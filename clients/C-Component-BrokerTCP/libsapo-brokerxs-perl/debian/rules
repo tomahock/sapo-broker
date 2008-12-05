@@ -54,7 +54,8 @@ install-stamp:
 	(cd SAPO-BrokerXS; $(MAKE) test)
 	(cd SAPO-BrokerXS; $(MAKE) install DESTDIR=$(TMP) PREFIX=/usr)
 
-	rmdir --ignore-fail-on-non-empty --parents $(TMP)/usr/share/perl5
+#bad rmdir , bad boy	
+#	rmdir --ignore-fail-on-non-empty --parents $(TMP)/usr/share/perl5
 
 	touch install-stamp
 
