@@ -487,6 +487,7 @@ sub _parse_soap_message {
     }
 
     $fields{source} = $message->findvalue('//wsa:From/wsa:Address');
+    $fields{original_destination} = $message->findvalue('//wsa:To');
     
     # extra info, i hope, some day, this fields come from the broker
     if ($fields{source}) {
