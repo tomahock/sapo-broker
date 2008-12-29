@@ -201,7 +201,7 @@ sub receive {
 
 	my $event = _parse_soap_message(
 		$buf,'http://services.sapo.pt/broker',
-		'BrokerMessage', qw(TextPayload MessageId DestinationName)
+		'BrokerMessage', qw(TextPayload MessageId DestinationName Timestamp Expiration)
 	);
 
 	return $self->{retstruct} || ( $self->{msg_type} && $self->{msg_type} eq 'TOPIC_AS_QUEUE' ) ? 
