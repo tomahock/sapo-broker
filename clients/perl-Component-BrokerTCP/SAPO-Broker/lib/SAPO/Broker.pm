@@ -269,6 +269,9 @@ sub _debug {
         
         print STDERR "$detail\n";
     }
+    elsif (ref($self->{DEBUG}) eq 'Log::Log4perl::Logger') {
+        $self->{DEBUG}->debug($msg);
+    }
     else {
         print STDERR "[SAPO::Broker DEBUG] ", $msg, "\n";
     }
