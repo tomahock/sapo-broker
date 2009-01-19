@@ -182,6 +182,7 @@ sub receive {
 	$self->_debug("Receiving...");
 
 	$self->_reconnect unless $self->_connected;
+	return undef      unless $self->_connected;
 
 	my $buf;
 	$self->{_CORE_}->{sock}->read( $buf, 4 );
