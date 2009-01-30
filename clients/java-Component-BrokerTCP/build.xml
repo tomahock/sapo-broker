@@ -3,14 +3,13 @@
 	<property name="java-Component-BrokerTCP.location" value="." />
 	<property name="dist" value="./dist" />
 
-	
 
 	<path id="project.classpath">
 		<pathelement location="${java-Component-BrokerTCP.location}/bin" />
 		<pathelement location="${java-Component-BrokerTCP.location}/clib/bcel.jar" />
 		<pathelement location="${java-Component-BrokerTCP.location}/clib/jibx-bind.jar" />
 		<pathelement location="${java-Component-BrokerTCP.location}/../../common-libs/jibx-run.jar"/>
-		<pathelement location="${java-Component-BrokerTCP.location}/../../common-libs/slf4j-api-1.5.5.jar"/>
+		<pathelement location="${java-Component-BrokerTCP.location}/../../common-libs/slf4j-api-1.5.6.jar"/>
 		<pathelement location="${java-Component-BrokerTCP.location}/../../common-libs/org.caudexorigo.jar"/>
 	</path>
 
