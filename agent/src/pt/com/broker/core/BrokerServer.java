@@ -68,7 +68,6 @@ public class BrokerServer
 					try
 					{
 						log.info("Disconnect broker socket acceptor");
-						acceptor.unbind();
 						Gcs.destroy();
 					}
 					catch (Throwable te)

@@ -262,9 +262,6 @@ public class Gcs
 		{
 			LocalQueueConsumers.removeAllListeners();
 			LocalTopicConsumers.removeAllListeners();
-			Sleep.time(250);
-			acceptor.unbind();
-			Sleep.time(250);
 			log.info("Flush buffers");
 			BDBEnviroment.sync();
 		}
