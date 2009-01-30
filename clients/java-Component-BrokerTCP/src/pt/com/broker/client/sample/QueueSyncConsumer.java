@@ -12,7 +12,7 @@ import pt.com.broker.client.messaging.BrokerMessage;
 
 public class QueueSyncConsumer
 {
-	private static final Logger log = LoggerFactory.getLogger(Consumer.class);
+	private static final Logger log = LoggerFactory.getLogger(QueueSyncConsumer.class);
 	private final AtomicInteger counter = new AtomicInteger(0);
 
 	private String host;
@@ -28,7 +28,7 @@ public class QueueSyncConsumer
 		qsconsumer.host = cargs.getHost();
 		qsconsumer.port = cargs.getPort();
 		qsconsumer.dname = cargs.getDestination();
-
+		
 		BrokerClient bk = new BrokerClient(qsconsumer.host, qsconsumer.port, "tcp://mycompany.com/mysniffer");
 
 		qsconsumer.receiveLoop(bk);

@@ -11,8 +11,6 @@ import org.jibx.runtime.JiBXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.management.GcInfo;
-
 import pt.com.broker.xml.EndPointReference;
 import pt.com.broker.xml.SoapEnvelope;
 import pt.com.broker.xml.SoapFault;
