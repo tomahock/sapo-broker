@@ -13,5 +13,14 @@ setup(
 	author_email = 'c.valente@co.sapo.pt',
     description="SAPO Broker python client",
     url="http://softwarelivre.sapo.pt/broker",
-	version = version
+	version = version,
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.4',
+        'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
 )
