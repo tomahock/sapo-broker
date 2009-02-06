@@ -1,3 +1,11 @@
+libsapo-broker (0.1.2) unstable; urgency=low
+
+  * Fix build for linux/x86_64
+  * Fix compile warning on gcc 4.3
+  * small fixes.
+
+ -- Miguel Sousa Filipe <miguel.filipe@caixamagica.pt>  Wed,  03 Sep 2008 16:20:13 +0100
+ 
 libsapo-broker (0.1.1.0) unstable; urgency=low
 
   * Added UDP support,

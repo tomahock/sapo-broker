@@ -128,9 +128,6 @@ char *sb_error();
 int sb_connect(SAPO_BROKER_T * conn);
 int sb_reconnect(SAPO_BROKER_T * conn);
 int sb_disconnect(SAPO_BROKER_T * conn);
-static int _sb_write(int socket, char *msg, int size);
-static int _sb_read(int socket, char *msg, int size);
-
 
 // mantaray operations
 int sb_publish(SAPO_BROKER_T * conn, int type, char *topic, char *payload);
