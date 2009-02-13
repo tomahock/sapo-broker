@@ -1,5 +1,7 @@
+#define _XOPEN_SOURCE
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 //#include <glib.h>
 #include "expat.h"
 #include "sapo_broker_xml.h"
@@ -85,7 +87,7 @@ BrokerMessage *sb_parser_process(XML_Parser p, char *buffer, int len)
 
     if (!XML_Parse(p, buffer, len, 1)) {
         fprintf(stderr, "Parse error at line %d:\n%s\n",
-                XML_GetCurrentLineNumber(p),
+                (int)XML_GetCurrentLineNumber(p),
                 XML_ErrorString(XML_GetErrorCode(p)));
         exit(-1);
     }
