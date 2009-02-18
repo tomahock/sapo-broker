@@ -353,6 +353,10 @@ int sb_publish_time(SAPO_BROKER_T * conn, int type, char *topic, char *payload,
     // allocate memory if necessary
     if (body_len > MAX_BUFFER) {
         body = calloc(body_len + 1, sizeof(char));
+		if (!body) {
+			fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
+			return SB_ERROR;;
+		}
         allocated = 1;
     } else {
         body = static_body;
@@ -441,6 +445,10 @@ int sb_subscribe(SAPO_BROKER_T * conn, int type, char *topic)
 
     if (body_len > MAX_BUFFER) {
         body = calloc(body_len + 1, sizeof(char));
+		if (!body) {
+			fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
+			return SB_ERROR;;
+		}
         allocated = 1;
     } else {
         body = static_body;
@@ -511,6 +519,10 @@ BrokerMessage *sb_receive(SAPO_BROKER_T * conn)
 
     if (body_len > MAX_BUFFER) {
         body = malloc( (body_len + 1) * sizeof(char));
+		if (!body) {
+			fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
+			return SB_ERROR;;
+		}
         allocated = 1;
     } else {
         body = static_body;
