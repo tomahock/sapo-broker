@@ -521,7 +521,7 @@ BrokerMessage *sb_receive(SAPO_BROKER_T * conn)
         body = malloc( (body_len + 1) * sizeof(char));
 		if (!body) {
 			fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
-			return SB_ERROR;;
+			return NULL;
 		}
         allocated = 1;
     } else {
