@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
 //#include <glib.h>
 #include "expat.h"
 #include "sapo_broker_xml.h"
@@ -79,7 +80,13 @@ void getText(void *data, const XML_Char * s, int len)
 BrokerMessage *sb_parser_process(XML_Parser p, char *buffer, int len)
 {
     BrokerParserData *bp = (BrokerParserData *) XML_GetUserData(p);
+
     bp->msg = calloc(1, sizeof(BrokerMessage));
+	if (!bp->msg) {
+		fprintf(stderr,"Cannot allocate memory for bp->msg: %s\n", strerror(errno));
+		exit(-1);
+	}
+
     XML_ParserReset(p, NULL);
     XML_SetUserData(p, bp);
     XML_SetElementHandler(p, sbx_start, sbx_end);
@@ -110,7 +117,13 @@ int showResult(BrokerMessage * bm)
 XML_Parser sb_parser_new()
 {
     XML_Parser p;
+
     BrokerParserData *bp = calloc(1, sizeof(BrokerParserData));
+	if (!bp) {
+		fprintf(stderr,"Cannot allocate memory for bp->msg: %s\n", strerror(errno));
+		exit(-1);
+	}
+
     p = XML_ParserCreateNS(NULL, ' ');
 
     XML_SetUserData(p, bp);
