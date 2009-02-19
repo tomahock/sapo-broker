@@ -44,11 +44,9 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    m = calloc(1, sizeof(BrokerMessage));
-
     while ((m = sb_receive(sb)) != NULL) {
         printf("%s\n", m->payload);
-		free(m);
+		sb_free_message(m);
 	}
 
     printf("Exiting: %s\n", sb_error());
