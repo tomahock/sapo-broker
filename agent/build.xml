@@ -101,12 +101,12 @@
  		</copy>
 
 		<copy todir="${target-dir}/jvm15">
-			<fileset dir="jvm15"/>
+			<fileset dir="../bindings/xml/java/jvm15"/>
  		</copy>
 
-		<!--copy todir="${target-dir}/clients">
-			<fileset dir="${clients}" excludes="**/.*"/>
- 		</copy -->
+		<copy todir="${target-dir}/clients">
+			<fileset dir="../clients" excludes="**/.*"/>
+ 		</copy>
 
 		<copy todir="${target-dir}">
 			<fileset dir="${project.location}">
