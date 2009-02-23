@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteTimeoutException;
+import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.io.UnsynchByteArrayOutputStream;
 import org.caudexorigo.text.StringUtils;
@@ -13,27 +14,32 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.core.ErrorHandler;
-import pt.com.broker.messaging.Accepted;
 import pt.com.broker.messaging.BrokerConsumer;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
-import pt.com.broker.messaging.Notify;
-import pt.com.broker.messaging.Poll;
 import pt.com.broker.messaging.QueueSessionListenerList;
-import pt.com.broker.messaging.Status;
 import pt.com.broker.messaging.TopicSubscriberList;
-import pt.com.broker.messaging.Unsubscribe;
-import pt.com.broker.xml.FaultCode;
-import pt.com.broker.xml.SoapEnvelope;
-import pt.com.broker.xml.SoapSerializer;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.Message;
 import pt.com.gcs.net.IoSessionHelper;
+import pt.com.types.NetAccepted;
+import pt.com.types.NetAction;
+import pt.com.types.NetBrokerMessage;
+import pt.com.types.NetFault;
+import pt.com.types.NetMessage;
+import pt.com.types.NetPong;
+import pt.com.types.NetPublish;
+import pt.com.types.NetSubscribe;
+import pt.com.types.NetUnsubscribe;
+import pt.com.types.NetAction.ActionType;
+import pt.com.xml.FaultCode;
+import pt.com.xml.SoapEnvelope;
+import pt.com.xml.SoapSerializer;
 
 public class BrokerProtocolHandler extends IoHandlerAdapter
 {
+
 	private static final Logger log = LoggerFactory.getLogger(BrokerProtocolHandler.class);
 
 	private static final BrokerProducer _brokerProducer = BrokerProducer.getInstance();
@@ -79,16 +85,48 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	public void exceptionCaught(IoSession iosession, Throwable cause, String actionId)
 	{
+		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+
+		NetFault fault = new NetFault("CODE:99999", rootCause.getMessage());
+		fault.setActionId(actionId);
+		fault.setDetail(ErrorHandler.buildStackTrace(rootCause));
+
+		NetAction action = new NetAction(ActionType.FAULT);
+		action.setFaultMessage(fault);
+
+		NetMessage ex_msg = new NetMessage(action, null);
+
+		if (!(cause instanceof IOException))
+		{
+			try
+			{
+				iosession.write(fault);
+			}
+			catch (Throwable t)
+			{
+				log.error("The error information could not be delivered to the client", t);
+			}
+		}
+		try
+		{
+			iosession.close();
+		}
+		catch (Throwable t)
+		{
+			log.error("Error closing client connection", t);
+		}
+
 		ErrorHandler.WTF wtf = ErrorHandler.buildSoapFault(cause);
-		SoapEnvelope ex_msg = wtf.Message;
+		SoapEnvelope soap_ex_msg = wtf.Message;
+
 		if (actionId != null)
 		{
-			ex_msg.body.fault.faultCode.subcode = new FaultCode();
-			ex_msg.body.fault.faultCode.subcode.value = "action-id:" + actionId;
+			soap_ex_msg.body.fault.faultCode.subcode = new FaultCode();
+			soap_ex_msg.body.fault.faultCode.subcode.value = "action-id:" + actionId;
 
 		}
 
-		publishFault(ex_msg);
+		publishFault(soap_ex_msg);
 
 		String client = IoSessionHelper.getRemoteAddress(iosession);
 
@@ -144,16 +182,18 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 	}
 
-	private void publishFault(SoapEnvelope ex_msg)
+	private void publishFault(SoapEnvelope faultMessage)
 	{
 		try
 		{
 			UnsynchByteArrayOutputStream out = new UnsynchByteArrayOutputStream();
-			SoapSerializer.ToXml(ex_msg, out);
-			Message errmsg = new Message();
-			errmsg.setContent(new String(out.toByteArray()));
-			errmsg.setDestination(String.format("/system/faults/#%s#", GcsInfo.getAgentName()));
-			Gcs.publish(errmsg);
+			SoapSerializer.ToXml(faultMessage, out);
+			
+			NetBrokerMessage xfaultMessage = new NetBrokerMessage(out.toByteArray());
+			
+			NetPublish p = new NetPublish((String.format("/system/faults/#%s#", GcsInfo.getAgentName())), NetAction.DestinationType.TOPIC,  xfaultMessage);
+
+			_brokerProducer.publishMessage(p, null);
 		}
 		catch (Throwable t)
 		{
@@ -161,19 +201,18 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 	}
 
-	@Override
 	public void messageReceived(final IoSession session, Object message) throws Exception
 	{
-		if (!(message instanceof SoapEnvelope))
+		if (!(message instanceof NetMessage))
 		{
 			return;
 		}
 
-		final SoapEnvelope request = (SoapEnvelope) message;
+		final NetMessage request = (NetMessage) message;
 		handleMessage(session, request);
 	}
 
-	private void handleMessage(IoSession session, final SoapEnvelope request)
+	private void handleMessage(IoSession session, final NetMessage request)
 	{
 		String actionId = null;
 
@@ -181,88 +220,39 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		{
 			final String requestSource = MQ.requestSource(request);
 
-			if (request.body.notify != null)
+			switch (request.getAction().getActionType())
 			{
-				Notify sb = request.body.notify;
-				actionId = sb.actionId;
-
-				if (StringUtils.isBlank(sb.destinationName))
-				{
-					throw new IllegalArgumentException("Must provide a valid destination");
-				}
-
-				if (sb.destinationType.equals("TOPIC"))
-				{
-					_brokerConsumer.subscribe(sb, session);
-				}
-				else if (sb.destinationType.equals("QUEUE"))
-				{
-					_brokerConsumer.listen(sb, session);
-				}
-				else if (sb.destinationType.equals("TOPIC_AS_QUEUE"))
-				{
-					if (StringUtils.contains(sb.destinationName, "@"))
-					{
-						_brokerConsumer.listen(sb, session);
-					}
-					else
-					{
-						throw new IllegalArgumentException("Not a valid destination name for a TOPIC_AS_QUEUE consumer");
-					}
-				}
-				sendAccepted(session, actionId);
-				return;
-			}
-			else if (request.body.publish != null)
-			{
-				actionId = request.body.publish.actionId;
-				_brokerProducer.publishMessage(request.body.publish, requestSource);
-				sendAccepted(session, actionId);
-				return;
-			}
-			else if (request.body.enqueue != null)
-			{
-				actionId = request.body.enqueue.actionId;
-				_brokerProducer.enqueueMessage(request.body.enqueue, requestSource);
-				sendAccepted(session, actionId);
-				return;
-			}
-			else if (request.body.poll != null)
-			{
-				actionId = request.body.poll.actionId;
-				sendAccepted(session, actionId);
-
-				Poll poll = request.body.poll;
-				BrokerSyncConsumer.poll(poll, session);
-				return;
-			}
-			else if (request.body.acknowledge != null)
-			{
-				_brokerProducer.acknowledge(request.body.acknowledge);
-				return;
-			}
-			else if (request.body.accepted != null)
-			{
-				// TODO: deal with the ack
-				return;
-			}
-			else if (request.body.unsubscribe != null)
-			{
-				Unsubscribe unsubs = request.body.unsubscribe;
-				_brokerConsumer.unsubscribe(unsubs, session);
-				actionId = request.body.unsubscribe.actionId;
-				sendAccepted(session, actionId);
-				return;
-			}
-			else if (request.body.checkStatus != null)
-			{
-				SoapEnvelope soap_status = new SoapEnvelope();
-				soap_status.body.status = new Status();
-				session.write(soap_status);
-				return;
-			}
-			else
-			{
+			case NOTIFICATION:
+				/*
+				 * Notifications are sent from Agents to Clients Send error message!
+				 */
+				break;
+			case PUBLISH:
+				handlePubishMessage(session, request, requestSource);
+				break;
+			case POLL:
+				handlePoolMessage(session, request);
+				break;
+			case ACKNOWLEDGE_MESSAGE:
+				handleAcknowledeMessage(session, request);
+				break;
+			case ACCEPTED:
+				handleAcceptedMessage(session, request);
+				break;
+			case UNSUBSCRIBE:
+				handleUnsubscribeMessage(session, request);
+				break;
+			case SUBSCRIBE:
+				handleSubscribeMessage(session, request);
+				break;
+			case PING:
+				handlePingMessage(session, request);
+				break;
+			case PONG:
+				/*
+				 * Pong are sent from Agents to Clients Send error message!
+				 */
+			default:
 				throw new RuntimeException("Not a valid request");
 			}
 		}
@@ -272,15 +262,153 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 	}
 
+	private void handlePubishMessage(IoSession session, NetMessage request, String messageSource)
+	{
+		NetPublish publish = request.getAction().getPublishMessage();
+		switch (publish.getDestinationType())
+		{
+		case TOPIC:
+			_brokerProducer.publishMessage(publish, messageSource);
+			break;
+		case QUEUE:
+			_brokerProducer.enqueueMessage(publish, messageSource);
+			break;
+		case VIRTUAL_QUEUE:
+			if (StringUtils.contains(publish.getDestination(), "@"))
+			{
+				_brokerProducer.enqueueMessage(publish, messageSource);
+			}
+			else
+			{
+				throw new IllegalArgumentException("Not a valid destination name for a TOPIC_AS_QUEUE consumer");
+			}
+			_brokerProducer.enqueueMessage(publish, messageSource);
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid publication destination type");
+		}
+
+		sendAccepted(session, publish.getActionId());
+
+	}
+
+	private void handlePoolMessage(IoSession session, NetMessage request)
+	{
+		sendAccepted(session, request.getAction().getPollMessage().getActionId());
+
+		BrokerSyncConsumer.poll(request.getAction().getPollMessage(), session);
+	}
+
+	private void handleAcknowledeMessage(IoSession session, NetMessage request)
+	{
+		_brokerProducer.acknowledge(request.getAction().getAcknowledgeMessage());
+	}
+
+	private void handleAcceptedMessage(IoSession session, NetMessage request)
+	{
+		// TODO: deal with the ack
+		return;
+
+	}
+
+	private void handleUnsubscribeMessage(IoSession session, NetMessage request)
+	{
+		NetUnsubscribe unsubMsg = request.getAction().getUnsbuscribeMessage();
+		if (unsubMsg == null)
+			throw new RuntimeException("Not a valid request - inexistent Unsubscribe message");
+
+		_brokerConsumer.unsubscribe(unsubMsg, session);
+		String actionId = unsubMsg.getActionId();
+		sendAccepted(session, actionId);
+
+	}
+
+	private void handleSubscribeMessage(IoSession session, NetMessage request)
+	{
+		NetSubscribe subscritption = request.getAction().getSubscribeMessage();
+
+		if (StringUtils.isBlank(subscritption.getDestination()))
+		{
+			throw new IllegalArgumentException("Must provide a valid destination");
+		}
+
+		switch (subscritption.getDestinationType())
+		{
+		case QUEUE:
+			_brokerConsumer.listen(subscritption, session);
+			break;
+		case TOPIC:
+			_brokerConsumer.subscribe(subscritption, session);
+			break;
+		case VIRTUAL_QUEUE:
+			if (StringUtils.contains(subscritption.getDestination(), "@"))
+			{
+				_brokerConsumer.listen(subscritption, session);
+			}
+			else
+			{
+				throw new IllegalArgumentException("Not a valid destination name for a TOPIC_AS_QUEUE consumer");
+			}
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid subscription destination type");
+		}
+		sendAccepted(session, subscritption.getActionId());
+	}
+
+	private void handlePingMessage(final IoSession ios, Object object)
+	{
+		NetPong pong = new NetPong(System.currentTimeMillis());
+		NetAction action = new NetAction(ActionType.PONG);
+		action.setPongMessage(pong);
+		NetMessage message = new NetMessage(action, null);
+
+		ios.write(message);
+
+		boolean isSuspended = (Boolean) ios.getAttribute("IS_SUSPENDED", Boolean.FALSE);
+
+		// TODO: determine if it's ios.getScheduledWriteBytes() or ios.getScheduledWriteMessages()
+		if ((ios.getScheduledWriteMessages() > MAX_WRITE_BUFFER_SIZE) && !isSuspended)
+		{
+			ios.suspendRead();
+			ios.setAttribute("IS_SUSPENDED", Boolean.TRUE);
+
+			Runnable resumer = new Runnable()
+			{
+				public void run()
+				{
+					int counter = 0;
+					while (true)
+					{
+						Sleep.time(5);
+						counter++;
+						if (ios.getScheduledWriteMessages() <= MAX_WRITE_BUFFER_SIZE)
+						{
+							ios.resumeRead();
+							ios.setAttribute("IS_SUSPENDED", Boolean.FALSE);
+							return;
+						}
+						if (counter % 1000 == 0)
+						{
+							log.warn("Client is slow reading pong message.");
+						}
+					}
+				}
+			};
+			BrokerExecutor.execute(resumer);
+		}
+	}
+
 	private void sendAccepted(final IoSession ios, final String actionId)
 	{
 		if (actionId != null)
 		{
-			SoapEnvelope soap_a = new SoapEnvelope();
-			Accepted a = new Accepted();
-			a.actionId = actionId;
-			soap_a.body.accepted = a;
-			ios.write(soap_a);
+			NetAccepted accept = new NetAccepted(actionId);
+			NetAction action = new NetAction(NetAction.ActionType.ACCEPTED);
+			action.setAcceptedMessage(accept);
+			NetMessage message = new NetMessage(action, null);
+
+			ios.write(message);
 
 			boolean isSuspended = (Boolean) ios.getAttribute("IS_SUSPENDED", Boolean.FALSE);
 

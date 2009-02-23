@@ -1,9 +1,7 @@
 package pt.com.broker.client;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -14,27 +12,28 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.messaging.Acknowledge;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.broker.client.messaging.BrokerMessage;
-import pt.com.broker.client.messaging.CheckStatus;
-import pt.com.broker.client.messaging.DestinationType;
-import pt.com.broker.client.messaging.Enqueue;
-import pt.com.broker.client.messaging.Notify;
-import pt.com.broker.client.messaging.Poll;
-import pt.com.broker.client.messaging.Publish;
-import pt.com.broker.client.messaging.Status;
-import pt.com.broker.client.messaging.Unsubscribe;
-import pt.com.broker.client.xml.EndPointReference;
-import pt.com.broker.client.xml.SoapEnvelope;
-import pt.com.broker.client.xml.SoapSerializer;
+import pt.com.types.NetAcknowledgeMessage;
+import pt.com.types.NetAction;
+import pt.com.types.NetBrokerMessage;
+import pt.com.types.NetMessage;
+import pt.com.types.NetNotification;
+import pt.com.types.NetParameter;
+import pt.com.types.NetPing;
+import pt.com.types.NetPoll;
+import pt.com.types.NetPong;
+import pt.com.types.NetPublish;
+import pt.com.types.NetSubscribe;
+import pt.com.types.NetUnsubscribe;
+import pt.com.types.NetAction.ActionType;
+import pt.com.types.NetAction.DestinationType;
 
 public class BrokerClient
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);
 	private final String _appName;
 	private final ConcurrentMap<String, BrokerListener> _async_listeners = new ConcurrentHashMap<String, BrokerListener>();
-	private final BlockingQueue<Status> _bstatus = new LinkedBlockingQueue<Status>();
+	private final BlockingQueue<NetPong> _bstatus = new LinkedBlockingQueue<NetPong>();
 	private final List<BrokerAsyncConsumer> _consumerList = new CopyOnWriteArrayList<BrokerAsyncConsumer>();
 	private BrokerProtocolHandler _netHandler;
 	private final String _host;
@@ -56,17 +55,19 @@ public class BrokerClient
 		_netHandler.start();
 	}
 
-	public void acknowledge(BrokerMessage brkmsg) throws Throwable
+	public void acknowledge(NetNotification notification) throws Throwable
 	{
-		if ((brkmsg != null) && (StringUtils.isNotBlank(brkmsg.messageId)))
-		{
-			Acknowledge ack = new Acknowledge();
-			ack.messageId = brkmsg.messageId;
-			ack.destinationName = brkmsg.destinationName;
 
-			SoapEnvelope soap = buildSoapEnvelope("http://services.sapo.pt/broker/acknowledge");
-			soap.body.acknowledge = ack;
-			_netHandler.sendMessage(soap);
+		if ((notification != null) && (notification.getMessage() != null) && (StringUtils.isNotBlank(notification.getMessage().getMessageId())))
+		{
+			NetBrokerMessage brkMsg = notification.getMessage();
+			NetAcknowledgeMessage ackMsg = new NetAcknowledgeMessage(notification.getDestination(), brkMsg.getMessageId());
+
+			NetAction action = new NetAction(ActionType.ACKNOWLEDGE_MESSAGE);
+			action.setAcknowledgeMessage(ackMsg);
+			NetMessage msg = buildMessage("http://services.sapo.pt/broker/acknowledge", action);
+
+			_netHandler.sendMessage(msg);
 		}
 		else
 		{
@@ -74,26 +75,31 @@ public class BrokerClient
 		}
 	}
 
-	public void addAsyncConsumer(Notify notify, BrokerListener listener) throws Throwable
+	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener) throws Throwable
 	{
-		if ((notify != null) && (StringUtils.isNotBlank(notify.destinationName)))
+		if ((subscribe != null) && (StringUtils.isNotBlank(subscribe.getDestination())))
 		{
 			synchronized (mutex)
 			{
-				if (_async_listeners.containsKey(notify.destinationName))
+				if (_async_listeners.containsKey(subscribe.getDestination()))
 				{
 					throw new IllegalStateException("A listener for that Destination already exists");
 				}
 
-				_async_listeners.put(notify.destinationName, listener);
+				_async_listeners.put(subscribe.getDestination(), listener);
 			}
 
-			String action = buildAction(notify);
-			SoapEnvelope soap = buildSoapEnvelope(action);
-			soap.body.notify = notify;
-			_netHandler.sendMessage(soap);
-			_consumerList.add(new BrokerAsyncConsumer(notify, listener));
-			log.info("Created new async consumer for '{}'", notify.destinationName);
+			String action = buildAction(subscribe.getDestinationType());
+
+			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
+			netAction.setSubscribeMessage(subscribe);
+
+			NetMessage msg = buildMessage(action, netAction);
+
+			_netHandler.sendMessage(msg);
+
+			_consumerList.add(new BrokerAsyncConsumer(subscribe, listener));
+			log.info("Created new async consumer for '{}'", subscribe.getDestination());
 		}
 		else
 		{
@@ -105,65 +111,79 @@ public class BrokerClient
 	{
 		for (BrokerAsyncConsumer aconsumer : _consumerList)
 		{
-			Notify notify = aconsumer.getNotify();
-			String action = buildAction(notify);
-			SoapEnvelope soap = buildSoapEnvelope(action);
-			soap.body.notify = notify;
-			_netHandler.sendMessage(soap);
-			log.info("Reconnected async consumer for '{}'", notify.destinationName);
+			NetSubscribe subscription = aconsumer.getSubscription();
+			String action = buildAction(subscription.getDestinationType());
+
+			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
+			netAction.setSubscribeMessage(subscription);
+
+			NetMessage msg = buildMessage(action, netAction);
+
+			_netHandler.sendMessage(msg);
+			log.info("Reconnected async consumer for '{}'", subscription.getDestination());
 		}
 	}
 
-	protected void bindConsumers() throws Throwable
+//	protected void bindConsumers() throws Throwable
+//	{
+//		for (BrokerAsyncConsumer bac : _consumerList)
+//		{
+//			NetSubscribe subscription = bac.getSubscription();
+//
+//			String action = buildAction(subscription.getDestinationType());
+//
+//			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
+//			netAction.setSubscribeMessage(subscription);
+//
+//			NetMessage msg = buildMessage(action, netAction);
+//
+//			_netHandler.sendMessage(msg);
+//
+//			_consumerList.add(new BrokerAsyncConsumer(subscription, bac.getListener()));
+//		}
+//	}
+
+	public NetMessage buildMessage(String actionDest, NetAction action)
 	{
-		for (BrokerAsyncConsumer bac : _consumerList)
-		{
-			String action = buildAction(bac.getNotify());
-			SoapEnvelope soap = buildSoapEnvelope(action);
-			soap.body.notify = bac.getNotify();
-			_netHandler.sendMessage(soap);
-			_consumerList.add(new BrokerAsyncConsumer(bac.getNotify(), bac.getListener()));
-		}
+		List<NetParameter> headers = new ArrayList<NetParameter>(3);
+		headers.add(new NetParameter("ACTION", actionDest));
+		headers.add(new NetParameter("ADDRESS", _appName));
+		headers.add(new NetParameter("TO", actionDest));
+
+		NetMessage message = new NetMessage(action, headers);
+
+		return message;
 	}
 
-	private String buildAction(Notify notify)
+	private String buildAction(DestinationType destinationType)
 	{
 		String raction = "";
-		if (notify.destinationType == DestinationType.QUEUE)
+
+		switch (destinationType)
 		{
+		case QUEUE:
 			raction = "http://services.sapo.pt/broker/listen";
-		}
-		else if (notify.destinationType == DestinationType.TOPIC)
-		{
+			break;
+		case TOPIC:
 			raction = "http://services.sapo.pt/broker/subscribe";
-		}
-		else if (notify.destinationType == DestinationType.TOPIC_AS_QUEUE)
-		{
+			break;
+		case VIRTUAL_QUEUE:
 			raction = "http://services.sapo.pt/broker/listen";
-		}
-		else
-		{
-			throw new IllegalArgumentException("Mal-formed Notification request");
+			break;
 		}
 		return raction;
 	}
 
-	private SoapEnvelope buildSoapEnvelope(String action)
+	public NetPong checkStatus() throws Throwable
 	{
-		SoapEnvelope soap = new SoapEnvelope();
-		soap.header.wsaAction = action;
-		soap.header.wsaFrom = new EndPointReference();
-		soap.header.wsaFrom.address = _appName;
-		soap.header.wsaTo = action;
-		return soap;
-	}
+		NetPing ping = new NetPing(System.currentTimeMillis());
 
-	public Status checkStatus() throws Throwable
-	{
-		CheckStatus checkstatus = new CheckStatus();
-		SoapEnvelope soap = buildSoapEnvelope("http://services.sapo.pt/broker/checkstatus");
-		soap.body.checkStatus = checkstatus;
-		_netHandler.sendMessage(soap);
+		NetAction action = new NetAction(ActionType.PING);
+		action.setPingMessage(ping);
+
+		NetMessage message = buildMessage("http://services.sapo.pt/broker/checkstatus", action);
+
+		_netHandler.sendMessage(message);
 		return _bstatus.take();
 
 	}
@@ -173,16 +193,27 @@ public class BrokerClient
 		_netHandler.stop();
 	}
 
-	public void enqueueMessage(BrokerMessage brkmsg) throws Throwable
+	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName)
 	{
-		if ((brkmsg != null) && (StringUtils.isNotBlank(brkmsg.destinationName)))
+
+		if ((brokerMessage != null) && (StringUtils.isNotBlank(destinationName)))
 		{
-			Enqueue enqreq = new Enqueue();
-			//enqreq.actionId = UUID.randomUUID().toString();
-			enqreq.brokerMessage = brkmsg;
-			SoapEnvelope soap = buildSoapEnvelope("http://services.sapo.pt/broker/enqueue");
-			soap.body.enqueue = enqreq;
-			_netHandler.sendMessage(soap);
+			NetPublish publish = new NetPublish(destinationName, pt.com.types.NetAction.DestinationType.QUEUE, brokerMessage);
+
+			NetAction action = new NetAction(ActionType.PUBLISH);
+			action.setPublishMessage(publish);
+
+			NetMessage msg = buildMessage("http://services.sapo.pt/broker/enqueue", action);
+
+			try
+			{
+				_netHandler.sendMessage(msg);
+			}
+			catch (Throwable t)
+			{
+				log.error("Could not acknowledge message, messageId: '{}'", publish.getMessage().getMessageId());
+				log.error(t.getMessage(), t);
+			}
 		}
 		else
 		{
@@ -190,9 +221,9 @@ public class BrokerClient
 		}
 	}
 
-	protected void feedStatusConsumer(Status status) throws Throwable
+	protected void feedStatusConsumer(NetPong pong) throws Throwable
 	{
-		_bstatus.offer(status);
+		_bstatus.offer(pong);
 	}
 
 	public String getHost()
@@ -205,44 +236,44 @@ public class BrokerClient
 		return _portNumber;
 	}
 
-	protected void notifyListener(BrokerMessage msg)
+	protected void notifyListener(NetNotification notification)
 	{
 		for (BrokerAsyncConsumer aconsumer : _consumerList)
 		{
-			boolean isDelivered = aconsumer.deliver(msg);
+			boolean isDelivered = aconsumer.deliver(notification);
 			BrokerListener listener = aconsumer.getListener();
 
-		
 			if (listener.isAutoAck() && isDelivered)
 			{
 				try
 				{
-					acknowledge(msg);
+					acknowledge(notification);
 				}
 				catch (Throwable t)
 				{
-					log.error("Could not acknowledge message, messageId: '{}'", msg.messageId);
+					log.error("Could not acknowledge message, messageId: '{}'", notification.getMessage().getMessageId());
 					log.error(t.getMessage(), t);
 				}
 			}
 		}
 	}
 
-	public BrokerMessage poll(String queueName) throws Throwable
+	public NetNotification poll(String queueName) throws Throwable
 	{
 		if (StringUtils.isNotBlank(queueName))
 		{
-			Poll p = new Poll();
-			p.destinationName = queueName;
-			SoapEnvelope soap = buildSoapEnvelope("http://services.sapo.pt/broker/poll");
-			soap.body.poll = p;
+			NetPoll poll = new NetPoll(queueName);
+			poll.setActionId("http://services.sapo.pt/broker/poll");
+			NetAction action = new NetAction(ActionType.POLL);
+			action.setPollMessage(poll);
 
+			NetMessage message = buildMessage("http://services.sapo.pt/broker/poll", action);
 			SyncConsumer sc = SyncConsumerList.get(queueName);
 			sc.increment();
 
-			_netHandler.sendMessage(soap);
+			_netHandler.sendMessage(message);
 
-			BrokerMessage m = sc.take();
+			NetNotification m = sc.take();
 			return m;
 		}
 		else
@@ -251,16 +282,27 @@ public class BrokerClient
 		}
 	}
 
-	public void publishMessage(BrokerMessage brkmsg) throws Throwable
+	public void publishMessage(NetBrokerMessage brokerMessage, String destination)
 	{
-		if ((brkmsg != null) && (StringUtils.isNotBlank(brkmsg.destinationName)))
+		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination)))
 		{
-			Publish pubreq = new Publish();
-			pubreq.actionId= UUID.randomUUID().toString();
-			pubreq.brokerMessage = brkmsg;
-			SoapEnvelope soap = buildSoapEnvelope("http://services.sapo.pt/broker/publish");
-			soap.body.publish = pubreq;
-			_netHandler.sendMessage(soap);
+			NetPublish publish = new NetPublish(destination, pt.com.types.NetAction.DestinationType.TOPIC, brokerMessage);
+			// publish.setActionId(UUID.randomUUID().toString());
+
+			NetAction action = new NetAction(ActionType.PUBLISH);
+			action.setPublishMessage(publish);
+
+			NetMessage msg = buildMessage("http://services.sapo.pt/broker/publish", action);
+
+			try
+			{
+				_netHandler.sendMessage(msg);
+			}
+			catch (Throwable e)
+			{
+				log.error("Could not publish message, messageId:");
+				log.error(e.getMessage(), e);
+			}
 		}
 		else
 		{
@@ -268,22 +310,23 @@ public class BrokerClient
 		}
 	}
 
-	public void unsubscribe(DestinationType destinationType, String destinationName) throws Throwable
+	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName) throws Throwable
 	{
 		if ((StringUtils.isNotBlank(destinationName)) && (destinationType != null))
 		{
-			Unsubscribe u = new Unsubscribe();
-			u.destinationName = destinationName;
-			u.destinationType = destinationType;
-			SoapEnvelope soap = buildSoapEnvelope("http://services.sapo.pt/broker/unsubscribe");
-			soap.body.unsubscribe = u;
-			_netHandler.sendMessage(soap);
+			NetUnsubscribe unsubs = new NetUnsubscribe(destinationName, destinationType);
+			NetAction action = new NetAction(ActionType.UNSUBSCRIBE);
+			action.setUnsbuscribeMessage(unsubs);
+
+			NetMessage message = buildMessage("http://services.sapo.pt/broker/unsubscribe", action);
+
+			_netHandler.sendMessage(message);
 
 			for (BrokerAsyncConsumer bac : _consumerList)
 			{
-				Notify n = bac.getNotify();
+				NetSubscribe n = bac.getSubscription();
 
-				if ((n.destinationName.equals(destinationName)) && (n.destinationType == destinationType))
+				if ((n.getDestination().equals(destinationName)) && (n.getDestinationType() == destinationType))
 					_consumerList.remove(bac);
 			}
 		}
@@ -293,38 +336,39 @@ public class BrokerClient
 		}
 	}
 
-	public static void saveToDropbox(String dropboxPath, BrokerMessage brkmsg, DestinationType dtype) throws Throwable
-	{
-		if ((brkmsg != null) && (StringUtils.isNotBlank(brkmsg.destinationName)) && (StringUtils.isNotBlank(dropboxPath)))
-		{
-			SoapEnvelope soap = new SoapEnvelope();
+	// public static void saveToDropbox(String dropboxPath, BrokerMessage brkmsg, DestinationType dtype) throws Throwable
+	// {
+	// if ((brkmsg != null) && (StringUtils.isNotBlank(brkmsg.destinationName)) && (StringUtils.isNotBlank(dropboxPath)))
+	// {
+	// SoapEnvelope soap = new SoapEnvelope();
+	//
+	// if (dtype == DestinationType.TOPIC)
+	// {
+	// Publish pubreq = new Publish();
+	// pubreq.brokerMessage = brkmsg;
+	// soap.body.publish = pubreq;
+	// }
+	// else if (dtype == DestinationType.QUEUE)
+	// {
+	// Enqueue enqreq = new Enqueue();
+	// enqreq.brokerMessage = brkmsg;
+	// soap.body.enqueue = enqreq;
+	// }
+	//
+	// String baseFileName = dropboxPath + File.separator + UUID.randomUUID().toString();
+	// String tempfileName = baseFileName + ".temp";
+	// String fileName = baseFileName + ".good";
+	//
+	// FileOutputStream fos = new FileOutputStream(tempfileName);
+	// SoapSerializer.ToXml(soap, fos);
+	// fos.flush();
+	// fos.close();
+	// (new File(tempfileName)).renameTo(new File(fileName));
+	// }
+	// else
+	// {
+	// throw new IllegalArgumentException("Missing arguments for Dropbox persistence");
+	// }
+	// }
 
-			if (dtype == DestinationType.TOPIC)
-			{
-				Publish pubreq = new Publish();
-				pubreq.brokerMessage = brkmsg;
-				soap.body.publish = pubreq;
-			}
-			else if (dtype == DestinationType.QUEUE)
-			{
-				Enqueue enqreq = new Enqueue();
-				enqreq.brokerMessage = brkmsg;
-				soap.body.enqueue = enqreq;
-			}
-
-			String baseFileName = dropboxPath + File.separator + UUID.randomUUID().toString();
-			String tempfileName = baseFileName + ".temp";
-			String fileName = baseFileName + ".good";
-
-			FileOutputStream fos = new FileOutputStream(tempfileName);
-			SoapSerializer.ToXml(soap, fos);
-			fos.flush();
-			fos.close();
-			(new File(tempfileName)).renameTo(new File(fileName));
-		}
-		else
-		{
-			throw new IllegalArgumentException("Missing arguments for Dropbox persistence");
-		}
-	}
 }

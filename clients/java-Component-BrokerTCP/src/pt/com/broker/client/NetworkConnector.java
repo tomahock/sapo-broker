@@ -44,13 +44,13 @@ public class NetworkConnector
 	public void reconnect(Throwable se)
 	{
 		log.warn("Connect Error: " + se.getMessage());
-		
+
 		close();
-		
+
 		Throwable ex = new Exception(se);
 
 		while (ex != null)
-		{			
+		{
 			try
 			{
 				log.error("Trying to reconnect");

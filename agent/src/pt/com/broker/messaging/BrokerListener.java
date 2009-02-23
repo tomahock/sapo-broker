@@ -1,53 +1,41 @@
 package pt.com.broker.messaging;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.mina.core.session.IoSession;
-import org.caudexorigo.text.DateUtil;
 
-import pt.com.broker.xml.EndPointReference;
-import pt.com.broker.xml.SoapEnvelope;
-import pt.com.broker.xml.SoapHeader;
-import pt.com.gcs.messaging.Message;
+import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageListener;
+import pt.com.types.NetAction;
+import pt.com.types.NetMessage;
+import pt.com.types.NetNotification;
+import pt.com.types.NetParameter;
+import pt.com.types.NetAction.DestinationType;
 
 public abstract class BrokerListener implements MessageListener
 {
-	protected static SoapEnvelope buildNotification(Message msg)
+	protected static NetMessage buildNotification(InternalMessage msg, DestinationType dtype)
 	{
-		return buildNotification(msg, null);
+		return buildNotification(msg, null, dtype);
 	}
 
-	protected static SoapEnvelope buildNotification(Message msg, String subscriptionName)
+	protected static NetMessage buildNotification(InternalMessage msg, String subscriptionName, DestinationType dtype )
 	{
-		Notification nt = new Notification();
-		BrokerMessage bkrm = nt.brokerMessage;
+		NetNotification notification = new NetNotification(msg.getDestination(), dtype, msg.getContent(), subscriptionName);
 
-		bkrm.destinationName = msg.getDestination();
-		bkrm.timestamp = DateUtil.formatISODate(new Date(msg.getTimestamp()));
-		bkrm.expiration = DateUtil.formatISODate(new Date(msg.getExpiration()));
-		bkrm.messageId = msg.getMessageId();
-		bkrm.textPayload = msg.getContent();
-		nt.brokerMessage = bkrm;
-		nt.actionId = msg.getMessageId();
+		NetAction action = new NetAction(NetAction.ActionType.NOTIFICATION);
+		action.setNotificationMessage(notification);
+		
+		notification.getMessage().setMessageId(msg.getMessageId());
 
-		SoapEnvelope soap_env = new SoapEnvelope();
-		SoapHeader soap_header = new SoapHeader();
-		EndPointReference epr = new EndPointReference();
-		epr.address = msg.getSourceApp();
-		soap_header.wsaFrom = epr;
-		if (subscriptionName != null)
-		{
-			soap_header.wsaTo = subscriptionName;
-		}
+		List<NetParameter> params = new ArrayList<NetParameter>(4);
+		params.add(new NetParameter("FROM", msg.getSourceApp()));
+		params.add(new NetParameter("ACTION", "http://services.sapo.pt/broker/notification/" + msg.getMessageId()));
 
-		soap_header.wsaMessageID = "http://services.sapo.pt/broker/message/" + bkrm.messageId;
-		soap_header.wsaAction = "http://services.sapo.pt/broker/notification/";
-		soap_env.header = soap_header;
+		NetMessage message = new NetMessage(action, params);
 
-		soap_env.body.notification = nt;
-
-		return soap_env;
+		return message;
 	}
 
 	public abstract int addConsumer(IoSession iosession);

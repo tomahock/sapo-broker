@@ -11,11 +11,11 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.xml.SoapEnvelope;
-import pt.com.gcs.messaging.DestinationType;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.Message;
+import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.net.IoSessionHelper;
+import pt.com.types.NetMessage;
+import pt.com.types.NetAction.DestinationType;
 
 public class QueueSessionListener extends BrokerListener
 {
@@ -42,7 +42,7 @@ public class QueueSessionListener extends BrokerListener
 		return DestinationType.QUEUE;
 	}
 
-	public boolean onMessage(final Message msg)
+	public boolean onMessage(final InternalMessage msg)
 	{
 		if (msg == null)
 			return true;
@@ -55,8 +55,8 @@ public class QueueSessionListener extends BrokerListener
 			{
 				if (ioSession.isConnected() && !ioSession.isClosing())
 				{
-					final SoapEnvelope response = BrokerListener.buildNotification(msg);
-
+					final NetMessage response = BrokerListener.buildNotification(msg, pt.com.types.NetAction.DestinationType.QUEUE);
+					
 					if (ioSession.getScheduledWriteBytes() > MAX_SESSION_BUFFER_SIZE)
 					{
 						int sleepCount = 0;
@@ -89,7 +89,7 @@ public class QueueSessionListener extends BrokerListener
 				Gcs.ackMessage(_dname, msg.getMessageId());
 				log.warn("Undeliverable message was deleted. Id: '{}'", msg.getMessageId());
 			}
-			
+
 			try
 			{
 				(ioSession.getHandler()).exceptionCaught(ioSession, e);
@@ -164,7 +164,7 @@ public class QueueSessionListener extends BrokerListener
 				QueueSessionListenerList.remove(_dname);
 				Gcs.removeAsyncConsumer(this);
 			}
-			
+
 			return _sessions.size();
 		}
 	}

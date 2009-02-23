@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
-import pt.com.broker.client.messaging.BrokerMessage;
+import pt.com.types.NetNotification;
 
 public class QueueSyncConsumer
 {
@@ -28,7 +28,7 @@ public class QueueSyncConsumer
 		qsconsumer.host = cargs.getHost();
 		qsconsumer.port = cargs.getPort();
 		qsconsumer.dname = cargs.getDestination();
-		
+
 		BrokerClient bk = new BrokerClient(qsconsumer.host, qsconsumer.port, "tcp://mycompany.com/mysniffer");
 
 		qsconsumer.receiveLoop(bk);
@@ -38,8 +38,8 @@ public class QueueSyncConsumer
 	{
 		while (true)
 		{
-			BrokerMessage m = bk.poll(dname);
-			log.info(String.format("%s -> Received Message: %s", counter.incrementAndGet(), m.textPayload));
+			NetNotification m = bk.poll(dname);
+			log.info(String.format("%s -> Received Message: %s", counter.incrementAndGet(), new String(m.getMessage().getPayload())));
 			bk.acknowledge(m);
 		}
 	}

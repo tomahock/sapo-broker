@@ -16,9 +16,13 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
-import pt.com.broker.xml.SoapEnvelope;
-import pt.com.broker.xml.SoapSerializer;
 import pt.com.http.HttpAction;
+import pt.com.types.NetAction;
+import pt.com.types.NetBrokerMessage;
+import pt.com.types.NetPublish;
+import pt.com.xml.BrokerMessage;
+import pt.com.xml.SoapEnvelope;
+import pt.com.xml.SoapSerializer;
 
 public class BrokerHttpAction extends HttpAction
 {
@@ -66,12 +70,26 @@ public class BrokerHttpAction extends HttpAction
 
 				if (req_message.body.publish != null)
 				{
-					_http_broker.publishMessage(req_message.body.publish, requestSource);
+					BrokerMessage xmsg = req_message.body.publish.brokerMessage;
+					NetAction.DestinationType dtype = NetAction.DestinationType.TOPIC;
+					NetBrokerMessage netBkMsg = new NetBrokerMessage(xmsg.textPayload.getBytes(MQ.DEFAULT_CHARSET));
+					netBkMsg.setMessageId(xmsg.messageId);
+
+					NetPublish netPublish = new NetPublish(xmsg.destinationName, dtype, netBkMsg);
+
+					_http_broker.publishMessage(netPublish, requestSource);
 
 				}
 				else if (req_message.body.enqueue != null)
 				{
-					_http_broker.enqueueMessage(req_message.body.enqueue, requestSource);
+					BrokerMessage xmsg = req_message.body.enqueue.brokerMessage;
+					NetAction.DestinationType dtype = NetAction.DestinationType.QUEUE;
+					NetBrokerMessage netBkMsg = new NetBrokerMessage(xmsg.textPayload.getBytes(MQ.DEFAULT_CHARSET));
+					netBkMsg.setMessageId(xmsg.messageId);
+
+					NetPublish netPublish = new NetPublish(xmsg.destinationName, dtype, netBkMsg);
+
+					_http_broker.publishMessage(netPublish, requestSource);
 				}
 				else
 				{

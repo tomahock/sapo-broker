@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
-import pt.com.broker.client.messaging.BrokerMessage;
-import pt.com.broker.client.messaging.DestinationType;
+import pt.com.types.NetBrokerMessage;
+import pt.com.types.NetAction.DestinationType;
 
 public class Producer
 {
@@ -34,32 +34,33 @@ public class Producer
 		producer.dname = cargs.getDestination();
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
-		
-		log.info("Start sending a string of 100 random alphanumeric characters at the rate of 1/sec.");
+
+		log.info("Start sending a string of 1000 random alphanumeric characters in 2 seconds...");
+
+		Thread.sleep(2000);
 
 		producer.sendLoop(bk);
-
 	}
 
 	private void sendLoop(BrokerClient bk) throws Throwable
 	{
-		for (int i = 0; i < 1000; i++)
+		for (int i = 0; i < 100000; i++)
 		{
-			final String msg = RandomStringUtils.randomAlphanumeric(100);
-			BrokerMessage brkMsg = new BrokerMessage();
+			final String msg = RandomStringUtils.randomAlphanumeric(1000);
 
-			brkMsg.textPayload = msg;
-			brkMsg.destinationName = dname;
+			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
+
 			if (dtype == DestinationType.QUEUE)
 			{
-				bk.enqueueMessage(brkMsg);
+				bk.enqueueMessage(brokerMessage, dname);
 			}
 			else
 			{
-				bk.publishMessage(brkMsg);
+				bk.publishMessage(brokerMessage, dname);
 			}
 
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
+
 			Sleep.time(1000);
 		}
 	}

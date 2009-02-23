@@ -7,43 +7,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerExecutor;
-import pt.com.broker.xml.SoapEnvelope;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.Message;
+import pt.com.gcs.messaging.InternalMessage;
+import pt.com.types.NetMessage;
+import pt.com.types.NetPoll;
+import pt.com.types.NetAction.DestinationType;
 
 public class BrokerSyncConsumer
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerSyncConsumer.class);
 
-	public static void poll(Poll poll, IoSession ios)
+	public static void poll(NetPoll poll, IoSession ios)
 	{
+		String pollDest = poll.getDestination();
 		if (log.isDebugEnabled())
 		{
-			log.debug("Poll message from Queue '{}'", poll.destinationName);
+			log.debug("Poll message from Queue '{}'", pollDest);
 		}
 
 		try
 		{
-			Message m = Gcs.poll(poll.destinationName);
+			InternalMessage m = Gcs.poll(pollDest);
 			if (m == null)
 			{
 				BrokerExecutor.schedule(new QueuePoller(poll, ios), 1000, TimeUnit.MILLISECONDS);
 				return;
 			}
 
-			if (!m.getDestination().equals(poll.destinationName))
+			if (!m.getDestination().equals(pollDest))
 			{
 				throw new IllegalStateException("Poll.destinationName != Message.getDestination()");
 			}
 
 			if ((ios != null) && ios.isConnected() && !ios.isClosing())
 			{
-				final SoapEnvelope response = BrokerListener.buildNotification(m);
+				final NetMessage response = BrokerListener.buildNotification(m, pollDest, DestinationType.QUEUE);
 				ios.write(response);
 			}
 			else
 			{
-				Gcs.removeSyncConsumer(poll.destinationName);
+				Gcs.removeSyncConsumer(pollDest);
 			}
 		}
 		catch (Throwable e)

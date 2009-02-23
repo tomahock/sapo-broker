@@ -16,8 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.net.BrokerProtocolHandler;
-import pt.com.broker.net.codec.SoapCodec;
-import pt.com.gcs.messaging.Gcs;
+import pt.com.broker.net.codec.BrokerCodecRouter;
 
 public class BrokerServer
 {
@@ -38,20 +37,16 @@ public class BrokerServer
 	{
 		try
 		{
-			log.info("SAPO-BROKER starting - Version: {}", BrokerInfo.VERSION);
-
-			Gcs.init();
 			final SocketAcceptor acceptor = new NioSocketAcceptor(NCPU);
 
 			acceptor.setReuseAddress(true);
 			((SocketSessionConfig) acceptor.getSessionConfig()).setReuseAddress(true);
 			((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(false);
 			((SocketSessionConfig) acceptor.getSessionConfig()).setKeepAlive(true);
-			
-
 
 			DefaultIoFilterChainBuilder filterChainBuilder = acceptor.getFilterChain();
-			filterChainBuilder.addLast("SOAP_CODEC", new ProtocolCodecFilter(new SoapCodec()));
+			filterChainBuilder.addLast("BROKER_CODEC", new ProtocolCodecFilter(new BrokerCodecRouter()));
+			// filterChainBuilder.addLast("BROKER_CODEC", new ProtocolCodecFilter(new SoapCodec()));
 			filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE))));
 
 			acceptor.setHandler(new BrokerProtocolHandler());
@@ -59,25 +54,6 @@ public class BrokerServer
 			// Bind
 			acceptor.bind(new InetSocketAddress(_portNumber));
 			log.info("SAPO-BROKER Listening on: '{}'.", acceptor.getLocalAddress());
-			
-			
-			Thread sync_hook = new Thread()
-			{
-				public void run()
-				{
-					try
-					{
-						log.info("Disconnect broker socket acceptor");
-						Gcs.destroy();
-					}
-					catch (Throwable te)
-					{
-						log.error(te.getMessage(), te);
-					}
-				}
-			};
-
-			Runtime.getRuntime().addShutdownHook(sync_hook);
 
 		}
 		catch (Throwable e)

@@ -4,18 +4,18 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import pt.com.broker.client.messaging.BrokerMessage;
+import pt.com.types.NetNotification;
 
 public class SyncConsumer
 {
 	private final AtomicInteger count = new AtomicInteger(0);
-	private final BlockingQueue<BrokerMessage> queue = new LinkedBlockingQueue<BrokerMessage>();
+	private final BlockingQueue<NetNotification> queue = new LinkedBlockingQueue<NetNotification>();
 
 	protected void increment()
 	{
 		count.incrementAndGet();
 	}
-	
+
 	protected void decrement()
 	{
 		count.decrementAndGet();
@@ -26,7 +26,7 @@ public class SyncConsumer
 		return count.get();
 	}
 
-	protected BrokerMessage take()
+	protected NetNotification take()
 	{
 		try
 		{
@@ -39,9 +39,9 @@ public class SyncConsumer
 		}
 	}
 
-	protected void offer(BrokerMessage msg)
+	protected void offer(NetNotification notification)
 	{
-		queue.offer(msg);
+		queue.offer(notification);
 	}
 
 }

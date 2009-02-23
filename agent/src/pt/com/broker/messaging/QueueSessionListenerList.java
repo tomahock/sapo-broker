@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.Message;
+import pt.com.gcs.messaging.InternalMessage;
+import pt.com.gcs.messaging.MessageType;
+import pt.com.types.NetBrokerMessage;
 
 public class QueueSessionListenerList
 {
@@ -33,14 +35,17 @@ public class QueueSessionListenerList
 					for (QueueSessionListener qs : qsl)
 					{
 						int ssize = qs.count();
-
-						Message cnt_message = new Message();
 						String ctName = String.format("/system/stats/queue-consumer-count/#%s#", qs.getDestinationName());
 						String content = GcsInfo.getAgentName() + "#" + qs.getDestinationName() + "#" + ssize;
-						cnt_message.setDestination(ctName);
-						cnt_message.setContent(content);
 
-						Gcs.publish(cnt_message);
+						NetBrokerMessage brkMessage = new NetBrokerMessage(content.getBytes("UTF-8"));
+
+						InternalMessage intMsg = new InternalMessage();
+						intMsg.setContent(brkMessage);
+						intMsg.setDestination(ctName);
+						intMsg.setType(MessageType.COM_TOPIC);
+
+						Gcs.publish(intMsg);
 					}
 				}
 				catch (Throwable t)

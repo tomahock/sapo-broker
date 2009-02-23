@@ -5,19 +5,18 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import org.caudexorigo.io.UnsynchByteArrayInputStream;
-import org.caudexorigo.io.UnsynchByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.messaging.BrokerMessage;
-import pt.com.broker.client.messaging.Status;
 import pt.com.broker.client.net.ProtocolHandler;
-import pt.com.broker.client.xml.SoapEnvelope;
-import pt.com.broker.client.xml.SoapFault;
-import pt.com.broker.client.xml.SoapSerializer;
+import pt.com.protobuf.codec.ProtoBufDecoder;
+import pt.com.protobuf.codec.ProtoBufEncoder;
+import pt.com.types.NetAction;
+import pt.com.types.NetFault;
+import pt.com.types.NetMessage;
+import pt.com.types.NetNotification;
 
-public class BrokerProtocolHandler extends ProtocolHandler<SoapEnvelope>
+public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerProtocolHandler.class);
 
@@ -25,18 +24,14 @@ public class BrokerProtocolHandler extends ProtocolHandler<SoapEnvelope>
 
 	private final NetworkConnector _connector;
 
+	private ProtoBufDecoder decoder = new ProtoBufDecoder(4 * 1024);
+	ProtoBufEncoder encoder = new ProtoBufEncoder();
+
 	public BrokerProtocolHandler(BrokerClient brokerClient) throws UnknownHostException, IOException
 	{
 		_brokerClient = brokerClient;
 
 		_connector = new NetworkConnector(brokerClient.getHost(), brokerClient.getPort());
-	}
-
-	public SoapEnvelope unmarshal(byte[] message)
-	{
-		UnsynchByteArrayInputStream bin = new UnsynchByteArrayInputStream(message);
-		SoapEnvelope msg = SoapSerializer.FromXml(bin);
-		return msg;
 	}
 
 	@Override
@@ -73,68 +68,83 @@ public class BrokerProtocolHandler extends ProtocolHandler<SoapEnvelope>
 	}
 
 	@Override
-	protected void handleReceivedMessage(SoapEnvelope request)
+	protected void handleReceivedMessage(NetMessage message)
 	{
-		if (request.body.notification != null)
-		{
-			BrokerMessage msg = request.body.notification.brokerMessage;
+		NetAction action = message.getAction();
 
-			if (msg != null)
-			{
-				SyncConsumer sc = SyncConsumerList.get(msg.destinationName);
-				if (sc.count() > 0)
-				{
-					sc.offer(msg);
-					sc.decrement();
-				}
-				else
-				{
-					_brokerClient.notifyListener(msg);
-				}
-			}
-		}
-		else if (request.body.status != null)
+		switch (action.getActionType())
 		{
-			Status status = request.body.status;
+		case NOTIFICATION:
+			NetNotification notification = action.getNotificationMessage();
+			SyncConsumer sc = SyncConsumerList.get(notification.getDestination());
+			if (sc.count() > 0)
+			{
+				sc.offer(notification);
+				sc.decrement();
+			}
+			else
+			{
+				_brokerClient.notifyListener(notification);
+			}
+			break;
+		case PONG:
 			try
 			{
-				_brokerClient.feedStatusConsumer(status);
+				_brokerClient.feedStatusConsumer(action.getPongMessage());
 			}
-			catch (Throwable t)
+			catch (Throwable e)
 			{
-				log.error(t.getMessage(), t);
+				// TODO decide what to do with exception
+				e.printStackTrace();
 			}
-		}
-		else if (request.body.fault != null)
-		{
-			SoapFault fault = request.body.fault;
-			log.error(fault.toString());
-			throw new RuntimeException(fault.faultReason.text);
-		}
-		else if (request.body.accepted != null)
-		{
+			break;
+		case FAULT:
+			NetFault fault = action.getFaultMessage();
+			log.error(fault.getMessage());
+			// TODO: Probably throwing an exeption is not a good idea
+			throw new RuntimeException(fault.getMessage());
+		case ACCEPTED:
 			// TODO: handle ACK
 			// Accepted accepted = request.body.accepted;
+			break;
+		default:
+			throw new RuntimeException("Unexepected ActionType in received message. ActionType: " + action.getActionType());
+
 		}
 	}
 
 	@Override
-	public SoapEnvelope decode(DataInputStream in) throws IOException
+	public NetMessage decode(DataInputStream in) throws IOException
 	{
-		int len = in.readInt();
-		byte[] buf = new byte[len];
-		in.readFully(buf);
-		UnsynchByteArrayInputStream holder = new UnsynchByteArrayInputStream(buf);
-		return SoapSerializer.FromXml(holder);
+		int sizeHeader = in.readInt();
+		int flag = (sizeHeader & (1 << 31));
+		if (flag == 0)
+		{
+			throw new RuntimeException("Received message does not have an extended size header");
+		}
+		short protocolType = in.readShort();
+		if (protocolType != 1)
+		{
+			throw new RuntimeException("Received message was not coded using ProtoBuf encoding");
+		}
+		short protocolVersion = in.readShort();
+
+		int len = (sizeHeader ^ (1 << 31));
+
+		byte[] data = new byte[len];
+		in.readFully(data);
+
+		NetMessage message = (NetMessage) decoder.processBody(data, protocolType, protocolVersion);
+		return message;
 	}
 
 	@Override
-	public void encode(SoapEnvelope message, DataOutputStream out) throws IOException
+	public void encode(NetMessage message, DataOutputStream out) throws IOException
 	{
-		UnsynchByteArrayOutputStream holder = new UnsynchByteArrayOutputStream();
-		SoapSerializer.ToXml(message, holder);
-		byte[] buf = holder.toByteArray();
-		out.writeInt(buf.length);
-		out.write(buf);
+		byte[] encodedMsg = encoder.processBody(message, (short) 1, (short) 0);
+		out.writeInt(encodedMsg.length | (1 << 31));
+		out.writeShort(1);
+		out.writeShort(0);
+		out.write(encodedMsg);
 	}
 }

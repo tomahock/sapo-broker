@@ -1,6 +1,7 @@
 package pt.com.broker;
 
 import org.apache.mina.util.ExceptionMonitor;
+import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import pt.com.broker.core.FilePublisher;
 import pt.com.broker.core.UdpService;
 import pt.com.broker.http.BrokerHttpService;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.messaging.Gcs;
 
 public class Start
 {
@@ -44,27 +46,57 @@ public class Start
 
 		ExceptionMonitor.setInstance(new ErrorHandler());
 
-		int bus_port = GcsInfo.getBrokerPort();
-		BrokerServer broker_srv = new BrokerServer(bus_port);
-		broker_srv.start();
-
-		int http_port = GcsInfo.getBrokerHttpPort();
-		BrokerHttpService http_srv = new BrokerHttpService(http_port);
-		http_srv.start();
-
-		FilePublisher.init();
-
-		Runnable udp_srv_runner = new Runnable()
+		try
 		{
-			@Override
-			public void run()
+			Gcs.init();
+
+			int bus_port = GcsInfo.getBrokerPort();
+			BrokerServer broker_srv = new BrokerServer(bus_port);
+			broker_srv.start();
+
+			int http_port = GcsInfo.getBrokerHttpPort();
+			BrokerHttpService http_srv = new BrokerHttpService(http_port);
+			http_srv.start();
+
+			FilePublisher.init();
+
+			Runnable udp_srv_runner = new Runnable()
 			{
-				UdpService udp_srv = new UdpService();
-				udp_srv.start();
-			}
-		};
-		
-		BrokerExecutor.execute(udp_srv_runner);
+				@Override
+				public void run()
+				{
+					UdpService udp_srv = new UdpService();
+					udp_srv.start();
+				}
+			};
+
+			Thread sync_hook = new Thread()
+			{
+				public void run()
+				{
+					try
+					{
+						log.info("Disconnect broker socket acceptor");
+						Gcs.destroy();
+						log.info("Shutdown hook thread ended!");
+					}
+					catch (Throwable te)
+					{
+						log.error(te.getMessage(), te);
+					}
+				}
+			};
+
+			Runtime.getRuntime().addShutdownHook(sync_hook);
+
+			BrokerExecutor.execute(udp_srv_runner);
+
+		}
+		catch (Throwable e)
+		{
+			log.error(e.getMessage(), e);
+			Shutdown.now();
+		}
 
 	}
 }

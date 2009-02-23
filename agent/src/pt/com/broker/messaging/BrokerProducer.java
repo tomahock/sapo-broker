@@ -1,14 +1,16 @@
 package pt.com.broker.messaging;
 
-import org.caudexorigo.text.DateUtil;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.Message;
+import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageType;
+import pt.com.types.NetAcknowledgeMessage;
+import pt.com.types.NetBrokerMessage;
+import pt.com.types.NetPublish;
 
 public class BrokerProducer
 {
@@ -25,29 +27,29 @@ public class BrokerProducer
 	{
 	}
 
-	private Message prepareForSending(BrokerMessage brkMessage)
+	private InternalMessage prepareForSending(NetPublish publish)
 	{
 		try
 		{
-			final Message message = new Message();
+			NetBrokerMessage brkMessage = publish.getMessage();
 
-			if (StringUtils.isNotBlank(brkMessage.messageId))
-				message.setMessageId(brkMessage.messageId);
+			final InternalMessage message = new InternalMessage();
 
-			if (StringUtils.isNotBlank(brkMessage.destinationName))
-				message.setDestination(brkMessage.destinationName);
+			if (StringUtils.isNotBlank(brkMessage.getMessageId()))
+				message.setMessageId(brkMessage.getMessageId());
 
-			if (StringUtils.isNotBlank(brkMessage.timestamp))
+			if (StringUtils.isNotBlank(publish.getDestination()))
+				message.setDestination(publish.getDestination());
+
+			if (brkMessage.getTimestamp() != -1)
+				message.setTimestamp(brkMessage.getTimestamp());
+
+			if (brkMessage.getExpiration() != -1)
 			{
-				message.setTimestamp(DateUtil.parseISODate(brkMessage.timestamp).getTime());
+				message.setExpiration(brkMessage.getExpiration());
 			}
 
-			if (StringUtils.isNotBlank(brkMessage.expiration))
-			{
-				message.setExpiration(DateUtil.parseISODate(brkMessage.expiration).getTime());
-			}
-
-			message.setContent(brkMessage.textPayload);
+			message.setContent(brkMessage);
 
 			if (log.isDebugEnabled())
 			{
@@ -62,15 +64,15 @@ public class BrokerProducer
 		}
 	}
 
-	public void enqueueMessage(Enqueue enqreq, String messageSource)
+	public void enqueueMessage(final NetPublish enqReq, String messageSource)
 	{
-		BrokerMessage brkm = enqreq.brokerMessage;
-		Message msg = prepareForSending(brkm);
+		InternalMessage msg = prepareForSending(enqReq);
+
 		StringBuffer sb_source = new StringBuffer();
 		sb_source.append("queue@");
 		sb_source.append(GcsInfo.getAgentName());
 		sb_source.append("://");
-		sb_source.append(brkm.destinationName);
+		sb_source.append(enqReq.getDestination());
 		if (StringUtils.isNotBlank(messageSource))
 		{
 			sb_source.append("?app=");
@@ -82,17 +84,15 @@ public class BrokerProducer
 		Gcs.enqueue(msg);
 	}
 
-	public void publishMessage(final Publish pubreq, final String messageSource)
+	public void publishMessage(final NetPublish pubReq, final String messageSource)
 	{
-		final BrokerMessage brkm = pubreq.brokerMessage;
-
-		Message msg = prepareForSending(brkm);
+		InternalMessage msg = prepareForSending(pubReq);
 
 		StringBuffer sb_source = new StringBuffer();
 		sb_source.append("topic@");
 		sb_source.append(GcsInfo.getAgentName());
 		sb_source.append("://");
-		sb_source.append(brkm.destinationName);
+		sb_source.append(pubReq.getDestination());
 		if (StringUtils.isNotBlank(messageSource))
 		{
 			sb_source.append("?app=");
@@ -103,9 +103,8 @@ public class BrokerProducer
 		Gcs.publish(msg);
 	}
 
-	public void acknowledge(Acknowledge ackReq)
+	public void acknowledge(NetAcknowledgeMessage ackReq)
 	{
-		Gcs.ackMessage(ackReq.destinationName, ackReq.messageId);
+		Gcs.ackMessage(ackReq.getDestination(), ackReq.getMessageId());
 	}
-
 }

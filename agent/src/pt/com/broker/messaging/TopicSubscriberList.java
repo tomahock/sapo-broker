@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.Message;
+import pt.com.gcs.messaging.InternalMessage;
+import pt.com.types.NetBrokerMessage;
 
 public class TopicSubscriberList
 {
@@ -41,12 +42,17 @@ public class TopicSubscriberList
 						{
 							int ssize = topicSubscriber.count();
 
-							Message cnt_message = new Message();
+							InternalMessage message = new InternalMessage();
+
 							String ctName = String.format("/system/stats/topic-consumer-count/#%s#", topicSubscriber.getDestinationName());
 							String content = GcsInfo.getAgentName() + "#" + topicSubscriber.getDestinationName() + "#" + ssize;
-							cnt_message.setDestination(ctName);
-							cnt_message.setContent(content);
-							Gcs.publish(cnt_message);
+
+							message.setDestination(ctName);
+
+							NetBrokerMessage brkMessage = new NetBrokerMessage(content.getBytes("UTF-8"));
+							message.setContent(brkMessage);
+
+							Gcs.publish(message);
 						}
 					}
 					catch (Throwable e)

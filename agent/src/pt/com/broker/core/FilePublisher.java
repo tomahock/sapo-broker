@@ -2,24 +2,15 @@ package pt.com.broker.core;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.text.Collator;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.messaging.BrokerProducer;
-import pt.com.broker.messaging.MQ;
-import pt.com.broker.xml.SoapEnvelope;
-import pt.com.broker.xml.SoapSerializer;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.Message;
 
 public class FilePublisher
 {
@@ -40,7 +31,6 @@ public class FilePublisher
 	private File dropBoxDir;
 
 	private int fileCount = 0;
-	
 
 	private FilePublisher()
 	{
@@ -85,93 +75,97 @@ public class FilePublisher
 	{
 		public void run()
 		{
-			log.debug("Checking for files in the DropBox.");
-			try
-			{
-				fileCount = 0;
-				File[] files = dropBoxDir.listFiles(fileFilter);
-				int goodFileCount = files.length;
-
-				
-				Message cnt_message = new Message();
-				String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
-				String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
-				cnt_message.setDestination(dName);
-				cnt_message.setContent(content);
-				Gcs.publish(cnt_message);
-				
-
-				if ((files != null) && (files.length > 0))
-				{
-					if (log.isDebugEnabled())
-					{
-						log.debug("Will try to publish " + files.length + " file(s).");
-					}
-
-					Arrays.sort(files, fileComparator);
-
-					for (File msgf : files)
-					{
-						FileInputStream fis = new FileInputStream(msgf);
-						SoapEnvelope soap = null;
-						boolean isFileValid = false;
-						try
-						{
-							soap = SoapSerializer.FromXml(fis);
-							isFileValid = true;
-						}
-						catch (Throwable e)
-						{
-							log.error("Error processing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
-						}
-
-						if (isFileValid)
-						{
-							try
-							{
-								if (soap.body.publish != null)
-								{
-									BrokerProducer.getInstance().publishMessage(soap.body.publish, MQ.requestSource(soap));
-								}
-								else if (soap.body.enqueue != null)
-								{
-									BrokerProducer.getInstance().enqueueMessage(soap.body.enqueue, MQ.requestSource(soap));
-								}
-							}
-							catch (Throwable e)
-							{
-								log.error("Error publishing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
-							}
-							finally
-							{
-								try
-								{
-									fis.close();
-									msgf.delete();
-								}
-								catch (Throwable t)
-								{
-									log.error("Error deleting file", t);
-								}
-							}
-						}
-						else
-						{
-							fis.close();
-							File badFile = new File(msgf.getAbsolutePath() + ".bad");
-							msgf.renameTo(badFile);
-						}
-					}
-				}
-				else
-				{
-					log.debug("No files to publish.");
-				}
-			}
-			catch (Throwable e)
-			{
-				log.error(e.getMessage(), e);
-			}
+			// log.debug("Checking for files in the DropBox.");
+			// try
+			// {
+			// fileCount = 0;
+			// File[] files = dropBoxDir.listFiles(fileFilter);
+			// int goodFileCount = files.length;
+			//
+			//				
+			// Message cnt_message = new Message();
+			// String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
+			// String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
+			// cnt_message.setDestination(dName);
+			// cnt_message.setContent(content);
+			//				
+			// InternalMessage intMessage = new InternalMessage();
+			//				
+			//				
+			// Gcs.publish(cnt_message);
+			//				
+			//
+			// if ((files != null) && (files.length > 0))
+			// {
+			// if (log.isDebugEnabled())
+			// {
+			// log.debug("Will try to publish " + files.length + " file(s).");
+			// }
+			//
+			// Arrays.sort(files, fileComparator);
+			//
+			// for (File msgf : files)
+			// {
+			// FileInputStream fis = new FileInputStream(msgf);
+			// SoapEnvelope soap = null;
+			// boolean isFileValid = false;
+			// try
+			// {
+			// soap = SoapSerializer.FromXml(fis);
+			// isFileValid = true;
+			// }
+			// catch (Throwable e)
+			// {
+			// log.error("Error processing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
+			// }
+			//
+			// if (isFileValid)
+			// {
+			// try
+			// {
+			// if (soap.body.publish != null)
+			// {
+			// BrokerTextProducer.getInstance().publishMessage(soap.body.publish, MQ.requestSource(soap));
+			// }
+			// else if (soap.body.enqueue != null)
+			// {
+			// BrokerTextProducer.getInstance().enqueueMessage(soap.body.enqueue, MQ.requestSource(soap));
+			// }
+			// }
+			// catch (Throwable e)
+			// {
+			// log.error("Error publishing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
+			// }
+			// finally
+			// {
+			// try
+			// {
+			// fis.close();
+			// msgf.delete();
+			// }
+			// catch (Throwable t)
+			// {
+			// log.error("Error deleting file", t);
+			// }
+			// }
+			// }
+			// else
+			// {
+			// fis.close();
+			// File badFile = new File(msgf.getAbsolutePath() + ".bad");
+			// msgf.renameTo(badFile);
+			// }
+			// }
+			// }
+			// else
+			// {
+			// log.debug("No files to publish.");
+			// }
+			// }
+			// catch (Throwable e)
+			// {
+			// log.error(e.getMessage(), e);
+			// }
 		}
 	};
 

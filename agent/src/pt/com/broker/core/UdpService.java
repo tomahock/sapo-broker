@@ -6,14 +6,10 @@ import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 
 import org.caudexorigo.concurrent.CustomExecutors;
-import org.caudexorigo.io.UnsynchByteArrayInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.messaging.BrokerProducer;
-import pt.com.broker.messaging.MQ;
-import pt.com.broker.xml.SoapEnvelope;
-import pt.com.broker.xml.SoapSerializer;
 import pt.com.gcs.conf.GcsInfo;
 
 public class UdpService
@@ -37,7 +33,7 @@ public class UdpService
 			int port = GcsInfo.getBrokerUdpPort();
 			socket = new DatagramSocket(port, inet);
 			socket.setReceiveBufferSize(4 * 1024 * 1024);
-			
+
 			log.info("Starting UdpService. Listen Port: {}. ReceiveBufferSize: {}", port, socket.getReceiveBufferSize());
 		}
 		catch (Exception error)
@@ -81,25 +77,27 @@ public class UdpService
 		@Override
 		public void run()
 		{
-			try
-			{
-				SoapEnvelope soap = SoapSerializer.FromXml(new UnsynchByteArrayInputStream(_messageData));
+			// TODO: implement this
 
-				final String requestSource = MQ.requestSource(soap);
-
-				if (soap.body.publish != null)
-				{
-					_brokerProducer.publishMessage(soap.body.publish, requestSource);
-				}
-				else if (soap.body.enqueue != null)
-				{
-					_brokerProducer.enqueueMessage(soap.body.enqueue, requestSource);
-				}
-			}
-			catch (Throwable error)
-			{
-				log.error(error.getMessage(), error);
-			}
+			// try
+			// {
+			// SoapEnvelope soap = SoapSerializer.FromXml(new UnsynchByteArrayInputStream(_messageData));
+			//
+			// final String requestSource = MQ.requestSource(soap);
+			//
+			// if (soap.body.publish != null)
+			// {
+			// _brokerProducer.publishMessage(soap.body.publish, requestSource);
+			// }
+			// else if (soap.body.enqueue != null)
+			// {
+			// _brokerProducer.enqueueMessage(soap.body.enqueue, requestSource);
+			// }
+			// }
+			// catch (Throwable error)
+			// {
+			// log.error(error.getMessage(), error);
+			// }
 
 		}
 	}

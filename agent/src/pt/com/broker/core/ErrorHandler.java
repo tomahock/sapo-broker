@@ -11,11 +11,11 @@ import org.jibx.runtime.JiBXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.xml.EndPointReference;
-import pt.com.broker.xml.SoapEnvelope;
-import pt.com.broker.xml.SoapFault;
-import pt.com.broker.xml.SoapHeader;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.xml.EndPointReference;
+import pt.com.xml.SoapEnvelope;
+import pt.com.xml.SoapFault;
+import pt.com.xml.SoapHeader;
 
 public class ErrorHandler extends ExceptionMonitor
 {
@@ -69,11 +69,8 @@ public class ErrorHandler extends ExceptionMonitor
 
 	private static WTF _buildSoapFault(String faultCode, Throwable ex)
 	{
-		StringBuilderWriter sw = new StringBuilderWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		ex.printStackTrace(pw);
 		String reason = ex.getMessage();
-		String detail = sw.toString();
+		String detail = buildStackTrace(ex);
 
 		SoapEnvelope faultMessage = new SoapEnvelope();
 		SoapFault sfault = new SoapFault();
@@ -81,22 +78,26 @@ public class ErrorHandler extends ExceptionMonitor
 		sfault.faultReason.text = reason;
 		sfault.detail = detail;
 		faultMessage.body.fault = sfault;
-		
 
 		SoapHeader soap_header = new SoapHeader();
 		EndPointReference epr = new EndPointReference();
 		epr.address = GcsInfo.getAgentName();
 		soap_header.wsaFrom = epr;
 		faultMessage.header = soap_header;
-		
 
 		WTF wtf = new WTF();
 		wtf.Cause = ex;
 		wtf.Message = faultMessage;
-		
-		
 
 		return wtf;
+	}
+	
+	public static String buildStackTrace(Throwable ex)
+	{
+		StringBuilderWriter sw = new StringBuilderWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		ex.printStackTrace(pw);
+		return sw.toString();
 	}
 
 	public static class WTF
@@ -105,11 +106,11 @@ public class ErrorHandler extends ExceptionMonitor
 
 		public Throwable Cause;
 	}
-	
+
 	private static void exitIfUlimit(Throwable t)
 	{
 		String ul_error = "Too many open files".toLowerCase();
-		if (t.getMessage()!=null)
+		if (t.getMessage() != null)
 		{
 			String emsg = t.getMessage().toLowerCase();
 			if (emsg.contains(ul_error))
@@ -118,7 +119,7 @@ public class ErrorHandler extends ExceptionMonitor
 			}
 		}
 	}
-	
+
 	private static void exitIfCritical(Throwable cause)
 	{
 		ErrorAnalyser.exitIfOOM(cause);

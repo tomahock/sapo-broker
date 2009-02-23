@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.broker.client.messaging.BrokerMessage;
-import pt.com.broker.client.messaging.DestinationType;
-import pt.com.broker.client.messaging.Notify;
+import pt.com.types.NetNotification;
+import pt.com.types.NetSubscribe;
+import pt.com.types.NetAction.DestinationType;
 
 public class Consumer implements BrokerListener
 {
@@ -37,11 +37,9 @@ public class Consumer implements BrokerListener
 
 		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer");
 
-		Notify nreq1 = new Notify();
-		nreq1.destinationName = consumer.dname;
-		nreq1.destinationType = consumer.dtype;
+		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 
-		bk.addAsyncConsumer(nreq1, consumer);
+		bk.addAsyncConsumer(subscribe, consumer);
 
 		System.out.println("listening...");
 	}
@@ -60,9 +58,9 @@ public class Consumer implements BrokerListener
 	}
 
 	@Override
-	public void onMessage(BrokerMessage message)
+	public void onMessage(NetNotification notification)
 	{
-		log.info(String.format("%s -> Received Message: %s", counter.incrementAndGet(), message.textPayload));
+		log.info(String.format("%s -> Received Message Length: %s (%s)", counter.incrementAndGet(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
 	}
 
 }

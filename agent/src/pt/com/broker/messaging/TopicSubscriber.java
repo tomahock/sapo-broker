@@ -8,10 +8,10 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.xml.SoapEnvelope;
-import pt.com.gcs.messaging.DestinationType;
-import pt.com.gcs.messaging.Message;
+import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.net.IoSessionHelper;
+import pt.com.types.NetMessage;
+import pt.com.types.NetAction.DestinationType;
 
 public class TopicSubscriber extends BrokerListener
 {
@@ -36,7 +36,7 @@ public class TopicSubscriber extends BrokerListener
 		return DestinationType.TOPIC;
 	}
 
-	public boolean onMessage(Message amsg)
+	public boolean onMessage(InternalMessage amsg)
 	{
 		if (amsg == null)
 			return true;
@@ -62,7 +62,7 @@ public class TopicSubscriber extends BrokerListener
 						}
 						else
 						{
-							final SoapEnvelope response = BrokerListener.buildNotification(amsg, _dname);
+							final NetMessage response = BrokerListener.buildNotification(amsg, _dname, DestinationType.TOPIC);
 							ios.write(response);
 						}
 					}

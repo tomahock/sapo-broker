@@ -2,6 +2,6 @@ package pt.com.broker.core;
 
 public class BrokerInfo
 {
-	public static final String VERSION = "@brokerversion@";
-	
+	public static final String VERSION = "200902191213";
+
 }

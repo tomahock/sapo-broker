@@ -39,10 +39,6 @@ public abstract class ProtocolHandler<T>
 	public abstract NetworkConnector getConnector();
 
 	protected abstract void handleReceivedMessage(T request);
-	
-	private int p = 0;
-	
-	private int c = 0;
 
 	private final Runnable reader = new Runnable()
 	{
@@ -57,7 +53,6 @@ public abstract class ProtocolHandler<T>
 				try
 				{
 					T message = doDecode(in);
-					//System.out.println("read: " + c++);
 					handleReceivedMessage(message);
 				}
 				catch (Throwable error)
@@ -128,7 +123,6 @@ public abstract class ProtocolHandler<T>
 
 	public final void sendMessage(final T message) throws Throwable
 	{
-		//System.out.println("write: " + p++);
 		final NetworkConnector connector = getConnector();
 		try
 		{

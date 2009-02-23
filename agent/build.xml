@@ -1,81 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="build" name="sapo-broker">
-	<property name="sapo-broker.location" value="." />
-	<property name="dist" value="../dist" />
-	<property name="gcs" value="../gcs/base/bin" />
-	<property name="gcs_src" value="../gcs/base/src" />
-	<property name="clients" value="../clients" />
-	
+<project basedir="." default="build" name="sapo-broker-agent">
+	<property name="project.location" value="." />
+	<property name="dist" value="dist" />
+	<property name="src" value="src" />
+	<property name="bin" value="bin" />
+	<property name="target-dir" value="../sapo-broker" />
+	<property name="package" value="sapo-broker-agent.jar" />
 
 	<path id="project.classpath">
-		<pathelement location="${sapo-broker.location}/bin" />
-		<pathelement location="${sapo-broker.location}/clib/bcel.jar" />
-		<pathelement location="${sapo-broker.location}/clib/jibx-bind.jar" />
-		<pathelement location="${sapo-broker.location}/${gcs}" />
-		<pathelement location="${sapo-broker.location}/../common-libs/jibx-run.jar"/>
-		<pathelement location="${sapo-broker.location}/../common-libs/mina_http_filter.jar"/>
-		<pathelement location="${sapo-broker.location}/../common-libs/logback-classic-0.9.11.jar"/>
-		<pathelement location="${sapo-broker.location}/../common-libs/logback-core-0.9.11.jar"/>
-		<pathelement location="${sapo-broker.location}/../common-libs/slf4j-api-1.5.6.jar"/>
-		<pathelement location="${sapo-broker.location}/../common-libs/org.caudexorigo.jar"/>
-		<pathelement location="${sapo-broker.location}/../common-libs/mina2-snapshot.jar"/>
-		<pathelement location="${sapo-broker.location}/../common-libs/je-3.3.75.jar"/>
+		<pathelement location="../comm-types/dist/sapo-broker-commtypes.jar" />
+		<pathelement location="../gcs/dist/sapo-gcs.jar" />
+		<pathelement location="../bindings/xml/java/dist/sapo-broker-xmlbinding.jar" />
+		<pathelement location="../bindings/protobuf/java/dist/sapo-broker-protobufbinding.jar" />
+		<fileset dir="../common-libs/">
+			<include name="**/*.jar" />
+		</fileset>
 	</path>
 
-
-	<!-- show list of targets -->
-	<target name="help">
-		<echo message="Targets are:" />
-		<echo />
-		<echo message="clean delete all class files and generated code" />
-		<echo message="compile compile class files as a separate step" />
-		<echo message="bind compile JiBX bindings as a separate step" />
-		<echo message="build compile classes and JiBX binding" />
-		<echo message="package creates distribution" />
-	</target>
-
 	<target name="init" depends="clean">
-		<mkdir dir="bin" />
-		<mkdir dir="${gcs}" />
+		<mkdir dir="${bin}" />
+		<mkdir dir="${dist}" />
 	</target>
 
 	<target name="clean">
-		<delete dir="bin" />
-		<delete dir="${gcs}" />
+		<delete dir="${bin}" />
+		<delete dir="${dist}" />
+		<delete dir="${target-dir}" />
 		<delete file="../sapo-broker.tar.gz" />
-		<delete dir="${dist}" />		
 	</target>
 
-
-	<!-- bind as a separate step -->
-	<target name="bind">
-		<echo message="Running JiBX binding compiler" />
-		<taskdef name="bind" classname="org.jibx.binding.ant.CompileTask">
-			<classpath refid="project.classpath" />
-		</taskdef>
-		<bind binding="${basedir}/binding.xml">
-			<classpath refid="project.classpath" />
-		</bind>
+	<target name="clean-all" depends="clean">
+		<ant antfile="../comm-types/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../gcs/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="clean" />
 	</target>
 
-
-	<target name="compile" depends="init" >
+	<target name="build" depends="init, package-all">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<tstamp/>
 		
-		<copy file="${gcs_src}/pt/com/gcs/conf/GcsInfo.java" tofile="${gcs_src}/pt/com/gcs/conf/GcsInfo.bak" overwrite="true"/>
-		<replace file="${gcs_src}/pt/com/gcs/conf/GcsInfo.java" token="@gcsversion@" value="${DSTAMP}${TSTAMP}"/>
-		<javac destdir="${gcs}" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
-			<src path="${gcs_src}" />
-			<classpath refid="project.classpath" />
-		</javac>
-		<move file="${gcs_src}/pt/com/gcs/conf/GcsInfo.bak" tofile="${gcs_src}/pt/com/gcs/conf/GcsInfo.java" overwrite="true"/>		
-		<copy todir="${gcs}">
-			<fileset dir="${gcs_src}" excludes="**/*.java"/>
-		</copy>
-		
 		<copy file="src/pt/com/broker/core/BrokerInfo.java" tofile="src/pt/com/broker/core/BrokerInfo.bak" overwrite="true"/>
-		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerversion@" value="${DSTAMP}${TSTAMP}"/>
+		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerVersion@" value="${DSTAMP}${TSTAMP}"/>
 		<javac destdir="bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
 			<src path="src" />
 			<classpath refid="project.classpath" />
@@ -84,87 +51,83 @@
 		<copy todir="bin">
 			<fileset dir="src" excludes="**/*.java"/>
 		</copy>
-		
 	</target>
 
-	<target name="build" depends="compile,bind" />
-
-
 	<target name="package" depends="build">
+		<jar destfile="${dist}/${package}">
+			<fileset dir="${bin}" />
+		</jar>
+	</target>
 
-		<mkdir dir="${dist}/lib" />
+	<target name="package-all">
+		<ant antfile="../comm-types/build.xml" inheritAll="false" target="package" />
+		<ant antfile="../gcs/build.xml" inheritAll="false" target="package" />
+		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="package">
+			<property name="project.location" value="../bindings/xml/java"/> 
+		</ant>
+		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package" />
+		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package" />
+	</target>
+
+	<target name="tarball" depends="package, package-all">
+
+		<mkdir dir="${target-dir}/lib" />
 		
-		<copy todir="${dist}/lib">
-			<fileset dir="${sapo-broker.location}/../common-libs/">
+		<copy todir="${target-dir}/lib">
+			<fileset dir="${project.location}/../common-libs/">
 				<include name="*.jar"/>
 			</fileset>
  		</copy>
-		
-		<jar destfile="${dist}/lib/sapo-gcs.jar">
-			<fileset dir="${gcs}"/>
-		</jar>
-		
-		<jar destfile="${dist}/lib/sapo-broker.jar">
-			<fileset dir="bin"/>
-		</jar>
-		
-		<copy todir="${dist}/doc">
+		<copy file="./dist/sapo-broker-agent.jar" todir="${target-dir}/lib" />
+		<copy file="../comm-types/dist/sapo-broker-commtypes.jar" todir="${target-dir}/lib" />
+		<copy file="../gcs/dist/sapo-gcs.jar" todir="${target-dir}/lib" />
+		<copy file="../bindings/xml/java/dist/sapo-broker-xmlbinding.jar" todir="${target-dir}/lib" />
+		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding.jar" todir="${target-dir}/lib" />
+		<copy file="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP.jar" todir="${target-dir}/lib" />
+	
+		<copy todir="${target-dir}/doc">
 			<fileset dir="doc"/>
  		</copy>
 
-		<copy todir="${dist}/doc">
+		<copy todir="${target-dir}/doc">
 			<fileset dir="doc"/>
  		</copy>
-		<copy todir="${dist}/conf">
+		<copy todir="${target-dir}/conf">
 			<fileset dir="conf"/>
  		</copy>
 
-		<copy todir="${dist}/license">
+		<copy todir="${target-dir}/license">
 			<fileset dir="../license"/>
  		</copy>
 
-		<copy todir="${dist}/jvm15">
+		<copy todir="${target-dir}/jvm15">
 			<fileset dir="jvm15"/>
  		</copy>
 
-		<exec executable="ant">
-			<arg value="-f"/>
-			<arg value="../clients/java-Component-BrokerTCP/build.xml"/>
-			<arg value="package"/>
-		</exec>
-
-		<copy file="${clients}/java-Component-BrokerTCP/dist/lib/java-Component-BrokerTCP.jar" tofile="${dist}/lib/java-Component-BrokerTCP.jar" overwrite="true"/>
-
-		<exec executable="ant">
-			<arg value="-f"/>
-			<arg value="../clients/java-Component-BrokerTCP/build.xml"/>
-			<arg value="clean"/>
-		</exec>
-
-		<copy todir="${dist}/clients">
+		<!--copy todir="${target-dir}/clients">
 			<fileset dir="${clients}" excludes="**/.*"/>
- 		</copy>
+ 		</copy -->
 
-		<copy todir="${dist}">
-			<fileset dir="${sapo-broker.location}">
+		<copy todir="${target-dir}">
+			<fileset dir="${project.location}">
 				<include name="*.sh"/>
 				<include name="*.bat"/>
 			</fileset>
 		</copy>
 
-		<chmod dir="${dist}" perm="+x" includes="*.sh"/>
+		<chmod dir="${target-dir}" perm="+x" includes="*.sh"/>
 
 		<tar tarfile="../sapo-broker.tar" >
-			<tarfileset dir="${dist}" prefix="sapo-broker">
+			<tarfileset dir="${target-dir}" prefix="sapo-broker">
 				<exclude name="**/*.sh"/>
 			</tarfileset>
-			<tarfileset dir="${dist}" prefix="sapo-broker" filemode="755">
+			<tarfileset dir="${target-dir}" prefix="sapo-broker" filemode="755">
 				<include name="**/*.sh"/>
 			</tarfileset>
 		</tar>
 		<gzip src="../sapo-broker.tar" destfile="../sapo-broker.tar.gz" />
 		<delete file="../sapo-broker.tar" />
-		<!-- <delete dir="${dist}" /> -->
+		<!-- <delete dir="${target-dir}" /> -->
 	</target>
 
 </project>
