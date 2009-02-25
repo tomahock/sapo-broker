@@ -4,9 +4,13 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 {
+	private static final Logger log = LoggerFactory.getLogger(SimpleFramingDecoder.class);
+	
 	private final int _max_message_size;
 
 	public static final int MIN_HEADER_LENGTH = 4;
@@ -74,12 +78,14 @@ public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 			// We can decode the message length
 			if (msize > _max_message_size)
 			{
-				throw new IllegalArgumentException("Illegal message size!! The maximum allowed message size is " + _max_message_size + " bytes.");
+				session.close(true);
+				log.error("Illegal message size!! The maximum allowed message size is " + _max_message_size + " bytes.");
 			}
 			else if (msize <= 0)
 			{
-				throw new IllegalArgumentException("Illegal message size!! The message lenght must be a positive value.");
-			}
+				session.close(true);
+				log.error("Illegal message size!! The message lenght must be a positive value.");				
+			}			
 
 			if (in.remaining() < msize)
 			{
