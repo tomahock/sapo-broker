@@ -9,7 +9,7 @@ public class GcsDecoder extends SimpleFramingDecoder
 {
 	public GcsDecoder(int max_message_size)
 	{
-		super(max_message_size);
+		super(max_message_size, false);
 	}
 
 	@Override
