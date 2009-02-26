@@ -13,7 +13,7 @@ public class BrokerDecoderRouter extends SimpleFramingDecoder
 
 	public BrokerDecoderRouter(int max_message_size)
 	{
-		super(max_message_size);
+		super(max_message_size, true);
 	}
 
 	@Override

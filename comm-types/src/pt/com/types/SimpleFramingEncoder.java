@@ -10,10 +10,10 @@ public abstract class SimpleFramingEncoder extends ProtocolEncoderAdapter
 	{
 		Short protocolType = (Short) session.getAttribute("PROTOCOL_TYPE");
 		Short protocolVersion = (Short) session.getAttribute("PROTOCOL_VERSION");
+		
+		System.out.println("SimpleFramingEncoder.encode:" + protocolType);
 
 		processBody(message, pout, protocolType, protocolVersion);
-		// processBody(message, pout, (short) 0, (short) 0);
-
 	}
 
 	public abstract byte[] processBody(Object message, Short protocolType, Short protocolVersion);

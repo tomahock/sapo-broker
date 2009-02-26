@@ -30,13 +30,14 @@ public class SoapDecoder extends SimpleFramingDecoder
 
 	public SoapDecoder(int max_message_size)
 	{
-		super(max_message_size);
+		super(max_message_size, false);
 	}
 
 	@Override
 	public Object processBody(byte[] packet, short protocolType, short protocolVersion)
 	{
 
+		System.out.println("SoapDecoder.processBody()");
 		UnsynchByteArrayInputStream bin = new UnsynchByteArrayInputStream(packet);
 		SoapEnvelope msg = SoapSerializer.FromXml(bin);
 

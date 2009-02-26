@@ -1,32 +1,31 @@
 package pt.com.types;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NetMessage
 {
 
 	private NetAction action;
-	private List<NetParameter> headers;
+	private Map<String, String> headers;
 
 	public NetMessage(NetAction action)
 	{
 		this(action, null);
 	}
 
-	public NetMessage(NetAction action, List<NetParameter> headers)
+	public NetMessage(NetAction action, Map<String, String> headers)
 	{
 		this.action = action;
 		if (headers != null)
 			this.headers = headers;
 		else
-			this.headers = new ArrayList<NetParameter>(0);
+			this.headers = new HashMap<String, String>();
 	}
 
-	public Iterator<NetParameter> getHeaders()
+	public Map<String, String> getHeaders()
 	{
-		return headers.iterator();
+		return headers;
 	}
 
 	public NetAction getAction()

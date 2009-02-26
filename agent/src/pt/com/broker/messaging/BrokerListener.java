@@ -1,7 +1,7 @@
 package pt.com.broker.messaging;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.mina.core.session.IoSession;
 
@@ -10,7 +10,6 @@ import pt.com.gcs.messaging.MessageListener;
 import pt.com.types.NetAction;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
-import pt.com.types.NetParameter;
 import pt.com.types.NetAction.DestinationType;
 
 public abstract class BrokerListener implements MessageListener
@@ -29,9 +28,9 @@ public abstract class BrokerListener implements MessageListener
 		
 		notification.getMessage().setMessageId(msg.getMessageId());
 
-		List<NetParameter> params = new ArrayList<NetParameter>(4);
-		params.add(new NetParameter("FROM", msg.getSourceApp()));
-		params.add(new NetParameter("ACTION", "http://services.sapo.pt/broker/notification/" + msg.getMessageId()));
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("FROM", msg.getSourceApp());
+		params.put("ACTION", "http://services.sapo.pt/broker/notification/" + msg.getMessageId());
 
 		NetMessage message = new NetMessage(action, params);
 

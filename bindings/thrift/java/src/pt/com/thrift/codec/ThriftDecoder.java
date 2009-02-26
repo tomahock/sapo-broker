@@ -1,23 +1,24 @@
-package pt.com.protobuf.codec;
+package pt.com.thrift.codec;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.apache.thrift.TDeserializer;
+import org.apache.thrift.protocol.TBinaryProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.protobuf.codec.PBMessage.Atom;
-import pt.com.protobuf.codec.PBMessage.Atom.AcknowledgeMessage;
-import pt.com.protobuf.codec.PBMessage.Atom.Action;
-import pt.com.protobuf.codec.PBMessage.Atom.BrokerMessage;
-import pt.com.protobuf.codec.PBMessage.Atom.Fault;
-import pt.com.protobuf.codec.PBMessage.Atom.Header;
-import pt.com.protobuf.codec.PBMessage.Atom.Notification;
-import pt.com.protobuf.codec.PBMessage.Atom.Parameter;
-import pt.com.protobuf.codec.PBMessage.Atom.Poll;
-import pt.com.protobuf.codec.PBMessage.Atom.Publish;
-import pt.com.protobuf.codec.PBMessage.Atom.Subscribe;
-import pt.com.protobuf.codec.PBMessage.Atom.Unsubscribe;
+import pt.com.thrift.AcknowledgeMessage;
+import pt.com.thrift.Action;
+import pt.com.thrift.ActionType;
+import pt.com.thrift.BrokerMessage;
+import pt.com.thrift.DestinationType;
+import pt.com.thrift.Fault;
+import pt.com.thrift.Notification;
+import pt.com.thrift.Ping;
+import pt.com.thrift.Poll;
+import pt.com.thrift.Pong;
+import pt.com.thrift.Publish;
+import pt.com.thrift.Subscribe;
+import pt.com.thrift.ThriftMessage;
+import pt.com.thrift.Unsubscribe;
 import pt.com.types.NetAccepted;
 import pt.com.types.NetAcknowledgeMessage;
 import pt.com.types.NetAction;
@@ -33,12 +34,12 @@ import pt.com.types.NetSubscribe;
 import pt.com.types.NetUnsubscribe;
 import pt.com.types.SimpleFramingDecoder;
 
-public class ProtoBufDecoder extends SimpleFramingDecoder
+public class ThriftDecoder extends SimpleFramingDecoder
 {
 
-	private static final Logger log = LoggerFactory.getLogger(ProtoBufDecoder.class);
+	private static final Logger log = LoggerFactory.getLogger(ThriftDecoder.class);
 
-	public ProtoBufDecoder(int max_message_size)
+	public ThriftDecoder(int max_message_size)
 	{
 		super(max_message_size, true);
 	}
@@ -46,52 +47,32 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 	@Override
 	public Object processBody(byte[] packet, short protocolType, short protocolVersion)
 	{
-		
 		NetMessage message = null;
 		try
 		{
-			PBMessage.Atom atom = PBMessage.Atom.parseFrom(packet);
-			message = constructMessage(atom);
+			ThriftMessage tm = new ThriftMessage();
+			TDeserializer deserializer = new TDeserializer(new TBinaryProtocol.Factory());
+			deserializer.deserialize(tm, packet);
+			message = constructMessage(tm);
 		}
 		catch (Throwable e)
 		{
 			// TODO: decide what to do with exception
-			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+			log.error("Error parsing Thrift message.", e);
 		}
 		return message;
 	}
 
-	private NetMessage constructMessage(PBMessage.Atom atom)
+	private NetMessage constructMessage(ThriftMessage tm)
 	{
-		Map<String, String> parameters = null;
-		if (atom.hasHeader())
-		{
-			parameters = extractParameters(atom.getHeader());
-		}
 
-		NetMessage message = new NetMessage(extractAction(atom.getAction()), parameters);
+		NetMessage message = new NetMessage(extractAction(tm.getAction()), tm.header.parameters);
 		return message;
-	}
-
-	private Map<String, String> extractParameters(Header header)
-	{
-
-		int paramsCount = header.getParameterCount();
-
-		Map<String, String> parameters = new HashMap<String, String>();
-
-		for (int i = 0; i != paramsCount; ++i)
-		{
-			Parameter param = header.getParameter(i);
-			parameters.put(param.getName(), param.getValue());
-		}
-
-		return parameters;
 	}
 
 	private NetAction extractAction(Action action)
 	{
-		NetAction.ActionType actionType = translate(action.getActionType());
+		NetAction.ActionType actionType = translateActionType(action.getAction_type());
 		NetAction netAction = new NetAction(actionType);
 
 		switch (actionType)
@@ -134,7 +115,7 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 	private NetPing extractPingMessage(Action action)
 	{
 		// TODO: Verify if it's valid. Throw check exception if not
-		Atom.Ping ping = action.getPing();
+		Ping ping = action.getPing();
 
 		NetPing netPing = new NetPing(ping.getTimestamp());
 
@@ -144,7 +125,7 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 	private NetPong extractPongMessage(Action action)
 	{
 		// TODO: Verify if it's valid. Throw check exception if not
-		Atom.Pong pong = action.getPong();
+		Pong pong = action.getPong();
 
 		NetPong netPong = new NetPong(pong.getTimestamp());
 
@@ -154,52 +135,50 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 	private NetBrokerMessage obtainBrokerMessage(BrokerMessage message)
 	{
 
-		NetBrokerMessage brkMsg = new NetBrokerMessage(message.getPayload().toByteArray());
+		NetBrokerMessage brkMsg = new NetBrokerMessage(message.getPayload());
 
-		if (message.hasTimestamp())
-			brkMsg.setTimestamp(message.getTimestamp());
-		if (message.hasExpiration())
-			brkMsg.setExpiration(message.getExpiration());
-		if (message.hasMessageId())
-			brkMsg.setMessageId(message.getMessageId());
+		brkMsg.setTimestamp(message.getTimestamp());
+		brkMsg.setExpiration(message.getExpiration());
+		brkMsg.setMessageId(message.getMessage_id());
 
 		return brkMsg;
 	}
 
-	static private NetAction.ActionType translate(PBMessage.Atom.Action.ActionType actionType)
+	static private NetAction.ActionType translateActionType(int actionType)
 	{
+		System.out.println("ThriftDecoder.translateActionType.actionType: " + actionType);
 		switch (actionType)
 		{
-		case ACCEPTED:
+		case ActionType.ACCEPTED:
 			return NetAction.ActionType.ACCEPTED;
-		case ACKNOWLEDGE_MESSAGE:
+		case ActionType.ACKNOWLEDGE_MESSAGE:
 			return NetAction.ActionType.ACKNOWLEDGE_MESSAGE;
-		case FAULT:
+		case ActionType.FAULT:
 			return NetAction.ActionType.FAULT;
-		case NOTIFICATION:
+		case ActionType.NOTIFICATION:
 			return NetAction.ActionType.NOTIFICATION;
-		case POLL:
+		case ActionType.POLL:
 			return NetAction.ActionType.POLL;
-		case PUBLISH:
+		case ActionType.PUBLISH:
 			return NetAction.ActionType.PUBLISH;
-		case SUBSCRIBE:
+		case ActionType.SUBSCRIBE:
 			return NetAction.ActionType.SUBSCRIBE;
-		case UNSUBSCRIBE:
+		case ActionType.UNSUBSCRIBE:
 			return NetAction.ActionType.UNSUBSCRIBE;
 		}
 		// TODO: Throw checked exception
 		return NetAction.ActionType.ACCEPTED;
 	}
 
-	static private NetAction.DestinationType translate(PBMessage.Atom.DestinationType destinationType)
+	static private NetAction.DestinationType translateDestinationType(int destinationType)
 	{
 		switch (destinationType)
 		{
-		case QUEUE:
+		case DestinationType.QUEUE:
 			return NetAction.DestinationType.QUEUE;
-		case TOPIC:
+		case DestinationType.TOPIC:
 			return NetAction.DestinationType.TOPIC;
-		case VIRTUAL_QUEUE:
+		case DestinationType.VIRTUAL_QUEUE:
 			return NetAction.DestinationType.VIRTUAL_QUEUE;
 		}
 		// TODO: Throw checked exception
@@ -209,20 +188,20 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 	private NetAccepted extractAcceptedMessage(Action action)
 	{
 		// TODO: Verify if it's valid. Throw check exception if not
-		NetAccepted netAccepted = new NetAccepted(action.getAccepted().getActionId());
+		NetAccepted netAccepted = new NetAccepted(action.getAccepted().getAction_id());
 
 		return netAccepted;
 	}
 
 	private NetAcknowledgeMessage extractAcknowledgeMessage(Action action)
 	{
-		AcknowledgeMessage protoBufAckMsg = action.getAckMessage();
+		AcknowledgeMessage ThriftAckMsg = action.getAck_message();
 		// TODO: Verify if it's valid. Throw check exception if not
-		String destination = protoBufAckMsg.getDestination();
-		String messageId = protoBufAckMsg.getMessageId();
+		String destination = ThriftAckMsg.getDestination();
+		String messageId = ThriftAckMsg.getMessage_id();
 		NetAcknowledgeMessage ackMessage = new NetAcknowledgeMessage(destination, messageId);
-		if (action.getAckMessage().hasActionId())
-			ackMessage.setActionId(action.getAckMessage().getActionId());
+		if (action.getAck_message().isSetAction_id())
+			ackMessage.setActionId(action.getAck_message().getAction_id());
 
 		return ackMessage;
 	}
@@ -231,16 +210,16 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 	{
 		Fault fault = action.getFault();
 		// TODO: Verify if it's valid. Throw check exception if not
-		String code = fault.getFaultCode();
-		String message = fault.getFaultMessage();
+		String code = fault.getFault_code();
+		String message = fault.getFault_message();
 
 		NetFault netFault = new NetFault(code, message);
 
-		if (fault.hasActionId())
-			netFault.setActionId(fault.getActionId());
+		if (fault.isSetAction_id())
+			netFault.setActionId(fault.getAction_id());
 
-		if (fault.hasFaultDetail())
-			netFault.setDetail(fault.getFaultCode());
+		if (fault.isSetFault_detail())
+			netFault.setDetail(fault.getFault_code());
 
 		return netFault;
 	}
@@ -251,7 +230,7 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 		// TODO: Verify if it's valid. Throw check exception if not
 
 		String dest = notification.getDestination();
-		NetAction.DestinationType destType = translate(notification.getDestinationType());
+		NetAction.DestinationType destType = translateDestinationType(notification.getDestination_type());
 		NetBrokerMessage brkMsg = obtainBrokerMessage(notification.getMessage());
 		String subs = notification.getSubscription();
 
@@ -268,8 +247,8 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 
 		NetPoll pollMsg = new NetPoll(destination);
 
-		if (poll.hasActionId())
-			pollMsg.setActionId(poll.getActionId());
+		if (poll.isSetAction_id())
+			pollMsg.setActionId(poll.getAction_id());
 
 		return pollMsg;
 	}
@@ -280,13 +259,13 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 		Publish pub = action.getPublish();
 
 		String dest = pub.getDestination();
-		NetAction.DestinationType destType = translate(pub.getDestinationType());
+		NetAction.DestinationType destType = translateDestinationType(pub.getDestination_type());
 		NetBrokerMessage brkMsg = obtainBrokerMessage(pub.getMessage());
 
 		NetPublish netPub = new NetPublish(dest, destType, brkMsg);
 
-		if (pub.hasActionId())
-			netPub.setActionId(pub.getActionId());
+		if (pub.isSetAction_id())
+			netPub.setActionId(pub.getAction_id());
 
 		return netPub;
 	}
@@ -297,12 +276,12 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 		Subscribe subs = action.getSubscribe();
 
 		String dest = subs.getDestination();
-		NetAction.DestinationType destType = translate(subs.getDestinationType());
+		NetAction.DestinationType destType = translateDestinationType(subs.getDestination_type());
 
 		NetSubscribe netSubs = new NetSubscribe(dest, destType);
 
-		if (subs.hasActionId())
-			netSubs.setActionId(subs.getActionId());
+		if (subs.isSetAction_id())
+			netSubs.setActionId(subs.getAction_id());
 
 		return netSubs;
 	}
@@ -313,12 +292,12 @@ public class ProtoBufDecoder extends SimpleFramingDecoder
 		Unsubscribe unsubs = action.getUnsubscribe();
 
 		String dest = unsubs.getDestination();
-		NetAction.DestinationType destType = translate(unsubs.getDestinationType());
+		NetAction.DestinationType destType = translateDestinationType(unsubs.getDestination_type());
 
 		NetUnsubscribe cgsUnsubs = new NetUnsubscribe(dest, destType);
 
-		if (unsubs.hasActionId())
-			cgsUnsubs.setActionId(unsubs.getActionId());
+		if (unsubs.isSetAction_id())
+			cgsUnsubs.setActionId(unsubs.getAction_id());
 
 		return cgsUnsubs;
 	}

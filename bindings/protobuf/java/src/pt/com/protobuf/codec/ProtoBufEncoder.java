@@ -1,6 +1,7 @@
 package pt.com.protobuf.codec;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
@@ -26,7 +27,6 @@ import pt.com.types.NetBrokerMessage;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
-import pt.com.types.NetParameter;
 import pt.com.types.NetPing;
 import pt.com.types.NetPoll;
 import pt.com.types.NetPong;
@@ -51,6 +51,7 @@ public class ProtoBufEncoder extends SimpleFramingEncoder
 	@Override
 	public byte[] processBody(Object message, Short protocolType, Short protocolVersion)
 	{
+		System.out.println("ProtoBufEncoder.processBody()");
 		byte[] result = null;
 		if (!(message instanceof NetMessage))
 		{
@@ -105,7 +106,7 @@ public class ProtoBufEncoder extends SimpleFramingEncoder
 			wbuf.putShort(protocolType.shortValue());
 			wbuf.putShort(protocolVersion.shortValue());
 			atomBuilder.build().writeTo(wbuf.asOutputStream());
-			wbuf.putInt(0, (wbuf.position() - 8) | 1 << 31);
+			wbuf.putInt(0, (wbuf.position() - 8));
 			wbuf.flip();
 
 			pout.write(wbuf);
@@ -297,15 +298,18 @@ public class ProtoBufEncoder extends SimpleFramingEncoder
 		PBMessage.Atom.Header.Builder builder = PBMessage.Atom.Header.newBuilder();
 		boolean hasParams = false;
 
-		Iterator<NetParameter> params = gcsMessage.getHeaders();
+		Map<String, String> params = gcsMessage.getHeaders();
 		if (params != null)
 		{
-			while (params.hasNext())
+			Iterator<String> it = params.keySet().iterator();
+			while (it.hasNext())
 			{
 				hasParams = true;
-				NetParameter param = params.next();
-				if (param != null)
-					builder.addParameter(PBMessage.Atom.Parameter.newBuilder().setName(param.getName()).setValue(param.getValue()));
+				String k = it.next();
+				String v = params.get(k);
+
+				if ((k != null) && (v != null))
+					builder.addParameter(PBMessage.Atom.Parameter.newBuilder().setName(k).setValue(v));
 			}
 		}
 		if (hasParams)

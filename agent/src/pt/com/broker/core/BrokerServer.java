@@ -1,6 +1,7 @@
 package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.net.codec.BrokerCodecRouter;
+import pt.com.xml.codec.SoapCodec;
 
 public class BrokerServer
 {
@@ -37,23 +39,40 @@ public class BrokerServer
 	{
 		try
 		{
-			final SocketAcceptor acceptor = new NioSocketAcceptor(NCPU);
+			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE));
+			final SocketAcceptor acceptor0 = new NioSocketAcceptor(NCPU);
 
-			acceptor.setReuseAddress(true);
-			((SocketSessionConfig) acceptor.getSessionConfig()).setReuseAddress(true);
-			((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(false);
-			((SocketSessionConfig) acceptor.getSessionConfig()).setKeepAlive(true);
+			acceptor0.setReuseAddress(true);
+			((SocketSessionConfig) acceptor0.getSessionConfig()).setReuseAddress(true);
+			((SocketSessionConfig) acceptor0.getSessionConfig()).setTcpNoDelay(false);
+			((SocketSessionConfig) acceptor0.getSessionConfig()).setKeepAlive(true);
 
-			DefaultIoFilterChainBuilder filterChainBuilder = acceptor.getFilterChain();
-			filterChainBuilder.addLast("BROKER_CODEC", new ProtocolCodecFilter(new BrokerCodecRouter()));
-			// filterChainBuilder.addLast("BROKER_CODEC", new ProtocolCodecFilter(new SoapCodec()));
-			filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE))));
+			DefaultIoFilterChainBuilder filterChainBuilder0 = acceptor0.getFilterChain();
+			filterChainBuilder0.addLast("BROKER_CODEC", new ProtocolCodecFilter(new SoapCodec()));
+			filterChainBuilder0.addLast("executor", new ExecutorFilter(tpe));
 
-			acceptor.setHandler(new BrokerProtocolHandler());
+			acceptor0.setHandler(new BrokerProtocolHandler());
 
 			// Bind
-			acceptor.bind(new InetSocketAddress(_portNumber));
-			log.info("SAPO-BROKER Listening on: '{}'.", acceptor.getLocalAddress());
+			acceptor0.bind(new InetSocketAddress(_portNumber));
+			log.info("SAPO-BROKER  Listening on: '{}'.", acceptor0.getLocalAddress());
+
+			final SocketAcceptor acceptor1 = new NioSocketAcceptor(NCPU);
+
+			acceptor1.setReuseAddress(true);
+			((SocketSessionConfig) acceptor1.getSessionConfig()).setReuseAddress(true);
+			((SocketSessionConfig) acceptor1.getSessionConfig()).setTcpNoDelay(false);
+			((SocketSessionConfig) acceptor1.getSessionConfig()).setKeepAlive(true);
+
+			DefaultIoFilterChainBuilder filterChainBuilder1 = acceptor1.getFilterChain();
+			filterChainBuilder1.addLast("BROKER_BINARY_CODEC", new ProtocolCodecFilter(new BrokerCodecRouter()));
+			filterChainBuilder1.addLast("executor", new ExecutorFilter(tpe));
+
+			acceptor1.setHandler(new BrokerProtocolHandler());
+
+			// Bind
+			acceptor1.bind(new InetSocketAddress(_portNumber + 1));
+			log.info("SAPO-BROKER Listening on: '{}'.", acceptor1.getLocalAddress());
 
 		}
 		catch (Throwable e)

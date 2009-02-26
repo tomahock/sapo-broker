@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="build" name="java-Component-BrokerTCP">
+<project basedir="." default="build" name="sapo-broker-thriftbinding">
 	<property name="project.location" value="." />
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
-	<property name="package" value="java-Component-BrokerTCP.jar" />
+	<property name="package" value="sapo-broker-thriftbinding.jar" />
+
 
 	<path id="project.classpath">
-		<pathelement location="../../comm-types/dist/sapo-broker-commtypes.jar" />
-		<pathelement location="../../bindings/protobuf/java/dist/sapo-broker-protobufbinding.jar" />
-		<pathelement location="../../bindings/thrift/java/dist/sapo-broker-thriftbinding.jar" />
-		<pathelement location="../../bindings/xml/java/dist/sapo-broker-xmlbinding.jar" />
-		<fileset dir="../../common-libs/">
+		<pathelement location="../../../comm-types/dist/sapo-broker-commtypes.jar" />
+		<fileset dir="../../../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -26,15 +24,28 @@
 		<delete dir="${dist}" />
 	</target>
 
-	<target name="build" depends="init">
+	<target name="thrift">
+		<echo message="Running Thrift compiler" />
+		<exec executable="thrift">
+			<arg value="-gen"/>
+			<arg value="java"/>			
+			<arg value="../broker.thrift"/>
+		</exec>
+
+		<copy todir="src">
+			<fileset dir="gen-java"/>
+		</copy>
+
+		<delete dir="gen-java" />
+	</target>
+
+
+	<target name="build" depends="init, thrift">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac destdir="${bin}" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
 			<src path="${src}" />
 			<classpath refid="project.classpath" />
 		</javac>
-		<copy todir="${bin}">
-			<fileset dir="${src}" excludes="**/*.java" />
-		</copy>
 	</target>
 
 	<target name="package" depends="build">

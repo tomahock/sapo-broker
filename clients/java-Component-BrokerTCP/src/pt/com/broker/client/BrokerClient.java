@@ -1,7 +1,8 @@
 package pt.com.broker.client;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -18,10 +19,10 @@ import pt.com.types.NetAction;
 import pt.com.types.NetBrokerMessage;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
-import pt.com.types.NetParameter;
 import pt.com.types.NetPing;
 import pt.com.types.NetPoll;
 import pt.com.types.NetPong;
+import pt.com.types.NetProtocolType;
 import pt.com.types.NetPublish;
 import pt.com.types.NetSubscribe;
 import pt.com.types.NetUnsubscribe;
@@ -51,7 +52,7 @@ public class BrokerClient
 		_host = host;
 		_portNumber = portNumber;
 		_appName = appName;
-		_netHandler = new BrokerProtocolHandler(this);
+		_netHandler = new BrokerProtocolHandler(this, NetProtocolType.THRIFT);
 		_netHandler.start();
 	}
 
@@ -124,31 +125,31 @@ public class BrokerClient
 		}
 	}
 
-//	protected void bindConsumers() throws Throwable
-//	{
-//		for (BrokerAsyncConsumer bac : _consumerList)
-//		{
-//			NetSubscribe subscription = bac.getSubscription();
-//
-//			String action = buildAction(subscription.getDestinationType());
-//
-//			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
-//			netAction.setSubscribeMessage(subscription);
-//
-//			NetMessage msg = buildMessage(action, netAction);
-//
-//			_netHandler.sendMessage(msg);
-//
-//			_consumerList.add(new BrokerAsyncConsumer(subscription, bac.getListener()));
-//		}
-//	}
+	// protected void bindConsumers() throws Throwable
+	// {
+	// for (BrokerAsyncConsumer bac : _consumerList)
+	// {
+	// NetSubscribe subscription = bac.getSubscription();
+	//
+	// String action = buildAction(subscription.getDestinationType());
+	//
+	// NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
+	// netAction.setSubscribeMessage(subscription);
+	//
+	// NetMessage msg = buildMessage(action, netAction);
+	//
+	// _netHandler.sendMessage(msg);
+	//
+	// _consumerList.add(new BrokerAsyncConsumer(subscription, bac.getListener()));
+	// }
+	// }
 
 	public NetMessage buildMessage(String actionDest, NetAction action)
 	{
-		List<NetParameter> headers = new ArrayList<NetParameter>(3);
-		headers.add(new NetParameter("ACTION", actionDest));
-		headers.add(new NetParameter("ADDRESS", _appName));
-		headers.add(new NetParameter("TO", actionDest));
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("ACTION", actionDest);
+		headers.put("ADDRESS", _appName);
+		headers.put("TO", actionDest);
 
 		NetMessage message = new NetMessage(action, headers);
 

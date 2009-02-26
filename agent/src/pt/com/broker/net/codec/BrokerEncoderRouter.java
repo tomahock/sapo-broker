@@ -56,6 +56,7 @@ public class BrokerEncoderRouter extends SimpleFramingEncoder
 		{
 			throw new RuntimeException("Invalid protocol type decoder implementation: " + protocolType, e);
 		}
+		
 		encoder.processBody(message, pout, protocolType, protocolVersion);
 	}
 }

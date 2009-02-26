@@ -1,12 +1,10 @@
 package pt.com.broker.messaging;
 
 import java.nio.charset.Charset;
-import java.util.Iterator;
 
 import org.caudexorigo.text.StringUtils;
 
 import pt.com.types.NetMessage;
-import pt.com.types.NetParameter;
 import pt.com.xml.SoapEnvelope;
 
 public class MQ
@@ -37,7 +35,7 @@ public class MQ
 	public static final String ASYNC_QUEUE_CONSUMER_LIST_ATTR = "ASYNC_QUEUE_CONSUMER_LIST_ATTR";
 
 	public static final String SYNC_QUEUE_CONSUMER_LIST_ATTR = "SYNC_QUEUE_CONSUMER_LIST_ATTR";
-	
+
 	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	static
@@ -55,20 +53,17 @@ public class MQ
 				if (StringUtils.isNotBlank(soap.header.wsaFrom.address))
 					return soap.header.wsaFrom.address;
 
-		//return "broker://agent/" + pt.com.gcs.conf.GcsInfo.getAgentName() + "/";
+		// return "broker://agent/" + pt.com.gcs.conf.GcsInfo.getAgentName() + "/";
 		return null;
 	}
 
 	public static String requestSource(NetMessage message)
 	{
-		Iterator<NetParameter> headers = message.getHeaders();
-		NetParameter next;
-		while (headers.hasNext())
-		{
-			next = headers.next();
+		String from = message.getHeaders().get("FROM");
 
-			if (next.getName().equals("FROM"))
-				return next.getValue();
+		if (StringUtils.isNotBlank(from))
+		{
+			return from;
 		}
 
 		return "broker://agent/" + pt.com.gcs.conf.GcsInfo.getAgentName() + "/";

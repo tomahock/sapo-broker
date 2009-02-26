@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +13,15 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.net.ProtocolHandler;
 import pt.com.protobuf.codec.ProtoBufDecoder;
 import pt.com.protobuf.codec.ProtoBufEncoder;
+import pt.com.thrift.codec.ThriftDecoder;
+import pt.com.thrift.codec.ThriftEncoder;
 import pt.com.types.NetAction;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
+import pt.com.types.NetProtocolType;
+import pt.com.types.SimpleFramingDecoder;
+import pt.com.types.SimpleFramingEncoder;
 
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
@@ -24,14 +31,48 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	private final NetworkConnector _connector;
 
-	private ProtoBufDecoder decoder = new ProtoBufDecoder(4 * 1024);
-	ProtoBufEncoder encoder = new ProtoBufEncoder();
+	private final Map decoders = new HashMap();
+	private final Map encoders = new HashMap();
+
+	private static final int MAX_SIZE = 4 * 1024;
+
+	private short proto_type = 1;
+
+	public BrokerProtocolHandler(BrokerClient brokerClient, NetProtocolType ptype) throws UnknownHostException, IOException
+	{
+		this(brokerClient);
+		if (ptype != null)
+		{
+			switch (ptype)
+			{
+			case SOAP:
+				proto_type = 0;
+				break;
+			case PROTOCOL_BUFFER:
+				proto_type = 1;
+				break;
+			case THRIFT:
+				proto_type = 2;
+				break;
+			default:
+				proto_type = 1;
+				break;
+			}
+		}
+	}
 
 	public BrokerProtocolHandler(BrokerClient brokerClient) throws UnknownHostException, IOException
 	{
 		_brokerClient = brokerClient;
 
 		_connector = new NetworkConnector(brokerClient.getHost(), brokerClient.getPort());
+
+		decoders.put((short) 1, new ProtoBufDecoder(MAX_SIZE));
+		decoders.put((short) 2, new ThriftDecoder(MAX_SIZE));
+
+		encoders.put((short) 1, new ProtoBufEncoder());
+		encoders.put((short) 2, new ThriftEncoder());
+
 	}
 
 	@Override
@@ -116,20 +157,16 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public NetMessage decode(DataInputStream in) throws IOException
 	{
-		int sizeHeader = in.readInt();
-		int flag = (sizeHeader & (1 << 31));
-		if (flag == 0)
-		{
-			throw new RuntimeException("Received message does not have an extended size header");
-		}
+		int len = in.readInt();
 		short protocolType = in.readShort();
-		if (protocolType != 1)
-		{
-			throw new RuntimeException("Received message was not coded using ProtoBuf encoding");
-		}
 		short protocolVersion = in.readShort();
 
-		int len = (sizeHeader ^ (1 << 31));
+		SimpleFramingDecoder decoder = (SimpleFramingDecoder) decoders.get(protocolType);
+
+		if (decoder == null)
+		{
+			throw new RuntimeException("Received message was not coded using a known encoding");
+		}
 
 		byte[] data = new byte[len];
 		in.readFully(data);
@@ -141,9 +178,10 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public void encode(NetMessage message, DataOutputStream out) throws IOException
 	{
-		byte[] encodedMsg = encoder.processBody(message, (short) 1, (short) 0);
-		out.writeInt(encodedMsg.length | (1 << 31));
-		out.writeShort(1);
+		SimpleFramingEncoder encoder = (SimpleFramingEncoder) encoders.get(proto_type);
+		byte[] encodedMsg = encoder.processBody(message, (short) proto_type, (short) 0);
+		out.writeInt(encodedMsg.length);
+		out.writeShort(proto_type);
 		out.writeShort(0);
 		out.write(encodedMsg);
 	}
