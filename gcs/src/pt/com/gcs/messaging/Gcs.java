@@ -31,7 +31,6 @@ import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.WorldMap;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
-import pt.com.gcs.security.AccessControl;
 import pt.com.types.NetAction.DestinationType;
 
 public class Gcs
