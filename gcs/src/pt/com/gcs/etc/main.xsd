@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="Windows-1252"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bs="http://softwarelivre.sapo.pt/broker/securityPolicies">
+	<xs:import namespace="http://softwarelivre.sapo.pt/broker/securityPolicies" schemaLocation="policy.xsd"/>
 	<xs:element name="config">
 		<xs:complexType>
 			<xs:sequence>
@@ -15,6 +16,7 @@
 							<xs:element name="discovery_delay" type="xs:int" />
 							<xs:element name="file_ref" type="xs:string" />
 							<xs:element name="broker-port" type="xs:int" />
+							<xs:element name="broker-legacy-port" type="xs:int" />
 							<xs:element name="broker-http-port" type="xs:int" />
 							<xs:element name="broker-udp-port" type="xs:int" />
 						</xs:sequence>
@@ -55,6 +57,8 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+					
+				<xs:element minOccurs="0" maxOccurs="1" name="securityPolicies" type="bs:BrokerSecurityPolicy" />
 				
 			</xs:sequence>
 		</xs:complexType>
