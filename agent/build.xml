@@ -72,7 +72,7 @@
 		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package" />
 	</target>
 
-	<target name="tarball" depends="package, package-all">
+	<target name="build-dist" depends="package, package-all">
 
 		<mkdir dir="${target-dir}/lib" />
 		
@@ -120,7 +120,9 @@
 		</copy>
 
 		<chmod dir="${target-dir}" perm="+x" includes="*.sh"/>
+	</target>
 
+	<target name="tarball" depends="build-dist">
 		<tar tarfile="../sapo-broker.tar" >
 			<tarfileset dir="${target-dir}" prefix="sapo-broker">
 				<exclude name="**/*.sh"/>
@@ -131,7 +133,7 @@
 		</tar>
 		<gzip src="../sapo-broker.tar" destfile="../sapo-broker.tar.gz" />
 		<delete file="../sapo-broker.tar" />
-		<!-- <delete dir="${target-dir}" /> -->
+		<delete dir="${target-dir}" />
 	</target>
 
 </project>
