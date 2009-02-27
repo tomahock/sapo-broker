@@ -43,7 +43,6 @@ public class SoapEncoder extends SimpleFramingEncoder
 		wbuf.putInt(0);
 		SoapSerializer.ToXml((SoapEnvelope) soap, wbuf.asOutputStream());
 		wbuf.putInt(0, wbuf.position() - 4);
-
 		wbuf.flip();
 
 		pout.write(wbuf);

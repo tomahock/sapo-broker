@@ -38,7 +38,8 @@ public class SoapEncoderV2 extends SimpleFramingEncoderV2
 
 		IoBuffer wbuf = IoBuffer.allocate(2048, false);
 		wbuf.setAutoExpand(true);
-		wbuf.putShort((short) 0);
+		wbuf.putShort(protocolType.shortValue());
+		wbuf.putShort(protocolVersion.shortValue());
 		SoapSerializer.ToXml(soap, wbuf.asOutputStream());
 		wbuf.putShort(4, (short) (wbuf.position() - 6));
 		wbuf.flip();
