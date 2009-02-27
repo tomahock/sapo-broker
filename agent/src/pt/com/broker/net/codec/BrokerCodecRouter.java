@@ -10,33 +10,24 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 
 import pt.com.protobuf.codec.ProtoBufCodec;
 import pt.com.thrift.codec.ThriftCodec;
+import pt.com.types.Constants;
+import pt.com.xml.codec.SoapCodecV2;
 
 /**
  * The network protocol has the following layout:
  * 
  * <pre>
+ *  -----------
+ *  |  Type   | -&gt; 16-bit signed integer in network order for protocol type
+ *  -----------
+ *  | Version | -&gt; 16-bit signed integer in network order for protocol version
  *  ----------- 
- *  | Length  | -&gt; integer in network order (msb = 0)
+ *  | Length  | -&gt; 16-bit signed integer in network order for the payload length
  *  -----------
  *  | Payload | -&gt; binary message
  *  -----------
  * </pre>
  * 
- * or
- * 
- * <pre>
- *  ----------- 
- *  | Length  | -&gt; integer in network order (msb = 1) [32 bits]
- *  -----------
- *  |  Type   | -&gt; protocol type [16 bits]
- *  -----------
- *  | Version | -&gt; protocol version [16 bits] 
- *  -----------
- *  | Payload | -&gt; binary message
- *  -----------
- * </pre>
- * 
- * The most significant bit (msb) determines if the message length is followed by the payload (msb = 0), maintaining retro-compatibility, or the protocol type and version (msb = 1). <br/>
  * This applies to both input and output messages.
  */
 public class BrokerCodecRouter implements ProtocolCodecFactory
@@ -46,12 +37,12 @@ public class BrokerCodecRouter implements ProtocolCodecFactory
 
 	static
 	{
+		codecs.put(new Short((short) 0), new SoapCodecV2());
 		codecs.put(new Short((short) 1), new ProtoBufCodec());
 		codecs.put(new Short((short) 2), new ThriftCodec());
 	}
 
-	// TODO: Create a constructor that specifies this value. The original value was defined by: MQ.MAX_MESSAGE_SIZE
-	public static final int MAX_MESSAGE_SIZE = 4 * 1024;
+	// TODO: Create a constructor that specifies this value. The original value was defined by: Constants.MAX_MESSAGE_SIZE
 
 	private BrokerEncoderRouter encoder;
 	private BrokerDecoderRouter decoder;
@@ -59,7 +50,7 @@ public class BrokerCodecRouter implements ProtocolCodecFactory
 	public BrokerCodecRouter()
 	{
 		encoder = new BrokerEncoderRouter();
-		decoder = new BrokerDecoderRouter(MAX_MESSAGE_SIZE);
+		decoder = new BrokerDecoderRouter(Constants.MAX_MESSAGE_SIZE);
 	}
 
 	@Override

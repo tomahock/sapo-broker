@@ -33,12 +33,12 @@ import pt.com.types.NetPong;
 import pt.com.types.NetPublish;
 import pt.com.types.NetSubscribe;
 import pt.com.types.NetUnsubscribe;
-import pt.com.types.SimpleFramingEncoder;
+import pt.com.types.SimpleFramingEncoderV2;
 import pt.com.types.NetAction.DestinationType;
 
 import com.google.protobuf.ByteString;
 
-public class ProtoBufEncoder extends SimpleFramingEncoder
+public class ProtoBufEncoder extends SimpleFramingEncoderV2
 {
 
 	private static final Logger log = LoggerFactory.getLogger(ProtoBufEncoder.class);
@@ -100,12 +100,12 @@ public class ProtoBufEncoder extends SimpleFramingEncoder
 				atomBuilder.setHeader(getHeaders(gcsMessage));
 
 			IoBuffer wbuf = IoBuffer.allocate(2048, false);
-			wbuf.setAutoExpand(true);
-			wbuf.putInt(0);
+			wbuf.setAutoExpand(true);			
 			wbuf.putShort(protocolType.shortValue());
 			wbuf.putShort(protocolVersion.shortValue());
+			wbuf.putShort((short) 0);
 			atomBuilder.build().writeTo(wbuf.asOutputStream());
-			wbuf.putInt(0, (wbuf.position() - 8));
+			wbuf.putShort(4, (short) (wbuf.position() - 6));
 			wbuf.flip();
 
 			pout.write(wbuf);

@@ -11,7 +11,7 @@ import pt.com.types.SimpleFramingEncoder;
 public class GcsEncoder extends SimpleFramingEncoder
 {
 	@Override
-	public byte[] processBody(Object message, Short protocolType, Short protocolVersion)
+	public byte[] processBody(Object message)
 	{
 		if (!(message instanceof InternalMessage))
 		{
@@ -24,7 +24,7 @@ public class GcsEncoder extends SimpleFramingEncoder
 	}
 
 	@Override
-	public void processBody(Object message, ProtocolEncoderOutput pout, Short protocolType, Short protocolVersion)
+	public void processBody(Object message, ProtocolEncoderOutput pout)
 	{
 
 		if (!(message instanceof InternalMessage))

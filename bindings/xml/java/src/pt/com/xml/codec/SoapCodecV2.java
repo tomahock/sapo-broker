@@ -7,31 +7,18 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 
 import pt.com.types.Constants;
 
-/**
- * The network protocol is as simple as could be:
- * 
- * <pre>
- *  ----------- 
- *  | Length  | -&gt; integer in network order
- *  -----------
- *  | Payload | -&gt; Xml Soap Message
- *  -----------
- * </pre>
- * 
- * This applies to both input and ouput messages.
- */
-public class SoapCodec implements ProtocolCodecFactory
+public class SoapCodecV2 implements ProtocolCodecFactory
 {
 	public static final int HEADER_LENGTH = 4;
 
-	private SoapEncoder encoder;
+	private SoapEncoderV2 encoder;
 
-	private SoapDecoder decoder;
+	private SoapDecoderV2 decoder;
 
-	public SoapCodec()
+	public SoapCodecV2()
 	{
-		encoder = new SoapEncoder();
-		decoder = new SoapDecoder(Constants.MAX_MESSAGE_SIZE);
+		encoder = new SoapEncoderV2();
+		decoder = new SoapDecoderV2(Constants.MAX_MESSAGE_SIZE);
 	}
 
 	@Override

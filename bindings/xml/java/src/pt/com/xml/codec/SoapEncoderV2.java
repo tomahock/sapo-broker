@@ -5,15 +5,14 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.caudexorigo.io.UnsynchByteArrayOutputStream;
 
 import pt.com.types.NetMessage;
-import pt.com.types.SimpleFramingEncoder;
+import pt.com.types.SimpleFramingEncoderV2;
 import pt.com.xml.SoapEnvelope;
 import pt.com.xml.SoapSerializer;
 
-public class SoapEncoder extends SimpleFramingEncoder
+public class SoapEncoderV2 extends SimpleFramingEncoderV2
 {
-
 	@Override
-	public byte[] processBody(Object message)
+	public byte[] processBody(Object message, Short protocolType, Short protocolVersion)
 	{
 		if (!(message instanceof NetMessage))
 		{
@@ -27,7 +26,7 @@ public class SoapEncoder extends SimpleFramingEncoder
 	}
 
 	@Override
-	public void processBody(Object message, ProtocolEncoderOutput pout)
+	public void processBody(Object message, ProtocolEncoderOutput pout, Short protocolType, Short protocolVersion)
 	{
 		if (!(message instanceof NetMessage))
 		{
@@ -37,13 +36,11 @@ public class SoapEncoder extends SimpleFramingEncoder
 		NetMessage gcsMessage = (NetMessage) message;
 		SoapEnvelope soap = Builder.netMessageToSoap(gcsMessage);
 
-	
 		IoBuffer wbuf = IoBuffer.allocate(2048, false);
 		wbuf.setAutoExpand(true);
-		wbuf.putInt(0);
-		SoapSerializer.ToXml((SoapEnvelope) soap, wbuf.asOutputStream());
-		wbuf.putInt(0, wbuf.position() - 4);
-
+		wbuf.putShort((short) 0);
+		SoapSerializer.ToXml(soap, wbuf.asOutputStream());
+		wbuf.putShort(4, (short) (wbuf.position() - 6));
 		wbuf.flip();
 
 		pout.write(wbuf);

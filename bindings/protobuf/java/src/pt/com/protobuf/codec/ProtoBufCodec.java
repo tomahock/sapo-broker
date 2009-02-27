@@ -5,26 +5,14 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
-/**
- * The network protocol is as simple as could be:
- * 
- * <pre>
- *  ----------- 
- *  | Length  | -&gt; integer in network order
- *  -----------
- *  | Payload | -&gt; Binary message
- *  -----------
- * </pre>
- * 
- * This applies to both input and ouput messages.
- */
+import pt.com.types.Constants;
+
+
 public class ProtoBufCodec implements ProtocolCodecFactory
 {
 
-	public static final int HEADER_LENGTH = 4;
+	public static final int HEADER_LENGTH = 6;
 
-	// TODO: Create a constructor that specifies this value. The original value was defined by: MQ.MAX_MESSAGE_SIZE
-	public static final int MAX_MESSAGE_SIZE = 4 * 1024;
 
 	private ProtoBufEncoder encoder;
 	private ProtoBufDecoder decoder;
@@ -32,7 +20,7 @@ public class ProtoBufCodec implements ProtocolCodecFactory
 	public ProtoBufCodec()
 	{
 		encoder = new ProtoBufEncoder();
-		decoder = new ProtoBufDecoder(MAX_MESSAGE_SIZE);
+		decoder = new ProtoBufDecoder(Constants.MAX_MESSAGE_SIZE);
 	}
 
 	@Override

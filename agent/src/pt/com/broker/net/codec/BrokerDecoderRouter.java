@@ -4,16 +4,16 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.types.SimpleFramingDecoder;
+import pt.com.types.SimpleFramingDecoderV2;
 
-public class BrokerDecoderRouter extends SimpleFramingDecoder
+public class BrokerDecoderRouter extends SimpleFramingDecoderV2
 {
 
 	private static final Logger log = LoggerFactory.getLogger(BrokerDecoderRouter.class);
 
 	public BrokerDecoderRouter(int max_message_size)
 	{
-		super(max_message_size, true);
+		super(max_message_size);
 	}
 
 	@Override
@@ -25,10 +25,10 @@ public class BrokerDecoderRouter extends SimpleFramingDecoder
 			throw new RuntimeException("Invalid protocol type: " + protocolType);
 		}
 
-		SimpleFramingDecoder decoder;
+		SimpleFramingDecoderV2 decoder;
 		try
 		{
-			decoder = (SimpleFramingDecoder) codec.getDecoder(null);
+			decoder = (SimpleFramingDecoderV2) codec.getDecoder(null);
 		}
 		catch (Exception e)
 		{

@@ -20,10 +20,10 @@ import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
 import pt.com.types.NetProtocolType;
-import pt.com.types.SimpleFramingDecoder;
-import pt.com.types.SimpleFramingEncoder;
-import pt.com.xml.codec.SoapDecoder;
-import pt.com.xml.codec.SoapEncoder;
+import pt.com.types.SimpleFramingDecoderV2;
+import pt.com.types.SimpleFramingEncoderV2;
+import pt.com.xml.codec.SoapDecoderV2;
+import pt.com.xml.codec.SoapEncoderV2;
 
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
@@ -38,7 +38,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	private static final int MAX_SIZE = 4 * 1024;
 
-	private boolean has_extra_header_info = true;
 	private short proto_type = 1;
 
 	public BrokerProtocolHandler(BrokerClient brokerClient, NetProtocolType ptype) throws UnknownHostException, IOException
@@ -47,11 +46,11 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 		_connector = new NetworkConnector(brokerClient.getHost(), brokerClient.getPort());
 
-		decoders.put((short) 0, new SoapDecoder(MAX_SIZE));
+		decoders.put((short) 0, new SoapDecoderV2(MAX_SIZE));
 		decoders.put((short) 1, new ProtoBufDecoder(MAX_SIZE));
 		decoders.put((short) 2, new ThriftDecoder(MAX_SIZE));
 
-		encoders.put((short) 0, new SoapEncoder());
+		encoders.put((short) 0, new SoapEncoderV2());
 		encoders.put((short) 1, new ProtoBufEncoder());
 		encoders.put((short) 2, new ThriftEncoder());
 
@@ -61,7 +60,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			{
 			case SOAP:
 				proto_type = 0;
-				has_extra_header_info = false;
 				break;
 			case PROTOCOL_BUFFER:
 				proto_type = 1;
@@ -163,22 +161,11 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public NetMessage decode(DataInputStream in) throws IOException
 	{
-		int len = in.readInt();
-		short protocolType;
-		short protocolVersion;
+		short protocolType = in.readShort();
+		short protocolVersion = in.readShort();
+		short len = in.readShort();
 
-		if (has_extra_header_info)
-		{
-			protocolType = in.readShort();
-			protocolVersion = in.readShort();
-		}
-		else
-		{
-			protocolType = 0;
-			protocolVersion = 0;
-		}
-
-		SimpleFramingDecoder decoder = (SimpleFramingDecoder) decoders.get(protocolType);
+		SimpleFramingDecoderV2 decoder = (SimpleFramingDecoderV2) decoders.get(protocolType);
 
 		if (decoder == null)
 		{
@@ -187,7 +174,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 		byte[] data = new byte[len];
 		in.readFully(data);
-		
+
 		NetMessage message = (NetMessage) decoder.processBody(data, protocolType, protocolVersion);
 		return message;
 	}
@@ -195,14 +182,16 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public void encode(NetMessage message, DataOutputStream out) throws IOException
 	{
-		SimpleFramingEncoder encoder = (SimpleFramingEncoder) encoders.get(proto_type);
-		byte[] encodedMsg = encoder.processBody(message, (short) proto_type, (short) 0);
-		out.writeInt(encodedMsg.length);
-		if (has_extra_header_info)
-		{
-			out.writeShort(proto_type);
-			out.writeShort(0);
-		}
+		short protocolType = proto_type;
+		short protocolVersion = (short) 0;
+
+		SimpleFramingEncoderV2 encoder = (SimpleFramingEncoderV2) encoders.get(proto_type);
+		byte[] encodedMsg = encoder.processBody(message, protocolType, protocolType);
+
+		out.writeShort(protocolType);
+		out.writeShort(protocolVersion);
+		out.writeShort((short) encodedMsg.length);
+
 		out.write(encodedMsg);
 	}
 }

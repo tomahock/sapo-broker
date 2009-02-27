@@ -7,15 +7,16 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
+public abstract class SimpleFramingDecoderV2 extends CumulativeProtocolDecoder
 {
-	private static final Logger log = LoggerFactory.getLogger(SimpleFramingDecoder.class);
+	private static final Logger log = LoggerFactory.getLogger(SimpleFramingDecoderV2.class);
 
 	private final int _max_message_size;
 
-	private static final int MIN_HEADER_LENGTH = 4;
+	private static final int MIN_HEADER_LENGTH = 6;
+	
 
-	public SimpleFramingDecoder(int max_message_size)
+	public SimpleFramingDecoderV2(int max_message_size)
 	{
 		_max_message_size = max_message_size;
 	}
@@ -50,8 +51,16 @@ public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 				return false;
 			}
 
-			int len = in.getInt();
+			
 
+			short protocolType = in.getShort();
+			short protocolVersion = in.getShort();
+			int len = in.getShort();
+
+			
+			// TODO: This could be done only the first time the client sends a message...
+			session.setAttribute("PROTOCOL_TYPE", new Short(protocolType));
+			session.setAttribute("PROTOCOL_VERSION", new Short(protocolVersion));
 
 			// We can decode the message length
 			if (len > _max_message_size)
@@ -75,7 +84,7 @@ public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 
 			byte[] packet = new byte[len];
 			in.get(packet);
-			out.write(processBody(packet));
+			out.write(processBody(packet, protocolType, protocolVersion));
 
 			return true;
 
@@ -88,6 +97,6 @@ public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 		}
 	}
 
-	public abstract Object processBody(byte[] packet);
+	public abstract Object processBody(byte[] packet, short protocolType, short protocolVersion);
 
 }

@@ -31,16 +31,16 @@ import pt.com.types.NetPong;
 import pt.com.types.NetPublish;
 import pt.com.types.NetSubscribe;
 import pt.com.types.NetUnsubscribe;
-import pt.com.types.SimpleFramingDecoder;
+import pt.com.types.SimpleFramingDecoderV2;
 
-public class ProtoBufDecoder extends SimpleFramingDecoder
+public class ProtoBufDecoder extends SimpleFramingDecoderV2
 {
 
 	private static final Logger log = LoggerFactory.getLogger(ProtoBufDecoder.class);
 
 	public ProtoBufDecoder(int max_message_size)
 	{
-		super(max_message_size, true);
+		super(max_message_size);
 	}
 
 	@Override

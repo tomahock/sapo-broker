@@ -34,10 +34,10 @@ import pt.com.types.NetPong;
 import pt.com.types.NetPublish;
 import pt.com.types.NetSubscribe;
 import pt.com.types.NetUnsubscribe;
-import pt.com.types.SimpleFramingEncoder;
+import pt.com.types.SimpleFramingEncoderV2;
 import pt.com.types.NetAction.DestinationType;
 
-public class ThriftEncoder extends SimpleFramingEncoder
+public class ThriftEncoder extends SimpleFramingEncoderV2
 {
 
 	private static final Logger log = LoggerFactory.getLogger(ThriftEncoder.class);
@@ -113,11 +113,11 @@ public class ThriftEncoder extends SimpleFramingEncoder
 
 			IoBuffer wbuf = IoBuffer.allocate(2048, false);
 			wbuf.setAutoExpand(true);
-			wbuf.putInt(0);
 			wbuf.putShort(protocolType.shortValue());
 			wbuf.putShort(protocolVersion.shortValue());
+			wbuf.putShort((short) 0);
 			wbuf.put(result);
-			wbuf.putInt(0, (wbuf.position() - 8));
+			wbuf.putShort(4, (short) (wbuf.position() - 6));
 			wbuf.flip();
 
 			pout.write(wbuf);
@@ -137,7 +137,6 @@ public class ThriftEncoder extends SimpleFramingEncoder
 		{
 		case ACCEPTED:
 			ac.setAction_type(ActionType.ACCEPTED);
-			Accepted acc = new Accepted();
 			ac.setAccepted(getAccepted(gcsMessage));
 			break;
 		case ACKNOWLEDGE_MESSAGE:
