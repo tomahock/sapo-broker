@@ -22,6 +22,8 @@ import pt.com.types.NetNotification;
 import pt.com.types.NetProtocolType;
 import pt.com.types.SimpleFramingDecoder;
 import pt.com.types.SimpleFramingEncoder;
+import pt.com.xml.codec.SoapDecoder;
+import pt.com.xml.codec.SoapEncoder;
 
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
@@ -36,17 +38,30 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	private static final int MAX_SIZE = 4 * 1024;
 
+	private boolean has_extra_header_info = true;
 	private short proto_type = 1;
 
 	public BrokerProtocolHandler(BrokerClient brokerClient, NetProtocolType ptype) throws UnknownHostException, IOException
 	{
-		this(brokerClient);
+		_brokerClient = brokerClient;
+
+		_connector = new NetworkConnector(brokerClient.getHost(), brokerClient.getPort());
+
+		decoders.put((short) 0, new SoapDecoder(MAX_SIZE));
+		decoders.put((short) 1, new ProtoBufDecoder(MAX_SIZE));
+		decoders.put((short) 2, new ThriftDecoder(MAX_SIZE));
+
+		encoders.put((short) 0, new SoapEncoder());
+		encoders.put((short) 1, new ProtoBufEncoder());
+		encoders.put((short) 2, new ThriftEncoder());
+
 		if (ptype != null)
 		{
 			switch (ptype)
 			{
 			case SOAP:
 				proto_type = 0;
+				has_extra_header_info = false;
 				break;
 			case PROTOCOL_BUFFER:
 				proto_type = 1;
@@ -63,16 +78,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	public BrokerProtocolHandler(BrokerClient brokerClient) throws UnknownHostException, IOException
 	{
-		_brokerClient = brokerClient;
-
-		_connector = new NetworkConnector(brokerClient.getHost(), brokerClient.getPort());
-
-		decoders.put((short) 1, new ProtoBufDecoder(MAX_SIZE));
-		decoders.put((short) 2, new ThriftDecoder(MAX_SIZE));
-
-		encoders.put((short) 1, new ProtoBufEncoder());
-		encoders.put((short) 2, new ThriftEncoder());
-
+		this(brokerClient, null);
 	}
 
 	@Override
@@ -158,19 +164,30 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	public NetMessage decode(DataInputStream in) throws IOException
 	{
 		int len = in.readInt();
-		short protocolType = in.readShort();
-		short protocolVersion = in.readShort();
+		short protocolType;
+		short protocolVersion;
+
+		if (has_extra_header_info)
+		{
+			protocolType = in.readShort();
+			protocolVersion = in.readShort();
+		}
+		else
+		{
+			protocolType = 0;
+			protocolVersion = 0;
+		}
 
 		SimpleFramingDecoder decoder = (SimpleFramingDecoder) decoders.get(protocolType);
 
 		if (decoder == null)
 		{
-			throw new RuntimeException("Received message was not coded using a known encoding");
+			throw new RuntimeException("Received message uses an unknown encoding");
 		}
 
 		byte[] data = new byte[len];
 		in.readFully(data);
-
+		
 		NetMessage message = (NetMessage) decoder.processBody(data, protocolType, protocolVersion);
 		return message;
 	}
@@ -181,8 +198,11 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		SimpleFramingEncoder encoder = (SimpleFramingEncoder) encoders.get(proto_type);
 		byte[] encodedMsg = encoder.processBody(message, (short) proto_type, (short) 0);
 		out.writeInt(encodedMsg.length);
-		out.writeShort(proto_type);
-		out.writeShort(0);
+		if (has_extra_header_info)
+		{
+			out.writeShort(proto_type);
+			out.writeShort(0);
+		}
 		out.write(encodedMsg);
 	}
 }

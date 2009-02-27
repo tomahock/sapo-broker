@@ -9,6 +9,7 @@ import pt.com.types.NetAcknowledgeMessage;
 import pt.com.types.NetAction;
 import pt.com.types.NetBrokerMessage;
 import pt.com.types.NetMessage;
+import pt.com.types.NetNotification;
 import pt.com.types.NetPing;
 import pt.com.types.NetPoll;
 import pt.com.types.NetPong;
@@ -18,6 +19,7 @@ import pt.com.types.NetUnsubscribe;
 import pt.com.types.SimpleFramingDecoder;
 import pt.com.xml.Acknowledge;
 import pt.com.xml.BrokerMessage;
+import pt.com.xml.Notification;
 import pt.com.xml.Notify;
 import pt.com.xml.Poll;
 import pt.com.xml.SoapEnvelope;
@@ -36,26 +38,26 @@ public class SoapDecoder extends SimpleFramingDecoder
 	@Override
 	public Object processBody(byte[] packet, short protocolType, short protocolVersion)
 	{
-
-		System.out.println("SoapDecoder.processBody()");
 		UnsynchByteArrayInputStream bin = new UnsynchByteArrayInputStream(packet);
 		SoapEnvelope msg = SoapSerializer.FromXml(bin);
 
 		NetMessage message = null;
 
 		String actionId = null;
-		if (msg.body.notify != null)
-		{
-			Notify sb = msg.body.notify;
-			actionId = sb.actionId;
 
-			NetAction netAction = new NetAction(NetAction.ActionType.SUBSCRIBE);
-			NetAction.DestinationType dtype = NetAction.DestinationType.valueOf(sb.destinationType);
-			NetSubscribe netSubscribe = new NetSubscribe(sb.destinationName, dtype);
-			netSubscribe.setActionId(actionId);
+		if (msg.body.notification != null)
+		{
+			Notification notification = msg.body.notification;
+
+			String dest = notification.brokerMessage.destinationName;
+			NetAction.DestinationType destType = NetAction.DestinationType.valueOf(msg.header.wsaFrom.address);
+			NetBrokerMessage brkMsg = new NetBrokerMessage(notification.brokerMessage.textPayload.getBytes(CHARSET));
+			String subs = msg.header.wsaTo;
+			NetNotification netNotification = new NetNotification(dest, destType, brkMsg, subs);
+			NetAction netAction = new NetAction(NetAction.ActionType.NOTIFICATION);
 
 			message = new NetMessage(netAction);
-			message.getAction().setSubscribeMessage(netSubscribe);
+			message.getAction().setNotificationMessage(netNotification);
 
 		}
 		else if (msg.body.publish != null)
@@ -92,6 +94,20 @@ public class SoapDecoder extends SimpleFramingDecoder
 
 			message = new NetMessage(netAction);
 			message.getAction().setPublishMessage(netPublish);
+		}
+		else if (msg.body.notify != null)
+		{
+			Notify sb = msg.body.notify;
+			actionId = sb.actionId;
+
+			NetAction netAction = new NetAction(NetAction.ActionType.SUBSCRIBE);
+			NetAction.DestinationType dtype = NetAction.DestinationType.valueOf(sb.destinationType);
+			NetSubscribe netSubscribe = new NetSubscribe(sb.destinationName, dtype);
+			netSubscribe.setActionId(actionId);
+
+			message = new NetMessage(netAction);
+			message.getAction().setSubscribeMessage(netSubscribe);
+
 		}
 		else if (msg.body.poll != null)
 		{

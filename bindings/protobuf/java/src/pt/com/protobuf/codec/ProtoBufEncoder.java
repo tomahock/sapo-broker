@@ -51,7 +51,6 @@ public class ProtoBufEncoder extends SimpleFramingEncoder
 	@Override
 	public byte[] processBody(Object message, Short protocolType, Short protocolVersion)
 	{
-		System.out.println("ProtoBufEncoder.processBody()");
 		byte[] result = null;
 		if (!(message instanceof NetMessage))
 		{

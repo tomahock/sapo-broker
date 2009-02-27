@@ -49,10 +49,15 @@ public class BrokerClient
 
 	public BrokerClient(String host, int portNumber, String appName) throws Throwable
 	{
+		this(host, portNumber, appName, NetProtocolType.PROTOCOL_BUFFER);
+	}
+
+	public BrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
+	{
 		_host = host;
 		_portNumber = portNumber;
 		_appName = appName;
-		_netHandler = new BrokerProtocolHandler(this, NetProtocolType.THRIFT);
+		_netHandler = new BrokerProtocolHandler(this, ptype);
 		_netHandler.start();
 	}
 
@@ -124,25 +129,6 @@ public class BrokerClient
 			log.info("Reconnected async consumer for '{}'", subscription.getDestination());
 		}
 	}
-
-	// protected void bindConsumers() throws Throwable
-	// {
-	// for (BrokerAsyncConsumer bac : _consumerList)
-	// {
-	// NetSubscribe subscription = bac.getSubscription();
-	//
-	// String action = buildAction(subscription.getDestinationType());
-	//
-	// NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
-	// netAction.setSubscribeMessage(subscription);
-	//
-	// NetMessage msg = buildMessage(action, netAction);
-	//
-	// _netHandler.sendMessage(msg);
-	//
-	// _consumerList.add(new BrokerAsyncConsumer(subscription, bac.getListener()));
-	// }
-	// }
 
 	public NetMessage buildMessage(String actionDest, NetAction action)
 	{
@@ -288,8 +274,6 @@ public class BrokerClient
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination)))
 		{
 			NetPublish publish = new NetPublish(destination, pt.com.types.NetAction.DestinationType.TOPIC, brokerMessage);
-			// publish.setActionId(UUID.randomUUID().toString());
-
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
 
@@ -337,9 +321,11 @@ public class BrokerClient
 		}
 	}
 
-	// public static void saveToDropbox(String dropboxPath, BrokerMessage brkmsg, DestinationType dtype) throws Throwable
+	// public static void saveToDropbox(String dropboxPath, BrokerMessage
+	// brkmsg, DestinationType dtype) throws Throwable
 	// {
-	// if ((brkmsg != null) && (StringUtils.isNotBlank(brkmsg.destinationName)) && (StringUtils.isNotBlank(dropboxPath)))
+	// if ((brkmsg != null) && (StringUtils.isNotBlank(brkmsg.destinationName))
+	// && (StringUtils.isNotBlank(dropboxPath)))
 	// {
 	// SoapEnvelope soap = new SoapEnvelope();
 	//
@@ -356,7 +342,8 @@ public class BrokerClient
 	// soap.body.enqueue = enqreq;
 	// }
 	//
-	// String baseFileName = dropboxPath + File.separator + UUID.randomUUID().toString();
+	// String baseFileName = dropboxPath + File.separator +
+	// UUID.randomUUID().toString();
 	// String tempfileName = baseFileName + ".temp";
 	// String fileName = baseFileName + ".good";
 	//
@@ -368,7 +355,8 @@ public class BrokerClient
 	// }
 	// else
 	// {
-	// throw new IllegalArgumentException("Missing arguments for Dropbox persistence");
+	// throw new
+	// IllegalArgumentException("Missing arguments for Dropbox persistence");
 	// }
 	// }
 

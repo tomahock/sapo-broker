@@ -10,7 +10,6 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 
 import pt.com.protobuf.codec.ProtoBufCodec;
 import pt.com.thrift.codec.ThriftCodec;
-import pt.com.xml.codec.SoapCodec;
 
 /**
  * The network protocol has the following layout:

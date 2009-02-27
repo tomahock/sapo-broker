@@ -112,8 +112,7 @@ public class SoapEncoder extends SimpleFramingEncoder
 			SoapEnvelope soap_env = new SoapEnvelope();
 			SoapHeader soap_header = new SoapHeader();
 			EndPointReference epr = new EndPointReference();
-			// FIXME: fill with the real sourceapp
-			epr.address = "$DUMMY_SOURCE$";
+			epr.address = nnotf.getDestinationType().toString();
 			soap_header.wsaFrom = epr;
 			if (nnotf.getSubscription() != null)
 			{

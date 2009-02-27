@@ -21,7 +21,6 @@ import pt.com.broker.messaging.MQ;
 import pt.com.broker.messaging.QueueSessionListenerList;
 import pt.com.broker.messaging.TopicSubscriberList;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.net.IoSessionHelper;
 import pt.com.types.NetAccepted;
 import pt.com.types.NetAction;

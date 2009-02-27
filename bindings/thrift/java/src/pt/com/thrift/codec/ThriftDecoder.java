@@ -146,7 +146,6 @@ public class ThriftDecoder extends SimpleFramingDecoder
 
 	static private NetAction.ActionType translateActionType(int actionType)
 	{
-		System.out.println("ThriftDecoder.translateActionType.actionType: " + actionType);
 		switch (actionType)
 		{
 		case ActionType.ACCEPTED:
