@@ -148,5 +148,10 @@ public class GcsInfo
 	{
 		return instance.conf.getMessaging().getDropbox().getCheckInterval();
 	}
+	
+	public static BrokerSecurityPolicy getSecurityPolicy()
+	{
+		return instance.conf.getSecurityPolicies();
+	}
 
 }
