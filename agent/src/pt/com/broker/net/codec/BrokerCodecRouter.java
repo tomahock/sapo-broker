@@ -22,7 +22,7 @@ import pt.com.xml.codec.SoapCodecV2;
  *  -----------
  *  | Version | -&gt; 16-bit signed integer in network order for protocol version
  *  ----------- 
- *  | Length  | -&gt; 16-bit signed integer in network order for the payload length
+ *  | Length  | -&gt; 32-bit signed integer in network order for the payload length
  *  -----------
  *  | Payload | -&gt; binary message
  *  -----------

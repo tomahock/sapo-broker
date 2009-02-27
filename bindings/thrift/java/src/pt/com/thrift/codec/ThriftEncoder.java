@@ -1,7 +1,6 @@
 package pt.com.thrift.codec;
 
 import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.slf4j.Logger;
@@ -86,7 +85,7 @@ public class ThriftEncoder extends SimpleFramingEncoderV2
 	}
 
 	@Override
-	public void processBody(Object message, ProtocolEncoderOutput pout, Short protocolType, Short protocolVersion)
+	public void processBody(Object message, IoBuffer wbuf, Short protocolType, Short protocolVersion)
 	{
 		if (!(message instanceof NetMessage))
 		{
@@ -111,16 +110,7 @@ public class ThriftEncoder extends SimpleFramingEncoderV2
 			TSerializer serializer = new TSerializer(new TBinaryProtocol.Factory());
 			byte[] result = serializer.serialize(tm);
 
-			IoBuffer wbuf = IoBuffer.allocate(2048, false);
-			wbuf.setAutoExpand(true);
-			wbuf.putShort(protocolType.shortValue());
-			wbuf.putShort(protocolVersion.shortValue());
-			wbuf.putShort((short) 0);
 			wbuf.put(result);
-			wbuf.putShort(4, (short) (wbuf.position() - 6));
-			wbuf.flip();
-
-			pout.write(wbuf);
 		}
 		catch (Throwable e)
 		{
@@ -351,5 +341,7 @@ public class ThriftEncoder extends SimpleFramingEncoderV2
 		// TODO: Throw checked exception
 		return pt.com.thrift.DestinationType.TOPIC;
 	}
+
+
 
 }

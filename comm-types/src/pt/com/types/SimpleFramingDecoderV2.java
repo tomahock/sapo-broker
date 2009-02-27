@@ -13,8 +13,7 @@ public abstract class SimpleFramingDecoderV2 extends CumulativeProtocolDecoder
 
 	private final int _max_message_size;
 
-	private static final int MIN_HEADER_LENGTH = 6;
-	
+	private static final int MIN_HEADER_LENGTH = 8;
 
 	public SimpleFramingDecoderV2(int max_message_size)
 	{
@@ -51,13 +50,10 @@ public abstract class SimpleFramingDecoderV2 extends CumulativeProtocolDecoder
 				return false;
 			}
 
-			
-
 			short protocolType = in.getShort();
 			short protocolVersion = in.getShort();
-			int len = in.getShort();
+			int len = in.getInt();
 
-			
 			// TODO: This could be done only the first time the client sends a message...
 			session.setAttribute("PROTOCOL_TYPE", new Short(protocolType));
 			session.setAttribute("PROTOCOL_VERSION", new Short(protocolVersion));

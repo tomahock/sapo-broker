@@ -1,7 +1,6 @@
 package pt.com.xml.codec;
 
 import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.caudexorigo.io.UnsynchByteArrayOutputStream;
 
 import pt.com.types.NetMessage;
@@ -26,7 +25,7 @@ public class SoapEncoderV2 extends SimpleFramingEncoderV2
 	}
 
 	@Override
-	public void processBody(Object message, ProtocolEncoderOutput pout, Short protocolType, Short protocolVersion)
+	public void processBody(Object message, IoBuffer wbuf, Short protocolType, Short protocolVersion)
 	{
 		if (!(message instanceof NetMessage))
 		{
@@ -35,16 +34,6 @@ public class SoapEncoderV2 extends SimpleFramingEncoderV2
 
 		NetMessage gcsMessage = (NetMessage) message;
 		SoapEnvelope soap = Builder.netMessageToSoap(gcsMessage);
-
-		IoBuffer wbuf = IoBuffer.allocate(2048, false);
-		wbuf.setAutoExpand(true);
-		wbuf.putShort(protocolType.shortValue());
-		wbuf.putShort(protocolVersion.shortValue());
 		SoapSerializer.ToXml(soap, wbuf.asOutputStream());
-		wbuf.putShort(4, (short) (wbuf.position() - 6));
-		wbuf.flip();
-
-		pout.write(wbuf);
 	}
-
 }

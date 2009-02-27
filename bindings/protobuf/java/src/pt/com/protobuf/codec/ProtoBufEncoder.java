@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,6 @@ public class ProtoBufEncoder extends SimpleFramingEncoderV2
 
 	public ProtoBufEncoder()
 	{
-
 	}
 
 	@Override
@@ -81,7 +79,7 @@ public class ProtoBufEncoder extends SimpleFramingEncoderV2
 	}
 
 	@Override
-	public void processBody(Object message, ProtocolEncoderOutput pout, Short protocolType, Short protocolVersion)
+	public void processBody(Object message, IoBuffer wbuf, Short protocolType, Short protocolVersion)
 	{
 		if (!(message instanceof NetMessage))
 		{
@@ -99,16 +97,8 @@ public class ProtoBufEncoder extends SimpleFramingEncoderV2
 			if (header != null)
 				atomBuilder.setHeader(getHeaders(gcsMessage));
 
-			IoBuffer wbuf = IoBuffer.allocate(2048, false);
-			wbuf.setAutoExpand(true);			
-			wbuf.putShort(protocolType.shortValue());
-			wbuf.putShort(protocolVersion.shortValue());
-			wbuf.putShort((short) 0);
 			atomBuilder.build().writeTo(wbuf.asOutputStream());
-			wbuf.putShort(4, (short) (wbuf.position() - 6));
-			wbuf.flip();
 
-			pout.write(wbuf);
 		}
 		catch (Throwable e)
 		{

@@ -163,7 +163,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	{
 		short protocolType = in.readShort();
 		short protocolVersion = in.readShort();
-		short len = in.readShort();
+		int len = in.readInt();
 
 		SimpleFramingDecoderV2 decoder = (SimpleFramingDecoderV2) decoders.get(protocolType);
 
@@ -190,7 +190,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 		out.writeShort(protocolType);
 		out.writeShort(protocolVersion);
-		out.writeShort((short) encodedMsg.length);
+		out.writeInt(encodedMsg.length);
 
 		out.write(encodedMsg);
 	}

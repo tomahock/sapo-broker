@@ -1,7 +1,7 @@
 package pt.com.broker.net.codec;
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class BrokerEncoderRouter extends SimpleFramingEncoderV2
 	}
 
 	@Override
-	public void processBody(Object message, ProtocolEncoderOutput pout, Short protocolType, Short protocolVersion)
+	public void processBody(Object message, IoBuffer wbuf, Short protocolType, Short protocolVersion)
 	{
 		ProtocolCodecFactory codec = BrokerCodecRouter.getProcolCodec(new Short(protocolType));
 		if (codec == null)
@@ -57,6 +57,6 @@ public class BrokerEncoderRouter extends SimpleFramingEncoderV2
 			throw new RuntimeException("Invalid protocol type decoder implementation: " + protocolType, e);
 		}
 
-		encoder.processBody(message, pout, protocolType, protocolVersion);
+		encoder.processBody(message, wbuf, protocolType, protocolVersion);
 	}
 }
