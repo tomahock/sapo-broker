@@ -19,6 +19,7 @@ import pt.com.thrift.Publish;
 import pt.com.thrift.Subscribe;
 import pt.com.thrift.ThriftMessage;
 import pt.com.thrift.Unsubscribe;
+import pt.com.types.Constants;
 import pt.com.types.NetAccepted;
 import pt.com.types.NetAcknowledgeMessage;
 import pt.com.types.NetAction;
@@ -39,9 +40,9 @@ public class ThriftDecoder extends SimpleFramingDecoderV2
 
 	private static final Logger log = LoggerFactory.getLogger(ThriftDecoder.class);
 
-	public ThriftDecoder(int max_message_size)
+	public ThriftDecoder()
 	{
-		super(max_message_size);
+		super(Constants.MAX_MESSAGE_SIZE);
 	}
 
 	@Override

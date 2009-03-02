@@ -2,6 +2,7 @@ package pt.com.xml.codec;
 
 import org.caudexorigo.io.UnsynchByteArrayInputStream;
 
+import pt.com.types.Constants;
 import pt.com.types.SimpleFramingDecoderV2;
 import pt.com.xml.SoapEnvelope;
 import pt.com.xml.SoapSerializer;
@@ -9,9 +10,9 @@ import pt.com.xml.SoapSerializer;
 public class SoapDecoderV2 extends SimpleFramingDecoderV2
 {
 
-	public SoapDecoderV2(int max_message_size)
+	public SoapDecoderV2()
 	{
-		super(max_message_size);
+		super(Constants.MAX_MESSAGE_SIZE);
 	}
 
 	@Override

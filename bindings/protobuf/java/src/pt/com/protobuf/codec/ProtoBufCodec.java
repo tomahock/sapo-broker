@@ -5,14 +5,10 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
-import pt.com.types.Constants;
-
-
 public class ProtoBufCodec implements ProtocolCodecFactory
 {
 
 	public static final int HEADER_LENGTH = 6;
-
 
 	private ProtoBufEncoder encoder;
 	private ProtoBufDecoder decoder;
@@ -20,7 +16,7 @@ public class ProtoBufCodec implements ProtocolCodecFactory
 	public ProtoBufCodec()
 	{
 		encoder = new ProtoBufEncoder();
-		decoder = new ProtoBufDecoder(Constants.MAX_MESSAGE_SIZE);
+		decoder = new ProtoBufDecoder();
 	}
 
 	@Override

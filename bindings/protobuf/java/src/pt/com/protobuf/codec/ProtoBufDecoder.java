@@ -18,6 +18,7 @@ import pt.com.protobuf.codec.PBMessage.Atom.Poll;
 import pt.com.protobuf.codec.PBMessage.Atom.Publish;
 import pt.com.protobuf.codec.PBMessage.Atom.Subscribe;
 import pt.com.protobuf.codec.PBMessage.Atom.Unsubscribe;
+import pt.com.types.Constants;
 import pt.com.types.NetAccepted;
 import pt.com.types.NetAcknowledgeMessage;
 import pt.com.types.NetAction;
@@ -38,9 +39,9 @@ public class ProtoBufDecoder extends SimpleFramingDecoderV2
 
 	private static final Logger log = LoggerFactory.getLogger(ProtoBufDecoder.class);
 
-	public ProtoBufDecoder(int max_message_size)
+	public ProtoBufDecoder()
 	{
-		super(max_message_size);
+		super(Constants.MAX_MESSAGE_SIZE);
 	}
 
 	@Override

@@ -4,17 +4,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
 
+import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.net.ProtocolHandler;
-import pt.com.protobuf.codec.ProtoBufDecoder;
-import pt.com.protobuf.codec.ProtoBufEncoder;
-import pt.com.thrift.codec.ThriftDecoder;
-import pt.com.thrift.codec.ThriftEncoder;
 import pt.com.types.NetAction;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
@@ -22,8 +17,6 @@ import pt.com.types.NetNotification;
 import pt.com.types.NetProtocolType;
 import pt.com.types.SimpleFramingDecoderV2;
 import pt.com.types.SimpleFramingEncoderV2;
-import pt.com.xml.codec.SoapDecoderV2;
-import pt.com.xml.codec.SoapEncoderV2;
 
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
@@ -33,10 +26,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	private final NetworkConnector _connector;
 
-	private final Map decoders = new HashMap();
-	private final Map encoders = new HashMap();
-
-	private static final int MAX_SIZE = 4 * 1024;
+	private SimpleFramingDecoderV2 decoder;
+	private SimpleFramingEncoderV2 encoder;
 
 	private short proto_type = 1;
 
@@ -46,31 +37,47 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 		_connector = new NetworkConnector(brokerClient.getHost(), brokerClient.getPort());
 
-		decoders.put((short) 0, new SoapDecoderV2(MAX_SIZE));
-		decoders.put((short) 1, new ProtoBufDecoder(MAX_SIZE));
-		decoders.put((short) 2, new ThriftDecoder(MAX_SIZE));
-
-		encoders.put((short) 0, new SoapEncoderV2());
-		encoders.put((short) 1, new ProtoBufEncoder());
-		encoders.put((short) 2, new ThriftEncoder());
-
-		if (ptype != null)
+		try
 		{
-			switch (ptype)
+
+			if (ptype != null)
 			{
-			case SOAP:
-				proto_type = 0;
-				break;
-			case PROTOCOL_BUFFER:
-				proto_type = 1;
-				break;
-			case THRIFT:
-				proto_type = 2;
-				break;
-			default:
-				proto_type = 1;
-				break;
+				switch (ptype)
+				{
+				case SOAP:
+					proto_type = 0;
+					decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.xml.codec.SoapDecoderV2").newInstance();
+					encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.xml.codec.SoapEncoderV2").newInstance();
+					break;
+				case PROTOCOL_BUFFER:
+					proto_type = 1;
+					decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufDecoder").newInstance();
+					encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufEncoder").newInstance();
+					break;
+				case THRIFT:
+					proto_type = 2;
+					decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.thrift.codec.ThriftDecoder").newInstance();
+					encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.thrift.codec.ThriftEncoder").newInstance();
+					break;
+				default:
+					proto_type = 1;
+					decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufDecoder").newInstance();
+					encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufEncoder").newInstance();
+					break;
+				}
 			}
+			else
+			{
+				proto_type = 1;
+				decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufDecoder").newInstance();
+				encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufEncoder").newInstance();
+			}
+
+		}
+		catch (Throwable t)
+		{
+			log.error("Put the binding implentation of your choice in the classpath and try again");
+			Shutdown.now();
 		}
 	}
 
@@ -165,8 +172,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		short protocolVersion = in.readShort();
 		int len = in.readInt();
 
-		SimpleFramingDecoderV2 decoder = (SimpleFramingDecoderV2) decoders.get(protocolType);
-
 		if (decoder == null)
 		{
 			throw new RuntimeException("Received message uses an unknown encoding");
@@ -185,7 +190,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		short protocolType = proto_type;
 		short protocolVersion = (short) 0;
 
-		SimpleFramingEncoderV2 encoder = (SimpleFramingEncoderV2) encoders.get(proto_type);
 		byte[] encodedMsg = encoder.processBody(message, protocolType, protocolType);
 
 		out.writeShort(protocolType);

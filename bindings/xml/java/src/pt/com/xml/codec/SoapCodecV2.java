@@ -5,8 +5,6 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
-import pt.com.types.Constants;
-
 public class SoapCodecV2 implements ProtocolCodecFactory
 {
 	public static final int HEADER_LENGTH = 4;
@@ -18,7 +16,7 @@ public class SoapCodecV2 implements ProtocolCodecFactory
 	public SoapCodecV2()
 	{
 		encoder = new SoapEncoderV2();
-		decoder = new SoapDecoderV2(Constants.MAX_MESSAGE_SIZE);
+		decoder = new SoapDecoderV2();
 	}
 
 	@Override
