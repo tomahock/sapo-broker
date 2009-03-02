@@ -10,13 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.net.ProtocolHandler;
+import pt.com.types.BindingSerializer;
 import pt.com.types.NetAction;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
 import pt.com.types.NetProtocolType;
-import pt.com.types.SimpleFramingDecoderV2;
-import pt.com.types.SimpleFramingEncoderV2;
 
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
@@ -26,8 +25,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	private final NetworkConnector _connector;
 
-	private SimpleFramingDecoderV2 decoder;
-	private SimpleFramingEncoderV2 encoder;
+	private BindingSerializer serializer;
 
 	private short proto_type = 1;
 
@@ -46,31 +44,26 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 				{
 				case SOAP:
 					proto_type = 0;
-					decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.xml.codec.SoapDecoderV2").newInstance();
-					encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.xml.codec.SoapEncoderV2").newInstance();
+					serializer = (BindingSerializer) Class.forName("pt.com.xml.codec.SoapBindingSerializer").newInstance();
 					break;
 				case PROTOCOL_BUFFER:
 					proto_type = 1;
-					decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufDecoder").newInstance();
-					encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufEncoder").newInstance();
+					serializer = (BindingSerializer) Class.forName("pt.com.protobuf.codec.ProtoBufBindingSerializer").newInstance();
 					break;
 				case THRIFT:
 					proto_type = 2;
-					decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.thrift.codec.ThriftDecoder").newInstance();
-					encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.thrift.codec.ThriftEncoder").newInstance();
+					serializer = (BindingSerializer) Class.forName("pt.com.thrift.codec.ThriftBindingSerializer").newInstance();
 					break;
 				default:
 					proto_type = 1;
-					decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufDecoder").newInstance();
-					encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufEncoder").newInstance();
+					serializer = (BindingSerializer) Class.forName("pt.com.protobuf.codec.ProtoBufBindingSerializer").newInstance();
 					break;
 				}
 			}
 			else
 			{
 				proto_type = 1;
-				decoder = (SimpleFramingDecoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufDecoder").newInstance();
-				encoder = (SimpleFramingEncoderV2) Class.forName("pt.com.protobuf.codec.ProtoBufEncoder").newInstance();
+				serializer = (BindingSerializer) Class.forName("pt.com.protobuf.codec.ProtoBufBindingSerializer").newInstance();
 			}
 
 		}
@@ -172,7 +165,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		short protocolVersion = in.readShort();
 		int len = in.readInt();
 
-		if (decoder == null)
+		if (serializer == null)
 		{
 			throw new RuntimeException("Received message uses an unknown encoding");
 		}
@@ -180,7 +173,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		byte[] data = new byte[len];
 		in.readFully(data);
 
-		NetMessage message = (NetMessage) decoder.processBody(data, protocolType, protocolVersion);
+		NetMessage message = (NetMessage) serializer.unmarshal(data);
 		return message;
 	}
 
@@ -190,7 +183,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		short protocolType = proto_type;
 		short protocolVersion = (short) 0;
 
-		byte[] encodedMsg = encoder.processBody(message, protocolType, protocolType);
+		byte[] encodedMsg = serializer.marshal(message);
 
 		out.writeShort(protocolType);
 		out.writeShort(protocolVersion);

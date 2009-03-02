@@ -25,8 +25,6 @@ public abstract class SimpleFramingEncoderV2 extends ProtocolEncoderAdapter
 		pout.write(wbuf);
 	}
 
-	public abstract byte[] processBody(Object message, Short protocolType, Short protocolVersion);
-
 	public abstract void processBody(Object message, IoBuffer wbuf, Short protocolType, Short protocolVersion);
 
 }
