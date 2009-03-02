@@ -6,11 +6,11 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class TopicMatcher
+public class DestinationMatcher
 {
-	private static Logger log = LoggerFactory.getLogger(TopicMatcher.class);
+	private static Logger log = LoggerFactory.getLogger(DestinationMatcher.class);
 
-	protected static boolean match(String subscriptionName, String topicName)
+	public static boolean match(String subscriptionName, String topicName)
 	{
 		try
 		{

@@ -72,7 +72,7 @@ class RemoteTopicConsumers
 				}
 				else
 				{
-					if (TopicMatcher.match(sname, topicName))
+					if (DestinationMatcher.match(sname, topicName))
 						matches.add(sname);
 				}
 			}
