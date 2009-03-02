@@ -1,40 +1,7 @@
 <?xml version="1.0"?>
 <xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://softwarelivre.sapo.pt/broker/securityPolicies" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bs="http://softwarelivre.sapo.pt/broker/securityPolicies">
 
-	<xs:complexType name="Condition">
-		<xs:sequence>			
-			<xs:element minOccurs="0" name="role" type="xs:string" />
-			<xs:element minOccurs="0" name="channel-type">
-				<xs:simpleType>
-				  <xs:restriction base="xs:string">
-					<xs:enumeration value="CONFIDENTIALITY"/>
-					<xs:enumeration value="INTEGRITY"/>
-					<xs:enumeration value="AUTHENTICITY"/>
-				  </xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element minOccurs="0" name="address">
-			  <xs:complexType>
-				<xs:simpleContent>
-				  <xs:extension base="xs:string">
-					<xs:attribute name="mask" type="xs:unsignedByte" use="optional" />
-				  </xs:extension>
-				</xs:simpleContent>
-			  </xs:complexType>
-			</xs:element>
-			<xs:element minOccurs="0" maxOccurs="unbounded" name="condition" type="bs:Condition" />
-		</xs:sequence>
-		<xs:attribute name="condition-type" use="required">
-			<xs:simpleType>
-				  <xs:restriction base="xs:string">
-					<xs:enumeration value="ROLE"/>
-					<xs:enumeration value="CHANNELTYPE"/>
-					<xs:enumeration value="ADDRESS"/>
-					<xs:enumeration value="AND"/>
-				  </xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-	</xs:complexType>
+
 	
 	<xs:simpleType name="Privilege">
 		<xs:restriction base="xs:string">
@@ -55,6 +22,40 @@
 		 <xs:enumeration value="DENY"/>
 	   </xs:restriction>
     </xs:simpleType>
+    <xs:simpleType name="ChannelType">
+	  <xs:restriction base="xs:string">
+		<xs:enumeration value="INTEGRITY"/>
+		<xs:enumeration value="CONFIDENTIALITY"/>
+		<xs:enumeration value="AUTHENTICATION"/>
+	  </xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ConditionType">
+	  <xs:restriction base="xs:string">
+		<xs:enumeration value="ROLE"/>
+		<xs:enumeration value="CHANNELTYPE"/>
+		<xs:enumeration value="ADDRESS"/>
+		<xs:enumeration value="AND"/>
+	  </xs:restriction>
+	</xs:simpleType>
+	
+	<xs:complexType name="Condition">
+		<xs:sequence>			
+			<xs:element minOccurs="0" name="role" type="xs:string" />
+			<xs:element minOccurs="0" name="channel-type" type="bs:ChannelType"/>
+			<xs:element minOccurs="0" name="address">
+			  <xs:complexType>
+				<xs:simpleContent>
+				  <xs:extension base="xs:string">
+					<xs:attribute name="mask" type="xs:unsignedByte" use="optional" />
+				  </xs:extension>
+				</xs:simpleContent>
+			  </xs:complexType>
+			</xs:element>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="condition" type="bs:Condition" />
+		</xs:sequence>
+		<xs:attribute name="condition-type" use="required" type="bs:ConditionType" />
+	</xs:complexType>
 	
 	<xs:complexType name="Policies">
 	  <xs:sequence>
@@ -76,7 +77,11 @@
 								</xs:simpleType>
 							</xs:attribute>
 							<xs:attribute name="destination" type="xs:string" use="required" />							
-							<xs:attribute name="privilege" use="required" type="bs:Privilege" />
+							<xs:attribute name="privilege" use="required">
+								<xs:simpleType>
+									<xs:list itemType="bs:Privilege" />
+								</xs:simpleType>
+							</xs:attribute>
 					  </xs:complexType>
 					</xs:element>
 				  </xs:sequence>
@@ -109,8 +114,8 @@
 	
 	<xs:complexType name="BrokerSecurityPolicy">
 	  <xs:sequence>
-		<xs:element name="policies" type="bs:Policies" />
-		<xs:element minOccurs="0" maxOccurs="unbounded" name="agents" type="bs:Agents" />
+		<xs:element minOccurs="0" maxOccurs="1" name="policies" type="bs:Policies" />
+		<xs:element minOccurs="0" maxOccurs="1" name="agents" type="bs:Agents" />
 	  </xs:sequence>
 	</xs:complexType>
 </xs:schema>
