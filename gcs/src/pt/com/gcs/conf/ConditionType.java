@@ -13,32 +13,36 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Privilege.
+ * <p>Java class for ConditionType.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="Privilege">
+ * &lt;simpleType name="ConditionType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="READ"/>
- *     &lt;enumeration value="WRITE"/>
+ *     &lt;enumeration value="ROLE"/>
+ *     &lt;enumeration value="CHANNELTYPE"/>
+ *     &lt;enumeration value="ADDRESS"/>
+ *     &lt;enumeration value="AND"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "Privilege")
+@XmlType(name = "ConditionType")
 @XmlEnum
-public enum Privilege {
+public enum ConditionType {
 
-    READ,
-    WRITE;
+    ROLE,
+    CHANNELTYPE,
+    ADDRESS,
+    AND;
 
     public String value() {
         return name();
     }
 
-    public static Privilege fromValue(String v) {
+    public static ConditionType fromValue(String v) {
         return valueOf(v);
     }
 
