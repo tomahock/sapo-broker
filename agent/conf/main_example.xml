@@ -12,9 +12,10 @@
 		-->
 		<discovery_delay>100</discovery_delay>
 		<file_ref>./conf/world_map.xml</file_ref>
-		<broker-port>3322</broker-port>
+		<broker-port>3323</broker-port>
+		<broker-legacy-port>3322</broker-legacy-port>
 		<broker-http-port>3380</broker-http-port>
-		<broker-udp-port>3366</broker-udp-port>
+		<broker-udp-port>3323</broker-udp-port>
 	</net>
 
 	<!-- Persistent storage configuration -->

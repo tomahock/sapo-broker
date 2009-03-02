@@ -50,8 +50,9 @@ public class Start
 		{
 			Gcs.init();
 
-			int bus_port = GcsInfo.getBrokerPort();
-			BrokerServer broker_srv = new BrokerServer(bus_port);
+			int broker_port = GcsInfo.getBrokerPort();
+			int broker_legacy_port = GcsInfo.getBrokerLegacyPort();
+			BrokerServer broker_srv = new BrokerServer(broker_port, broker_legacy_port);
 			broker_srv.start();
 
 			int http_port = GcsInfo.getBrokerHttpPort();

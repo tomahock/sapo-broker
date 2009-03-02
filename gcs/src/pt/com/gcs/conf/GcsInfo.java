@@ -133,6 +133,12 @@ public class GcsInfo
 		int iprop = instance.conf.getNet().getBrokerPort();
 		return iprop;
 	}
+	
+	public static int getBrokerLegacyPort()
+	{
+		int iprop = instance.conf.getNet().getBrokerLegacyPort();
+		return iprop;
+	}
 
 	public static boolean isDropboxEnabled()
 	{

@@ -13,6 +13,7 @@
 		<discovery_delay>100</discovery_delay>
 		<file_ref>@PATH_TO_WORLDMAP@</file_ref>
 		<broker-port>@BROKER_PORT@</broker-port>
+		<broker-legacy-port>@BROKER__LEGACY_PORT@</broker-legacy-port>
 		<broker-http-port>@HTTP_PORT@</broker-http-port>
 		<broker-udp-port>@UDP_PORT@</broker-udp-port>
 	</net>

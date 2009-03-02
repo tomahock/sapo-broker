@@ -26,13 +26,16 @@ public class BrokerServer
 
 	private int _portNumber;
 
+	private int _legacyPortNumber;
+
 	private static final int MAX_BUFFER_SIZE = 16 * 1024 * 1024;
 
 	private static final int NCPU = Runtime.getRuntime().availableProcessors();
 
-	public BrokerServer(int portNumber)
+	public BrokerServer(int portNumber, int legacyPortNumber)
 	{
 		_portNumber = portNumber;
+		_legacyPortNumber = legacyPortNumber;
 	}
 
 	public void start()
@@ -54,8 +57,8 @@ public class BrokerServer
 			acceptor0.setHandler(new BrokerProtocolHandler());
 
 			// Bind
-			acceptor0.bind(new InetSocketAddress(_portNumber));
-			log.info("SAPO-BROKER  Listening on: '{}'.", acceptor0.getLocalAddress());
+			acceptor0.bind(new InetSocketAddress(_legacyPortNumber));
+			log.info("SAPO-BROKER (legacy protocol)  Listening on: '{}'.", acceptor0.getLocalAddress());
 
 			final SocketAcceptor acceptor1 = new NioSocketAcceptor(NCPU);
 
@@ -71,7 +74,7 @@ public class BrokerServer
 			acceptor1.setHandler(new BrokerProtocolHandler());
 
 			// Bind
-			acceptor1.bind(new InetSocketAddress(_portNumber + 1));
+			acceptor1.bind(new InetSocketAddress(_portNumber));
 			log.info("SAPO-BROKER Listening on: '{}'.", acceptor1.getLocalAddress());
 
 		}
