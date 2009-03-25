@@ -4,6 +4,7 @@ option java_package = "pt.com.protobuf.codec";
 option java_outer_classname = "PBMessage";
 option optimize_for = SPEED;
 
+
 message Atom
 {	
 	enum DestinationType
@@ -71,7 +72,10 @@ message Atom
 		required string destination = 2;
 		required DestinationType destination_type = 3;
 	}
+
+
 	
+
 	message Notification
 	{
 		required string destination = 1;
@@ -103,33 +107,34 @@ message Atom
 		message ClientAuth
 		{
 			optional string authentication_type = 1;
-			required string localCommunicationId = 2;
+			required string local_communication_id = 2;
 			required bytes token = 3;
 			optional string user_id = 4;
 			repeated string role = 5; 			
 		}
 		message ServerChallenge
 		{
-			required string communicationId = 1;			
+			required string communication_id = 1;			
 			required bytes challenge = 2;
 			required bytes secret = 3;
-			required string localCommunicationId = 4;		
+			required string local_communication_id = 4;		
 			optional string secret_type = 5;
 		}		
 		message ServerChallengeResponseClientChallenge
 		{
-			required string communicationId = 1;			
-			required bytes protectedChallenges = 2;
+			required string communication_id = 1;			
+			required bytes protected_challenges = 2;
 		}		
 		message ClientChallengeResponse
 		{
-			required string communicationId = 1;
+			required string communication_id = 1;
 			required bytes challenge = 2;
 		}		
 		message ClientAcknowledge
 		{
-			required string communicationId = 1;
+			required string communication_id = 1;
 		}
+
 
 		enum AuthMessageType {
 			CLIENT_AUTH = 0;
@@ -141,17 +146,18 @@ message Atom
 
 		required AuthMessageType authMsgType = 1;
 
-		optional ClientAuth clientAuth = 2;
-		optional ServerChallenge serverChallenge = 3;
-		optional ServerChallengeResponseClientChallenge  serverChallengeResponseClientChallenge = 4;
-		optional ClientChallengeResponse clientChallengeResponse = 5;
-		optional ClientAcknowledge clientAcknowledge = 6;
+		optional ClientAuth client_auth = 2;
+		optional ServerChallenge server_challenge = 3;
+		optional ServerChallengeResponseClientChallenge  server_challenge_response_client_challenge = 4;
+		optional ClientChallengeResponse client_challenge_response = 5;
+		optional ClientAcknowledge client_acknowledge = 6;
 	}
 	
 	 	
 	message Action
 	{
-		enum ActionType{
+		enum ActionType
+		{
 			PUBLISH = 0;
 			POLL = 1;
 			ACCEPTED = 2;
@@ -175,8 +181,7 @@ message Atom
 		optional Fault fault = 8;
 		optional Ping ping = 9;
 		optional Pong pong = 10;
-		optional Authentication auth = 11;
-		
+		optional Authentication auth = 11;		
 		required ActionType action_type = 12;
 	}
 	
