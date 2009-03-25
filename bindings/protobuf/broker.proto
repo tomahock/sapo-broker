@@ -97,6 +97,56 @@ message Atom
 	{
 		required int64 timestamp = 1;
 	}
+
+	message Authentication
+	{
+		message ClientAuth
+		{
+			optional string authentication_type = 1;
+			required string localCommunicationId = 2;
+			required bytes token = 3;
+			optional string user_id = 4;
+			repeated string role = 5; 			
+		}
+		message ServerChallenge
+		{
+			required string communicationId = 1;			
+			required bytes challenge = 2;
+			required bytes secret = 3;
+			required string localCommunicationId = 4;		
+			optional string secret_type = 5;
+		}		
+		message ServerChallengeResponseClientChallenge
+		{
+			required string communicationId = 1;			
+			required bytes protectedChallenges = 2;
+		}		
+		message ClientChallengeResponse
+		{
+			required string communicationId = 1;
+			required bytes challenge = 2;
+		}		
+		message ClientAcknowledge
+		{
+			required string communicationId = 1;
+		}
+
+		enum AuthMessageType {
+			CLIENT_AUTH = 0;
+			SERVER_CHALLENGE = 1;
+			SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE = 2;
+			CLIENT_CHALLENGE_RESPONSE = 3;
+			CLIENT_ACKNOWLEDGE = 4;
+		}
+
+		required AuthMessageType authMsgType = 1;
+
+		optional ClientAuth clientAuth = 2;
+		optional ServerChallenge serverChallenge = 3;
+		optional ServerChallengeResponseClientChallenge  serverChallengeResponseClientChallenge = 4;
+		optional ClientChallengeResponse clientChallengeResponse = 5;
+		optional ClientAcknowledge clientAcknowledge = 6;
+	}
 	
 	 	
 	message Action
@@ -112,6 +162,7 @@ message Atom
 			FAULT = 7;
 			PING = 8;
 			PONG = 9;
+			AUTH = 10;
 		}
 				
 		optional Publish publish = 1;
@@ -124,8 +175,9 @@ message Atom
 		optional Fault fault = 8;
 		optional Ping ping = 9;
 		optional Pong pong = 10;
+		optional Authentication auth = 11;
 		
-		required ActionType action_type = 11;
+		required ActionType action_type = 12;
 	}
 	
 
