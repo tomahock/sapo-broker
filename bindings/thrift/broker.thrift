@@ -19,6 +19,16 @@ enum ActionType
 	FAULT = 7;
 	PING = 8;
 	PONG = 9;
+	AUTH = 10;
+}
+
+enum AuthMessageType
+{
+	CLIENT_AUTH = 0;
+	SERVER_CHALLENGE = 1;
+	SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE = 2;
+	CLIENT_CHALLENGE_RESPONSE = 3;
+	CLIENT_ACKNOWLEDGE = 4;
 }
 
 struct Header
@@ -98,8 +108,53 @@ struct Ping
 struct Pong
 {
 	1: i64 timestamp;
-}	
- 	
+}
+
+struct ClientAuth
+{
+	1: optional string authentication_type;
+	2: string local_communication_id;
+	3: binary token;
+	4: optional string user_id;
+	5: list<string> role;		
+}
+
+struct ServerChallenge
+{
+	1: string communication_id;		
+	2: binary challenge;
+	3: binary secret;
+	4: string local_communication_id;		
+	5: optional string secret_type;
+}
+		
+struct ServerChallengeResponseClientChallenge
+{
+	1: string communication_id;			
+	2: binary protected_challenges;
+}
+		
+struct ClientChallengeResponse
+{
+	1: string communication_id;
+	2: binary challenge;
+}
+		
+struct ClientAcknowledge
+{
+	1: string communication_id;
+}
+
+struct Authentication
+{
+	1: AuthMessageType auth_msg_type;
+	2: optional ClientAuth client_auth;
+	3: optional ServerChallenge server_challenge;
+	4: optional ServerChallengeResponseClientChallenge  serverChallengeResponseClientChallenge;
+	5: optional ClientChallengeResponse clientChallengeResponse;
+	6: optional ClientAcknowledge client_acknowledge;
+}
+	
 struct Action
 {				
 	1: optional Publish publish;
@@ -111,8 +166,10 @@ struct Action
 	7: optional Notification notification;
 	8: optional Fault fault;
 	9: optional Ping ping;
-	10: optional Pong pong;		
-	11: ActionType action_type;
+	10: optional Pong pong;
+	11: optional Authentication auth;		
+	12: ActionType action_type;
+
 }
 
 struct ThriftMessage
