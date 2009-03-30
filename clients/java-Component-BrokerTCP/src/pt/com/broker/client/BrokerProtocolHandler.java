@@ -10,8 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.net.ProtocolHandler;
+import pt.com.common.security.ClientAuthInfo;
+import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
 import pt.com.types.BindingSerializer;
 import pt.com.types.NetAction;
+import pt.com.types.NetAuthentication;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
@@ -24,16 +27,25 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	private final BrokerClient _brokerClient;
 
 	private final NetworkConnector _connector;
+	private final SslNetworkConnector _sslConnector;
 
 	private BindingSerializer serializer;
 
 	private short proto_type = 1;
 
-	public BrokerProtocolHandler(BrokerClient brokerClient, NetProtocolType ptype) throws UnknownHostException, IOException
+	private ClientAuthInfo userCredentials;
+	private ClientAuthInfo providerCredentials;
+	private AuthenticationCredentialsProvider authProvider;
+
+	public BrokerProtocolHandler(BrokerClient brokerClient, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws UnknownHostException, IOException
 	{
 		_brokerClient = brokerClient;
 
 		_connector = new NetworkConnector(brokerClient.getHost(), brokerClient.getPort());
+		if (brokerClient.getSslPort() != 0)
+			_sslConnector = new SslNetworkConnector(brokerClient.getHost(), brokerClient.getSslPort(), keystoreLocation, keystorePw);
+		else
+			_sslConnector = null;
 
 		try
 		{
@@ -74,15 +86,26 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		}
 	}
 
+	public BrokerProtocolHandler(BrokerClient brokerClient, String keystoreLocation, char[] keystorePw) throws UnknownHostException, IOException
+	{
+		this(brokerClient, null, keystoreLocation, keystorePw);
+	}
+	
 	public BrokerProtocolHandler(BrokerClient brokerClient) throws UnknownHostException, IOException
 	{
-		this(brokerClient, null);
-	}
+		this(brokerClient, null, null, null);
+	} 
 
 	@Override
 	public NetworkConnector getConnector()
 	{
 		return _connector;
+	}
+
+	@Override
+	public SslNetworkConnector getSslConnector()
+	{
+		return _sslConnector;
 	}
 
 	@Override
@@ -152,6 +175,10 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			// TODO: handle ACK
 			// Accepted accepted = request.body.accepted;
 			break;
+		case AUTH:
+			NetAuthentication auth = action.getAuthorizationMessage();
+			ClientBrokerProtocolHandlerAuthenticationHelper.handleAuthMessage(this, auth);
+			break;
 		default:
 			throw new RuntimeException("Unexepected ActionType in received message. ActionType: " + action.getActionType());
 
@@ -191,4 +218,19 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 		out.write(encodedMsg);
 	}
+
+	public void setCredentials(ClientAuthInfo userCredentials, ClientAuthInfo providerCredentials, AuthenticationCredentialsProvider authProvider)
+	{
+		this.userCredentials = userCredentials;
+		this.providerCredentials = providerCredentials;
+		this.authProvider = authProvider;
+		
+		//TODO: Resolve the credentials renovation issue
+	}
+
+	public BrokerClient getBrokerClient()
+	{
+		return _brokerClient;
+	}
+
 }

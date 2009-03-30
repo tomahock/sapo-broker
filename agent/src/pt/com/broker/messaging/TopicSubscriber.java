@@ -1,5 +1,6 @@
 package pt.com.broker.messaging;
 
+import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 

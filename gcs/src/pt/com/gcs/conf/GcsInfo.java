@@ -107,12 +107,15 @@ public class GcsInfo
 			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf");
 			Unmarshaller u = jc.createUnmarshaller();
 
-			conf = (Config) u.unmarshal(new File(filePath));
+			File f = new File(filePath);
+			boolean b = f.exists();
+			conf = (Config) u.unmarshal(f);
 		}
 		catch (JAXBException e)
 		{
+			// Throwable t = ErrorAnalyser.findRootCause(e);
 			log.error("Fatal error: {}", e.getMessage());
-			Shutdown.now();
+			Shutdown.now(e);
 		}
 	}
 
@@ -133,7 +136,13 @@ public class GcsInfo
 		int iprop = instance.conf.getNet().getBrokerPort();
 		return iprop;
 	}
-	
+
+	public static int getBrokerSSLPort()
+	{
+		int sslPort = instance.conf.getNet().getBrokerSslPort();
+		return sslPort;
+	}
+
 	public static int getBrokerLegacyPort()
 	{
 		int iprop = instance.conf.getNet().getBrokerLegacyPort();
@@ -154,10 +163,54 @@ public class GcsInfo
 	{
 		return instance.conf.getMessaging().getDropbox().getCheckInterval();
 	}
-	
+
 	public static BrokerSecurityPolicy getSecurityPolicy()
 	{
 		return instance.conf.getSecurityPolicies();
 	}
+	
+	// SSL related properties
+	
+	public static String getKeystoreLocation()
+	{
+		if( instance.conf.ssl != null)
+			return instance.conf.ssl.getKeystoreLocation();
+		return null;
+	}
 
+	public static String getKeystorePassword()
+	{
+		if( instance.conf.ssl != null)
+			return instance.conf.ssl.getKeystorePassword();
+		return null;
+	}
+	
+	public static String getKeyPassword()
+	{
+		if( instance.conf.ssl != null)
+			return instance.conf.ssl.getKeyPassword();
+		return null;
+	}
+	
+	// STS related properties
+	
+	public static String getSTSLocation()
+	{
+		if( instance.conf.sts != null)
+			return instance.conf.sts.getSTSLocation();
+		return null;
+	}
+	public static String getSTSUsername()
+	{
+		if( instance.conf.sts != null)
+			return instance.conf.sts.getSTSUsername();
+		return null;
+	}
+	public static String getSTSPassword()
+	{
+		if( instance.conf.sts != null)
+			return instance.conf.sts.getSTSPassword();
+		return null;
+	}
+	
 }

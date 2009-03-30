@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://softwarelivre.sapo.pt/broker/securityPolicies" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bs="http://softwarelivre.sapo.pt/broker/securityPolicies">
-
-
-	
 	<xs:simpleType name="Privilege">
 		<xs:restriction base="xs:string">
 		 <xs:enumeration value="READ"/>
@@ -35,6 +32,7 @@
 		<xs:enumeration value="ROLE"/>
 		<xs:enumeration value="CHANNELTYPE"/>
 		<xs:enumeration value="ADDRESS"/>
+		<xs:enumeration value="ALWAYS"/>
 		<xs:enumeration value="AND"/>
 	  </xs:restriction>
 	</xs:simpleType>

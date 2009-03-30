@@ -5,7 +5,7 @@ public final class NetAction
 
 	public enum ActionType
 	{
-		PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE_MESSAGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG
+		PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE_MESSAGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH
 	};
 
 	public enum DestinationType
@@ -25,6 +25,7 @@ public final class NetAction
 	private NetFault faultMessage;
 	private NetPing pingMessage;
 	private NetPong pongMessage;
+	private NetAuthentication authorizationMessage;
 
 	public NetAction(ActionType actionType)
 	{
@@ -134,5 +135,13 @@ public final class NetAction
 	public NetPong getPongMessage()
 	{
 		return pongMessage;
+	}
+
+	public void setAuthenticationMessage(NetAuthentication authorizationMessage) {
+		this.authorizationMessage = authorizationMessage;
+	}
+
+	public NetAuthentication getAuthorizationMessage() {
+		return authorizationMessage;
 	}
 }

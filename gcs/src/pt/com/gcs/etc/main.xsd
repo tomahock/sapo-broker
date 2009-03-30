@@ -19,6 +19,7 @@
 							<xs:element name="broker-legacy-port" type="xs:int" />
 							<xs:element name="broker-http-port" type="xs:int" />
 							<xs:element name="broker-udp-port" type="xs:int" />
+							<xs:element name="broker-ssl-port" type="xs:int" />
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -57,7 +58,26 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-					
+				
+				<xs:element minOccurs="0" maxOccurs="1" name="ssl">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="keystoreLocation" type="xs:string" />
+							<xs:element name="keystorePassword" type="xs:string" />
+							<xs:element name="keyPassword" type="xs:string" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="1" name="sts">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="STSLocation" type="xs:string" />
+							<xs:element name="STSUsername" type="xs:string" />
+							<xs:element name="STSPassword" type="xs:string" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>				
+
 				<xs:element minOccurs="0" maxOccurs="1" name="securityPolicies" type="bs:BrokerSecurityPolicy" />
 				
 			</xs:sequence>

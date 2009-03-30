@@ -14,8 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.security.SecureSessionContainer;
+import pt.com.broker.security.SecureSessionInfo;
+import pt.com.common.security.ClientAuthInfo;
+import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
 import pt.com.types.NetAcknowledgeMessage;
 import pt.com.types.NetAction;
+import pt.com.types.NetAuthentication;
 import pt.com.types.NetBrokerMessage;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
@@ -28,6 +33,7 @@ import pt.com.types.NetSubscribe;
 import pt.com.types.NetUnsubscribe;
 import pt.com.types.NetAction.ActionType;
 import pt.com.types.NetAction.DestinationType;
+import pt.com.types.NetAuthentication.AuthMessageType;
 
 public class BrokerClient
 {
@@ -39,26 +45,113 @@ public class BrokerClient
 	private BrokerProtocolHandler _netHandler;
 	private final String _host;
 	private final int _portNumber;
+	private int _sslPortNumber;
+
+	private AuthenticationCredentialsProvider authProvider;
+	private ClientAuthInfo userCredentials;
+	private ClientAuthInfo providerCredentials;
+
+	private SecureSessionInfo secureSessionInfo;
 
 	private final Object mutex = new Object();
 
+	public BrokerClient(String host, int portNumber, int sslPortNumber) throws Throwable
+	{
+		this(host, portNumber, sslPortNumber, "brokerClient");
+	}
+
 	public BrokerClient(String host, int portNumber) throws Throwable
 	{
-		this(host, portNumber, "brokerClient");
+		this(host, portNumber, 0, "brokerClient");
+	}
+
+	public BrokerClient(String host, int portNumber, int sslPortNumber, String appName) throws Throwable
+	{
+		this(host, portNumber, sslPortNumber, appName, NetProtocolType.PROTOCOL_BUFFER, null, null);
 	}
 
 	public BrokerClient(String host, int portNumber, String appName) throws Throwable
 	{
-		this(host, portNumber, appName, NetProtocolType.PROTOCOL_BUFFER);
+		this(host, portNumber, 0, appName, NetProtocolType.PROTOCOL_BUFFER, null, null);
+	}
+
+	public BrokerClient(String host, int portNumber, int sslPortNumber, String appName, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws Throwable
+	{
+		_host = host;
+		_portNumber = portNumber;
+		_sslPortNumber = sslPortNumber;
+		_appName = appName;
+		_netHandler = new BrokerProtocolHandler(this, ptype, keystoreLocation, keystorePw);
+		_netHandler.start();
 	}
 
 	public BrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
 	{
-		_host = host;
-		_portNumber = portNumber;
-		_appName = appName;
-		_netHandler = new BrokerProtocolHandler(this, ptype);
-		_netHandler.start();
+		this(host, portNumber, 0, null, null, null, null);
+	}
+
+	public void setAuthenticationCredentials(AuthenticationCredentialsProvider authProvider, ClientAuthInfo userCredentials) throws Exception
+	{
+		synchronized (mutex)
+		{
+			this.authProvider = authProvider;
+			this.userCredentials = userCredentials;
+			obtainCredentials();
+		}
+	}
+
+	public void obtainCredentials() throws Exception
+	{
+		synchronized (mutex)
+		{
+			if (authProvider == null)
+				return;
+			if (userCredentials == null)
+				return;
+			providerCredentials = authProvider.getCredentials(userCredentials);
+			if (providerCredentials != null)
+			{
+				_netHandler.setCredentials(userCredentials, providerCredentials, authProvider);
+			}
+		}
+	}
+
+	public void authenticateClient() throws Throwable
+	{
+		if (providerCredentials == null)
+			return;
+
+		String localCommId = SecureSessionContainer.getLocalCommunicationId();
+		System.out.println("Local comm id: "+ localCommId);
+		NetAuthentication.AuthClientAuthentication clientAuth = new NetAuthentication.AuthClientAuthentication(providerCredentials.getToken(), localCommId);
+		if (providerCredentials.getRoles() != null && providerCredentials.getRoles().size() != 0)
+			clientAuth.setRoles(providerCredentials.getRoles());
+
+		if (providerCredentials.getUserAuthenticationType() != null)
+			clientAuth.setAuthenticationType(providerCredentials.getUserAuthenticationType());
+
+		if (providerCredentials.getUserId() != null)
+			clientAuth.setUserId(providerCredentials.getUserId());
+
+		NetAuthentication netAuth = new NetAuthentication(AuthMessageType.CLIENT_AUTH);
+		netAuth.setAuthClientAuthentication(clientAuth);
+
+		NetAction action = new NetAction(ActionType.AUTH);
+		action.setAuthenticationMessage(netAuth);
+
+		NetMessage msg = new NetMessage(action);
+
+		SecureSessionInfo ssi = new SecureSessionInfo();
+		ssi.setLocalCommunicationId(localCommId);
+		ssi.setAuthProvider(authProvider);
+		ssi.setUserCredentials(userCredentials);
+		ssi.setProviderCredentials(providerCredentials);
+		ssi.setBrokerProtocolHandler(_netHandler);
+		ssi.setExpectedMessageType(AuthMessageType.SERVER_CHALLENGE);
+
+		SecureSessionContainer.addInitializingSecureSessionInfo(ssi);
+
+		_netHandler.sendMessageOverSsl(msg);
 	}
 
 	public void acknowledge(NetNotification notification) throws Throwable
@@ -81,7 +174,7 @@ public class BrokerClient
 		}
 	}
 
-	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener) throws Throwable
+	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener, boolean useSsl) throws Throwable
 	{
 		if ((subscribe != null) && (StringUtils.isNotBlank(subscribe.getDestination())))
 		{
@@ -102,8 +195,15 @@ public class BrokerClient
 
 			NetMessage msg = buildMessage(action, netAction);
 
-			_netHandler.sendMessage(msg);
-
+			if (useSsl)
+			{
+				_netHandler.sendMessageOverSsl(msg);
+			}
+			else
+			{
+				_netHandler.sendMessage(msg);
+			}
+			
 			_consumerList.add(new BrokerAsyncConsumer(subscribe, listener));
 			log.info("Created new async consumer for '{}'", subscribe.getDestination());
 		}
@@ -111,6 +211,11 @@ public class BrokerClient
 		{
 			throw new IllegalArgumentException("Mal-formed Notification request");
 		}
+	}
+
+	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener) throws Throwable
+	{
+		addAsyncConsumer(subscribe, listener, false);
 	}
 
 	protected void sendSubscriptions() throws Throwable
@@ -130,7 +235,7 @@ public class BrokerClient
 		}
 	}
 
-	public NetMessage buildMessage(String actionDest, NetAction action)
+	private NetMessage buildMessage(String actionDest, NetAction action)
 	{
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("ACTION", actionDest);
@@ -180,7 +285,7 @@ public class BrokerClient
 		_netHandler.stop();
 	}
 
-	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName)
+	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName, boolean useSsl)
 	{
 
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destinationName)))
@@ -194,7 +299,10 @@ public class BrokerClient
 
 			try
 			{
-				_netHandler.sendMessage(msg);
+				if (useSsl)
+					_netHandler.sendMessageOverSsl(msg);
+				else
+					_netHandler.sendMessage(msg);
 			}
 			catch (Throwable t)
 			{
@@ -206,6 +314,11 @@ public class BrokerClient
 		{
 			throw new IllegalArgumentException("Mal-formed Enqueue request");
 		}
+	}
+
+	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName)
+	{
+		enqueueMessage(brokerMessage, destinationName, false);
 	}
 
 	protected void feedStatusConsumer(NetPong pong) throws Throwable
@@ -221,6 +334,11 @@ public class BrokerClient
 	public int getPort()
 	{
 		return _portNumber;
+	}
+
+	public int getSslPort()
+	{
+		return _sslPortNumber;
 	}
 
 	protected void notifyListener(NetNotification notification)
@@ -245,7 +363,7 @@ public class BrokerClient
 		}
 	}
 
-	public NetNotification poll(String queueName) throws Throwable
+	public NetNotification poll(String queueName, boolean useSsl) throws Throwable
 	{
 		if (StringUtils.isNotBlank(queueName))
 		{
@@ -258,7 +376,10 @@ public class BrokerClient
 			SyncConsumer sc = SyncConsumerList.get(queueName);
 			sc.increment();
 
-			_netHandler.sendMessage(message);
+			if (useSsl)
+				_netHandler.sendMessageOverSsl(message);
+			else
+				_netHandler.sendMessage(message);
 
 			NetNotification m = sc.take();
 			return m;
@@ -268,8 +389,13 @@ public class BrokerClient
 			throw new IllegalArgumentException("Mal-formed Poll request");
 		}
 	}
+	
+	public NetNotification poll(String queueName) throws Throwable
+	{
+		return poll(queueName, false);
+	}
 
-	public void publishMessage(NetBrokerMessage brokerMessage, String destination)
+	public void publishMessage(NetBrokerMessage brokerMessage, String destination, boolean useSsl)
 	{
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination)))
 		{
@@ -281,7 +407,10 @@ public class BrokerClient
 
 			try
 			{
-				_netHandler.sendMessage(msg);
+				if (useSsl)
+					_netHandler.sendMessageOverSsl(msg);
+				else
+					_netHandler.sendMessage(msg);
 			}
 			catch (Throwable e)
 			{
@@ -294,8 +423,12 @@ public class BrokerClient
 			throw new IllegalArgumentException("Mal-formed Publish request");
 		}
 	}
+	public void publishMessage(NetBrokerMessage brokerMessage, String destination)
+	{
+		publishMessage(brokerMessage, destination, false);
+	}
 
-	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName) throws Throwable
+	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName, boolean useSsl) throws Throwable
 	{
 		if ((StringUtils.isNotBlank(destinationName)) && (destinationType != null))
 		{
@@ -305,7 +438,10 @@ public class BrokerClient
 
 			NetMessage message = buildMessage("http://services.sapo.pt/broker/unsubscribe", action);
 
-			_netHandler.sendMessage(message);
+			if (useSsl)
+				_netHandler.sendMessageOverSsl(message);
+			else
+				_netHandler.sendMessage(message);
 
 			for (BrokerAsyncConsumer bac : _consumerList)
 			{
@@ -319,6 +455,21 @@ public class BrokerClient
 		{
 			throw new IllegalArgumentException("Mal-formed Unsubscribe request");
 		}
+	}
+
+	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName) throws Throwable
+	{
+		unsubscribe(destinationType, destinationName, false);
+	}
+	
+	public void setSecureSessionInfo(SecureSessionInfo secureSessionInfo)
+	{
+		this.secureSessionInfo = secureSessionInfo;
+	}
+
+	public SecureSessionInfo getSecureSessionInfo()
+	{
+		return secureSessionInfo;
 	}
 
 	// public static void saveToDropbox(String dropboxPath, BrokerMessage

@@ -61,7 +61,7 @@ public class Producer
 
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-			Sleep.time(1000);
+			Sleep.time(4000);
 		}
 	}
 }

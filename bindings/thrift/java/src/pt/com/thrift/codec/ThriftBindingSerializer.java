@@ -28,6 +28,7 @@ import pt.com.types.BindingSerializer;
 import pt.com.types.NetAccepted;
 import pt.com.types.NetAcknowledgeMessage;
 import pt.com.types.NetAction;
+import pt.com.types.NetAuthentication;
 import pt.com.types.NetBrokerMessage;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
@@ -44,17 +45,16 @@ public class ThriftBindingSerializer implements BindingSerializer
 	private static final Logger log = LoggerFactory.getLogger(ThriftBindingSerializer.class);
 
 	@Override
-	public byte[] marshal(NetMessage message)
+	public byte[] marshal(NetMessage netMessage)
 	{
 		byte[] result = null;
-		NetMessage gcsMessage = (NetMessage) message;
 
 		try
 		{
 
 			ThriftMessage tm = new ThriftMessage();
-			Header header = getHeaders(gcsMessage);
-			Action ac = getAction(gcsMessage);
+			Header header = getHeaders(netMessage);
+			Action ac = getAction(netMessage);
 
 			if (header != null)
 				tm.setHeader(header);
@@ -151,29 +151,11 @@ public class ThriftBindingSerializer implements BindingSerializer
 		case PONG:
 			netAction.setPongMessage(extractPongMessage(action));
 			break;
+		case AUTH:
+			netAction.setAuthenticationMessage(extractAuthenticationMessage(action));
 
 		}
 		return netAction;
-	}
-
-	private NetPing extractPingMessage(Action action)
-	{
-		// TODO: Verify if it's valid. Throw check exception if not
-		Ping ping = action.getPing();
-
-		NetPing netPing = new NetPing(ping.getTimestamp());
-
-		return netPing;
-	}
-
-	private NetPong extractPongMessage(Action action)
-	{
-		// TODO: Verify if it's valid. Throw check exception if not
-		Pong pong = action.getPong();
-
-		NetPong netPong = new NetPong(pong.getTimestamp());
-
-		return netPong;
 	}
 
 	private NetBrokerMessage obtainBrokerMessage(BrokerMessage message)
@@ -345,59 +327,87 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return cgsUnsubs;
 	}
 
-	private Action getAction(NetMessage gcsMessage)
+	private NetPing extractPingMessage(Action action)
+	{
+		// TODO: Verify if it's valid. Throw check exception if not
+		Ping ping = action.getPing();
+
+		NetPing netPing = new NetPing(ping.getTimestamp());
+
+		return netPing;
+	}
+
+	private NetPong extractPongMessage(Action action)
+	{
+		// TODO: Verify if it's valid. Throw check exception if not
+		Pong pong = action.getPong();
+
+		NetPong netPong = new NetPong(pong.getTimestamp());
+
+		return netPong;
+	}
+	
+	private NetAuthentication extractAuthenticationMessage(Action action) {
+		//TODO: Implement this
+		throw new RuntimeException("Implement ThriftBindingSerializer.extractAuthenticationMessage");
+	}
+
+	private Action getAction(NetMessage netMessage)
 	{
 		Action ac = new Action();
 
-		switch (gcsMessage.getAction().getActionType())
+		switch (netMessage.getAction().getActionType())
 		{
 		case ACCEPTED:
 			ac.setAction_type(ActionType.ACCEPTED);
-			ac.setAccepted(getAccepted(gcsMessage));
+			ac.setAccepted(getAccepted(netMessage));
 			break;
 		case ACKNOWLEDGE_MESSAGE:
 			ac.setAction_type(ActionType.ACKNOWLEDGE_MESSAGE);
-			ac.setAck_message(getAcknowledge(gcsMessage));
+			ac.setAck_message(getAcknowledge(netMessage));
 			break;
 		case FAULT:
 			ac.setAction_type(ActionType.FAULT);
-			ac.setFault(getFault(gcsMessage));
+			ac.setFault(getFault(netMessage));
 			break;
 		case NOTIFICATION:
 			ac.setAction_type(ActionType.NOTIFICATION);
-			ac.setNotification(getNotification(gcsMessage));
+			ac.setNotification(getNotification(netMessage));
 			break;
 		case POLL:
 			ac.setAction_type(ActionType.POLL);
-			ac.setPoll(getPool(gcsMessage));
+			ac.setPoll(getPool(netMessage));
 			break;
 		case PUBLISH:
 			ac.setAction_type(ActionType.PUBLISH);
-			ac.setPublish(getPublish(gcsMessage));
+			ac.setPublish(getPublish(netMessage));
 			break;
 		case SUBSCRIBE:
 			ac.setAction_type(ActionType.SUBSCRIBE);
-			ac.setSubscribe(getSubscribe(gcsMessage));
+			ac.setSubscribe(getSubscribe(netMessage));
 			break;
 		case UNSUBSCRIBE:
 			ac.setAction_type(ActionType.UNSUBSCRIBE);
-			ac.setUnsubscribe(getUnsubscribe(gcsMessage));
+			ac.setUnsubscribe(getUnsubscribe(netMessage));
 			break;
 		case PING:
 			ac.setAction_type(ActionType.PING);
-			ac.setPing(getPing(gcsMessage));
+			ac.setPing(getPing(netMessage));
 			break;
 		case PONG:
 			ac.setAction_type(ActionType.PONG);
-			ac.setPong(getPong(gcsMessage));
+			ac.setPong(getPong(netMessage));
 			break;
+		case AUTH:
+			//TODO: Implement this
+			throw new RuntimeException("Implement ThriftBindingSerializer.getAction case AUTH");
 		}
 		return ac;
 	}
 
-	private Ping getPing(NetMessage gcsMessage)
+	private Ping getPing(NetMessage netMessage)
 	{
-		NetPing gcsPing = gcsMessage.getAction().getPingMessage();
+		NetPing gcsPing = netMessage.getAction().getPingMessage();
 
 		Ping struct = new Ping();
 		struct.setTimestamp(gcsPing.getTimestamp());
@@ -405,9 +415,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Pong getPong(NetMessage gcsMessage)
+	private Pong getPong(NetMessage netMessage)
 	{
-		NetPong gcsPong = gcsMessage.getAction().getPongMessage();
+		NetPong gcsPong = netMessage.getAction().getPongMessage();
 
 		Pong struct = new Pong();
 		struct.setTimestamp(gcsPong.getTimestamp());
@@ -415,17 +425,17 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Accepted getAccepted(NetMessage gcsMessage)
+	private Accepted getAccepted(NetMessage netMessage)
 	{
-		NetAccepted gcsAccepted = gcsMessage.getAction().getAcceptedMessage();
+		NetAccepted gcsAccepted = netMessage.getAction().getAcceptedMessage();
 		Accepted struct = new Accepted();
 		struct.setAction_id((gcsAccepted.getActionId()));
 		return struct;
 	}
 
-	private AcknowledgeMessage getAcknowledge(NetMessage gcsMessage)
+	private AcknowledgeMessage getAcknowledge(NetMessage netMessage)
 	{
-		NetAcknowledgeMessage net = gcsMessage.getAction().getAcknowledgeMessage();
+		NetAcknowledgeMessage net = netMessage.getAction().getAcknowledgeMessage();
 
 		AcknowledgeMessage struct = new AcknowledgeMessage();
 
@@ -437,9 +447,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Fault getFault(NetMessage gcsMessage)
+	private Fault getFault(NetMessage netMessage)
 	{
-		NetFault net = gcsMessage.getAction().getFaultMessage();
+		NetFault net = netMessage.getAction().getFaultMessage();
 
 		Fault struct = new Fault();
 
@@ -454,9 +464,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Notification getNotification(NetMessage gcsMessage)
+	private Notification getNotification(NetMessage netMessage)
 	{
-		NetNotification net = gcsMessage.getAction().getNotificationMessage();
+		NetNotification net = netMessage.getAction().getNotificationMessage();
 
 		String subs = net.getSubscription();
 		if (subs == null)
@@ -471,9 +481,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Poll getPool(NetMessage gcsMessage)
+	private Poll getPool(NetMessage netMessage)
 	{
-		NetPoll net = gcsMessage.getAction().getPollMessage();
+		NetPoll net = netMessage.getAction().getPollMessage();
 
 		Poll struct = new Poll();
 		struct.setDestination(net.getDestination());
@@ -484,9 +494,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Publish getPublish(NetMessage gcsMessage)
+	private Publish getPublish(NetMessage netMessage)
 	{
-		NetPublish net = gcsMessage.getAction().getPublishMessage();
+		NetPublish net = netMessage.getAction().getPublishMessage();
 
 		Publish struct = new Publish();
 		struct.setDestination(net.getDestination());
@@ -499,9 +509,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Subscribe getSubscribe(NetMessage gcsMessage)
+	private Subscribe getSubscribe(NetMessage netMessage)
 	{
-		NetSubscribe net = gcsMessage.getAction().getSubscribeMessage();
+		NetSubscribe net = netMessage.getAction().getSubscribeMessage();
 
 		Subscribe struct = new Subscribe();
 		struct.setDestination(net.getDestination());
@@ -513,9 +523,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Unsubscribe getUnsubscribe(NetMessage gcsMessage)
+	private Unsubscribe getUnsubscribe(NetMessage netMessage)
 	{
-		NetUnsubscribe net = gcsMessage.getAction().getUnsbuscribeMessage();
+		NetUnsubscribe net = netMessage.getAction().getUnsbuscribeMessage();
 
 		Unsubscribe struct = new Unsubscribe();
 		struct.setDestination(net.getDestination());
@@ -527,10 +537,10 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Header getHeaders(NetMessage gcsMessage)
+	private Header getHeaders(NetMessage netMessage)
 	{
 		Header header = new Header();
-		header.setParameters(gcsMessage.getHeaders());
+		header.setParameters(netMessage.getHeaders());
 
 		return header;
 	}

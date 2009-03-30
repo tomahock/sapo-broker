@@ -6,7 +6,7 @@
 	<classpathentry exported="true" kind="lib" path="mina_http_filter.jar"/>
 	<classpathentry exported="true" kind="lib" path="slf4j-api-1.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="mina2-snapshot.jar" sourcepath="/Mina/src/main/java"/>
-	<classpathentry exported="true" kind="lib" path="org.caudexorigo.jar"/>
+	<classpathentry exported="true" kind="lib" path="org.caudexorigo.jar" sourcepath="/org.caudexorigo"/>
 	<classpathentry exported="true" kind="lib" path="protobuf-java-2.0.3.jar"/>
 	<classpathentry kind="lib" path="aalto-gpl-0.9.4.jar"/>
 	<classpathentry kind="lib" path="stax2-api-3.0.1.jar"/>

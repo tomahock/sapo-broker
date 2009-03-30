@@ -30,7 +30,8 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
   private static final TField FAULT_FIELD_DESC = new TField("fault", TType.STRUCT, (short)8);
   private static final TField PING_FIELD_DESC = new TField("ping", TType.STRUCT, (short)9);
   private static final TField PONG_FIELD_DESC = new TField("pong", TType.STRUCT, (short)10);
-  private static final TField ACTION_TYPE_FIELD_DESC = new TField("action_type", TType.I32, (short)11);
+  private static final TField AUTH_FIELD_DESC = new TField("auth", TType.STRUCT, (short)11);
+  private static final TField ACTION_TYPE_FIELD_DESC = new TField("action_type", TType.I32, (short)12);
 
   public Publish publish;
   public static final int PUBLISH = 1;
@@ -52,8 +53,10 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
   public static final int PING = 9;
   public Pong pong;
   public static final int PONG = 10;
+  public Authentication auth;
+  public static final int AUTH = 11;
   public int action_type;
-  public static final int ACTION_TYPE = 11;
+  public static final int ACTION_TYPE = 12;
 
   private final Isset __isset = new Isset();
   private static final class Isset implements java.io.Serializable {
@@ -81,6 +84,8 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
         new StructMetaData(TType.STRUCT, Ping.class)));
     put(PONG, new FieldMetaData("pong", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Pong.class)));
+    put(AUTH, new FieldMetaData("auth", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Authentication.class)));
     put(ACTION_TYPE, new FieldMetaData("action_type", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.I32)));
   }});
@@ -103,6 +108,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     Fault fault,
     Ping ping,
     Pong pong,
+    Authentication auth,
     int action_type)
   {
     this();
@@ -116,6 +122,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     this.fault = fault;
     this.ping = ping;
     this.pong = pong;
+    this.auth = auth;
     this.action_type = action_type;
     this.__isset.action_type = true;
   }
@@ -153,6 +160,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     }
     if (other.isSetPong()) {
       this.pong = new Pong(other.pong);
+    }
+    if (other.isSetAuth()) {
+      this.auth = new Authentication(other.auth);
     }
     __isset.action_type = other.__isset.action_type;
     this.action_type = other.action_type;
@@ -393,6 +403,29 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
+  public Authentication getAuth() {
+    return this.auth;
+  }
+
+  public void setAuth(Authentication auth) {
+    this.auth = auth;
+  }
+
+  public void unsetAuth() {
+    this.auth = null;
+  }
+
+  // Returns true if field auth is set (has been asigned a value) and false otherwise
+  public boolean isSetAuth() {
+    return this.auth != null;
+  }
+
+  public void setAuthIsSet(boolean value) {
+    if (!value) {
+      this.auth = null;
+    }
+  }
+
   public int getAction_type() {
     return this.action_type;
   }
@@ -457,6 +490,10 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
       setPong((Pong)value);
       break;
 
+    case AUTH:
+      setAuth((Authentication)value);
+      break;
+
     case ACTION_TYPE:
       setAction_type((Integer)value);
       break;
@@ -498,6 +535,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     case PONG:
       return getPong();
 
+    case AUTH:
+      return getAuth();
+
     case ACTION_TYPE:
       return getAction_type();
 
@@ -529,6 +569,8 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
       return isSetPing();
     case PONG:
       return isSetPong();
+    case AUTH:
+      return isSetAuth();
     case ACTION_TYPE:
       return isSetAction_type();
     default:
@@ -636,6 +678,15 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
       if (!(this_present_pong && that_present_pong))
         return false;
       if (!this.pong.equals(that.pong))
+        return false;
+    }
+
+    boolean this_present_auth = true && this.isSetAuth();
+    boolean that_present_auth = true && that.isSetAuth();
+    if (this_present_auth || that_present_auth) {
+      if (!(this_present_auth && that_present_auth))
+        return false;
+      if (!this.auth.equals(that.auth))
         return false;
     }
 
@@ -747,6 +798,14 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
             TProtocolUtil.skip(iprot, field.type);
           }
           break;
+        case AUTH:
+          if (field.type == TType.STRUCT) {
+            this.auth = new Authentication();
+            this.auth.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
         case ACTION_TYPE:
           if (field.type == TType.I32) {
             this.action_type = iprot.readI32();
@@ -820,6 +879,11 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     if (this.pong != null) {
       oprot.writeFieldBegin(PONG_FIELD_DESC);
       this.pong.write(oprot);
+      oprot.writeFieldEnd();
+    }
+    if (this.auth != null) {
+      oprot.writeFieldBegin(AUTH_FIELD_DESC);
+      this.auth.write(oprot);
       oprot.writeFieldEnd();
     }
     oprot.writeFieldBegin(ACTION_TYPE_FIELD_DESC);
@@ -930,6 +994,16 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
         sb.append("null");
       } else {
         sb.append(this.pong);
+      }
+      first = false;
+    }
+    if (isSetAuth()) {
+      if (!first) sb.append(", ");
+      sb.append("auth:");
+      if (this.auth == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.auth);
       }
       first = false;
     }

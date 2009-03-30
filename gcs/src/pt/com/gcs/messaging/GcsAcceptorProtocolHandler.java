@@ -1,5 +1,9 @@
 package pt.com.gcs.messaging;
 
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -8,6 +12,7 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.gcs.conf.WorldMap;
 import pt.com.gcs.net.IoSessionHelper;
 import pt.com.gcs.net.Peer;
 import pt.com.types.NetBrokerMessage;
@@ -16,6 +21,22 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 {
 	private static Logger log = LoggerFactory.getLogger(GcsAcceptorProtocolHandler.class);
 
+	private static List<InetSocketAddress> peersAddressList;
+	
+	static{
+		createPeersList();
+	}
+
+	private static void createPeersList(){
+		List<Peer> peerList = WorldMap.getPeerList();
+		peersAddressList = new ArrayList<InetSocketAddress>(peerList.size());
+		for (Peer peer : peerList)
+		{
+			InetSocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
+			peersAddressList.add(addr);
+		}	
+	}
+	
 	@Override
 	public void exceptionCaught(IoSession iosession, Throwable cause) throws Exception
 	{
@@ -129,12 +150,33 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	@Override
 	public void sessionCreated(IoSession iosession) throws Exception
 	{
+		if(!validPeerAddress(iosession))
+		{
+			iosession.close(true);
+			log.warn("GCS: connection refused");
+			return;
+		}
+		
 		IoSessionHelper.tagWithRemoteAddress(iosession);
 		if (log.isDebugEnabled())
 		{
 			log.debug("Session Created: '{}'", IoSessionHelper.getRemoteAddress(iosession));
 		}
 	}
+	
+	private boolean validPeerAddress(IoSession iosession)
+	{
+		InetSocketAddress remoteAddress = (InetSocketAddress)iosession.getRemoteAddress();
+				
+		List<Peer> peerList = WorldMap.getPeerList();
+		for (InetSocketAddress addr : peersAddressList)
+		{
+			if(addr.equals(remoteAddress) )
+				return true;
+		}		
+		return false;
+	}
+
 
 	@Override
 	public void sessionIdle(IoSession iosession, IdleStatus status) throws Exception

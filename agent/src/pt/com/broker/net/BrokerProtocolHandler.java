@@ -227,7 +227,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 				 */
 				break;
 			case PUBLISH:
-				handlePubishMessage(session, request, requestSource);
+				handlePublishMessage(session, request, requestSource);
 				break;
 			case POLL:
 				handlePoolMessage(session, request);
@@ -251,6 +251,9 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 				/*
 				 * Pong are sent from Agents to Clients Send error message!
 				 */
+			case AUTH:
+				BrokerProtocolHandlerAuthenticationHelper.handleAuthMessage(session, request);
+				break;
 			default:
 				throw new RuntimeException("Not a valid request");
 			}
@@ -261,7 +264,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 	}
 
-	private void handlePubishMessage(IoSession session, NetMessage request, String messageSource)
+	private void handlePublishMessage(IoSession session, NetMessage request, String messageSource)
 	{
 		NetPublish publish = request.getAction().getPublishMessage();
 		switch (publish.getDestinationType())
@@ -270,17 +273,6 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			_brokerProducer.publishMessage(publish, messageSource);
 			break;
 		case QUEUE:
-			_brokerProducer.enqueueMessage(publish, messageSource);
-			break;
-		case VIRTUAL_QUEUE:
-			if (StringUtils.contains(publish.getDestination(), "@"))
-			{
-				_brokerProducer.enqueueMessage(publish, messageSource);
-			}
-			else
-			{
-				throw new IllegalArgumentException("Not a valid destination name for a TOPIC_AS_QUEUE consumer");
-			}
 			_brokerProducer.enqueueMessage(publish, messageSource);
 			break;
 		default:
@@ -355,7 +347,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		sendAccepted(session, subscritption.getActionId());
 	}
 
-	private void handlePingMessage(final IoSession ios, Object object)
+	private void handlePingMessage(final IoSession ios, NetMessage request)
 	{
 		NetPong pong = new NetPong(System.currentTimeMillis());
 		NetAction action = new NetAction(ActionType.PONG);
@@ -397,7 +389,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			BrokerExecutor.execute(resumer);
 		}
 	}
-
+	
 	private void sendAccepted(final IoSession ios, final String actionId)
 	{
 		if (actionId != null)

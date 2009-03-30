@@ -22,6 +22,7 @@ public class ActionType {
   public static final int FAULT = 7;
   public static final int PING = 8;
   public static final int PONG = 9;
+  public static final int AUTH = 10;
 
-  public static final IntRangeSet VALID_VALUES = new IntRangeSet(PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE_MESSAGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG);
+  public static final IntRangeSet VALID_VALUES = new IntRangeSet(PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE_MESSAGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH);
 }

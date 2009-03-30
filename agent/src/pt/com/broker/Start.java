@@ -5,12 +5,9 @@ import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.core.BrokerExecutor;
-import pt.com.broker.core.BrokerServer;
-import pt.com.broker.core.ErrorHandler;
-import pt.com.broker.core.FilePublisher;
-import pt.com.broker.core.UdpService;
+import pt.com.broker.core.*;
 import pt.com.broker.http.BrokerHttpService;
+import pt.com.broker.security.authentication.BrokerAuthenticationService;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 
@@ -49,7 +46,9 @@ public class Start
 		try
 		{
 			Gcs.init();
-
+	
+			BrokerAuthenticationService.start();
+			
 			int broker_port = GcsInfo.getBrokerPort();
 			int broker_legacy_port = GcsInfo.getBrokerLegacyPort();
 			BrokerServer broker_srv = new BrokerServer(broker_port, broker_legacy_port);
@@ -58,6 +57,11 @@ public class Start
 			int http_port = GcsInfo.getBrokerHttpPort();
 			BrokerHttpService http_srv = new BrokerHttpService(http_port);
 			http_srv.start();
+			
+			int ssl_port = GcsInfo.getBrokerSSLPort();
+			BrokerSSLServer ssl_svr = new BrokerSSLServer(ssl_port);
+			ssl_svr.start();
+			
 
 			FilePublisher.init();
 

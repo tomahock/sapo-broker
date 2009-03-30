@@ -13,18 +13,15 @@ import org.caudexorigo.concurrent.CustomExecutors;
 import org.caudexorigo.concurrent.Sleep;
 
 import pt.com.broker.client.NetworkConnector;
+import pt.com.broker.client.SslNetworkConnector;
 
 public abstract class ProtocolHandler<T>
 {
 	private final AtomicBoolean _isReconnecting = new AtomicBoolean(false);
 
-	private final ExecutorService exec = CustomExecutors.newScheduledThreadPool(1, "protocol-handler");
+	private final ExecutorService exec = CustomExecutors.newThreadPool(4, "protocol-handler");
 
 	private final ScheduledExecutorService shed_exec = CustomExecutors.newScheduledThreadPool(1, "sched-protocol-handler");
-
-	private Object rlock = new Object();
-
-	private Object wlock = new Object();
 
 	public abstract T decode(DataInputStream in) throws IOException;
 
@@ -38,6 +35,8 @@ public abstract class ProtocolHandler<T>
 
 	public abstract NetworkConnector getConnector();
 
+	public abstract SslNetworkConnector getSslConnector();
+
 	protected abstract void handleReceivedMessage(T request);
 
 	private final Runnable reader = new Runnable()
@@ -49,7 +48,46 @@ public abstract class ProtocolHandler<T>
 
 			while (true)
 			{
+				try
+				{
+					T message = doDecode(in);
+					handleReceivedMessage(message);
+				}
+				catch (Throwable error)
+				{
+					final Throwable rootCause = ErrorAnalyser.findRootCause(error);
+					if (rootCause instanceof IOException)
+					{
+						Sleep.time(2000);
+						connector.reconnect(rootCause);
+						onConnectionOpen();
+						in = connector.getInput();
+					}
+					else
+					{
+						try
+						{
+							onError(rootCause);
+						}
+						catch (Throwable t)
+						{
+							// ignore
+						}
+					}
+				}
+			}
+		}
+	};
 
+	private final Runnable sslReader = new Runnable()
+	{
+		public void run()
+		{
+			SslNetworkConnector connector = getSslConnector();
+			DataInputStream in = connector.getInput();
+
+			while (true)
+			{
 				try
 				{
 					T message = doDecode(in);
@@ -105,9 +143,33 @@ public abstract class ProtocolHandler<T>
 		return rootCause;
 	}
 
+	private Throwable resetSslConnection(final SslNetworkConnector connector, Throwable error)
+	{
+		final Throwable rootCause = ErrorAnalyser.findRootCause(error);
+		if (rootCause instanceof IOException)
+		{
+			if (!_isReconnecting.getAndSet(true))
+			{
+				Runnable reconnector = new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						connector.reconnect(rootCause);
+						_isReconnecting.set(false);
+						onConnectionOpen();
+					}
+				};
+
+				shed_exec.schedule(reconnector, 2000, TimeUnit.MILLISECONDS);
+			}
+		}
+		return rootCause;
+	}
+
 	private T doDecode(DataInputStream in) throws IOException
 	{
-		synchronized (rlock)
+		synchronized (in)
 		{
 			return decode(in);
 		}
@@ -115,9 +177,26 @@ public abstract class ProtocolHandler<T>
 
 	public void doEncode(T message, DataOutputStream out) throws IOException
 	{
-		synchronized (wlock)
+		synchronized (out)
 		{
 			encode(message, out);
+		}
+	}
+
+	public void sendMessageOverSsl(final T message) throws Throwable
+	{
+		final SslNetworkConnector connector = getSslConnector();
+		if (connector == null)
+			throw new RuntimeException("SslNetworkConnector unavailable");
+		try
+		{
+			DataOutputStream out = connector.getOutput();
+			doEncode(message, out);
+		}
+		catch (Throwable error)
+		{
+			Throwable rootCause = resetSslConnection(connector, error);
+			throw rootCause;
 		}
 	}
 
@@ -138,6 +217,9 @@ public abstract class ProtocolHandler<T>
 
 	public final void start() throws Throwable
 	{
+		if (getSslConnector() != null)
+			exec.execute(sslReader);
+		
 		exec.execute(reader);
 	}
 

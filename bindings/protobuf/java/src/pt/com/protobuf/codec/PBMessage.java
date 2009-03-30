@@ -4256,6 +4256,2312 @@ public final class PBMessage {
       }
     }
     
+    public static final class Authentication extends
+        com.google.protobuf.GeneratedMessage {
+      // Use Authentication.newBuilder() to construct.
+      private Authentication() {}
+      
+      private static final Authentication defaultInstance = new Authentication();
+      public static Authentication getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public Authentication getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_descriptor;
+      }
+      
+      @Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_fieldAccessorTable;
+      }
+      
+      public static enum AuthMessageType {
+        CLIENT_AUTH(0, 0),
+        SERVER_CHALLENGE(1, 1),
+        SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE(2, 2),
+        CLIENT_CHALLENGE_RESPONSE(3, 3),
+        CLIENT_ACKNOWLEDGE(4, 4),
+        ;
+        
+        
+        public final int getNumber() { return value; }
+        
+        public static AuthMessageType valueOf(int value) {
+          switch (value) {
+            case 0: return CLIENT_AUTH;
+            case 1: return SERVER_CHALLENGE;
+            case 2: return SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE;
+            case 3: return CLIENT_CHALLENGE_RESPONSE;
+            case 4: return CLIENT_ACKNOWLEDGE;
+            default: return null;
+          }
+        }
+        
+        public final com.google.protobuf.Descriptors.EnumValueDescriptor
+            getValueDescriptor() {
+          return getDescriptor().getValues().get(index);
+        }
+        public final com.google.protobuf.Descriptors.EnumDescriptor
+            getDescriptorForType() {
+          return getDescriptor();
+        }
+        public static final com.google.protobuf.Descriptors.EnumDescriptor
+            getDescriptor() {
+          return pt.com.protobuf.codec.PBMessage.Atom.Authentication.getDescriptor().getEnumTypes().get(0);
+        }
+        
+        private static final AuthMessageType[] VALUES = {
+          CLIENT_AUTH, SERVER_CHALLENGE, SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE, CLIENT_CHALLENGE_RESPONSE, CLIENT_ACKNOWLEDGE, 
+        };
+        public static AuthMessageType valueOf(
+            com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+          if (desc.getType() != getDescriptor()) {
+            throw new java.lang.IllegalArgumentException(
+              "EnumValueDescriptor is not for this type.");
+          }
+          return VALUES[desc.getIndex()];
+        }
+        private final int index;
+        private final int value;
+        private AuthMessageType(int index, int value) {
+          this.index = index;
+          this.value = value;
+        }
+        
+        static {
+          pt.com.protobuf.codec.PBMessage.getDescriptor();
+        }
+      }
+      
+      public static final class ClientAuth extends
+          com.google.protobuf.GeneratedMessage {
+        // Use ClientAuth.newBuilder() to construct.
+        private ClientAuth() {}
+        
+        private static final ClientAuth defaultInstance = new ClientAuth();
+        public static ClientAuth getDefaultInstance() {
+          return defaultInstance;
+        }
+        
+        public ClientAuth getDefaultInstanceForType() {
+          return defaultInstance;
+        }
+        
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ClientAuth_descriptor;
+        }
+        
+        @Override
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ClientAuth_fieldAccessorTable;
+        }
+        
+        // optional string authentication_type = 1;
+        private boolean hasAuthenticationType;
+        private java.lang.String authenticationType_ = "";
+        public boolean hasAuthenticationType() { return hasAuthenticationType; }
+        public java.lang.String getAuthenticationType() { return authenticationType_; }
+        
+        // required string local_communication_id = 2;
+        private boolean hasLocalCommunicationId;
+        private java.lang.String localCommunicationId_ = "";
+        public boolean hasLocalCommunicationId() { return hasLocalCommunicationId; }
+        public java.lang.String getLocalCommunicationId() { return localCommunicationId_; }
+        
+        // required bytes token = 3;
+        private boolean hasToken;
+        private com.google.protobuf.ByteString token_ = com.google.protobuf.ByteString.EMPTY;
+        public boolean hasToken() { return hasToken; }
+        public com.google.protobuf.ByteString getToken() { return token_; }
+        
+        // optional string user_id = 4;
+        private boolean hasUserId;
+        private java.lang.String userId_ = "";
+        public boolean hasUserId() { return hasUserId; }
+        public java.lang.String getUserId() { return userId_; }
+        
+        // repeated string role = 5;
+        private java.util.List<java.lang.String> role_ =
+          java.util.Collections.emptyList();
+        public java.util.List<java.lang.String> getRoleList() {
+          return role_;
+        }
+        public int getRoleCount() { return role_.size(); }
+        public java.lang.String getRole(int index) {
+          return role_.get(index);
+        }
+        
+        @Override
+        public final boolean isInitialized() {
+          if (!hasLocalCommunicationId) return false;
+          if (!hasToken) return false;
+          return true;
+        }
+        
+        @Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (hasAuthenticationType()) {
+            output.writeString(1, getAuthenticationType());
+          }
+          if (hasLocalCommunicationId()) {
+            output.writeString(2, getLocalCommunicationId());
+          }
+          if (hasToken()) {
+            output.writeBytes(3, getToken());
+          }
+          if (hasUserId()) {
+            output.writeString(4, getUserId());
+          }
+          for (java.lang.String element : getRoleList()) {
+            output.writeString(5, element);
+          }
+          getUnknownFields().writeTo(output);
+        }
+        
+        private int memoizedSerializedSize = -1;
+        @Override
+        public int getSerializedSize() {
+          int size = memoizedSerializedSize;
+          if (size != -1) return size;
+        
+          size = 0;
+          if (hasAuthenticationType()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(1, getAuthenticationType());
+          }
+          if (hasLocalCommunicationId()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(2, getLocalCommunicationId());
+          }
+          if (hasToken()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBytesSize(3, getToken());
+          }
+          if (hasUserId()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(4, getUserId());
+          }
+          for (java.lang.String element : getRoleList()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(5, element);
+          }
+          size += getUnknownFields().getSerializedSize();
+          memoizedSerializedSize = size;
+          return size;
+        }
+        
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        
+        public static Builder newBuilder() { return new Builder(); }
+        public Builder newBuilderForType() { return new Builder(); }
+        public static Builder newBuilder(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth prototype) {
+          return new Builder().mergeFrom(prototype);
+        }
+        
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessage.Builder<Builder> {
+          // Construct using pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.newBuilder()
+          private Builder() {}
+          
+          pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth();
+          
+          @Override
+          protected pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth internalGetResult() {
+            return result;
+          }
+          
+          @Override
+          public Builder clear() {
+            result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth();
+            return this;
+          }
+          
+          @Override
+          public Builder clone() {
+            return new Builder().mergeFrom(result);
+          }
+          
+          @Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.getDescriptor();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth getDefaultInstanceForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.getDefaultInstance();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth build() {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result);
+            }
+            return buildPartial();
+          }
+          
+          private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth buildParsed()
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result).asInvalidProtocolBufferException();
+            }
+            return buildPartial();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth buildPartial() {
+            if (result.role_ != java.util.Collections.EMPTY_LIST) {
+              result.role_ =
+                java.util.Collections.unmodifiableList(result.role_);
+            }
+            pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth returnMe = result;
+            result = null;
+            return returnMe;
+          }
+          
+          @Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth) {
+              return mergeFrom((pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+          
+          public Builder mergeFrom(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth other) {
+            if (other == pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.getDefaultInstance()) return this;
+            if (other.hasAuthenticationType()) {
+              setAuthenticationType(other.getAuthenticationType());
+            }
+            if (other.hasLocalCommunicationId()) {
+              setLocalCommunicationId(other.getLocalCommunicationId());
+            }
+            if (other.hasToken()) {
+              setToken(other.getToken());
+            }
+            if (other.hasUserId()) {
+              setUserId(other.getUserId());
+            }
+            if (!other.role_.isEmpty()) {
+              if (result.role_.isEmpty()) {
+                result.role_ = new java.util.ArrayList<java.lang.String>();
+              }
+              result.role_.addAll(other.role_);
+            }
+            this.mergeUnknownFields(other.getUnknownFields());
+            return this;
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input)
+              throws java.io.IOException {
+            return mergeFrom(input,
+              com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistry extensionRegistry)
+              throws java.io.IOException {
+            com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder(
+                this.getUnknownFields());
+            while (true) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  this.setUnknownFields(unknownFields.build());
+                  return this;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    this.setUnknownFields(unknownFields.build());
+                    return this;
+                  }
+                  break;
+                }
+                case 10: {
+                  setAuthenticationType(input.readString());
+                  break;
+                }
+                case 18: {
+                  setLocalCommunicationId(input.readString());
+                  break;
+                }
+                case 26: {
+                  setToken(input.readBytes());
+                  break;
+                }
+                case 34: {
+                  setUserId(input.readString());
+                  break;
+                }
+                case 42: {
+                  addRole(input.readString());
+                  break;
+                }
+              }
+            }
+          }
+          
+          
+          // optional string authentication_type = 1;
+          public boolean hasAuthenticationType() {
+            return result.hasAuthenticationType();
+          }
+          public java.lang.String getAuthenticationType() {
+            return result.getAuthenticationType();
+          }
+          public Builder setAuthenticationType(java.lang.String value) {
+            result.hasAuthenticationType = true;
+            result.authenticationType_ = value;
+            return this;
+          }
+          public Builder clearAuthenticationType() {
+            result.hasAuthenticationType = false;
+            result.authenticationType_ = "";
+            return this;
+          }
+          
+          // required string local_communication_id = 2;
+          public boolean hasLocalCommunicationId() {
+            return result.hasLocalCommunicationId();
+          }
+          public java.lang.String getLocalCommunicationId() {
+            return result.getLocalCommunicationId();
+          }
+          public Builder setLocalCommunicationId(java.lang.String value) {
+            result.hasLocalCommunicationId = true;
+            result.localCommunicationId_ = value;
+            return this;
+          }
+          public Builder clearLocalCommunicationId() {
+            result.hasLocalCommunicationId = false;
+            result.localCommunicationId_ = "";
+            return this;
+          }
+          
+          // required bytes token = 3;
+          public boolean hasToken() {
+            return result.hasToken();
+          }
+          public com.google.protobuf.ByteString getToken() {
+            return result.getToken();
+          }
+          public Builder setToken(com.google.protobuf.ByteString value) {
+            result.hasToken = true;
+            result.token_ = value;
+            return this;
+          }
+          public Builder clearToken() {
+            result.hasToken = false;
+            result.token_ = com.google.protobuf.ByteString.EMPTY;
+            return this;
+          }
+          
+          // optional string user_id = 4;
+          public boolean hasUserId() {
+            return result.hasUserId();
+          }
+          public java.lang.String getUserId() {
+            return result.getUserId();
+          }
+          public Builder setUserId(java.lang.String value) {
+            result.hasUserId = true;
+            result.userId_ = value;
+            return this;
+          }
+          public Builder clearUserId() {
+            result.hasUserId = false;
+            result.userId_ = "";
+            return this;
+          }
+          
+          // repeated string role = 5;
+          public java.util.List<java.lang.String> getRoleList() {
+            return java.util.Collections.unmodifiableList(result.role_);
+          }
+          public int getRoleCount() {
+            return result.getRoleCount();
+          }
+          public java.lang.String getRole(int index) {
+            return result.getRole(index);
+          }
+          public Builder setRole(int index, java.lang.String value) {
+            result.role_.set(index, value);
+            return this;
+          }
+          public Builder addRole(java.lang.String value) {
+            if (result.role_.isEmpty()) {
+              result.role_ = new java.util.ArrayList<java.lang.String>();
+            }
+            result.role_.add(value);
+            return this;
+          }
+          public Builder addAllRole(
+              java.lang.Iterable<? extends java.lang.String> values) {
+            if (result.role_.isEmpty()) {
+              result.role_ = new java.util.ArrayList<java.lang.String>();
+            }
+            super.addAll(values, result.role_);
+            return this;
+          }
+          public Builder clearRole() {
+            result.role_ = java.util.Collections.emptyList();
+            return this;
+          }
+        }
+        
+        static {
+          pt.com.protobuf.codec.PBMessage.getDescriptor();
+        }
+      }
+      
+      public static final class ServerChallenge extends
+          com.google.protobuf.GeneratedMessage {
+        // Use ServerChallenge.newBuilder() to construct.
+        private ServerChallenge() {}
+        
+        private static final ServerChallenge defaultInstance = new ServerChallenge();
+        public static ServerChallenge getDefaultInstance() {
+          return defaultInstance;
+        }
+        
+        public ServerChallenge getDefaultInstanceForType() {
+          return defaultInstance;
+        }
+        
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ServerChallenge_descriptor;
+        }
+        
+        @Override
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ServerChallenge_fieldAccessorTable;
+        }
+        
+        // required string communication_id = 1;
+        private boolean hasCommunicationId;
+        private java.lang.String communicationId_ = "";
+        public boolean hasCommunicationId() { return hasCommunicationId; }
+        public java.lang.String getCommunicationId() { return communicationId_; }
+        
+        // required bytes challenge = 2;
+        private boolean hasChallenge;
+        private com.google.protobuf.ByteString challenge_ = com.google.protobuf.ByteString.EMPTY;
+        public boolean hasChallenge() { return hasChallenge; }
+        public com.google.protobuf.ByteString getChallenge() { return challenge_; }
+        
+        // required bytes secret = 3;
+        private boolean hasSecret;
+        private com.google.protobuf.ByteString secret_ = com.google.protobuf.ByteString.EMPTY;
+        public boolean hasSecret() { return hasSecret; }
+        public com.google.protobuf.ByteString getSecret() { return secret_; }
+        
+        // required string local_communication_id = 4;
+        private boolean hasLocalCommunicationId;
+        private java.lang.String localCommunicationId_ = "";
+        public boolean hasLocalCommunicationId() { return hasLocalCommunicationId; }
+        public java.lang.String getLocalCommunicationId() { return localCommunicationId_; }
+        
+        // optional string secret_type = 5;
+        private boolean hasSecretType;
+        private java.lang.String secretType_ = "";
+        public boolean hasSecretType() { return hasSecretType; }
+        public java.lang.String getSecretType() { return secretType_; }
+        
+        @Override
+        public final boolean isInitialized() {
+          if (!hasCommunicationId) return false;
+          if (!hasChallenge) return false;
+          if (!hasSecret) return false;
+          if (!hasLocalCommunicationId) return false;
+          return true;
+        }
+        
+        @Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (hasCommunicationId()) {
+            output.writeString(1, getCommunicationId());
+          }
+          if (hasChallenge()) {
+            output.writeBytes(2, getChallenge());
+          }
+          if (hasSecret()) {
+            output.writeBytes(3, getSecret());
+          }
+          if (hasLocalCommunicationId()) {
+            output.writeString(4, getLocalCommunicationId());
+          }
+          if (hasSecretType()) {
+            output.writeString(5, getSecretType());
+          }
+          getUnknownFields().writeTo(output);
+        }
+        
+        private int memoizedSerializedSize = -1;
+        @Override
+        public int getSerializedSize() {
+          int size = memoizedSerializedSize;
+          if (size != -1) return size;
+        
+          size = 0;
+          if (hasCommunicationId()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(1, getCommunicationId());
+          }
+          if (hasChallenge()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBytesSize(2, getChallenge());
+          }
+          if (hasSecret()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBytesSize(3, getSecret());
+          }
+          if (hasLocalCommunicationId()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(4, getLocalCommunicationId());
+          }
+          if (hasSecretType()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(5, getSecretType());
+          }
+          size += getUnknownFields().getSerializedSize();
+          memoizedSerializedSize = size;
+          return size;
+        }
+        
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        
+        public static Builder newBuilder() { return new Builder(); }
+        public Builder newBuilderForType() { return new Builder(); }
+        public static Builder newBuilder(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge prototype) {
+          return new Builder().mergeFrom(prototype);
+        }
+        
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessage.Builder<Builder> {
+          // Construct using pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.newBuilder()
+          private Builder() {}
+          
+          pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge();
+          
+          @Override
+          protected pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge internalGetResult() {
+            return result;
+          }
+          
+          @Override
+          public Builder clear() {
+            result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge();
+            return this;
+          }
+          
+          @Override
+          public Builder clone() {
+            return new Builder().mergeFrom(result);
+          }
+          
+          @Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.getDescriptor();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge getDefaultInstanceForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.getDefaultInstance();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge build() {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result);
+            }
+            return buildPartial();
+          }
+          
+          private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge buildParsed()
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result).asInvalidProtocolBufferException();
+            }
+            return buildPartial();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge buildPartial() {
+            pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge returnMe = result;
+            result = null;
+            return returnMe;
+          }
+          
+          @Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge) {
+              return mergeFrom((pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+          
+          public Builder mergeFrom(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge other) {
+            if (other == pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.getDefaultInstance()) return this;
+            if (other.hasCommunicationId()) {
+              setCommunicationId(other.getCommunicationId());
+            }
+            if (other.hasChallenge()) {
+              setChallenge(other.getChallenge());
+            }
+            if (other.hasSecret()) {
+              setSecret(other.getSecret());
+            }
+            if (other.hasLocalCommunicationId()) {
+              setLocalCommunicationId(other.getLocalCommunicationId());
+            }
+            if (other.hasSecretType()) {
+              setSecretType(other.getSecretType());
+            }
+            this.mergeUnknownFields(other.getUnknownFields());
+            return this;
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input)
+              throws java.io.IOException {
+            return mergeFrom(input,
+              com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistry extensionRegistry)
+              throws java.io.IOException {
+            com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder(
+                this.getUnknownFields());
+            while (true) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  this.setUnknownFields(unknownFields.build());
+                  return this;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    this.setUnknownFields(unknownFields.build());
+                    return this;
+                  }
+                  break;
+                }
+                case 10: {
+                  setCommunicationId(input.readString());
+                  break;
+                }
+                case 18: {
+                  setChallenge(input.readBytes());
+                  break;
+                }
+                case 26: {
+                  setSecret(input.readBytes());
+                  break;
+                }
+                case 34: {
+                  setLocalCommunicationId(input.readString());
+                  break;
+                }
+                case 42: {
+                  setSecretType(input.readString());
+                  break;
+                }
+              }
+            }
+          }
+          
+          
+          // required string communication_id = 1;
+          public boolean hasCommunicationId() {
+            return result.hasCommunicationId();
+          }
+          public java.lang.String getCommunicationId() {
+            return result.getCommunicationId();
+          }
+          public Builder setCommunicationId(java.lang.String value) {
+            result.hasCommunicationId = true;
+            result.communicationId_ = value;
+            return this;
+          }
+          public Builder clearCommunicationId() {
+            result.hasCommunicationId = false;
+            result.communicationId_ = "";
+            return this;
+          }
+          
+          // required bytes challenge = 2;
+          public boolean hasChallenge() {
+            return result.hasChallenge();
+          }
+          public com.google.protobuf.ByteString getChallenge() {
+            return result.getChallenge();
+          }
+          public Builder setChallenge(com.google.protobuf.ByteString value) {
+            result.hasChallenge = true;
+            result.challenge_ = value;
+            return this;
+          }
+          public Builder clearChallenge() {
+            result.hasChallenge = false;
+            result.challenge_ = com.google.protobuf.ByteString.EMPTY;
+            return this;
+          }
+          
+          // required bytes secret = 3;
+          public boolean hasSecret() {
+            return result.hasSecret();
+          }
+          public com.google.protobuf.ByteString getSecret() {
+            return result.getSecret();
+          }
+          public Builder setSecret(com.google.protobuf.ByteString value) {
+            result.hasSecret = true;
+            result.secret_ = value;
+            return this;
+          }
+          public Builder clearSecret() {
+            result.hasSecret = false;
+            result.secret_ = com.google.protobuf.ByteString.EMPTY;
+            return this;
+          }
+          
+          // required string local_communication_id = 4;
+          public boolean hasLocalCommunicationId() {
+            return result.hasLocalCommunicationId();
+          }
+          public java.lang.String getLocalCommunicationId() {
+            return result.getLocalCommunicationId();
+          }
+          public Builder setLocalCommunicationId(java.lang.String value) {
+            result.hasLocalCommunicationId = true;
+            result.localCommunicationId_ = value;
+            return this;
+          }
+          public Builder clearLocalCommunicationId() {
+            result.hasLocalCommunicationId = false;
+            result.localCommunicationId_ = "";
+            return this;
+          }
+          
+          // optional string secret_type = 5;
+          public boolean hasSecretType() {
+            return result.hasSecretType();
+          }
+          public java.lang.String getSecretType() {
+            return result.getSecretType();
+          }
+          public Builder setSecretType(java.lang.String value) {
+            result.hasSecretType = true;
+            result.secretType_ = value;
+            return this;
+          }
+          public Builder clearSecretType() {
+            result.hasSecretType = false;
+            result.secretType_ = "";
+            return this;
+          }
+        }
+        
+        static {
+          pt.com.protobuf.codec.PBMessage.getDescriptor();
+        }
+      }
+      
+      public static final class ServerChallengeResponseClientChallenge extends
+          com.google.protobuf.GeneratedMessage {
+        // Use ServerChallengeResponseClientChallenge.newBuilder() to construct.
+        private ServerChallengeResponseClientChallenge() {}
+        
+        private static final ServerChallengeResponseClientChallenge defaultInstance = new ServerChallengeResponseClientChallenge();
+        public static ServerChallengeResponseClientChallenge getDefaultInstance() {
+          return defaultInstance;
+        }
+        
+        public ServerChallengeResponseClientChallenge getDefaultInstanceForType() {
+          return defaultInstance;
+        }
+        
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ServerChallengeResponseClientChallenge_descriptor;
+        }
+        
+        @Override
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ServerChallengeResponseClientChallenge_fieldAccessorTable;
+        }
+        
+        // required string communication_id = 1;
+        private boolean hasCommunicationId;
+        private java.lang.String communicationId_ = "";
+        public boolean hasCommunicationId() { return hasCommunicationId; }
+        public java.lang.String getCommunicationId() { return communicationId_; }
+        
+        // required bytes protected_challenges = 2;
+        private boolean hasProtectedChallenges;
+        private com.google.protobuf.ByteString protectedChallenges_ = com.google.protobuf.ByteString.EMPTY;
+        public boolean hasProtectedChallenges() { return hasProtectedChallenges; }
+        public com.google.protobuf.ByteString getProtectedChallenges() { return protectedChallenges_; }
+        
+        @Override
+        public final boolean isInitialized() {
+          if (!hasCommunicationId) return false;
+          if (!hasProtectedChallenges) return false;
+          return true;
+        }
+        
+        @Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (hasCommunicationId()) {
+            output.writeString(1, getCommunicationId());
+          }
+          if (hasProtectedChallenges()) {
+            output.writeBytes(2, getProtectedChallenges());
+          }
+          getUnknownFields().writeTo(output);
+        }
+        
+        private int memoizedSerializedSize = -1;
+        @Override
+        public int getSerializedSize() {
+          int size = memoizedSerializedSize;
+          if (size != -1) return size;
+        
+          size = 0;
+          if (hasCommunicationId()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(1, getCommunicationId());
+          }
+          if (hasProtectedChallenges()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBytesSize(2, getProtectedChallenges());
+          }
+          size += getUnknownFields().getSerializedSize();
+          memoizedSerializedSize = size;
+          return size;
+        }
+        
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        
+        public static Builder newBuilder() { return new Builder(); }
+        public Builder newBuilderForType() { return new Builder(); }
+        public static Builder newBuilder(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge prototype) {
+          return new Builder().mergeFrom(prototype);
+        }
+        
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessage.Builder<Builder> {
+          // Construct using pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.newBuilder()
+          private Builder() {}
+          
+          pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge();
+          
+          @Override
+          protected pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge internalGetResult() {
+            return result;
+          }
+          
+          @Override
+          public Builder clear() {
+            result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge();
+            return this;
+          }
+          
+          @Override
+          public Builder clone() {
+            return new Builder().mergeFrom(result);
+          }
+          
+          @Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.getDescriptor();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge getDefaultInstanceForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.getDefaultInstance();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge build() {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result);
+            }
+            return buildPartial();
+          }
+          
+          private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge buildParsed()
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result).asInvalidProtocolBufferException();
+            }
+            return buildPartial();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge buildPartial() {
+            pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge returnMe = result;
+            result = null;
+            return returnMe;
+          }
+          
+          @Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge) {
+              return mergeFrom((pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+          
+          public Builder mergeFrom(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge other) {
+            if (other == pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.getDefaultInstance()) return this;
+            if (other.hasCommunicationId()) {
+              setCommunicationId(other.getCommunicationId());
+            }
+            if (other.hasProtectedChallenges()) {
+              setProtectedChallenges(other.getProtectedChallenges());
+            }
+            this.mergeUnknownFields(other.getUnknownFields());
+            return this;
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input)
+              throws java.io.IOException {
+            return mergeFrom(input,
+              com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistry extensionRegistry)
+              throws java.io.IOException {
+            com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder(
+                this.getUnknownFields());
+            while (true) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  this.setUnknownFields(unknownFields.build());
+                  return this;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    this.setUnknownFields(unknownFields.build());
+                    return this;
+                  }
+                  break;
+                }
+                case 10: {
+                  setCommunicationId(input.readString());
+                  break;
+                }
+                case 18: {
+                  setProtectedChallenges(input.readBytes());
+                  break;
+                }
+              }
+            }
+          }
+          
+          
+          // required string communication_id = 1;
+          public boolean hasCommunicationId() {
+            return result.hasCommunicationId();
+          }
+          public java.lang.String getCommunicationId() {
+            return result.getCommunicationId();
+          }
+          public Builder setCommunicationId(java.lang.String value) {
+            result.hasCommunicationId = true;
+            result.communicationId_ = value;
+            return this;
+          }
+          public Builder clearCommunicationId() {
+            result.hasCommunicationId = false;
+            result.communicationId_ = "";
+            return this;
+          }
+          
+          // required bytes protected_challenges = 2;
+          public boolean hasProtectedChallenges() {
+            return result.hasProtectedChallenges();
+          }
+          public com.google.protobuf.ByteString getProtectedChallenges() {
+            return result.getProtectedChallenges();
+          }
+          public Builder setProtectedChallenges(com.google.protobuf.ByteString value) {
+            result.hasProtectedChallenges = true;
+            result.protectedChallenges_ = value;
+            return this;
+          }
+          public Builder clearProtectedChallenges() {
+            result.hasProtectedChallenges = false;
+            result.protectedChallenges_ = com.google.protobuf.ByteString.EMPTY;
+            return this;
+          }
+        }
+        
+        static {
+          pt.com.protobuf.codec.PBMessage.getDescriptor();
+        }
+      }
+      
+      public static final class ClientChallengeResponse extends
+          com.google.protobuf.GeneratedMessage {
+        // Use ClientChallengeResponse.newBuilder() to construct.
+        private ClientChallengeResponse() {}
+        
+        private static final ClientChallengeResponse defaultInstance = new ClientChallengeResponse();
+        public static ClientChallengeResponse getDefaultInstance() {
+          return defaultInstance;
+        }
+        
+        public ClientChallengeResponse getDefaultInstanceForType() {
+          return defaultInstance;
+        }
+        
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ClientChallengeResponse_descriptor;
+        }
+        
+        @Override
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ClientChallengeResponse_fieldAccessorTable;
+        }
+        
+        // required string communication_id = 1;
+        private boolean hasCommunicationId;
+        private java.lang.String communicationId_ = "";
+        public boolean hasCommunicationId() { return hasCommunicationId; }
+        public java.lang.String getCommunicationId() { return communicationId_; }
+        
+        // required bytes challenge = 2;
+        private boolean hasChallenge;
+        private com.google.protobuf.ByteString challenge_ = com.google.protobuf.ByteString.EMPTY;
+        public boolean hasChallenge() { return hasChallenge; }
+        public com.google.protobuf.ByteString getChallenge() { return challenge_; }
+        
+        @Override
+        public final boolean isInitialized() {
+          if (!hasCommunicationId) return false;
+          if (!hasChallenge) return false;
+          return true;
+        }
+        
+        @Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (hasCommunicationId()) {
+            output.writeString(1, getCommunicationId());
+          }
+          if (hasChallenge()) {
+            output.writeBytes(2, getChallenge());
+          }
+          getUnknownFields().writeTo(output);
+        }
+        
+        private int memoizedSerializedSize = -1;
+        @Override
+        public int getSerializedSize() {
+          int size = memoizedSerializedSize;
+          if (size != -1) return size;
+        
+          size = 0;
+          if (hasCommunicationId()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(1, getCommunicationId());
+          }
+          if (hasChallenge()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBytesSize(2, getChallenge());
+          }
+          size += getUnknownFields().getSerializedSize();
+          memoizedSerializedSize = size;
+          return size;
+        }
+        
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        
+        public static Builder newBuilder() { return new Builder(); }
+        public Builder newBuilderForType() { return new Builder(); }
+        public static Builder newBuilder(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse prototype) {
+          return new Builder().mergeFrom(prototype);
+        }
+        
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessage.Builder<Builder> {
+          // Construct using pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.newBuilder()
+          private Builder() {}
+          
+          pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse();
+          
+          @Override
+          protected pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse internalGetResult() {
+            return result;
+          }
+          
+          @Override
+          public Builder clear() {
+            result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse();
+            return this;
+          }
+          
+          @Override
+          public Builder clone() {
+            return new Builder().mergeFrom(result);
+          }
+          
+          @Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.getDescriptor();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse getDefaultInstanceForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.getDefaultInstance();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse build() {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result);
+            }
+            return buildPartial();
+          }
+          
+          private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse buildParsed()
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result).asInvalidProtocolBufferException();
+            }
+            return buildPartial();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse buildPartial() {
+            pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse returnMe = result;
+            result = null;
+            return returnMe;
+          }
+          
+          @Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse) {
+              return mergeFrom((pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+          
+          public Builder mergeFrom(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse other) {
+            if (other == pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.getDefaultInstance()) return this;
+            if (other.hasCommunicationId()) {
+              setCommunicationId(other.getCommunicationId());
+            }
+            if (other.hasChallenge()) {
+              setChallenge(other.getChallenge());
+            }
+            this.mergeUnknownFields(other.getUnknownFields());
+            return this;
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input)
+              throws java.io.IOException {
+            return mergeFrom(input,
+              com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistry extensionRegistry)
+              throws java.io.IOException {
+            com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder(
+                this.getUnknownFields());
+            while (true) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  this.setUnknownFields(unknownFields.build());
+                  return this;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    this.setUnknownFields(unknownFields.build());
+                    return this;
+                  }
+                  break;
+                }
+                case 10: {
+                  setCommunicationId(input.readString());
+                  break;
+                }
+                case 18: {
+                  setChallenge(input.readBytes());
+                  break;
+                }
+              }
+            }
+          }
+          
+          
+          // required string communication_id = 1;
+          public boolean hasCommunicationId() {
+            return result.hasCommunicationId();
+          }
+          public java.lang.String getCommunicationId() {
+            return result.getCommunicationId();
+          }
+          public Builder setCommunicationId(java.lang.String value) {
+            result.hasCommunicationId = true;
+            result.communicationId_ = value;
+            return this;
+          }
+          public Builder clearCommunicationId() {
+            result.hasCommunicationId = false;
+            result.communicationId_ = "";
+            return this;
+          }
+          
+          // required bytes challenge = 2;
+          public boolean hasChallenge() {
+            return result.hasChallenge();
+          }
+          public com.google.protobuf.ByteString getChallenge() {
+            return result.getChallenge();
+          }
+          public Builder setChallenge(com.google.protobuf.ByteString value) {
+            result.hasChallenge = true;
+            result.challenge_ = value;
+            return this;
+          }
+          public Builder clearChallenge() {
+            result.hasChallenge = false;
+            result.challenge_ = com.google.protobuf.ByteString.EMPTY;
+            return this;
+          }
+        }
+        
+        static {
+          pt.com.protobuf.codec.PBMessage.getDescriptor();
+        }
+      }
+      
+      public static final class ClientAcknowledge extends
+          com.google.protobuf.GeneratedMessage {
+        // Use ClientAcknowledge.newBuilder() to construct.
+        private ClientAcknowledge() {}
+        
+        private static final ClientAcknowledge defaultInstance = new ClientAcknowledge();
+        public static ClientAcknowledge getDefaultInstance() {
+          return defaultInstance;
+        }
+        
+        public ClientAcknowledge getDefaultInstanceForType() {
+          return defaultInstance;
+        }
+        
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ClientAcknowledge_descriptor;
+        }
+        
+        @Override
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Authentication_ClientAcknowledge_fieldAccessorTable;
+        }
+        
+        // required string communication_id = 1;
+        private boolean hasCommunicationId;
+        private java.lang.String communicationId_ = "";
+        public boolean hasCommunicationId() { return hasCommunicationId; }
+        public java.lang.String getCommunicationId() { return communicationId_; }
+        
+        @Override
+        public final boolean isInitialized() {
+          if (!hasCommunicationId) return false;
+          return true;
+        }
+        
+        @Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (hasCommunicationId()) {
+            output.writeString(1, getCommunicationId());
+          }
+          getUnknownFields().writeTo(output);
+        }
+        
+        private int memoizedSerializedSize = -1;
+        @Override
+        public int getSerializedSize() {
+          int size = memoizedSerializedSize;
+          if (size != -1) return size;
+        
+          size = 0;
+          if (hasCommunicationId()) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeStringSize(1, getCommunicationId());
+          }
+          size += getUnknownFields().getSerializedSize();
+          memoizedSerializedSize = size;
+          return size;
+        }
+        
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        
+        public static Builder newBuilder() { return new Builder(); }
+        public Builder newBuilderForType() { return new Builder(); }
+        public static Builder newBuilder(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge prototype) {
+          return new Builder().mergeFrom(prototype);
+        }
+        
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessage.Builder<Builder> {
+          // Construct using pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.newBuilder()
+          private Builder() {}
+          
+          pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge();
+          
+          @Override
+          protected pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge internalGetResult() {
+            return result;
+          }
+          
+          @Override
+          public Builder clear() {
+            result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge();
+            return this;
+          }
+          
+          @Override
+          public Builder clone() {
+            return new Builder().mergeFrom(result);
+          }
+          
+          @Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.getDescriptor();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge getDefaultInstanceForType() {
+            return pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.getDefaultInstance();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge build() {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result);
+            }
+            return buildPartial();
+          }
+          
+          private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge buildParsed()
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            if (!isInitialized()) {
+              throw new com.google.protobuf.UninitializedMessageException(
+                result).asInvalidProtocolBufferException();
+            }
+            return buildPartial();
+          }
+          
+          public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge buildPartial() {
+            pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge returnMe = result;
+            result = null;
+            return returnMe;
+          }
+          
+          @Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge) {
+              return mergeFrom((pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+          
+          public Builder mergeFrom(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge other) {
+            if (other == pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.getDefaultInstance()) return this;
+            if (other.hasCommunicationId()) {
+              setCommunicationId(other.getCommunicationId());
+            }
+            this.mergeUnknownFields(other.getUnknownFields());
+            return this;
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input)
+              throws java.io.IOException {
+            return mergeFrom(input,
+              com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+          }
+          
+          @Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistry extensionRegistry)
+              throws java.io.IOException {
+            com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder(
+                this.getUnknownFields());
+            while (true) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  this.setUnknownFields(unknownFields.build());
+                  return this;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    this.setUnknownFields(unknownFields.build());
+                    return this;
+                  }
+                  break;
+                }
+                case 10: {
+                  setCommunicationId(input.readString());
+                  break;
+                }
+              }
+            }
+          }
+          
+          
+          // required string communication_id = 1;
+          public boolean hasCommunicationId() {
+            return result.hasCommunicationId();
+          }
+          public java.lang.String getCommunicationId() {
+            return result.getCommunicationId();
+          }
+          public Builder setCommunicationId(java.lang.String value) {
+            result.hasCommunicationId = true;
+            result.communicationId_ = value;
+            return this;
+          }
+          public Builder clearCommunicationId() {
+            result.hasCommunicationId = false;
+            result.communicationId_ = "";
+            return this;
+          }
+        }
+        
+        static {
+          pt.com.protobuf.codec.PBMessage.getDescriptor();
+        }
+      }
+      
+      // required .sapo_broker.Atom.Authentication.AuthMessageType authMsgType = 1;
+      private boolean hasAuthMsgType;
+      private pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType authMsgType_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType.CLIENT_AUTH;
+      public boolean hasAuthMsgType() { return hasAuthMsgType; }
+      public pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType getAuthMsgType() { return authMsgType_; }
+      
+      // optional .sapo_broker.Atom.Authentication.ClientAuth client_auth = 2;
+      private boolean hasClientAuth;
+      private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth clientAuth_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.getDefaultInstance();
+      public boolean hasClientAuth() { return hasClientAuth; }
+      public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth getClientAuth() { return clientAuth_; }
+      
+      // optional .sapo_broker.Atom.Authentication.ServerChallenge server_challenge = 3;
+      private boolean hasServerChallenge;
+      private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge serverChallenge_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.getDefaultInstance();
+      public boolean hasServerChallenge() { return hasServerChallenge; }
+      public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge getServerChallenge() { return serverChallenge_; }
+      
+      // optional .sapo_broker.Atom.Authentication.ServerChallengeResponseClientChallenge server_challenge_response_client_challenge = 4;
+      private boolean hasServerChallengeResponseClientChallenge;
+      private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge serverChallengeResponseClientChallenge_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.getDefaultInstance();
+      public boolean hasServerChallengeResponseClientChallenge() { return hasServerChallengeResponseClientChallenge; }
+      public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge getServerChallengeResponseClientChallenge() { return serverChallengeResponseClientChallenge_; }
+      
+      // optional .sapo_broker.Atom.Authentication.ClientChallengeResponse client_challenge_response = 5;
+      private boolean hasClientChallengeResponse;
+      private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse clientChallengeResponse_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.getDefaultInstance();
+      public boolean hasClientChallengeResponse() { return hasClientChallengeResponse; }
+      public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse getClientChallengeResponse() { return clientChallengeResponse_; }
+      
+      // optional .sapo_broker.Atom.Authentication.ClientAcknowledge client_acknowledge = 6;
+      private boolean hasClientAcknowledge;
+      private pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge clientAcknowledge_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.getDefaultInstance();
+      public boolean hasClientAcknowledge() { return hasClientAcknowledge; }
+      public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge getClientAcknowledge() { return clientAcknowledge_; }
+      
+      @Override
+      public final boolean isInitialized() {
+        if (!hasAuthMsgType) return false;
+        if (hasClientAuth()) {
+          if (!getClientAuth().isInitialized()) return false;
+        }
+        if (hasServerChallenge()) {
+          if (!getServerChallenge().isInitialized()) return false;
+        }
+        if (hasServerChallengeResponseClientChallenge()) {
+          if (!getServerChallengeResponseClientChallenge().isInitialized()) return false;
+        }
+        if (hasClientChallengeResponse()) {
+          if (!getClientChallengeResponse().isInitialized()) return false;
+        }
+        if (hasClientAcknowledge()) {
+          if (!getClientAcknowledge().isInitialized()) return false;
+        }
+        return true;
+      }
+      
+      @Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (hasAuthMsgType()) {
+          output.writeEnum(1, getAuthMsgType().getNumber());
+        }
+        if (hasClientAuth()) {
+          output.writeMessage(2, getClientAuth());
+        }
+        if (hasServerChallenge()) {
+          output.writeMessage(3, getServerChallenge());
+        }
+        if (hasServerChallengeResponseClientChallenge()) {
+          output.writeMessage(4, getServerChallengeResponseClientChallenge());
+        }
+        if (hasClientChallengeResponse()) {
+          output.writeMessage(5, getClientChallengeResponse());
+        }
+        if (hasClientAcknowledge()) {
+          output.writeMessage(6, getClientAcknowledge());
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      @Override
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (hasAuthMsgType()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(1, getAuthMsgType().getNumber());
+        }
+        if (hasClientAuth()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, getClientAuth());
+        }
+        if (hasServerChallenge()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(3, getServerChallenge());
+        }
+        if (hasServerChallengeResponseClientChallenge()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(4, getServerChallengeResponseClientChallenge());
+        }
+        if (hasClientChallengeResponse()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(5, getClientChallengeResponse());
+        }
+        if (hasClientAcknowledge()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(6, getClientAcknowledge());
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      public static pt.com.protobuf.codec.PBMessage.Atom.Authentication parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static pt.com.protobuf.codec.PBMessage.Atom.Authentication parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static pt.com.protobuf.codec.PBMessage.Atom.Authentication parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static pt.com.protobuf.codec.PBMessage.Atom.Authentication parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static pt.com.protobuf.codec.PBMessage.Atom.Authentication parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static pt.com.protobuf.codec.PBMessage.Atom.Authentication parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static pt.com.protobuf.codec.PBMessage.Atom.Authentication parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static pt.com.protobuf.codec.PBMessage.Atom.Authentication parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return new Builder(); }
+      public Builder newBuilderForType() { return new Builder(); }
+      public static Builder newBuilder(pt.com.protobuf.codec.PBMessage.Atom.Authentication prototype) {
+        return new Builder().mergeFrom(prototype);
+      }
+      
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder> {
+        // Construct using pt.com.protobuf.codec.PBMessage.Atom.Authentication.newBuilder()
+        private Builder() {}
+        
+        pt.com.protobuf.codec.PBMessage.Atom.Authentication result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication();
+        
+        @Override
+        protected pt.com.protobuf.codec.PBMessage.Atom.Authentication internalGetResult() {
+          return result;
+        }
+        
+        @Override
+        public Builder clear() {
+          result = new pt.com.protobuf.codec.PBMessage.Atom.Authentication();
+          return this;
+        }
+        
+        @Override
+        public Builder clone() {
+          return new Builder().mergeFrom(result);
+        }
+        
+        @Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return pt.com.protobuf.codec.PBMessage.Atom.Authentication.getDescriptor();
+        }
+        
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication getDefaultInstanceForType() {
+          return pt.com.protobuf.codec.PBMessage.Atom.Authentication.getDefaultInstance();
+        }
+        
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication build() {
+          if (!isInitialized()) {
+            throw new com.google.protobuf.UninitializedMessageException(
+              result);
+          }
+          return buildPartial();
+        }
+        
+        private pt.com.protobuf.codec.PBMessage.Atom.Authentication buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          if (!isInitialized()) {
+            throw new com.google.protobuf.UninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return buildPartial();
+        }
+        
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication buildPartial() {
+          pt.com.protobuf.codec.PBMessage.Atom.Authentication returnMe = result;
+          result = null;
+          return returnMe;
+        }
+        
+        @Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof pt.com.protobuf.codec.PBMessage.Atom.Authentication) {
+            return mergeFrom((pt.com.protobuf.codec.PBMessage.Atom.Authentication)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(pt.com.protobuf.codec.PBMessage.Atom.Authentication other) {
+          if (other == pt.com.protobuf.codec.PBMessage.Atom.Authentication.getDefaultInstance()) return this;
+          if (other.hasAuthMsgType()) {
+            setAuthMsgType(other.getAuthMsgType());
+          }
+          if (other.hasClientAuth()) {
+            mergeClientAuth(other.getClientAuth());
+          }
+          if (other.hasServerChallenge()) {
+            mergeServerChallenge(other.getServerChallenge());
+          }
+          if (other.hasServerChallengeResponseClientChallenge()) {
+            mergeServerChallengeResponseClientChallenge(other.getServerChallengeResponseClientChallenge());
+          }
+          if (other.hasClientChallengeResponse()) {
+            mergeClientChallengeResponse(other.getClientChallengeResponse());
+          }
+          if (other.hasClientAcknowledge()) {
+            mergeClientAcknowledge(other.getClientAcknowledge());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        @Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return mergeFrom(input,
+            com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+        }
+        
+        @Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  return this;
+                }
+                break;
+              }
+              case 8: {
+                int rawValue = input.readEnum();
+                pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType value = pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType.valueOf(rawValue);
+                if (value == null) {
+                  unknownFields.mergeVarintField(1, rawValue);
+                } else {
+                  setAuthMsgType(value);
+                }
+                break;
+              }
+              case 18: {
+                pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.Builder subBuilder = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.newBuilder();
+                if (hasClientAuth()) {
+                  subBuilder.mergeFrom(getClientAuth());
+                }
+                input.readMessage(subBuilder, extensionRegistry);
+                setClientAuth(subBuilder.buildPartial());
+                break;
+              }
+              case 26: {
+                pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.Builder subBuilder = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.newBuilder();
+                if (hasServerChallenge()) {
+                  subBuilder.mergeFrom(getServerChallenge());
+                }
+                input.readMessage(subBuilder, extensionRegistry);
+                setServerChallenge(subBuilder.buildPartial());
+                break;
+              }
+              case 34: {
+                pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.Builder subBuilder = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.newBuilder();
+                if (hasServerChallengeResponseClientChallenge()) {
+                  subBuilder.mergeFrom(getServerChallengeResponseClientChallenge());
+                }
+                input.readMessage(subBuilder, extensionRegistry);
+                setServerChallengeResponseClientChallenge(subBuilder.buildPartial());
+                break;
+              }
+              case 42: {
+                pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.Builder subBuilder = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.newBuilder();
+                if (hasClientChallengeResponse()) {
+                  subBuilder.mergeFrom(getClientChallengeResponse());
+                }
+                input.readMessage(subBuilder, extensionRegistry);
+                setClientChallengeResponse(subBuilder.buildPartial());
+                break;
+              }
+              case 50: {
+                pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.Builder subBuilder = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.newBuilder();
+                if (hasClientAcknowledge()) {
+                  subBuilder.mergeFrom(getClientAcknowledge());
+                }
+                input.readMessage(subBuilder, extensionRegistry);
+                setClientAcknowledge(subBuilder.buildPartial());
+                break;
+              }
+            }
+          }
+        }
+        
+        
+        // required .sapo_broker.Atom.Authentication.AuthMessageType authMsgType = 1;
+        public boolean hasAuthMsgType() {
+          return result.hasAuthMsgType();
+        }
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType getAuthMsgType() {
+          return result.getAuthMsgType();
+        }
+        public Builder setAuthMsgType(pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType value) {
+          result.hasAuthMsgType = true;
+          result.authMsgType_ = value;
+          return this;
+        }
+        public Builder clearAuthMsgType() {
+          result.hasAuthMsgType = false;
+          result.authMsgType_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType.CLIENT_AUTH;
+          return this;
+        }
+        
+        // optional .sapo_broker.Atom.Authentication.ClientAuth client_auth = 2;
+        public boolean hasClientAuth() {
+          return result.hasClientAuth();
+        }
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth getClientAuth() {
+          return result.getClientAuth();
+        }
+        public Builder setClientAuth(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth value) {
+          result.hasClientAuth = true;
+          result.clientAuth_ = value;
+          return this;
+        }
+        public Builder setClientAuth(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.Builder builderForValue) {
+          result.hasClientAuth = true;
+          result.clientAuth_ = builderForValue.build();
+          return this;
+        }
+        public Builder mergeClientAuth(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth value) {
+          if (result.hasClientAuth() &&
+              result.clientAuth_ != pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.getDefaultInstance()) {
+            result.clientAuth_ =
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.newBuilder(result.clientAuth_).mergeFrom(value).buildPartial();
+          } else {
+            result.clientAuth_ = value;
+          }
+          result.hasClientAuth = true;
+          return this;
+        }
+        public Builder clearClientAuth() {
+          result.hasClientAuth = false;
+          result.clientAuth_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.getDefaultInstance();
+          return this;
+        }
+        
+        // optional .sapo_broker.Atom.Authentication.ServerChallenge server_challenge = 3;
+        public boolean hasServerChallenge() {
+          return result.hasServerChallenge();
+        }
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge getServerChallenge() {
+          return result.getServerChallenge();
+        }
+        public Builder setServerChallenge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge value) {
+          result.hasServerChallenge = true;
+          result.serverChallenge_ = value;
+          return this;
+        }
+        public Builder setServerChallenge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.Builder builderForValue) {
+          result.hasServerChallenge = true;
+          result.serverChallenge_ = builderForValue.build();
+          return this;
+        }
+        public Builder mergeServerChallenge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge value) {
+          if (result.hasServerChallenge() &&
+              result.serverChallenge_ != pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.getDefaultInstance()) {
+            result.serverChallenge_ =
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.newBuilder(result.serverChallenge_).mergeFrom(value).buildPartial();
+          } else {
+            result.serverChallenge_ = value;
+          }
+          result.hasServerChallenge = true;
+          return this;
+        }
+        public Builder clearServerChallenge() {
+          result.hasServerChallenge = false;
+          result.serverChallenge_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.getDefaultInstance();
+          return this;
+        }
+        
+        // optional .sapo_broker.Atom.Authentication.ServerChallengeResponseClientChallenge server_challenge_response_client_challenge = 4;
+        public boolean hasServerChallengeResponseClientChallenge() {
+          return result.hasServerChallengeResponseClientChallenge();
+        }
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge getServerChallengeResponseClientChallenge() {
+          return result.getServerChallengeResponseClientChallenge();
+        }
+        public Builder setServerChallengeResponseClientChallenge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge value) {
+          result.hasServerChallengeResponseClientChallenge = true;
+          result.serverChallengeResponseClientChallenge_ = value;
+          return this;
+        }
+        public Builder setServerChallengeResponseClientChallenge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.Builder builderForValue) {
+          result.hasServerChallengeResponseClientChallenge = true;
+          result.serverChallengeResponseClientChallenge_ = builderForValue.build();
+          return this;
+        }
+        public Builder mergeServerChallengeResponseClientChallenge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge value) {
+          if (result.hasServerChallengeResponseClientChallenge() &&
+              result.serverChallengeResponseClientChallenge_ != pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.getDefaultInstance()) {
+            result.serverChallengeResponseClientChallenge_ =
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.newBuilder(result.serverChallengeResponseClientChallenge_).mergeFrom(value).buildPartial();
+          } else {
+            result.serverChallengeResponseClientChallenge_ = value;
+          }
+          result.hasServerChallengeResponseClientChallenge = true;
+          return this;
+        }
+        public Builder clearServerChallengeResponseClientChallenge() {
+          result.hasServerChallengeResponseClientChallenge = false;
+          result.serverChallengeResponseClientChallenge_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.getDefaultInstance();
+          return this;
+        }
+        
+        // optional .sapo_broker.Atom.Authentication.ClientChallengeResponse client_challenge_response = 5;
+        public boolean hasClientChallengeResponse() {
+          return result.hasClientChallengeResponse();
+        }
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse getClientChallengeResponse() {
+          return result.getClientChallengeResponse();
+        }
+        public Builder setClientChallengeResponse(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse value) {
+          result.hasClientChallengeResponse = true;
+          result.clientChallengeResponse_ = value;
+          return this;
+        }
+        public Builder setClientChallengeResponse(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.Builder builderForValue) {
+          result.hasClientChallengeResponse = true;
+          result.clientChallengeResponse_ = builderForValue.build();
+          return this;
+        }
+        public Builder mergeClientChallengeResponse(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse value) {
+          if (result.hasClientChallengeResponse() &&
+              result.clientChallengeResponse_ != pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.getDefaultInstance()) {
+            result.clientChallengeResponse_ =
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.newBuilder(result.clientChallengeResponse_).mergeFrom(value).buildPartial();
+          } else {
+            result.clientChallengeResponse_ = value;
+          }
+          result.hasClientChallengeResponse = true;
+          return this;
+        }
+        public Builder clearClientChallengeResponse() {
+          result.hasClientChallengeResponse = false;
+          result.clientChallengeResponse_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.getDefaultInstance();
+          return this;
+        }
+        
+        // optional .sapo_broker.Atom.Authentication.ClientAcknowledge client_acknowledge = 6;
+        public boolean hasClientAcknowledge() {
+          return result.hasClientAcknowledge();
+        }
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge getClientAcknowledge() {
+          return result.getClientAcknowledge();
+        }
+        public Builder setClientAcknowledge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge value) {
+          result.hasClientAcknowledge = true;
+          result.clientAcknowledge_ = value;
+          return this;
+        }
+        public Builder setClientAcknowledge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.Builder builderForValue) {
+          result.hasClientAcknowledge = true;
+          result.clientAcknowledge_ = builderForValue.build();
+          return this;
+        }
+        public Builder mergeClientAcknowledge(pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge value) {
+          if (result.hasClientAcknowledge() &&
+              result.clientAcknowledge_ != pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.getDefaultInstance()) {
+            result.clientAcknowledge_ =
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.newBuilder(result.clientAcknowledge_).mergeFrom(value).buildPartial();
+          } else {
+            result.clientAcknowledge_ = value;
+          }
+          result.hasClientAcknowledge = true;
+          return this;
+        }
+        public Builder clearClientAcknowledge() {
+          result.hasClientAcknowledge = false;
+          result.clientAcknowledge_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.getDefaultInstance();
+          return this;
+        }
+      }
+      
+      static {
+        pt.com.protobuf.codec.PBMessage.getDescriptor();
+      }
+    }
+    
     public static final class Action extends
         com.google.protobuf.GeneratedMessage {
       // Use Action.newBuilder() to construct.
@@ -4292,6 +6598,7 @@ public final class PBMessage {
         FAULT(7, 7),
         PING(8, 8),
         PONG(9, 9),
+        AUTH(10, 10),
         ;
         
         
@@ -4309,6 +6616,7 @@ public final class PBMessage {
             case 7: return FAULT;
             case 8: return PING;
             case 9: return PONG;
+            case 10: return AUTH;
             default: return null;
           }
         }
@@ -4327,7 +6635,7 @@ public final class PBMessage {
         }
         
         private static final ActionType[] VALUES = {
-          PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE_MESSAGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, 
+          PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE_MESSAGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH, 
         };
         public static ActionType valueOf(
             com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
@@ -4409,7 +6717,13 @@ public final class PBMessage {
       public boolean hasPong() { return hasPong; }
       public pt.com.protobuf.codec.PBMessage.Atom.Pong getPong() { return pong_; }
       
-      // required .sapo_broker.Atom.Action.ActionType action_type = 11;
+      // optional .sapo_broker.Atom.Authentication auth = 11;
+      private boolean hasAuth;
+      private pt.com.protobuf.codec.PBMessage.Atom.Authentication auth_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.getDefaultInstance();
+      public boolean hasAuth() { return hasAuth; }
+      public pt.com.protobuf.codec.PBMessage.Atom.Authentication getAuth() { return auth_; }
+      
+      // required .sapo_broker.Atom.Action.ActionType action_type = 12;
       private boolean hasActionType;
       private pt.com.protobuf.codec.PBMessage.Atom.Action.ActionType actionType_ = pt.com.protobuf.codec.PBMessage.Atom.Action.ActionType.PUBLISH;
       public boolean hasActionType() { return hasActionType; }
@@ -4448,6 +6762,9 @@ public final class PBMessage {
         if (hasPong()) {
           if (!getPong().isInitialized()) return false;
         }
+        if (hasAuth()) {
+          if (!getAuth().isInitialized()) return false;
+        }
         return true;
       }
       
@@ -4484,8 +6801,11 @@ public final class PBMessage {
         if (hasPong()) {
           output.writeMessage(10, getPong());
         }
+        if (hasAuth()) {
+          output.writeMessage(11, getAuth());
+        }
         if (hasActionType()) {
-          output.writeEnum(11, getActionType().getNumber());
+          output.writeEnum(12, getActionType().getNumber());
         }
         getUnknownFields().writeTo(output);
       }
@@ -4537,9 +6857,13 @@ public final class PBMessage {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(10, getPong());
         }
+        if (hasAuth()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(11, getAuth());
+        }
         if (hasActionType()) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(11, getActionType().getNumber());
+            .computeEnumSize(12, getActionType().getNumber());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -4697,6 +7021,9 @@ public final class PBMessage {
           if (other.hasPong()) {
             mergePong(other.getPong());
           }
+          if (other.hasAuth()) {
+            mergeAuth(other.getAuth());
+          }
           if (other.hasActionType()) {
             setActionType(other.getActionType());
           }
@@ -4824,11 +7151,20 @@ public final class PBMessage {
                 setPong(subBuilder.buildPartial());
                 break;
               }
-              case 88: {
+              case 90: {
+                pt.com.protobuf.codec.PBMessage.Atom.Authentication.Builder subBuilder = pt.com.protobuf.codec.PBMessage.Atom.Authentication.newBuilder();
+                if (hasAuth()) {
+                  subBuilder.mergeFrom(getAuth());
+                }
+                input.readMessage(subBuilder, extensionRegistry);
+                setAuth(subBuilder.buildPartial());
+                break;
+              }
+              case 96: {
                 int rawValue = input.readEnum();
                 pt.com.protobuf.codec.PBMessage.Atom.Action.ActionType value = pt.com.protobuf.codec.PBMessage.Atom.Action.ActionType.valueOf(rawValue);
                 if (value == null) {
-                  unknownFields.mergeVarintField(11, rawValue);
+                  unknownFields.mergeVarintField(12, rawValue);
                 } else {
                   setActionType(value);
                 }
@@ -5179,7 +7515,41 @@ public final class PBMessage {
           return this;
         }
         
-        // required .sapo_broker.Atom.Action.ActionType action_type = 11;
+        // optional .sapo_broker.Atom.Authentication auth = 11;
+        public boolean hasAuth() {
+          return result.hasAuth();
+        }
+        public pt.com.protobuf.codec.PBMessage.Atom.Authentication getAuth() {
+          return result.getAuth();
+        }
+        public Builder setAuth(pt.com.protobuf.codec.PBMessage.Atom.Authentication value) {
+          result.hasAuth = true;
+          result.auth_ = value;
+          return this;
+        }
+        public Builder setAuth(pt.com.protobuf.codec.PBMessage.Atom.Authentication.Builder builderForValue) {
+          result.hasAuth = true;
+          result.auth_ = builderForValue.build();
+          return this;
+        }
+        public Builder mergeAuth(pt.com.protobuf.codec.PBMessage.Atom.Authentication value) {
+          if (result.hasAuth() &&
+              result.auth_ != pt.com.protobuf.codec.PBMessage.Atom.Authentication.getDefaultInstance()) {
+            result.auth_ =
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.newBuilder(result.auth_).mergeFrom(value).buildPartial();
+          } else {
+            result.auth_ = value;
+          }
+          result.hasAuth = true;
+          return this;
+        }
+        public Builder clearAuth() {
+          result.hasAuth = false;
+          result.auth_ = pt.com.protobuf.codec.PBMessage.Atom.Authentication.getDefaultInstance();
+          return this;
+        }
+        
+        // required .sapo_broker.Atom.Action.ActionType action_type = 12;
         public boolean hasActionType() {
           return result.hasActionType();
         }
@@ -5586,6 +7956,36 @@ public final class PBMessage {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_sapo_broker_Atom_Pong_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_sapo_broker_Atom_Authentication_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_sapo_broker_Atom_Authentication_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_sapo_broker_Atom_Authentication_ClientAuth_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_sapo_broker_Atom_Authentication_ClientAuth_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_sapo_broker_Atom_Authentication_ServerChallenge_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_sapo_broker_Atom_Authentication_ServerChallenge_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_sapo_broker_Atom_Authentication_ServerChallengeResponseClientChallenge_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_sapo_broker_Atom_Authentication_ServerChallengeResponseClientChallenge_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_sapo_broker_Atom_Authentication_ClientChallengeResponse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_sapo_broker_Atom_Authentication_ClientChallengeResponse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_sapo_broker_Atom_Authentication_ClientAcknowledge_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_sapo_broker_Atom_Authentication_ClientAcknowledge_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_sapo_broker_Atom_Action_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5599,7 +7999,7 @@ public final class PBMessage {
       descriptor;
   static {
     java.lang.String descriptorData =
-      "\n\014broker.proto\022\013sapo_broker\"\353\016\n\004Atom\022(\n\006" +
+      "\n\014broker.proto\022\013sapo_broker\"\261\030\n\004Atom\022(\n\006" +
       "header\030\001 \001(\0132\030.sapo_broker.Atom.Header\022(" +
       "\n\006action\030\002 \002(\0132\030.sapo_broker.Atom.Action" +
       "\032(\n\tParameter\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002" +
@@ -5628,27 +8028,57 @@ public final class PBMessage {
       "\n\005Fault\022\021\n\taction_id\030\001 \001(\t\022\022\n\nfault_code" +
       "\030\002 \002(\t\022\025\n\rfault_message\030\003 \002(\t\022\024\n\014fault_d" +
       "etail\030\004 \001(\t\032\031\n\004Ping\022\021\n\ttimestamp\030\001 \002(\003\032\031" +
-      "\n\004Pong\022\021\n\ttimestamp\030\001 \002(\003\032\251\005\n\006Action\022*\n\007" +
-      "publish\030\001 \001(\0132\031.sapo_broker.Atom.Publish" +
-      "\022$\n\004poll\030\002 \001(\0132\026.sapo_broker.Atom.Poll\022," +
-      "\n\010accepted\030\003 \001(\0132\032.sapo_broker.Atom.Acce" +
-      "pted\0229\n\013ack_message\030\004 \001(\0132$.sapo_broker." +
-      "Atom.AcknowledgeMessage\022.\n\tsubscribe\030\005 \001" +
-      "(\0132\033.sapo_broker.Atom.Subscribe\0222\n\013unsub" +
-      "scribe\030\006 \001(\0132\035.sapo_broker.Atom.Unsubscr" +
-      "ibe\0224\n\014notification\030\007 \001(\0132\036.sapo_broker." +
-      "Atom.Notification\022&\n\005fault\030\010 \001(\0132\027.sapo_" +
-      "broker.Atom.Fault\022$\n\004ping\030\t \001(\0132\026.sapo_b" +
-      "roker.Atom.Ping\022$\n\004pong\030\n \001(\0132\026.sapo_bro" +
-      "ker.Atom.Pong\0228\n\013action_type\030\013 \002(\0162#.sap" +
-      "o_broker.Atom.Action.ActionType\"\233\001\n\nActi" +
-      "onType\022\013\n\007PUBLISH\020\000\022\010\n\004POLL\020\001\022\014\n\010ACCEPTE" +
-      "D\020\002\022\027\n\023ACKNOWLEDGE_MESSAGE\020\003\022\r\n\tSUBSCRIB" +
-      "E\020\004\022\017\n\013UNSUBSCRIBE\020\005\022\020\n\014NOTIFICATION\020\006\022\t" +
-      "\n\005FAULT\020\007\022\010\n\004PING\020\010\022\010\n\004PONG\020\t\":\n\017Destina" +
-      "tionType\022\t\n\005TOPIC\020\000\022\t\n\005QUEUE\020\001\022\021\n\rVIRTUA" +
-      "L_QUEUE\020\002B$\n\025pt.com.protobuf.codecB\tPBMe" +
-      "ssageH\001";
+      "\n\004Pong\022\021\n\ttimestamp\030\001 \002(\003\032\211\t\n\016Authentica" +
+      "tion\022E\n\013authMsgType\030\001 \002(\01620.sapo_broker." +
+      "Atom.Authentication.AuthMessageType\022@\n\013c" +
+      "lient_auth\030\002 \001(\0132+.sapo_broker.Atom.Auth" +
+      "entication.ClientAuth\022J\n\020server_challeng" +
+      "e\030\003 \001(\01320.sapo_broker.Atom.Authenticatio" +
+      "n.ServerChallenge\022{\n*server_challenge_re" +
+      "sponse_client_challenge\030\004 \001(\0132G.sapo_bro" +
+      "ker.Atom.Authentication.ServerChallengeR" +
+      "esponseClientChallenge\022[\n\031client_challen" +
+      "ge_response\030\005 \001(\01328.sapo_broker.Atom.Aut" +
+      "hentication.ClientChallengeResponse\022N\n\022c" +
+      "lient_acknowledge\030\006 \001(\01322.sapo_broker.At" +
+      "om.Authentication.ClientAcknowledge\032w\n\nC" +
+      "lientAuth\022\033\n\023authentication_type\030\001 \001(\t\022\036" +
+      "\n\026local_communication_id\030\002 \002(\t\022\r\n\005token\030" +
+      "\003 \002(\014\022\017\n\007user_id\030\004 \001(\t\022\014\n\004role\030\005 \003(\t\032\203\001\n" +
+      "\017ServerChallenge\022\030\n\020communication_id\030\001 \002" +
+      "(\t\022\021\n\tchallenge\030\002 \002(\014\022\016\n\006secret\030\003 \002(\014\022\036\n" +
+      "\026local_communication_id\030\004 \002(\t\022\023\n\013secret_" +
+      "type\030\005 \001(\t\032`\n&ServerChallengeResponseCli" +
+      "entChallenge\022\030\n\020communication_id\030\001 \002(\t\022\034" +
+      "\n\024protected_challenges\030\002 \002(\014\032F\n\027ClientCh" +
+      "allengeResponse\022\030\n\020communication_id\030\001 \002(" +
+      "\t\022\021\n\tchallenge\030\002 \002(\014\032-\n\021ClientAcknowledg" +
+      "e\022\030\n\020communication_id\030\001 \002(\t\"\237\001\n\017AuthMess" +
+      "ageType\022\017\n\013CLIENT_AUTH\020\000\022\024\n\020SERVER_CHALL" +
+      "ENGE\020\001\022.\n*SERVER_CHALLENGE_RESPONSE_CLIE" +
+      "NT_CHALLENGE\020\002\022\035\n\031CLIENT_CHALLENGE_RESPO" +
+      "NSE\020\003\022\026\n\022CLIENT_ACKNOWLEDGE\020\004\032\343\005\n\006Action" +
+      "\022*\n\007publish\030\001 \001(\0132\031.sapo_broker.Atom.Pub" +
+      "lish\022$\n\004poll\030\002 \001(\0132\026.sapo_broker.Atom.Po" +
+      "ll\022,\n\010accepted\030\003 \001(\0132\032.sapo_broker.Atom." +
+      "Accepted\0229\n\013ack_message\030\004 \001(\0132$.sapo_bro" +
+      "ker.Atom.AcknowledgeMessage\022.\n\tsubscribe" +
+      "\030\005 \001(\0132\033.sapo_broker.Atom.Subscribe\0222\n\013u" +
+      "nsubscribe\030\006 \001(\0132\035.sapo_broker.Atom.Unsu" +
+      "bscribe\0224\n\014notification\030\007 \001(\0132\036.sapo_bro" +
+      "ker.Atom.Notification\022&\n\005fault\030\010 \001(\0132\027.s" +
+      "apo_broker.Atom.Fault\022$\n\004ping\030\t \001(\0132\026.sa" +
+      "po_broker.Atom.Ping\022$\n\004pong\030\n \001(\0132\026.sapo" +
+      "_broker.Atom.Pong\022.\n\004auth\030\013 \001(\0132 .sapo_b" +
+      "roker.Atom.Authentication\0228\n\013action_type" +
+      "\030\014 \002(\0162#.sapo_broker.Atom.Action.ActionT" +
+      "ype\"\245\001\n\nActionType\022\013\n\007PUBLISH\020\000\022\010\n\004POLL\020" +
+      "\001\022\014\n\010ACCEPTED\020\002\022\027\n\023ACKNOWLEDGE_MESSAGE\020\003" +
+      "\022\r\n\tSUBSCRIBE\020\004\022\017\n\013UNSUBSCRIBE\020\005\022\020\n\014NOTI" +
+      "FICATION\020\006\022\t\n\005FAULT\020\007\022\010\n\004PING\020\010\022\010\n\004PONG\020" +
+      "\t\022\010\n\004AUTH\020\n\":\n\017DestinationType\022\t\n\005TOPIC\020" +
+      "\000\022\t\n\005QUEUE\020\001\022\021\n\rVIRTUAL_QUEUE\020\002B$\n\025pt.co" +
+      "m.protobuf.codecB\tPBMessageH\001";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -5766,12 +8196,60 @@ public final class PBMessage {
               new java.lang.String[] { "Timestamp", },
               pt.com.protobuf.codec.PBMessage.Atom.Pong.class,
               pt.com.protobuf.codec.PBMessage.Atom.Pong.Builder.class);
-          internal_static_sapo_broker_Atom_Action_descriptor =
+          internal_static_sapo_broker_Atom_Authentication_descriptor =
             internal_static_sapo_broker_Atom_descriptor.getNestedTypes().get(13);
+          internal_static_sapo_broker_Atom_Authentication_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_sapo_broker_Atom_Authentication_descriptor,
+              new java.lang.String[] { "AuthMsgType", "ClientAuth", "ServerChallenge", "ServerChallengeResponseClientChallenge", "ClientChallengeResponse", "ClientAcknowledge", },
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.class,
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.Builder.class);
+          internal_static_sapo_broker_Atom_Authentication_ClientAuth_descriptor =
+            internal_static_sapo_broker_Atom_Authentication_descriptor.getNestedTypes().get(0);
+          internal_static_sapo_broker_Atom_Authentication_ClientAuth_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_sapo_broker_Atom_Authentication_ClientAuth_descriptor,
+              new java.lang.String[] { "AuthenticationType", "LocalCommunicationId", "Token", "UserId", "Role", },
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.class,
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth.Builder.class);
+          internal_static_sapo_broker_Atom_Authentication_ServerChallenge_descriptor =
+            internal_static_sapo_broker_Atom_Authentication_descriptor.getNestedTypes().get(1);
+          internal_static_sapo_broker_Atom_Authentication_ServerChallenge_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_sapo_broker_Atom_Authentication_ServerChallenge_descriptor,
+              new java.lang.String[] { "CommunicationId", "Challenge", "Secret", "LocalCommunicationId", "SecretType", },
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.class,
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge.Builder.class);
+          internal_static_sapo_broker_Atom_Authentication_ServerChallengeResponseClientChallenge_descriptor =
+            internal_static_sapo_broker_Atom_Authentication_descriptor.getNestedTypes().get(2);
+          internal_static_sapo_broker_Atom_Authentication_ServerChallengeResponseClientChallenge_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_sapo_broker_Atom_Authentication_ServerChallengeResponseClientChallenge_descriptor,
+              new java.lang.String[] { "CommunicationId", "ProtectedChallenges", },
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.class,
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.Builder.class);
+          internal_static_sapo_broker_Atom_Authentication_ClientChallengeResponse_descriptor =
+            internal_static_sapo_broker_Atom_Authentication_descriptor.getNestedTypes().get(3);
+          internal_static_sapo_broker_Atom_Authentication_ClientChallengeResponse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_sapo_broker_Atom_Authentication_ClientChallengeResponse_descriptor,
+              new java.lang.String[] { "CommunicationId", "Challenge", },
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.class,
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse.Builder.class);
+          internal_static_sapo_broker_Atom_Authentication_ClientAcknowledge_descriptor =
+            internal_static_sapo_broker_Atom_Authentication_descriptor.getNestedTypes().get(4);
+          internal_static_sapo_broker_Atom_Authentication_ClientAcknowledge_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_sapo_broker_Atom_Authentication_ClientAcknowledge_descriptor,
+              new java.lang.String[] { "CommunicationId", },
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.class,
+              pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAcknowledge.Builder.class);
+          internal_static_sapo_broker_Atom_Action_descriptor =
+            internal_static_sapo_broker_Atom_descriptor.getNestedTypes().get(14);
           internal_static_sapo_broker_Atom_Action_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_sapo_broker_Atom_Action_descriptor,
-              new java.lang.String[] { "Publish", "Poll", "Accepted", "AckMessage", "Subscribe", "Unsubscribe", "Notification", "Fault", "Ping", "Pong", "ActionType", },
+              new java.lang.String[] { "Publish", "Poll", "Accepted", "AckMessage", "Subscribe", "Unsubscribe", "Notification", "Fault", "Ping", "Pong", "Auth", "ActionType", },
               pt.com.protobuf.codec.PBMessage.Atom.Action.class,
               pt.com.protobuf.codec.PBMessage.Atom.Action.Builder.class);
           return null;
