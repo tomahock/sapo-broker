@@ -12,10 +12,11 @@
 		-->
 		<discovery_delay>100</discovery_delay>
 		<file_ref>./conf/world_map.xml</file_ref>
-		<broker-port>3323</broker-port>
 		<broker-legacy-port>3322</broker-legacy-port>
+		<broker-port>3323</broker-port>
 		<broker-http-port>3380</broker-http-port>
-		<broker-udp-port>3323</broker-udp-port>
+		<broker-udp-port>3366</broker-udp-port>
+		<broker-ssl-port>3390</broker-ssl-port>
 	</net>
 
 	<!-- Persistent storage configuration -->
@@ -90,5 +91,100 @@
 		-->
 		<update_interval>60</update_interval>
 	</statistics>
+	
+	<ssl>
+		<keystoreLocation>XXXXXXXX</keystoreLocation>
+		<keystorePassword>XXXXXXXX</keystorePassword>
+		<keyPassword>XXXXXXXX</keyPassword>
+	</ssl>
+ 	
+	<sts>
+		<STSLocation>https://services.sapo.pt/sts/</STSLocation>
+		<STSUsername>XXXXXXXX</STSUsername>
+		<STSPassword>XXXXXXXX</STSPassword>
+	</sts>
+	<securityPolicies>
+		<bs:policies xmlns:bs="http://softwarelivre.sapo.pt/broker/securityPolicies">
+			<bs:policy policy-name="default">
+				<bs:acl>
+					<bs:entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination=".*"  privilege="READ WRITE">
+						<bs:condition condition-type="ALWAYS" />
+					</bs:entry>				</bs:acl>
+			</bs:policy>
+			<bs:policy policy-name="special policy" inherits="default">
+				<bs:acl>
+					<bs:entry action="PERMIT" destination-type="QUEUE" destination="*"  privilege="READ">
+						<bs:condition condition-type="ADDRESS">
+							<bs:address  mask="24">10.11.12.0</bs:address>
+						</bs:condition>
+						<bs:condition condition-type="ROLE">
+							<bs:role>brk_role_x</bs:role>
+						</bs:condition>
+					</bs:entry>
+					<bs:entry action="PERMIT" destination-type="QUEUE" destination="*"  privilege="WRITE">
+						<bs:condition condition-type="ADDRESS">
+							<bs:address mask="24">10.11.12.0</bs:address>
+						</bs:condition>
+						<bs:condition condition-type="ROLE">
+							<bs:role>brk_writer_role</bs:role>
+						</bs:condition>
+					</bs:entry>
+					<bs:entry action="DENY" destination-type="QUEUE" destination="*"  privilege="READ">
+						<bs:condition condition-type="ADDRESS">
+							<bs:address mask="24">10.11.12.0</bs:address>
+						</bs:condition>
+						<bs:condition condition-type="ROLE">
+							<bs:role>brk_writer_role</bs:role>
+						</bs:condition>
+					</bs:entry>
+					<bs:entry action="DENY" destination-type="QUEUE" destination="*"  privilege="READ READ">
+						<bs:condition condition-type="ALWAYS" />
+					</bs:entry>
+				</bs:acl>
+			</bs:policy>
+			<bs:policy policy-name="very special policy" inherits="special policy">
+				<bs:acl>
+					<bs:entry action="PERMIT" destination-type="TOPIC" destination="/topic/sensitive"  privilege="READ WRITE">
+						<bs:condition condition-type="AND">
+							<bs:condition condition-type="ROLE">
+								<bs:role>brk_writer_role</bs:role>
+							</bs:condition>
+							<bs:condition condition-type="CHANNELTYPE">
+								<bs:channel-type>CONFIDENTIALITY</bs:channel-type>
+							</bs:condition>
+						</bs:condition>
+					</bs:entry>	
+				</bs:acl>
+			</bs:policy>
+			<bs:policy policy-name="policy-agent1" inherits="default">
+				<bs:acl>
+					<bs:entry action="PERMIT" destination-type="TOPIC" destination="/test/foo"  privilege="WRITE">
+						<bs:condition condition-type="ADDRESS">
+							<bs:address mask="32">127.0.0.1</bs:address>
+						</bs:condition>
+					</bs:entry>
+					<bs:entry action="PERMIT" destination-type="TOPIC" destination="/test/.*"  privilege="READ">
 
+						<bs:condition condition-type="AND">
+							<bs:condition condition-type="ADDRESS">
+								<bs:address mask="32">127.0.0.1</bs:address>
+							</bs:condition>
+							<bs:condition condition-type="ROLE">
+								<bs:role>admin@notsuchdomain</bs:role>
+							</bs:condition>							
+						</bs:condition>
+					</bs:entry>
+				</bs:acl>
+			</bs:policy>
+		</bs:policies>
+		
+		<bs:agents xmlns:bs="http://softwarelivre.sapo.pt/broker/securityPolicies">
+			<bs:agent agent-name="borderAgent">
+				<bs:agent-policy policy-name="special policy" />
+			</bs:agent>
+			<bs:agent agent-name="broker1">
+				<bs:agent-policy policy-name= "policy-agent1" />
+			</bs:agent>
+		</bs:agents>
+	</securityPolicies>
 </config>
