@@ -72,10 +72,9 @@ public class BrokerSSLServer
 			log.info("SAPO-SSL-BROKER  Listening on: '{}'.", acceptor0.getLocalAddress());
 
 		}
-		catch (Throwable e)
+		catch (Exception e)
 		{
-			log.error(e.getMessage(), e);
-			Shutdown.now();
+			log.error("SAPO-SSL-BROKER failed to start. " + e.getMessage(), e);
 		}
 	}
 
