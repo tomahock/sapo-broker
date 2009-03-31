@@ -23,7 +23,7 @@ namespace PTCom.ApplicationBlocks.Messaging.Sample
         {
             MQConsumer consumer = new MQConsumer();
 
-            BrokerClient bc = new BrokerClient("10.135.5.86", 3322, "tcp://mycompany.com/mysniffer");
+            BrokerClient bc = new BrokerClient("broker.bk.sapo.pt", 3322, "tcp://mycompany.com/mysniffer");
 
             Notify nreq1 = new Notify();
             nreq1.DestinationName = "/sapo/webanalytics/pageviews";
