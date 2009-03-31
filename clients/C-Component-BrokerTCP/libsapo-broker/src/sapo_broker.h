@@ -7,10 +7,7 @@
 
 #include <sys/time.h>
 #include <sys/socket.h>
-#include <expat.h>
-
 #include "sapo_broker_xml.h"
-
 
 #define DEFAULT_HOST "127.0.0.1"
 #define DEFAULT_PORT 2222
@@ -25,51 +22,6 @@ enum {
 #define SB_SEND_TOPIC "Publish"
 #define SB_RECV_QUEUE "QUEUE"
 #define SB_RECV_TOPIC "TOPIC"
-
-
-// Template for publishing messages (Topics or queues)
-// This will be filled by the correct params 
-// Not pretty, but fast
-
-#define TPUBLISH "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"><soapenv:Body>\
-<%s xmlns=\"http://services.sapo.pt/broker\"><BrokerMessage>\
-<DestinationName>%s</DestinationName>\
-<TextPayload>\
-<![CDATA[%s]]>\
-</TextPayload>\
-</BrokerMessage></%s>\
-</soapenv:Body></soapenv:Envelope>"
-
-
-#define TPUBLISH_TIME "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"><soapenv:Body>\
-<%s xmlns=\"http://services.sapo.pt/broker\"><BrokerMessage>\
-<Expiration>%s</Expiration>\
-<DestinationName>%s</DestinationName>\
-<TextPayload>\
-<![CDATA[%s]]>\
-</TextPayload>\
-</BrokerMessage></%s>\
-</soapenv:Body></soapenv:Envelope>"
-
-
-#define TACK "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"><soapenv:Body>\
-<Acknowledge xmlns=\"http://services.sapo.pt/broker\">\
-<MessageId>%s</MessageId>\
-<DestinationName>%s</DestinationName>\
-</Acknowledge>\
-</soapenv:Body></soapenv:Envelope>"
-
-// Template for subscribing topics/queues
-// This will be filled by the correct params 
-// Not pretty, but fast
-
-#define TSUBSCRIBE "<soapenv:Envelope xmlns:soapenv='http://www.w3.org/2003/05/soap-envelope'><soapenv:Body>\
-<Notify xmlns='http://services.sapo.pt/broker'>\
-<DestinationName>%s</DestinationName>\
-<DestinationType>%s</DestinationType>\
-</Notify>\
-</soapenv:Body></soapenv:Envelope>"
-
 
 // not in use ... yet
 #define SAPO_BROKER_MAX_RETRY 5
@@ -116,10 +68,6 @@ typedef struct _sapo_broker_connection {
     XML_Parser parser;
 } SAPO_BROKER_T;
 
-
-
-
-
 SAPO_BROKER_T *sb_new(char *hostname, int port, int type);
 void sb_destroy(SAPO_BROKER_T * conn);
 char *sb_error();
@@ -140,12 +88,7 @@ int sb_wait_time(SAPO_BROKER_T * conn, struct timeval *tv);
 
 int sb_send_ack(SAPO_BROKER_T * conn, BrokerMessage * msg);
 
-
 // xml operations 
 void sb_free_message(BrokerMessage * message);
 
-
-
-
-
-#endif                          // _SAPO_BROKER_H_
+#endif /* _SAPO_BROKER_H_ */

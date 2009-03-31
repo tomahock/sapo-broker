@@ -1,8 +1,9 @@
-#ifndef _sb_xml_
-#define _sb_xml_
+#ifndef _SAPO_BROKER_XML_H_
+#define _SAPO_BROKER_XML_H_
 
 #include <time.h>
-#include "expat.h"
+#include <expat.h>
+#include "sapo_broker_xml_templates.h"
 
 #define BUFFSIZE	8192
 char Buff[BUFFSIZE];
@@ -43,9 +44,8 @@ typedef struct {
     BrokerMessage *msg;
 } BrokerParserData;
 
-
 BrokerMessage *sb_parser_process(XML_Parser p, char *buffer, int len);
 XML_Parser sb_parser_new();
 void sb_parser_destroy(XML_Parser p);
 
-#endif
+#endif /* _SAPO_BROKER_XML_H_ */
