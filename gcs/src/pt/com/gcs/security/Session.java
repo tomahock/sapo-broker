@@ -1,52 +1,65 @@
-package pt.com.gcs.security;
+package pt.com.broker.security;
 
 import org.apache.mina.core.session.IoSession;
 
-import pt.com.gcs.security.AccessControl.Privilege;
+import pt.com.broker.security.authorization.AccessControl;
+import pt.com.broker.security.authorization.AclEntry;
+import pt.com.broker.security.authorization.SessionAcl;
+import pt.com.broker.security.authorization.AccessControl.Privilege;
 
-public class Session {
+public class Session
+{
 	private IoSession session;
 	private SessionProperties sessionProperties;
 	private SessionAcl readSessionAcl;
 	private SessionAcl writeSessionAcl;
-	
+
 	public Session(IoSession session)
 	{
-		this(session, new SessionProperties());
+		this(session, new SessionProperties(session));
 	}
-	
+
 	public Session(IoSession session, SessionProperties sessionProperties)
 	{
 		this.session = session;
 		this.sessionProperties = sessionProperties;
-		upadateAcl();
+		updateAcl();
 	}
-	
-	public IoSession getSession() {
+
+	public IoSession getSession()
+	{
 		return session;
 	}
-	public SessionProperties getSessionProperties() {
+
+	public SessionProperties getSessionProperties()
+	{
 		return sessionProperties;
 	}
-	public SessionAcl getReadSessionAcl() {
+
+	public SessionAcl getReadSessionAcl()
+	{
 		return readSessionAcl;
 	}
-	public SessionAcl getWriteSessionAcl() {
+
+	public SessionAcl getWriteSessionAcl()
+	{
 		return writeSessionAcl;
 	}
-	
-	public void upadateAcl()
+
+	public void updateAcl()
 	{
 		readSessionAcl = new SessionAcl();
 		writeSessionAcl = new SessionAcl();
 		SessionAcl fullSessionAcl = AccessControl.getSessionAcl(sessionProperties);
-		
-		for(AclEntry entry : fullSessionAcl)
+
+		for (AclEntry entry : fullSessionAcl)
 		{
-			if(entry.getPrivilege().equals(Privilege.READ))
+			if (entry.getPrivilege().equals(Privilege.READ))
 			{
 				readSessionAcl.add(entry);
-			} else {
+			}
+			else
+			{
 				writeSessionAcl.add(entry);
 			}
 		}
