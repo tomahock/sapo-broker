@@ -1,5 +1,6 @@
 package pt.com.broker.client;
 
+import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -400,6 +401,7 @@ public class BrokerClient
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination)))
 		{
 			NetPublish publish = new NetPublish(destination, pt.com.types.NetAction.DestinationType.TOPIC, brokerMessage);
+			publish.setActionId((new UID()).toString());
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
 
