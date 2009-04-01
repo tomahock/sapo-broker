@@ -55,28 +55,11 @@ public class QueueSessionListener extends BrokerListener
 			{
 				if (ioSession.isConnected() && !ioSession.isClosing())
 				{
-					final NetMessage response = BrokerListener.buildNotification(msg, pt.com.types.NetAction.DestinationType.QUEUE);
-					
 					if (ioSession.getScheduledWriteBytes() > MAX_SESSION_BUFFER_SIZE)
 					{
-						int sleepCount = 0;
-						boolean isWriteTimeout = false;
-						while (ioSession.getScheduledWriteBytes() > MAX_SESSION_BUFFER_SIZE && !isWriteTimeout)
-						{
-							Sleep.time(1);
-							sleepCount++;
-							if (sleepCount > 2500)
-							{
-								isWriteTimeout = true;
-							}
-						}
-
-						if (isWriteTimeout)
-						{
-							WriteRequest wreq = new DefaultWriteRequest(response);
-							throw new WriteTimeoutException(wreq);
-						}
+						return false;
 					}
+					final NetMessage response = BrokerListener.buildNotification(msg, pt.com.types.NetAction.DestinationType.QUEUE);
 					ioSession.write(response);
 					return true;
 				}

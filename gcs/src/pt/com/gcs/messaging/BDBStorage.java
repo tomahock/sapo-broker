@@ -28,8 +28,6 @@ class BDBStorage
 {
 	private static Logger log = LoggerFactory.getLogger(BDBStorage.class);
 
-	private static final int MAX_DELIVERY_COUNT = 25;
-
 	private Environment env;
 
 	private Database messageDb;
@@ -198,13 +196,7 @@ class BDBStorage
 							final boolean isReserved = reserved > now ? true : false;
 							final boolean safeForPolling = ((reserved == 0) && (deliveryCount == 0)) ? true : false;
 
-							if (deliveryCount > MAX_DELIVERY_COUNT)
-							{
-								msg_cursor.delete();
-								log.warn("Overdelivered message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
-								dumpMessage(msg);
-							}
-							else if (now > expiration)
+							if (now > expiration)
 							{
 								msg_cursor.delete();
 								log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
@@ -279,8 +271,6 @@ class BDBStorage
 
 		synchronized (dbLock)
 		{
-			long c0 = System.currentTimeMillis();
-
 			Cursor msg_cursor = null;
 			boolean redelivery = ((batchCount.incrementAndGet() % 10) == 0);
 
@@ -293,14 +283,12 @@ class BDBStorage
 			{
 				msg_cursor = messageDb.openCursor(null, null);
 
-				long c1 = System.currentTimeMillis();
-				long d0 = (c1 - c0);
-
 				DatabaseEntry key = new DatabaseEntry();
 				DatabaseEntry data = new DatabaseEntry();
 
 				int i0 = 0;
 				int j0 = 0;
+				long mark = System.currentTimeMillis();
 
 				while (msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS)
 				{
@@ -319,20 +307,7 @@ class BDBStorage
 
 					if (!isReserved && ((deliveryCount < 1) || redelivery))
 					{
-						bdbm.setDeliveryCount(deliveryCount + 1);
-						bdbm.setPreferLocalConsumer(false);
-						msg_cursor.put(key, buildDatabaseEntry(bdbm));
-
-						long mark = System.currentTimeMillis();
-
-						if (deliveryCount > MAX_DELIVERY_COUNT)
-						{
-							j0++;
-							msg_cursor.delete();
-							log.warn("Overdelivered message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
-							dumpMessage(msg);
-						}
-						else if (mark > msg.getExpiration())
+						if (mark > msg.getExpiration())
 						{
 							j0++;
 							msg_cursor.delete();
@@ -345,12 +320,20 @@ class BDBStorage
 							{
 								if (!queueProcessor.forward(msg, preferLocalConsumer))
 								{
-									j0++;
-									bdbm.setDeliveryCount(deliveryCount);
+									bdbm.setDeliveryCount(deliveryCount + 1);
+									bdbm.setPreferLocalConsumer(false);
 									msg_cursor.put(key, buildDatabaseEntry(bdbm));
-									log.warn("Could not deliver message. Id: '{}'", bdbm.getMessage().getMessageId());
+									if (log.isDebugEnabled())
+									{
+										log.debug("Could not deliver message. Id: '{}'", msg.getMessageId());
+									}
 									dumpMessage(msg);
+									j0++;
 
+									if (queueProcessor.size() < 2)
+									{
+										break;
+									}
 								}
 								else
 								{
@@ -365,12 +348,9 @@ class BDBStorage
 					}
 				}
 
-				long c2 = System.currentTimeMillis();
-				long d1 = (c2 - c1);
-
 				if (log.isDebugEnabled())
 				{
-					log.debug(String.format("Queue '%s' processing summary; Retrieval time: %s ms; Delivery time: %s ms; Delivered: %s; Failed delivered: %s, Redelivery: %s;", queueProcessor.getDestinationName(), d0, d1, i0, j0, redelivery));
+					log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivered: %s, Redelivery: %s;", queueProcessor.getDestinationName(), i0, j0, redelivery));
 				}
 			}
 			catch (Throwable t)
