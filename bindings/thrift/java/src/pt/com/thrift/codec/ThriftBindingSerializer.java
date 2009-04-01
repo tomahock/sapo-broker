@@ -12,6 +12,7 @@ import pt.com.thrift.Accepted;
 import pt.com.thrift.AcknowledgeMessage;
 import pt.com.thrift.Action;
 import pt.com.thrift.ActionType;
+import pt.com.thrift.Atom;
 import pt.com.thrift.BrokerMessage;
 import pt.com.thrift.DestinationType;
 import pt.com.thrift.Fault;
@@ -22,7 +23,6 @@ import pt.com.thrift.Poll;
 import pt.com.thrift.Pong;
 import pt.com.thrift.Publish;
 import pt.com.thrift.Subscribe;
-import pt.com.thrift.ThriftMessage;
 import pt.com.thrift.Unsubscribe;
 import pt.com.types.BindingSerializer;
 import pt.com.types.NetAccepted;
@@ -52,7 +52,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 		try
 		{
 
-			ThriftMessage tm = new ThriftMessage();
+			Atom tm = new Atom();
 			Header header = getHeaders(netMessage);
 			Action ac = getAction(netMessage);
 
@@ -94,7 +94,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 		NetMessage message = null;
 		try
 		{
-			ThriftMessage tm = new ThriftMessage();
+			Atom tm = new Atom();
 			TDeserializer deserializer = new TDeserializer(new TBinaryProtocol.Factory());
 			deserializer.deserialize(tm, packet);
 			message = constructMessage(tm);
@@ -107,7 +107,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return message;
 	}
 
-	private NetMessage constructMessage(ThriftMessage tm)
+	private NetMessage constructMessage(Atom tm)
 	{
 
 		NetMessage message = new NetMessage(extractAction(tm.getAction()), tm.header.parameters);

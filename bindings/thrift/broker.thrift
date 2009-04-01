@@ -172,7 +172,7 @@ struct Action
 
 }
 
-struct ThriftMessage
+struct Atom
 {	
 	1: optional Header header;
 	2: Action action;
