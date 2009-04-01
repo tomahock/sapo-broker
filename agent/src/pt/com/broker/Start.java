@@ -32,14 +32,14 @@ public class Start
 		try
 		{
 			// Verify if the Aalto parser is in the classpath
-			Class.forName("org.codehaus.wool.stax.InputFactoryImpl").newInstance();
-			Class.forName("org.codehaus.wool.stax.OutputFactoryImpl").newInstance();
-			Class.forName("org.codehaus.wool.stax.EventFactoryImpl").newInstance();
+			Class.forName("com.fasterxml.aalto.stax.InputFactoryImpl").newInstance();
+			Class.forName("com.fasterxml.aalto.stax.OutputFactoryImpl").newInstance();
+			Class.forName("com.fasterxml.aalto.stax.EventFactoryImpl").newInstance();
 
 			// If we made it here without errors set Aalto as our StaX parser
-			System.setProperty("javax.xml.stream.XMLInputFactory", "org.codehaus.wool.stax.InputFactoryImpl");
-			System.setProperty("javax.xml.stream.XMLOutputFactory", "org.codehaus.wool.stax.OutputFactoryImpl");
-			System.setProperty("javax.xml.stream.XMLEventFactory", "org.codehaus.wool.stax.EventFactoryImpl");
+			System.setProperty("javax.xml.stream.XMLInputFactory", "com.fasterxml.aalto.stax.InputFactoryImpl");
+			System.setProperty("javax.xml.stream.XMLOutputFactory", "com.fasterxml.aalto.stax.OutputFactoryImpl");
+			System.setProperty("javax.xml.stream.XMLEventFactory", "com.fasterxml.aalto.stax.EventFactoryImpl");
 		}
 		catch (Throwable t)
 		{
