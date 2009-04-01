@@ -12,6 +12,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -23,7 +25,9 @@ import pt.com.common.security.authentication.SapoSTSAuthenticationParamsProvider
 public class SapoSTSAuthenticationCredentialsProvider implements AuthenticationCredentialsProvider
 {
 
-	String tokenTTL = "2:00:00";
+	private static final Logger log = LoggerFactory.getLogger(SapoSTSAuthenticationCredentialsProvider.class);
+	
+	private static final String tokenTTL = "2:00:00";
 
 	@Override
 	public ClientAuthInfo getCredentials(ClientAuthInfo clientAuthInfo) throws Exception
@@ -34,11 +38,13 @@ public class SapoSTSAuthenticationCredentialsProvider implements AuthenticationC
 
 		if (!(connection instanceof HttpURLConnection))
 		{
-			// TODO: Solve this... Something strange happened! Throw Exception...
-			return clientAuthInfo;
+			return null;
 		}
 
 		HttpURLConnection httpUrlconn = (HttpURLConnection) connection;
+		httpUrlconn.setConnectTimeout(500);
+		httpUrlconn.setReadTimeout(4000);
+		
 		int respCode = httpUrlconn.getResponseCode();
 
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -55,8 +61,6 @@ public class SapoSTSAuthenticationCredentialsProvider implements AuthenticationC
 		}
 		else
 		{
-			// TODO: Solve this... Something strange happened! Throw Exception...
-			// BAD; VERY BAD...
 			return null;
 		}
 
