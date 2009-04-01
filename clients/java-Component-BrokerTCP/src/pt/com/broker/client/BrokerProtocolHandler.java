@@ -13,6 +13,7 @@ import pt.com.broker.client.net.ProtocolHandler;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
 import pt.com.types.BindingSerializer;
+import pt.com.types.NetAccepted;
 import pt.com.types.NetAction;
 import pt.com.types.NetAuthentication;
 import pt.com.types.NetFault;
@@ -172,8 +173,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			// TODO: Probably throwing an exeption is not a good idea
 			throw new RuntimeException(fault.getMessage());
 		case ACCEPTED:
-			// TODO: handle ACK
-			// Accepted accepted = request.body.accepted;
+			NetAccepted accepted = action.getAcceptedMessage();
+			//System.out.println("BrokerProtocolHandler.handleReceivedMessage(accepted): " + accepted.getActionId());
 			break;
 		case AUTH:
 			NetAuthentication auth = action.getAuthorizationMessage();
