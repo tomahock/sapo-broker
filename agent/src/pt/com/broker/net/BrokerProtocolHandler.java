@@ -6,13 +6,11 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteTimeoutException;
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.io.UnsynchByteArrayOutputStream;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerConsumer;
 import pt.com.broker.messaging.BrokerProducer;
@@ -187,10 +185,10 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		{
 			UnsynchByteArrayOutputStream out = new UnsynchByteArrayOutputStream();
 			SoapSerializer.ToXml(faultMessage, out);
-			
+
 			NetBrokerMessage xfaultMessage = new NetBrokerMessage(out.toByteArray());
-			
-			NetPublish p = new NetPublish((String.format("/system/faults/#%s#", GcsInfo.getAgentName())), NetAction.DestinationType.TOPIC,  xfaultMessage);
+
+			NetPublish p = new NetPublish((String.format("/system/faults/#%s#", GcsInfo.getAgentName())), NetAction.DestinationType.TOPIC, xfaultMessage);
 
 			_brokerProducer.publishMessage(p, null);
 		}
@@ -353,44 +351,10 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		NetAction action = new NetAction(ActionType.PONG);
 		action.setPongMessage(pong);
 		NetMessage message = new NetMessage(action, null);
-
 		ios.write(message);
-
-		boolean isSuspended = (Boolean) ios.getAttribute("IS_SUSPENDED", Boolean.FALSE);
-
-		// TODO: determine if it's ios.getScheduledWriteBytes() or ios.getScheduledWriteMessages()
-		if ((ios.getScheduledWriteMessages() > MAX_WRITE_BUFFER_SIZE) && !isSuspended)
-		{
-			ios.suspendRead();
-			ios.setAttribute("IS_SUSPENDED", Boolean.TRUE);
-
-			Runnable resumer = new Runnable()
-			{
-				public void run()
-				{
-					int counter = 0;
-					while (true)
-					{
-						Sleep.time(5);
-						counter++;
-						if (ios.getScheduledWriteMessages() <= MAX_WRITE_BUFFER_SIZE)
-						{
-							ios.resumeRead();
-							ios.setAttribute("IS_SUSPENDED", Boolean.FALSE);
-							return;
-						}
-						if (counter % 1000 == 0)
-						{
-							log.warn("Client is slow reading pong message.");
-						}
-					}
-				}
-			};
-			BrokerExecutor.execute(resumer);
-		}
 	}
 	
-	private void sendAccepted(final IoSession ios, final String actionId)
+	private synchronized void sendAccepted(final IoSession ios, final String actionId)
 	{
 		if (actionId != null)
 		{
@@ -398,41 +362,8 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			NetAction action = new NetAction(NetAction.ActionType.ACCEPTED);
 			action.setAcceptedMessage(accept);
 			NetMessage message = new NetMessage(action, null);
-
 			ios.write(message);
-
-			boolean isSuspended = (Boolean) ios.getAttribute("IS_SUSPENDED", Boolean.FALSE);
-
-			if ((ios.getScheduledWriteMessages() > MAX_WRITE_BUFFER_SIZE) && !isSuspended)
-			{
-				ios.suspendRead();
-				ios.setAttribute("IS_SUSPENDED", Boolean.TRUE);
-
-				Runnable resumer = new Runnable()
-				{
-					public void run()
-					{
-						int counter = 0;
-						while (true)
-						{
-							Sleep.time(5);
-							counter++;
-							if (ios.getScheduledWriteMessages() <= MAX_WRITE_BUFFER_SIZE)
-							{
-								ios.resumeRead();
-								ios.setAttribute("IS_SUSPENDED", Boolean.FALSE);
-								return;
-							}
-							if (counter % 1000 == 0)
-							{
-								log.warn("Client is slow to read ack messages.");
-							}
-						}
-					}
-				};
-				BrokerExecutor.execute(resumer);
-			}
 		}
-
 	}
+
 }
