@@ -36,13 +36,13 @@ public class BrokerAuthenticationService
 			agentAuthenticationInfo = authProvider.getCredentials(agentAuthInfo);
 			if(agentAuthenticationInfo == null)
 			{
-				log.warn("BrokerAuthenticationService - failed to get credentials");
+				log.warn("Failed to get credentials");
 				return;
 			}
 		}
 		catch (Exception e)
 		{
-			log.warn("BrokerAuthenticationService - failed to get credentials", e);
+			log.warn("Failed to get credentials for Service BUS. Reason: '{}'", e.getMessage());
 			return;
 		}
 		
