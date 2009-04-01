@@ -26,5 +26,6 @@ public class AuthenticationCredentialsProviderFactory
 			validationType = "SapoSTS";
 		
 		return validators.get(validationType);
+
 	}
 }
