@@ -1,14 +1,9 @@
 package pt.com.broker.net;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +12,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
@@ -36,15 +30,12 @@ import pt.com.common.security.AuthenticationFailException;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.ClientAuthenticationInfoValidationResult;
 import pt.com.common.security.ClientAuthenticationInfoValidator;
-import pt.com.gcs.conf.ChannelType;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.types.NetAccepted;
 import pt.com.types.NetAction;
 import pt.com.types.NetAuthentication;
 import pt.com.types.NetMessage;
 import pt.com.types.NetAuthentication.AuthClientAcknowledge;
 import pt.com.types.NetAuthentication.AuthClientAuthentication;
-import pt.com.types.NetAuthentication.AuthClientChallengeResponse;
 import pt.com.types.NetAuthentication.AuthMessageType;
 import pt.com.types.NetAuthentication.AuthServerChallengeResponseClientChallenge;
 

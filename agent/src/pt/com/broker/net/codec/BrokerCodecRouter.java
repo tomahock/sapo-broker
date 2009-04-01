@@ -9,7 +9,6 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
 import pt.com.protobuf.codec.ProtoBufCodec;
-import pt.com.thrift.codec.ThriftCodec;
 import pt.com.types.Constants;
 import pt.com.xml.codec.SoapCodecV2;
 

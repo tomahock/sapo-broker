@@ -1,17 +1,14 @@
 package pt.com.broker.messaging;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
-import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.security.Session;
 import pt.com.broker.security.SessionProperties;
 import pt.com.broker.security.authorization.AccessControl;

@@ -15,7 +15,6 @@ import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.SocketAcceptor;
 import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
-import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,9 +71,9 @@ public class BrokerSSLServer
 			log.info("SAPO-SSL-BROKER  Listening on: '{}'.", acceptor0.getLocalAddress());
 
 		}
-		catch (Exception e)
+		catch (Throwable t)
 		{
-			log.error("SAPO-SSL-BROKER failed to start. " + e.getMessage(), e);
+			log.error("SAPO-SSL-BROKER failed to start. Reason: '{}'. The SSL endoint is not available", t.getMessage());
 		}
 	}
 

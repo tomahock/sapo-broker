@@ -116,7 +116,6 @@ public class BDBMessage implements Externalizable
 		oIn = new ObjectInputStream(new UnsynchByteArrayInputStream(buf));
 		bm.readExternal(oIn);
 		return bm;
-
 	}
 
 }

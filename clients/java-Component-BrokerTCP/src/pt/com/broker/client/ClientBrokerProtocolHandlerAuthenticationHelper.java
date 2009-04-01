@@ -1,14 +1,11 @@
 package pt.com.broker.client;
 
-import java.security.Provider;
 import java.security.SecureRandom;
-import java.security.Provider.Service;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource.AuthenticationType;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;

@@ -2,7 +2,6 @@ package pt.com.types;
 
 import java.io.OutputStream;
 
-
 public interface BindingSerializer
 {
 

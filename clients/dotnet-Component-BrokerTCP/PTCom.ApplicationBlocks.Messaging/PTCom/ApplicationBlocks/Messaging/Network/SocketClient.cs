@@ -269,7 +269,7 @@ namespace PTCom.ApplicationBlocks.Messaging.Network
                     {
                         if (_brokerHandlerDelegate != null)
                         {
-                            foreach (BrokerHandler handler in _brokerHandlerDelegate.GetInvocationList())
+                            foreach (BrokerHandler handler in _brokerHandlerDelegateGetInvocationList())
                             {
                                 try
                                 {

@@ -22,10 +22,7 @@ import org.w3c.dom.NodeList;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.ClientAuthenticationInfoValidationResult;
 import pt.com.common.security.ClientAuthenticationInfoValidator;
-import pt.com.common.security.InvalidCredentialsException;
-import pt.com.common.security.InvalidTokenException;
 import pt.com.common.security.SapoSTSCodeErrors;
-import pt.com.common.security.TokenExpiredException;
 import pt.com.common.security.authentication.SapoSTSAuthenticationParamsProvider;
 import pt.com.common.security.authentication.SapoSTSAuthenticationParamsProvider.Parameters;
 

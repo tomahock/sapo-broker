@@ -1,9 +1,6 @@
 package pt.com.gcs.messaging;
 
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -15,9 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.conf.WorldMap;
 import pt.com.gcs.net.IoSessionHelper;
-import pt.com.gcs.net.Peer;
 import pt.com.types.NetBrokerMessage;
 
 class GcsRemoteProtocolHandler extends IoHandlerAdapter
