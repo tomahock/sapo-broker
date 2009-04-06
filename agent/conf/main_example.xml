@@ -11,7 +11,7 @@
 		Valid values: Positive integer Default value: 100
 		-->
 		<discovery_delay>100</discovery_delay>
-		<file_ref>./conf/world_map.xml</file_ref>
+		<file_ref>./conf/global_config.xml</file_ref>
 		<broker-legacy-port>3322</broker-legacy-port>
 		<broker-port>3323</broker-port>
 		<broker-http-port>3380</broker-http-port>
@@ -91,7 +91,7 @@
 		-->
 		<update_interval>60</update_interval>
 	</statistics>
-	
+<!--	
 	<ssl>
 		<keystoreLocation>XXXXXXXX</keystoreLocation>
 		<keystorePassword>XXXXXXXX</keystorePassword>
@@ -103,6 +103,8 @@
 		<STSUsername>XXXXXXXX</STSUsername>
 		<STSPassword>XXXXXXXX</STSPassword>
 	</sts>
+-->
+<!--	
 	<securityPolicies>
 		<bs:policies xmlns:bs="http://softwarelivre.sapo.pt/broker/securityPolicies">
 			<bs:policy policy-name="default">
@@ -187,4 +189,5 @@
 			</bs:agent>
 		</bs:agents>
 	</securityPolicies>
+-->
 </config>

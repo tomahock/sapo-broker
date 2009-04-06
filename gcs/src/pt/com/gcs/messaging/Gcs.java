@@ -27,8 +27,12 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.common.security.ClientAuthenticationInfoValidator;
+import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
+import pt.com.common.security.authentication.AuthenticationCredentialsProviderFactory;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.conf.WorldMap;
+import pt.com.gcs.conf.GlobalConfig;
+import pt.com.gcs.conf.ProviderInfo;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
 import pt.com.types.NetAction.DestinationType;
@@ -66,7 +70,7 @@ public class Gcs
 
 	protected static void connect(SocketAddress address)
 	{
-		if (WorldMap.contains((InetSocketAddress) address))
+		if (GlobalConfig.contains((InetSocketAddress) address))
 		{
 			log.info("Connecting to '{}'.", address.toString());
 
@@ -97,13 +101,13 @@ public class Gcs
 		{
 			InetSocketAddress inet = (InetSocketAddress) ioSession.getRemoteAddress();
 
-			if (!WorldMap.contains(inet))
+			if (!GlobalConfig.contains(inet))
 			{
 				log.info("Remove peer '{}'", inet.toString());
 				ioSession.close();
 			}
 		}
-		List<Peer> peerList = WorldMap.getPeerList();
+		List<Peer> peerList = GlobalConfig.getPeerList();
 		for (Peer peer : peerList)
 		{
 			SocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
@@ -130,7 +134,7 @@ public class Gcs
 
 	protected static List<Peer> getPeerList()
 	{
-		return WorldMap.getPeerList();
+		return GlobalConfig.getPeerList();
 	}
 
 	public static void destroy()
@@ -199,7 +203,7 @@ public class Gcs
 
 	private void connectToAllPeers()
 	{
-		List<Peer> peerList = WorldMap.getPeerList();
+		List<Peer> peerList = GlobalConfig.getPeerList();
 		for (Peer peer : peerList)
 		{
 			SocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());

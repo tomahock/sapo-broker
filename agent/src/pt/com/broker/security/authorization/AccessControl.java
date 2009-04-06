@@ -10,17 +10,17 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.security.Session;
 import pt.com.broker.security.SessionProperties;
-import pt.com.gcs.conf.Agents;
-import pt.com.gcs.conf.Authorization;
-import pt.com.gcs.conf.BrokerSecurityPolicy;
-import pt.com.gcs.conf.ChannelType;
-import pt.com.gcs.conf.Condition;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.conf.Policies;
-import pt.com.gcs.conf.Agents.Agent;
-import pt.com.gcs.conf.Condition.Address;
-import pt.com.gcs.conf.Policies.Policy;
-import pt.com.gcs.conf.Policies.Policy.Acl.Entry;
+import pt.com.gcs.conf.global.Agents;
+import pt.com.gcs.conf.global.Authorization;
+import pt.com.gcs.conf.global.BrokerSecurityPolicy;
+import pt.com.gcs.conf.global.ChannelType;
+import pt.com.gcs.conf.global.Condition;
+import pt.com.gcs.conf.global.Policies;
+import pt.com.gcs.conf.global.Agents.Agent;
+import pt.com.gcs.conf.global.Condition.Address;
+import pt.com.gcs.conf.global.Policies.Policy;
+import pt.com.gcs.conf.global.Policies.Policy.Acl.Entry;
 import pt.com.gcs.messaging.DestinationMatcher;
 import pt.com.types.NetMessage;
 import pt.com.types.NetPoll;
@@ -46,7 +46,7 @@ public class AccessControl
 	public enum Privilege
 	{
 		READ, WRITE;
-		public static Privilege fromValue(pt.com.gcs.conf.Privilege priv)
+		public static Privilege fromValue(pt.com.gcs.conf.global.Privilege priv)
 		{
 			switch (priv)
 			{
@@ -62,7 +62,7 @@ public class AccessControl
 	public enum Autorization
 	{
 		PERMIT, DENY;
-		public static Autorization fromValue(pt.com.gcs.conf.Authorization auth)
+		public static Autorization fromValue(pt.com.gcs.conf.global.Authorization auth)
 		{
 			switch (auth)
 			{
@@ -98,7 +98,7 @@ public class AccessControl
 		refused_authRequired.accessGranted = false;
 		refused_authRequired.reasonForRejection = "Authentication Required!";
 
-		BrokerSecurityPolicy securityPolicy = GcsInfo.getSecurityPolicy();
+		BrokerSecurityPolicy securityPolicy = GcsInfo.getSecurityPolicies();
 		if (securityPolicy == null)
 		{
 			accessControlRequired = false;
@@ -180,15 +180,15 @@ public class AccessControl
 	{
 		for (Entry entry : entries)
 		{
-			List<pt.com.gcs.conf.Privilege> privileges = entry.getPrivilege();
+			List<pt.com.gcs.conf.global.Privilege> privileges = entry.getPrivilege();
 			String destination = entry.getDestination();
-			List<pt.com.gcs.conf.DestinationType> destinationTypes = entry.getDestinationType();
+			List<pt.com.gcs.conf.global.DestinationType> destinationTypes = entry.getDestinationType();
 			List<AclPredicate> predicates = translatePredicates(entry.getCondition());
 			Authorization action = entry.getAction();
 
-			for (pt.com.gcs.conf.Privilege priv : privileges)
+			for (pt.com.gcs.conf.global.Privilege priv : privileges)
 			{
-				for (pt.com.gcs.conf.DestinationType destType : destinationTypes)
+				for (pt.com.gcs.conf.global.DestinationType destType : destinationTypes)
 				{
 					agentAcl.add(new AclEntry(Autorization.fromValue(action), Privilege.fromValue(priv), destination, translateDestinationType(destType), predicates));
 				}
@@ -196,7 +196,7 @@ public class AccessControl
 		}
 	}
 
-	private static DestinationType translateDestinationType(pt.com.gcs.conf.DestinationType destType)
+	private static DestinationType translateDestinationType(pt.com.gcs.conf.global.DestinationType destType)
 	{
 		switch (destType)
 		{

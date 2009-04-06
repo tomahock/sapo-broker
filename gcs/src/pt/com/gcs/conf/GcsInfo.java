@@ -1,6 +1,7 @@
 package pt.com.gcs.conf;
 
 import java.io.File;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -11,6 +12,9 @@ import org.caudexorigo.io.FilenameUtils;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pt.com.gcs.conf.global.BrokerSecurityPolicy;
+import pt.com.gcs.conf.agent.AgentConfig;
 
 public class GcsInfo
 {
@@ -81,7 +85,7 @@ public class GcsInfo
 		return prop;
 	}
 
-	public static String getWorldMapPath()
+	public static String getGlobalConfigFilePath()
 	{
 		String prop = instance.conf.getNet().getFileRef();
 		if (StringUtils.isBlank(prop))
@@ -92,7 +96,7 @@ public class GcsInfo
 		return prop;
 	}
 
-	private Config conf;
+	private AgentConfig conf;
 
 	private GcsInfo()
 	{
@@ -104,12 +108,12 @@ public class GcsInfo
 		}
 		try
 		{
-			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf");
+			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf.agent");
 			Unmarshaller u = jc.createUnmarshaller();
 
 			File f = new File(filePath);
 			boolean b = f.exists();
-			conf = (Config) u.unmarshal(f);
+			conf = (AgentConfig) u.unmarshal(f);
 		}
 		catch (JAXBException e)
 		{
@@ -137,12 +141,6 @@ public class GcsInfo
 		return iprop;
 	}
 
-	public static int getBrokerSSLPort()
-	{
-		int sslPort = instance.conf.getNet().getBrokerSslPort();
-		return sslPort;
-	}
-
 	public static int getBrokerLegacyPort()
 	{
 		int iprop = instance.conf.getNet().getBrokerLegacyPort();
@@ -164,53 +162,62 @@ public class GcsInfo
 		return instance.conf.getMessaging().getDropbox().getCheckInterval();
 	}
 
-	public static BrokerSecurityPolicy getSecurityPolicy()
+	// Access Control related methods
+	
+	public static boolean useAccessControl()
 	{
-		return instance.conf.getSecurityPolicies();
+		return getSecurityPolicies() != null;
 	}
 	
-	// SSL related properties
+	public static BrokerSecurityPolicy getSecurityPolicies()
+	{
+		return GlobalConfig.getSecurityPolicies();
+	}
+	
+	// SSL related methods
+
+	public static boolean createSSLInterface()
+	{
+		return instance.conf.getSsl() != null;
+	}
+	
+	public static int getBrokerSSLPort()
+	{
+		int sslPort = instance.conf.getSsl().getBrokerSslPort();
+		return sslPort;
+	}
 	
 	public static String getKeystoreLocation()
 	{
-		if( instance.conf.ssl != null)
-			return instance.conf.ssl.getKeystoreLocation();
+		if( instance.conf.getSsl() != null)
+			return instance.conf.getSsl().getKeystoreLocation();
 		return null;
 	}
 
 	public static String getKeystorePassword()
 	{
-		if( instance.conf.ssl != null)
-			return instance.conf.ssl.getKeystorePassword();
+		if( instance.conf.getSsl() != null)
+			return instance.conf.getSsl().getKeystorePassword();
 		return null;
 	}
 	
 	public static String getKeyPassword()
 	{
-		if( instance.conf.ssl != null)
-			return instance.conf.ssl.getKeyPassword();
+		if( instance.conf.getSsl() != null)
+			return instance.conf.getSsl().getKeyPassword();
 		return null;
 	}
 	
 	// STS related properties
 	
-	public static String getSTSLocation()
+	
+	public static Map<String, ProviderInfo> getAuthenticationProviders()
 	{
-		if( instance.conf.sts != null)
-			return instance.conf.sts.getSTSLocation();
-		return null;
-	}
-	public static String getSTSUsername()
-	{
-		if( instance.conf.sts != null)
-			return instance.conf.sts.getSTSUsername();
-		return null;
-	}
-	public static String getSTSPassword()
-	{
-		if( instance.conf.sts != null)
-			return instance.conf.sts.getSTSPassword();
-		return null;
+		return GlobalConfig.getAuthenticationProviders();
 	}
 	
+	public static Map<String, ProviderInfo> getCredentialValidatorProviders()
+	{
+		return GlobalConfig.getCredentialValidatorProviders();
+	}
 }

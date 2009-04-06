@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bs="http://softwarelivre.sapo.pt/broker/securityPolicies">
-	<xs:import namespace="http://softwarelivre.sapo.pt/broker/securityPolicies" schemaLocation="policy.xsd"/>
-	<xs:element name="config">
+<xs:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="agent-config">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="name" type="xs:string" />
 				<xs:element name="config-version" type="xs:string" />
-				
+
 				<xs:element name="net">
 					<xs:complexType>
 						<xs:sequence>
@@ -23,7 +23,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				
+
 				<xs:element name="persistency">
 					<xs:complexType>
 						<xs:sequence>
@@ -31,26 +31,27 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				
+
 				<xs:element name="messaging">
-		          <xs:complexType>
-		            <xs:sequence>
-		              <xs:element name="dropbox">
-		                <xs:complexType>
-		                  <xs:sequence>
-		                    <xs:element name="enabled" type="xs:boolean" />
-		                    <xs:element name="dir" type="xs:string" />
-		                    <xs:element name="check_interval" type="xs:int" />
-		                  </xs:sequence>
-		                </xs:complexType>
-		              </xs:element>
-		            </xs:sequence>
-		          </xs:complexType>
-		        </xs:element>
-		        
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="dropbox">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="enabled" type="xs:boolean" />
+										<xs:element name="dir" type="xs:string" />
+										<xs:element name="check_interval" type="xs:int" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
 				<xs:element name="statistics">
 					<xs:complexType>
 						<xs:sequence>
+
 							<xs:element name="collect_stats" type="xs:boolean" />
 							<xs:element name="send_updates" type="xs:boolean" />
 							<xs:element name="topic" type="xs:string" />
@@ -58,7 +59,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				
+
 				<xs:element minOccurs="0" maxOccurs="1" name="ssl">
 					<xs:complexType>
 						<xs:sequence>
@@ -76,12 +77,10 @@
 							<xs:element name="STSPassword" type="xs:string" />
 						</xs:sequence>
 					</xs:complexType>
-				</xs:element>				
-
-				<xs:element minOccurs="0" maxOccurs="1" name="securityPolicies" type="bs:BrokerSecurityPolicy" />
-				
+				</xs:element>
+				<!---->
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 </xs:schema>

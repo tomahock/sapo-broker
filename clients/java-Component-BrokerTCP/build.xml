@@ -8,9 +8,11 @@
 
 	<path id="project.classpath">
 		<pathelement location="../../comm-types/dist/sapo-broker-commtypes.jar" />
+		<pathelement location="../../sapo-sts/dist/sapo-broker-saposts.jar" />
 		<pathelement location="../../bindings/protobuf/java/dist/sapo-broker-protobufbinding.jar" />
 		<pathelement location="../../bindings/thrift/java/dist/sapo-broker-thriftbinding.jar" />
 		<pathelement location="../../bindings/xml/java/dist/sapo-broker-xmlbinding.jar" />
+		<pathelement location="../../sapos-sts/dist/sapo-broker-saposts.jar" />
 		<fileset dir="../../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>

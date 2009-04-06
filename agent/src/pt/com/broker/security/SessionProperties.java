@@ -9,7 +9,7 @@ import javax.crypto.SecretKey;
 
 import org.apache.mina.core.session.IoSession;
 
-import pt.com.gcs.conf.ChannelType;
+import pt.com.gcs.conf.global.ChannelType;
 
 public class SessionProperties extends HashMap<String, Object> {
 	private static final long serialVersionUID = -5044861586951252094L;

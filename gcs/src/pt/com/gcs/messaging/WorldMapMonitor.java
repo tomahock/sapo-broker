@@ -3,7 +3,7 @@ package pt.com.gcs.messaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.gcs.conf.WorldMap;
+import pt.com.gcs.conf.GlobalConfig;
 
 public class WorldMapMonitor implements Runnable
 {
@@ -15,7 +15,7 @@ public class WorldMapMonitor implements Runnable
 	{
 		log.debug("Checking world map file for modifications.");
 
-		if (WorldMap.reload())
+		if (GlobalConfig.reload())
 		{
 			Gcs.reloadWorldMap();
 		}

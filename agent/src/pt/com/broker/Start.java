@@ -12,7 +12,7 @@ import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.core.FilePublisher;
 import pt.com.broker.core.UdpService;
 import pt.com.broker.http.BrokerHttpService;
-import pt.com.broker.security.authentication.BrokerAuthenticationService;
+import pt.com.broker.security.ProvidersLoader;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 
@@ -51,9 +51,8 @@ public class Start
 		try
 		{
 			Gcs.init();
-	
-			BrokerAuthenticationService.start();
-			
+			ProvidersLoader.init();
+						
 			int broker_port = GcsInfo.getBrokerPort();
 			int broker_legacy_port = GcsInfo.getBrokerLegacyPort();
 			BrokerServer broker_srv = new BrokerServer(broker_port, broker_legacy_port);
@@ -62,11 +61,13 @@ public class Start
 			int http_port = GcsInfo.getBrokerHttpPort();
 			BrokerHttpService http_srv = new BrokerHttpService(http_port);
 			http_srv.start();
-			
-			int ssl_port = GcsInfo.getBrokerSSLPort();
-			BrokerSSLServer ssl_svr = new BrokerSSLServer(ssl_port);
-			ssl_svr.start();
-			
+
+			if (GcsInfo.createSSLInterface())
+			{
+				int ssl_port = GcsInfo.getBrokerSSLPort();
+				BrokerSSLServer ssl_svr = new BrokerSSLServer(ssl_port);
+				ssl_svr.start();
+			}
 
 			FilePublisher.init();
 

@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.security.Session;
 import pt.com.broker.security.SessionProperties;
-import pt.com.broker.security.authentication.BrokerAuthenticationService;
 import pt.com.broker.security.authentication.ClientAuthenticationInfoVerifierFactory;
 import pt.com.common.security.AuthenticationFailException;
 import pt.com.common.security.ClientAuthInfo;
@@ -138,10 +137,6 @@ public class BrokerProtocolHandlerAuthenticationHelper
 
 	private static void handleClientAuthentication(IoSession session, NetAuthentication request)
 	{
-		System.out.println("------------> BrokerProtocolHandlerAuthenticationHelper.handleClientAuthentication()");
-		
-		
-		
 		AuthClientAuthentication authClientAuthrentication = request.getAuthClientAuthentication();
 
 		// Validate client credentials
@@ -150,7 +145,7 @@ public class BrokerProtocolHandlerAuthenticationHelper
 		ClientAuthenticationInfoValidationResult validate;
 		try
 		{
-			validate = validator.validate(info, BrokerAuthenticationService.getAgentAuthenticationInfo());
+			validate = validator.validate(info);
 		}
 		catch (Exception e)
 		{
@@ -161,7 +156,7 @@ public class BrokerProtocolHandlerAuthenticationHelper
 			throw new AuthenticationFailException(validate.getReasonForFailure());
 
 		info.setRoles(validate.getRoles());
-		
+
 		String communicationIdStr = RandomStringUtils.random(16);
 
 		// Build session info
@@ -174,7 +169,7 @@ public class BrokerProtocolHandlerAuthenticationHelper
 		clientSessionInfo.key = keyGenerator.generateKey();
 		clientSessionInfo.secureSession = session;
 		clientSessionInfo.nextExpectedMessage = NetAuthentication.AuthMessageType.SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE;
-		
+
 		synchronized (authSessions)
 		{
 			authSessions.put(communicationIdStr, clientSessionInfo);
@@ -188,17 +183,12 @@ public class BrokerProtocolHandlerAuthenticationHelper
 		netAuthentication.setAuthServerChallenge(serverChallenge);
 
 		sendMessage(session, netAuthentication);
-		System.out.println("------------> BrokerProtocolHandlerAuthenticationHelper.handleClientAuthentication() - message sent!");
 	}
 
 	static IvParameterSpec ivParamSpec = new IvParameterSpec(new byte[16]);
-	
+
 	private static void handleServerChallengeResponseClientChallenge(IoSession session, NetAuthentication request)
 	{
-		
-		System.out.println("------------> BrokerProtocolHandlerAuthenticationHelper.handleServerChallengeResponseClientChallenge()");
-		
-		
 		AuthServerChallengeResponseClientChallenge ascrcc = request.getAuthServerChallengeResponseClientChallenge();
 
 		ClientAuthenticationSessionInfo clientSessionInfo;
@@ -271,8 +261,6 @@ public class BrokerProtocolHandlerAuthenticationHelper
 
 	private static void handleClientAcknowledge(IoSession session, NetAuthentication request)
 	{
-		System.out.println("------------> BrokerProtocolHandlerAuthenticationHelper.handleClientAcknowledge()");
-		
 		AuthClientAcknowledge clientAck = request.getAuthClientAcknowledge();
 
 		ClientAuthenticationSessionInfo clientSessionInfo;
@@ -302,22 +290,16 @@ public class BrokerProtocolHandlerAuthenticationHelper
 
 		plainSessionProps.setRoles(clientSessionInfo.clientAuthenticationInfo.getRoles());
 		sslSessionProps.setRoles(clientSessionInfo.clientAuthenticationInfo.getRoles());
-		
+
 		plainSession.updateAcl();
 		protectedSession.updateAcl();
-		
+
 		plainSessionProps.setKey(clientSessionInfo.key);
 		sslSessionProps.setKey(clientSessionInfo.key);
-		
-		
-		
-		
-		System.out.println("------------> BrokerProtocolHandlerAuthenticationHelper.handleClientAcknowledge() -> setRoles " + System.currentTimeMillis());
 	}
 
 	private static void sendMessage(final IoSession ios, NetAuthentication authMessage)
 	{
-
 		NetAction action = new NetAction(NetAction.ActionType.AUTH);
 		action.setAuthenticationMessage(authMessage);
 		NetMessage message = new NetMessage(action, null);

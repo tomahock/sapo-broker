@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.messaging.AuthorizationFilter;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.net.codec.BrokerCodecRouter;
+import pt.com.gcs.conf.GcsInfo;
 import pt.com.xml.codec.SoapCodec;
 
 public class BrokerServer
@@ -52,10 +53,13 @@ public class BrokerServer
 			((SocketSessionConfig) acceptor0.getSessionConfig()).setKeepAlive(true);
 
 			AuthorizationFilter authFilter = AuthorizationFilter.getInstance();
-			
+
 			DefaultIoFilterChainBuilder filterChainBuilder0 = acceptor0.getFilterChain();
 			filterChainBuilder0.addLast("BROKER_CODEC", new ProtocolCodecFilter(new SoapCodec()));
-			filterChainBuilder0.addLast("AUTHORIZATION_FILTER", authFilter);
+			if (GcsInfo.useAccessControl())
+			{
+				filterChainBuilder0.addLast("AUTHORIZATION_FILTER", authFilter);
+			}
 			filterChainBuilder0.addLast("executor", new ExecutorFilter(tpe));
 
 			acceptor0.setHandler(new BrokerProtocolHandler());
@@ -73,7 +77,10 @@ public class BrokerServer
 
 			DefaultIoFilterChainBuilder filterChainBuilder1 = acceptor1.getFilterChain();
 			filterChainBuilder1.addLast("BROKER_BINARY_CODEC", new ProtocolCodecFilter(BrokerCodecRouter.getInstance()));
-			filterChainBuilder1.addLast("AUTHORIZATION_FILTER", authFilter);
+			if (GcsInfo.useAccessControl())
+			{
+				filterChainBuilder1.addLast("AUTHORIZATION_FILTER", authFilter);
+			}
 			filterChainBuilder1.addLast("executor", new ExecutorFilter(tpe));
 
 			acceptor1.setHandler(new BrokerProtocolHandler());

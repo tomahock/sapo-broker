@@ -12,7 +12,7 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.gcs.conf.WorldMap;
+import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.net.IoSessionHelper;
 import pt.com.gcs.net.Peer;
 import pt.com.types.NetBrokerMessage;
@@ -28,7 +28,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	}
 
 	private static void createPeersList(){
-		List<Peer> peerList = WorldMap.getPeerList();
+		List<Peer> peerList = GlobalConfig.getPeerList();
 		peersAddressList = new ArrayList<InetSocketAddress>(peerList.size());
 		for (Peer peer : peerList)
 		{
@@ -168,7 +168,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	{
 		InetSocketAddress remoteAddress = (InetSocketAddress)iosession.getRemoteAddress();
 				
-		List<Peer> peerList = WorldMap.getPeerList();
+		List<Peer> peerList = GlobalConfig.getPeerList();
 		for (InetSocketAddress addr : peersAddressList)
 		{
 			if(addr.equals(remoteAddress) )

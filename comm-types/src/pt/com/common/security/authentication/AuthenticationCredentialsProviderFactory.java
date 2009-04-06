@@ -11,8 +11,6 @@ public class AuthenticationCredentialsProviderFactory
 	static
 	{
 			validators = new TreeMap<String, AuthenticationCredentialsProvider>();
-			
-			validators.put("SapoSTS", new SapoSTSAuthenticationCredentialsProvider() );
 	}
 
 	public static AuthenticationCredentialsProvider getDefaultProvider()
@@ -27,5 +25,10 @@ public class AuthenticationCredentialsProviderFactory
 		
 		return validators.get(validationType);
 
+	}
+
+	public static void addProvider(String validationType, AuthenticationCredentialsProvider provider)
+	{
+		validators.put(validationType, provider);
 	}
 }

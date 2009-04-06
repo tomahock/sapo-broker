@@ -61,7 +61,10 @@ public class BrokerSSLServer
 
 			filterChainBuilder0.addLast("SSL_FILTER", new SslFilter(sslContext));
 			filterChainBuilder0.addLast("BROKER_CODEC", new ProtocolCodecFilter(BrokerCodecRouter.getInstance()));
-			filterChainBuilder0.addLast("AUTHORIZATION_FILTER", authFilter);
+			if (GcsInfo.useAccessControl())
+			{
+				filterChainBuilder0.addLast("AUTHORIZATION_FILTER", authFilter);
+			}
 			filterChainBuilder0.addLast("executor", new ExecutorFilter(tpe));
 
 			acceptor0.setHandler(new BrokerProtocolHandler());

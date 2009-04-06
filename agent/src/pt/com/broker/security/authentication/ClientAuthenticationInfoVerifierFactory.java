@@ -12,8 +12,6 @@ public class ClientAuthenticationInfoVerifierFactory
 	static
 	{
 			validators = new TreeMap<String, ClientAuthenticationInfoValidator>();
-			
-			validators.put("SapoSTS", new SapoSTSAuthenticationInfoValidator() );
 	}
 
 	public static ClientAuthenticationInfoValidator getDefaultValidator()
@@ -27,6 +25,11 @@ public class ClientAuthenticationInfoVerifierFactory
 			validationType = "SapoSTS";
 		
 		return validators.get(validationType);
+	}
+	
+	public static void addValidator(String validationType, ClientAuthenticationInfoValidator validator)
+	{
+		validators.put(validationType, validator);
 	}
 
 }

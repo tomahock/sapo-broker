@@ -5,5 +5,5 @@ import java.util.List;
 public interface ClientAuthenticationInfoValidationResult {
 	boolean areCredentialsValid();
 	String getReasonForFailure();
-	List<String>  getRoles();
+	List<String> getRoles();
 }

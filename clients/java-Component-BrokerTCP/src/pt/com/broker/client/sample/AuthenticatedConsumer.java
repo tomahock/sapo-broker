@@ -11,7 +11,7 @@ import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.authentication.AuthenticationCredentialsProviderFactory;
-import pt.com.common.security.authentication.SapoSTSAuthenticationParamsProvider;
+import pt.com.security.authentication.sapoSts.SapoSTSAuthenticationParamsProvider;
 import pt.com.types.NetNotification;
 import pt.com.types.NetProtocolType;
 import pt.com.types.NetSubscribe;
@@ -87,8 +87,8 @@ public class AuthenticatedConsumer implements BrokerListener
 			System.out.println("Unable to authenticate client...");
 			System.out.println(t);
 		}
-		
-		//TODO: create callback object with time out
+
+		// TODO: create callback object with time out
 		System.out.println("giving time to authenticate (5s)...");
 		Thread.sleep(5000);
 
