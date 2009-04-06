@@ -1,6 +1,16 @@
 
+KERNEL:=$(shell uname -s)
+
+# Apple's MacOSX uses it's own named libtoolize
+ifeq ($(KERNEL),Darwin)
+LIBTOOLIZE=glibtoolize
+else
+LIBTOOLIZE=libtoolize
+endif
+
 all:
-	libtoolize --force 
+	@echo "** Kernel is $(KERNEL) **"
+	$(LIBTOOLIZE) --force 
 	aclocal -I config
 	autoheader
 	automake --foreign --add-missing

@@ -212,8 +212,18 @@ static int _sb_write(int socket, char *msg, int size)
     int remain = size;
     int ret = 0;
     int err = 0;
+#ifdef __APPLE__
+	/* Mac OS X does not support the flag MSG_NOSIGNAL. Starting with version
+	 * 10.2 (Jaguar), Mac OS X has the socket option SO_NOSIGPIPE that prevents
+	 * SIGPIPE from being raised when a write fails on a socket to which there
+	 * is no reader; instead the write to the socket returns with the error
+	 * EPIPE. */
+    int flags = SO_NOSIGPIPE;
+#else
     int flags = MSG_NOSIGNAL;
+#endif
     //printf ("socket[%d]",socket);
+
     do {
         // MSG_NOSIGNAL -> returns EPIPE ?
         // ENOTCONN
