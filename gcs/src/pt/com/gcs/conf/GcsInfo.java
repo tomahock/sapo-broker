@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 import pt.com.gcs.conf.agent.AgentConfig;
+import pt.com.gcs.conf.agent.AgentConfig.Ssl;
 
 public class GcsInfo
 {
@@ -183,7 +184,14 @@ public class GcsInfo
 	
 	public static int getBrokerSSLPort()
 	{
-		int sslPort = instance.conf.getSsl().getBrokerSslPort();
+		System.out.println("GcsInfo.getBrokerSSLPort()");
+		Ssl ssl = instance.conf.getSsl();
+		if(ssl == null){
+			System.out.println("NO SSL");
+			return -1;
+		}
+			
+		int sslPort = ssl.getBrokerSslPort();
 		return sslPort;
 	}
 	
