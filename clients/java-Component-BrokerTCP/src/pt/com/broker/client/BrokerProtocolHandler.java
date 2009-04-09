@@ -119,6 +119,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public void onConnectionOpen()
 	{
+		if( closed.get() )
+			return;
 		log.debug("Connection Opened");
 		try
 		{

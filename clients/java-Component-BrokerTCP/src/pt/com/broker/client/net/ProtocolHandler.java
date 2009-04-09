@@ -22,6 +22,8 @@ public abstract class ProtocolHandler<T>
 	private final ExecutorService exec = CustomExecutors.newThreadPool(4, "protocol-handler");
 
 	private final ScheduledExecutorService shed_exec = CustomExecutors.newScheduledThreadPool(1, "sched-protocol-handler");
+	
+	protected AtomicBoolean closed = new AtomicBoolean(false);  
 
 	public abstract T decode(DataInputStream in) throws IOException;
 
@@ -58,6 +60,8 @@ public abstract class ProtocolHandler<T>
 					final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 					if (rootCause instanceof IOException)
 					{
+						if(closed.get())
+							return;
 						Sleep.time(2000);
 						connector.reconnect(rootCause);
 						onConnectionOpen();
@@ -98,6 +102,8 @@ public abstract class ProtocolHandler<T>
 					final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 					if (rootCause instanceof IOException)
 					{
+						if(closed.get())
+							return;
 						Sleep.time(2000);
 						connector.reconnect(rootCause);
 						onConnectionOpen();
@@ -225,8 +231,12 @@ public abstract class ProtocolHandler<T>
 
 	public final void stop()
 	{
+		closed.set(true);
+		
 		getConnector().close();
-
+		if (getSslConnector() != null)
+			getSslConnector().close();
+		
 		try
 		{
 			exec.shutdown();

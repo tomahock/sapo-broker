@@ -123,7 +123,7 @@ public class BrokerClient
 			return;
 
 		String localCommId = SecureSessionContainer.getLocalCommunicationId();
-		System.out.println("Local comm id: "+ localCommId);
+		System.out.println("Local comm id: " + localCommId);
 		NetAuthentication.AuthClientAuthentication clientAuth = new NetAuthentication.AuthClientAuthentication(providerCredentials.getToken(), localCommId);
 		if (providerCredentials.getRoles() != null && providerCredentials.getRoles().size() != 0)
 			clientAuth.setRoles(providerCredentials.getRoles());
@@ -204,7 +204,7 @@ public class BrokerClient
 			{
 				_netHandler.sendMessage(msg);
 			}
-			
+
 			_consumerList.add(new BrokerAsyncConsumer(subscribe, listener));
 			log.info("Created new async consumer for '{}'", subscribe.getDestination());
 		}
@@ -390,7 +390,7 @@ public class BrokerClient
 			throw new IllegalArgumentException("Mal-formed Poll request");
 		}
 	}
-	
+
 	public NetNotification poll(String queueName) throws Throwable
 	{
 		return poll(queueName, false);
@@ -425,6 +425,7 @@ public class BrokerClient
 			throw new IllegalArgumentException("Mal-formed Publish request");
 		}
 	}
+
 	public void publishMessage(NetBrokerMessage brokerMessage, String destination)
 	{
 		publishMessage(brokerMessage, destination, false);
@@ -450,7 +451,10 @@ public class BrokerClient
 				NetSubscribe n = bac.getSubscription();
 
 				if ((n.getDestination().equals(destinationName)) && (n.getDestinationType() == destinationType))
+				{
 					_consumerList.remove(bac);
+					break;
+				}
 			}
 		}
 		else
@@ -463,7 +467,7 @@ public class BrokerClient
 	{
 		unsubscribe(destinationType, destinationName, false);
 	}
-	
+
 	public void setSecureSessionInfo(SecureSessionInfo secureSessionInfo)
 	{
 		this.secureSessionInfo = secureSessionInfo;
