@@ -1,5 +1,6 @@
 package pt.com.gcs.messaging;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -166,14 +167,16 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	
 	private boolean validPeerAddress(IoSession iosession)
 	{
-		InetSocketAddress remoteAddress = (InetSocketAddress)iosession.getRemoteAddress();
+		InetSocketAddress remotePeer = (InetSocketAddress)iosession.getRemoteAddress();
+		InetAddress address = remotePeer.getAddress();
 				
-		List<Peer> peerList = GlobalConfig.getPeerList();
 		for (InetSocketAddress addr : peersAddressList)
 		{
-			if(addr.equals(remoteAddress) )
+			if(address.equals(addr.getAddress()) )
+			{
 				return true;
-		}		
+			}
+		}
 		return false;
 	}
 
