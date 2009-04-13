@@ -59,7 +59,7 @@ public class QueueSessionListener extends BrokerListener
 					{
 						return false;
 					}
-					final NetMessage response = BrokerListener.buildNotification(msg, pt.com.types.NetAction.DestinationType.QUEUE);
+					final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.types.NetAction.DestinationType.QUEUE);
 					ioSession.write(response);
 					return true;
 				}
