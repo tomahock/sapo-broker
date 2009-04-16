@@ -228,7 +228,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 				handlePublishMessage(session, request, requestSource);
 				break;
 			case POLL:
-				handlePoolMessage(session, request);
+				handlePollMessage(session, request);
 				break;
 			case ACKNOWLEDGE_MESSAGE:
 				handleAcknowledeMessage(session, request);
@@ -281,7 +281,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	}
 
-	private void handlePoolMessage(IoSession session, NetMessage request)
+	private void handlePollMessage(IoSession session, NetMessage request)
 	{
 		sendAccepted(session, request.getAction().getPollMessage().getActionId());
 

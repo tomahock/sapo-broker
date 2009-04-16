@@ -60,6 +60,8 @@ public class PollTest extends Test
 					
 					NetNotification msg = bk.poll(queueName );
 					
+					bk.acknowledge(msg);
+					
 					bk.close();
 					
 					if(msg.getMessage() == null)

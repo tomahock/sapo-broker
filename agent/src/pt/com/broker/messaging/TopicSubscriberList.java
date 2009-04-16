@@ -74,16 +74,8 @@ public class TopicSubscriberList
 			{
 				TopicSubscriber subscriber = null;
 
-				if (topicSubscribersCache.containsKey(destinationName))
-				{
-					subscriber = topicSubscribersCache.get(destinationName);
-
-					if (subscriber == null)
-					{
-						subscriber = createSubscriber(destinationName);
-					}
-				}
-				else
+				subscriber = topicSubscribersCache.get(destinationName);
+				if (subscriber == null)
 				{
 					subscriber = createSubscriber(destinationName);
 				}

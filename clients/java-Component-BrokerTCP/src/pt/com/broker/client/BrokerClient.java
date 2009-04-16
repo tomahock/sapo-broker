@@ -401,7 +401,6 @@ public class BrokerClient
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination)))
 		{
 			NetPublish publish = new NetPublish(destination, pt.com.types.NetAction.DestinationType.TOPIC, brokerMessage);
-			publish.setActionId((new UID()).toString());
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
 

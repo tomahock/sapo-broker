@@ -33,7 +33,7 @@ public class BrokerConsumer
 		}
 	}
 
-	public void subscribe(NetSubscribe sb, IoSession ios)
+	public synchronized void subscribe(NetSubscribe sb, IoSession ios)
 	{
 		if (StringUtils.contains(sb.getDestination(), "@"))
 		{
@@ -55,7 +55,6 @@ public class BrokerConsumer
 		}
 	}
 
-	/* TODO: answer the question - Why the synchronized? */
 	public synchronized void unsubscribe(NetUnsubscribe unsubs, IoSession session)
 	{
 		String dname = unsubs.getDestination();
@@ -65,7 +64,7 @@ public class BrokerConsumer
 			TopicSubscriber subscriber = TopicSubscriberList.get(dname);
 			subscriber.removeSessionConsumer(session);
 		}
-		else if (dtype == DestinationType.QUEUE)
+		else if (dtype == DestinationType.QUEUE || dtype == DestinationType.VIRTUAL_QUEUE)
 		{
 			QueueSessionListener qsl = QueueSessionListenerList.get(dname);
 			qsl.removeSessionConsumer(session);
