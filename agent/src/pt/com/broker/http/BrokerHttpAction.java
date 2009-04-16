@@ -4,6 +4,8 @@ import java.io.OutputStream;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecFactory;
+import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.http.HttpMethod;
 import org.apache.mina.filter.codec.http.HttpRequest;
 import org.apache.mina.filter.codec.http.HttpResponseStatus;
@@ -16,13 +18,20 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
+import pt.com.broker.net.codec.BrokerCodecRouter;
+import pt.com.broker.security.Session;
+import pt.com.broker.security.authorization.AccessControl;
+import pt.com.broker.security.authorization.AccessControl.ValidationResult;
 import pt.com.http.HttpAction;
 import pt.com.types.NetAction;
 import pt.com.types.NetBrokerMessage;
+import pt.com.types.NetMessage;
 import pt.com.types.NetPublish;
+import pt.com.types.SimpleFramingDecoderV2;
 import pt.com.xml.BrokerMessage;
 import pt.com.xml.SoapEnvelope;
 import pt.com.xml.SoapSerializer;
+import pt.com.xml.codec.SoapCodecV2;
 
 public class BrokerHttpAction extends HttpAction
 {
@@ -35,6 +44,8 @@ public class BrokerHttpAction extends HttpAction
 	private static final BrokerProducer _http_broker = BrokerProducer.getInstance();
 
 	private IoBuffer BAD_REQUEST_RESPONSE;
+	private IoBuffer ACCESS_DENIED_REQUEST_RESPONSE;
+	private IoBuffer INVALID_MESSAGE_TYPE_RESPONSE;
 
 	public BrokerHttpAction()
 	{
@@ -45,6 +56,16 @@ public class BrokerHttpAction extends HttpAction
 			BAD_REQUEST_RESPONSE = IoBuffer.allocate(bad_arr.length);
 			BAD_REQUEST_RESPONSE.put(bad_arr);
 			BAD_REQUEST_RESPONSE.flip();
+			
+			bad_arr = "<p>Access denied</p>".getBytes("UTF-8");
+			ACCESS_DENIED_REQUEST_RESPONSE = IoBuffer.allocate(bad_arr.length);
+			ACCESS_DENIED_REQUEST_RESPONSE.put(bad_arr);
+			ACCESS_DENIED_REQUEST_RESPONSE.flip();
+			
+			bad_arr = "<p>Invalid message type. Only publish is supported (topic and queue).</p>".getBytes("UTF-8");
+			INVALID_MESSAGE_TYPE_RESPONSE = IoBuffer.allocate(bad_arr.length);
+			INVALID_MESSAGE_TYPE_RESPONSE.put(bad_arr);
+			INVALID_MESSAGE_TYPE_RESPONSE.flip();
 		}
 		catch (Throwable error)
 		{
@@ -56,53 +77,53 @@ public class BrokerHttpAction extends HttpAction
 	@Override
 	public void writeResponse(IoSession session, HttpRequest request, MutableHttpResponse response)
 	{
+		
+		
 		try
 		{
+			Session sessionProps = null;
+			Object obj = session.getAttribute("BROKER_SESSION_PROPERTIES");
+			if( obj != null)
+			{
+				sessionProps = (Session) obj;
+			}
+			else
+			{
+				sessionProps = new Session(session);
+			}
+			
 			if (request.getMethod().equals(HttpMethod.POST))
 			{
 				IoBuffer bb = (IoBuffer) request.getContent();
 				byte[] buf = new byte[bb.limit()];
 				bb.position(0);
 				bb.get(buf);
+				
+				SimpleFramingDecoderV2 xmlDecoder = (SimpleFramingDecoderV2)BrokerCodecRouter.getProcolCodec((short)0).getDecoder(null);
+				NetMessage message = (NetMessage) xmlDecoder.processBody(buf, (short)0, (short)0);
 
-				SoapEnvelope req_message = SoapSerializer.FromXml(new UnsynchByteArrayInputStream(buf));
-				String requestSource = MQ.requestSource(req_message);
-
-				if (req_message.body.publish != null)
+				ValidationResult validationResult = AccessControl.validate(message, sessionProps);
+				
+				if(!validationResult.accessGranted )
 				{
-					BrokerMessage xmsg = req_message.body.publish.brokerMessage;
-					NetAction.DestinationType dtype = NetAction.DestinationType.TOPIC;
-					NetBrokerMessage netBkMsg = new NetBrokerMessage(xmsg.textPayload.getBytes(MQ.DEFAULT_CHARSET));
-					netBkMsg.setMessageId(xmsg.messageId);
-
-					NetPublish netPublish = new NetPublish(xmsg.destinationName, dtype, netBkMsg);
-
-					_http_broker.publishMessage(netPublish, requestSource);
-
-				}
-				else if (req_message.body.enqueue != null)
-				{
-					BrokerMessage xmsg = req_message.body.enqueue.brokerMessage;
-					NetAction.DestinationType dtype = NetAction.DestinationType.QUEUE;
-					NetBrokerMessage netBkMsg = new NetBrokerMessage(xmsg.textPayload.getBytes(MQ.DEFAULT_CHARSET));
-					netBkMsg.setMessageId(xmsg.messageId);
-
-					NetPublish netPublish = new NetPublish(xmsg.destinationName, dtype, netBkMsg);
-
-					_http_broker.publishMessage(netPublish, requestSource);
-				}
-				else
-				{
-					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-					fault("soap:Sender", new UnsupportedOperationException(), response);
+					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal server error?...
+					response.setContent(ACCESS_DENIED_REQUEST_RESPONSE.duplicate());
 					return;
 				}
-
+				
+				if( (message.getAction().getActionType() != NetAction.ActionType.PUBLISH) || (message.getAction().getPublishMessage() == null))
+				{
+					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal server error?...
+					response.setContent(INVALID_MESSAGE_TYPE_RESPONSE.duplicate());
+					return;
+				}
+				
+				_http_broker.publishMessage(message.getAction().getPublishMessage(),  MQ.requestSource(message));
 				response.setStatus(HttpResponseStatus.ACCEPTED);
 			}
 			else
 			{
-				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal server error?...
 				response.setContent(BAD_REQUEST_RESPONSE.duplicate());
 			}
 		}
