@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.security.SecureSessionContainer;
 import pt.com.broker.security.SecureSessionInfo;
 import pt.com.common.security.ClientAuthInfo;
@@ -155,19 +156,31 @@ public class BrokerClient
 		_netHandler.sendMessageOverSsl(msg);
 	}
 
-	public void acknowledge(NetNotification notification) throws Throwable
+	public void acknowledge(NetNotification notification, boolean useSsl, AcceptRequest acceptRequest) throws Throwable
 	{
 
 		if ((notification != null) && (notification.getMessage() != null) && (StringUtils.isNotBlank(notification.getMessage().getMessageId())))
 		{
 			NetBrokerMessage brkMsg = notification.getMessage();
 			NetAcknowledgeMessage ackMsg = new NetAcknowledgeMessage(notification.getDestination(), brkMsg.getMessageId());
+			if( acceptRequest != null)
+			{
+				ackMsg.setActionId(acceptRequest.getActionId());
+				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
+			}
 
 			NetAction action = new NetAction(ActionType.ACKNOWLEDGE_MESSAGE);
 			action.setAcknowledgeMessage(ackMsg);
 			NetMessage msg = buildMessage("http://services.sapo.pt/broker/acknowledge", action);
 
-			_netHandler.sendMessage(msg);
+			if (useSsl)
+			{
+				_netHandler.sendMessageOverSsl(msg);
+			}
+			else
+			{
+				_netHandler.sendMessage(msg);
+			}
 		}
 		else
 		{
@@ -175,7 +188,12 @@ public class BrokerClient
 		}
 	}
 
-	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener, boolean useSsl) throws Throwable
+	public void acknowledge(NetNotification notification) throws Throwable
+	{
+		acknowledge(notification, false, null);
+	}
+	
+	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener, boolean useSsl, AcceptRequest acceptRequest) throws Throwable
 	{
 		if ((subscribe != null) && (StringUtils.isNotBlank(subscribe.getDestination())))
 		{
@@ -187,6 +205,11 @@ public class BrokerClient
 				}
 
 				_async_listeners.put(subscribe.getDestination(), listener);
+			}
+			if( acceptRequest != null)
+			{
+				subscribe.setActionId(acceptRequest.getActionId());
+				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 			}
 
 			String action = buildAction(subscribe.getDestinationType());
@@ -216,7 +239,7 @@ public class BrokerClient
 
 	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener) throws Throwable
 	{
-		addAsyncConsumer(subscribe, listener, false);
+		addAsyncConsumer(subscribe, listener, false, null);
 	}
 
 	protected void sendSubscriptions() throws Throwable
@@ -286,12 +309,17 @@ public class BrokerClient
 		_netHandler.stop();
 	}
 
-	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName, boolean useSsl)
+	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName, boolean useSsl, AcceptRequest acceptRequest)
 	{
 
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destinationName)))
 		{
 			NetPublish publish = new NetPublish(destinationName, pt.com.types.NetAction.DestinationType.QUEUE, brokerMessage);
+			if( acceptRequest != null)
+			{
+				publish.setActionId(acceptRequest.getActionId());
+				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
+			}
 
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
@@ -319,7 +347,7 @@ public class BrokerClient
 
 	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName)
 	{
-		enqueueMessage(brokerMessage, destinationName, false);
+		enqueueMessage(brokerMessage, destinationName, false, null);
 	}
 
 	protected void feedStatusConsumer(NetPong pong) throws Throwable
@@ -364,12 +392,16 @@ public class BrokerClient
 		}
 	}
 
-	public NetNotification poll(String queueName, boolean useSsl) throws Throwable
+	public NetNotification poll(String queueName, boolean useSsl, AcceptRequest acceptRequest) throws Throwable
 	{
 		if (StringUtils.isNotBlank(queueName))
 		{
 			NetPoll poll = new NetPoll(queueName);
-			poll.setActionId("http://services.sapo.pt/broker/poll");
+			if( acceptRequest != null)
+			{
+				poll.setActionId(acceptRequest.getActionId());
+				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
+			}
 			NetAction action = new NetAction(ActionType.POLL);
 			action.setPollMessage(poll);
 
@@ -393,7 +425,7 @@ public class BrokerClient
 
 	public NetNotification poll(String queueName) throws Throwable
 	{
-		return poll(queueName, false);
+		return poll(queueName, false, null);
 	}
 
 	public void publishMessage(NetBrokerMessage brokerMessage, String destination, boolean useSsl)
@@ -430,11 +462,16 @@ public class BrokerClient
 		publishMessage(brokerMessage, destination, false);
 	}
 
-	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName, boolean useSsl) throws Throwable
+	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName, boolean useSsl, AcceptRequest acceptRequest) throws Throwable
 	{
 		if ((StringUtils.isNotBlank(destinationName)) && (destinationType != null))
 		{
 			NetUnsubscribe unsubs = new NetUnsubscribe(destinationName, destinationType);
+			if( acceptRequest != null)
+			{
+				unsubs.setActionId(acceptRequest.getActionId());
+				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
+			}
 			NetAction action = new NetAction(ActionType.UNSUBSCRIBE);
 			action.setUnsbuscribeMessage(unsubs);
 
@@ -464,7 +501,7 @@ public class BrokerClient
 
 	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName) throws Throwable
 	{
-		unsubscribe(destinationType, destinationName, false);
+		unsubscribe(destinationType, destinationName, false, null);
 	}
 
 	public void setSecureSessionInfo(SecureSessionInfo secureSessionInfo)

@@ -89,8 +89,11 @@ public class Main
 //		new PingTest().run();
 //		new TopicNameSpecified().run();
 //		new TopicNameWildcard().run();
+		Test t = new TopicPubSubWithActionId();
+		t.setTimeout(3000);
+		t.run();
 //		new QueueTest().run();
-		new PollTest().run();
+//		new PollTest().run();
 //				
 //		new TopicNameSpecifiedDist().run();
 //		new TopicNameWildcardDist().run();

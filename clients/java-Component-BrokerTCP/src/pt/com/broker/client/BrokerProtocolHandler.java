@@ -9,6 +9,7 @@ import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.net.ProtocolHandler;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
@@ -176,6 +177,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			throw new RuntimeException(fault.getMessage());
 		case ACCEPTED:
 			NetAccepted accepted = action.getAcceptedMessage();
+			PendingAcceptRequestsManager.acceptedMessageReceived(accepted.getActionId());
 			//System.out.println("BrokerProtocolHandler.handleReceivedMessage(accepted): " + accepted.getActionId());
 			break;
 		case AUTH:

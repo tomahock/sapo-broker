@@ -34,16 +34,16 @@ public class SecureSessionContainer
 					System.out.println("SecureSessionContainer.run()");
 
 					long currentTime = System.currentTimeMillis();
-					boolean deletedSomeEntry = false;
+					boolean deletedSomeEntry;
 
 					do
 					{
-
+						deletedSomeEntry = false;
 						synchronized (initializingSecureSession)
 						{
 							for (Map.Entry<String, Long> entry : initializaionTimeOuts.entrySet())
 							{
-								if (entry.getValue().longValue() > currentTime)
+								if (entry.getValue().longValue() <= currentTime)
 								{
 									initializingSecureSession.remove(entry.getKey());
 									initializaionTimeOuts.remove(entry.getKey());

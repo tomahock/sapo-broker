@@ -94,7 +94,7 @@ public class AuthenticatedConsumer implements BrokerListener
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 
-		bk.addAsyncConsumer(subscribe, consumer, (cargs.useSsl() != 0));
+		bk.addAsyncConsumer(subscribe, consumer, (cargs.useSsl() != 0), null);
 
 		System.out.println("listening...");
 	}
