@@ -92,11 +92,11 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	{
 		this(brokerClient, null, keystoreLocation, keystorePw);
 	}
-	
+
 	public BrokerProtocolHandler(BrokerClient brokerClient) throws UnknownHostException, IOException
 	{
 		this(brokerClient, null, null, null);
-	} 
+	}
 
 	@Override
 	public NetworkConnector getConnector()
@@ -120,7 +120,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public void onConnectionOpen()
 	{
-		if( closed.get() )
+		if (closed.get())
 			return;
 		log.debug("Connection Opened");
 		try
@@ -136,7 +136,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public void onError(Throwable error)
 	{
-		log.error(error.getMessage(), error);
+		_brokerClient.getErrorListener().onError(error);
 	}
 
 	@Override
@@ -172,13 +172,12 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			break;
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
-			log.error(fault.getMessage());
-			// TODO: Probably throwing an exeption is not a good idea
-			throw new RuntimeException(fault.getMessage());
+			_brokerClient.getErrorListener().onFault(fault);
+			break;
 		case ACCEPTED:
 			NetAccepted accepted = action.getAcceptedMessage();
 			PendingAcceptRequestsManager.acceptedMessageReceived(accepted.getActionId());
-			//System.out.println("BrokerProtocolHandler.handleReceivedMessage(accepted): " + accepted.getActionId());
+			// System.out.println("BrokerProtocolHandler.handleReceivedMessage(accepted): " + accepted.getActionId());
 			break;
 		case AUTH:
 			NetAuthentication auth = action.getAuthorizationMessage();
@@ -229,8 +228,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		this.userCredentials = userCredentials;
 		this.providerCredentials = providerCredentials;
 		this.authProvider = authProvider;
-		
-		//TODO: Resolve the credentials renovation issue
+
+		// TODO: Resolve the credentials renovation issue
 	}
 
 	public BrokerClient getBrokerClient()

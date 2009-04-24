@@ -4,7 +4,6 @@ import pt.com.types.NetNotification;
 
 public interface BrokerListener
 {
-	public void onMessage(NetNotification message);
-
-	public boolean isAutoAck();
+	void onMessage(NetNotification message);
+	boolean isAutoAck();
 }

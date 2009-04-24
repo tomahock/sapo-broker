@@ -24,7 +24,6 @@ public class BrokerDecoderRouter extends SimpleFramingDecoderV2
 		{
 			throw new RuntimeException("Invalid protocol type: " + protocolType);
 		}
-
 		SimpleFramingDecoderV2 decoder;
 		try
 		{

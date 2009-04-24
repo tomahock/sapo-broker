@@ -85,12 +85,13 @@ public class AuthorizationFilter extends IoFilterAdapter
 
 	private void messageRefused(final IoSession session, NetMessage message, String reason)
 	{
-		NetFault fault = new NetFault("AUTH_FAILED", reason);
-		NetAction action = new NetAction(NetAction.ActionType.FAULT);
-		action.setFaultMessage(fault);
-		
-		NetMessage msg = new NetMessage(action, null);
-
-		session.write(msg);
+		if(reason == null)
+		{
+			session.write(NetFault.AccessDeniedErrorMessage);
+		}
+		else
+		{
+			session.write(NetFault.getMessageFaultWithDetail(NetFault.AccessDeniedErrorMessage, reason));
+		}
 	}
 }

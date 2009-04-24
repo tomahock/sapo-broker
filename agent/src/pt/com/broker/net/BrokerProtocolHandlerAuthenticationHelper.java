@@ -32,6 +32,7 @@ import pt.com.common.security.ClientAuthenticationInfoValidator;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.types.NetAction;
 import pt.com.types.NetAuthentication;
+import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
 import pt.com.types.NetAuthentication.AuthClientAcknowledge;
 import pt.com.types.NetAuthentication.AuthClientAuthentication;
@@ -117,7 +118,8 @@ public class BrokerProtocolHandlerAuthenticationHelper
 		NetAuthentication auth = request.getAction().getAuthorizationMessage();
 		if (!validateAuthenticationMessageConnection(session, auth))
 		{
-			throw new RuntimeException("Invalid channel used for authentication");
+			session.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Not using authentication channel (SSL)"));
+			return;
 		}
 		switch (auth.getAuthMessageType())
 		{
@@ -131,7 +133,8 @@ public class BrokerProtocolHandlerAuthenticationHelper
 			handleClientAcknowledge(session, auth);
 			break;
 		default:
-			throw new RuntimeException("Invalid Authentication Messaage Type: " + auth.getAuthMessageType());
+			log.error("Invalid Authentication Message Type: " + auth.getAuthMessageType());
+			session.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Invalid message"));
 		}
 	}
 
@@ -142,18 +145,22 @@ public class BrokerProtocolHandlerAuthenticationHelper
 		// Validate client credentials
 		ClientAuthInfo info = new ClientAuthInfo(authClientAuthrentication.getUserId(), authClientAuthrentication.getRoles(), authClientAuthrentication.getToken(), authClientAuthrentication.getAuthenticationType(), null);
 		ClientAuthenticationInfoValidator validator = ClientAuthenticationInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
-		ClientAuthenticationInfoValidationResult validate;
+		ClientAuthenticationInfoValidationResult validate = null;
 		try
 		{
 			validate = validator.validate(info);
 		}
 		catch (Exception e)
 		{
-			throw new AuthenticationFailException("Internal Error", e);
+			session.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error"));
+			return;
 		}
 
 		if (!validate.areCredentialsValid())
-			throw new AuthenticationFailException(validate.getReasonForFailure());
+		{
+			session.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validate.getReasonForFailure()));
+			return;
+		}
 
 		info.setRoles(validate.getRoles());
 

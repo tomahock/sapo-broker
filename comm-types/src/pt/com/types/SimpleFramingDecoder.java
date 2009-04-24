@@ -52,17 +52,18 @@ public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 
 			int len = in.getInt();
 
-
 			// We can decode the message length
 			if (len > _max_message_size)
 			{
-				session.close(true);
-				log.error("Illegal message size!! The maximum allowed message size is " + _max_message_size + " bytes.");
+				dealWithOversizedMessage(len, _max_message_size, session);				
+				log.error("Illegal message size!! Received message claimed to have " + len + " bytes.");
+				return false;
 			}
 			else if (len <= 0)
 			{
-				session.close(true);
-				log.error("Illegal message size!! The message lenght must be a positive value.");
+				dealWithOversizedMessage(len, _max_message_size, session);				
+				log.error("Illegal message size!! Received message claimed to have " + len + " bytes.");
+				return false;
 			}
 
 			if (in.remaining() < len)
@@ -86,6 +87,16 @@ public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 			log.error(t.getMessage(), t);
 			return false;
 		}
+	}
+
+	private void dealWithOversizedMessage(int len, int _max_message_size2, IoSession session)
+	{
+		session.suspendRead();
+		
+		session.write(NetFault.InvalidMessageSizeErrorMessage); 
+		
+		session.close(false);
+		
 	}
 
 	public abstract Object processBody(byte[] packet);

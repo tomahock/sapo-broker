@@ -1,6 +1,5 @@
 package pt.com.broker.client;
 
-import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.security.SecureSessionContainer;
@@ -56,7 +56,26 @@ public class BrokerClient
 	private SecureSessionInfo secureSessionInfo;
 
 	private final Object mutex = new Object();
+	
+	
+	private static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter(){
+		public void onFault(pt.com.types.NetFault fault)
+		{
+			log.error("Fault message received");
+			log.error("	Fault code: '{}'", fault.getCode());
+			log.error("	Fault message: '{}'", fault.getMessage());
+			log.error("	Fault action identifier: '{}'", fault.getActionId());
+			log.error("	Fault detail: '{}'", fault.getDetail());
+		}
+		public void onError(Throwable throwable)
+		{
+			log.error("An error occurred", throwable);
+		}
+	};
+	
 
+	private BrokerErrorListenter errorListener; 
+	
 	public BrokerClient(String host, int portNumber, int sslPortNumber) throws Throwable
 	{
 		this(host, portNumber, sslPortNumber, "brokerClient");
@@ -83,13 +102,14 @@ public class BrokerClient
 		_portNumber = portNumber;
 		_sslPortNumber = sslPortNumber;
 		_appName = appName;
+		setErrorListener( getDefaultErrorListener() );
 		_netHandler = new BrokerProtocolHandler(this, ptype, keystoreLocation, keystorePw);
-		_netHandler.start();
+		getNetHandler().start();
 	}
 
 	public BrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
 	{
-		this(host, portNumber, 0, null, null, null, null);
+		this(host, portNumber, 0, appName, ptype, null, null);
 	}
 
 	public void setAuthenticationCredentials(AuthenticationCredentialsProvider authProvider, ClientAuthInfo userCredentials) throws Exception
@@ -113,7 +133,7 @@ public class BrokerClient
 			providerCredentials = authProvider.getCredentials(userCredentials);
 			if (providerCredentials != null)
 			{
-				_netHandler.setCredentials(userCredentials, providerCredentials, authProvider);
+				getNetHandler().setCredentials(userCredentials, providerCredentials, authProvider);
 			}
 		}
 	}
@@ -148,12 +168,12 @@ public class BrokerClient
 		ssi.setAuthProvider(authProvider);
 		ssi.setUserCredentials(userCredentials);
 		ssi.setProviderCredentials(providerCredentials);
-		ssi.setBrokerProtocolHandler(_netHandler);
+		ssi.setBrokerProtocolHandler(getNetHandler());
 		ssi.setExpectedMessageType(AuthMessageType.SERVER_CHALLENGE);
 
 		SecureSessionContainer.addInitializingSecureSessionInfo(ssi);
 
-		_netHandler.sendMessageOverSsl(msg);
+		getNetHandler().sendMessageOverSsl(msg);
 	}
 
 	public void acknowledge(NetNotification notification, boolean useSsl, AcceptRequest acceptRequest) throws Throwable
@@ -171,15 +191,15 @@ public class BrokerClient
 
 			NetAction action = new NetAction(ActionType.ACKNOWLEDGE_MESSAGE);
 			action.setAcknowledgeMessage(ackMsg);
-			NetMessage msg = buildMessage("http://services.sapo.pt/broker/acknowledge", action);
+			NetMessage msg = buildMessage(action);
 
 			if (useSsl)
 			{
-				_netHandler.sendMessageOverSsl(msg);
+				getNetHandler().sendMessageOverSsl(msg);
 			}
 			else
 			{
-				_netHandler.sendMessage(msg);
+				getNetHandler().sendMessage(msg);
 			}
 		}
 		else
@@ -212,20 +232,18 @@ public class BrokerClient
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 			}
 
-			String action = buildAction(subscribe.getDestinationType());
-
 			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
 			netAction.setSubscribeMessage(subscribe);
 
-			NetMessage msg = buildMessage(action, netAction);
+			NetMessage msg = buildMessage(netAction);
 
 			if (useSsl)
 			{
-				_netHandler.sendMessageOverSsl(msg);
+				getNetHandler().sendMessageOverSsl(msg);
 			}
 			else
 			{
-				_netHandler.sendMessage(msg);
+				getNetHandler().sendMessage(msg);
 			}
 
 			_consumerList.add(new BrokerAsyncConsumer(subscribe, listener));
@@ -247,47 +265,29 @@ public class BrokerClient
 		for (BrokerAsyncConsumer aconsumer : _consumerList)
 		{
 			NetSubscribe subscription = aconsumer.getSubscription();
-			String action = buildAction(subscription.getDestinationType());
 
 			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
 			netAction.setSubscribeMessage(subscription);
 
-			NetMessage msg = buildMessage(action, netAction);
+			NetMessage msg = buildMessage(netAction);
 
-			_netHandler.sendMessage(msg);
+			getNetHandler().sendMessage(msg);
 			log.info("Reconnected async consumer for '{}'", subscription.getDestination());
 		}
 	}
 
-	private NetMessage buildMessage(String actionDest, NetAction action)
+	private NetMessage buildMessage(NetAction action)
 	{
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("ACTION", actionDest);
-		headers.put("ADDRESS", _appName);
-		headers.put("TO", actionDest);
-
-		NetMessage message = new NetMessage(action, headers);
+		NetMessage message = new NetMessage(action, null);
 
 		return message;
 	}
 
-	private String buildAction(DestinationType destinationType)
+	private NetMessage buildMessage(NetAction action, Map<String, String> headers)
 	{
-		String raction = "";
-
-		switch (destinationType)
-		{
-		case QUEUE:
-			raction = "http://services.sapo.pt/broker/listen";
-			break;
-		case TOPIC:
-			raction = "http://services.sapo.pt/broker/subscribe";
-			break;
-		case VIRTUAL_QUEUE:
-			raction = "http://services.sapo.pt/broker/listen";
-			break;
-		}
-		return raction;
+		NetMessage message = new NetMessage(action, headers);
+		
+		return message;
 	}
 
 	public NetPong checkStatus() throws Throwable
@@ -297,16 +297,16 @@ public class BrokerClient
 		NetAction action = new NetAction(ActionType.PING);
 		action.setPingMessage(ping);
 
-		NetMessage message = buildMessage("http://services.sapo.pt/broker/checkstatus", action);
+		NetMessage message = buildMessage(action);
 
-		_netHandler.sendMessage(message);
+		getNetHandler().sendMessage(message);
 		return _bstatus.take();
 
 	}
 
 	public void close()
 	{
-		_netHandler.stop();
+		getNetHandler().stop();
 	}
 
 	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName, boolean useSsl, AcceptRequest acceptRequest)
@@ -324,14 +324,14 @@ public class BrokerClient
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
 
-			NetMessage msg = buildMessage("http://services.sapo.pt/broker/enqueue", action);
+			NetMessage msg = buildMessage(action);
 
 			try
 			{
 				if (useSsl)
-					_netHandler.sendMessageOverSsl(msg);
+					getNetHandler().sendMessageOverSsl(msg);
 				else
-					_netHandler.sendMessage(msg);
+					getNetHandler().sendMessage(msg);
 			}
 			catch (Throwable t)
 			{
@@ -405,14 +405,14 @@ public class BrokerClient
 			NetAction action = new NetAction(ActionType.POLL);
 			action.setPollMessage(poll);
 
-			NetMessage message = buildMessage("http://services.sapo.pt/broker/poll", action);
+			NetMessage message = buildMessage(action);
 			SyncConsumer sc = SyncConsumerList.get(queueName);
 			sc.increment();
 
 			if (useSsl)
-				_netHandler.sendMessageOverSsl(message);
+				getNetHandler().sendMessageOverSsl(message);
 			else
-				_netHandler.sendMessage(message);
+				getNetHandler().sendMessage(message);
 
 			NetNotification m = sc.take();
 			return m;
@@ -428,22 +428,27 @@ public class BrokerClient
 		return poll(queueName, false, null);
 	}
 
-	public void publishMessage(NetBrokerMessage brokerMessage, String destination, boolean useSsl)
+	public void publishMessage(NetBrokerMessage brokerMessage, String destination, boolean useSsl,  AcceptRequest acceptRequest)
 	{
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination)))
 		{
 			NetPublish publish = new NetPublish(destination, pt.com.types.NetAction.DestinationType.TOPIC, brokerMessage);
+			if( acceptRequest != null)
+			{
+				publish.setActionId(acceptRequest.getActionId());
+				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
+			}
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
 
-			NetMessage msg = buildMessage("http://services.sapo.pt/broker/publish", action);
+			NetMessage msg = buildMessage(action);
 
 			try
 			{
 				if (useSsl)
-					_netHandler.sendMessageOverSsl(msg);
+					getNetHandler().sendMessageOverSsl(msg);
 				else
-					_netHandler.sendMessage(msg);
+					getNetHandler().sendMessage(msg);
 			}
 			catch (Throwable e)
 			{
@@ -459,7 +464,7 @@ public class BrokerClient
 
 	public void publishMessage(NetBrokerMessage brokerMessage, String destination)
 	{
-		publishMessage(brokerMessage, destination, false);
+		publishMessage(brokerMessage, destination, false, null);
 	}
 
 	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName, boolean useSsl, AcceptRequest acceptRequest) throws Throwable
@@ -475,12 +480,12 @@ public class BrokerClient
 			NetAction action = new NetAction(ActionType.UNSUBSCRIBE);
 			action.setUnsbuscribeMessage(unsubs);
 
-			NetMessage message = buildMessage("http://services.sapo.pt/broker/unsubscribe", action);
+			NetMessage message = buildMessage(action);
 
 			if (useSsl)
-				_netHandler.sendMessageOverSsl(message);
+				getNetHandler().sendMessageOverSsl(message);
 			else
-				_netHandler.sendMessage(message);
+				getNetHandler().sendMessage(message);
 
 			for (BrokerAsyncConsumer bac : _consumerList)
 			{
@@ -512,6 +517,26 @@ public class BrokerClient
 	public SecureSessionInfo getSecureSessionInfo()
 	{
 		return secureSessionInfo;
+	}
+
+	public BrokerProtocolHandler getNetHandler()
+	{
+		return _netHandler;
+	}
+
+	public static BrokerErrorListenter getDefaultErrorListener()
+	{
+		return defaultErrorListener;
+	}
+
+	public void setErrorListener(BrokerErrorListenter errorListener)
+	{
+		this.errorListener = errorListener;
+	}
+
+	public BrokerErrorListenter getErrorListener()
+	{
+		return errorListener;
 	}
 
 	// public static void saveToDropbox(String dropboxPath, BrokerMessage

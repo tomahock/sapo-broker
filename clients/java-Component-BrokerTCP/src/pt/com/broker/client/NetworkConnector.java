@@ -29,16 +29,16 @@ public class NetworkConnector
 		_host = host;
 		_port = port;
 
-		_client = new Socket(_host, _port);
-		_client.setSoTimeout(0);
-		_rawo = new DataOutputStream(_client.getOutputStream());
-		_rawi = new DataInputStream(_client.getInputStream());
+		setSocket(new Socket(_host, _port));
+		getSocket().setSoTimeout(0);
+		_rawo = new DataOutputStream(getSocket().getOutputStream());
+		_rawi = new DataInputStream(getSocket().getInputStream());
 
-		_addr = _client.getRemoteSocketAddress();
+		_addr = getSocket().getRemoteSocketAddress();
 		_saddr = _addr.toString();
 
-		log.info("Receive Buffer Size: " + _client.getReceiveBufferSize());
-		log.info("Send Buffer Size: " + _client.getSendBufferSize());
+		log.info("Receive Buffer Size: " + getSocket().getReceiveBufferSize());
+		log.info("Send Buffer Size: " + getSocket().getSendBufferSize());
 	}
 
 	public void reconnect(Throwable se)
@@ -54,10 +54,10 @@ public class NetworkConnector
 			try
 			{
 				log.error("Trying to reconnect");
-				_client = new Socket(_host, _port);
-				_rawo = new DataOutputStream(_client.getOutputStream());
-				_rawi = new DataInputStream(_client.getInputStream());
-				_addr = _client.getRemoteSocketAddress();
+				setSocket(new Socket(_host, _port));
+				_rawo = new DataOutputStream(getSocket().getOutputStream());
+				_rawi = new DataInputStream(getSocket().getInputStream());
+				_addr = getSocket().getRemoteSocketAddress();
 				_saddr = _addr.toString();
 
 				ex = null;
@@ -103,7 +103,7 @@ public class NetworkConnector
 
 		try
 		{
-			_client.close();
+			getSocket().close();
 		}
 		catch (Throwable e)
 		{
@@ -112,17 +112,17 @@ public class NetworkConnector
 
 	public boolean isConnected()
 	{
-		return _client.isConnected();
+		return getSocket().isConnected();
 	}
 
 	public boolean isInputShutdown()
 	{
-		return _client.isInputShutdown();
+		return getSocket().isInputShutdown();
 	}
 
 	public boolean isOutputShutdown()
 	{
-		return _client.isOutputShutdown();
+		return getSocket().isOutputShutdown();
 	}
 
 	public SocketAddress getInetAddress()
@@ -133,6 +133,16 @@ public class NetworkConnector
 	public String getAddress()
 	{
 		return _saddr;
+	}
+
+	public void setSocket(Socket _client)
+	{
+		this._client = _client;
+	}
+
+	public Socket getSocket()
+	{
+		return _client;
 	}
 
 }

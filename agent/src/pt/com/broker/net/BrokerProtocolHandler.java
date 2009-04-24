@@ -106,7 +106,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 		try
 		{
-			iosession.close();
+			iosession.close(true);
 		}
 		catch (Throwable t)
 		{
@@ -141,7 +141,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 		try
 		{
-			iosession.close();
+			iosession.close(true);
 		}
 		catch (Throwable t)
 		{
@@ -219,11 +219,6 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 			switch (request.getAction().getActionType())
 			{
-			case NOTIFICATION:
-				/*
-				 * Notifications are sent from Agents to Clients Send error message!
-				 */
-				break;
 			case PUBLISH:
 				handlePublishMessage(session, request, requestSource);
 				break;
@@ -232,9 +227,6 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 				break;
 			case ACKNOWLEDGE_MESSAGE:
 				handleAcknowledeMessage(session, request);
-				break;
-			case ACCEPTED:
-				handleAcceptedMessage(session, request);
 				break;
 			case UNSUBSCRIBE:
 				handleUnsubscribeMessage(session, request);
@@ -245,15 +237,11 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			case PING:
 				handlePingMessage(session, request);
 				break;
-			case PONG:
-				/*
-				 * Pong are sent from Agents to Clients Send error message!
-				 */
 			case AUTH:
 				BrokerProtocolHandlerAuthenticationHelper.handleAuthMessage(session, request);
 				break;
 			default:
-				throw new RuntimeException("Not a valid request");
+				handleUnexpectedMessageType(session, request);
 			}
 		}
 		catch (Throwable t)
@@ -262,9 +250,34 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 	}
 
+	private void handleUnexpectedMessageType(IoSession session, NetMessage request)
+	{
+		String actionId = null;
+		switch(request.getAction().getActionType())
+		{
+		case FAULT:
+			actionId = request.getAction().getFaultMessage().getActionId();
+			break;
+		case ACCEPTED:
+			actionId = request.getAction().getAcceptedMessage().getActionId();
+			break;
+		}
+		if(actionId == null)
+		{
+			session.write(NetFault.UnexpectedMessageTypeErrorMessage);
+		}
+		else
+		{
+			session.write(NetFault.getMessageFaultWithActionId(NetFault.UnexpectedMessageTypeErrorMessage, actionId));
+		}
+	}
+
 	private void handlePublishMessage(IoSession session, NetMessage request, String messageSource)
 	{
 		NetPublish publish = request.getAction().getPublishMessage();
+		
+		String actionId = publish.getActionId();
+		
 		switch (publish.getDestinationType())
 		{
 		case TOPIC:
@@ -274,10 +287,18 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			_brokerProducer.enqueueMessage(publish, messageSource);
 			break;
 		default:
-			throw new IllegalArgumentException("Invalid publication destination type");
+			if(actionId == null)
+			{
+				session.write(NetFault.InvalidMessageDestinationTypeErrorMessage);
+			}
+			else
+			{
+				session.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidMessageDestinationTypeErrorMessage, actionId));
+			}
+			return;
 		}
 
-		sendAccepted(session, publish.getActionId());
+		sendAccepted(session, actionId);
 
 	}
 
@@ -291,13 +312,6 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 	private void handleAcknowledeMessage(IoSession session, NetMessage request)
 	{
 		_brokerProducer.acknowledge(request.getAction().getAcknowledgeMessage());
-	}
-
-	private void handleAcceptedMessage(IoSession session, NetMessage request)
-	{
-		// TODO: deal with the ack
-		return;
-
 	}
 
 	private void handleUnsubscribeMessage(IoSession session, NetMessage request)
@@ -336,7 +350,15 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			}
 			else
 			{
-				throw new IllegalArgumentException("Not a valid destination name for a TOPIC_AS_QUEUE consumer");
+				if(subscritption.getActionId() == null)
+				{
+					session.write(NetFault.InvalidDestinationNameErrorMessage);
+				}
+				else
+				{
+					session.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, subscritption.getActionId()));
+				}
+				return;
 			}
 			break;
 		default:
@@ -353,7 +375,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		NetMessage message = new NetMessage(action, null);
 		ios.write(message);
 	}
-	
+
 	private synchronized void sendAccepted(final IoSession ios, final String actionId)
 	{
 		if (actionId != null)

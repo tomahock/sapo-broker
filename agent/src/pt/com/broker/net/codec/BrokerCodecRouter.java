@@ -9,6 +9,7 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
 import pt.com.protobuf.codec.ProtoBufCodec;
+import pt.com.thrift.codec.ThriftCodec;
 import pt.com.types.Constants;
 import pt.com.xml.codec.SoapCodecV2;
 
@@ -38,7 +39,7 @@ public class BrokerCodecRouter implements ProtocolCodecFactory
 	{
 		codecs.put(new Short((short) 0), new SoapCodecV2());
 		codecs.put(new Short((short) 1), new ProtoBufCodec());
-		//codecs.put(new Short((short) 2), new ThriftCodec());
+		codecs.put(new Short((short) 2), new ThriftCodec());
 	}
 
 	// TODO: Create a constructor that specifies this value. The original value was defined by: Constants.MAX_MESSAGE_SIZE

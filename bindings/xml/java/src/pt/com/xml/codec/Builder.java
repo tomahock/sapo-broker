@@ -23,6 +23,7 @@ import pt.com.xml.Acknowledge;
 import pt.com.xml.BrokerMessage;
 import pt.com.xml.CheckStatus;
 import pt.com.xml.EndPointReference;
+import pt.com.xml.Enqueue;
 import pt.com.xml.Notification;
 import pt.com.xml.Notify;
 import pt.com.xml.Poll;
@@ -36,7 +37,7 @@ import pt.com.xml.Unsubscribe;
 public class Builder
 {
 	private static final Charset CHARSET = Charset.forName("UTF-8");
-	
+
 	protected static final NetMessage soapToNetMessage(SoapEnvelope msg)
 	{
 		NetMessage message = null;
@@ -50,6 +51,21 @@ public class Builder
 			String dest = notification.brokerMessage.destinationName;
 			NetAction.DestinationType destType = NetAction.DestinationType.valueOf(msg.header.wsaFrom.address);
 			NetBrokerMessage brkMsg = new NetBrokerMessage(notification.brokerMessage.textPayload.getBytes(CHARSET));
+			brkMsg.setMessageId(notification.brokerMessage.messageId);
+			String val = notification.brokerMessage.expiration;
+			try
+			{
+				if ((val != null) && (!val.equals("")))
+					brkMsg.setExpiration(Long.parseLong(val));
+				val = notification.brokerMessage.timestamp;
+				if ((val != null) && (!val.equals("")))
+					brkMsg.setExpiration(Long.parseLong(val));
+				brkMsg.setTimestamp(Long.parseLong(val));
+			}
+			catch (NumberFormatException nfe)
+			{
+			}
+
 			String subs = msg.header.wsaTo;
 			NetNotification netNotification = new NetNotification(dest, destType, brkMsg, subs);
 			NetAction netAction = new NetAction(NetAction.ActionType.NOTIFICATION);
@@ -78,8 +94,8 @@ public class Builder
 		}
 		else if (msg.body.enqueue != null)
 		{
-			BrokerMessage xmsg = msg.body.publish.brokerMessage;
-			actionId = msg.body.publish.actionId;
+			BrokerMessage xmsg = msg.body.enqueue.brokerMessage;
+			actionId = msg.body.enqueue.actionId;
 
 			NetAction netAction = new NetAction(NetAction.ActionType.PUBLISH);
 			NetAction.DestinationType dtype = NetAction.DestinationType.QUEUE;
@@ -167,30 +183,44 @@ public class Builder
 			message = new NetMessage(netAction);
 			message.getAction().setPongMessage(netPong);
 		}
+		else if (msg.body.fault != null)
+		{
+			NetAction netAction = new NetAction(NetAction.ActionType.FAULT);
+			String faultCode = null;
+			String faultMessage = null;
+
+			if (msg.body.fault.faultCode != null)
+				faultCode = msg.body.fault.faultCode.value;
+			if (msg.body.fault.faultReason != null)
+				faultMessage = msg.body.fault.faultReason.text;
+
+			NetFault netFault = new NetFault(faultCode, faultMessage);
+			message = new NetMessage(netAction);
+			message.getAction().setFaultMessage(netFault);
+		}
 		else
 		{
 			throw new RuntimeException("Not a valid request");
 		}
 		return message;
 	}
-	
-	
+
 	protected static final SoapEnvelope netMessageToSoap(NetMessage message)
 	{
-		NetMessage gcsMessage = (NetMessage) message;
+		NetMessage netMessage = (NetMessage) message;
 
 		SoapEnvelope soap = new SoapEnvelope();
 
-		switch (gcsMessage.getAction().getActionType())
+		switch (netMessage.getAction().getActionType())
 		{
 		case ACCEPTED:
 			Accepted a = new Accepted();
-			a.actionId = gcsMessage.getAction().getAcceptedMessage().getActionId();
+			a.actionId = netMessage.getAction().getAcceptedMessage().getActionId();
 			soap.body.accepted = a;
 			break;
 		case ACKNOWLEDGE_MESSAGE:
 			Acknowledge ack = new Acknowledge();
-			NetAcknowledgeMessage nack = gcsMessage.getAction().getAcknowledgeMessage();
+			NetAcknowledgeMessage nack = netMessage.getAction().getAcknowledgeMessage();
 			ack.actionId = nack.getActionId();
 			ack.destinationName = nack.getDestination();
 			ack.messageId = nack.getMessageId();
@@ -198,7 +228,7 @@ public class Builder
 			break;
 		case FAULT:
 			SoapFault f = new SoapFault();
-			NetFault nf = gcsMessage.getAction().getFaultMessage();
+			NetFault nf = netMessage.getAction().getFaultMessage();
 			f.faultCode.value = nf.getCode();
 			f.faultReason.text = nf.getMessage();
 			f.detail = nf.getDetail();
@@ -206,8 +236,9 @@ public class Builder
 			break;
 		case NOTIFICATION:
 			Notification notf = new Notification();
-			NetNotification nnotf = gcsMessage.getAction().getNotificationMessage();
+			NetNotification nnotf = netMessage.getAction().getNotificationMessage();
 			notf.brokerMessage = buildXmlBrokerMessage(nnotf.getMessage(), nnotf.getDestination());
+			notf.actionId = nnotf.getMessage().getMessageId();
 
 			SoapEnvelope soap_env = new SoapEnvelope();
 			SoapHeader soap_header = new SoapHeader();
@@ -227,21 +258,17 @@ public class Builder
 			break;
 		case POLL:
 			Poll poll = new Poll();
-			NetPoll npoll = gcsMessage.getAction().getPollMessage();
+			NetPoll npoll = netMessage.getAction().getPollMessage();
 			poll.actionId = npoll.getActionId();
 			poll.destinationName = npoll.getDestination();
 			soap.body.poll = poll;
 			break;
 		case PUBLISH:
-			Publish pub = new Publish();
-			NetPublish npub = gcsMessage.getAction().getPublishMessage();
-			pub.actionId = npub.getActionId();
-			pub.brokerMessage = buildXmlBrokerMessage(npub.getMessage(), npub.getDestination());
-			soap.body.publish = pub;
+			handlePublish(soap, netMessage);
 			break;
 		case SUBSCRIBE:
 			Notify notify = new Notify();
-			NetSubscribe nsubs = gcsMessage.getAction().getSubscribeMessage();
+			NetSubscribe nsubs = netMessage.getAction().getSubscribeMessage();
 			notify.actionId = nsubs.getActionId();
 			notify.destinationName = nsubs.getDestination();
 			notify.destinationType = nsubs.getDestinationType().toString();
@@ -249,7 +276,7 @@ public class Builder
 			break;
 		case UNSUBSCRIBE:
 			Unsubscribe unsubscribe = new Unsubscribe();
-			NetUnsubscribe nunsubscribe = gcsMessage.getAction().getUnsbuscribeMessage();
+			NetUnsubscribe nunsubscribe = netMessage.getAction().getUnsbuscribeMessage();
 			unsubscribe.actionId = nunsubscribe.getActionId();
 			unsubscribe.destinationName = nunsubscribe.getDestination();
 			unsubscribe.destinationType = nunsubscribe.getDestinationType().toString();
@@ -260,7 +287,7 @@ public class Builder
 			break;
 		case PONG:
 			Status status = new Status();
-			long ts = gcsMessage.getAction().getPongMessage().getTimestamp();
+			long ts = netMessage.getAction().getPongMessage().getTimestamp();
 			if (ts > 0)
 			{
 				status.timestamp = DateUtil.formatISODate(new Date(ts));
@@ -270,6 +297,29 @@ public class Builder
 		}
 
 		return soap;
+	}
+
+	private static void handlePublish(SoapEnvelope soap, NetMessage netMessage)
+	{
+		NetPublish publish = netMessage.getAction().getPublishMessage();
+		switch (publish.getDestinationType())
+		{
+		case TOPIC:
+			Publish pub = new Publish();
+			pub.actionId = publish.getActionId();
+			pub.brokerMessage = buildXmlBrokerMessage(publish.getMessage(), publish.getDestination());
+			soap.body.publish = pub;
+			break;
+		case QUEUE:
+			Enqueue enqueue = new Enqueue();
+			enqueue.actionId = publish.getActionId();
+			enqueue.brokerMessage = buildXmlBrokerMessage(publish.getMessage(), publish.getDestination());
+			soap.body.enqueue = enqueue;
+			break;
+		default:
+			throw new RuntimeException("Invalid destinatio type");
+		}
+
 	}
 
 	private static final BrokerMessage buildXmlBrokerMessage(NetBrokerMessage net_bkmsg, String destinationName)

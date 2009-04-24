@@ -180,6 +180,10 @@ public class ThriftBindingSerializer implements BindingSerializer
 			return NetAction.ActionType.ACKNOWLEDGE_MESSAGE;
 		case ActionType.FAULT:
 			return NetAction.ActionType.FAULT;
+		case ActionType.PING:
+			return  NetAction.ActionType.PING;
+		case ActionType.PONG:
+			return  NetAction.ActionType.PONG;
 		case ActionType.NOTIFICATION:
 			return NetAction.ActionType.NOTIFICATION;
 		case ActionType.POLL:
@@ -190,9 +194,11 @@ public class ThriftBindingSerializer implements BindingSerializer
 			return NetAction.ActionType.SUBSCRIBE;
 		case ActionType.UNSUBSCRIBE:
 			return NetAction.ActionType.UNSUBSCRIBE;
+		case ActionType.AUTH:
+			return  NetAction.ActionType.AUTH;
 		}
 		// TODO: Throw checked exception
-		return NetAction.ActionType.ACCEPTED;
+		throw new RuntimeException("Unexpected ActionType: "+ actionType);
 	}
 
 	static private NetAction.DestinationType translateDestinationType(int destinationType)
