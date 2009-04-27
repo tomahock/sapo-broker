@@ -17,15 +17,14 @@ if [ $? = 0 ] ; then # Yup, 1.5 still
   done
 else # we assume 1.6 here
   echo Found Java version 1.6
-  classpath="./conf:../sapo-broker/lib/*"
+  classpath="./conf:../BrokerRepo/sapo-broker/lib/*"
 fi
 
 java -server \
--Xverify:none -Xms256M -Xmx256M \
+-Xverify:none -Xms16M -Xmx16M \
 -Djava.awt.headless=true \
 -Djava.net.preferIPv4Stack=true \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
--Dconfig-path=./conf/agent_example.config \
 -cp $classpath \
-pt.com.broker.Start
+pt.com.broker.client.sample.Producer -n /test/foo -d TOPIC

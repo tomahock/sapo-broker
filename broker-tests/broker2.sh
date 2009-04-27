@@ -26,6 +26,6 @@ java -server \
 -Djava.net.preferIPv4Stack=true \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
--Dconfig-path=./conf/agent_example.config \
+-Dconfig-path=./conf/agent2_example.config \
 -cp $classpath \
 pt.com.broker.Start
