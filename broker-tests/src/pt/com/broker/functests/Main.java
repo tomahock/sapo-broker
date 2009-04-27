@@ -7,7 +7,7 @@ import pt.com.broker.functests.positive.*;
 
 public class Main
 {
-
+	/*
 	public static class HelloWorldTest extends Test
 	{
 		public HelloWorldTest(){
@@ -83,6 +83,7 @@ public class Main
 			});
 		}
 	}
+	*/
 
 	public static void main(String[] args)
 	{
@@ -141,7 +142,10 @@ public class Main
 //			new BadEncodingTypeTest().run(numberOfTests);
 //			new BadEncodingVersionTest().run(numberOfTests);
 //
-//			new InvalidMessage().run(numberOfTests);
+//			new InvalidMessageTest().run(numberOfTests);
+//			new InvalidRandomMessageTest().run(numberOfTests);
+//			new TotallyInvalidRandomMessageTest().run(numberOfTests);
+			new MessageSizeBiggerThanMessageTest().run(numberOfTests);
 //			new NotificationTest().run(numberOfTests);
 //			new PongTest().run(numberOfTests);
 //			new FaultTest().run(numberOfTests);
@@ -149,8 +153,9 @@ public class Main
 //			new AcceptedTest().run(numberOfTests);
 //			new InvalidDestinationName().run(numberOfTests);
 //			new InvalidDestinationType().run(numberOfTests);
-//			new AccessDenied().run(numberOfTests);
-			new AuthenticationFailed().run(numberOfTests);
+//			new AccessDeniedTest().run(numberOfTests);
+//			new AuthenticationFailed().run(numberOfTests);
+//			new InvalidDestinationNameInPublishTest().run(numberOfTests);
 		
 		}
 		

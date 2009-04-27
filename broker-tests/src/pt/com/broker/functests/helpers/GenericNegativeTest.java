@@ -13,6 +13,8 @@ public class GenericNegativeTest extends BrokerTest
 
 	private BrokerClient brokerClient = null;
 	
+	private boolean okToTimeout = false;
+	
 	private BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
 	{
 		@Override

@@ -6,6 +6,7 @@ import pt.com.types.NetFault;
 
 public class FaultConsequence extends Consequence
 {
+	private boolean okToTimeout = false;
 	
 	private String faultCode;
 	private String faultMessage;

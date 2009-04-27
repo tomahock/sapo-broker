@@ -4,7 +4,7 @@
 	<classpathentry exported="true" kind="lib" path="je-3.3.75.jar"/>
 	<classpathentry exported="true" kind="lib" path="jibx-run.jar"/>
 	<classpathentry exported="true" kind="lib" path="mina_http_filter.jar"/>
-	<classpathentry exported="true" kind="lib" path="slf4j-api-1.5.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="slf4j-api-1.5.6.jar" sourcepath="/home/lcosta/Work/Projects/mina_repo3"/>
 	<classpathentry exported="true" kind="lib" path="mina2-snapshot.jar" sourcepath="/Mina/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="org.caudexorigo.jar" sourcepath="/org.caudexorigo"/>
 	<classpathentry exported="true" kind="lib" path="protobuf-java-2.0.3.jar"/>

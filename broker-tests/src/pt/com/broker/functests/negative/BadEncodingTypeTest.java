@@ -10,9 +10,6 @@ public class BadEncodingTypeTest extends GenericNegativeTest
 		super("Bad Encoding Type Test");
 		
 		setDataToSend(new byte[] { 0, (byte) 0xff, 0, 0, (byte) 0, (byte) 0, (byte) 0, (byte) 2, 0, 0 });
-
-		setFaultCode("1102");
-		setFaultMessage("Unknown encoding protocol");
 	}
 	
 	public void addConsequece(){}

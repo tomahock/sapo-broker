@@ -53,7 +53,7 @@ public abstract class SimpleFramingDecoderV2 extends CumulativeProtocolDecoder
 			short protocolType = in.getShort();
 			short protocolVersion = in.getShort();
 			int len = in.getInt();
-
+			
 			// TODO: This could be done only the first time the client sends a message...
 			session.setAttribute("PROTOCOL_TYPE", new Short(protocolType));
 			session.setAttribute("PROTOCOL_VERSION", new Short(protocolVersion));

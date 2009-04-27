@@ -278,6 +278,19 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		
 		String actionId = publish.getActionId();
 		
+		if (StringUtils.contains(publish.getDestination(), "@"))
+		{
+			if(publish.getActionId() == null)
+			{
+				session.write(NetFault.InvalidDestinationNameErrorMessage);
+			}
+			else
+			{
+				session.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, publish.getActionId()));
+			}
+			return;
+		}
+		
 		switch (publish.getDestinationType())
 		{
 		case TOPIC:

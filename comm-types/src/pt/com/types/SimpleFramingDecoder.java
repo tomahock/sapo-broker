@@ -51,7 +51,7 @@ public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 			}
 
 			int len = in.getInt();
-
+			
 			// We can decode the message length
 			if (len > _max_message_size)
 			{
