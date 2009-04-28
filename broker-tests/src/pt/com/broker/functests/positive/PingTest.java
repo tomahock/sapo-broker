@@ -31,7 +31,7 @@ public class PingTest extends BrokerTest
 					bk.close();
 
 					setDone(true);
-					setSucess(true);
+					setSucess(pong != null);
 				}
 				catch (Throwable t)
 				{

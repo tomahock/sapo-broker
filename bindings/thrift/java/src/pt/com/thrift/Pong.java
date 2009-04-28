@@ -20,19 +20,18 @@ import org.apache.thrift.transport.*;
 
 public class Pong implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Pong");
-  private static final TField TIMESTAMP_FIELD_DESC = new TField("timestamp", TType.I64, (short)1);
+  private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
 
-  public long timestamp;
-  public static final int TIMESTAMP = 1;
+  public String action_id;
+  public static final int ACTION_ID = 1;
 
   private final Isset __isset = new Isset();
   private static final class Isset implements java.io.Serializable {
-    public boolean timestamp = false;
   }
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(TIMESTAMP, new FieldMetaData("timestamp", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.I64)));
+    put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
   }});
 
   static {
@@ -43,19 +42,19 @@ public class Pong implements TBase, java.io.Serializable, Cloneable {
   }
 
   public Pong(
-    long timestamp)
+    String action_id)
   {
     this();
-    this.timestamp = timestamp;
-    this.__isset.timestamp = true;
+    this.action_id = action_id;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public Pong(Pong other) {
-    __isset.timestamp = other.__isset.timestamp;
-    this.timestamp = other.timestamp;
+    if (other.isSetAction_id()) {
+      this.action_id = other.action_id;
+    }
   }
 
   @Override
@@ -63,32 +62,33 @@ public class Pong implements TBase, java.io.Serializable, Cloneable {
     return new Pong(this);
   }
 
-  public long getTimestamp() {
-    return this.timestamp;
+  public String getAction_id() {
+    return this.action_id;
   }
 
-  public void setTimestamp(long timestamp) {
-    this.timestamp = timestamp;
-    this.__isset.timestamp = true;
+  public void setAction_id(String action_id) {
+    this.action_id = action_id;
   }
 
-  public void unsetTimestamp() {
-    this.__isset.timestamp = false;
+  public void unsetAction_id() {
+    this.action_id = null;
   }
 
-  // Returns true if field timestamp is set (has been asigned a value) and false otherwise
-  public boolean isSetTimestamp() {
-    return this.__isset.timestamp;
+  // Returns true if field action_id is set (has been asigned a value) and false otherwise
+  public boolean isSetAction_id() {
+    return this.action_id != null;
   }
 
-  public void setTimestampIsSet(boolean value) {
-    this.__isset.timestamp = value;
+  public void setAction_idIsSet(boolean value) {
+    if (!value) {
+      this.action_id = null;
+    }
   }
 
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
-    case TIMESTAMP:
-      setTimestamp((Long)value);
+    case ACTION_ID:
+      setAction_id((String)value);
       break;
 
     default:
@@ -98,8 +98,8 @@ public class Pong implements TBase, java.io.Serializable, Cloneable {
 
   public Object getFieldValue(int fieldID) {
     switch (fieldID) {
-    case TIMESTAMP:
-      return new Long(getTimestamp());
+    case ACTION_ID:
+      return getAction_id();
 
     default:
       throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
@@ -109,8 +109,8 @@ public class Pong implements TBase, java.io.Serializable, Cloneable {
   // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
   public boolean isSet(int fieldID) {
     switch (fieldID) {
-    case TIMESTAMP:
-      return isSetTimestamp();
+    case ACTION_ID:
+      return isSetAction_id();
     default:
       throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
@@ -129,12 +129,12 @@ public class Pong implements TBase, java.io.Serializable, Cloneable {
     if (that == null)
       return false;
 
-    boolean this_present_timestamp = true;
-    boolean that_present_timestamp = true;
-    if (this_present_timestamp || that_present_timestamp) {
-      if (!(this_present_timestamp && that_present_timestamp))
+    boolean this_present_action_id = true && this.isSetAction_id();
+    boolean that_present_action_id = true && that.isSetAction_id();
+    if (this_present_action_id || that_present_action_id) {
+      if (!(this_present_action_id && that_present_action_id))
         return false;
-      if (this.timestamp != that.timestamp)
+      if (!this.action_id.equals(that.action_id))
         return false;
     }
 
@@ -157,10 +157,9 @@ public class Pong implements TBase, java.io.Serializable, Cloneable {
       }
       switch (field.id)
       {
-        case TIMESTAMP:
-          if (field.type == TType.I64) {
-            this.timestamp = iprot.readI64();
-            this.__isset.timestamp = true;
+        case ACTION_ID:
+          if (field.type == TType.STRING) {
+            this.action_id = iprot.readString();
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
@@ -182,9 +181,11 @@ public class Pong implements TBase, java.io.Serializable, Cloneable {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
-    oprot.writeFieldBegin(TIMESTAMP_FIELD_DESC);
-    oprot.writeI64(this.timestamp);
-    oprot.writeFieldEnd();
+    if (this.action_id != null) {
+      oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
+      oprot.writeString(this.action_id);
+      oprot.writeFieldEnd();
+    }
     oprot.writeFieldStop();
     oprot.writeStructEnd();
   }
@@ -194,8 +195,12 @@ public class Pong implements TBase, java.io.Serializable, Cloneable {
     StringBuilder sb = new StringBuilder("Pong(");
     boolean first = true;
 
-    sb.append("timestamp:");
-    sb.append(this.timestamp);
+    sb.append("action_id:");
+    if (this.action_id == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.action_id);
+    }
     first = false;
     sb.append(")");
     return sb.toString();

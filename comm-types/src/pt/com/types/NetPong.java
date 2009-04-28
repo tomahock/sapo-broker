@@ -2,15 +2,22 @@ package pt.com.types;
 
 public class NetPong
 {
-	private long timestamp;
-
-	public NetPong(long timestamp)
+	private final static String universalActionId = "5E4FF374-B9AC-459b-B078-89A587D21001";
+	
+	private String actionId;
+	
+	public NetPong(String actionId)
 	{
-		this.timestamp = timestamp;
+		this.actionId = actionId;
 	}
 
-	public long getTimestamp()
+	public String getActionId()
 	{
-		return timestamp;
+		return actionId;
+	}
+
+	public static String getUniversalActionId()
+	{
+		return universalActionId;
 	}
 }

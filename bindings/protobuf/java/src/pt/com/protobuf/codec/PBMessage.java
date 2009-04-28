@@ -3775,23 +3775,23 @@ public final class PBMessage {
         return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Ping_fieldAccessorTable;
       }
       
-      // required int64 timestamp = 1;
-      private boolean hasTimestamp;
-      private long timestamp_ = 0L;
-      public boolean hasTimestamp() { return hasTimestamp; }
-      public long getTimestamp() { return timestamp_; }
+      // required string action_id = 1;
+      private boolean hasActionId;
+      private java.lang.String actionId_ = "";
+      public boolean hasActionId() { return hasActionId; }
+      public java.lang.String getActionId() { return actionId_; }
       
       @Override
       public final boolean isInitialized() {
-        if (!hasTimestamp) return false;
+        if (!hasActionId) return false;
         return true;
       }
       
       @Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
-        if (hasTimestamp()) {
-          output.writeInt64(1, getTimestamp());
+        if (hasActionId()) {
+          output.writeString(1, getActionId());
         }
         getUnknownFields().writeTo(output);
       }
@@ -3803,9 +3803,9 @@ public final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasTimestamp()) {
+        if (hasActionId()) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(1, getTimestamp());
+            .computeStringSize(1, getActionId());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -3933,8 +3933,8 @@ public final class PBMessage {
         
         public Builder mergeFrom(pt.com.protobuf.codec.PBMessage.Atom.Ping other) {
           if (other == pt.com.protobuf.codec.PBMessage.Atom.Ping.getDefaultInstance()) return this;
-          if (other.hasTimestamp()) {
-            setTimestamp(other.getTimestamp());
+          if (other.hasActionId()) {
+            setActionId(other.getActionId());
           }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
@@ -3970,8 +3970,8 @@ public final class PBMessage {
                 }
                 break;
               }
-              case 8: {
-                setTimestamp(input.readInt64());
+              case 10: {
+                setActionId(input.readString());
                 break;
               }
             }
@@ -3979,21 +3979,21 @@ public final class PBMessage {
         }
         
         
-        // required int64 timestamp = 1;
-        public boolean hasTimestamp() {
-          return result.hasTimestamp();
+        // required string action_id = 1;
+        public boolean hasActionId() {
+          return result.hasActionId();
         }
-        public long getTimestamp() {
-          return result.getTimestamp();
+        public java.lang.String getActionId() {
+          return result.getActionId();
         }
-        public Builder setTimestamp(long value) {
-          result.hasTimestamp = true;
-          result.timestamp_ = value;
+        public Builder setActionId(java.lang.String value) {
+          result.hasActionId = true;
+          result.actionId_ = value;
           return this;
         }
-        public Builder clearTimestamp() {
-          result.hasTimestamp = false;
-          result.timestamp_ = 0L;
+        public Builder clearActionId() {
+          result.hasActionId = false;
+          result.actionId_ = "";
           return this;
         }
       }
@@ -4028,23 +4028,23 @@ public final class PBMessage {
         return pt.com.protobuf.codec.PBMessage.internal_static_sapo_broker_Atom_Pong_fieldAccessorTable;
       }
       
-      // required int64 timestamp = 1;
-      private boolean hasTimestamp;
-      private long timestamp_ = 0L;
-      public boolean hasTimestamp() { return hasTimestamp; }
-      public long getTimestamp() { return timestamp_; }
+      // required string action_id = 1;
+      private boolean hasActionId;
+      private java.lang.String actionId_ = "";
+      public boolean hasActionId() { return hasActionId; }
+      public java.lang.String getActionId() { return actionId_; }
       
       @Override
       public final boolean isInitialized() {
-        if (!hasTimestamp) return false;
+        if (!hasActionId) return false;
         return true;
       }
       
       @Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
-        if (hasTimestamp()) {
-          output.writeInt64(1, getTimestamp());
+        if (hasActionId()) {
+          output.writeString(1, getActionId());
         }
         getUnknownFields().writeTo(output);
       }
@@ -4056,9 +4056,9 @@ public final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasTimestamp()) {
+        if (hasActionId()) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(1, getTimestamp());
+            .computeStringSize(1, getActionId());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -4186,8 +4186,8 @@ public final class PBMessage {
         
         public Builder mergeFrom(pt.com.protobuf.codec.PBMessage.Atom.Pong other) {
           if (other == pt.com.protobuf.codec.PBMessage.Atom.Pong.getDefaultInstance()) return this;
-          if (other.hasTimestamp()) {
-            setTimestamp(other.getTimestamp());
+          if (other.hasActionId()) {
+            setActionId(other.getActionId());
           }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
@@ -4223,8 +4223,8 @@ public final class PBMessage {
                 }
                 break;
               }
-              case 8: {
-                setTimestamp(input.readInt64());
+              case 10: {
+                setActionId(input.readString());
                 break;
               }
             }
@@ -4232,21 +4232,21 @@ public final class PBMessage {
         }
         
         
-        // required int64 timestamp = 1;
-        public boolean hasTimestamp() {
-          return result.hasTimestamp();
+        // required string action_id = 1;
+        public boolean hasActionId() {
+          return result.hasActionId();
         }
-        public long getTimestamp() {
-          return result.getTimestamp();
+        public java.lang.String getActionId() {
+          return result.getActionId();
         }
-        public Builder setTimestamp(long value) {
-          result.hasTimestamp = true;
-          result.timestamp_ = value;
+        public Builder setActionId(java.lang.String value) {
+          result.hasActionId = true;
+          result.actionId_ = value;
           return this;
         }
-        public Builder clearTimestamp() {
-          result.hasTimestamp = false;
-          result.timestamp_ = 0L;
+        public Builder clearActionId() {
+          result.hasActionId = false;
+          result.actionId_ = "";
           return this;
         }
       }
@@ -8027,8 +8027,8 @@ public final class PBMessage {
       "\004 \002(\0132\037.sapo_broker.Atom.BrokerMessage\032[" +
       "\n\005Fault\022\021\n\taction_id\030\001 \001(\t\022\022\n\nfault_code" +
       "\030\002 \002(\t\022\025\n\rfault_message\030\003 \002(\t\022\024\n\014fault_d" +
-      "etail\030\004 \001(\t\032\031\n\004Ping\022\021\n\ttimestamp\030\001 \002(\003\032\031" +
-      "\n\004Pong\022\021\n\ttimestamp\030\001 \002(\003\032\211\t\n\016Authentica" +
+      "etail\030\004 \001(\t\032\031\n\004Ping\022\021\n\taction_id\030\001 \002(\t\032\031" +
+      "\n\004Pong\022\021\n\taction_id\030\001 \002(\t\032\211\t\n\016Authentica" +
       "tion\022E\n\013authMsgType\030\001 \002(\01620.sapo_broker." +
       "Atom.Authentication.AuthMessageType\022@\n\013c" +
       "lient_auth\030\002 \001(\0132+.sapo_broker.Atom.Auth" +
@@ -8185,7 +8185,7 @@ public final class PBMessage {
           internal_static_sapo_broker_Atom_Ping_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_sapo_broker_Atom_Ping_descriptor,
-              new java.lang.String[] { "Timestamp", },
+              new java.lang.String[] { "ActionId", },
               pt.com.protobuf.codec.PBMessage.Atom.Ping.class,
               pt.com.protobuf.codec.PBMessage.Atom.Ping.Builder.class);
           internal_static_sapo_broker_Atom_Pong_descriptor =
@@ -8193,7 +8193,7 @@ public final class PBMessage {
           internal_static_sapo_broker_Atom_Pong_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_sapo_broker_Atom_Pong_descriptor,
-              new java.lang.String[] { "Timestamp", },
+              new java.lang.String[] { "ActionId", },
               pt.com.protobuf.codec.PBMessage.Atom.Pong.class,
               pt.com.protobuf.codec.PBMessage.Atom.Pong.Builder.class);
           internal_static_sapo_broker_Atom_Authentication_descriptor =

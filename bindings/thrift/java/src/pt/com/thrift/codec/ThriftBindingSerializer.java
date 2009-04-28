@@ -338,17 +338,16 @@ public class ThriftBindingSerializer implements BindingSerializer
 		// TODO: Verify if it's valid. Throw check exception if not
 		Ping ping = action.getPing();
 
-		NetPing netPing = new NetPing(ping.getTimestamp());
+		NetPing netPing = new NetPing(ping.getAction_id());
 
 		return netPing;
 	}
 
 	private NetPong extractPongMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Pong pong = action.getPong();
 
-		NetPong netPong = new NetPong(pong.getTimestamp());
+		NetPong netPong = new NetPong(pong.getAction_id());
 
 		return netPong;
 	}
@@ -413,29 +412,29 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private Ping getPing(NetMessage netMessage)
 	{
-		NetPing gcsPing = netMessage.getAction().getPingMessage();
+		NetPing netPing = netMessage.getAction().getPingMessage();
 
 		Ping struct = new Ping();
-		struct.setTimestamp(gcsPing.getTimestamp());
+		struct.setAction_id(netPing.getActionId());
 
 		return struct;
 	}
 
 	private Pong getPong(NetMessage netMessage)
 	{
-		NetPong gcsPong = netMessage.getAction().getPongMessage();
+		NetPong netPong = netMessage.getAction().getPongMessage();
 
 		Pong struct = new Pong();
-		struct.setTimestamp(gcsPong.getTimestamp());
+		struct.setAction_id(netPong.getActionId());
 
 		return struct;
 	}
 
 	private Accepted getAccepted(NetMessage netMessage)
 	{
-		NetAccepted gcsAccepted = netMessage.getAction().getAcceptedMessage();
+		NetAccepted netAccepted = netMessage.getAction().getAcceptedMessage();
 		Accepted struct = new Accepted();
-		struct.setAction_id((gcsAccepted.getActionId()));
+		struct.setAction_id((netAccepted.getActionId()));
 		return struct;
 	}
 

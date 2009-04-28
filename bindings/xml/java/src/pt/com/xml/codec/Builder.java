@@ -37,7 +37,7 @@ import pt.com.xml.Unsubscribe;
 public class Builder
 {
 	private static final Charset CHARSET = Charset.forName("UTF-8");
-
+	
 	protected static final NetMessage soapToNetMessage(SoapEnvelope msg)
 	{
 		NetMessage message = null;
@@ -172,14 +172,14 @@ public class Builder
 		else if (msg.body.checkStatus != null)
 		{
 			NetAction netAction = new NetAction(NetAction.ActionType.PING);
-			NetPing netPing = new NetPing(System.currentTimeMillis());
+			NetPing netPing = new NetPing(NetPong.getUniversalActionId());
 			message = new NetMessage(netAction);
 			message.getAction().setPingMessage(netPing);
 		}
 		else if (msg.body.status != null)
 		{
 			NetAction netAction = new NetAction(NetAction.ActionType.PONG);
-			NetPong netPong = new NetPong(System.currentTimeMillis());
+			NetPong netPong = new NetPong(msg.body.status.message);
 			message = new NetMessage(netAction);
 			message.getAction().setPongMessage(netPong);
 		}
@@ -205,10 +205,8 @@ public class Builder
 		return message;
 	}
 
-	protected static final SoapEnvelope netMessageToSoap(NetMessage message)
+	protected static final SoapEnvelope netMessageToSoap(NetMessage netMessage)
 	{
-		NetMessage netMessage = (NetMessage) message;
-
 		SoapEnvelope soap = new SoapEnvelope();
 
 		switch (netMessage.getAction().getActionType())
@@ -286,12 +284,9 @@ public class Builder
 			soap.body.checkStatus = new CheckStatus();
 			break;
 		case PONG:
+			NetPong pong = netMessage.getAction().getPongMessage();
 			Status status = new Status();
-			long ts = netMessage.getAction().getPongMessage().getTimestamp();
-			if (ts > 0)
-			{
-				status.timestamp = DateUtil.formatISODate(new Date(ts));
-			}
+			status.message = pong.getActionId();
 			soap.body.status = status;
 			break;
 		}

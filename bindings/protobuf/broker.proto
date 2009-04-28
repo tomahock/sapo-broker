@@ -94,12 +94,12 @@ message Atom
 	
 	message Ping
 	{
-		required int64 timestamp = 1;
+		required string action_id = 1;
 	}
 	
 	message Pong
 	{
-		required int64 timestamp = 1;
+		required string action_id = 1;
 	}
 
 	message Authentication

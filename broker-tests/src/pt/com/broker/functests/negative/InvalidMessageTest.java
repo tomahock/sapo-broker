@@ -32,7 +32,7 @@ public class InvalidMessageTest extends GenericNegativeTest
 	private byte[] buildMessage()
 	{
 		NetAction action = new NetAction(ActionType.PING);
-		NetPing ping = new NetPing(System.currentTimeMillis());
+		NetPing ping = new NetPing("ACTIONID");
 		action.setPingMessage(ping);
 		NetMessage message = new NetMessage(action);
 

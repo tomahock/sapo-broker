@@ -102,12 +102,12 @@ struct Fault
 
 struct Ping
 {
-	1: i64 timestamp;
+	1: string action_id;
 }
 
 struct Pong
 {
-	1: i64 timestamp;
+	1: string action_id;
 }
 
 struct ClientAuth

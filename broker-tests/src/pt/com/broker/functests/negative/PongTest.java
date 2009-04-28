@@ -12,7 +12,7 @@ public class PongTest extends GenericNetMessageNegativeTest
 	{
 		super("Unexpected Message - Pong");
 
-		NetPong pong = new NetPong(System.currentTimeMillis());
+		NetPong pong = new NetPong("abcdefghijklmnopqrstuvwxyz");
 		NetAction action = new NetAction(ActionType.PONG);
 		action.setPongMessage(pong);
 		NetMessage message = new NetMessage(action);

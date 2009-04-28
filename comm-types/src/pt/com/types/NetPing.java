@@ -2,15 +2,15 @@ package pt.com.types;
 
 public class NetPing
 {
-	private long timestamp;
+	private String actionId;
 
-	public NetPing(long timestamp)
+	public NetPing(String actionId)
 	{
-		this.timestamp = timestamp;
+		this.actionId = actionId;
 	}
 
-	public long getTimestamp()
+	public String getActionId()
 	{
-		return timestamp;
+		return actionId;
 	}
 }

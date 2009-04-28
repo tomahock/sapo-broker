@@ -3,12 +3,14 @@ package pt.com.broker.client;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -292,7 +294,8 @@ public class BrokerClient
 
 	public NetPong checkStatus() throws Throwable
 	{
-		NetPing ping = new NetPing(System.currentTimeMillis());
+		String actionId = UUID.randomUUID().toString();
+		NetPing ping = new NetPing(actionId);
 
 		NetAction action = new NetAction(ActionType.PING);
 		action.setPingMessage(ping);
@@ -300,8 +303,28 @@ public class BrokerClient
 		NetMessage message = buildMessage(action);
 
 		getNetHandler().sendMessage(message);
-		return _bstatus.take();
+	
+		long timeout = System.currentTimeMillis() +  ( 2 * 1000);
+		NetPong pong = null;
+		
+		do {
+			synchronized (_bstatus)
+			{
+				Sleep.time(500);
+				if( System.currentTimeMillis() > timeout)
+					return null;
+				pong = _bstatus.peek();
+				if(pong == null)
+					continue;
+				if(!pong.getActionId().equals(NetPong.getUniversalActionId()) && !pong.getActionId().equals(actionId))
+				{
+					pong = null;
+				}
+				_bstatus.remove();
+			}
+		} while (pong == null);
 
+		return pong;
 	}
 
 	public void close()

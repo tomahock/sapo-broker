@@ -25,6 +25,7 @@ import pt.com.types.NetAction;
 import pt.com.types.NetBrokerMessage;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
+import pt.com.types.NetPing;
 import pt.com.types.NetPong;
 import pt.com.types.NetPublish;
 import pt.com.types.NetSubscribe;
@@ -382,7 +383,9 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	private void handlePingMessage(final IoSession ios, NetMessage request)
 	{
-		NetPong pong = new NetPong(System.currentTimeMillis());
+		NetPing netPing = request.getAction().getPingMessage();
+		
+		NetPong pong = new NetPong(netPing.getActionId());
 		NetAction action = new NetAction(ActionType.PONG);
 		action.setPongMessage(pong);
 		NetMessage message = new NetMessage(action, null);

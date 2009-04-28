@@ -177,7 +177,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		NetPing gcsPing = netMessage.getAction().getPingMessage();
 
 		PBMessage.Atom.Ping.Builder builder = PBMessage.Atom.Ping.newBuilder();
-		builder.setTimestamp(gcsPing.getTimestamp());
+		builder.setActionId(gcsPing.getActionId());
 
 		return builder.build();
 	}
@@ -187,7 +187,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		NetPong gcsPong = netMessage.getAction().getPongMessage();
 
 		PBMessage.Atom.Pong.Builder builder = PBMessage.Atom.Pong.newBuilder();
-		builder.setTimestamp(gcsPong.getTimestamp());
+		builder.setActionId(gcsPong.getActionId());
 
 		return builder.build();
 	}
@@ -727,7 +727,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		// TODO: Verify if it's valid. Throw check exception if not
 		Atom.Ping ping = action.getPing();
 
-		NetPing netPing = new NetPing(ping.getTimestamp());
+		NetPing netPing = new NetPing(ping.getActionId());
 
 		return netPing;
 	}
@@ -737,7 +737,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		// TODO: Verify if it's valid. Throw check exception if not
 		Atom.Pong pong = action.getPong();
 
-		NetPong netPong = new NetPong(pong.getTimestamp());
+		NetPong netPong = new NetPong(pong.getActionId());
 
 		return netPong;
 	}

@@ -102,7 +102,7 @@ public class Main
 			BrokerTest.setDefaultEncodingProtocolType(protoType);
 			int numberOfTests = 1;
 	
-//			new PingTest().run(numberOfTests);
+			new PingTest().run(numberOfTests);
 //			
 //			new TopicNameSpecified().run(numberOfTests);
 //			BrokerTest t = new TopicPubSubWithActionId(numberOfTests);
@@ -145,7 +145,7 @@ public class Main
 //			new InvalidMessageTest().run(numberOfTests);
 //			new InvalidRandomMessageTest().run(numberOfTests);
 //			new TotallyInvalidRandomMessageTest().run(numberOfTests);
-			new MessageSizeBiggerThanMessageTest().run(numberOfTests);
+//			new MessageSizeBiggerThanMessageTest().run(numberOfTests);
 //			new NotificationTest().run(numberOfTests);
 //			new PongTest().run(numberOfTests);
 //			new FaultTest().run(numberOfTests);
