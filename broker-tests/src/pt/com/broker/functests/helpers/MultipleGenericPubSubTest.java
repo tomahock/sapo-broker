@@ -182,7 +182,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		for (TestClientInfo tci : getInfoConsumers())
 		{
 			MultipleNotificationConsequence notConsequence = new MultipleNotificationConsequence("Consume", "consumer", tci.brokerListenter);
-			notConsequence.setDestination(getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE)? "xpto@" + getDestinationName() :getDestinationName());
+			notConsequence.setDestination(getDestinationName()/*getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE)? "xpto@" + getDestinationName() :getDestinationName()*/);
 			notConsequence.setSubscription(getSubscriptionName());
 			notConsequence.setDestinationType(getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE)? DestinationType.QUEUE : getConsumerDestinationType());
 			notConsequence.setMessagePayload(data);

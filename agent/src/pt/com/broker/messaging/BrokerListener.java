@@ -21,7 +21,7 @@ public abstract class BrokerListener implements MessageListener
 
 	protected static NetMessage buildNotification(InternalMessage msg, String subscriptionName, DestinationType dtype )
 	{
-		NetNotification notification = new NetNotification(msg.getDestination(), dtype, msg.getContent(), subscriptionName);
+		NetNotification notification = new NetNotification(msg.getPublishDestination(), dtype, msg.getContent(), subscriptionName);
 
 		NetAction action = new NetAction(NetAction.ActionType.NOTIFICATION);
 		action.setNotificationMessage(notification);

@@ -91,7 +91,6 @@ public abstract class Test
 			int count = nrOfRuns;
 			do
 			{
-				System.out.println(".");
 				executionResults = executer.invokeAll(activities, getTimeout(), TimeUnit.MILLISECONDS);
 
 				for (Future<Step> executionResult : executionResults)

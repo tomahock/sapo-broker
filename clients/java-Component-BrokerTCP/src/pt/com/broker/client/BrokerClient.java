@@ -184,7 +184,18 @@ public class BrokerClient
 		if ((notification != null) && (notification.getMessage() != null) && (StringUtils.isNotBlank(notification.getMessage().getMessageId())))
 		{
 			NetBrokerMessage brkMsg = notification.getMessage();
-			NetAcknowledgeMessage ackMsg = new NetAcknowledgeMessage(notification.getDestination(), brkMsg.getMessageId());
+			
+			String ackDestination = null;
+			if(notification.getDestinationType() != DestinationType.TOPIC)
+			{
+				ackDestination = notification.getSubscription();
+			}
+			else 
+			{
+				ackDestination = notification.getDestination();
+			}
+			
+			NetAcknowledgeMessage ackMsg = new NetAcknowledgeMessage(ackDestination, brkMsg.getMessageId());
 			if( acceptRequest != null)
 			{
 				ackMsg.setActionId(acceptRequest.getActionId());

@@ -25,8 +25,6 @@ public class MultipleNNQueue extends MultipleGenericQueuePubSubTest
 			tci.numberOfExecutions = getConsumerNotifications();
 
 			this.addInfoConsumer(tci);
-			
-			System.out.println("getConsumerNotifications() = " + getConsumerNotifications());
 		}
 		catch (Throwable t)
 		{

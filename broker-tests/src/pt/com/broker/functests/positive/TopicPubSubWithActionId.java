@@ -165,9 +165,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 			public Step run() throws Exception
 			{
 				Boolean result = future.get();
-				
-				System.out.println("Action received: " + result);
-				
+
 				setSucess(result.booleanValue());
 				setDone(true);
 				

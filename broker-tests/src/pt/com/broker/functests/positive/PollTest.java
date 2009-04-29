@@ -30,7 +30,6 @@ public class PollTest extends BrokerTest
 			{
 				try
 				{
-					System.out.println("PollTest.Action.run()");
 					BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(data);
 

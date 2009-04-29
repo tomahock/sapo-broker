@@ -26,6 +26,7 @@ public class InternalMessage implements Externalizable
 	private String id;
 	private NetBrokerMessage content;
 	private String destination;
+	private String publishDestination;
 	private String correlationId;
 	private int priority = DEFAULT_PRIORITY;
 	private String sourceApp = "Undefined Source";
@@ -194,12 +195,19 @@ public class InternalMessage implements Externalizable
 		correlationId = in.readUTF();
 		if (correlationId.equals(""))
 			correlationId = null;
+		
 		destination = in.readUTF();
 		if (destination.equals(""))
 			destination = null;
+		
+		publishDestination = in.readUTF();
+		if (publishDestination.equals(""))
+			publishDestination = null;
+		
 		id = in.readUTF();
 		if (id.equals(""))
 			id = null;
+		
 		priority = in.readInt();
 		sourceApp = in.readUTF();
 		if (sourceApp.equals(""))
@@ -217,6 +225,7 @@ public class InternalMessage implements Externalizable
 
 		out.writeUTF((correlationId != null) ? correlationId : "");
 		out.writeUTF((destination != null) ? destination : "");
+		out.writeUTF((publishDestination != null) ? publishDestination : "");
 		out.writeUTF((id != null) ? id : "");
 		out.writeInt(priority);
 		out.writeUTF((sourceApp != null) ? sourceApp : "");
@@ -250,6 +259,16 @@ public class InternalMessage implements Externalizable
 		buf.append(getType().getValue());
 
 		return buf.toString();
+	}
+
+	public void setPublishDestination(String publishDestination)
+	{
+		this.publishDestination = publishDestination;
+	}
+
+	public String getPublishDestination()
+	{
+		return publishDestination;
 	}
 
 }

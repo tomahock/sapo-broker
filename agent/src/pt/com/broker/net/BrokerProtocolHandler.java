@@ -346,7 +346,15 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 		if (StringUtils.isBlank(subscritption.getDestination()))
 		{
-			throw new IllegalArgumentException("Must provide a valid destination");
+			if(subscritption.getActionId() == null)
+			{
+				session.write(NetFault.InvalidDestinationNameErrorMessage);
+			}
+			else
+			{
+				session.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, subscritption.getActionId()));
+			}
+			return;
 		}
 
 		switch (subscritption.getDestinationType())

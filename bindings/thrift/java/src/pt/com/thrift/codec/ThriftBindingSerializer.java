@@ -162,10 +162,14 @@ public class ThriftBindingSerializer implements BindingSerializer
 	{
 
 		NetBrokerMessage brkMsg = new NetBrokerMessage(message.getPayload());
-
-		brkMsg.setTimestamp(message.getTimestamp());
-		brkMsg.setExpiration(message.getExpiration());
-		brkMsg.setMessageId(message.getMessage_id());
+		
+		if(message.getTimestamp() != -1)
+			brkMsg.setTimestamp(message.getTimestamp());
+		if(message.getExpiration() != -1)
+			brkMsg.setExpiration(message.getExpiration());
+		if(!message.getMessage_id().equals(""))
+			brkMsg.setMessageId(message.getMessage_id());
+		
 
 		return brkMsg;
 	}
@@ -556,14 +560,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 		struct.setPayload(message.getPayload());
 
-		if (message.getMessageId() != null)
-			struct.setMessage_id(message.getMessageId());
-
-		if (message.getExpiration() != -1)
-			struct.setExpiration(message.getExpiration());
-
-		if (message.getTimestamp() != -1)
-			struct.setTimestamp(message.getTimestamp());
+		struct.setMessage_id(message.getMessageId());
+		struct.setExpiration(message.getExpiration());
+		struct.setTimestamp(message.getTimestamp());
 
 		return struct;
 	}

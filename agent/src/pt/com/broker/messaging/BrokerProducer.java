@@ -38,17 +38,19 @@ public class BrokerProducer
 			if (StringUtils.isNotBlank(brkMessage.getMessageId()))
 				message.setMessageId(brkMessage.getMessageId());
 
-			if (StringUtils.isNotBlank(publish.getDestination()))
+			if (StringUtils.isNotBlank(publish.getDestination())){
 				message.setDestination(publish.getDestination());
-
+				message.setPublishDestination(publish.getDestination());
+			}
 			if (brkMessage.getTimestamp() != -1)
 				message.setTimestamp(brkMessage.getTimestamp());
 
 			if (brkMessage.getExpiration() != -1)
 			{
 				message.setExpiration(brkMessage.getExpiration());
+				System.out.println("BrokerProducer.prepareForSending() - setExpiration");
 			}
-
+			
 			message.setContent(brkMessage);
 
 			if (log.isDebugEnabled())

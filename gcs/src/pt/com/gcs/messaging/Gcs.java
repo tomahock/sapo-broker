@@ -90,7 +90,12 @@ public class Gcs
 
 	public static void enqueue(final InternalMessage message)
 	{
-		instance.ienqueue(message);
+		instance.ienqueue(message, null);
+	}
+	
+	public static void enqueue(InternalMessage message, String queueName)
+	{
+		instance.ienqueue(message, queueName);
 	}
 
 	protected static void reloadWorldMap()
@@ -234,10 +239,11 @@ public class Gcs
 		}
 	}
 
-	private void ienqueue(InternalMessage message)
+	private void ienqueue(InternalMessage message, String queueName)
 	{
-		QueueProcessorList.get(message.getDestination()).store(message);
+		QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message);
 	}
+
 
 	private void iinit()
 	{

@@ -16,6 +16,7 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 	{
 		super(testName);
 		setDestinationType(DestinationType.QUEUE);
+		setConsumerDestinationType(DestinationType.QUEUE);
 	}
 
 	protected void addConsumers()
