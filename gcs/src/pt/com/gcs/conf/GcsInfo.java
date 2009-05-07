@@ -184,10 +184,8 @@ public class GcsInfo
 	
 	public static int getBrokerSSLPort()
 	{
-		System.out.println("GcsInfo.getBrokerSSLPort()");
 		Ssl ssl = instance.conf.getSsl();
 		if(ssl == null){
-			System.out.println("NO SSL");
 			return -1;
 		}
 			

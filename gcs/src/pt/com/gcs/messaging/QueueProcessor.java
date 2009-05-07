@@ -59,7 +59,10 @@ public class QueueProcessor
 			log.debug("Ack message . MsgId: '{}'.", msgId);
 		}
 
-		storage.deleteMessage(msgId);
+		if (!storage.deleteMessage(msgId))
+		{
+			log.error("Failed to delete message with id '{}'", msgId);
+		}
 	}
 
 	protected final void wakeup()

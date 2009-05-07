@@ -224,8 +224,8 @@ public class BrokerProtocolHandlerAuthenticationHelper
 		}
 		catch (Exception e)
 		{
-			// This shouldn't happen.
-			System.out.println(e);
+			//TODO: This shouldn't happen.
+			log.error("Failed to init decipher operation", e);
 			return;
 		}
 

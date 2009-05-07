@@ -1,5 +1,7 @@
 package pt.com.broker.functests.helpers;
 
+import org.caudexorigo.text.RandomStringUtils;
+
 import pt.com.broker.functests.Test;
 import pt.com.types.NetProtocolType;
 
@@ -9,9 +11,15 @@ public abstract class BrokerTest extends Test
 	private static NetProtocolType defaultEncodingProtocolType = NetProtocolType.PROTOCOL_BUFFER;
 
 	private NetProtocolType encodingProtocolType;
-	
+
 	private boolean constructionFailed = false;
 	private Throwable reasonForFailure;
+
+	private static int defaultDataLenght = 200;
+
+	protected int dataLenght = getDefaultDataLenght();
+
+	protected byte[] rawData = null;
 
 	public BrokerTest(String testName)
 	{
@@ -25,7 +33,7 @@ public abstract class BrokerTest extends Test
 		setReasonForFailure(throwable);
 
 	}
-	
+
 	public void setEncodingProtocolType(NetProtocolType encodingProtocolType)
 	{
 		this.encodingProtocolType = encodingProtocolType;
@@ -70,5 +78,40 @@ public abstract class BrokerTest extends Test
 	public Throwable getReasonForFailure()
 	{
 		return reasonForFailure;
+	}
+
+	public void setData(byte[] data)
+	{
+		synchronized (this)
+		{
+			this.rawData = data;
+		}
+	}
+
+	public byte[] getData()
+	{
+		synchronized (this)
+		{
+			if (rawData == null)
+				rawData = RandomStringUtils.randomAlphanumeric(dataLenght).getBytes();
+			return rawData;
+		}
+	}
+
+	public static void setDefaultDataLenght(int defaultDataLenght)
+	{
+		synchronized (BrokerTest.class)
+		{
+			BrokerTest.defaultDataLenght = defaultDataLenght;
+		}
+
+	}
+
+	public static int getDefaultDataLenght()
+	{
+		synchronized (BrokerTest.class)
+		{
+			return defaultDataLenght;
+		}
 	}
 }

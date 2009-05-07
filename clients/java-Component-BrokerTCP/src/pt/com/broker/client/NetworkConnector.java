@@ -2,12 +2,11 @@ package pt.com.broker.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 
-import org.caudexorigo.concurrent.Sleep;
+import javax.crypto.BadPaddingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,76 +14,63 @@ public class NetworkConnector
 {
 	private static final Logger log = LoggerFactory.getLogger(NetworkConnector.class);
 
-	private final String _host;
-	private final int _port;
-
 	private Socket _client;
 	private DataInputStream _rawi = null;
 	private DataOutputStream _rawo = null;
 	private SocketAddress _addr;
 	private String _saddr;
+	private volatile boolean closed = true;
 
-	public NetworkConnector(String host, int port) throws UnknownHostException, IOException
+	private final BrokerProtocolHandler protocolHandler;
+
+	private HostInfo hostInfo = null;
+
+	private long connectionVersion;
+
+	public NetworkConnector(BrokerProtocolHandler protocolHandler, HostInfo hostInfo)
 	{
-		_host = host;
-		_port = port;
+		this.protocolHandler = protocolHandler;
+		this.hostInfo = hostInfo;
+	}
 
-		setSocket(new Socket(_host, _port));
-		getSocket().setSoTimeout(0);
+	public synchronized void connect() throws Throwable
+	{
+		if(hostInfo == null)
+		{
+			throw new Exception("NetworkConnector: Unable to connect - no host information available");
+		}
+		connect(this.hostInfo, 0);
+	}
+
+	public synchronized void connect(HostInfo host, long connectionVersion) throws Throwable
+	{
+		log.warn("Trying to connect");
+		this.setConnectionVersion(connectionVersion);
+		this.hostInfo = host;
+		_client = new Socket(host.getHostname(), host.getPort());
 		_rawo = new DataOutputStream(getSocket().getOutputStream());
 		_rawi = new DataInputStream(getSocket().getInputStream());
-
 		_addr = getSocket().getRemoteSocketAddress();
 		_saddr = _addr.toString();
-
-		log.info("Receive Buffer Size: " + getSocket().getReceiveBufferSize());
-		log.info("Send Buffer Size: " + getSocket().getSendBufferSize());
+		log.info("Connection established: " + _saddr);
+		closed = false;
 	}
 
-	public void reconnect(Throwable se)
-	{
-		log.warn("Connect Error: " + se.getMessage());
-
-		close();
-
-		Throwable ex = new Exception(se);
-
-		while (ex != null)
-		{
-			try
-			{
-				log.error("Trying to reconnect");
-				setSocket(new Socket(_host, _port));
-				_rawo = new DataOutputStream(getSocket().getOutputStream());
-				_rawi = new DataInputStream(getSocket().getInputStream());
-				_addr = getSocket().getRemoteSocketAddress();
-				_saddr = _addr.toString();
-
-				ex = null;
-				log.info("Connection established: " + _saddr);
-
-			}
-			catch (Exception re)
-			{
-				log.info("Reconnect failled");
-				ex = re;
-				Sleep.time(2000);
-			}
-		}
-	}
-
-	public DataInputStream getInput()
+	public synchronized DataInputStream getInput()
 	{
 		return _rawi;
 	}
 
-	public DataOutputStream getOutput()
+	public synchronized DataOutputStream getOutput()
 	{
 		return _rawo;
 	}
 
-	public void close()
+	public synchronized void close()
 	{
+		if(isClosed())
+			return;
+		closed = true;
 		try
 		{
 			_rawi.close();
@@ -110,39 +96,53 @@ public class NetworkConnector
 		}
 	}
 
-	public boolean isConnected()
+	public synchronized boolean isConnected()
 	{
 		return getSocket().isConnected();
 	}
 
-	public boolean isInputShutdown()
+	public synchronized  boolean isInputShutdown()
 	{
 		return getSocket().isInputShutdown();
 	}
 
-	public boolean isOutputShutdown()
+	public synchronized boolean isOutputShutdown()
 	{
 		return getSocket().isOutputShutdown();
 	}
 
-	public SocketAddress getInetAddress()
+	public synchronized SocketAddress getInetAddress()
 	{
 		return _addr;
 	}
 
-	public String getAddress()
+	public synchronized  String getAddress()
 	{
 		return _saddr;
 	}
 
-	public void setSocket(Socket _client)
-	{
-		this._client = _client;
-	}
-
-	public Socket getSocket()
+	public synchronized Socket getSocket()
 	{
 		return _client;
 	}
 
+	public synchronized HostInfo getHostInfo()
+	{
+		return hostInfo;
+	}
+
+	public synchronized boolean isClosed()
+	{
+		return closed;
+	}
+
+	public synchronized void setConnectionVersion(long connectionVersion)
+	{
+		this.connectionVersion = connectionVersion;
+	}
+
+	public synchronized long getConnectionVersion()
+	{
+		return connectionVersion;
+	}
 }

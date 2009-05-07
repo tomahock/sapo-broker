@@ -100,11 +100,6 @@ class RemoteQueueConsumers
 
 	protected boolean doNotify(InternalMessage message)
 	{
-
-		/*
-		 * TODO: Create GcsNotify (message queue)
-		 */
-
 		CopyOnWriteArrayList<IoSession> sessions = remoteQueueConsumers.get(message.getDestination());
 		if (sessions != null)
 		{

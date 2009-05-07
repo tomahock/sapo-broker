@@ -23,8 +23,6 @@ public class TopicPubSubWithActionId extends BrokerTest
 	private String destinationName = "/topic/foo";
 	private String subscriptionName = "/topic/foo";
 
-	private byte[] data = "This is the data to be transferred.".getBytes();
-
 	private DestinationType destinationType = DestinationType.TOPIC;
 
 	private GenericBrokerListener brokerListener;
@@ -129,7 +127,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 				try
 				{
 
-					NetBrokerMessage brokerMessage = new NetBrokerMessage(data);
+					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 					if (destinationType.equals(DestinationType.TOPIC))
 					{

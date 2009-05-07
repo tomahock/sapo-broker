@@ -13,8 +13,6 @@ import pt.com.types.NetNotification;
 public class PollTest extends BrokerTest
 {
 	private String queueName = "/test/foo";
-	private byte[] data = "test".getBytes();
-	
 	public PollTest()
 	{
 		super("Poll test");
@@ -31,7 +29,7 @@ public class PollTest extends BrokerTest
 				try
 				{
 					BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
-					NetBrokerMessage brokerMessage = new NetBrokerMessage(data);
+					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 					bk.enqueueMessage(brokerMessage, queueName);
 
@@ -75,7 +73,7 @@ public class PollTest extends BrokerTest
 						return this;
 					}
 					
-					if(!Arrays.equals(msg.getMessage().getPayload(), data))
+					if(!Arrays.equals(msg.getMessage().getPayload(), getData()))
 					{
 						setReasonForFailure("Message payload is different from expected");
 						return this;

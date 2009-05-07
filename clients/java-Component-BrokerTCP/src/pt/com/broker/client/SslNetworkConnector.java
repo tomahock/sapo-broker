@@ -22,44 +22,34 @@ public class SslNetworkConnector
 {
 	private static final Logger log = LoggerFactory.getLogger(SslNetworkConnector.class);
 
-	private final String _host;
-	private final int _port;
+	private static final int MAX_NUMBER_OF_TRIES = 5;
 
 	private Socket _client;
 	private DataInputStream _rawi = null;
 	private DataOutputStream _rawo = null;
 	private SocketAddress _addr;
+	private volatile boolean closed = true;
 
 	private String _saddr;
-	public SslNetworkConnector(String host, int port) throws UnknownHostException, IOException
-	{
-		this(host, port, null, null);
-	}
-	
-	public SslNetworkConnector(String host, int port, String keystoreLocation, char[] keystorePw) throws UnknownHostException, IOException
-	{
-		_host = host;
-		_port = port;
-		
-		SocketFactory socketFactory = null;
-		
-		if(StringUtils.isBlank(keystoreLocation))
-			socketFactory = SSLSocketFactory.getDefault();
-		else 
-			socketFactory = getSslSocketFactory(keystoreLocation, keystorePw);
-			
-		setSocket(socketFactory.createSocket(_host, _port));
-		getSocket().setSoTimeout(0);
-		_rawo = new DataOutputStream(getSocket().getOutputStream());
-		_rawi = new DataInputStream(getSocket().getInputStream());
 
-		_addr = getSocket().getRemoteSocketAddress();
-		_saddr = _addr.toString();
+	private final BrokerProtocolHandler protocolHandler;
 
-		log.info("Receive Buffer Size: " + getSocket().getReceiveBufferSize());
-		log.info("Send Buffer Size: " + getSocket().getSendBufferSize());
+	private HostInfo hostInfo = null;
+
+	private final String keystoreLocation;
+
+	private final char[] keystorePw;
+
+	private long connectionVersion;
+
+	public SslNetworkConnector(BrokerProtocolHandler protocolHandler, HostInfo hostInfo, String keystoreLocation, char[] keystorePw) throws UnknownHostException, IOException
+	{
+		this.protocolHandler = protocolHandler;
+		this.hostInfo = hostInfo;
+		this.keystoreLocation = keystoreLocation;
+		this.keystorePw = keystorePw;
+
 	}
-	
 
 	private SocketFactory getSslSocketFactory(String keystoreLocation, char[] keystorePw)
 	{
@@ -68,16 +58,14 @@ public class SslNetworkConnector
 		{
 			KeyStore keyStore = KeyStore.getInstance("JKS");
 
-	
 			keyStore.load(new FileInputStream(keystoreLocation), keystorePw);
-			
-			
+
 			TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
 			tmf.init(keyStore);
-			
+
 			javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance("SSLv3");
 			sslContext.init(null, tmf.getTrustManagers(), null);
-			
+
 			sf = sslContext.getSocketFactory();
 		}
 		catch (Throwable t)
@@ -85,54 +73,58 @@ public class SslNetworkConnector
 			log.error("SslNetworkConnector.SslNetworkConnector", t);
 			throw new RuntimeException(t);
 		}
-		
-		return sf;		
+
+		return sf;
 	}
 
-	public void reconnect(Throwable se)
+	public synchronized void connect() throws Throwable
 	{
-		log.warn("Connect Error: " + se.getMessage());
-
-		close();
-
-		Throwable ex = new Exception(se);
-
-		while (ex != null)
+		if (hostInfo == null)
 		{
-			try
-			{
-				log.error("Trying to reconnect");
-				setSocket(new Socket(_host, _port));
-				_rawo = new DataOutputStream(getSocket().getOutputStream());
-				_rawi = new DataInputStream(getSocket().getInputStream());
-				_addr = getSocket().getRemoteSocketAddress();
-				_saddr = _addr.toString();
-
-				ex = null;
-				log.info("Connection established: " + _saddr);
-
-			}
-			catch (Exception re)
-			{
-				log.info("Reconnect failled");
-				ex = re;
-				Sleep.time(2000);
-			}
+			throw new Exception("NetworkConnector: Unable to connect - no host information available");
 		}
+		connect(this.hostInfo, 0);
 	}
 
-	public DataInputStream getInput()
+	public synchronized void connect(HostInfo host, long connectionVersion) throws Throwable
+	{
+		log.warn("Trying to reconnect (SSL)");
+		this.hostInfo = host;
+		this.setConnectionVersion(connectionVersion);
+		SocketFactory socketFactory = null;
+
+		if (StringUtils.isBlank(keystoreLocation))
+			socketFactory = SSLSocketFactory.getDefault();
+		else
+			socketFactory = getSslSocketFactory(keystoreLocation, keystorePw);
+
+		_client = new Socket(host.getHostname(), host.getPort());
+		_client = socketFactory.createSocket(hostInfo.getHostname(), hostInfo.getSslPort());
+		getSocket().setSoTimeout(0);
+
+		_rawo = new DataOutputStream(getSocket().getOutputStream());
+		_rawi = new DataInputStream(getSocket().getInputStream());
+		_addr = getSocket().getRemoteSocketAddress();
+		_saddr = _addr.toString();
+		log.info("Connection established (SSL): " + _saddr);
+		closed = false;
+	}
+
+	public synchronized DataInputStream getInput()
 	{
 		return _rawi;
 	}
 
-	public DataOutputStream getOutput()
+	public synchronized DataOutputStream getOutput()
 	{
 		return _rawo;
 	}
 
-	public void close()
+	public synchronized void close()
 	{
+		if(isClosed())
+			return;
+		closed = true;
 		try
 		{
 			_rawi.close();
@@ -158,38 +150,58 @@ public class SslNetworkConnector
 		}
 	}
 
-	public boolean isConnected()
+	public synchronized boolean isConnected()
 	{
 		return getSocket().isConnected();
 	}
 
-	public boolean isInputShutdown()
+	public synchronized boolean isInputShutdown()
 	{
 		return getSocket().isInputShutdown();
 	}
 
-	public boolean isOutputShutdown()
+	public synchronized boolean isOutputShutdown()
 	{
 		return getSocket().isOutputShutdown();
 	}
 
-	public SocketAddress getInetAddress()
+	public synchronized SocketAddress getInetAddress()
 	{
 		return _addr;
 	}
 
-	public String getAddress()
+	public synchronized String getAddress()
 	{
 		return _saddr;
 	}
 
-	public void setSocket(Socket _client)
-	{
-		this._client = _client;
-	}
-
-	public Socket getSocket()
+	public synchronized Socket getSocket()
 	{
 		return _client;
+	}
+
+	public synchronized void setHostInfo(HostInfo hostInfo)
+	{
+		this.hostInfo = hostInfo;
+	}
+
+	public synchronized HostInfo getHostInfo()
+	{
+		return hostInfo;
+	}
+
+	public synchronized boolean isClosed()
+	{
+		return closed;
+	}
+
+	public synchronized void setConnectionVersion(long connectionVersion)
+	{
+		this.connectionVersion = connectionVersion;
+	}
+
+	public synchronized long getConnectionVersion()
+	{
+		return connectionVersion;
 	}
 }

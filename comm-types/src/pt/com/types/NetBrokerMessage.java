@@ -65,9 +65,9 @@ public class NetBrokerMessage
 		String mid = in.readUTF();
 		long exp = in.readLong();
 		long ts = in.readLong();
-		int size = in.readInt();		
+		int size = in.readInt();
 		byte[] content = new byte[size];
-		in.read(content, 0, size);
+		in.readFully(content, 0, size );
 
 		NetBrokerMessage message = new NetBrokerMessage(content);
 		message.setMessageId(mid);

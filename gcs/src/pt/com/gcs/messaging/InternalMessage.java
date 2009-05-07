@@ -234,6 +234,8 @@ public class InternalMessage implements Externalizable
 		out.writeInt(getType().getValue());
 
 		content.write(out);
+		
+		out.flush();
 	}
 
 	@Override

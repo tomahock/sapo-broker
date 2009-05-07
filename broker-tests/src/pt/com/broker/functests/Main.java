@@ -1,5 +1,7 @@
 package pt.com.broker.functests;
 
+import org.caudexorigo.concurrent.Sleep;
+
 import pt.com.types.NetProtocolType;
 import pt.com.broker.functests.helpers.*;
 import pt.com.broker.functests.negative.*;
@@ -91,49 +93,51 @@ public class Main
 
 //		// Positive Tests
 		
+		NetProtocolType[] protoTypes = new NetProtocolType[]{NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT};
 		
-		for(NetProtocolType protoType : NetProtocolType.values())
+		for(NetProtocolType protoType : protoTypes)
 		{
 		
-//			NetProtocolType protoType = NetProtocolType.SOAP;
 			System.out.println(String.format(" ---> Using %s encoding protocol", protoType));
 			
 			BrokerTest.setDefaultimeout(6*1000);
 			BrokerTest.setDefaultEncodingProtocolType(protoType);
+			BrokerTest.setDefaultDataLenght(1024);
+			
 			int numberOfTests = 1;
 	
 //			new PingTest().run(numberOfTests);
 //			
-			new TopicNameSpecified().run(numberOfTests);
-			new TopicPubSubWithActionId().run(numberOfTests);
-			new TopicNameWildcard().run(numberOfTests);
-
-			new QueueTest().run(numberOfTests);
-			new PollTest().run(numberOfTests);
-
-			new TopicNameWildcardDist().run(numberOfTests);
-			new TopicNameSpecifiedDist().run(numberOfTests);
-			new QueueTestDist().run(numberOfTests);
-
-			new MultipleN1Topic().run(numberOfTests);
-			new Multiple1NTopic().run(numberOfTests);
-			new MultipleNNTopic().run(numberOfTests);
-			new MultipleN1TopicRemote().run(numberOfTests);
-			new Multiple1NTopicRemote().run(numberOfTests);
-			new MultipleNNTopicRemote().run(numberOfTests);
-
-			new MultipleN1Queue().run(numberOfTests);
-			new MultipleNNQueue().run(numberOfTests);
-
-			new MultipleN1QueueRemote().run(numberOfTests);
-			new MultipleNNQueueRemote().run(numberOfTests);
-
-			new MultipleGenericVirtualQueuePubSubTest().run(numberOfTests);
-
-			new VirtualQueueNameSpecified().run(numberOfTests);
-			new VirtualQueueTopicNameWildcard().run(numberOfTests);
-			new VirtualQueueNameSpecifiedRemote().run(numberOfTests);
-			new VirtualQueueTopicNameWildcardRemote().run(numberOfTests);
+//			new TopicNameSpecified().run(numberOfTests);
+//			new TopicPubSubWithActionId().run(numberOfTests);
+//			new TopicNameWildcard().run(numberOfTests);
+//
+//			new QueueTest().run(numberOfTests);
+//			new PollTest().run(numberOfTests);
+//
+//			new TopicNameWildcardDist().run(numberOfTests);
+//			new TopicNameSpecifiedDist().run(numberOfTests);
+//			new QueueTestDist().run(numberOfTests);
+//
+//			new MultipleN1Topic().run(numberOfTests);
+//			new Multiple1NTopic().run(numberOfTests);
+//			new MultipleNNTopic().run(numberOfTests);
+//			new MultipleN1TopicRemote().run(numberOfTests);
+//			new Multiple1NTopicRemote().run(numberOfTests);
+//			new MultipleNNTopicRemote().run(numberOfTests);
+//
+//			new MultipleN1Queue().run(numberOfTests);
+//			new MultipleNNQueue().run(numberOfTests);
+//
+//			new MultipleN1QueueRemote().run(numberOfTests);
+//			new MultipleNNQueueRemote().run(numberOfTests);
+//
+//			new MultipleGenericVirtualQueuePubSubTest().run(numberOfTests);
+//
+//			new VirtualQueueNameSpecified().run(numberOfTests);
+//			new VirtualQueueTopicNameWildcard().run(numberOfTests);
+//			new VirtualQueueNameSpecifiedRemote().run(numberOfTests);
+//			new VirtualQueueTopicNameWildcardRemote().run(numberOfTests);
 //		
 //			//Negative Tests
 //		
@@ -148,12 +152,12 @@ public class Main
 //			new NotificationTest().run(numberOfTests);
 //			new PongTest().run(numberOfTests);
 //			new FaultTest().run(numberOfTests);
-//			new FaultWinfActionIdTest().run(numberOfTests);
+//			new FaultWithActionIdTest().run(numberOfTests);
 //			new AcceptedTest().run(numberOfTests);
 //			new InvalidDestinationName().run(numberOfTests);
 //			new InvalidDestinationType().run(numberOfTests);
 //			new AccessDeniedTest().run(numberOfTests);
-//			new AuthenticationFailed().run(numberOfTests);
+//			new AuthenticationFailedTest().run(numberOfTests);
 //			new InvalidDestinationNameInPublishTest().run(numberOfTests);
 		
 		}

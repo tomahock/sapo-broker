@@ -35,18 +35,18 @@ public class Producer
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
-		log.info("Start sending a string of 1000 random alphanumeric characters in 2 seconds...");
+		log.info("Start sending a string of " +  cargs.getMessageLength() +" random alphanumeric characters in 2 seconds...");
 
 		Thread.sleep(2000);
 
-		producer.sendLoop(bk);
+		producer.sendLoop(bk, cargs.getMessageLength() );
 	}
 
-	private void sendLoop(BrokerClient bk) throws Throwable
+	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
 	{
 		for (int i = 0; i < 100000; i++)
 		{
-			final String msg = RandomStringUtils.randomAlphanumeric(1000);
+			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
 
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
 

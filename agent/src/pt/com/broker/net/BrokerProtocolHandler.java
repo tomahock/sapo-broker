@@ -98,7 +98,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		{
 			try
 			{
-				iosession.write(fault);
+				iosession.write(ex_msg);
 			}
 			catch (Throwable t)
 			{

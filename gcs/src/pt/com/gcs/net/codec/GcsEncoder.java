@@ -20,6 +20,9 @@ public class GcsEncoder extends SimpleFramingEncoder
 		}
 		UnsynchByteArrayOutputStream holder = new UnsynchByteArrayOutputStream();
 		SerializerHelper.toStream((InternalMessage) message, holder);
+		
+		System.out.println("GcsEncoder.processBody()");
+		System.out.println("Size: " + holder.size());
 		return holder.toByteArray();
 	}
 

@@ -38,4 +38,8 @@ public interface CliArgs
 	@Option(shortName = "P", defaultValue = "")
 	String getSTSPassword();
 	
+	
+	@Option(shortName = "l", defaultValue = "1000")
+	int getMessageLength();
+	
 }

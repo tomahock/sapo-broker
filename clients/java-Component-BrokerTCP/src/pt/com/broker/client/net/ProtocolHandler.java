@@ -5,12 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.concurrent.CustomExecutors;
-import org.caudexorigo.concurrent.Sleep;
 
 import pt.com.broker.client.NetworkConnector;
 import pt.com.broker.client.SslNetworkConnector;
@@ -22,8 +20,8 @@ public abstract class ProtocolHandler<T>
 	private final ExecutorService exec = CustomExecutors.newThreadPool(4, "protocol-handler");
 
 	private final ScheduledExecutorService shed_exec = CustomExecutors.newScheduledThreadPool(1, "sched-protocol-handler");
-	
-	protected AtomicBoolean closed = new AtomicBoolean(false);  
+
+	protected AtomicBoolean closed = new AtomicBoolean(false);
 
 	public abstract T decode(DataInputStream in) throws IOException;
 
@@ -34,6 +32,8 @@ public abstract class ProtocolHandler<T>
 	public abstract void onConnectionOpen();
 
 	public abstract void onError(Throwable error);
+
+	protected abstract void onIOFailure(long connectionVersion);
 
 	public abstract NetworkConnector getConnector();
 
@@ -48,8 +48,11 @@ public abstract class ProtocolHandler<T>
 			NetworkConnector connector = getConnector();
 			DataInputStream in = connector.getInput();
 
-			while (true)
+			boolean continueReading = true;
+
+			while (continueReading)
 			{
+
 				try
 				{
 					T message = doDecode(in);
@@ -60,12 +63,9 @@ public abstract class ProtocolHandler<T>
 					final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 					if (rootCause instanceof IOException)
 					{
-						if(closed.get())
-							return;
-						Sleep.time(2000);
-						connector.reconnect(rootCause);
-						onConnectionOpen();
-						in = connector.getInput();
+						if (!connector.isClosed())
+							onIOFailure(connector.getConnectionVersion());
+						continueReading = false;
 					}
 					else
 					{
@@ -78,6 +78,7 @@ public abstract class ProtocolHandler<T>
 							// ignore
 						}
 					}
+
 				}
 			}
 		}
@@ -90,7 +91,9 @@ public abstract class ProtocolHandler<T>
 			SslNetworkConnector connector = getSslConnector();
 			DataInputStream in = connector.getInput();
 
-			while (true)
+			boolean continueReading = true;
+
+			while (continueReading)
 			{
 				try
 				{
@@ -102,12 +105,9 @@ public abstract class ProtocolHandler<T>
 					final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 					if (rootCause instanceof IOException)
 					{
-						if(closed.get())
-							return;
-						Sleep.time(2000);
-						connector.reconnect(rootCause);
-						onConnectionOpen();
-						in = connector.getInput();
+						if (!connector.isClosed())
+							onIOFailure(connector.getConnectionVersion());
+						continueReading = false;
 					}
 					else
 					{
@@ -120,8 +120,10 @@ public abstract class ProtocolHandler<T>
 							// ignore
 						}
 					}
+
 				}
 			}
+
 		}
 	};
 
@@ -130,21 +132,7 @@ public abstract class ProtocolHandler<T>
 		final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 		if (rootCause instanceof IOException)
 		{
-			if (!_isReconnecting.getAndSet(true))
-			{
-				Runnable reconnector = new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						connector.reconnect(rootCause);
-						_isReconnecting.set(false);
-						onConnectionOpen();
-					}
-				};
-
-				shed_exec.schedule(reconnector, 2000, TimeUnit.MILLISECONDS);
-			}
+			onIOFailure(connector.getConnectionVersion());
 		}
 		return rootCause;
 	}
@@ -154,21 +142,7 @@ public abstract class ProtocolHandler<T>
 		final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 		if (rootCause instanceof IOException)
 		{
-			if (!_isReconnecting.getAndSet(true))
-			{
-				Runnable reconnector = new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						connector.reconnect(rootCause);
-						_isReconnecting.set(false);
-						onConnectionOpen();
-					}
-				};
-
-				shed_exec.schedule(reconnector, 2000, TimeUnit.MILLISECONDS);
-			}
+			onIOFailure(connector.getConnectionVersion());
 		}
 		return rootCause;
 	}
@@ -206,7 +180,7 @@ public abstract class ProtocolHandler<T>
 		}
 	}
 
-	public final void sendMessage(final T message) throws Throwable
+	public void sendMessage(final T message) throws Throwable
 	{
 		final NetworkConnector connector = getConnector();
 		try
@@ -225,18 +199,18 @@ public abstract class ProtocolHandler<T>
 	{
 		if (getSslConnector() != null)
 			exec.execute(sslReader);
-		
+
 		exec.execute(reader);
 	}
 
 	public final void stop()
 	{
 		closed.set(true);
-		
+
 		getConnector().close();
 		if (getSslConnector() != null)
 			getSslConnector().close();
-		
+
 		try
 		{
 			exec.shutdown();

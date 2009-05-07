@@ -20,8 +20,6 @@ public class GenericPubSubTest extends BrokerTest
 	private String destinationName = "/topic/foo";
 	private String subscriptionName = "/topic/foo";
 
-	private byte[] data = "This is the data to be transferred.".getBytes();
-
 	private DestinationType destinationType = DestinationType.TOPIC;
 
 	private GenericBrokerListener brokerListener;
@@ -113,7 +111,7 @@ public class GenericPubSubTest extends BrokerTest
 				try
 				{
 
-					NetBrokerMessage brokerMessage = new NetBrokerMessage(data);
+					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 					if (getDestinationType().equals(DestinationType.TOPIC))
 					{
@@ -146,7 +144,7 @@ public class GenericPubSubTest extends BrokerTest
 		notConsequence.setDestination(getDestinationName());
 		notConsequence.setSubscription(getSubscriptionName());
 		notConsequence.setDestinationType(getDestinationType());
-		notConsequence.setMessagePayload(data);
+		notConsequence.setMessagePayload(getData());
 
 		this.addConsequences(notConsequence);
 	}

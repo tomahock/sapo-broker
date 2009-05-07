@@ -1,6 +1,6 @@
 package pt.com.broker.client;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -18,46 +18,47 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
+import pt.com.broker.client.utils.CircularContainer;
 import pt.com.broker.security.SecureSessionContainer;
 import pt.com.broker.security.SecureSessionInfo;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
-import pt.com.types.NetAcknowledgeMessage;
-import pt.com.types.NetAction;
-import pt.com.types.NetAuthentication;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetMessage;
-import pt.com.types.NetNotification;
-import pt.com.types.NetPing;
-import pt.com.types.NetPoll;
-import pt.com.types.NetPong;
-import pt.com.types.NetProtocolType;
-import pt.com.types.NetPublish;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetUnsubscribe;
-import pt.com.types.NetAction.ActionType;
-import pt.com.types.NetAction.DestinationType;
-import pt.com.types.NetAuthentication.AuthMessageType;
+import pt.com.types.*;
+import pt.com.types.NetAction.*;
+import pt.com.types.NetAuthentication.*;
 
 public class BrokerClient
 {
+	
+	public enum BrokerClientState{
+		UNSTARTED, CONNECT, OK, AUTH, FAIL, CLOSE;
+	}
+	
+	public interface BrokerClientStateOk{
+		void onOk(BrokerClient brokerClient);
+	}
+	
 	private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);
 	private final String _appName;
 	private final ConcurrentMap<String, BrokerListener> _async_listeners = new ConcurrentHashMap<String, BrokerListener>();
 	private final BlockingQueue<NetPong> _bstatus = new LinkedBlockingQueue<NetPong>();
 	private final List<BrokerAsyncConsumer> _consumerList = new CopyOnWriteArrayList<BrokerAsyncConsumer>();
+
+	private BrokerClientState state = BrokerClientState.UNSTARTED;
+	
 	private BrokerProtocolHandler _netHandler;
-	private final String _host;
-	private final int _portNumber;
-	private int _sslPortNumber;
+	
+	private CircularContainer<HostInfo> hosts;
+	
 
 	private AuthenticationCredentialsProvider authProvider;
 	private ClientAuthInfo userCredentials;
 	private ClientAuthInfo providerCredentials;
+	private boolean requiresAuthentication = false;
 
 	private SecureSessionInfo secureSessionInfo;
 
-	private final Object mutex = new Object();
+	private final Object authMutex = new Object();
 	
 	
 	private static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter(){
@@ -78,19 +79,23 @@ public class BrokerClient
 
 	private BrokerErrorListenter errorListener; 
 	
-	public BrokerClient(String host, int portNumber, int sslPortNumber) throws Throwable
+	private void init(NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws Throwable
 	{
-		this(host, portNumber, sslPortNumber, "brokerClient");
+		state = BrokerClientState.CONNECT;
+		setErrorListener( getDefaultErrorListener() );
+		_netHandler = new BrokerProtocolHandler(this, ptype, keystoreLocation, keystorePw);
+		getNetHandler().start();
+		state = BrokerClientState.OK;
 	}
-
+	
 	public BrokerClient(String host, int portNumber) throws Throwable
 	{
 		this(host, portNumber, 0, "brokerClient");
 	}
-
-	public BrokerClient(String host, int portNumber, int sslPortNumber, String appName) throws Throwable
+	
+	public BrokerClient(String host, int portNumber, int sslPortNumber) throws Throwable
 	{
-		this(host, portNumber, sslPortNumber, appName, NetProtocolType.PROTOCOL_BUFFER, null, null);
+		this(host, portNumber, sslPortNumber, "brokerClient");
 	}
 
 	public BrokerClient(String host, int portNumber, String appName) throws Throwable
@@ -98,25 +103,47 @@ public class BrokerClient
 		this(host, portNumber, 0, appName, NetProtocolType.PROTOCOL_BUFFER, null, null);
 	}
 
-	public BrokerClient(String host, int portNumber, int sslPortNumber, String appName, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws Throwable
+	public BrokerClient(String host, int portNumber, int sslPortNumber, String appName) throws Throwable
 	{
-		_host = host;
-		_portNumber = portNumber;
-		_sslPortNumber = sslPortNumber;
-		_appName = appName;
-		setErrorListener( getDefaultErrorListener() );
-		_netHandler = new BrokerProtocolHandler(this, ptype, keystoreLocation, keystorePw);
-		getNetHandler().start();
+		this(host, portNumber, sslPortNumber, appName, NetProtocolType.PROTOCOL_BUFFER, null, null);
 	}
-
+	
 	public BrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
 	{
 		this(host, portNumber, 0, appName, ptype, null, null);
 	}
 
+	public BrokerClient(String host, int portNumber, int sslPortNumber, String appName, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws Throwable
+	{
+		this.hosts = new CircularContainer<HostInfo>(1);
+		this.hosts.add(new HostInfo(host, portNumber, sslPortNumber));
+		_appName = appName;
+		
+		init(ptype, keystoreLocation, keystorePw);
+	}
+
+	public BrokerClient(Collection<HostInfo> hosts) throws Throwable
+	{
+		this(hosts, "brokerClient");
+	}
+	
+	public BrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable
+	{
+		this(hosts, appName, NetProtocolType.PROTOCOL_BUFFER, null, null);
+	}
+	
+	public BrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws Throwable
+	{
+		this.hosts = new CircularContainer<HostInfo>(hosts);
+	
+		_appName = appName;
+		
+		init(ptype, keystoreLocation, keystorePw);
+	}
+	
 	public void setAuthenticationCredentials(AuthenticationCredentialsProvider authProvider, ClientAuthInfo userCredentials) throws Exception
 	{
-		synchronized (mutex)
+		synchronized (authMutex)
 		{
 			this.authProvider = authProvider;
 			this.userCredentials = userCredentials;
@@ -126,7 +153,7 @@ public class BrokerClient
 
 	public void obtainCredentials() throws Exception
 	{
-		synchronized (mutex)
+		synchronized (authMutex)
 		{
 			if (authProvider == null)
 				return;
@@ -142,6 +169,8 @@ public class BrokerClient
 
 	public void authenticateClient() throws Throwable
 	{
+		this.requiresAuthentication = true;
+		
 		if (providerCredentials == null)
 			return;
 
@@ -230,7 +259,7 @@ public class BrokerClient
 	{
 		if ((subscribe != null) && (StringUtils.isNotBlank(subscribe.getDestination())))
 		{
-			synchronized (mutex)
+			synchronized (authMutex)
 			{
 				if (_async_listeners.containsKey(subscribe.getDestination()))
 				{
@@ -341,6 +370,7 @@ public class BrokerClient
 	public void close()
 	{
 		getNetHandler().stop();
+		state = BrokerClientState.CLOSE;
 	}
 
 	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName, boolean useSsl, AcceptRequest acceptRequest)
@@ -389,19 +419,14 @@ public class BrokerClient
 		_bstatus.offer(pong);
 	}
 
-	public String getHost()
+	public HostInfo getHostInfo()
 	{
-		return _host;
+		return hosts.get();
 	}
-
-	public int getPort()
+	
+	public void addHostInfo(HostInfo hostInfo)
 	{
-		return _portNumber;
-	}
-
-	public int getSslPort()
-	{
-		return _sslPortNumber;
+		hosts.add(hostInfo);
 	}
 
 	protected void notifyListener(NetNotification notification)
@@ -571,6 +596,27 @@ public class BrokerClient
 	public BrokerErrorListenter getErrorListener()
 	{
 		return errorListener;
+	}
+
+	public BrokerClientState getState()
+	{
+		synchronized (this)
+		{
+			return state;
+		}
+	}
+	
+	public void setState(BrokerClientState state){
+		synchronized (this)
+		{
+			this.state = state;
+			//if(this)
+		}		
+	}
+
+	public boolean isAuthenticationRequired()
+	{
+		return requiresAuthentication;
 	}
 
 	// public static void saveToDropbox(String dropboxPath, BrokerMessage

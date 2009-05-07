@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.caudexorigo.concurrent.Sleep;
+import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.functests.Action;
@@ -25,10 +26,9 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		public int numberOfExecutions;
 	}
 
-	private String destinationName = "/topic/foo";
-	private String subscriptionName = "/topic/foo";
-
-	private byte[] data = "This is the data to be transferred.".getBytes();
+	private String baseName = RandomStringUtils.randomAlphanumeric(10);
+	private String destinationName = String.format("/%s/foo", getBaseName());
+	private String subscriptionName = String.format("/%s/foo", getBaseName());
 
 	private DestinationType destinationType = DestinationType.TOPIC;
 	private DestinationType consumerDestinationType = destinationType;
@@ -146,7 +146,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 				{
 					for (TestClientInfo tci : getInfoProducers())
 					{
-						NetBrokerMessage brokerMessage = new NetBrokerMessage(data);
+						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 						if (getDestinationType().equals(DestinationType.TOPIC))
 						{
@@ -182,10 +182,10 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		for (TestClientInfo tci : getInfoConsumers())
 		{
 			MultipleNotificationConsequence notConsequence = new MultipleNotificationConsequence("Consume", "consumer", tci.brokerListenter);
-			notConsequence.setDestination(getDestinationName()/*getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE)? "xpto@" + getDestinationName() :getDestinationName()*/);
+			notConsequence.setDestination(getDestinationName());
 			notConsequence.setSubscription(getSubscriptionName());
 			notConsequence.setDestinationType(getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE)? DestinationType.QUEUE : getConsumerDestinationType());
-			notConsequence.setMessagePayload(data);
+			notConsequence.setMessagePayload(getData());
 
 			this.addConsequences(notConsequence);
 		}
@@ -278,5 +278,15 @@ public class MultipleGenericPubSubTest extends BrokerTest
 	public DestinationType getConsumerDestinationType()
 	{
 		return consumerDestinationType;
+	}
+
+	public void setBaseName(String baseName)
+	{
+		this.baseName = baseName;
+	}
+
+	public String getBaseName()
+	{
+		return baseName;
 	}
 }

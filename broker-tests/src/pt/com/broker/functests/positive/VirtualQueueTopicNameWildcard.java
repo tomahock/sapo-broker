@@ -7,6 +7,6 @@ public class VirtualQueueTopicNameWildcard extends MultipleGenericVirtualQueuePu
 	public VirtualQueueTopicNameWildcard()
 	{
 		super("VirtualQueue - Topic name is a wildcard");
-		setSubscriptionName("xpto@/topic/.*");
+		setSubscriptionName(String.format("xpto@/%s/.*",getBaseName()));
 	}
 }

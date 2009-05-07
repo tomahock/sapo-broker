@@ -312,7 +312,7 @@ public class Builder
 			soap.body.enqueue = enqueue;
 			break;
 		default:
-			throw new RuntimeException("Invalid destinatio type");
+			throw new RuntimeException("Invalid destination type");
 		}
 
 	}

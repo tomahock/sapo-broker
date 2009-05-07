@@ -19,8 +19,6 @@ public class SampleTests
 	public static Test t = new BrokerTest("simple pub/sub test")
 	{
 		String topicName = "/topic/foo";
-		byte[] data = "test".getBytes();
-
 		GenericBrokerListener brokerListener = new GenericBrokerListener(NetAction.DestinationType.TOPIC);
 
 		BrokerClient consumer;
@@ -59,7 +57,7 @@ public class SampleTests
 					try
 					{
 						BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
-						NetBrokerMessage brokerMessage = new NetBrokerMessage(data);
+						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 						bk.publishMessage(brokerMessage, topicName);
 
@@ -81,7 +79,7 @@ public class SampleTests
 			notConsequence.setDestination(topicName);
 			notConsequence.setSubscription("/topic/.*");
 			notConsequence.setDestinationType(NetAction.DestinationType.TOPIC);
-			notConsequence.setMessagePayload(data);
+			notConsequence.setMessagePayload(getData());
 
 			this.addConsequences(notConsequence);
 
