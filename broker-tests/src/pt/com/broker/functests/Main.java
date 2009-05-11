@@ -93,7 +93,7 @@ public class Main
 
 //		// Positive Tests
 		
-		NetProtocolType[] protoTypes = new NetProtocolType[]{NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT};
+		NetProtocolType[] protoTypes = new NetProtocolType[]{NetProtocolType.SOAP/*, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT*/};
 		
 		for(NetProtocolType protoType : protoTypes)
 		{
@@ -111,6 +111,7 @@ public class Main
 //			new TopicNameSpecified().run(numberOfTests);
 //			new TopicPubSubWithActionId().run(numberOfTests);
 //			new TopicNameWildcard().run(numberOfTests);
+//			new SslTopicNameSpeficied().run(numberOfTests);
 //
 //			new QueueTest().run(numberOfTests);
 //			new PollTest().run(numberOfTests);
@@ -156,9 +157,9 @@ public class Main
 //			new AcceptedTest().run(numberOfTests);
 //			new InvalidDestinationName().run(numberOfTests);
 //			new InvalidDestinationType().run(numberOfTests);
-//			new AccessDeniedTest().run(numberOfTests);
-//			new AuthenticationFailedTest().run(numberOfTests);
 //			new InvalidDestinationNameInPublishTest().run(numberOfTests);
+			new AccessDeniedTest().run(numberOfTests);
+			new AuthenticationFailedTest().run(numberOfTests);
 		
 		}
 		

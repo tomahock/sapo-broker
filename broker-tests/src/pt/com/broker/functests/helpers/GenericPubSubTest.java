@@ -2,14 +2,12 @@ package pt.com.broker.functests.helpers;
 
 import org.caudexorigo.concurrent.Sleep;
 
+import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
-import pt.com.broker.functests.Test;
-import pt.com.broker.functests.helpers.GenericBrokerListener;
-import pt.com.broker.functests.helpers.NotificationConsequence;
 import pt.com.types.NetAction;
 import pt.com.types.NetBrokerMessage;
 import pt.com.types.NetSubscribe;
@@ -24,8 +22,8 @@ public class GenericPubSubTest extends BrokerTest
 
 	private GenericBrokerListener brokerListener;
 
-	private BrokerClient infoConsumer;
-	private BrokerClient infoProducer;
+	private BaseBrokerClient infoConsumer;
+	private BaseBrokerClient infoProducer;
 
 	private boolean constructionFailed = false;
 	private Throwable reasonForFailure;
@@ -206,22 +204,22 @@ public class GenericPubSubTest extends BrokerTest
 		return brokerListener;
 	}
 
-	public void setInfoConsumer(BrokerClient infoConsumer)
+	public void setInfoConsumer(BaseBrokerClient infoConsumer)
 	{
 		this.infoConsumer = infoConsumer;
 	}
 
-	public BrokerClient getInfoConsumer()
+	public BaseBrokerClient getInfoConsumer()
 	{
 		return infoConsumer;
 	}
 
-	public void setInfoProducer(BrokerClient infoProducer)
+	public void setInfoProducer(BaseBrokerClient infoProducer)
 	{
 		this.infoProducer = infoProducer;
 	}
 
-	public BrokerClient getInfoProducer()
+	public BaseBrokerClient getInfoProducer()
 	{
 		return infoProducer;
 	}

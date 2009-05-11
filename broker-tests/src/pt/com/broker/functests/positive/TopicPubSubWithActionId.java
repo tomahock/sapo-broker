@@ -100,7 +100,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 					}, 1000);
 					
 					NetSubscribe subscribe = new NetSubscribe(subscriptionName, destinationType);
-					infoConsumer.addAsyncConsumer(subscribe, brokerListener, false, accReq);
+					infoConsumer.addAsyncConsumer(subscribe, brokerListener,accReq);
 
 					
 					Sleep.time(1000);

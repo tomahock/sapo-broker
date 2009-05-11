@@ -6,8 +6,10 @@ import org.caudexorigo.cli.CliFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
+import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.authentication.AuthenticationCredentialsProviderFactory;
@@ -27,9 +29,6 @@ public class AuthenticatedConsumer implements BrokerListener
 	private int port;
 	private DestinationType dtype;
 	private String dname;
-
-	private int sslPort;
-	private int useSsl;
 
 	private String stsLocation;
 	private String stsUsername;
@@ -55,8 +54,6 @@ public class AuthenticatedConsumer implements BrokerListener
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
 
-		consumer.sslPort = cargs.getSslPort();
-		consumer.useSsl = cargs.useSsl();
 		consumer.stsLocation = cargs.getSTSLocation();
 		consumer.stsUsername = cargs.getSTSUsername();
 		consumer.stsPassword = cargs.getSTSPassword();
@@ -65,15 +62,8 @@ public class AuthenticatedConsumer implements BrokerListener
 
 		initSTSParams(consumer);
 
-		BrokerClient bk = null;
-		if (consumer.useSsl == 0)
-		{
-			bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer");
-		}
-		else
-		{
-			bk = new BrokerClient(consumer.host, consumer.port, consumer.sslPort, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
-		}
+		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
+
 
 		ClientAuthInfo clientAuthInfo = new ClientAuthInfo(consumer.stsUsername, consumer.stsPassword);
 
@@ -94,7 +84,7 @@ public class AuthenticatedConsumer implements BrokerListener
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 
-		bk.addAsyncConsumer(subscribe, consumer, (cargs.useSsl() != 0), null);
+		bk.addAsyncConsumer(subscribe, consumer, null);
 
 		System.out.println("listening...");
 	}

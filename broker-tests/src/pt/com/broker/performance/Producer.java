@@ -31,13 +31,13 @@ public class Producer implements Callable<Integer>
 		if(destinationType == DestinationType.QUEUE)
 		{
 			for(int i = numberOfMsgToSend; i != 0; --i){
-				brokerClient.enqueueMessage(message, destination, false, null);
+				brokerClient.enqueueMessage(message, destination);
 			}
 		}
 		else
 		{
 			for(int i = numberOfMsgToSend; i != 0; --i){
-				brokerClient.publishMessage(message, destination, false, null);
+				brokerClient.publishMessage(message, destination);
 			}
 		}
 		

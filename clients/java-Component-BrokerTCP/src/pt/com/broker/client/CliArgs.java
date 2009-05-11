@@ -15,19 +15,12 @@ public interface CliArgs
 
 	@Option(shortName = "d", defaultValue = "TOPIC")
 	String getDestinationType();
-
-	@Option(shortName = "s", defaultValue = "3390")
-	int getSslPort();
 	
-	@Option(shortName = "u", defaultValue = "0")
-	int useSsl();
-	
-	@Option(shortName = "l", defaultValue = ".")
+	@Option(shortName = "L", defaultValue = ".")
 	String getKeystoreLocation();
 	
-	@Option(shortName = "w", defaultValue = "")
+	@Option(shortName = "W", defaultValue = "")
 	String getKeystorePassword();
-	
 	
 	@Option(shortName = "S", defaultValue = ".")
 	String getSTSLocation();

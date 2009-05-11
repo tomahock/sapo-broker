@@ -20,44 +20,34 @@ import org.apache.thrift.transport.*;
 
 public class Authentication implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Authentication");
-  private static final TField AUTH_MSG_TYPE_FIELD_DESC = new TField("auth_msg_type", TType.I32, (short)1);
-  private static final TField CLIENT_AUTH_FIELD_DESC = new TField("client_auth", TType.STRUCT, (short)2);
-  private static final TField SERVER_CHALLENGE_FIELD_DESC = new TField("server_challenge", TType.STRUCT, (short)3);
-  private static final TField SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE_FIELD_DESC = new TField("serverChallengeResponseClientChallenge", TType.STRUCT, (short)4);
-  private static final TField CLIENT_CHALLENGE_RESPONSE_FIELD_DESC = new TField("clientChallengeResponse", TType.STRUCT, (short)5);
-  private static final TField CLIENT_ACKNOWLEDGE_FIELD_DESC = new TField("client_acknowledge", TType.STRUCT, (short)6);
+  private static final TField AUTHENTICATION_TYPE_FIELD_DESC = new TField("authentication_type", TType.STRING, (short)1);
+  private static final TField TOKEN_FIELD_DESC = new TField("token", TType.STRING, (short)3);
+  private static final TField USER_ID_FIELD_DESC = new TField("user_id", TType.STRING, (short)4);
+  private static final TField ROLES_FIELD_DESC = new TField("roles", TType.LIST, (short)5);
 
-  public int auth_msg_type;
-  public static final int AUTH_MSG_TYPE = 1;
-  public ClientAuth client_auth;
-  public static final int CLIENT_AUTH = 2;
-  public ServerChallenge server_challenge;
-  public static final int SERVER_CHALLENGE = 3;
-  public ServerChallengeResponseClientChallenge serverChallengeResponseClientChallenge;
-  public static final int SERVERCHALLENGERESPONSECLIENTCHALLENGE = 4;
-  public ClientChallengeResponse clientChallengeResponse;
-  public static final int CLIENTCHALLENGERESPONSE = 5;
-  public ClientAcknowledge client_acknowledge;
-  public static final int CLIENT_ACKNOWLEDGE = 6;
+  public String authentication_type;
+  public static final int AUTHENTICATION_TYPE = 1;
+  public byte[] token;
+  public static final int TOKEN = 3;
+  public String user_id;
+  public static final int USER_ID = 4;
+  public List<String> roles;
+  public static final int ROLES = 5;
 
   private final Isset __isset = new Isset();
   private static final class Isset implements java.io.Serializable {
-    public boolean auth_msg_type = false;
   }
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(AUTH_MSG_TYPE, new FieldMetaData("auth_msg_type", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.I32)));
-    put(CLIENT_AUTH, new FieldMetaData("client_auth", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, ClientAuth.class)));
-    put(SERVER_CHALLENGE, new FieldMetaData("server_challenge", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, ServerChallenge.class)));
-    put(SERVERCHALLENGERESPONSECLIENTCHALLENGE, new FieldMetaData("serverChallengeResponseClientChallenge", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, ServerChallengeResponseClientChallenge.class)));
-    put(CLIENTCHALLENGERESPONSE, new FieldMetaData("clientChallengeResponse", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, ClientChallengeResponse.class)));
-    put(CLIENT_ACKNOWLEDGE, new FieldMetaData("client_acknowledge", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, ClientAcknowledge.class)));
+    put(AUTHENTICATION_TYPE, new FieldMetaData("authentication_type", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.STRING)));
+    put(TOKEN, new FieldMetaData("token", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    put(USER_ID, new FieldMetaData("user_id", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.STRING)));
+    put(ROLES, new FieldMetaData("roles", TFieldRequirementType.OPTIONAL, 
+        new ListMetaData(TType.LIST, 
+            new FieldValueMetaData(TType.STRING))));
   }});
 
   static {
@@ -68,43 +58,38 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   }
 
   public Authentication(
-    int auth_msg_type,
-    ClientAuth client_auth,
-    ServerChallenge server_challenge,
-    ServerChallengeResponseClientChallenge serverChallengeResponseClientChallenge,
-    ClientChallengeResponse clientChallengeResponse,
-    ClientAcknowledge client_acknowledge)
+    String authentication_type,
+    byte[] token,
+    String user_id,
+    List<String> roles)
   {
     this();
-    this.auth_msg_type = auth_msg_type;
-    this.__isset.auth_msg_type = true;
-    this.client_auth = client_auth;
-    this.server_challenge = server_challenge;
-    this.serverChallengeResponseClientChallenge = serverChallengeResponseClientChallenge;
-    this.clientChallengeResponse = clientChallengeResponse;
-    this.client_acknowledge = client_acknowledge;
+    this.authentication_type = authentication_type;
+    this.token = token;
+    this.user_id = user_id;
+    this.roles = roles;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public Authentication(Authentication other) {
-    __isset.auth_msg_type = other.__isset.auth_msg_type;
-    this.auth_msg_type = other.auth_msg_type;
-    if (other.isSetClient_auth()) {
-      this.client_auth = new ClientAuth(other.client_auth);
+    if (other.isSetAuthentication_type()) {
+      this.authentication_type = other.authentication_type;
     }
-    if (other.isSetServer_challenge()) {
-      this.server_challenge = new ServerChallenge(other.server_challenge);
+    if (other.isSetToken()) {
+      this.token = new byte[other.token.length];
+      System.arraycopy(other.token, 0, token, 0, other.token.length);
     }
-    if (other.isSetServerChallengeResponseClientChallenge()) {
-      this.serverChallengeResponseClientChallenge = new ServerChallengeResponseClientChallenge(other.serverChallengeResponseClientChallenge);
+    if (other.isSetUser_id()) {
+      this.user_id = other.user_id;
     }
-    if (other.isSetClientChallengeResponse()) {
-      this.clientChallengeResponse = new ClientChallengeResponse(other.clientChallengeResponse);
-    }
-    if (other.isSetClient_acknowledge()) {
-      this.client_acknowledge = new ClientAcknowledge(other.client_acknowledge);
+    if (other.isSetRoles()) {
+      List<String> __this__roles = new ArrayList<String>();
+      for (String other_element : other.roles) {
+        __this__roles.add(other_element);
+      }
+      this.roles = __this__roles;
     }
   }
 
@@ -113,167 +98,129 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     return new Authentication(this);
   }
 
-  public int getAuth_msg_type() {
-    return this.auth_msg_type;
+  public String getAuthentication_type() {
+    return this.authentication_type;
   }
 
-  public void setAuth_msg_type(int auth_msg_type) {
-    this.auth_msg_type = auth_msg_type;
-    this.__isset.auth_msg_type = true;
+  public void setAuthentication_type(String authentication_type) {
+    this.authentication_type = authentication_type;
   }
 
-  public void unsetAuth_msg_type() {
-    this.__isset.auth_msg_type = false;
+  public void unsetAuthentication_type() {
+    this.authentication_type = null;
   }
 
-  // Returns true if field auth_msg_type is set (has been asigned a value) and false otherwise
-  public boolean isSetAuth_msg_type() {
-    return this.__isset.auth_msg_type;
+  // Returns true if field authentication_type is set (has been asigned a value) and false otherwise
+  public boolean isSetAuthentication_type() {
+    return this.authentication_type != null;
   }
 
-  public void setAuth_msg_typeIsSet(boolean value) {
-    this.__isset.auth_msg_type = value;
-  }
-
-  public ClientAuth getClient_auth() {
-    return this.client_auth;
-  }
-
-  public void setClient_auth(ClientAuth client_auth) {
-    this.client_auth = client_auth;
-  }
-
-  public void unsetClient_auth() {
-    this.client_auth = null;
-  }
-
-  // Returns true if field client_auth is set (has been asigned a value) and false otherwise
-  public boolean isSetClient_auth() {
-    return this.client_auth != null;
-  }
-
-  public void setClient_authIsSet(boolean value) {
+  public void setAuthentication_typeIsSet(boolean value) {
     if (!value) {
-      this.client_auth = null;
+      this.authentication_type = null;
     }
   }
 
-  public ServerChallenge getServer_challenge() {
-    return this.server_challenge;
+  public byte[] getToken() {
+    return this.token;
   }
 
-  public void setServer_challenge(ServerChallenge server_challenge) {
-    this.server_challenge = server_challenge;
+  public void setToken(byte[] token) {
+    this.token = token;
   }
 
-  public void unsetServer_challenge() {
-    this.server_challenge = null;
+  public void unsetToken() {
+    this.token = null;
   }
 
-  // Returns true if field server_challenge is set (has been asigned a value) and false otherwise
-  public boolean isSetServer_challenge() {
-    return this.server_challenge != null;
+  // Returns true if field token is set (has been asigned a value) and false otherwise
+  public boolean isSetToken() {
+    return this.token != null;
   }
 
-  public void setServer_challengeIsSet(boolean value) {
+  public void setTokenIsSet(boolean value) {
     if (!value) {
-      this.server_challenge = null;
+      this.token = null;
     }
   }
 
-  public ServerChallengeResponseClientChallenge getServerChallengeResponseClientChallenge() {
-    return this.serverChallengeResponseClientChallenge;
+  public String getUser_id() {
+    return this.user_id;
   }
 
-  public void setServerChallengeResponseClientChallenge(ServerChallengeResponseClientChallenge serverChallengeResponseClientChallenge) {
-    this.serverChallengeResponseClientChallenge = serverChallengeResponseClientChallenge;
+  public void setUser_id(String user_id) {
+    this.user_id = user_id;
   }
 
-  public void unsetServerChallengeResponseClientChallenge() {
-    this.serverChallengeResponseClientChallenge = null;
+  public void unsetUser_id() {
+    this.user_id = null;
   }
 
-  // Returns true if field serverChallengeResponseClientChallenge is set (has been asigned a value) and false otherwise
-  public boolean isSetServerChallengeResponseClientChallenge() {
-    return this.serverChallengeResponseClientChallenge != null;
+  // Returns true if field user_id is set (has been asigned a value) and false otherwise
+  public boolean isSetUser_id() {
+    return this.user_id != null;
   }
 
-  public void setServerChallengeResponseClientChallengeIsSet(boolean value) {
+  public void setUser_idIsSet(boolean value) {
     if (!value) {
-      this.serverChallengeResponseClientChallenge = null;
+      this.user_id = null;
     }
   }
 
-  public ClientChallengeResponse getClientChallengeResponse() {
-    return this.clientChallengeResponse;
+  public int getRolesSize() {
+    return (this.roles == null) ? 0 : this.roles.size();
   }
 
-  public void setClientChallengeResponse(ClientChallengeResponse clientChallengeResponse) {
-    this.clientChallengeResponse = clientChallengeResponse;
+  public java.util.Iterator<String> getRolesIterator() {
+    return (this.roles == null) ? null : this.roles.iterator();
   }
 
-  public void unsetClientChallengeResponse() {
-    this.clientChallengeResponse = null;
-  }
-
-  // Returns true if field clientChallengeResponse is set (has been asigned a value) and false otherwise
-  public boolean isSetClientChallengeResponse() {
-    return this.clientChallengeResponse != null;
-  }
-
-  public void setClientChallengeResponseIsSet(boolean value) {
-    if (!value) {
-      this.clientChallengeResponse = null;
+  public void addToRoles(String elem) {
+    if (this.roles == null) {
+      this.roles = new ArrayList<String>();
     }
+    this.roles.add(elem);
   }
 
-  public ClientAcknowledge getClient_acknowledge() {
-    return this.client_acknowledge;
+  public List<String> getRoles() {
+    return this.roles;
   }
 
-  public void setClient_acknowledge(ClientAcknowledge client_acknowledge) {
-    this.client_acknowledge = client_acknowledge;
+  public void setRoles(List<String> roles) {
+    this.roles = roles;
   }
 
-  public void unsetClient_acknowledge() {
-    this.client_acknowledge = null;
+  public void unsetRoles() {
+    this.roles = null;
   }
 
-  // Returns true if field client_acknowledge is set (has been asigned a value) and false otherwise
-  public boolean isSetClient_acknowledge() {
-    return this.client_acknowledge != null;
+  // Returns true if field roles is set (has been asigned a value) and false otherwise
+  public boolean isSetRoles() {
+    return this.roles != null;
   }
 
-  public void setClient_acknowledgeIsSet(boolean value) {
+  public void setRolesIsSet(boolean value) {
     if (!value) {
-      this.client_acknowledge = null;
+      this.roles = null;
     }
   }
 
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
-    case AUTH_MSG_TYPE:
-      setAuth_msg_type((Integer)value);
+    case AUTHENTICATION_TYPE:
+      setAuthentication_type((String)value);
       break;
 
-    case CLIENT_AUTH:
-      setClient_auth((ClientAuth)value);
+    case TOKEN:
+      setToken((byte[])value);
       break;
 
-    case SERVER_CHALLENGE:
-      setServer_challenge((ServerChallenge)value);
+    case USER_ID:
+      setUser_id((String)value);
       break;
 
-    case SERVERCHALLENGERESPONSECLIENTCHALLENGE:
-      setServerChallengeResponseClientChallenge((ServerChallengeResponseClientChallenge)value);
-      break;
-
-    case CLIENTCHALLENGERESPONSE:
-      setClientChallengeResponse((ClientChallengeResponse)value);
-      break;
-
-    case CLIENT_ACKNOWLEDGE:
-      setClient_acknowledge((ClientAcknowledge)value);
+    case ROLES:
+      setRoles((List<String>)value);
       break;
 
     default:
@@ -283,23 +230,17 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
 
   public Object getFieldValue(int fieldID) {
     switch (fieldID) {
-    case AUTH_MSG_TYPE:
-      return getAuth_msg_type();
+    case AUTHENTICATION_TYPE:
+      return getAuthentication_type();
 
-    case CLIENT_AUTH:
-      return getClient_auth();
+    case TOKEN:
+      return getToken();
 
-    case SERVER_CHALLENGE:
-      return getServer_challenge();
+    case USER_ID:
+      return getUser_id();
 
-    case SERVERCHALLENGERESPONSECLIENTCHALLENGE:
-      return getServerChallengeResponseClientChallenge();
-
-    case CLIENTCHALLENGERESPONSE:
-      return getClientChallengeResponse();
-
-    case CLIENT_ACKNOWLEDGE:
-      return getClient_acknowledge();
+    case ROLES:
+      return getRoles();
 
     default:
       throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
@@ -309,18 +250,14 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
   public boolean isSet(int fieldID) {
     switch (fieldID) {
-    case AUTH_MSG_TYPE:
-      return isSetAuth_msg_type();
-    case CLIENT_AUTH:
-      return isSetClient_auth();
-    case SERVER_CHALLENGE:
-      return isSetServer_challenge();
-    case SERVERCHALLENGERESPONSECLIENTCHALLENGE:
-      return isSetServerChallengeResponseClientChallenge();
-    case CLIENTCHALLENGERESPONSE:
-      return isSetClientChallengeResponse();
-    case CLIENT_ACKNOWLEDGE:
-      return isSetClient_acknowledge();
+    case AUTHENTICATION_TYPE:
+      return isSetAuthentication_type();
+    case TOKEN:
+      return isSetToken();
+    case USER_ID:
+      return isSetUser_id();
+    case ROLES:
+      return isSetRoles();
     default:
       throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
@@ -339,57 +276,39 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     if (that == null)
       return false;
 
-    boolean this_present_auth_msg_type = true;
-    boolean that_present_auth_msg_type = true;
-    if (this_present_auth_msg_type || that_present_auth_msg_type) {
-      if (!(this_present_auth_msg_type && that_present_auth_msg_type))
+    boolean this_present_authentication_type = true && this.isSetAuthentication_type();
+    boolean that_present_authentication_type = true && that.isSetAuthentication_type();
+    if (this_present_authentication_type || that_present_authentication_type) {
+      if (!(this_present_authentication_type && that_present_authentication_type))
         return false;
-      if (this.auth_msg_type != that.auth_msg_type)
-        return false;
-    }
-
-    boolean this_present_client_auth = true && this.isSetClient_auth();
-    boolean that_present_client_auth = true && that.isSetClient_auth();
-    if (this_present_client_auth || that_present_client_auth) {
-      if (!(this_present_client_auth && that_present_client_auth))
-        return false;
-      if (!this.client_auth.equals(that.client_auth))
+      if (!this.authentication_type.equals(that.authentication_type))
         return false;
     }
 
-    boolean this_present_server_challenge = true && this.isSetServer_challenge();
-    boolean that_present_server_challenge = true && that.isSetServer_challenge();
-    if (this_present_server_challenge || that_present_server_challenge) {
-      if (!(this_present_server_challenge && that_present_server_challenge))
+    boolean this_present_token = true && this.isSetToken();
+    boolean that_present_token = true && that.isSetToken();
+    if (this_present_token || that_present_token) {
+      if (!(this_present_token && that_present_token))
         return false;
-      if (!this.server_challenge.equals(that.server_challenge))
-        return false;
-    }
-
-    boolean this_present_serverChallengeResponseClientChallenge = true && this.isSetServerChallengeResponseClientChallenge();
-    boolean that_present_serverChallengeResponseClientChallenge = true && that.isSetServerChallengeResponseClientChallenge();
-    if (this_present_serverChallengeResponseClientChallenge || that_present_serverChallengeResponseClientChallenge) {
-      if (!(this_present_serverChallengeResponseClientChallenge && that_present_serverChallengeResponseClientChallenge))
-        return false;
-      if (!this.serverChallengeResponseClientChallenge.equals(that.serverChallengeResponseClientChallenge))
+      if (!java.util.Arrays.equals(this.token, that.token))
         return false;
     }
 
-    boolean this_present_clientChallengeResponse = true && this.isSetClientChallengeResponse();
-    boolean that_present_clientChallengeResponse = true && that.isSetClientChallengeResponse();
-    if (this_present_clientChallengeResponse || that_present_clientChallengeResponse) {
-      if (!(this_present_clientChallengeResponse && that_present_clientChallengeResponse))
+    boolean this_present_user_id = true && this.isSetUser_id();
+    boolean that_present_user_id = true && that.isSetUser_id();
+    if (this_present_user_id || that_present_user_id) {
+      if (!(this_present_user_id && that_present_user_id))
         return false;
-      if (!this.clientChallengeResponse.equals(that.clientChallengeResponse))
+      if (!this.user_id.equals(that.user_id))
         return false;
     }
 
-    boolean this_present_client_acknowledge = true && this.isSetClient_acknowledge();
-    boolean that_present_client_acknowledge = true && that.isSetClient_acknowledge();
-    if (this_present_client_acknowledge || that_present_client_acknowledge) {
-      if (!(this_present_client_acknowledge && that_present_client_acknowledge))
+    boolean this_present_roles = true && this.isSetRoles();
+    boolean that_present_roles = true && that.isSetRoles();
+    if (this_present_roles || that_present_roles) {
+      if (!(this_present_roles && that_present_roles))
         return false;
-      if (!this.client_acknowledge.equals(that.client_acknowledge))
+      if (!this.roles.equals(that.roles))
         return false;
     }
 
@@ -412,50 +331,40 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
       }
       switch (field.id)
       {
-        case AUTH_MSG_TYPE:
-          if (field.type == TType.I32) {
-            this.auth_msg_type = iprot.readI32();
-            this.__isset.auth_msg_type = true;
+        case AUTHENTICATION_TYPE:
+          if (field.type == TType.STRING) {
+            this.authentication_type = iprot.readString();
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
           break;
-        case CLIENT_AUTH:
-          if (field.type == TType.STRUCT) {
-            this.client_auth = new ClientAuth();
-            this.client_auth.read(iprot);
+        case TOKEN:
+          if (field.type == TType.STRING) {
+            this.token = iprot.readBinary();
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
           break;
-        case SERVER_CHALLENGE:
-          if (field.type == TType.STRUCT) {
-            this.server_challenge = new ServerChallenge();
-            this.server_challenge.read(iprot);
+        case USER_ID:
+          if (field.type == TType.STRING) {
+            this.user_id = iprot.readString();
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
           break;
-        case SERVERCHALLENGERESPONSECLIENTCHALLENGE:
-          if (field.type == TType.STRUCT) {
-            this.serverChallengeResponseClientChallenge = new ServerChallengeResponseClientChallenge();
-            this.serverChallengeResponseClientChallenge.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case CLIENTCHALLENGERESPONSE:
-          if (field.type == TType.STRUCT) {
-            this.clientChallengeResponse = new ClientChallengeResponse();
-            this.clientChallengeResponse.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case CLIENT_ACKNOWLEDGE:
-          if (field.type == TType.STRUCT) {
-            this.client_acknowledge = new ClientAcknowledge();
-            this.client_acknowledge.read(iprot);
+        case ROLES:
+          if (field.type == TType.LIST) {
+            {
+              TList _list5 = iprot.readListBegin();
+              this.roles = new ArrayList<String>(_list5.size);
+              for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+              {
+                String _elem7;
+                _elem7 = iprot.readString();
+                this.roles.add(_elem7);
+              }
+              iprot.readListEnd();
+            }
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
@@ -477,32 +386,30 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
-    oprot.writeFieldBegin(AUTH_MSG_TYPE_FIELD_DESC);
-    oprot.writeI32(this.auth_msg_type);
-    oprot.writeFieldEnd();
-    if (this.client_auth != null) {
-      oprot.writeFieldBegin(CLIENT_AUTH_FIELD_DESC);
-      this.client_auth.write(oprot);
+    if (this.authentication_type != null) {
+      oprot.writeFieldBegin(AUTHENTICATION_TYPE_FIELD_DESC);
+      oprot.writeString(this.authentication_type);
       oprot.writeFieldEnd();
     }
-    if (this.server_challenge != null) {
-      oprot.writeFieldBegin(SERVER_CHALLENGE_FIELD_DESC);
-      this.server_challenge.write(oprot);
+    if (this.token != null) {
+      oprot.writeFieldBegin(TOKEN_FIELD_DESC);
+      oprot.writeBinary(this.token);
       oprot.writeFieldEnd();
     }
-    if (this.serverChallengeResponseClientChallenge != null) {
-      oprot.writeFieldBegin(SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE_FIELD_DESC);
-      this.serverChallengeResponseClientChallenge.write(oprot);
+    if (this.user_id != null) {
+      oprot.writeFieldBegin(USER_ID_FIELD_DESC);
+      oprot.writeString(this.user_id);
       oprot.writeFieldEnd();
     }
-    if (this.clientChallengeResponse != null) {
-      oprot.writeFieldBegin(CLIENT_CHALLENGE_RESPONSE_FIELD_DESC);
-      this.clientChallengeResponse.write(oprot);
-      oprot.writeFieldEnd();
-    }
-    if (this.client_acknowledge != null) {
-      oprot.writeFieldBegin(CLIENT_ACKNOWLEDGE_FIELD_DESC);
-      this.client_acknowledge.write(oprot);
+    if (this.roles != null) {
+      oprot.writeFieldBegin(ROLES_FIELD_DESC);
+      {
+        oprot.writeListBegin(new TList(TType.STRING, this.roles.size()));
+        for (String _iter8 : this.roles)        {
+          oprot.writeString(_iter8);
+        }
+        oprot.writeListEnd();
+      }
       oprot.writeFieldEnd();
     }
     oprot.writeFieldStop();
@@ -514,56 +421,45 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     StringBuilder sb = new StringBuilder("Authentication(");
     boolean first = true;
 
-    sb.append("auth_msg_type:");
-    sb.append(this.auth_msg_type);
+    if (isSetAuthentication_type()) {
+      sb.append("authentication_type:");
+      if (this.authentication_type == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authentication_type);
+      }
+      first = false;
+    }
+    if (!first) sb.append(", ");
+    sb.append("token:");
+    if (this.token == null) {
+      sb.append("null");
+    } else {
+        int __token_size = Math.min(this.token.length, 128);
+        for (int i = 0; i < __token_size; i++) {
+          if (i != 0) sb.append(" ");
+          sb.append(Integer.toHexString(this.token[i]).length() > 1 ? Integer.toHexString(this.token[i]).substring(Integer.toHexString(this.token[i]).length() - 2).toUpperCase() : "0" + Integer.toHexString(this.token[i]).toUpperCase());
+        }
+        if (this.token.length > 128) sb.append(" ...");
+    }
     first = false;
-    if (isSetClient_auth()) {
+    if (isSetUser_id()) {
       if (!first) sb.append(", ");
-      sb.append("client_auth:");
-      if (this.client_auth == null) {
+      sb.append("user_id:");
+      if (this.user_id == null) {
         sb.append("null");
       } else {
-        sb.append(this.client_auth);
+        sb.append(this.user_id);
       }
       first = false;
     }
-    if (isSetServer_challenge()) {
+    if (isSetRoles()) {
       if (!first) sb.append(", ");
-      sb.append("server_challenge:");
-      if (this.server_challenge == null) {
+      sb.append("roles:");
+      if (this.roles == null) {
         sb.append("null");
       } else {
-        sb.append(this.server_challenge);
-      }
-      first = false;
-    }
-    if (isSetServerChallengeResponseClientChallenge()) {
-      if (!first) sb.append(", ");
-      sb.append("serverChallengeResponseClientChallenge:");
-      if (this.serverChallengeResponseClientChallenge == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.serverChallengeResponseClientChallenge);
-      }
-      first = false;
-    }
-    if (isSetClientChallengeResponse()) {
-      if (!first) sb.append(", ");
-      sb.append("clientChallengeResponse:");
-      if (this.clientChallengeResponse == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.clientChallengeResponse);
-      }
-      first = false;
-    }
-    if (isSetClient_acknowledge()) {
-      if (!first) sb.append(", ");
-      sb.append("client_acknowledge:");
-      if (this.client_acknowledge == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.client_acknowledge);
+        sb.append(this.roles);
       }
       first = false;
     }
@@ -574,9 +470,6 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   public void validate() throws TException {
     // check for required fields
     // check that fields of type enum have valid values
-    if (__isset.auth_msg_type && !AuthMessageType.VALID_VALUES.contains(auth_msg_type)){
-      throw new TProtocolException("Invalid value of field 'auth_msg_type'!");
-    }
   }
 
 }

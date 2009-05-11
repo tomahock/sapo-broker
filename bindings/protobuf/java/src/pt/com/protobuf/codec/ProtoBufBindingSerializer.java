@@ -24,11 +24,6 @@ import pt.com.protobuf.codec.PBMessage.Atom.Pong;
 import pt.com.protobuf.codec.PBMessage.Atom.Publish;
 import pt.com.protobuf.codec.PBMessage.Atom.Subscribe;
 import pt.com.protobuf.codec.PBMessage.Atom.Unsubscribe;
-import pt.com.protobuf.codec.PBMessage.Atom.Authentication.AuthMessageType;
-import pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientAuth;
-import pt.com.protobuf.codec.PBMessage.Atom.Authentication.ClientChallengeResponse;
-import pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallenge;
-import pt.com.protobuf.codec.PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge;
 import pt.com.types.BindingSerializer;
 import pt.com.types.NetAccepted;
 import pt.com.types.NetAcknowledgeMessage;
@@ -45,10 +40,6 @@ import pt.com.types.NetPublish;
 import pt.com.types.NetSubscribe;
 import pt.com.types.NetUnsubscribe;
 import pt.com.types.NetAction.DestinationType;
-import pt.com.types.NetAuthentication.AuthClientAuthentication;
-import pt.com.types.NetAuthentication.AuthClientChallengeResponse;
-import pt.com.types.NetAuthentication.AuthServerChallenge;
-import pt.com.types.NetAuthentication.AuthServerChallengeResponseClientChallenge;
 
 import com.google.protobuf.ByteString;
 
@@ -296,86 +287,27 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 		return builder.build();
 	}
-	
-	private Authentication getAuth(NetMessage netMessage) {
-		NetAuthentication auth = netMessage.getAction().getAuthorizationMessage();
-		
-		PBMessage.Atom.Authentication.Builder authBuilder = PBMessage.Atom.Authentication.newBuilder();
-		authBuilder.setAuthMsgType(translate(auth.getAuthMessageType()));
-		
-		switch(auth.getAuthMessageType())
+
+	private Authentication getAuth(NetMessage netMessage)
+	{
+		NetAuthentication authClientAuthrentication = netMessage.getAction().getAuthenticationMessage();
+
+		PBMessage.Atom.Authentication.Builder builder = PBMessage.Atom.Authentication.newBuilder();
+
+		builder.setToken(ByteString.copyFrom(authClientAuthrentication.getToken()));
+		if (authClientAuthrentication.getAuthenticationType() != null)
+			builder.setAuthenticationType(authClientAuthrentication.getAuthenticationType());
+
+		if (authClientAuthrentication.getUserId() != null)
+			builder.setUserId(authClientAuthrentication.getUserId());
+
+		if (authClientAuthrentication.getRoles() != null)
 		{
-		case CLIENT_ACKNOWLEDGE:
-			{
-				PBMessage.Atom.Authentication.ClientAcknowledge.Builder builder = PBMessage.Atom.Authentication.ClientAcknowledge.newBuilder();
-				builder.setCommunicationId( auth.getAuthClientAcknowledge().getCommunicationId() );
-				authBuilder.setClientAcknowledge(builder);
-			}
-			break;
-		case CLIENT_AUTH:
-			{
-				PBMessage.Atom.Authentication.ClientAuth.Builder builder = PBMessage.Atom.Authentication.ClientAuth.newBuilder();
-				AuthClientAuthentication authClientAuthrentication = auth.getAuthClientAuthentication();
-				
-				builder.setToken(ByteString.copyFrom(authClientAuthrentication.getToken())).
-					setLocalCommunicationId(authClientAuthrentication.getLocalCommunicationId());
-				if(authClientAuthrentication.getAuthenticationType() != null)
-					builder.setAuthenticationType(authClientAuthrentication.getAuthenticationType());
-				
-				if(authClientAuthrentication.getUserId() != null)
-					builder.setUserId(authClientAuthrentication.getUserId());
-				
-				if(authClientAuthrentication.getRoles() != null)
-				{
-					int i = 0;
-					for(String role : authClientAuthrentication.getRoles())
-						builder.setRole(i++, role);
-				}
-				authBuilder.setClientAuth(builder);
-			}
-			break;
-		case CLIENT_CHALLENGE_RESPONSE:
-			{
-				PBMessage.Atom.Authentication.ClientChallengeResponse.Builder builder = PBMessage.Atom.Authentication.ClientChallengeResponse.newBuilder();
-				AuthClientChallengeResponse challengeResp = auth.getAuthClientChallengeResponse();
-				
-				builder.setCommunicationId(challengeResp.getCommunicationId()).
-						setChallenge(ByteString.copyFrom(challengeResp.getChallenge()));
-								
-				authBuilder.setClientChallengeResponse(builder);
-			}
-			break;
-		case SERVER_CHALLENGE:
-			{
-				PBMessage.Atom.Authentication.ServerChallenge.Builder builder = PBMessage.Atom.Authentication.ServerChallenge.newBuilder();
-				AuthServerChallenge authServerChallenge = auth.getAuthServerChallenge();
-							
-				builder.setCommunicationId(authServerChallenge.getCommunicationId()).
-					setChallenge(ByteString.copyFrom(authServerChallenge.getChallenge())).
-					setSecret(ByteString.copyFrom(authServerChallenge.getSecret())).
-					setLocalCommunicationId(authServerChallenge.getLocalCommunicationId());
-				
-				if(authServerChallenge.getSecretType() != null)
-					builder.setSecretType(authServerChallenge.getSecretType());
-				
-				authBuilder.setServerChallenge(builder);
-			}
-			break;
-		case SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE:
-			{
-				PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.Builder builder = PBMessage.Atom.Authentication.ServerChallengeResponseClientChallenge.newBuilder();
-				AuthServerChallengeResponseClientChallenge authServerChallengeResponseClientChallenge = auth.getAuthServerChallengeResponseClientChallenge();
-				
-				builder.setCommunicationId(authServerChallengeResponseClientChallenge.getCommunicationId()).
-						setProtectedChallenges(ByteString.copyFrom(authServerChallengeResponseClientChallenge.getProtectedChallenges()));
-								
-				authBuilder.setServerChallengeResponseClientChallenge(builder);
-			}
-			break;
+			int i = 0;
+			for (String role : authClientAuthrentication.getRoles())
+				builder.setRole(i++, role);
 		}
-		
-		
-		return authBuilder.build();
+		return builder.build();
 	}
 
 	private PBMessage.Atom.Header getHeaders(NetMessage netMessage)
@@ -506,7 +438,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 		return brkMsg;
 	}
-	
+
 	private PBMessage.Atom.DestinationType translate(DestinationType destinationType)
 	{
 		switch (destinationType)
@@ -521,7 +453,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		// TODO: Throw checked exception
 		return PBMessage.Atom.DestinationType.TOPIC;
 	}
-	
+
 	static private NetAction.DestinationType translate(PBMessage.Atom.DestinationType destinationType)
 	{
 		switch (destinationType)
@@ -532,42 +464,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			return NetAction.DestinationType.TOPIC;
 		case VIRTUAL_QUEUE:
 			return NetAction.DestinationType.VIRTUAL_QUEUE;
-		}
-		// TODO: Throw checked exception
-		return null;
-	}
-	
-	private AuthMessageType translate(pt.com.types.NetAuthentication.AuthMessageType authMessageType) {
-		switch(authMessageType)
-		{
-		case CLIENT_ACKNOWLEDGE:
-			return AuthMessageType.CLIENT_ACKNOWLEDGE;
-		case CLIENT_AUTH:
-			return AuthMessageType.CLIENT_AUTH;
-		case CLIENT_CHALLENGE_RESPONSE:
-			return AuthMessageType.CLIENT_CHALLENGE_RESPONSE;
-		case SERVER_CHALLENGE:
-			return AuthMessageType.SERVER_CHALLENGE;
-		case SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE:
-			return AuthMessageType.SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE;
-		}
-		return null;
-	}
-	
-	static private NetAuthentication.AuthMessageType translate(PBMessage.Atom.Authentication.AuthMessageType authMsgType)
-	{
-		switch(authMsgType)
-		{
-		case CLIENT_ACKNOWLEDGE:
-			return NetAuthentication.AuthMessageType.CLIENT_ACKNOWLEDGE;
-		case CLIENT_AUTH:
-			return NetAuthentication.AuthMessageType.CLIENT_AUTH;
-		case CLIENT_CHALLENGE_RESPONSE:
-			return NetAuthentication.AuthMessageType.CLIENT_CHALLENGE_RESPONSE;
-		case SERVER_CHALLENGE:
-			return NetAuthentication.AuthMessageType.SERVER_CHALLENGE;
-		case SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE:
-			return NetAuthentication.AuthMessageType.SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE;
 		}
 		// TODO: Throw checked exception
 		return null;
@@ -599,7 +495,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			return NetAction.ActionType.PONG;
 		case AUTH:
 			return NetAction.ActionType.AUTH;
-			
+
 		}
 		// TODO: Throw checked exception
 		return NetAction.ActionType.ACCEPTED;
@@ -721,7 +617,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 		return cgsUnsubs;
 	}
-	
+
 	private NetPing extractPingMessage(Action action)
 	{
 		// TODO: Verify if it's valid. Throw check exception if not
@@ -742,51 +638,20 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		return netPong;
 	}
 
-	private NetAuthentication extractAuthenticationMessage(Action action) {
-		// TODO: Verify if it's valid. Throw check exception if not
-		Atom.Authentication auth = action.getAuth();
-		
-		NetAuthentication netAuth = new NetAuthentication(translate(auth.getAuthMsgType()));
-				
-		switch(auth.getAuthMsgType())
-		{
-			case CLIENT_ACKNOWLEDGE:
-				String comId= auth.getClientAcknowledge().getCommunicationId();
-				
-				NetAuthentication.AuthClientAcknowledge clientAck = new NetAuthentication.AuthClientAcknowledge(comId);
-				netAuth.setAuthClientAcknowledge(clientAck);
-				break;
-			case CLIENT_CHALLENGE_RESPONSE:
-				ClientChallengeResponse clientChallengeResponse = auth.getClientChallengeResponse();
-				
-				NetAuthentication.AuthClientChallengeResponse clientChallengeResp = new NetAuthentication.AuthClientChallengeResponse(clientChallengeResponse.getCommunicationId(), clientChallengeResponse.getChallenge().toByteArray());
-				netAuth.setAuthClientChallengeResponse(clientChallengeResp);
-				break;
-			case CLIENT_AUTH:
-				ClientAuth clientAuth = auth.getClientAuth();
-				NetAuthentication.AuthClientAuthentication netClientAuth = new NetAuthentication.AuthClientAuthentication(clientAuth.getToken().toByteArray(), clientAuth.getLocalCommunicationId());
-				if(clientAuth.hasAuthenticationType())
-					netClientAuth.setAuthenticationType(clientAuth.getAuthenticationType());
-				if(clientAuth.hasUserId())
-					netClientAuth.setUserId(clientAuth.getUserId());
-				if(clientAuth.getRoleCount() != 0)
-					netClientAuth.setRoles(clientAuth.getRoleList());
-				netAuth.setAuthClientAuthentication(netClientAuth);
-				break;
-			case SERVER_CHALLENGE:
-				ServerChallenge serverChallenge = auth.getServerChallenge();
-				NetAuthentication.AuthServerChallenge netServerChallenge = new NetAuthentication.AuthServerChallenge(serverChallenge.getChallenge().toByteArray(), serverChallenge.getSecret().toByteArray(), serverChallenge.getCommunicationId(), serverChallenge.getLocalCommunicationId());
-				if(serverChallenge.hasSecretType())
-					netServerChallenge.setSecretType(serverChallenge.getSecretType());
-				netAuth.setAuthServerChallenge(netServerChallenge);
-				break;
-			case SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE:
-				ServerChallengeResponseClientChallenge serverChallengeResponseClientChallenge = auth.getServerChallengeResponseClientChallenge();
-				NetAuthentication.AuthServerChallengeResponseClientChallenge netASRCC = new NetAuthentication.AuthServerChallengeResponseClientChallenge(serverChallengeResponseClientChallenge.getCommunicationId(), serverChallengeResponseClientChallenge.getProtectedChallenges().toByteArray()); 
-				netAuth.setAuthServerChallengeResponseClientChallenge(netASRCC);
-				break;
-		}
-		return netAuth;
+	private NetAuthentication extractAuthenticationMessage(Action action)
+	{
+		Atom.Authentication clientAuth = action.getAuth();
+
+		NetAuthentication netClientAuth = new NetAuthentication(clientAuth.getToken().toByteArray());
+
+		if (clientAuth.hasAuthenticationType())
+			netClientAuth.setAuthenticationType(clientAuth.getAuthenticationType());
+		if (clientAuth.hasUserId())
+			netClientAuth.setUserId(clientAuth.getUserId());
+		if (clientAuth.getRoleCount() != 0)
+			netClientAuth.setRoles(clientAuth.getRoleList());
+
+		return netClientAuth;
 	}
 
 }

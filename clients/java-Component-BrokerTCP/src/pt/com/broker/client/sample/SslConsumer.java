@@ -1,46 +1,46 @@
 package pt.com.broker.client.sample;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
-import pt.com.broker.client.HostInfo;
+import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.types.NetNotification;
 import pt.com.types.NetProtocolType;
 import pt.com.types.NetSubscribe;
 import pt.com.types.NetAction.DestinationType;
 
-public class ConsumerWithFailover implements BrokerListener
+public class SslConsumer implements BrokerListener
 {
-	private static final Logger log = LoggerFactory.getLogger(Consumer.class);
+
+	private static final Logger log = LoggerFactory.getLogger(SslConsumer.class);
 	private final AtomicInteger counter = new AtomicInteger(0);
 
 	private String host;
 	private int port;
 	private DestinationType dtype;
 	private String dname;
+	private String keystoreLocation;
+	private String keystorePassword;
 
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);
 
-		ConsumerWithFailover consumer = new ConsumerWithFailover();
+		SslConsumer consumer = new SslConsumer();
 
+		consumer.host = cargs.getHost();
+		consumer.port = cargs.getPort();
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
+		consumer.keystoreLocation = cargs.getKeystoreLocation();
+		consumer.keystorePassword = cargs.getKeystorePassword();
 
-		Collection<HostInfo> hosts = new ArrayList<HostInfo>(2);
-		hosts.add( new HostInfo("localhost", 3423) );
-		hosts.add( new HostInfo("localhost", 3323) );
-		
-		BrokerClient bk = new BrokerClient(hosts, "tcp://mycompany.com/mysniffer", NetProtocolType.THRIFT);
+		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 
@@ -67,4 +67,5 @@ public class ConsumerWithFailover implements BrokerListener
 	{
 		log.info(String.format("%s -> Received Message Length: %s (%s)", counter.incrementAndGet(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
 	}
+
 }

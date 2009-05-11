@@ -25,7 +25,7 @@ public final class NetAction
 	private NetFault faultMessage;
 	private NetPing pingMessage;
 	private NetPong pongMessage;
-	private NetAuthentication authorizationMessage;
+	private NetAuthentication authenticationMessage;
 
 	public NetAction(ActionType actionType)
 	{
@@ -137,11 +137,11 @@ public final class NetAction
 		return pongMessage;
 	}
 
-	public void setAuthenticationMessage(NetAuthentication authorizationMessage) {
-		this.authorizationMessage = authorizationMessage;
+	public void setAuthenticationMessage(NetAuthentication authenticationMessage) {
+		this.authenticationMessage = authenticationMessage;
 	}
 
-	public NetAuthentication getAuthorizationMessage() {
-		return authorizationMessage;
+	public NetAuthentication getAuthenticationMessage() {
+		return authenticationMessage;
 	}
 }

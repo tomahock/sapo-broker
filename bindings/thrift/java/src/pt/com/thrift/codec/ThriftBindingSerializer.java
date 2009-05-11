@@ -13,6 +13,7 @@ import pt.com.thrift.AcknowledgeMessage;
 import pt.com.thrift.Action;
 import pt.com.thrift.ActionType;
 import pt.com.thrift.Atom;
+import pt.com.thrift.Authentication;
 import pt.com.thrift.BrokerMessage;
 import pt.com.thrift.DestinationType;
 import pt.com.thrift.Fault;
@@ -162,14 +163,13 @@ public class ThriftBindingSerializer implements BindingSerializer
 	{
 
 		NetBrokerMessage brkMsg = new NetBrokerMessage(message.getPayload());
-		
-		if(message.getTimestamp() != -1)
+
+		if (message.getTimestamp() != -1)
 			brkMsg.setTimestamp(message.getTimestamp());
-		if(message.getExpiration() != -1)
+		if (message.getExpiration() != -1)
 			brkMsg.setExpiration(message.getExpiration());
-		if(!message.getMessage_id().equals(""))
+		if (!message.getMessage_id().equals(""))
 			brkMsg.setMessageId(message.getMessage_id());
-		
 
 		return brkMsg;
 	}
@@ -185,9 +185,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		case ActionType.FAULT:
 			return NetAction.ActionType.FAULT;
 		case ActionType.PING:
-			return  NetAction.ActionType.PING;
+			return NetAction.ActionType.PING;
 		case ActionType.PONG:
-			return  NetAction.ActionType.PONG;
+			return NetAction.ActionType.PONG;
 		case ActionType.NOTIFICATION:
 			return NetAction.ActionType.NOTIFICATION;
 		case ActionType.POLL:
@@ -199,10 +199,9 @@ public class ThriftBindingSerializer implements BindingSerializer
 		case ActionType.UNSUBSCRIBE:
 			return NetAction.ActionType.UNSUBSCRIBE;
 		case ActionType.AUTH:
-			return  NetAction.ActionType.AUTH;
+			return NetAction.ActionType.AUTH;
 		}
-		// TODO: Throw checked exception
-		throw new RuntimeException("Unexpected ActionType: "+ actionType);
+		throw new RuntimeException("Unexpected ActionType: " + actionType);
 	}
 
 	static private NetAction.DestinationType translateDestinationType(int destinationType)
@@ -216,13 +215,11 @@ public class ThriftBindingSerializer implements BindingSerializer
 		case DestinationType.VIRTUAL_QUEUE:
 			return NetAction.DestinationType.VIRTUAL_QUEUE;
 		}
-		// TODO: Throw checked exception
-		return NetAction.DestinationType.TOPIC;
+		throw new RuntimeException("Unexpected detination type: " + destinationType);
 	}
 
 	private NetAccepted extractAcceptedMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		NetAccepted netAccepted = new NetAccepted(action.getAccepted().getAction_id());
 
 		return netAccepted;
@@ -231,7 +228,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 	private NetAcknowledgeMessage extractAcknowledgeMessage(Action action)
 	{
 		AcknowledgeMessage ThriftAckMsg = action.getAck_message();
-		// TODO: Verify if it's valid. Throw check exception if not
 		String destination = ThriftAckMsg.getDestination();
 		String messageId = ThriftAckMsg.getMessage_id();
 		NetAcknowledgeMessage ackMessage = new NetAcknowledgeMessage(destination, messageId);
@@ -244,7 +240,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 	private NetFault extractFaultMessage(Action action)
 	{
 		Fault fault = action.getFault();
-		// TODO: Verify if it's valid. Throw check exception if not
 		String code = fault.getFault_code();
 		String message = fault.getFault_message();
 
@@ -262,7 +257,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 	private NetNotification extractNotificationMessage(Action action)
 	{
 		Notification notification = action.getNotification();
-		// TODO: Verify if it's valid. Throw check exception if not
 
 		String dest = notification.getDestination();
 		NetAction.DestinationType destType = translateDestinationType(notification.getDestination_type());
@@ -276,7 +270,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private NetPoll extractPoolMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Poll poll = action.getPoll();
 		String destination = poll.getDestination();
 
@@ -290,7 +283,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private NetPublish extractPublishMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Publish pub = action.getPublish();
 
 		String dest = pub.getDestination();
@@ -307,7 +299,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private NetSubscribe extractSubscribeMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Subscribe subs = action.getSubscribe();
 
 		String dest = subs.getDestination();
@@ -323,7 +314,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private NetUnsubscribe extractUnsubscribeMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Unsubscribe unsubs = action.getUnsubscribe();
 
 		String dest = unsubs.getDestination();
@@ -339,7 +329,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private NetPing extractPingMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Ping ping = action.getPing();
 
 		NetPing netPing = new NetPing(ping.getAction_id());
@@ -355,10 +344,16 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 		return netPong;
 	}
-	
-	private NetAuthentication extractAuthenticationMessage(Action action) {
-		//TODO: Implement this
-		throw new RuntimeException("Implement ThriftBindingSerializer.extractAuthenticationMessage");
+
+	private NetAuthentication extractAuthenticationMessage(Action action)
+	{
+		Authentication auth = action.getAuth();
+		NetAuthentication netAuthentication = new NetAuthentication(auth.getToken());
+		netAuthentication.setAuthenticationType(auth.getAuthentication_type());
+		netAuthentication.setRoles(auth.getRoles());
+		netAuthentication.setUserId(auth.getUser_id());
+
+		return netAuthentication;
 	}
 
 	private Action getAction(NetMessage netMessage)
@@ -408,10 +403,17 @@ public class ThriftBindingSerializer implements BindingSerializer
 			ac.setPong(getPong(netMessage));
 			break;
 		case AUTH:
-			//TODO: Implement this
-			throw new RuntimeException("Implement ThriftBindingSerializer.getAction case AUTH");
+			ac.setAction_type(ActionType.AUTH);
+			ac.setAuth(getAuth(netMessage));
 		}
 		return ac;
+	}
+
+	private Authentication getAuth(NetMessage netMessage)
+	{
+		NetAuthentication netAuthentication = netMessage.getAction().getAuthenticationMessage();
+		Authentication auth = new Authentication(netAuthentication.getAuthenticationType(), netAuthentication.getToken(), netAuthentication.getUserId(), netAuthentication.getRoles());
+		return auth;
 	}
 
 	private Ping getPing(NetMessage netMessage)
@@ -578,8 +580,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 		case VIRTUAL_QUEUE:
 			return pt.com.thrift.DestinationType.VIRTUAL_QUEUE;
 		}
-		// TODO: Throw checked exception
-		return pt.com.thrift.DestinationType.TOPIC;
+		throw new RuntimeException("Unexpected detination type: " + destinationType);
 	}
 
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.concurrent.CustomExecutors;
 
-import pt.com.broker.client.NetworkConnector;
+import pt.com.broker.client.BaseNetworkConnector;
 import pt.com.broker.client.SslNetworkConnector;
 
 public abstract class ProtocolHandler<T>
@@ -35,9 +35,7 @@ public abstract class ProtocolHandler<T>
 
 	protected abstract void onIOFailure(long connectionVersion);
 
-	public abstract NetworkConnector getConnector();
-
-	public abstract SslNetworkConnector getSslConnector();
+	public abstract BaseNetworkConnector getConnector();
 
 	protected abstract void handleReceivedMessage(T request);
 
@@ -45,7 +43,7 @@ public abstract class ProtocolHandler<T>
 	{
 		public void run()
 		{
-			NetworkConnector connector = getConnector();
+			BaseNetworkConnector connector = getConnector();
 			DataInputStream in = connector.getInput();
 
 			boolean continueReading = true;
@@ -84,60 +82,7 @@ public abstract class ProtocolHandler<T>
 		}
 	};
 
-	private final Runnable sslReader = new Runnable()
-	{
-		public void run()
-		{
-			SslNetworkConnector connector = getSslConnector();
-			DataInputStream in = connector.getInput();
-
-			boolean continueReading = true;
-
-			while (continueReading)
-			{
-				try
-				{
-					T message = doDecode(in);
-					handleReceivedMessage(message);
-				}
-				catch (Throwable error)
-				{
-					final Throwable rootCause = ErrorAnalyser.findRootCause(error);
-					if (rootCause instanceof IOException)
-					{
-						if (!connector.isClosed())
-							onIOFailure(connector.getConnectionVersion());
-						continueReading = false;
-					}
-					else
-					{
-						try
-						{
-							onError(rootCause);
-						}
-						catch (Throwable t)
-						{
-							// ignore
-						}
-					}
-
-				}
-			}
-
-		}
-	};
-
-	private Throwable resetConnection(final NetworkConnector connector, Throwable error)
-	{
-		final Throwable rootCause = ErrorAnalyser.findRootCause(error);
-		if (rootCause instanceof IOException)
-		{
-			onIOFailure(connector.getConnectionVersion());
-		}
-		return rootCause;
-	}
-
-	private Throwable resetSslConnection(final SslNetworkConnector connector, Throwable error)
+	private Throwable resetConnection(final BaseNetworkConnector connector, Throwable error)
 	{
 		final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 		if (rootCause instanceof IOException)
@@ -163,26 +108,9 @@ public abstract class ProtocolHandler<T>
 		}
 	}
 
-	public void sendMessageOverSsl(final T message) throws Throwable
-	{
-		final SslNetworkConnector connector = getSslConnector();
-		if (connector == null)
-			throw new RuntimeException("SslNetworkConnector unavailable");
-		try
-		{
-			DataOutputStream out = connector.getOutput();
-			doEncode(message, out);
-		}
-		catch (Throwable error)
-		{
-			Throwable rootCause = resetSslConnection(connector, error);
-			throw rootCause;
-		}
-	}
-
 	public void sendMessage(final T message) throws Throwable
 	{
-		final NetworkConnector connector = getConnector();
+		final BaseNetworkConnector connector = getConnector();
 		try
 		{
 			DataOutputStream out = connector.getOutput();
@@ -197,9 +125,6 @@ public abstract class ProtocolHandler<T>
 
 	public final void start() throws Throwable
 	{
-		if (getSslConnector() != null)
-			exec.execute(sslReader);
-
 		exec.execute(reader);
 	}
 
@@ -208,9 +133,6 @@ public abstract class ProtocolHandler<T>
 		closed.set(true);
 
 		getConnector().close();
-		if (getSslConnector() != null)
-			getSslConnector().close();
-
 		try
 		{
 			exec.shutdown();

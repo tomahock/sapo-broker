@@ -18,10 +18,15 @@ import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
 import pt.com.broker.messaging.QueueSessionListenerList;
 import pt.com.broker.messaging.TopicSubscriberList;
+import pt.com.broker.security.authentication.ClientAuthenticationInfoVerifierFactory;
+import pt.com.common.security.ClientAuthInfo;
+import pt.com.common.security.ClientAuthenticationInfoValidationResult;
+import pt.com.common.security.ClientAuthenticationInfoValidator;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 import pt.com.types.NetAccepted;
 import pt.com.types.NetAction;
+import pt.com.types.NetAuthentication;
 import pt.com.types.NetBrokerMessage;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
@@ -239,7 +244,9 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 				handlePingMessage(session, request);
 				break;
 			case AUTH:
-				BrokerProtocolHandlerAuthenticationHelper.handleAuthMessage(session, request);
+				
+				
+				handleAuthMessage(session, request);
 				break;
 			default:
 				handleUnexpectedMessageType(session, request);
@@ -398,6 +405,34 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		action.setPongMessage(pong);
 		NetMessage message = new NetMessage(action, null);
 		ios.write(message);
+	}
+	
+	private void handleAuthMessage(IoSession session, NetMessage request)
+	{
+		NetAuthentication netAuthentication = request.getAction().getAuthenticationMessage();
+
+
+//		// Validate client credentials
+		ClientAuthInfo info = new ClientAuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType(), null);
+		ClientAuthenticationInfoValidator validator = ClientAuthenticationInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
+		ClientAuthenticationInfoValidationResult validateResult = null;
+		try
+		{
+			validateResult = validator.validate(info);
+		}
+		catch (Exception e)
+		{
+			session.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error"));
+			return;
+		}
+
+		if (!validateResult.areCredentialsValid())
+		{
+			session.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure()));
+			return;
+		}
+
+		info.setRoles(validateResult.getRoles());
 	}
 
 	private synchronized void sendAccepted(final IoSession ios, final String actionId)

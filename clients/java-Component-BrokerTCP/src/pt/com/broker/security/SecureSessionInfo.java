@@ -5,7 +5,7 @@ import javax.crypto.SecretKey;
 import pt.com.broker.client.BrokerProtocolHandler;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
-import pt.com.types.NetAuthentication.AuthMessageType;
+import pt.com.thrift.AuthMessageType;
 
 public class SecureSessionInfo
 {
@@ -21,7 +21,6 @@ public class SecureSessionInfo
 	private String secretType;
 	private byte[] serverChallenge;
 	private AuthMessageType expectedMessageType;
-	
 	
 	
 	public void setLocalCommunicationId(String localCommunicationId)
@@ -105,15 +104,6 @@ public class SecureSessionInfo
 		return secretType;
 	}
 
-	public void setExpectedMessageType(AuthMessageType expectedMessageType)
-	{
-		this.expectedMessageType = expectedMessageType;
-	}
-
-	public AuthMessageType getExpectedMessageType()
-	{
-		return expectedMessageType;
-	}
 
 	public void setServerChallenge(byte[] serverChallenge)
 	{

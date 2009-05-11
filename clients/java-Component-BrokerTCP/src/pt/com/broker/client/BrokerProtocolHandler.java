@@ -4,15 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.BrokerClient.BrokerClientState;
+import pt.com.broker.client.BaseBrokerClient.BrokerClientState;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.net.ProtocolHandler;
 import pt.com.common.security.ClientAuthInfo;
@@ -20,7 +18,6 @@ import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
 import pt.com.types.BindingSerializer;
 import pt.com.types.NetAccepted;
 import pt.com.types.NetAction;
-import pt.com.types.NetAuthentication;
 import pt.com.types.NetFault;
 import pt.com.types.NetMessage;
 import pt.com.types.NetNotification;
@@ -34,42 +31,30 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	private static final Logger log = LoggerFactory.getLogger(BrokerProtocolHandler.class);
 
-	private final BrokerClient _brokerClient;
+	private final BaseBrokerClient brokerClient;
 
 	long connectionVersion = 0;
 
-	private final NetworkConnector _connector;
-	private final SslNetworkConnector _sslConnector;
+	private final BaseNetworkConnector connector;
 
 	private BindingSerializer serializer;
 
 	private short proto_type = 1;
 
-	private ClientAuthInfo userCredentials;
-	private ClientAuthInfo providerCredentials;
-	private AuthenticationCredentialsProvider authProvider;
-
+	
 	private HostInfo hostInfo = null;
 
-	public BrokerProtocolHandler(BrokerClient brokerClient, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws UnknownHostException, IOException, Throwable
+	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
 	{
-		_brokerClient = brokerClient;
+		this.brokerClient = brokerClient;
+		this.connector = connector;
 
 		setHostInfo(brokerClient.getHostInfo());
 
-		_connector = new NetworkConnector(this, getHostInfo());
-		_connector.connect();
-		if (getHostInfo().getSslPort() != 0)
-		{
-			_sslConnector = new SslNetworkConnector(this, getHostInfo(), keystoreLocation, keystorePw);
-			_sslConnector.connect();
-		}
-		else
-			_sslConnector = null;
+		connector.connect();
 
 		try
 		{
-
 			if (ptype == null)
 				ptype = NetProtocolType.PROTOCOL_BUFFER;
 
@@ -97,30 +82,16 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			log.error("Put the binding implentation of your choice in the classpath and try again", t);
 			Shutdown.now();
 		}
-		_brokerClient.setState(BrokerClientState.OK);
+		brokerClient.setState(BrokerClientState.OK);
 	}
 
-	public BrokerProtocolHandler(BrokerClient brokerClient, String keystoreLocation, char[] keystorePw) throws Throwable
-	{
-		this(brokerClient, null, keystoreLocation, keystorePw);
-	}
-
-	public BrokerProtocolHandler(BrokerClient brokerClient) throws Throwable
-	{
-		this(brokerClient, null, null, null);
-	}
 
 	@Override
-	public NetworkConnector getConnector()
+	public BaseNetworkConnector getConnector()
 	{
-		return _connector;
+		return connector;
 	}
 
-	@Override
-	public SslNetworkConnector getSslConnector()
-	{
-		return _sslConnector;
-	}
 
 	@Override
 	public void onConnectionClose()
@@ -136,7 +107,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		log.debug("Connection Opened");
 		try
 		{
-			_brokerClient.sendSubscriptions();
+			brokerClient.sendSubscriptions();
 		}
 		catch (Throwable t)
 		{
@@ -149,36 +120,35 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		if (connectionVersion == this.connectionVersion)
 		{
 			log.warn("onIoFailure -  connectionVersion: '{}'", connectionVersion);
-			this._brokerClient.setState(BrokerClientState.FAIL);
+			this.brokerClient.setState(BrokerClientState.FAIL);
 			int count = 0;
 
 			do
 			{
-				setHostInfo(_brokerClient.getHostInfo());
+				setHostInfo(brokerClient.getHostInfo());
 
 				try
 				{
 					// Close existing connections
-					this._connector.close();
-					if (_sslConnector != null)
-						this._sslConnector.close();
+					this.connector.close();
 
 					// Try to reconnected them
-					this._brokerClient.setState(BrokerClientState.CONNECT);
+					this.brokerClient.setState(BrokerClientState.CONNECT);
 					long newConnectionVersion = ++this.connectionVersion;
-					this._connector.connect(getHostInfo(), newConnectionVersion);
-					if (_sslConnector != null)
-						this._sslConnector.connect(getHostInfo(), newConnectionVersion);
+					this.connector.connect(getHostInfo(), newConnectionVersion);
 
 					// AUTH
-					if (_brokerClient.isAuthenticationRequired())
-					{
-						this._brokerClient.setState(BrokerClientState.AUTH);
-						_brokerClient.obtainCredentials();
-						_brokerClient.authenticateClient();
-					}
+					
+					//TODO: resolve this
+					
+//					if (brokerClient.isAuthenticationRequired())
+//					{
+//						this.brokerClient.setState(BrokerClientState.AUTH);
+//						brokerClient.obtainCredentials();
+//						brokerClient.authenticateClient();
+//					}
 
-					this._brokerClient.setState(BrokerClientState.OK);
+					this.brokerClient.setState(BrokerClientState.OK);
 
 					// READ THREADS
 					start();
@@ -198,7 +168,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			}
 			while (count != MAX_NUMBER_OF_TRIES);
 
-			this._brokerClient.setState(BrokerClientState.CLOSE);
+			this.brokerClient.setState(BrokerClientState.CLOSE);
 			this.notifyAll();
 
 			onError(new Exception("Unable to reconnect after " + MAX_NUMBER_OF_TRIES + " tries!"));
@@ -209,7 +179,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public void onError(Throwable error)
 	{
-		_brokerClient.getErrorListener().onError(error);
+		brokerClient.getErrorListener().onError(error);
 	}
 
 	@Override
@@ -230,13 +200,13 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			}
 			else
 			{
-				_brokerClient.notifyListener(notification);
+				brokerClient.notifyListener(notification);
 			}
 			break;
 		case PONG:
 			try
 			{
-				_brokerClient.feedStatusConsumer(action.getPongMessage());
+				brokerClient.feedStatusConsumer(action.getPongMessage());
 			}
 			catch (Throwable e)
 			{
@@ -246,15 +216,11 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			break;
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
-			_brokerClient.getErrorListener().onFault(fault);
+			brokerClient.getErrorListener().onFault(fault);
 			break;
 		case ACCEPTED:
 			NetAccepted accepted = action.getAcceptedMessage();
 			PendingAcceptRequestsManager.acceptedMessageReceived(accepted.getActionId());
-			break;
-		case AUTH:
-			NetAuthentication auth = action.getAuthorizationMessage();
-			ClientBrokerProtocolHandlerAuthenticationHelper.handleAuthMessage(this, auth);
 			break;
 		default:
 			throw new RuntimeException("Unexepected ActionType in received message. ActionType: " + action.getActionType());
@@ -299,24 +265,24 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public void sendMessage(final NetMessage message) throws Throwable
 	{
-		if (_brokerClient.getState() == BrokerClientState.CLOSE)
+		if (brokerClient.getState() == BrokerClientState.CLOSE)
 		{
 			onError(new Exception("Message cannot be sent because clien was closed"));
 			return;
 		}
 
-		if ((_brokerClient.getState() == BrokerClientState.OK) || ((_brokerClient.getState() == BrokerClientState.AUTH) && message.getAction().getActionType() == ActionType.AUTH))
+		if ((brokerClient.getState() == BrokerClientState.OK) || ((brokerClient.getState() == BrokerClientState.AUTH) && message.getAction().getActionType() == ActionType.AUTH))
 		{
 			super.sendMessage(message);
 			return;
 		}
 		synchronized (this)
 		{
-			while ((_brokerClient.getState() != BrokerClientState.OK) && (_brokerClient.getState() != BrokerClientState.CLOSE))
+			while ((brokerClient.getState() != BrokerClientState.OK) && (brokerClient.getState() != BrokerClientState.CLOSE))
 			{
 				this.wait();
 			}
-			if ((_brokerClient.getState() == BrokerClientState.OK))
+			if ((brokerClient.getState() == BrokerClientState.OK))
 			{
 				super.sendMessage(message);
 				return;
@@ -326,50 +292,10 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			log.error("Message Lost due to failure of agent!");
 		}
 	}
-
-	@Override
-	public void sendMessageOverSsl(NetMessage message) throws Throwable
+	
+	public BaseBrokerClient getBrokerClient()
 	{
-		if (_brokerClient.getState() == BrokerClientState.CLOSE)
-		{
-			onError(new Exception("Message cannot be sent because clien was closed"));
-			return;
-		}
-
-		if ((_brokerClient.getState() == BrokerClientState.OK) || ((_brokerClient.getState() == BrokerClientState.AUTH) && message.getAction().getActionType() == ActionType.AUTH))
-		{
-			super.sendMessageOverSsl(message);
-			return;
-		}
-		synchronized (this)
-		{
-			while ((_brokerClient.getState() != BrokerClientState.OK) && (_brokerClient.getState() != BrokerClientState.CLOSE))
-			{
-				this.wait();
-			}
-			if ((_brokerClient.getState() == BrokerClientState.OK))
-			{
-				super.sendMessageOverSsl(message);
-				return;
-			}
-			// BrokerCliet state is CLOSE. onFailure already invoked. Notify message lost
-			onError(new Exception("Message Lost due to failure of agent"));
-			log.error("Message Lost due to failure of agent!");
-		}
-	}
-
-	public void setCredentials(ClientAuthInfo userCredentials, ClientAuthInfo providerCredentials, AuthenticationCredentialsProvider authProvider)
-	{
-		this.userCredentials = userCredentials;
-		this.providerCredentials = providerCredentials;
-		this.authProvider = authProvider;
-
-		// TODO: Resolve the credentials renovation issue
-	}
-
-	public BrokerClient getBrokerClient()
-	{
-		return _brokerClient;
+		return brokerClient;
 	}
 
 	public void setHostInfo(HostInfo hostInfo)

@@ -27,4 +27,4 @@ java -server \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
 -cp $classpath \
-pt.com.broker.client.sample.AuthenticatedConsumer -u 1 -n /test/foo -d TOPIC -s 3390 -u 1 -L [keystoreLocation] -W [keystorePassword] -S https://services.sapo.pt/sts/ -U [STS username] -P [STS password]
+pt.com.broker.client.sample.SslConsumer -n /test/foo -d TOPIC -p 3390 -L [keystoreLocation] -W [keystorePassword]
