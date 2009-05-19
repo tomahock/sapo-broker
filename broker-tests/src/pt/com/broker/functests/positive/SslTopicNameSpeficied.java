@@ -11,6 +11,7 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 	
 	public SslTopicNameSpeficied(String testName)
 	{
+		super(testName);
 		//TODO: save these params in configuration
 		String keyStoreLocation = "/home/lcosta/Work/SSL/clientKeystore";
 		String keystorePassword = "changeit";

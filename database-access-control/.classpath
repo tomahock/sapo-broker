@@ -5,10 +5,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-BrokerV3-CommonLibs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-BrokerV3-CommTypes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-BrokerV3-GCS"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ProtoBufCodec"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/java-Component-BrokerTCPV3"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ThriftCodec"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-XmlCodec"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-BrokerV3-SapoSTS"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

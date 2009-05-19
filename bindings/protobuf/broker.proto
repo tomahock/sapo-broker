@@ -73,9 +73,6 @@ message Atom
 		required DestinationType destination_type = 3;
 	}
 
-
-	
-
 	message Notification
 	{
 		required string destination = 1;

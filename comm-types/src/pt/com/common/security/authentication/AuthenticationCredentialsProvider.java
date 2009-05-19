@@ -6,4 +6,5 @@ public interface AuthenticationCredentialsProvider
 {
 	ClientAuthInfo getCredentials(ClientAuthInfo clientAuthInfo) throws Exception;
 	void init();
+	String getAuthenticationType();
 }

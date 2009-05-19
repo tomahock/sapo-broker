@@ -18,6 +18,8 @@ import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
 import pt.com.broker.messaging.QueueSessionListenerList;
 import pt.com.broker.messaging.TopicSubscriberList;
+import pt.com.broker.security.Session;
+import pt.com.broker.security.SessionProperties;
 import pt.com.broker.security.authentication.ClientAuthenticationInfoVerifierFactory;
 import pt.com.common.security.ClientAuthInfo;
 import pt.com.common.security.ClientAuthenticationInfoValidationResult;
@@ -244,8 +246,6 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 				handlePingMessage(session, request);
 				break;
 			case AUTH:
-				
-				
 				handleAuthMessage(session, request);
 				break;
 			default:
@@ -413,7 +413,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 
 //		// Validate client credentials
-		ClientAuthInfo info = new ClientAuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType(), null);
+		ClientAuthInfo info = new ClientAuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType());
 		ClientAuthenticationInfoValidator validator = ClientAuthenticationInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
 		ClientAuthenticationInfoValidationResult validateResult = null;
 		try
@@ -432,7 +432,13 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			return;
 		}
 
-		info.setRoles(validateResult.getRoles());
+//		info.setRoles(validateResult.getRoles());
+		
+		Session plainSession = (Session) session.getAttribute("BROKER_SESSION_PROPERTIES");;
+		
+		SessionProperties plainSessionProps = plainSession.getSessionProperties();
+		plainSessionProps.setRoles(validateResult.getRoles());
+		plainSession.updateAcl();
 	}
 
 	private synchronized void sendAccepted(final IoSession ios, final String actionId)

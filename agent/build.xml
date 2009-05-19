@@ -38,6 +38,7 @@
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../sapo-sts/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../database-access-control/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="clean" />
 	</target>
 
@@ -70,6 +71,7 @@
 			<property name="project.location" value="../bindings/xml/java"/> 
 		</ant>
 		<ant antfile="../sapo-sts/build.xml" inheritAll="false" target="package" />
+		<ant antfile="../database-access-control/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package" />
@@ -93,6 +95,7 @@
 		<copy file="../bindings/thrift/java/dist/sapo-broker-thriftbinding.jar" todir="${target-dir}/lib" />
 		<copy file="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP.jar" todir="${target-dir}/lib" />
 		<copy file="../sapo-sts/dist/sapo-broker-saposts.jar" todir="${target-dir}/lib" />
+		<copy file="../database-access-control/dist/sapo-broker-dbAccessControl.jar" todir="${target-dir}/lib" />
 		<copy file="../broker-tests/dist/sapo-broker-tests.jar" todir="${target-dir}/lib" />
 	
 		<copy todir="${target-dir}/doc">

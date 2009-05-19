@@ -74,7 +74,7 @@ public class SapoSTSAuthenticationCredentialsProvider implements AuthenticationC
 
 			token = documentElement.getTextContent().getBytes(Charset.forName("UTF-8"));
 
-			ClientAuthInfo aui = new ClientAuthInfo(clientAuthInfo.getUserId(), clientAuthInfo.getRoles(), token, clientAuthInfo.getUserAuthenticationType(), clientAuthInfo.getPassword());
+			ClientAuthInfo aui = new ClientAuthInfo(clientAuthInfo.getUserId(), clientAuthInfo.getRoles(), token, clientAuthInfo.getUserAuthenticationType());
 			return aui;
 		}
 		else
@@ -101,7 +101,6 @@ public class SapoSTSAuthenticationCredentialsProvider implements AuthenticationC
 	private String getConnectionUrl(ClientAuthInfo clientAuthInfo)
 	{
 		String sapoSTSgetTokenUrl = "https://services.sapo.pt/STS/";
-		//String sapoSTSgetTokenUrl = "http://ESB/STS/";
 		
 		Parameters parameters = SapoSTSAuthenticationParamsProvider.getSTSParameters();
 		if( parameters != null && parameters.getLocation() != null )
@@ -116,7 +115,7 @@ public class SapoSTSAuthenticationCredentialsProvider implements AuthenticationC
 		sb.append("&");
 
 		sb.append("ESBPassword=");
-		sb.append(clientAuthInfo.getPassword());
+		sb.append(new String( clientAuthInfo.getToken() ));
 		sb.append("&");
 
 		sb.append("ESBTokenTimeToLive=");
@@ -130,6 +129,12 @@ public class SapoSTSAuthenticationCredentialsProvider implements AuthenticationC
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public String getAuthenticationType()
+	{
+		return "SapoSTS";
 	}
 
 }

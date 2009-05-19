@@ -20,11 +20,8 @@ public final class SslBrokerClient extends BaseBrokerClient
 	private static final Logger log = LoggerFactory.getLogger(SslBrokerClient.class);
 	
 	private boolean requiresAuthentication = false;
-	protected final Object authMutex = new Object();
 	
-	protected AuthenticationCredentialsProvider authProvider;
 	protected ClientAuthInfo userCredentials;
-	protected ClientAuthInfo providerCredentials;
 	
 	private String keystoreLocation = null;
 	private char[] keystorePass = null;
@@ -96,44 +93,25 @@ public final class SslBrokerClient extends BaseBrokerClient
 		init();
 	}
 	
-	public void setAuthenticationCredentials(AuthenticationCredentialsProvider authProvider, ClientAuthInfo userCredentials) throws Exception
+	public void setAuthenticationCredentials(ClientAuthInfo userCredentials)
 	{
-		synchronized (authMutex)
-		{
-			this.authProvider = authProvider;
-			this.userCredentials = userCredentials;
-			obtainCredentials();
-		}
-	}
-	
-	public void obtainCredentials() throws Exception
-	{
-		synchronized (authMutex)
-		{
-			if (authProvider == null)
-				return;
-			if (userCredentials == null)
-				return;
-			providerCredentials = authProvider.getCredentials(userCredentials);
-		}
+		this.userCredentials = userCredentials;
 	}
 
+	
 	public void authenticateClient() throws Throwable
 	{
-		if (providerCredentials == null)
-			return;
-
 		this.requiresAuthentication = true;
 
-		NetAuthentication clientAuth = new NetAuthentication(providerCredentials.getToken());
-		if (providerCredentials.getRoles() != null && providerCredentials.getRoles().size() != 0)
-			clientAuth.setRoles(providerCredentials.getRoles());
+		NetAuthentication clientAuth = new NetAuthentication(userCredentials.getToken());
+		if (userCredentials.getRoles() != null && userCredentials.getRoles().size() != 0)
+			clientAuth.setRoles(userCredentials.getRoles());
 
-		if (providerCredentials.getUserAuthenticationType() != null)
-			clientAuth.setAuthenticationType(providerCredentials.getUserAuthenticationType());
+		if (userCredentials.getUserAuthenticationType() != null)
+			clientAuth.setAuthenticationType(userCredentials.getUserAuthenticationType());
 
-		if (providerCredentials.getUserId() != null)
-			clientAuth.setUserId(providerCredentials.getUserId());
+		if (userCredentials.getUserId() != null)
+			clientAuth.setUserId(userCredentials.getUserId());
 
 		NetAction action = new NetAction(ActionType.AUTH);
 		action.setAuthenticationMessage(clientAuth);

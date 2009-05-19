@@ -93,14 +93,14 @@ public class Main
 
 //		// Positive Tests
 		
-		NetProtocolType[] protoTypes = new NetProtocolType[]{NetProtocolType.SOAP/*, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT*/};
+		NetProtocolType[] protoTypes = new NetProtocolType[]{NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT};
 		
 		for(NetProtocolType protoType : protoTypes)
 		{
 		
 			System.out.println(String.format(" ---> Using %s encoding protocol", protoType));
 			
-			BrokerTest.setDefaultimeout(6*1000);
+			BrokerTest.setDefaultimeout(12*1000);
 			BrokerTest.setDefaultEncodingProtocolType(protoType);
 			BrokerTest.setDefaultDataLenght(1024);
 			
@@ -111,7 +111,6 @@ public class Main
 //			new TopicNameSpecified().run(numberOfTests);
 //			new TopicPubSubWithActionId().run(numberOfTests);
 //			new TopicNameWildcard().run(numberOfTests);
-//			new SslTopicNameSpeficied().run(numberOfTests);
 //
 //			new QueueTest().run(numberOfTests);
 //			new PollTest().run(numberOfTests);
@@ -139,6 +138,9 @@ public class Main
 //			new VirtualQueueTopicNameWildcard().run(numberOfTests);
 //			new VirtualQueueNameSpecifiedRemote().run(numberOfTests);
 //			new VirtualQueueTopicNameWildcardRemote().run(numberOfTests);
+//			new SslTopicNameSpeficied().run(numberOfTests);			
+			new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests);
+			new DBRolesAuthenticationTest().run(numberOfTests);
 //		
 //			//Negative Tests
 //		
@@ -158,8 +160,8 @@ public class Main
 //			new InvalidDestinationName().run(numberOfTests);
 //			new InvalidDestinationType().run(numberOfTests);
 //			new InvalidDestinationNameInPublishTest().run(numberOfTests);
-			new AccessDeniedTest().run(numberOfTests);
-			new AuthenticationFailedTest().run(numberOfTests);
+//			new AccessDeniedTest().run(numberOfTests);
+//			new AuthenticationFailedTest().run(numberOfTests);
 		
 		}
 		

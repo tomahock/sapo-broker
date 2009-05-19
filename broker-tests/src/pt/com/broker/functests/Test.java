@@ -70,7 +70,7 @@ public abstract class Test
 			return true;
 		}
 		try
-		{
+		{	
 			log.info("Building test - " + getName());
 			build();
 

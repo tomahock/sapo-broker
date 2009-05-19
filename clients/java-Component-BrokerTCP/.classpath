@@ -7,6 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ProtoBufCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ThriftCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-XmlCodec"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-Broker-SapoSTS"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-BrokerV3-SapoSTS"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

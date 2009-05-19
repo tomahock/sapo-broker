@@ -26,10 +26,10 @@ public interface CliArgs
 	String getSTSLocation();
 	
 	@Option(shortName = "U", defaultValue = "")
-	String getSTSUsername();
+	String getUsername();
 	
 	@Option(shortName = "P", defaultValue = "")
-	String getSTSPassword();
+	String getUserPassword();
 	
 	
 	@Option(shortName = "l", defaultValue = "1000")

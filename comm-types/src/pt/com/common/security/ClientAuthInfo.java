@@ -7,20 +7,18 @@ public class ClientAuthInfo {
 	private List<String> roles;
 	private byte[] token;
 	private String userAuthenticationType;
-	private String password;
 	
 	public ClientAuthInfo(String userId, String password)
 	{
-		this(userId, null, null, null, password);
+		this(userId, null, password.getBytes(), null);
 	}
 	
-	public ClientAuthInfo(String userId, List<String> roles, byte[] token, String userAuthenticationType, String password)
+	public ClientAuthInfo(String userId, List<String> roles, byte[] token, String userAuthenticationType)
 	{
 		this.userId = userId;
 		this.roles = roles;
 		this.token = token;
 		this.userAuthenticationType = userAuthenticationType;
-		this.password = password;
 	}
 	
 	public void setUserId(String userId) {
@@ -28,9 +26,6 @@ public class ClientAuthInfo {
 	}
 	public String getUserId() {
 		return userId;
-	}
-	public String getPassword() {
-		return password;
 	}
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
