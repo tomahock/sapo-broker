@@ -10,6 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.security.Session;
 import pt.com.broker.security.SessionProperties;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPoll;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.global.Agents;
 import pt.com.gcs.conf.global.Authorization;
@@ -22,11 +27,6 @@ import pt.com.gcs.conf.global.Condition.Address;
 import pt.com.gcs.conf.global.Policies.Policy;
 import pt.com.gcs.conf.global.Policies.Policy.Acl.Entry;
 import pt.com.gcs.messaging.DestinationMatcher;
-import pt.com.types.NetMessage;
-import pt.com.types.NetPoll;
-import pt.com.types.NetPublish;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetAction.DestinationType;
 
 public class AccessControl
 {
@@ -93,7 +93,7 @@ public class AccessControl
 	{
 		granted = new ValidationResult();
 		granted.accessGranted = true;
-		
+
 		refused_authRequired = new ValidationResult();
 		refused_authRequired.accessGranted = false;
 		refused_authRequired.reasonForRejection = "Authentication Required!";
@@ -121,7 +121,8 @@ public class AccessControl
 			return;
 		}
 
-		// There are security policies. Determine if there is one for "this" agent.
+		// There are security policies. Determine if there is one for "this"
+		// agent.
 
 		Agents agents = securityPolicy.getAgents();
 		Agent agent = null;
@@ -171,7 +172,7 @@ public class AccessControl
 					addPolicy(policies, policy.getInherits());
 				}
 				break;
-			}			
+			}
 		}
 
 	}
@@ -331,7 +332,7 @@ public class AccessControl
 			return granted;
 
 		SessionProperties sessionProperties = null;
-		if(session != null)
+		if (session != null)
 			sessionProperties = session.getSessionProperties();
 
 		for (AclEntry entry : sessionAcl)
@@ -342,7 +343,7 @@ public class AccessControl
 				{
 					for (AclPredicate pred : entry.getConditions())
 					{
-						if(session == null)
+						if (session == null)
 						{
 							return refused_authRequired;
 						}
@@ -367,7 +368,7 @@ public class AccessControl
 
 	private static boolean match(String destinationName, String destination)
 	{
-		boolean result = DestinationMatcher.match(destinationName, destination); 
+		boolean result = DestinationMatcher.match(destinationName, destination);
 		return result;
 	}
 

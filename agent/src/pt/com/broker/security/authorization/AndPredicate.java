@@ -4,31 +4,35 @@ import java.util.List;
 
 import pt.com.broker.security.SessionProperties;
 
-public class AndPredicate implements AclPredicate {
+public class AndPredicate implements AclPredicate
+{
 
 	private List<AclPredicate> predicates;
-	
+
 	public AndPredicate(List<AclPredicate> predicates)
 	{
 		this.predicates = predicates;
 	}
-	
+
 	@Override
-	public boolean match(SessionProperties properties) {
-		for(AclPredicate pred : predicates)
+	public boolean match(SessionProperties properties)
+	{
+		for (AclPredicate pred : predicates)
 		{
-			if(!pred.match(properties))
+			if (!pred.match(properties))
 				return false;
 		}
 		return true;
 	}
 
-	public List<AclPredicate> getPredicates() {
+	public List<AclPredicate> getPredicates()
+	{
 		return predicates;
 	}
-	
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "AndPredicate";
 	}
 

@@ -4,13 +4,13 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetAcknowledgeMessage;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetPublish;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageType;
-import pt.com.types.NetAcknowledgeMessage;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetPublish;
 
 public class BrokerProducer
 {
@@ -38,7 +38,8 @@ public class BrokerProducer
 			if (StringUtils.isNotBlank(brkMessage.getMessageId()))
 				message.setMessageId(brkMessage.getMessageId());
 
-			if (StringUtils.isNotBlank(publish.getDestination())){
+			if (StringUtils.isNotBlank(publish.getDestination()))
+			{
 				message.setDestination(publish.getDestination());
 				message.setPublishDestination(publish.getDestination());
 			}
@@ -50,7 +51,7 @@ public class BrokerProducer
 				message.setExpiration(brkMessage.getExpiration());
 				System.out.println("BrokerProducer.prepareForSending() - setExpiration");
 			}
-			
+
 			message.setContent(brkMessage);
 
 			if (log.isDebugEnabled())

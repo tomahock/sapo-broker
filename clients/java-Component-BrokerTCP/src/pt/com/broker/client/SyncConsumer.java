@@ -4,7 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import pt.com.types.NetNotification;
+import pt.com.broker.types.NetNotification;
 
 public class SyncConsumer
 {

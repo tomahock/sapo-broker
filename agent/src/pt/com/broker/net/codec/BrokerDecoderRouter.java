@@ -4,7 +4,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.types.SimpleFramingDecoderV2;
+import pt.com.broker.types.SimpleFramingDecoderV2;
 
 public class BrokerDecoderRouter extends SimpleFramingDecoderV2
 {

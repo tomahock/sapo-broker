@@ -269,7 +269,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Parameter.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Parameter.newBuilder()
 				private Builder()
 				{
 				}
@@ -604,7 +605,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Header.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Header.newBuilder()
 				private Builder()
 				{
 				}
@@ -1013,7 +1015,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.BrokerMessage.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.BrokerMessage.newBuilder()
 				private Builder()
 				{
 				}
@@ -1481,7 +1484,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Publish.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Publish.newBuilder()
 				private Builder()
 				{
 				}
@@ -1672,7 +1676,8 @@ public final class BinaryMessage
 					return this;
 				}
 
-				// required .sapo_broker.Atom.DestinationType destination_type = 2;
+				// required .sapo_broker.Atom.DestinationType destination_type =
+				// 2;
 				public boolean hasDestinationType()
 				{
 					return result.hasDestinationType();
@@ -1935,7 +1940,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Poll.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Poll.newBuilder()
 				private Builder()
 				{
 				}
@@ -2263,7 +2269,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Accepted.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Accepted.newBuilder()
 				private Builder()
 				{
 				}
@@ -2603,7 +2610,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.AcknowledgeMessage.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.AcknowledgeMessage.newBuilder()
 				private Builder()
 				{
 				}
@@ -3011,7 +3019,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Subscribe.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Subscribe.newBuilder()
 				private Builder()
 				{
 				}
@@ -3212,7 +3221,8 @@ public final class BinaryMessage
 					return this;
 				}
 
-				// required .sapo_broker.Atom.DestinationType destination_type = 3;
+				// required .sapo_broker.Atom.DestinationType destination_type =
+				// 3;
 				public boolean hasDestinationType()
 				{
 					return result.hasDestinationType();
@@ -3428,7 +3438,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Unsubscribe.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Unsubscribe.newBuilder()
 				private Builder()
 				{
 				}
@@ -3629,7 +3640,8 @@ public final class BinaryMessage
 					return this;
 				}
 
-				// required .sapo_broker.Atom.DestinationType destination_type = 3;
+				// required .sapo_broker.Atom.DestinationType destination_type =
+				// 3;
 				public boolean hasDestinationType()
 				{
 					return result.hasDestinationType();
@@ -3873,7 +3885,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Notification.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Notification.newBuilder()
 				private Builder()
 				{
 				}
@@ -4089,7 +4102,8 @@ public final class BinaryMessage
 					return this;
 				}
 
-				// required .sapo_broker.Atom.DestinationType destination_type = 3;
+				// required .sapo_broker.Atom.DestinationType destination_type =
+				// 3;
 				public boolean hasDestinationType()
 				{
 					return result.hasDestinationType();
@@ -4373,7 +4387,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Fault.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Fault.newBuilder()
 				private Builder()
 				{
 				}
@@ -5060,7 +5075,8 @@ public final class BinaryMessage
 
 			public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 			{
-				// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.Action.newBuilder()
+				// Construct using
+				// pt.com.gcs.messaging.BinaryMessage.Atom.Action.newBuilder()
 				private Builder()
 				{
 				}
@@ -5451,7 +5467,8 @@ public final class BinaryMessage
 					return this;
 				}
 
-				// optional .sapo_broker.Atom.AcknowledgeMessage ack_message = 4;
+				// optional .sapo_broker.Atom.AcknowledgeMessage ack_message =
+				// 4;
 				public boolean hasAckMessage()
 				{
 					return result.hasAckMessage();
@@ -5850,7 +5867,8 @@ public final class BinaryMessage
 
 		public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder>
 		{
-			// Construct using pt.com.gcs.messaging.BinaryMessage.Atom.newBuilder()
+			// Construct using
+			// pt.com.gcs.messaging.BinaryMessage.Atom.newBuilder()
 			private Builder()
 			{
 			}

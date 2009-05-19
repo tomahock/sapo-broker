@@ -11,7 +11,8 @@ import org.apache.mina.core.session.IoSession;
 
 import pt.com.gcs.conf.global.ChannelType;
 
-public class SessionProperties extends HashMap<String, Object> {
+public class SessionProperties extends HashMap<String, Object>
+{
 	private static final long serialVersionUID = -5044861586951252094L;
 
 	private InetAddress address = null;
@@ -19,13 +20,12 @@ public class SessionProperties extends HashMap<String, Object> {
 	private List<ChannelType> channelTypes = null;
 	private SecretKey key = null;
 
-	
 	public SessionProperties(IoSession session)
 	{
 		address = ((InetSocketAddress) session.getRemoteAddress()).getAddress();
 	}
-	
-//	InetSocketAddress
+
+	// InetSocketAddress
 	public void setAddress(InetAddress address)
 	{
 		this.address = address;
@@ -65,5 +65,5 @@ public class SessionProperties extends HashMap<String, Object> {
 	{
 		return key;
 	}
-	
+
 }

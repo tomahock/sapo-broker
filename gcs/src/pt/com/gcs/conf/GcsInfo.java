@@ -164,64 +164,64 @@ public class GcsInfo
 	}
 
 	// Access Control related methods
-	
+
 	public static boolean useAccessControl()
 	{
 		return getSecurityPolicies() != null;
 	}
-	
+
 	public static BrokerSecurityPolicy getSecurityPolicies()
 	{
 		return GlobalConfig.getSecurityPolicies();
 	}
-	
+
 	// SSL related methods
 
 	public static boolean createSSLInterface()
 	{
 		return instance.conf.getSsl() != null;
 	}
-	
+
 	public static int getBrokerSSLPort()
 	{
 		Ssl ssl = instance.conf.getSsl();
-		if(ssl == null){
+		if (ssl == null)
+		{
 			return -1;
 		}
-			
+
 		int sslPort = ssl.getBrokerSslPort();
 		return sslPort;
 	}
-	
+
 	public static String getKeystoreLocation()
 	{
-		if( instance.conf.getSsl() != null)
+		if (instance.conf.getSsl() != null)
 			return instance.conf.getSsl().getKeystoreLocation();
 		return null;
 	}
 
 	public static String getKeystorePassword()
 	{
-		if( instance.conf.getSsl() != null)
+		if (instance.conf.getSsl() != null)
 			return instance.conf.getSsl().getKeystorePassword();
 		return null;
 	}
-	
+
 	public static String getKeyPassword()
 	{
-		if( instance.conf.getSsl() != null)
+		if (instance.conf.getSsl() != null)
 			return instance.conf.getSsl().getKeyPassword();
 		return null;
 	}
-	
+
 	// STS related properties
-	
-	
+
 	public static Map<String, ProviderInfo> getAuthenticationProviders()
 	{
 		return GlobalConfig.getAuthenticationProviders();
 	}
-	
+
 	public static Map<String, ProviderInfo> getCredentialValidatorProviders()
 	{
 		return GlobalConfig.getCredentialValidatorProviders();

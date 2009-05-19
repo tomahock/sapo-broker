@@ -1,4 +1,4 @@
-namespace java pt.com.thrift
+namespace java pt.com.broker.codec.thrift
 
 enum DestinationType
 {

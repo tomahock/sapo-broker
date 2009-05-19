@@ -2,7 +2,7 @@ package pt.com.broker.messaging;
 
 import org.apache.mina.core.session.IoSession;
 
-import pt.com.types.NetPoll;
+import pt.com.broker.types.NetPoll;
 
 public class QueuePoller implements Runnable
 {

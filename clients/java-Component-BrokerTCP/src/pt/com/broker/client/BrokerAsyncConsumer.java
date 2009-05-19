@@ -4,9 +4,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.types.NetAction;
-import pt.com.types.NetNotification;
-import pt.com.types.NetSubscribe;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetSubscribe;
 
 public class BrokerAsyncConsumer
 {
@@ -37,14 +37,17 @@ public class BrokerAsyncConsumer
 	public boolean deliver(NetNotification msg)
 	{
 		String toMatch = null;
-		if(msg.getDestinationType() != NetAction.DestinationType.TOPIC)
+		if (msg.getDestinationType() != NetAction.DestinationType.TOPIC)
 		{
-			// VIRTUAL QUEUES destination is the same as the subscription but destination is   
+			// VIRTUAL QUEUES destination is the same as the subscription but
+			// destination is
 			toMatch = msg.getSubscription();
-		} else {
+		}
+		else
+		{
 			toMatch = msg.getDestination();
 		}
-	
+
 		Matcher m = _subscriptionName.matcher(toMatch);
 		if (m.matches())
 		{

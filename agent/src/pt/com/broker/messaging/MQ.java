@@ -4,8 +4,8 @@ import java.nio.charset.Charset;
 
 import org.caudexorigo.text.StringUtils;
 
-import pt.com.types.NetMessage;
-import pt.com.xml.SoapEnvelope;
+import pt.com.broker.codec.xml.SoapEnvelope;
+import pt.com.broker.types.NetMessage;
 
 public class MQ
 {
@@ -53,7 +53,8 @@ public class MQ
 				if (StringUtils.isNotBlank(soap.header.wsaFrom.address))
 					return soap.header.wsaFrom.address;
 
-		// return "broker://agent/" + pt.com.gcs.conf.GcsInfo.getAgentName() + "/";
+		// return "broker://agent/" + pt.com.gcs.conf.GcsInfo.getAgentName() +
+		// "/";
 		return null;
 	}
 

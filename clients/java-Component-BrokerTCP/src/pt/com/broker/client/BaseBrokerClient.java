@@ -15,42 +15,43 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.CredentialsProvider;
+import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.utils.CircularContainer;
 import pt.com.broker.security.SecureSessionInfo;
-import pt.com.common.security.ClientAuthInfo;
-import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
-import pt.com.types.NetAcknowledgeMessage;
-import pt.com.types.NetAction;
-import pt.com.types.NetAuthentication;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetMessage;
-import pt.com.types.NetNotification;
-import pt.com.types.NetPing;
-import pt.com.types.NetPoll;
-import pt.com.types.NetPong;
-import pt.com.types.NetProtocolType;
-import pt.com.types.NetPublish;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetUnsubscribe;
-import pt.com.types.NetAction.ActionType;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetAcknowledgeMessage;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAuthentication;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetPing;
+import pt.com.broker.types.NetPoll;
+import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetUnsubscribe;
+import pt.com.broker.types.NetAction.ActionType;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public abstract class BaseBrokerClient
 {
-	public enum BrokerClientState{
+	public enum BrokerClientState
+	{
 		UNSTARTED, CONNECT, OK, AUTH, FAIL, CLOSE;
 	}
-	
-	public interface BrokerClientStateOk{
+
+	public interface BrokerClientStateOk
+	{
 		void onOk(BrokerClient brokerClient);
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(BaseBrokerClient.class);
 
-	
 	protected String _appName;
 	protected final ConcurrentMap<String, BrokerListener> _async_listeners = new ConcurrentHashMap<String, BrokerListener>();
 	protected final BlockingQueue<NetPong> _bstatus = new LinkedBlockingQueue<NetPong>();
@@ -58,13 +59,14 @@ public abstract class BaseBrokerClient
 
 	private NetProtocolType protocolType;
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
-	
+
 	protected BrokerProtocolHandler _netHandler;
 	protected CircularContainer<HostInfo> hosts;
 	protected SecureSessionInfo secureSessionInfo;
-	
-	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter(){
-		public void onFault(pt.com.types.NetFault fault)
+
+	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
+	{
+		public void onFault(pt.com.broker.types.NetFault fault)
 		{
 			log.error("Fault message received");
 			log.error("	Fault code: '{}'", fault.getCode());
@@ -72,28 +74,28 @@ public abstract class BaseBrokerClient
 			log.error("	Fault action identifier: '{}'", fault.getActionId());
 			log.error("	Fault detail: '{}'", fault.getDetail());
 		}
+
 		public void onError(Throwable throwable)
 		{
 			log.error("An error occurred", throwable);
 		}
 	};
 
-	protected BrokerErrorListenter errorListener; 
-	
+	protected BrokerErrorListenter errorListener;
+
 	// Should be called by inherit types
 	protected void init() throws Throwable
 	{
 		state = BrokerClientState.CONNECT;
-		setErrorListener( getDefaultErrorListener() );
+		setErrorListener(getDefaultErrorListener());
 		_netHandler = getBrokerProtocolHandler();
 		getNetHandler().start();
 		state = BrokerClientState.OK;
 	}
-	
-	
+
 	public BaseBrokerClient(String host, int portNumber) throws Throwable
 	{
-		this(host, portNumber,"BrokerClient", NetProtocolType.PROTOCOL_BUFFER);
+		this(host, portNumber, "BrokerClient", NetProtocolType.PROTOCOL_BUFFER);
 	}
 
 	public BaseBrokerClient(String host, int portNumber, String appName) throws Throwable
@@ -113,19 +115,19 @@ public abstract class BaseBrokerClient
 	{
 		this(hosts, "BrokerClient");
 	}
-	
+
 	public BaseBrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable
 	{
 		this(hosts, appName, NetProtocolType.PROTOCOL_BUFFER);
 	}
-	
+
 	public BaseBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable
 	{
 		this.hosts = new CircularContainer<HostInfo>(hosts);
 		_appName = appName;
 		protocolType = ptype;
 	}
-	
+
 	protected abstract BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable;
 
 	public void acknowledge(NetNotification notification, AcceptRequest acceptRequest) throws Throwable
@@ -134,19 +136,19 @@ public abstract class BaseBrokerClient
 		if ((notification != null) && (notification.getMessage() != null) && (StringUtils.isNotBlank(notification.getMessage().getMessageId())))
 		{
 			NetBrokerMessage brkMsg = notification.getMessage();
-			
+
 			String ackDestination = null;
-			if(notification.getDestinationType() != DestinationType.TOPIC)
+			if (notification.getDestinationType() != DestinationType.TOPIC)
 			{
 				ackDestination = notification.getSubscription();
 			}
-			else 
+			else
 			{
 				ackDestination = notification.getDestination();
 			}
-			
+
 			NetAcknowledgeMessage ackMsg = new NetAcknowledgeMessage(ackDestination, brkMsg.getMessageId());
-			if( acceptRequest != null)
+			if (acceptRequest != null)
 			{
 				ackMsg.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
@@ -157,7 +159,7 @@ public abstract class BaseBrokerClient
 			NetMessage msg = buildMessage(action);
 
 			getNetHandler().sendMessage(msg);
-			
+
 		}
 		else
 		{
@@ -169,7 +171,7 @@ public abstract class BaseBrokerClient
 	{
 		acknowledge(notification, null);
 	}
-	
+
 	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener, AcceptRequest acceptRequest) throws Throwable
 	{
 		if ((subscribe != null) && (StringUtils.isNotBlank(subscribe.getDestination())))
@@ -183,7 +185,7 @@ public abstract class BaseBrokerClient
 
 				_async_listeners.put(subscribe.getDestination(), listener);
 			}
-			if( acceptRequest != null)
+			if (acceptRequest != null)
 			{
 				subscribe.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
@@ -195,7 +197,7 @@ public abstract class BaseBrokerClient
 			NetMessage msg = buildMessage(netAction);
 
 			getNetHandler().sendMessage(msg);
-			
+
 			_consumerList.add(new BrokerAsyncConsumer(subscribe, listener));
 			log.info("Created new async consumer for '{}'", subscribe.getDestination());
 		}
@@ -244,26 +246,28 @@ public abstract class BaseBrokerClient
 		NetMessage message = buildMessage(action);
 
 		getNetHandler().sendMessage(message);
-	
-		long timeout = System.currentTimeMillis() +  ( 2 * 1000);
+
+		long timeout = System.currentTimeMillis() + (2 * 1000);
 		NetPong pong = null;
-		
-		do {
+
+		do
+		{
 			synchronized (_bstatus)
 			{
 				Sleep.time(500);
-				if( System.currentTimeMillis() > timeout)
+				if (System.currentTimeMillis() > timeout)
 					return null;
 				pong = _bstatus.peek();
-				if(pong == null)
+				if (pong == null)
 					continue;
-				if(!pong.getActionId().equals(NetPong.getUniversalActionId()) && !pong.getActionId().equals(actionId))
+				if (!pong.getActionId().equals(NetPong.getUniversalActionId()) && !pong.getActionId().equals(actionId))
 				{
 					pong = null;
 				}
 				_bstatus.remove();
 			}
-		} while (pong == null);
+		}
+		while (pong == null);
 
 		return pong;
 	}
@@ -273,8 +277,8 @@ public abstract class BaseBrokerClient
 
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destinationName)))
 		{
-			NetPublish publish = new NetPublish(destinationName, pt.com.types.NetAction.DestinationType.QUEUE, brokerMessage);
-			if( acceptRequest != null)
+			NetPublish publish = new NetPublish(destinationName, pt.com.broker.types.NetAction.DestinationType.QUEUE, brokerMessage);
+			if (acceptRequest != null)
 			{
 				publish.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
@@ -315,7 +319,7 @@ public abstract class BaseBrokerClient
 	{
 		return hosts.get();
 	}
-	
+
 	public void addHostInfo(HostInfo hostInfo)
 	{
 		hosts.add(hostInfo);
@@ -348,7 +352,7 @@ public abstract class BaseBrokerClient
 		if (StringUtils.isNotBlank(queueName))
 		{
 			NetPoll poll = new NetPoll(queueName);
-			if( acceptRequest != null)
+			if (acceptRequest != null)
 			{
 				poll.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
@@ -380,8 +384,8 @@ public abstract class BaseBrokerClient
 	{
 		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination)))
 		{
-			NetPublish publish = new NetPublish(destination, pt.com.types.NetAction.DestinationType.TOPIC, brokerMessage);
-			if( acceptRequest != null)
+			NetPublish publish = new NetPublish(destination, pt.com.broker.types.NetAction.DestinationType.TOPIC, brokerMessage);
+			if (acceptRequest != null)
 			{
 				publish.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
@@ -417,7 +421,7 @@ public abstract class BaseBrokerClient
 		if ((StringUtils.isNotBlank(destinationName)) && (destinationType != null))
 		{
 			NetUnsubscribe unsubs = new NetUnsubscribe(destinationName, destinationType);
-			if( acceptRequest != null)
+			if (acceptRequest != null)
 			{
 				unsubs.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
@@ -456,7 +460,7 @@ public abstract class BaseBrokerClient
 		getNetHandler().stop();
 		state = BrokerClientState.CLOSE;
 	}
-	
+
 	public BrokerProtocolHandler getNetHandler()
 	{
 		return _netHandler;
@@ -484,12 +488,13 @@ public abstract class BaseBrokerClient
 			return state;
 		}
 	}
-	
-	public void setState(BrokerClientState state){
+
+	public void setState(BrokerClientState state)
+	{
 		synchronized (this)
 		{
 			this.state = state;
-		}		
+		}
 	}
 
 	public void setPortocolType(NetProtocolType portocolType)
@@ -501,8 +506,6 @@ public abstract class BaseBrokerClient
 	{
 		return protocolType;
 	}
-
-
 
 	// public static void saveToDropbox(String dropboxPath, BrokerMessage
 	// brkmsg, DestinationType dtype) throws Throwable

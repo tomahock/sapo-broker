@@ -1,6 +1,6 @@
 package sapo_broker;
 
-option java_package = "pt.com.protobuf.codec";
+option java_package = "pt.com.broker.codec.protobuf";
 option java_outer_classname = "PBMessage";
 option optimize_for = SPEED;
 

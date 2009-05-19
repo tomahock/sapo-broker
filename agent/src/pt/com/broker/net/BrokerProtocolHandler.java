@@ -11,6 +11,12 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.AuthInfo;
+import pt.com.broker.auth.AuthValidationResult;
+import pt.com.broker.auth.AuthInfoValidator;
+import pt.com.broker.codec.xml.FaultCode;
+import pt.com.broker.codec.xml.SoapEnvelope;
+import pt.com.broker.codec.xml.SoapSerializer;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerConsumer;
 import pt.com.broker.messaging.BrokerProducer;
@@ -21,26 +27,20 @@ import pt.com.broker.messaging.TopicSubscriberList;
 import pt.com.broker.security.Session;
 import pt.com.broker.security.SessionProperties;
 import pt.com.broker.security.authentication.ClientAuthenticationInfoVerifierFactory;
-import pt.com.common.security.ClientAuthInfo;
-import pt.com.common.security.ClientAuthenticationInfoValidationResult;
-import pt.com.common.security.ClientAuthenticationInfoValidator;
+import pt.com.broker.types.NetAccepted;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAuthentication;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPing;
+import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetUnsubscribe;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
-import pt.com.types.NetAccepted;
-import pt.com.types.NetAction;
-import pt.com.types.NetAuthentication;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetFault;
-import pt.com.types.NetMessage;
-import pt.com.types.NetPing;
-import pt.com.types.NetPong;
-import pt.com.types.NetPublish;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetUnsubscribe;
-import pt.com.types.NetAction.ActionType;
-import pt.com.xml.FaultCode;
-import pt.com.xml.SoapEnvelope;
-import pt.com.xml.SoapSerializer;
 
 public class BrokerProtocolHandler extends IoHandlerAdapter
 {
@@ -261,7 +261,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 	private void handleUnexpectedMessageType(IoSession session, NetMessage request)
 	{
 		String actionId = null;
-		switch(request.getAction().getActionType())
+		switch (request.getAction().getActionType())
 		{
 		case FAULT:
 			actionId = request.getAction().getFaultMessage().getActionId();
@@ -270,7 +270,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			actionId = request.getAction().getAcceptedMessage().getActionId();
 			break;
 		}
-		if(actionId == null)
+		if (actionId == null)
 		{
 			session.write(NetFault.UnexpectedMessageTypeErrorMessage);
 		}
@@ -283,12 +283,12 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 	private void handlePublishMessage(IoSession session, NetMessage request, String messageSource)
 	{
 		NetPublish publish = request.getAction().getPublishMessage();
-		
+
 		String actionId = publish.getActionId();
-		
+
 		if (StringUtils.contains(publish.getDestination(), "@"))
 		{
-			if(publish.getActionId() == null)
+			if (publish.getActionId() == null)
 			{
 				session.write(NetFault.InvalidDestinationNameErrorMessage);
 			}
@@ -298,7 +298,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			}
 			return;
 		}
-		
+
 		switch (publish.getDestinationType())
 		{
 		case TOPIC:
@@ -308,7 +308,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			_brokerProducer.enqueueMessage(publish, messageSource);
 			break;
 		default:
-			if(actionId == null)
+			if (actionId == null)
 			{
 				session.write(NetFault.InvalidMessageDestinationTypeErrorMessage);
 			}
@@ -353,7 +353,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 		if (StringUtils.isBlank(subscritption.getDestination()))
 		{
-			if(subscritption.getActionId() == null)
+			if (subscritption.getActionId() == null)
 			{
 				session.write(NetFault.InvalidDestinationNameErrorMessage);
 			}
@@ -379,7 +379,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			}
 			else
 			{
-				if(subscritption.getActionId() == null)
+				if (subscritption.getActionId() == null)
 				{
 					session.write(NetFault.InvalidDestinationNameErrorMessage);
 				}
@@ -399,23 +399,22 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 	private void handlePingMessage(final IoSession ios, NetMessage request)
 	{
 		NetPing netPing = request.getAction().getPingMessage();
-		
+
 		NetPong pong = new NetPong(netPing.getActionId());
 		NetAction action = new NetAction(ActionType.PONG);
 		action.setPongMessage(pong);
 		NetMessage message = new NetMessage(action, null);
 		ios.write(message);
 	}
-	
+
 	private void handleAuthMessage(IoSession session, NetMessage request)
 	{
 		NetAuthentication netAuthentication = request.getAction().getAuthenticationMessage();
 
-
-//		// Validate client credentials
-		ClientAuthInfo info = new ClientAuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType());
-		ClientAuthenticationInfoValidator validator = ClientAuthenticationInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
-		ClientAuthenticationInfoValidationResult validateResult = null;
+		// // Validate client credentials
+		AuthInfo info = new AuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType());
+		AuthInfoValidator validator = ClientAuthenticationInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
+		AuthValidationResult validateResult = null;
 		try
 		{
 			validateResult = validator.validate(info);
@@ -432,10 +431,11 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			return;
 		}
 
-//		info.setRoles(validateResult.getRoles());
-		
-		Session plainSession = (Session) session.getAttribute("BROKER_SESSION_PROPERTIES");;
-		
+		// info.setRoles(validateResult.getRoles());
+
+		Session plainSession = (Session) session.getAttribute("BROKER_SESSION_PROPERTIES");
+		;
+
 		SessionProperties plainSessionProps = plainSession.getSessionProperties();
 		plainSessionProps.setRoles(validateResult.getRoles());
 		plainSession.updateAcl();

@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.types.NetProtocolType;
+import pt.com.broker.types.NetProtocolType;
 
 public class BrokerClient extends BaseBrokerClient
 {
@@ -28,26 +28,24 @@ public class BrokerClient extends BaseBrokerClient
 		super(host, portNumber, appName, ptype);
 		init();
 	}
-	
-	
+
 	public BrokerClient(Collection<HostInfo> hosts) throws Throwable
 	{
 		super(hosts);
 		init();
 	}
-	
+
 	public BrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable
 	{
-		super(hosts,appName);
+		super(hosts, appName);
 		init();
 	}
-	
+
 	public BrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable
 	{
-		super(hosts,appName, ptype);
+		super(hosts, appName, ptype);
 		init();
 	}
-	
 
 	@Override
 	protected BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable
@@ -57,8 +55,8 @@ public class BrokerClient extends BaseBrokerClient
 		NetworkConnector networkConnector = new NetworkConnector(getHostInfo());
 		brokerProtocolHandler = new BrokerProtocolHandler(this, getPortocolType(), networkConnector);
 		networkConnector.setProtocolHandler(brokerProtocolHandler);
-		
-		return brokerProtocolHandler;		
+
+		return brokerProtocolHandler;
 	}
 
 }

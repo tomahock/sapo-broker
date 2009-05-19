@@ -4,9 +4,9 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.caudexorigo.io.UnsynchByteArrayOutputStream;
 
+import pt.com.broker.types.SimpleFramingEncoder;
 import pt.com.gcs.io.SerializerHelper;
 import pt.com.gcs.messaging.InternalMessage;
-import pt.com.types.SimpleFramingEncoder;
 
 public class GcsEncoder extends SimpleFramingEncoder
 {
@@ -20,7 +20,7 @@ public class GcsEncoder extends SimpleFramingEncoder
 		}
 		UnsynchByteArrayOutputStream holder = new UnsynchByteArrayOutputStream();
 		SerializerHelper.toStream((InternalMessage) message, holder);
-		
+
 		System.out.println("GcsEncoder.processBody()");
 		System.out.println("Size: " + holder.size());
 		return holder.toByteArray();

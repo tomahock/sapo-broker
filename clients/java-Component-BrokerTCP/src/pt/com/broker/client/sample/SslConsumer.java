@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.types.NetNotification;
-import pt.com.types.NetProtocolType;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class SslConsumer implements BrokerListener
 {

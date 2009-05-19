@@ -75,12 +75,12 @@ public class GlobalConfig
 	{
 		populateWorldMap(doc);
 		extractSecurityPolicies(doc);
-		synchronized(authenticationProviders)
+		synchronized (authenticationProviders)
 		{
 			authenticationProviders.clear();
 			loadAuthenticationProviders(doc);
 		}
-		synchronized(credentialValidatiorProviders)
+		synchronized (credentialValidatiorProviders)
 		{
 			credentialValidatiorProviders.clear();
 			loadCredentialValidatiorProviders(doc);
@@ -206,18 +206,16 @@ public class GlobalConfig
 		}
 	}
 
-
 	public static Map<String, ProviderInfo> getAuthenticationProviders()
 	{
 		return instance.authenticationProviders;
 	}
-	
+
 	public static Map<String, ProviderInfo> getCredentialValidatorProviders()
 	{
 		return instance.credentialValidatiorProviders;
 	}
-	
-	
+
 	private void loadCredentialValidatiorProviders(Document doc)
 	{
 		try
@@ -245,9 +243,8 @@ public class GlobalConfig
 					NodeList paramsNodeList = elem.getElementsByTagName("provider-params");
 					if (paramsNodeList.getLength() != 0)
 					{
-						provParams = (Element)paramsNodeList.item(0);
+						provParams = (Element) paramsNodeList.item(0);
 					}
-
 
 					ProviderInfo provInfo = new ProviderInfo(provName, provPath, provParams);
 					credentialValidatiorProviders.put(provName, provInfo);
@@ -263,7 +260,7 @@ public class GlobalConfig
 			log.error("Error parsing credential-validators", e);
 		}
 	}
-	
+
 	private void loadAuthenticationProviders(Document doc)
 	{
 		try
@@ -309,6 +306,7 @@ public class GlobalConfig
 			log.error("Error parsing authorization-providers", e);
 		}
 	}
+
 	private synchronized boolean i_reload()
 	{
 		boolean wasReloaded = false;

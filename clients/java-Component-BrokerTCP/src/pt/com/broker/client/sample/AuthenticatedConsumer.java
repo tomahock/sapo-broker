@@ -6,19 +6,19 @@ import org.caudexorigo.cli.CliFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.CredentialsProviderFactory;
+import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.common.security.ClientAuthInfo;
-import pt.com.common.security.authentication.AuthenticationCredentialsProviderFactory;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.security.authentication.sapoSts.SapoSTSAuthenticationCredentialsProvider;
 import pt.com.security.authentication.sapoSts.SapoSTSAuthenticationParamsProvider;
-import pt.com.types.NetNotification;
-import pt.com.types.NetProtocolType;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetAction.DestinationType;
 
 public class AuthenticatedConsumer implements BrokerListener
 {
@@ -43,7 +43,7 @@ public class AuthenticatedConsumer implements BrokerListener
 		SapoSTSAuthenticationParamsProvider.Parameters parameters = new SapoSTSAuthenticationParamsProvider.Parameters(stsLocation);
 		SapoSTSAuthenticationParamsProvider.setSTSParameters(parameters);
 	}
-	
+
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);
@@ -61,20 +61,18 @@ public class AuthenticatedConsumer implements BrokerListener
 		consumer.keystoreLocation = cargs.getKeystoreLocation();
 		consumer.keystorePassword = cargs.getKeystorePassword();
 
-		
-		//  Provider initialization
+		// Provider initialization
 		initSTSParams(consumer.stsLocation);
-		AuthenticationCredentialsProviderFactory.addProvider("SapoSTS", new SapoSTSAuthenticationCredentialsProvider());
-		//  Provider initialized
-
+		CredentialsProviderFactory.addProvider("SapoSTS", new SapoSTSAuthenticationCredentialsProvider());
+		// Provider initialized
 
 		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
 
-		ClientAuthInfo clientAuthInfo = new ClientAuthInfo(consumer.stsUsername, consumer.stsPassword);
+		AuthInfo clientAuthInfo = new AuthInfo(consumer.stsUsername, consumer.stsPassword);
 		clientAuthInfo.setUserAuthenticationType("SapoSTS");
-		
-		ClientAuthInfo stsClientCredentials = AuthenticationCredentialsProviderFactory.getProvider("SapoSTS").getCredentials(clientAuthInfo);
-		
+
+		AuthInfo stsClientCredentials = CredentialsProviderFactory.getProvider("SapoSTS").getCredentials(clientAuthInfo);
+
 		bk.setAuthenticationCredentials(stsClientCredentials);
 		try
 		{

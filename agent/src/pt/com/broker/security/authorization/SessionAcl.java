@@ -1,7 +1,9 @@
 package pt.com.broker.security.authorization;
+
 import java.util.ArrayList;
 
-public class SessionAcl extends ArrayList<AclEntry>{
+public class SessionAcl extends ArrayList<AclEntry>
+{
 
 	/**
 	 * 

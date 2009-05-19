@@ -1,6 +1,6 @@
 package pt.com.gcs.messaging;
 
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public interface MessageListener
 {

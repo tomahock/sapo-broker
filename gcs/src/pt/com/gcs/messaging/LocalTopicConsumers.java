@@ -16,9 +16,9 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
-import pt.com.types.NetBrokerMessage;
 
 class LocalTopicConsumers
 {
@@ -95,7 +95,10 @@ class LocalTopicConsumers
 				if (messageListener != null)
 				{
 					messageListener.onMessage(message);
-					message.setDestination(topicName); // -> Set the destination name, queue dispatchers change it.
+					message.setDestination(topicName); // -> Set the destination
+														// name, queue
+														// dispatchers change
+														// it.
 				}
 			}
 		}

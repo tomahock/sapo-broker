@@ -27,15 +27,15 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.common.security.ClientAuthenticationInfoValidator;
-import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
-import pt.com.common.security.authentication.AuthenticationCredentialsProviderFactory;
+import pt.com.broker.auth.CredentialsProvider;
+import pt.com.broker.auth.CredentialsProviderFactory;
+import pt.com.broker.auth.AuthInfoValidator;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.conf.ProviderInfo;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
-import pt.com.types.NetAction.DestinationType;
 
 public class Gcs
 {
@@ -92,7 +92,7 @@ public class Gcs
 	{
 		instance.ienqueue(message, null);
 	}
-	
+
 	public static void enqueue(InternalMessage message, String queueName)
 	{
 		instance.ienqueue(message, queueName);
@@ -243,7 +243,6 @@ public class Gcs
 	{
 		QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message);
 	}
-
 
 	private void iinit()
 	{

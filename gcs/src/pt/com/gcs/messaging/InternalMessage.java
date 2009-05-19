@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.caudexorigo.cryto.MD5;
 import org.caudexorigo.text.StringUtils;
 
-import pt.com.types.NetBrokerMessage;
+import pt.com.broker.types.NetBrokerMessage;
 
 public class InternalMessage implements Externalizable
 {
@@ -18,7 +18,8 @@ public class InternalMessage implements Externalizable
 	private static final AtomicLong SEQ = new AtomicLong(0L);
 	private static final long serialVersionUID = -3656321513130930115L;
 	public static final int DEFAULT_PRIORITY = 4;
-	private static final long DEFAULT_EXPIRY = 1000L * 3600L * 24L * 7L; // 7 days
+	private static final long DEFAULT_EXPIRY = 1000L * 3600L * 24L * 7L; // 7
+																			// days
 	private static final String SEPARATOR = "<#>";
 
 	private static final String BASE_MESSAGE_ID;
@@ -195,19 +196,19 @@ public class InternalMessage implements Externalizable
 		correlationId = in.readUTF();
 		if (correlationId.equals(""))
 			correlationId = null;
-		
+
 		destination = in.readUTF();
 		if (destination.equals(""))
 			destination = null;
-		
+
 		publishDestination = in.readUTF();
 		if (publishDestination.equals(""))
 			publishDestination = null;
-		
+
 		id = in.readUTF();
 		if (id.equals(""))
 			id = null;
-		
+
 		priority = in.readInt();
 		sourceApp = in.readUTF();
 		if (sourceApp.equals(""))
@@ -234,7 +235,7 @@ public class InternalMessage implements Externalizable
 		out.writeInt(getType().getValue());
 
 		content.write(out);
-		
+
 		out.flush();
 	}
 

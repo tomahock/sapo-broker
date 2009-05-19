@@ -12,10 +12,10 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.types.NetNotification;
-import pt.com.types.NetProtocolType;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class ConsumerWithFailover implements BrokerListener
 {
@@ -37,9 +37,9 @@ public class ConsumerWithFailover implements BrokerListener
 		consumer.dname = cargs.getDestination();
 
 		Collection<HostInfo> hosts = new ArrayList<HostInfo>(2);
-		hosts.add( new HostInfo("localhost", 3423) );
-		hosts.add( new HostInfo("localhost", 3323) );
-		
+		hosts.add(new HostInfo("localhost", 3423));
+		hosts.add(new HostInfo("localhost", 3323));
+
 		BrokerClient bk = new BrokerClient(hosts, "tcp://mycompany.com/mysniffer", NetProtocolType.THRIFT);
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);

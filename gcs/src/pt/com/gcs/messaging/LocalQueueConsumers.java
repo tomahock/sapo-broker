@@ -14,9 +14,9 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
-import pt.com.types.NetBrokerMessage;
 
 class LocalQueueConsumers
 {
@@ -122,7 +122,8 @@ class LocalQueueConsumers
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			// This exception is never thrown because UTF-8 encoding is built-in in every JVM
+			// This exception is never thrown because UTF-8 encoding is built-in
+			// in every JVM
 		}
 
 		ioSession.write(m);

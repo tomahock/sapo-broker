@@ -1,6 +1,6 @@
 package pt.com.gcs.messaging;
 
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetAction.DestinationType;
 
 class TopicToQueueDispatcher implements MessageListener
 {
@@ -24,8 +24,8 @@ class TopicToQueueDispatcher implements MessageListener
 		{
 			message.setDestination(_queueName);
 			Gcs.enqueue(message);
-			//Gcs.enqueue(message, _queueName);
-		} 
+			// Gcs.enqueue(message, _queueName);
+		}
 		return true;
 	}
 

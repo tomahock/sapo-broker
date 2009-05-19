@@ -11,11 +11,11 @@ import org.jibx.runtime.JiBXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.codec.xml.EndPointReference;
+import pt.com.broker.codec.xml.SoapEnvelope;
+import pt.com.broker.codec.xml.SoapFault;
+import pt.com.broker.codec.xml.SoapHeader;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.xml.EndPointReference;
-import pt.com.xml.SoapEnvelope;
-import pt.com.xml.SoapFault;
-import pt.com.xml.SoapHeader;
 
 public class ErrorHandler extends ExceptionMonitor
 {
@@ -91,7 +91,7 @@ public class ErrorHandler extends ExceptionMonitor
 
 		return wtf;
 	}
-	
+
 	public static String buildStackTrace(Throwable ex)
 	{
 		StringBuilderWriter sw = new StringBuilderWriter();

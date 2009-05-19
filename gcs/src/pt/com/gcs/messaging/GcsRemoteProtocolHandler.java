@@ -11,14 +11,14 @@ import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
-import pt.com.types.NetBrokerMessage;
 
 class GcsRemoteProtocolHandler extends IoHandlerAdapter
 {
 	private static Logger log = LoggerFactory.getLogger(GcsRemoteProtocolHandler.class);
-	
+
 	@Override
 	public void exceptionCaught(IoSession iosession, Throwable cause) throws Exception
 	{
@@ -92,7 +92,6 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 		}
 	}
 
-	
 	@Override
 	public void sessionIdle(IoSession iosession, IdleStatus status) throws Exception
 	{

@@ -5,7 +5,6 @@
 // Generated on: 2009.04.03 at 03:49:16 PM WEST 
 //
 
-
 package pt.com.gcs.conf.global;
 
 import java.util.ArrayList;
@@ -16,515 +15,532 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for Policies complex type.
+ * <p>
+ * Java class for Policies complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
- * &lt;complexType name="Policies">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="policy" maxOccurs="unbounded">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="acl">
- *                     &lt;complexType>
- *                       &lt;complexContent>
- *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                           &lt;sequence>
- *                             &lt;element name="entry" maxOccurs="unbounded">
- *                               &lt;complexType>
- *                                 &lt;complexContent>
- *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                                     &lt;sequence>
- *                                       &lt;element name="condition" type="{}Condition" maxOccurs="unbounded"/>
- *                                     &lt;/sequence>
- *                                     &lt;attribute name="action" use="required" type="{}Authorization" />
- *                                     &lt;attribute name="destination-type" use="required">
- *                                       &lt;simpleType>
- *                                         &lt;list itemType="{}DestinationType" />
- *                                       &lt;/simpleType>
- *                                     &lt;/attribute>
- *                                     &lt;attribute name="destination" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                                     &lt;attribute name="privilege" use="required">
- *                                       &lt;simpleType>
- *                                         &lt;list itemType="{}Privilege" />
- *                                       &lt;/simpleType>
- *                                     &lt;/attribute>
- *                                   &lt;/restriction>
- *                                 &lt;/complexContent>
- *                               &lt;/complexType>
- *                             &lt;/element>
- *                           &lt;/sequence>
- *                         &lt;/restriction>
- *                       &lt;/complexContent>
- *                     &lt;/complexType>
- *                   &lt;/element>
- *                 &lt;/sequence>
- *                 &lt;attribute name="policy-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="inherits" type="{http://www.w3.org/2001/XMLSchema}string" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name=&quot;Policies&quot;&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name=&quot;policy&quot; maxOccurs=&quot;unbounded&quot;&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name=&quot;acl&quot;&gt;
+ *                     &lt;complexType&gt;
+ *                       &lt;complexContent&gt;
+ *                         &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *                           &lt;sequence&gt;
+ *                             &lt;element name=&quot;entry&quot; maxOccurs=&quot;unbounded&quot;&gt;
+ *                               &lt;complexType&gt;
+ *                                 &lt;complexContent&gt;
+ *                                   &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *                                     &lt;sequence&gt;
+ *                                       &lt;element name=&quot;condition&quot; type=&quot;{}Condition&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+ *                                     &lt;/sequence&gt;
+ *                                     &lt;attribute name=&quot;action&quot; use=&quot;required&quot; type=&quot;{}Authorization&quot; /&gt;
+ *                                     &lt;attribute name=&quot;destination-type&quot; use=&quot;required&quot;&gt;
+ *                                       &lt;simpleType&gt;
+ *                                         &lt;list itemType=&quot;{}DestinationType&quot; /&gt;
+ *                                       &lt;/simpleType&gt;
+ *                                     &lt;/attribute&gt;
+ *                                     &lt;attribute name=&quot;destination&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
+ *                                     &lt;attribute name=&quot;privilege&quot; use=&quot;required&quot;&gt;
+ *                                       &lt;simpleType&gt;
+ *                                         &lt;list itemType=&quot;{}Privilege&quot; /&gt;
+ *                                       &lt;/simpleType&gt;
+ *                                     &lt;/attribute&gt;
+ *                                   &lt;/restriction&gt;
+ *                                 &lt;/complexContent&gt;
+ *                               &lt;/complexType&gt;
+ *                             &lt;/element&gt;
+ *                           &lt;/sequence&gt;
+ *                         &lt;/restriction&gt;
+ *                       &lt;/complexContent&gt;
+ *                     &lt;/complexType&gt;
+ *                   &lt;/element&gt;
+ *                 &lt;/sequence&gt;
+ *                 &lt;attribute name=&quot;policy-name&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
+ *                 &lt;attribute name=&quot;inherits&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Policies", propOrder = {
-    "policy"
-})
-public class Policies {
+@XmlType(name = "Policies", propOrder = { "policy" })
+public class Policies
+{
 
-    @XmlElement(required = true)
-    protected List<Policies.Policy> policy;
+	@XmlElement(required = true)
+	protected List<Policies.Policy> policy;
 
-    /**
-     * Gets the value of the policy property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the policy property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getPolicy().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Policies.Policy }
-     * 
-     * 
-     */
-    public List<Policies.Policy> getPolicy() {
-        if (policy == null) {
-            policy = new ArrayList<Policies.Policy>();
-        }
-        return this.policy;
-    }
+	/**
+	 * Gets the value of the policy property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a
+	 * snapshot. Therefore any modification you make to the returned list will
+	 * be present inside the JAXB object. This is why there is not a
+	 * <CODE>set</CODE> method for the policy property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getPolicy().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list
+	 * {@link Policies.Policy }
+	 * 
+	 * 
+	 */
+	public List<Policies.Policy> getPolicy()
+	{
+		if (policy == null)
+		{
+			policy = new ArrayList<Policies.Policy>();
+		}
+		return this.policy;
+	}
 
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained
+	 * within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType&gt;
+	 *   &lt;complexContent&gt;
+	 *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+	 *       &lt;sequence&gt;
+	 *         &lt;element name=&quot;acl&quot;&gt;
+	 *           &lt;complexType&gt;
+	 *             &lt;complexContent&gt;
+	 *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+	 *                 &lt;sequence&gt;
+	 *                   &lt;element name=&quot;entry&quot; maxOccurs=&quot;unbounded&quot;&gt;
+	 *                     &lt;complexType&gt;
+	 *                       &lt;complexContent&gt;
+	 *                         &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+	 *                           &lt;sequence&gt;
+	 *                             &lt;element name=&quot;condition&quot; type=&quot;{}Condition&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+	 *                           &lt;/sequence&gt;
+	 *                           &lt;attribute name=&quot;action&quot; use=&quot;required&quot; type=&quot;{}Authorization&quot; /&gt;
+	 *                           &lt;attribute name=&quot;destination-type&quot; use=&quot;required&quot;&gt;
+	 *                             &lt;simpleType&gt;
+	 *                               &lt;list itemType=&quot;{}DestinationType&quot; /&gt;
+	 *                             &lt;/simpleType&gt;
+	 *                           &lt;/attribute&gt;
+	 *                           &lt;attribute name=&quot;destination&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
+	 *                           &lt;attribute name=&quot;privilege&quot; use=&quot;required&quot;&gt;
+	 *                             &lt;simpleType&gt;
+	 *                               &lt;list itemType=&quot;{}Privilege&quot; /&gt;
+	 *                             &lt;/simpleType&gt;
+	 *                           &lt;/attribute&gt;
+	 *                         &lt;/restriction&gt;
+	 *                       &lt;/complexContent&gt;
+	 *                     &lt;/complexType&gt;
+	 *                   &lt;/element&gt;
+	 *                 &lt;/sequence&gt;
+	 *               &lt;/restriction&gt;
+	 *             &lt;/complexContent&gt;
+	 *           &lt;/complexType&gt;
+	 *         &lt;/element&gt;
+	 *       &lt;/sequence&gt;
+	 *       &lt;attribute name=&quot;policy-name&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
+	 *       &lt;attribute name=&quot;inherits&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
+	 *     &lt;/restriction&gt;
+	 *   &lt;/complexContent&gt;
+	 * &lt;/complexType&gt;
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "", propOrder = { "acl" })
+	public static class Policy
+	{
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
-     *         &lt;element name="acl">
-     *           &lt;complexType>
-     *             &lt;complexContent>
-     *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                 &lt;sequence>
-     *                   &lt;element name="entry" maxOccurs="unbounded">
-     *                     &lt;complexType>
-     *                       &lt;complexContent>
-     *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                           &lt;sequence>
-     *                             &lt;element name="condition" type="{}Condition" maxOccurs="unbounded"/>
-     *                           &lt;/sequence>
-     *                           &lt;attribute name="action" use="required" type="{}Authorization" />
-     *                           &lt;attribute name="destination-type" use="required">
-     *                             &lt;simpleType>
-     *                               &lt;list itemType="{}DestinationType" />
-     *                             &lt;/simpleType>
-     *                           &lt;/attribute>
-     *                           &lt;attribute name="destination" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *                           &lt;attribute name="privilege" use="required">
-     *                             &lt;simpleType>
-     *                               &lt;list itemType="{}Privilege" />
-     *                             &lt;/simpleType>
-     *                           &lt;/attribute>
-     *                         &lt;/restriction>
-     *                       &lt;/complexContent>
-     *                     &lt;/complexType>
-     *                   &lt;/element>
-     *                 &lt;/sequence>
-     *               &lt;/restriction>
-     *             &lt;/complexContent>
-     *           &lt;/complexType>
-     *         &lt;/element>
-     *       &lt;/sequence>
-     *       &lt;attribute name="policy-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="inherits" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "acl"
-    })
-    public static class Policy {
+		@XmlElement(required = true)
+		protected Policies.Policy.Acl acl;
+		@XmlAttribute(name = "policy-name", required = true)
+		protected String policyName;
+		@XmlAttribute
+		protected String inherits;
 
-        @XmlElement(required = true)
-        protected Policies.Policy.Acl acl;
-        @XmlAttribute(name = "policy-name", required = true)
-        protected String policyName;
-        @XmlAttribute
-        protected String inherits;
+		/**
+		 * Gets the value of the acl property.
+		 * 
+		 * @return possible object is {@link Policies.Policy.Acl }
+		 * 
+		 */
+		public Policies.Policy.Acl getAcl()
+		{
+			return acl;
+		}
 
-        /**
-         * Gets the value of the acl property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Policies.Policy.Acl }
-         *     
-         */
-        public Policies.Policy.Acl getAcl() {
-            return acl;
-        }
+		/**
+		 * Sets the value of the acl property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link Policies.Policy.Acl }
+		 * 
+		 */
+		public void setAcl(Policies.Policy.Acl value)
+		{
+			this.acl = value;
+		}
 
-        /**
-         * Sets the value of the acl property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Policies.Policy.Acl }
-         *     
-         */
-        public void setAcl(Policies.Policy.Acl value) {
-            this.acl = value;
-        }
+		/**
+		 * Gets the value of the policyName property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getPolicyName()
+		{
+			return policyName;
+		}
 
-        /**
-         * Gets the value of the policyName property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getPolicyName() {
-            return policyName;
-        }
+		/**
+		 * Sets the value of the policyName property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setPolicyName(String value)
+		{
+			this.policyName = value;
+		}
 
-        /**
-         * Sets the value of the policyName property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setPolicyName(String value) {
-            this.policyName = value;
-        }
+		/**
+		 * Gets the value of the inherits property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getInherits()
+		{
+			return inherits;
+		}
 
-        /**
-         * Gets the value of the inherits property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getInherits() {
-            return inherits;
-        }
+		/**
+		 * Sets the value of the inherits property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setInherits(String value)
+		{
+			this.inherits = value;
+		}
 
-        /**
-         * Sets the value of the inherits property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setInherits(String value) {
-            this.inherits = value;
-        }
+		/**
+		 * <p>
+		 * Java class for anonymous complex type.
+		 * 
+		 * <p>
+		 * The following schema fragment specifies the expected content
+		 * contained within this class.
+		 * 
+		 * <pre>
+		 * &lt;complexType&gt;
+		 *   &lt;complexContent&gt;
+		 *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+		 *       &lt;sequence&gt;
+		 *         &lt;element name=&quot;entry&quot; maxOccurs=&quot;unbounded&quot;&gt;
+		 *           &lt;complexType&gt;
+		 *             &lt;complexContent&gt;
+		 *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+		 *                 &lt;sequence&gt;
+		 *                   &lt;element name=&quot;condition&quot; type=&quot;{}Condition&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+		 *                 &lt;/sequence&gt;
+		 *                 &lt;attribute name=&quot;action&quot; use=&quot;required&quot; type=&quot;{}Authorization&quot; /&gt;
+		 *                 &lt;attribute name=&quot;destination-type&quot; use=&quot;required&quot;&gt;
+		 *                   &lt;simpleType&gt;
+		 *                     &lt;list itemType=&quot;{}DestinationType&quot; /&gt;
+		 *                   &lt;/simpleType&gt;
+		 *                 &lt;/attribute&gt;
+		 *                 &lt;attribute name=&quot;destination&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
+		 *                 &lt;attribute name=&quot;privilege&quot; use=&quot;required&quot;&gt;
+		 *                   &lt;simpleType&gt;
+		 *                     &lt;list itemType=&quot;{}Privilege&quot; /&gt;
+		 *                   &lt;/simpleType&gt;
+		 *                 &lt;/attribute&gt;
+		 *               &lt;/restriction&gt;
+		 *             &lt;/complexContent&gt;
+		 *           &lt;/complexType&gt;
+		 *         &lt;/element&gt;
+		 *       &lt;/sequence&gt;
+		 *     &lt;/restriction&gt;
+		 *   &lt;/complexContent&gt;
+		 * &lt;/complexType&gt;
+		 * </pre>
+		 * 
+		 * 
+		 */
+		@XmlAccessorType(XmlAccessType.FIELD)
+		@XmlType(name = "", propOrder = { "entry" })
+		public static class Acl
+		{
 
+			@XmlElement(required = true)
+			protected List<Policies.Policy.Acl.Entry> entry;
 
-        /**
-         * <p>Java class for anonymous complex type.
-         * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
-         * <pre>
-         * &lt;complexType>
-         *   &lt;complexContent>
-         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;sequence>
-         *         &lt;element name="entry" maxOccurs="unbounded">
-         *           &lt;complexType>
-         *             &lt;complexContent>
-         *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *                 &lt;sequence>
-         *                   &lt;element name="condition" type="{}Condition" maxOccurs="unbounded"/>
-         *                 &lt;/sequence>
-         *                 &lt;attribute name="action" use="required" type="{}Authorization" />
-         *                 &lt;attribute name="destination-type" use="required">
-         *                   &lt;simpleType>
-         *                     &lt;list itemType="{}DestinationType" />
-         *                   &lt;/simpleType>
-         *                 &lt;/attribute>
-         *                 &lt;attribute name="destination" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *                 &lt;attribute name="privilege" use="required">
-         *                   &lt;simpleType>
-         *                     &lt;list itemType="{}Privilege" />
-         *                   &lt;/simpleType>
-         *                 &lt;/attribute>
-         *               &lt;/restriction>
-         *             &lt;/complexContent>
-         *           &lt;/complexType>
-         *         &lt;/element>
-         *       &lt;/sequence>
-         *     &lt;/restriction>
-         *   &lt;/complexContent>
-         * &lt;/complexType>
-         * </pre>
-         * 
-         * 
-         */
-        @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "", propOrder = {
-            "entry"
-        })
-        public static class Acl {
+			/**
+			 * Gets the value of the entry property.
+			 * 
+			 * <p>
+			 * This accessor method returns a reference to the live list, not a
+			 * snapshot. Therefore any modification you make to the returned
+			 * list will be present inside the JAXB object. This is why there is
+			 * not a <CODE>set</CODE> method for the entry property.
+			 * 
+			 * <p>
+			 * For example, to add a new item, do as follows:
+			 * 
+			 * <pre>
+			 * getEntry().add(newItem);
+			 * </pre>
+			 * 
+			 * 
+			 * <p>
+			 * Objects of the following type(s) are allowed in the list
+			 * {@link Policies.Policy.Acl.Entry }
+			 * 
+			 * 
+			 */
+			public List<Policies.Policy.Acl.Entry> getEntry()
+			{
+				if (entry == null)
+				{
+					entry = new ArrayList<Policies.Policy.Acl.Entry>();
+				}
+				return this.entry;
+			}
 
-            @XmlElement(required = true)
-            protected List<Policies.Policy.Acl.Entry> entry;
+			/**
+			 * <p>
+			 * Java class for anonymous complex type.
+			 * 
+			 * <p>
+			 * The following schema fragment specifies the expected content
+			 * contained within this class.
+			 * 
+			 * <pre>
+			 * &lt;complexType&gt;
+			 *   &lt;complexContent&gt;
+			 *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+			 *       &lt;sequence&gt;
+			 *         &lt;element name=&quot;condition&quot; type=&quot;{}Condition&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+			 *       &lt;/sequence&gt;
+			 *       &lt;attribute name=&quot;action&quot; use=&quot;required&quot; type=&quot;{}Authorization&quot; /&gt;
+			 *       &lt;attribute name=&quot;destination-type&quot; use=&quot;required&quot;&gt;
+			 *         &lt;simpleType&gt;
+			 *           &lt;list itemType=&quot;{}DestinationType&quot; /&gt;
+			 *         &lt;/simpleType&gt;
+			 *       &lt;/attribute&gt;
+			 *       &lt;attribute name=&quot;destination&quot; use=&quot;required&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
+			 *       &lt;attribute name=&quot;privilege&quot; use=&quot;required&quot;&gt;
+			 *         &lt;simpleType&gt;
+			 *           &lt;list itemType=&quot;{}Privilege&quot; /&gt;
+			 *         &lt;/simpleType&gt;
+			 *       &lt;/attribute&gt;
+			 *     &lt;/restriction&gt;
+			 *   &lt;/complexContent&gt;
+			 * &lt;/complexType&gt;
+			 * </pre>
+			 * 
+			 * 
+			 */
+			@XmlAccessorType(XmlAccessType.FIELD)
+			@XmlType(name = "", propOrder = { "condition" })
+			public static class Entry
+			{
 
-            /**
-             * Gets the value of the entry property.
-             * 
-             * <p>
-             * This accessor method returns a reference to the live list,
-             * not a snapshot. Therefore any modification you make to the
-             * returned list will be present inside the JAXB object.
-             * This is why there is not a <CODE>set</CODE> method for the entry property.
-             * 
-             * <p>
-             * For example, to add a new item, do as follows:
-             * <pre>
-             *    getEntry().add(newItem);
-             * </pre>
-             * 
-             * 
-             * <p>
-             * Objects of the following type(s) are allowed in the list
-             * {@link Policies.Policy.Acl.Entry }
-             * 
-             * 
-             */
-            public List<Policies.Policy.Acl.Entry> getEntry() {
-                if (entry == null) {
-                    entry = new ArrayList<Policies.Policy.Acl.Entry>();
-                }
-                return this.entry;
-            }
+				@XmlElement(required = true)
+				protected List<Condition> condition;
+				@XmlAttribute(required = true)
+				protected Authorization action;
+				@XmlAttribute(name = "destination-type", required = true)
+				protected List<DestinationType> destinationType;
+				@XmlAttribute(required = true)
+				protected String destination;
+				@XmlAttribute(required = true)
+				protected List<Privilege> privilege;
 
+				/**
+				 * Gets the value of the condition property.
+				 * 
+				 * <p>
+				 * This accessor method returns a reference to the live list,
+				 * not a snapshot. Therefore any modification you make to the
+				 * returned list will be present inside the JAXB object. This is
+				 * why there is not a <CODE>set</CODE> method for the condition
+				 * property.
+				 * 
+				 * <p>
+				 * For example, to add a new item, do as follows:
+				 * 
+				 * <pre>
+				 * getCondition().add(newItem);
+				 * </pre>
+				 * 
+				 * 
+				 * <p>
+				 * Objects of the following type(s) are allowed in the list
+				 * {@link Condition }
+				 * 
+				 * 
+				 */
+				public List<Condition> getCondition()
+				{
+					if (condition == null)
+					{
+						condition = new ArrayList<Condition>();
+					}
+					return this.condition;
+				}
 
-            /**
-             * <p>Java class for anonymous complex type.
-             * 
-             * <p>The following schema fragment specifies the expected content contained within this class.
-             * 
-             * <pre>
-             * &lt;complexType>
-             *   &lt;complexContent>
-             *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-             *       &lt;sequence>
-             *         &lt;element name="condition" type="{}Condition" maxOccurs="unbounded"/>
-             *       &lt;/sequence>
-             *       &lt;attribute name="action" use="required" type="{}Authorization" />
-             *       &lt;attribute name="destination-type" use="required">
-             *         &lt;simpleType>
-             *           &lt;list itemType="{}DestinationType" />
-             *         &lt;/simpleType>
-             *       &lt;/attribute>
-             *       &lt;attribute name="destination" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *       &lt;attribute name="privilege" use="required">
-             *         &lt;simpleType>
-             *           &lt;list itemType="{}Privilege" />
-             *         &lt;/simpleType>
-             *       &lt;/attribute>
-             *     &lt;/restriction>
-             *   &lt;/complexContent>
-             * &lt;/complexType>
-             * </pre>
-             * 
-             * 
-             */
-            @XmlAccessorType(XmlAccessType.FIELD)
-            @XmlType(name = "", propOrder = {
-                "condition"
-            })
-            public static class Entry {
+				/**
+				 * Gets the value of the action property.
+				 * 
+				 * @return possible object is {@link Authorization }
+				 * 
+				 */
+				public Authorization getAction()
+				{
+					return action;
+				}
 
-                @XmlElement(required = true)
-                protected List<Condition> condition;
-                @XmlAttribute(required = true)
-                protected Authorization action;
-                @XmlAttribute(name = "destination-type", required = true)
-                protected List<DestinationType> destinationType;
-                @XmlAttribute(required = true)
-                protected String destination;
-                @XmlAttribute(required = true)
-                protected List<Privilege> privilege;
+				/**
+				 * Sets the value of the action property.
+				 * 
+				 * @param value
+				 *            allowed object is {@link Authorization }
+				 * 
+				 */
+				public void setAction(Authorization value)
+				{
+					this.action = value;
+				}
 
-                /**
-                 * Gets the value of the condition property.
-                 * 
-                 * <p>
-                 * This accessor method returns a reference to the live list,
-                 * not a snapshot. Therefore any modification you make to the
-                 * returned list will be present inside the JAXB object.
-                 * This is why there is not a <CODE>set</CODE> method for the condition property.
-                 * 
-                 * <p>
-                 * For example, to add a new item, do as follows:
-                 * <pre>
-                 *    getCondition().add(newItem);
-                 * </pre>
-                 * 
-                 * 
-                 * <p>
-                 * Objects of the following type(s) are allowed in the list
-                 * {@link Condition }
-                 * 
-                 * 
-                 */
-                public List<Condition> getCondition() {
-                    if (condition == null) {
-                        condition = new ArrayList<Condition>();
-                    }
-                    return this.condition;
-                }
+				/**
+				 * Gets the value of the destinationType property.
+				 * 
+				 * <p>
+				 * This accessor method returns a reference to the live list,
+				 * not a snapshot. Therefore any modification you make to the
+				 * returned list will be present inside the JAXB object. This is
+				 * why there is not a <CODE>set</CODE> method for the
+				 * destinationType property.
+				 * 
+				 * <p>
+				 * For example, to add a new item, do as follows:
+				 * 
+				 * <pre>
+				 * getDestinationType().add(newItem);
+				 * </pre>
+				 * 
+				 * 
+				 * <p>
+				 * Objects of the following type(s) are allowed in the list
+				 * {@link DestinationType }
+				 * 
+				 * 
+				 */
+				public List<DestinationType> getDestinationType()
+				{
+					if (destinationType == null)
+					{
+						destinationType = new ArrayList<DestinationType>();
+					}
+					return this.destinationType;
+				}
 
-                /**
-                 * Gets the value of the action property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link Authorization }
-                 *     
-                 */
-                public Authorization getAction() {
-                    return action;
-                }
+				/**
+				 * Gets the value of the destination property.
+				 * 
+				 * @return possible object is {@link String }
+				 * 
+				 */
+				public String getDestination()
+				{
+					return destination;
+				}
 
-                /**
-                 * Sets the value of the action property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link Authorization }
-                 *     
-                 */
-                public void setAction(Authorization value) {
-                    this.action = value;
-                }
+				/**
+				 * Sets the value of the destination property.
+				 * 
+				 * @param value
+				 *            allowed object is {@link String }
+				 * 
+				 */
+				public void setDestination(String value)
+				{
+					this.destination = value;
+				}
 
-                /**
-                 * Gets the value of the destinationType property.
-                 * 
-                 * <p>
-                 * This accessor method returns a reference to the live list,
-                 * not a snapshot. Therefore any modification you make to the
-                 * returned list will be present inside the JAXB object.
-                 * This is why there is not a <CODE>set</CODE> method for the destinationType property.
-                 * 
-                 * <p>
-                 * For example, to add a new item, do as follows:
-                 * <pre>
-                 *    getDestinationType().add(newItem);
-                 * </pre>
-                 * 
-                 * 
-                 * <p>
-                 * Objects of the following type(s) are allowed in the list
-                 * {@link DestinationType }
-                 * 
-                 * 
-                 */
-                public List<DestinationType> getDestinationType() {
-                    if (destinationType == null) {
-                        destinationType = new ArrayList<DestinationType>();
-                    }
-                    return this.destinationType;
-                }
+				/**
+				 * Gets the value of the privilege property.
+				 * 
+				 * <p>
+				 * This accessor method returns a reference to the live list,
+				 * not a snapshot. Therefore any modification you make to the
+				 * returned list will be present inside the JAXB object. This is
+				 * why there is not a <CODE>set</CODE> method for the privilege
+				 * property.
+				 * 
+				 * <p>
+				 * For example, to add a new item, do as follows:
+				 * 
+				 * <pre>
+				 * getPrivilege().add(newItem);
+				 * </pre>
+				 * 
+				 * 
+				 * <p>
+				 * Objects of the following type(s) are allowed in the list
+				 * {@link Privilege }
+				 * 
+				 * 
+				 */
+				public List<Privilege> getPrivilege()
+				{
+					if (privilege == null)
+					{
+						privilege = new ArrayList<Privilege>();
+					}
+					return this.privilege;
+				}
 
-                /**
-                 * Gets the value of the destination property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getDestination() {
-                    return destination;
-                }
+			}
 
-                /**
-                 * Sets the value of the destination property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setDestination(String value) {
-                    this.destination = value;
-                }
+		}
 
-                /**
-                 * Gets the value of the privilege property.
-                 * 
-                 * <p>
-                 * This accessor method returns a reference to the live list,
-                 * not a snapshot. Therefore any modification you make to the
-                 * returned list will be present inside the JAXB object.
-                 * This is why there is not a <CODE>set</CODE> method for the privilege property.
-                 * 
-                 * <p>
-                 * For example, to add a new item, do as follows:
-                 * <pre>
-                 *    getPrivilege().add(newItem);
-                 * </pre>
-                 * 
-                 * 
-                 * <p>
-                 * Objects of the following type(s) are allowed in the list
-                 * {@link Privilege }
-                 * 
-                 * 
-                 */
-                public List<Privilege> getPrivilege() {
-                    if (privilege == null) {
-                        privilege = new ArrayList<Privilege>();
-                    }
-                    return this.privilege;
-                }
-
-            }
-
-        }
-
-    }
+	}
 
 }

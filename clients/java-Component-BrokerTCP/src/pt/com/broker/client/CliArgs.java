@@ -15,24 +15,23 @@ public interface CliArgs
 
 	@Option(shortName = "d", defaultValue = "TOPIC")
 	String getDestinationType();
-	
+
 	@Option(shortName = "L", defaultValue = ".")
 	String getKeystoreLocation();
-	
+
 	@Option(shortName = "W", defaultValue = "")
 	String getKeystorePassword();
-	
+
 	@Option(shortName = "S", defaultValue = ".")
 	String getSTSLocation();
-	
+
 	@Option(shortName = "U", defaultValue = "")
 	String getUsername();
-	
+
 	@Option(shortName = "P", defaultValue = "")
 	String getUserPassword();
-	
-	
+
 	@Option(shortName = "l", defaultValue = "1000")
 	int getMessageLength();
-	
+
 }

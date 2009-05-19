@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
-import pt.com.types.NetNotification;
+import pt.com.broker.types.NetNotification;
 
 public class QueueSyncConsumer
 {

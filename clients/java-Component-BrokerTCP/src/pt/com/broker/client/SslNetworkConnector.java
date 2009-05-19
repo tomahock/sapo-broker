@@ -26,12 +26,11 @@ public class SslNetworkConnector extends BaseNetworkConnector
 
 	private final char[] keystorePw;
 
-	
 	public SslNetworkConnector(HostInfo hostInfo) throws UnknownHostException, IOException
 	{
 		this(hostInfo, null, null);
 	}
-	
+
 	public SslNetworkConnector(HostInfo hostInfo, String keystoreLocation, char[] keystorePw) throws UnknownHostException, IOException
 	{
 		super(hostInfo);
@@ -64,7 +63,6 @@ public class SslNetworkConnector extends BaseNetworkConnector
 
 		return sf;
 	}
-
 
 	public synchronized void connect(HostInfo host, long connectionVersion) throws Throwable
 	{

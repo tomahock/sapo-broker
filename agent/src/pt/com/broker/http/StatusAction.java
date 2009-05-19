@@ -30,7 +30,8 @@ public class StatusAction extends HttpAction
 		// {
 		// Status status = new Status();
 		//
-		// String smessage = String.format(template, status.message, status.timestamp, status.version);
+		// String smessage = String.format(template, status.message,
+		// status.timestamp, status.version);
 		// byte[] bmessage = smessage.getBytes("UTF-8");
 		// response.setHeader("Pragma", "no-cache");
 		// response.setHeader("Cache-Control", "no-cache");
@@ -43,7 +44,8 @@ public class StatusAction extends HttpAction
 		// catch (Throwable e)
 		// {
 		// response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-		// log.error("HTTP Service error, cause:" + e.getMessage() + " client:" + iosession.getRemoteAddress());
+		// log.error("HTTP Service error, cause:" + e.getMessage() + " client:"
+		// + iosession.getRemoteAddress());
 		// }
 		// finally
 		// {

@@ -2,16 +2,17 @@ package pt.com.broker.security.authorization;
 
 import java.util.List;
 
-import pt.com.types.NetAction;
+import pt.com.broker.types.NetAction;
 
-public class AclEntry {
+public class AclEntry
+{
 	private AccessControl.Autorization autorizationType;
 	private NetAction.DestinationType destinationType;
 	private AccessControl.Privilege privilege;
 	private String destination;
 	private List<AclPredicate> conditions;
-	
-	public AclEntry(AccessControl.Autorization autorizationType,  AccessControl.Privilege privilege, String destination, NetAction.DestinationType destinationType, List<AclPredicate> conditions)
+
+	public AclEntry(AccessControl.Autorization autorizationType, AccessControl.Privilege privilege, String destination, NetAction.DestinationType destinationType, List<AclPredicate> conditions)
 	{
 		this.autorizationType = autorizationType;
 		this.privilege = privilege;
@@ -19,19 +20,29 @@ public class AclEntry {
 		this.destinationType = destinationType;
 		this.conditions = conditions;
 	}
-	public AccessControl.Autorization getAutorizationType() {
+
+	public AccessControl.Autorization getAutorizationType()
+	{
 		return autorizationType;
 	}
-	public AccessControl.Privilege getPrivilege() {
+
+	public AccessControl.Privilege getPrivilege()
+	{
 		return privilege;
 	}
-	public String getDestination() {
+
+	public String getDestination()
+	{
 		return destination;
 	}
-	public NetAction.DestinationType getDestinationType(){
+
+	public NetAction.DestinationType getDestinationType()
+	{
 		return destinationType;
 	}
-	public List<AclPredicate> getConditions() {
+
+	public List<AclPredicate> getConditions()
+	{
 		return conditions;
 	}
 }

@@ -8,12 +8,11 @@ import java.net.SocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public abstract class BaseNetworkConnector
 {
 
 	private static final Logger log = LoggerFactory.getLogger(BaseNetworkConnector.class);
-	
+
 	protected Socket client;
 	protected DataInputStream rawInput = null;
 	protected DataOutputStream rawOutput = null;
@@ -28,7 +27,7 @@ public abstract class BaseNetworkConnector
 	{
 		this.hostInfo = hostInfo;
 	}
-		
+
 	public synchronized DataInputStream getInput()
 	{
 		return rawInput;
@@ -41,7 +40,7 @@ public abstract class BaseNetworkConnector
 
 	public synchronized void close()
 	{
-		if(isClosed())
+		if (isClosed())
 			return;
 		closed = true;
 		try
@@ -51,7 +50,7 @@ public abstract class BaseNetworkConnector
 		catch (Throwable e)
 		{
 		}
-	
+
 		try
 		{
 			rawOutput.close();
@@ -59,7 +58,7 @@ public abstract class BaseNetworkConnector
 		catch (Throwable e)
 		{
 		}
-	
+
 		try
 		{
 			getSocket().close();
@@ -121,13 +120,13 @@ public abstract class BaseNetworkConnector
 
 	public synchronized void connect() throws Throwable
 	{
-		if(hostInfo == null)
+		if (hostInfo == null)
 		{
 			throw new Exception("NetworkConnector: Unable to connect - no host information available");
 		}
 		connect(this.hostInfo, 0);
 	}
-		
+
 	protected abstract void connect(HostInfo host, long connectionVersion) throws Throwable;
 
 	public void setProtocolHandler(BrokerProtocolHandler protocolHandler)
@@ -139,5 +138,5 @@ public abstract class BaseNetworkConnector
 	{
 		return protocolHandler;
 	}
-	
+
 }

@@ -5,12 +5,12 @@ import java.util.Map;
 
 import org.apache.mina.core.session.IoSession;
 
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageListener;
-import pt.com.types.NetAction;
-import pt.com.types.NetMessage;
-import pt.com.types.NetNotification;
-import pt.com.types.NetAction.DestinationType;
 
 public abstract class BrokerListener implements MessageListener
 {
@@ -19,13 +19,13 @@ public abstract class BrokerListener implements MessageListener
 		return buildNotification(msg, null, dtype);
 	}
 
-	protected static NetMessage buildNotification(InternalMessage msg, String subscriptionName, DestinationType dtype )
+	protected static NetMessage buildNotification(InternalMessage msg, String subscriptionName, DestinationType dtype)
 	{
 		NetNotification notification = new NetNotification(msg.getPublishDestination(), dtype, msg.getContent(), subscriptionName);
 
 		NetAction action = new NetAction(NetAction.ActionType.NOTIFICATION);
 		action.setNotificationMessage(notification);
-		
+
 		notification.getMessage().setMessageId(msg.getMessageId());
 
 		Map<String, String> params = new HashMap<String, String>();

@@ -5,8 +5,8 @@ package pt.com.gcs.messaging;
 
 import java.util.Iterator;
 
-import pt.com.types.NetAction;
-import pt.com.types.NetParameter;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetParameter;
 
 public abstract class GcsMessageAdapter
 {

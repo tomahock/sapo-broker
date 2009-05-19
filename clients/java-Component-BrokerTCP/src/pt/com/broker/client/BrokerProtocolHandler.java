@@ -10,19 +10,19 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.CredentialsProvider;
+import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.BaseBrokerClient.BrokerClientState;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.net.ProtocolHandler;
-import pt.com.common.security.ClientAuthInfo;
-import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
-import pt.com.types.BindingSerializer;
-import pt.com.types.NetAccepted;
-import pt.com.types.NetAction;
-import pt.com.types.NetFault;
-import pt.com.types.NetMessage;
-import pt.com.types.NetNotification;
-import pt.com.types.NetProtocolType;
-import pt.com.types.NetAction.ActionType;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.NetAccepted;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetAction.ActionType;
 
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
@@ -41,7 +41,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	private short proto_type = 1;
 
-	
 	private HostInfo hostInfo = null;
 
 	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
@@ -62,15 +61,15 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			{
 			case SOAP:
 				proto_type = 0;
-				serializer = (BindingSerializer) Class.forName("pt.com.xml.codec.SoapBindingSerializer").newInstance();
+				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.xml.SoapBindingSerializer").newInstance();
 				break;
 			case PROTOCOL_BUFFER:
 				proto_type = 1;
-				serializer = (BindingSerializer) Class.forName("pt.com.protobuf.codec.ProtoBufBindingSerializer").newInstance();
+				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.protobuf.ProtoBufBindingSerializer").newInstance();
 				break;
 			case THRIFT:
 				proto_type = 2;
-				serializer = (BindingSerializer) Class.forName("pt.com.thrift.codec.ThriftBindingSerializer").newInstance();
+				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.thrift.ThriftBindingSerializer").newInstance();
 				break;
 			default:
 				throw new Exception("Invalid Protocol Type: " + ptype);
@@ -85,13 +84,11 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		brokerClient.setState(BrokerClientState.OK);
 	}
 
-
 	@Override
 	public BaseNetworkConnector getConnector()
 	{
 		return connector;
 	}
-
 
 	@Override
 	public void onConnectionClose()
@@ -138,15 +135,15 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 					this.connector.connect(getHostInfo(), newConnectionVersion);
 
 					// AUTH
-					
-					//TODO: resolve this
-					
-//					if (brokerClient.isAuthenticationRequired())
-//					{
-//						this.brokerClient.setState(BrokerClientState.AUTH);
-//						brokerClient.obtainCredentials();
-//						brokerClient.authenticateClient();
-//					}
+
+					// TODO: resolve this
+
+					// if (brokerClient.isAuthenticationRequired())
+					// {
+					// this.brokerClient.setState(BrokerClientState.AUTH);
+					// brokerClient.obtainCredentials();
+					// brokerClient.authenticateClient();
+					// }
 
 					this.brokerClient.setState(BrokerClientState.OK);
 
@@ -287,12 +284,13 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 				super.sendMessage(message);
 				return;
 			}
-			// BrokerCliet state is CLOSE. onFailure already invoked. Notify message lost
+			// BrokerCliet state is CLOSE. onFailure already invoked. Notify
+			// message lost
 			onError(new Exception("Message Lost due to failure of agent"));
 			log.error("Message Lost due to failure of agent!");
 		}
 	}
-	
+
 	public BaseBrokerClient getBrokerClient()
 	{
 		return brokerClient;

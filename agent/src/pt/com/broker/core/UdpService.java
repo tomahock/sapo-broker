@@ -81,7 +81,8 @@ public class UdpService
 
 			// try
 			// {
-			// SoapEnvelope soap = SoapSerializer.FromXml(new UnsynchByteArrayInputStream(_messageData));
+			// SoapEnvelope soap = SoapSerializer.FromXml(new
+			// UnsynchByteArrayInputStream(_messageData));
 			//
 			// final String requestSource = MQ.requestSource(soap);
 			//

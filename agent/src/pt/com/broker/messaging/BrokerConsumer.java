@@ -3,9 +3,9 @@ package pt.com.broker.messaging;
 import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
 
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetUnsubscribe;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetUnsubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class BrokerConsumer
 {

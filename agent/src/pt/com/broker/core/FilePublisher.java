@@ -84,8 +84,11 @@ public class FilePublisher
 			//
 			//				
 			// Message cnt_message = new Message();
-			// String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
-			// String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
+			// String dName = String.format("/system/stats/dropbox/#%s#",
+			// GcsInfo.getAgentName());
+			// String content = GcsInfo.getAgentName() + "#" +
+			// dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" +
+			// goodFileCount;
 			// cnt_message.setDestination(dName);
 			// cnt_message.setContent(content);
 			//				
@@ -116,7 +119,9 @@ public class FilePublisher
 			// }
 			// catch (Throwable e)
 			// {
-			// log.error("Error processing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
+			// log.error("Error processing file \"" + msgf.getAbsolutePath() +
+			// "\". Error message: " +
+			// ErrorAnalyser.findRootCause(e).getMessage());
 			// }
 			//
 			// if (isFileValid)
@@ -125,16 +130,20 @@ public class FilePublisher
 			// {
 			// if (soap.body.publish != null)
 			// {
-			// BrokerTextProducer.getInstance().publishMessage(soap.body.publish, MQ.requestSource(soap));
+			// BrokerTextProducer.getInstance().publishMessage(soap.body.publish,
+			// MQ.requestSource(soap));
 			// }
 			// else if (soap.body.enqueue != null)
 			// {
-			// BrokerTextProducer.getInstance().enqueueMessage(soap.body.enqueue, MQ.requestSource(soap));
+			// BrokerTextProducer.getInstance().enqueueMessage(soap.body.enqueue,
+			// MQ.requestSource(soap));
 			// }
 			// }
 			// catch (Throwable e)
 			// {
-			// log.error("Error publishing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
+			// log.error("Error publishing file \"" + msgf.getAbsolutePath() +
+			// "\". Error message: " +
+			// ErrorAnalyser.findRootCause(e).getMessage());
 			// }
 			// finally
 			// {

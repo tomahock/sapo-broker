@@ -2,27 +2,26 @@ package pt.com.broker.security;
 
 import javax.crypto.SecretKey;
 
+import pt.com.broker.auth.CredentialsProvider;
+import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.BrokerProtocolHandler;
-import pt.com.common.security.ClientAuthInfo;
-import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
-import pt.com.thrift.AuthMessageType;
+import pt.com.broker.codec.thrift.AuthMessageType;
 
 public class SecureSessionInfo
 {
 	private String localCommunicationId;
-		
-	private AuthenticationCredentialsProvider authProvider;
-	private ClientAuthInfo userCredentials;
-	private ClientAuthInfo providerCredentials;
+
+	private CredentialsProvider authProvider;
+	private AuthInfo userCredentials;
+	private AuthInfo providerCredentials;
 	private BrokerProtocolHandler brokerProtocolHandler;
-	
+
 	private String communicationId;
 	private SecretKey key;
 	private String secretType;
 	private byte[] serverChallenge;
 	private AuthMessageType expectedMessageType;
-	
-	
+
 	public void setLocalCommunicationId(String localCommunicationId)
 	{
 		this.localCommunicationId = localCommunicationId;
@@ -34,22 +33,22 @@ public class SecureSessionInfo
 		return localCommunicationId;
 	}
 
-	public void setUserCredentials(ClientAuthInfo userCredentials)
+	public void setUserCredentials(AuthInfo userCredentials)
 	{
 		this.userCredentials = userCredentials;
 	}
 
-	public ClientAuthInfo getUserCredentials()
+	public AuthInfo getUserCredentials()
 	{
 		return userCredentials;
 	}
 
-	public void setProviderCredentials(ClientAuthInfo providerCredentials)
+	public void setProviderCredentials(AuthInfo providerCredentials)
 	{
 		this.providerCredentials = providerCredentials;
 	}
 
-	public ClientAuthInfo getProviderCredentials()
+	public AuthInfo getProviderCredentials()
 	{
 		return providerCredentials;
 	}
@@ -64,12 +63,12 @@ public class SecureSessionInfo
 		return brokerProtocolHandler;
 	}
 
-	public void setAuthProvider(AuthenticationCredentialsProvider authProvider)
+	public void setAuthProvider(CredentialsProvider authProvider)
 	{
 		this.authProvider = authProvider;
 	}
 
-	public AuthenticationCredentialsProvider getAuthProvider()
+	public CredentialsProvider getAuthProvider()
 	{
 		return authProvider;
 	}
@@ -103,7 +102,6 @@ public class SecureSessionInfo
 	{
 		return secretType;
 	}
-
 
 	public void setServerChallenge(byte[] serverChallenge)
 	{

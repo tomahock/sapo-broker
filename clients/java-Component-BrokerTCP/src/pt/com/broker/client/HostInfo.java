@@ -21,20 +21,19 @@ public final class HostInfo
 		return port;
 	}
 
-	
 	@Override
 	public boolean equals(Object obj)
 	{
-		if(!obj.getClass().equals(this.getClass()))
+		if (!obj.getClass().equals(this.getClass()))
 			return false;
-		HostInfo other = (HostInfo)obj;
-		if(!hostname.equals(other.hostname))
+		HostInfo other = (HostInfo) obj;
+		if (!hostname.equals(other.hostname))
 			return false;
-		if(port != other.port)
+		if (port != other.port)
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString()
 	{

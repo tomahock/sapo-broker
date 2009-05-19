@@ -6,14 +6,13 @@ public class AlwaysPredicate implements AclPredicate
 {
 
 	private static AlwaysPredicate instance = new AlwaysPredicate();
-	
+
 	@Override
 	public boolean match(SessionProperties properties)
 	{
 		// TODO Auto-generated method stub
 		return true;
 	}
-
 
 	public static AlwaysPredicate getInstance()
 	{

@@ -2,8 +2,8 @@ package pt.com.gcs.net.codec;
 
 import org.caudexorigo.io.UnsynchByteArrayInputStream;
 
+import pt.com.broker.types.SimpleFramingDecoder;
 import pt.com.gcs.io.SerializerHelper;
-import pt.com.types.SimpleFramingDecoder;
 
 public class GcsDecoder extends SimpleFramingDecoder
 {

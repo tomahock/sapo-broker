@@ -8,10 +8,10 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
-import pt.com.protobuf.codec.ProtoBufCodec;
-import pt.com.thrift.codec.ThriftCodec;
-import pt.com.types.Constants;
-import pt.com.xml.codec.SoapCodecV2;
+import pt.com.broker.codec.protobuf.ProtoBufCodec;
+import pt.com.broker.codec.thrift.ThriftCodec;
+import pt.com.broker.codec.xml.SoapCodecV2;
+import pt.com.broker.types.Constants;
 
 /**
  * The network protocol has the following layout:
@@ -42,16 +42,16 @@ public class BrokerCodecRouter implements ProtocolCodecFactory
 		codecs.put(new Short((short) 2), new ThriftCodec());
 	}
 
-	// TODO: Create a constructor that specifies this value. The original value was defined by: Constants.MAX_MESSAGE_SIZE
+	// TODO: Create a constructor that specifies this value. The original value
+	// was defined by: Constants.MAX_MESSAGE_SIZE
 
-	
 	private static BrokerCodecRouter instance = new BrokerCodecRouter();
-	
+
 	public static BrokerCodecRouter getInstance()
 	{
 		return instance;
 	}
-	
+
 	private BrokerEncoderRouter encoder;
 	private BrokerDecoderRouter decoder;
 

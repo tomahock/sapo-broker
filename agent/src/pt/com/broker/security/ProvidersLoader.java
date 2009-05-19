@@ -6,10 +6,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.CredentialsProvider;
+import pt.com.broker.auth.CredentialsProviderFactory;
+import pt.com.broker.auth.AuthInfoValidator;
 import pt.com.broker.security.authentication.ClientAuthenticationInfoVerifierFactory;
-import pt.com.common.security.ClientAuthenticationInfoValidator;
-import pt.com.common.security.authentication.AuthenticationCredentialsProvider;
-import pt.com.common.security.authentication.AuthenticationCredentialsProviderFactory;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.conf.ProviderInfo;
 
@@ -19,7 +19,7 @@ public class ProvidersLoader
 
 	public static void init()
 	{
-		// Loading order matters! Validators may use authentication providers 
+		// Loading order matters! Validators may use authentication providers
 		loadAuthenticationProviders();
 		loadCredentialValidators();
 	}
@@ -37,10 +37,10 @@ public class ProvidersLoader
 				{
 					ProviderInfo providerInfo = authenticationProviders.get(prov);
 					Class<?> provClass = Class.forName(providerInfo.getClassName());
-					AuthenticationCredentialsProvider authProv = (AuthenticationCredentialsProvider) provClass.newInstance();
+					CredentialsProvider authProv = (CredentialsProvider) provClass.newInstance();
 					authProv.init();
 
-					AuthenticationCredentialsProviderFactory.addProvider(providerInfo.getName(), authProv);
+					CredentialsProviderFactory.addProvider(providerInfo.getName(), authProv);
 				}
 				catch (Exception e)
 				{
@@ -64,7 +64,7 @@ public class ProvidersLoader
 				{
 					ProviderInfo providerInfo = credentialValidatorProviders.get(prov);
 					Class<?> provClass = Class.forName(providerInfo.getClassName());
-					ClientAuthenticationInfoValidator validatorProv = (ClientAuthenticationInfoValidator) provClass.newInstance();
+					AuthInfoValidator validatorProv = (AuthInfoValidator) provClass.newInstance();
 
 					validatorProv.init();
 					ClientAuthenticationInfoVerifierFactory.addValidator(providerInfo.getName(), validatorProv);

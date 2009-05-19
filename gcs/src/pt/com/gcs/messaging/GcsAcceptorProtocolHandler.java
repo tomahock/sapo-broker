@@ -13,31 +13,33 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.net.IoSessionHelper;
 import pt.com.gcs.net.Peer;
-import pt.com.types.NetBrokerMessage;
 
 class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 {
 	private static Logger log = LoggerFactory.getLogger(GcsAcceptorProtocolHandler.class);
 
 	private static List<InetSocketAddress> peersAddressList;
-	
-	static{
+
+	static
+	{
 		createPeersList();
 	}
 
-	private static void createPeersList(){
+	private static void createPeersList()
+	{
 		List<Peer> peerList = GlobalConfig.getPeerList();
 		peersAddressList = new ArrayList<InetSocketAddress>(peerList.size());
 		for (Peer peer : peerList)
 		{
 			InetSocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
 			peersAddressList.add(addr);
-		}	
+		}
 	}
-	
+
 	@Override
 	public void exceptionCaught(IoSession iosession, Throwable cause) throws Exception
 	{
@@ -92,7 +94,8 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 
 			final String action = extract(msgContent, "<action>", "</action>");
 			final String src_name = extract(msgContent, "<source-name>", "</source-name>");
-			// final String src_ip = extract(payload, "<source-ip>", "</source-ip>");
+			// final String src_ip = extract(payload, "<source-ip>",
+			// "</source-ip>");
 			final String destinationName = extract(msgContent, "<destination>", "</destination>");
 
 			if (log.isInfoEnabled())
@@ -151,35 +154,34 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	@Override
 	public void sessionCreated(IoSession iosession) throws Exception
 	{
-		if(!validPeerAddress(iosession))
+		if (!validPeerAddress(iosession))
 		{
 			iosession.close(true);
 			log.warn("GCS: connection refused");
 			return;
 		}
-		
+
 		IoSessionHelper.tagWithRemoteAddress(iosession);
 		if (log.isDebugEnabled())
 		{
 			log.debug("Session Created: '{}'", IoSessionHelper.getRemoteAddress(iosession));
 		}
 	}
-	
+
 	private boolean validPeerAddress(IoSession iosession)
 	{
-		InetSocketAddress remotePeer = (InetSocketAddress)iosession.getRemoteAddress();
+		InetSocketAddress remotePeer = (InetSocketAddress) iosession.getRemoteAddress();
 		InetAddress address = remotePeer.getAddress();
-				
+
 		for (InetSocketAddress addr : peersAddressList)
 		{
-			if(address.equals(addr.getAddress()) )
+			if (address.equals(addr.getAddress()))
 			{
 				return true;
 			}
 		}
 		return false;
 	}
-
 
 	@Override
 	public void sessionIdle(IoSession iosession, IdleStatus status) throws Exception

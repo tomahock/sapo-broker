@@ -6,14 +6,14 @@ import org.caudexorigo.cli.CliFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.common.security.ClientAuthInfo;
-import pt.com.types.NetNotification;
-import pt.com.types.NetProtocolType;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class AuthenticatedDBConsumer implements BrokerListener
 {
@@ -29,11 +29,10 @@ public class AuthenticatedDBConsumer implements BrokerListener
 	private String stsLocation;
 	private String username;
 	private String password;
-	
+
 	private String keystoreLocation;
 	private String keystorePassword;
 
-	
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);
@@ -47,15 +46,13 @@ public class AuthenticatedDBConsumer implements BrokerListener
 
 		consumer.username = cargs.getUsername();
 		consumer.password = cargs.getUserPassword();
-		
+
 		consumer.keystoreLocation = cargs.getKeystoreLocation();
 		consumer.keystorePassword = cargs.getKeystorePassword();
 
-
-		
 		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
 
-		ClientAuthInfo clientAuthInfo = new ClientAuthInfo(consumer.username, consumer.password);
+		AuthInfo clientAuthInfo = new AuthInfo(consumer.username, consumer.password);
 		clientAuthInfo.setUserAuthenticationType("BrokerRolesDB");
 
 		bk.setAuthenticationCredentials(clientAuthInfo);

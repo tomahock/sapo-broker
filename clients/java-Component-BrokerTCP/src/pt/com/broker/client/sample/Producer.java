@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class Producer
 {
@@ -35,11 +35,11 @@ public class Producer
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
-		log.info("Start sending a string of " +  cargs.getMessageLength() +" random alphanumeric characters in 2 seconds...");
+		log.info("Start sending a string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds...");
 
 		Thread.sleep(2000);
 
-		producer.sendLoop(bk, cargs.getMessageLength() );
+		producer.sendLoop(bk, cargs.getMessageLength());
 	}
 
 	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable

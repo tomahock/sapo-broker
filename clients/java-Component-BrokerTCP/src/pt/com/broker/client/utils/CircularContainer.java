@@ -17,7 +17,7 @@ public class CircularContainer<T>
 	{
 		innerContainer = new ArrayList<T>(capacity);
 	}
-	
+
 	public CircularContainer(Collection<T> elements)
 	{
 		innerContainer = new ArrayList<T>(elements);
@@ -47,7 +47,7 @@ public class CircularContainer<T>
 			innerContainer.clear();
 		}
 	}
-	
+
 	public int size()
 	{
 		synchronized (innerContainer)
