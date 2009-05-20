@@ -1,11 +1,8 @@
-package pt.com.broker.security;
+package pt.com.broker.auth;
 
 import org.apache.mina.core.session.IoSession;
 
-import pt.com.broker.security.authorization.AccessControl;
-import pt.com.broker.security.authorization.AclEntry;
-import pt.com.broker.security.authorization.SessionAcl;
-import pt.com.broker.security.authorization.AccessControl.Privilege;
+import pt.com.broker.auth.AccessControl.Privilege;
 
 public class Session
 {

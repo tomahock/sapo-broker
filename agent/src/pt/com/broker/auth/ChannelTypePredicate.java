@@ -1,8 +1,7 @@
-package pt.com.broker.security.authorization;
+package pt.com.broker.auth;
 
 import java.util.List;
 
-import pt.com.broker.security.SessionProperties;
 import pt.com.gcs.conf.global.ChannelType;
 
 public class ChannelTypePredicate implements AclPredicate

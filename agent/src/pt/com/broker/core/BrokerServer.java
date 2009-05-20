@@ -16,10 +16,10 @@ import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.codec.BrokerCodecRouter;
 import pt.com.broker.codec.xml.SoapCodec;
 import pt.com.broker.messaging.AuthorizationFilter;
 import pt.com.broker.net.BrokerProtocolHandler;
-import pt.com.broker.net.codec.BrokerCodecRouter;
 import pt.com.gcs.conf.GcsInfo;
 
 public class BrokerServer

@@ -1,10 +1,9 @@
-package pt.com.broker.security.authorization;
+package pt.com.broker.auth;
 
 import java.net.InetAddress;
 
 import org.apache.mina.filter.firewall.Subnet;
 
-import pt.com.broker.security.SessionProperties;
 
 public class AddressPredicate implements AclPredicate
 {

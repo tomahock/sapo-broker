@@ -1,4 +1,4 @@
-package pt.com.broker.security;
+package pt.com.broker.auth;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

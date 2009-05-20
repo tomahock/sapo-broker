@@ -10,8 +10,6 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.auth.CredentialsProvider;
-import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.BaseBrokerClient.BrokerClientState;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.net.ProtocolHandler;
@@ -207,8 +205,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			}
 			catch (Throwable e)
 			{
-				// TODO decide what to do with exception
-				e.printStackTrace();
+				brokerClient.getErrorListener().onError(e);
 			}
 			break;
 		case FAULT:

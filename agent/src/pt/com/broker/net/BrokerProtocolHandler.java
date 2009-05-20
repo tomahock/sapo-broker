@@ -12,8 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AuthInfo;
-import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.AuthInfoValidator;
+import pt.com.broker.auth.AuthValidationResult;
+import pt.com.broker.auth.AuthInfoVerifierFactory;
+import pt.com.broker.auth.Session;
+import pt.com.broker.auth.SessionProperties;
 import pt.com.broker.codec.xml.FaultCode;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapSerializer;
@@ -24,9 +27,6 @@ import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
 import pt.com.broker.messaging.QueueSessionListenerList;
 import pt.com.broker.messaging.TopicSubscriberList;
-import pt.com.broker.security.Session;
-import pt.com.broker.security.SessionProperties;
-import pt.com.broker.security.authentication.ClientAuthenticationInfoVerifierFactory;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAuthentication;
@@ -413,7 +413,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 		// // Validate client credentials
 		AuthInfo info = new AuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType());
-		AuthInfoValidator validator = ClientAuthenticationInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
+		AuthInfoValidator validator = AuthInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
 		AuthValidationResult validateResult = null;
 		try
 		{

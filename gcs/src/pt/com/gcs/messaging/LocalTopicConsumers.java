@@ -96,9 +96,9 @@ class LocalTopicConsumers
 				{
 					messageListener.onMessage(message);
 					message.setDestination(topicName); // -> Set the destination
-														// name, queue
-														// dispatchers change
-														// it.
+					// name, queue
+					// dispatchers change
+					// it.
 				}
 			}
 		}

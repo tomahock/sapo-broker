@@ -9,6 +9,7 @@ package pt.com.gcs.conf.global;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -20,8 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  * Java class for Policies complex type.
  * 
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name=&quot;Policies&quot;&gt;
@@ -93,10 +93,7 @@ public class Policies
 	 * Gets the value of the policy property.
 	 * 
 	 * <p>
-	 * This accessor method returns a reference to the live list, not a
-	 * snapshot. Therefore any modification you make to the returned list will
-	 * be present inside the JAXB object. This is why there is not a
-	 * <CODE>set</CODE> method for the policy property.
+	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the policy property.
 	 * 
 	 * <p>
 	 * For example, to add a new item, do as follows:
@@ -107,8 +104,7 @@ public class Policies
 	 * 
 	 * 
 	 * <p>
-	 * Objects of the following type(s) are allowed in the list
-	 * {@link Policies.Policy }
+	 * Objects of the following type(s) are allowed in the list {@link Policies.Policy }
 	 * 
 	 * 
 	 */
@@ -126,8 +122,7 @@ public class Policies
 	 * Java class for anonymous complex type.
 	 * 
 	 * <p>
-	 * The following schema fragment specifies the expected content contained
-	 * within this class.
+	 * The following schema fragment specifies the expected content contained within this class.
 	 * 
 	 * <pre>
 	 * &lt;complexType&gt;
@@ -263,8 +258,7 @@ public class Policies
 		 * Java class for anonymous complex type.
 		 * 
 		 * <p>
-		 * The following schema fragment specifies the expected content
-		 * contained within this class.
+		 * The following schema fragment specifies the expected content contained within this class.
 		 * 
 		 * <pre>
 		 * &lt;complexType&gt;
@@ -314,10 +308,7 @@ public class Policies
 			 * Gets the value of the entry property.
 			 * 
 			 * <p>
-			 * This accessor method returns a reference to the live list, not a
-			 * snapshot. Therefore any modification you make to the returned
-			 * list will be present inside the JAXB object. This is why there is
-			 * not a <CODE>set</CODE> method for the entry property.
+			 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the entry property.
 			 * 
 			 * <p>
 			 * For example, to add a new item, do as follows:
@@ -328,8 +319,7 @@ public class Policies
 			 * 
 			 * 
 			 * <p>
-			 * Objects of the following type(s) are allowed in the list
-			 * {@link Policies.Policy.Acl.Entry }
+			 * Objects of the following type(s) are allowed in the list {@link Policies.Policy.Acl.Entry }
 			 * 
 			 * 
 			 */
@@ -347,8 +337,7 @@ public class Policies
 			 * Java class for anonymous complex type.
 			 * 
 			 * <p>
-			 * The following schema fragment specifies the expected content
-			 * contained within this class.
+			 * The following schema fragment specifies the expected content contained within this class.
 			 * 
 			 * <pre>
 			 * &lt;complexType&gt;
@@ -396,11 +385,7 @@ public class Policies
 				 * Gets the value of the condition property.
 				 * 
 				 * <p>
-				 * This accessor method returns a reference to the live list,
-				 * not a snapshot. Therefore any modification you make to the
-				 * returned list will be present inside the JAXB object. This is
-				 * why there is not a <CODE>set</CODE> method for the condition
-				 * property.
+				 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the condition property.
 				 * 
 				 * <p>
 				 * For example, to add a new item, do as follows:
@@ -411,8 +396,7 @@ public class Policies
 				 * 
 				 * 
 				 * <p>
-				 * Objects of the following type(s) are allowed in the list
-				 * {@link Condition }
+				 * Objects of the following type(s) are allowed in the list {@link Condition }
 				 * 
 				 * 
 				 */
@@ -452,11 +436,7 @@ public class Policies
 				 * Gets the value of the destinationType property.
 				 * 
 				 * <p>
-				 * This accessor method returns a reference to the live list,
-				 * not a snapshot. Therefore any modification you make to the
-				 * returned list will be present inside the JAXB object. This is
-				 * why there is not a <CODE>set</CODE> method for the
-				 * destinationType property.
+				 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the destinationType property.
 				 * 
 				 * <p>
 				 * For example, to add a new item, do as follows:
@@ -467,8 +447,7 @@ public class Policies
 				 * 
 				 * 
 				 * <p>
-				 * Objects of the following type(s) are allowed in the list
-				 * {@link DestinationType }
+				 * Objects of the following type(s) are allowed in the list {@link DestinationType }
 				 * 
 				 * 
 				 */
@@ -508,11 +487,7 @@ public class Policies
 				 * Gets the value of the privilege property.
 				 * 
 				 * <p>
-				 * This accessor method returns a reference to the live list,
-				 * not a snapshot. Therefore any modification you make to the
-				 * returned list will be present inside the JAXB object. This is
-				 * why there is not a <CODE>set</CODE> method for the privilege
-				 * property.
+				 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the privilege property.
 				 * 
 				 * <p>
 				 * For example, to add a new item, do as follows:
@@ -523,8 +498,7 @@ public class Policies
 				 * 
 				 * 
 				 * <p>
-				 * Objects of the following type(s) are allowed in the list
-				 * {@link Privilege }
+				 * Objects of the following type(s) are allowed in the list {@link Privilege }
 				 * 
 				 * 
 				 */

@@ -32,9 +32,4 @@ public class NetMessage
 	{
 		return action;
 	}
-
-	/*
-	 * TODO : add this information: Encoding type Encoding version major
-	 * Encoding version major
-	 */
 }

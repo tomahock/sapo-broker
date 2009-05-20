@@ -27,12 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import pt.com.gcs.conf.global.BrokerSecurityPolicy;
-import pt.com.gcs.conf.global.GlobalConfig.AuthorizationProviders;
-import pt.com.gcs.conf.global.GlobalConfig.AuthorizationProviders.AuthorizationProvider;
 import pt.com.gcs.net.Peer;
 
 public class GlobalConfig

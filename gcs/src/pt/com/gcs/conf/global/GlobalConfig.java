@@ -9,6 +9,7 @@ package pt.com.gcs.conf.global;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -16,6 +17,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
 import org.w3c.dom.Element;
 
 /**
@@ -23,8 +25,7 @@ import org.w3c.dom.Element;
  * Java class for anonymous complex type.
  * 
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType&gt;
@@ -252,8 +253,7 @@ public class GlobalConfig
 	 * Java class for anonymous complex type.
 	 * 
 	 * <p>
-	 * The following schema fragment specifies the expected content contained
-	 * within this class.
+	 * The following schema fragment specifies the expected content contained within this class.
 	 * 
 	 * <pre>
 	 * &lt;complexType&gt;
@@ -303,10 +303,7 @@ public class GlobalConfig
 		 * Gets the value of the authorizationProvider property.
 		 * 
 		 * <p>
-		 * This accessor method returns a reference to the live list, not a
-		 * snapshot. Therefore any modification you make to the returned list
-		 * will be present inside the JAXB object. This is why there is not a
-		 * <CODE>set</CODE> method for the authorizationProvider property.
+		 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the authorizationProvider property.
 		 * 
 		 * <p>
 		 * For example, to add a new item, do as follows:
@@ -317,8 +314,7 @@ public class GlobalConfig
 		 * 
 		 * 
 		 * <p>
-		 * Objects of the following type(s) are allowed in the list
-		 * {@link GlobalConfig.AuthorizationProviders.AuthorizationProvider }
+		 * Objects of the following type(s) are allowed in the list {@link GlobalConfig.AuthorizationProviders.AuthorizationProvider }
 		 * 
 		 * 
 		 */
@@ -336,8 +332,7 @@ public class GlobalConfig
 		 * Java class for anonymous complex type.
 		 * 
 		 * <p>
-		 * The following schema fragment specifies the expected content
-		 * contained within this class.
+		 * The following schema fragment specifies the expected content contained within this class.
 		 * 
 		 * <pre>
 		 * &lt;complexType&gt;
@@ -403,8 +398,7 @@ public class GlobalConfig
 			/**
 			 * Gets the value of the providerParams property.
 			 * 
-			 * @return possible object is
-			 *         {@link GlobalConfig.AuthorizationProviders.AuthorizationProvider.ProviderParams }
+			 * @return possible object is {@link GlobalConfig.AuthorizationProviders.AuthorizationProvider.ProviderParams }
 			 * 
 			 */
 			public GlobalConfig.AuthorizationProviders.AuthorizationProvider.ProviderParams getProviderParams()
@@ -416,8 +410,7 @@ public class GlobalConfig
 			 * Sets the value of the providerParams property.
 			 * 
 			 * @param value
-			 *            allowed object is
-			 *            {@link GlobalConfig.AuthorizationProviders.AuthorizationProvider.ProviderParams }
+			 *            allowed object is {@link GlobalConfig.AuthorizationProviders.AuthorizationProvider.ProviderParams }
 			 * 
 			 */
 			public void setProviderParams(GlobalConfig.AuthorizationProviders.AuthorizationProvider.ProviderParams value)
@@ -453,8 +446,7 @@ public class GlobalConfig
 			 * Java class for anonymous complex type.
 			 * 
 			 * <p>
-			 * The following schema fragment specifies the expected content
-			 * contained within this class.
+			 * The following schema fragment specifies the expected content contained within this class.
 			 * 
 			 * <pre>
 			 * &lt;complexType&gt;
@@ -482,11 +474,7 @@ public class GlobalConfig
 				 * Gets the value of the any property.
 				 * 
 				 * <p>
-				 * This accessor method returns a reference to the live list,
-				 * not a snapshot. Therefore any modification you make to the
-				 * returned list will be present inside the JAXB object. This is
-				 * why there is not a <CODE>set</CODE> method for the any
-				 * property.
+				 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any property.
 				 * 
 				 * <p>
 				 * For example, to add a new item, do as follows:
@@ -497,8 +485,7 @@ public class GlobalConfig
 				 * 
 				 * 
 				 * <p>
-				 * Objects of the following type(s) are allowed in the list
-				 * {@link Element } {@link Object }
+				 * Objects of the following type(s) are allowed in the list {@link Element } {@link Object }
 				 * 
 				 * 
 				 */
@@ -522,8 +509,7 @@ public class GlobalConfig
 	 * Java class for anonymous complex type.
 	 * 
 	 * <p>
-	 * The following schema fragment specifies the expected content contained
-	 * within this class.
+	 * The following schema fragment specifies the expected content contained within this class.
 	 * 
 	 * <pre>
 	 * &lt;complexType&gt;
@@ -573,10 +559,7 @@ public class GlobalConfig
 		 * Gets the value of the credentialValidator property.
 		 * 
 		 * <p>
-		 * This accessor method returns a reference to the live list, not a
-		 * snapshot. Therefore any modification you make to the returned list
-		 * will be present inside the JAXB object. This is why there is not a
-		 * <CODE>set</CODE> method for the credentialValidator property.
+		 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the credentialValidator property.
 		 * 
 		 * <p>
 		 * For example, to add a new item, do as follows:
@@ -587,8 +570,7 @@ public class GlobalConfig
 		 * 
 		 * 
 		 * <p>
-		 * Objects of the following type(s) are allowed in the list
-		 * {@link GlobalConfig.CredentialValidators.CredentialValidator }
+		 * Objects of the following type(s) are allowed in the list {@link GlobalConfig.CredentialValidators.CredentialValidator }
 		 * 
 		 * 
 		 */
@@ -606,8 +588,7 @@ public class GlobalConfig
 		 * Java class for anonymous complex type.
 		 * 
 		 * <p>
-		 * The following schema fragment specifies the expected content
-		 * contained within this class.
+		 * The following schema fragment specifies the expected content contained within this class.
 		 * 
 		 * <pre>
 		 * &lt;complexType&gt;
@@ -673,8 +654,7 @@ public class GlobalConfig
 			/**
 			 * Gets the value of the providerParams property.
 			 * 
-			 * @return possible object is
-			 *         {@link GlobalConfig.CredentialValidators.CredentialValidator.ProviderParams }
+			 * @return possible object is {@link GlobalConfig.CredentialValidators.CredentialValidator.ProviderParams }
 			 * 
 			 */
 			public GlobalConfig.CredentialValidators.CredentialValidator.ProviderParams getProviderParams()
@@ -686,8 +666,7 @@ public class GlobalConfig
 			 * Sets the value of the providerParams property.
 			 * 
 			 * @param value
-			 *            allowed object is
-			 *            {@link GlobalConfig.CredentialValidators.CredentialValidator.ProviderParams }
+			 *            allowed object is {@link GlobalConfig.CredentialValidators.CredentialValidator.ProviderParams }
 			 * 
 			 */
 			public void setProviderParams(GlobalConfig.CredentialValidators.CredentialValidator.ProviderParams value)
@@ -723,8 +702,7 @@ public class GlobalConfig
 			 * Java class for anonymous complex type.
 			 * 
 			 * <p>
-			 * The following schema fragment specifies the expected content
-			 * contained within this class.
+			 * The following schema fragment specifies the expected content contained within this class.
 			 * 
 			 * <pre>
 			 * &lt;complexType&gt;
@@ -752,11 +730,7 @@ public class GlobalConfig
 				 * Gets the value of the any property.
 				 * 
 				 * <p>
-				 * This accessor method returns a reference to the live list,
-				 * not a snapshot. Therefore any modification you make to the
-				 * returned list will be present inside the JAXB object. This is
-				 * why there is not a <CODE>set</CODE> method for the any
-				 * property.
+				 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any property.
 				 * 
 				 * <p>
 				 * For example, to add a new item, do as follows:
@@ -767,8 +741,7 @@ public class GlobalConfig
 				 * 
 				 * 
 				 * <p>
-				 * Objects of the following type(s) are allowed in the list
-				 * {@link Element } {@link Object }
+				 * Objects of the following type(s) are allowed in the list {@link Element } {@link Object }
 				 * 
 				 * 
 				 */
@@ -792,8 +765,7 @@ public class GlobalConfig
 	 * Java class for anonymous complex type.
 	 * 
 	 * <p>
-	 * The following schema fragment specifies the expected content contained
-	 * within this class.
+	 * The following schema fragment specifies the expected content contained within this class.
 	 * 
 	 * <pre>
 	 * &lt;complexType&gt;
@@ -843,10 +815,7 @@ public class GlobalConfig
 		 * Gets the value of the peer property.
 		 * 
 		 * <p>
-		 * This accessor method returns a reference to the live list, not a
-		 * snapshot. Therefore any modification you make to the returned list
-		 * will be present inside the JAXB object. This is why there is not a
-		 * <CODE>set</CODE> method for the peer property.
+		 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the peer property.
 		 * 
 		 * <p>
 		 * For example, to add a new item, do as follows:
@@ -857,8 +826,7 @@ public class GlobalConfig
 		 * 
 		 * 
 		 * <p>
-		 * Objects of the following type(s) are allowed in the list
-		 * {@link GlobalConfig.Domain.Peer }
+		 * Objects of the following type(s) are allowed in the list {@link GlobalConfig.Domain.Peer }
 		 * 
 		 * 
 		 */
@@ -876,8 +844,7 @@ public class GlobalConfig
 		 * Java class for anonymous complex type.
 		 * 
 		 * <p>
-		 * The following schema fragment specifies the expected content
-		 * contained within this class.
+		 * The following schema fragment specifies the expected content contained within this class.
 		 * 
 		 * <pre>
 		 * &lt;complexType&gt;
@@ -944,8 +911,7 @@ public class GlobalConfig
 			/**
 			 * Gets the value of the transport property.
 			 * 
-			 * @return possible object is
-			 *         {@link GlobalConfig.Domain.Peer.Transport }
+			 * @return possible object is {@link GlobalConfig.Domain.Peer.Transport }
 			 * 
 			 */
 			public GlobalConfig.Domain.Peer.Transport getTransport()
@@ -957,8 +923,7 @@ public class GlobalConfig
 			 * Sets the value of the transport property.
 			 * 
 			 * @param value
-			 *            allowed object is
-			 *            {@link GlobalConfig.Domain.Peer.Transport }
+			 *            allowed object is {@link GlobalConfig.Domain.Peer.Transport }
 			 * 
 			 */
 			public void setTransport(GlobalConfig.Domain.Peer.Transport value)
@@ -971,8 +936,7 @@ public class GlobalConfig
 			 * Java class for anonymous complex type.
 			 * 
 			 * <p>
-			 * The following schema fragment specifies the expected content
-			 * contained within this class.
+			 * The following schema fragment specifies the expected content contained within this class.
 			 * 
 			 * <pre>
 			 * &lt;complexType&gt;

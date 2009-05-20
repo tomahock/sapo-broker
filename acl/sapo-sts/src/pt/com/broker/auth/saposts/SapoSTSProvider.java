@@ -18,8 +18,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.AuthInfo;
+import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.InvalidCredentialsException;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 
@@ -91,11 +91,9 @@ public class SapoSTSProvider implements CredentialsProvider
 			}
 			else
 			{
-				// TODO: decide what to throw
+				throw new UnknownError("STS unexpected error code - " + codeElem.getTextContent());
 			}
 		}
-
-		return null;
 	}
 
 	private String getConnectionUrl(AuthInfo clientAuthInfo)

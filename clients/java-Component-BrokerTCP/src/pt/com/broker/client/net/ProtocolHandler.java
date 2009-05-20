@@ -11,7 +11,6 @@ import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.concurrent.CustomExecutors;
 
 import pt.com.broker.client.BaseNetworkConnector;
-import pt.com.broker.client.SslNetworkConnector;
 
 public abstract class ProtocolHandler<T>
 {

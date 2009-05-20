@@ -4,32 +4,25 @@ import java.io.OutputStream;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFactory;
-import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.http.HttpMethod;
 import org.apache.mina.filter.codec.http.HttpRequest;
 import org.apache.mina.filter.codec.http.HttpResponseStatus;
 import org.apache.mina.filter.codec.http.MutableHttpResponse;
 import org.caudexorigo.Shutdown;
-import org.caudexorigo.io.UnsynchByteArrayInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.codec.xml.BrokerMessage;
-import pt.com.broker.codec.xml.SoapCodecV2;
+import pt.com.broker.auth.AccessControl;
+import pt.com.broker.auth.Session;
+import pt.com.broker.auth.AccessControl.ValidationResult;
+import pt.com.broker.codec.BrokerCodecRouter;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapSerializer;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
-import pt.com.broker.net.codec.BrokerCodecRouter;
-import pt.com.broker.security.Session;
-import pt.com.broker.security.authorization.AccessControl;
-import pt.com.broker.security.authorization.AccessControl.ValidationResult;
 import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.SimpleFramingDecoderV2;
 import pt.com.http.HttpAction;
 
@@ -106,8 +99,8 @@ public class BrokerHttpAction extends HttpAction
 				if (!validationResult.accessGranted)
 				{
 					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal
-																					// server
-																					// error?...
+					// server
+					// error?...
 					response.setContent(ACCESS_DENIED_REQUEST_RESPONSE.duplicate());
 					return;
 				}
@@ -115,8 +108,8 @@ public class BrokerHttpAction extends HttpAction
 				if ((message.getAction().getActionType() != NetAction.ActionType.PUBLISH) || (message.getAction().getPublishMessage() == null))
 				{
 					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal
-																					// server
-																					// error?...
+					// server
+					// error?...
 					response.setContent(INVALID_MESSAGE_TYPE_RESPONSE.duplicate());
 					return;
 				}
@@ -127,8 +120,8 @@ public class BrokerHttpAction extends HttpAction
 			else
 			{
 				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal
-																				// server
-																				// error?...
+				// server
+				// error?...
 				response.setContent(BAD_REQUEST_RESPONSE.duplicate());
 			}
 		}

@@ -19,7 +19,7 @@ public class InternalMessage implements Externalizable
 	private static final long serialVersionUID = -3656321513130930115L;
 	public static final int DEFAULT_PRIORITY = 4;
 	private static final long DEFAULT_EXPIRY = 1000L * 3600L * 24L * 7L; // 7
-																			// days
+	// days
 	private static final String SEPARATOR = "<#>";
 
 	private static final String BASE_MESSAGE_ID;

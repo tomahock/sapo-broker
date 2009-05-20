@@ -77,28 +77,28 @@ public class UdpService
 		@Override
 		public void run()
 		{
-			// TODO: implement this
+			// TODO: implement XML messages for UDP Service
 
-			// try
-			// {
-			// SoapEnvelope soap = SoapSerializer.FromXml(new
-			// UnsynchByteArrayInputStream(_messageData));
-			//
-			// final String requestSource = MQ.requestSource(soap);
-			//
-			// if (soap.body.publish != null)
-			// {
-			// _brokerProducer.publishMessage(soap.body.publish, requestSource);
-			// }
-			// else if (soap.body.enqueue != null)
-			// {
-			// _brokerProducer.enqueueMessage(soap.body.enqueue, requestSource);
-			// }
-			// }
-			// catch (Throwable error)
-			// {
-			// log.error(error.getMessage(), error);
-			// }
+//			 try
+//			 {
+//			 SoapEnvelope soap = SoapSerializer.FromXml(new
+//			 UnsynchByteArrayInputStream(_messageData));
+//			
+//			 final String requestSource = MQ.requestSource(soap);
+//			
+//			 if (soap.body.publish != null)
+//			 {
+//			 _brokerProducer.publishMessage(soap.body.publish, requestSource);
+//			 }
+//			 else if (soap.body.enqueue != null)
+//			 {
+//			 _brokerProducer.enqueueMessage(soap.body.enqueue, requestSource);
+//			 }
+//			 }
+//			 catch (Throwable error)
+//			 {
+//			 log.error(error.getMessage(), error);
+//			 }
 
 		}
 	}

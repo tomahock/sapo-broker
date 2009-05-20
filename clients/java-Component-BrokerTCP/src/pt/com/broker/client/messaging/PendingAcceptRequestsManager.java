@@ -20,11 +20,11 @@ public class PendingAcceptRequestsManager
 	private static Map<String, AcceptRequest> requests = new HashMap<String, AcceptRequest>();
 
 	private static Map<Long, String> timeouts = new TreeMap<Long, String>(); // access
-																				// protected
-																				// by
-																				// requests
-																				// sync
-																				// object
+	// protected
+	// by
+	// requests
+	// sync
+	// object
 
 	static
 	{

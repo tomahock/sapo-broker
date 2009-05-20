@@ -5,9 +5,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.AuthInfo;
-import pt.com.broker.client.utils.CircularContainer;
 import pt.com.broker.security.SecureSessionInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAuthentication;
@@ -117,6 +115,7 @@ public final class SslBrokerClient extends BaseBrokerClient
 		NetMessage msg = new NetMessage(action);
 
 		getNetHandler().sendMessage(msg);
+		
 	}
 
 	public boolean isAuthenticationRequired()

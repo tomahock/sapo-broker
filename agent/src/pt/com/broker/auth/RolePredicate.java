@@ -1,8 +1,7 @@
-package pt.com.broker.security.authorization;
+package pt.com.broker.auth;
 
 import java.util.List;
 
-import pt.com.broker.security.SessionProperties;
 
 public class RolePredicate implements AclPredicate
 {

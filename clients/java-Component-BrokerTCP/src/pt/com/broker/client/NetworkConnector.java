@@ -4,8 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
-import javax.crypto.BadPaddingException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

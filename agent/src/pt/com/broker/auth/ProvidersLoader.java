@@ -1,4 +1,4 @@
-package pt.com.broker.security;
+package pt.com.broker.auth;
 
 import java.util.Map;
 import java.util.Set;
@@ -6,10 +6,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.AuthInfoValidator;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.CredentialsProviderFactory;
-import pt.com.broker.auth.AuthInfoValidator;
-import pt.com.broker.security.authentication.ClientAuthenticationInfoVerifierFactory;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.conf.ProviderInfo;
 
@@ -67,7 +66,7 @@ public class ProvidersLoader
 					AuthInfoValidator validatorProv = (AuthInfoValidator) provClass.newInstance();
 
 					validatorProv.init();
-					ClientAuthenticationInfoVerifierFactory.addValidator(providerInfo.getName(), validatorProv);
+					AuthInfoVerifierFactory.addValidator(providerInfo.getName(), validatorProv);
 				}
 				catch (Exception e)
 				{

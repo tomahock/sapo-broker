@@ -2,8 +2,8 @@ package pt.com.broker.security;
 
 import javax.crypto.SecretKey;
 
-import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.AuthInfo;
+import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.client.BrokerProtocolHandler;
 import pt.com.broker.codec.thrift.AuthMessageType;
 

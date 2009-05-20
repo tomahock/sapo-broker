@@ -1,6 +1,5 @@
-package pt.com.broker.security.authorization;
+package pt.com.broker.auth;
 
-import pt.com.broker.security.SessionProperties;
 
 public class AlwaysPredicate implements AclPredicate
 {
@@ -10,7 +9,6 @@ public class AlwaysPredicate implements AclPredicate
 	@Override
 	public boolean match(SessionProperties properties)
 	{
-		// TODO Auto-generated method stub
 		return true;
 	}
 

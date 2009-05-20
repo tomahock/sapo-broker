@@ -9,11 +9,10 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.security.Session;
-import pt.com.broker.security.SessionProperties;
-import pt.com.broker.security.authorization.AccessControl;
-import pt.com.broker.security.authorization.AccessControl.ValidationResult;
-import pt.com.broker.types.NetAction;
+import pt.com.broker.auth.AccessControl;
+import pt.com.broker.auth.Session;
+import pt.com.broker.auth.SessionProperties;
+import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.gcs.conf.GcsInfo;
@@ -57,7 +56,6 @@ public class AuthorizationFilter extends IoFilterAdapter
 
 		session.setAttribute("BROKER_SESSION_PROPERTIES", sessionProps);
 
-		// TODO Auto-generated method stub
 		super.sessionCreated(nextFilter, session);
 	}
 

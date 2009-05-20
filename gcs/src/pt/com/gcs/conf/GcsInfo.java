@@ -13,9 +13,9 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 import pt.com.gcs.conf.agent.AgentConfig;
 import pt.com.gcs.conf.agent.AgentConfig.Ssl;
+import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 
 public class GcsInfo
 {

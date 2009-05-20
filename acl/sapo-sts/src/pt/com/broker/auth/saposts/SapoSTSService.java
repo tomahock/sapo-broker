@@ -9,12 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.CredentialsProviderFactory;
-import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
-import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.conf.ProviderInfo;
 
 public class SapoSTSService
 {
@@ -33,6 +31,7 @@ public class SapoSTSService
 		}
 
 		Element confNode = providerInfo.getParameters();
+
 		if (confNode == null)
 		{
 			log.error("There is no configuration info regarding SapoSTS authentication provider.");

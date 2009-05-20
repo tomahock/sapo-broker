@@ -1,4 +1,4 @@
-package pt.com.broker.net.codec;
+package pt.com.broker.codec;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;

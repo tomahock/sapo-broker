@@ -2,7 +2,6 @@ package pt.com.broker.client;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,8 +14,6 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.auth.CredentialsProvider;
-import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
@@ -24,7 +21,6 @@ import pt.com.broker.client.utils.CircularContainer;
 import pt.com.broker.security.SecureSessionInfo;
 import pt.com.broker.types.NetAcknowledgeMessage;
 import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;

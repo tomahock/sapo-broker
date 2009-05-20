@@ -12,496 +12,434 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
-public class BrokerMessage implements TBase, java.io.Serializable, Cloneable
-{
-	private static final TStruct STRUCT_DESC = new TStruct("BrokerMessage");
-	private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short) 1);
-	private static final TField PAYLOAD_FIELD_DESC = new TField("payload", TType.STRING, (short) 2);
-	private static final TField EXPIRATION_FIELD_DESC = new TField("expiration", TType.I64, (short) 3);
-	private static final TField TIMESTAMP_FIELD_DESC = new TField("timestamp", TType.I64, (short) 4);
+public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
+  private static final TStruct STRUCT_DESC = new TStruct("BrokerMessage");
+  private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)1);
+  private static final TField PAYLOAD_FIELD_DESC = new TField("payload", TType.STRING, (short)2);
+  private static final TField EXPIRATION_FIELD_DESC = new TField("expiration", TType.I64, (short)3);
+  private static final TField TIMESTAMP_FIELD_DESC = new TField("timestamp", TType.I64, (short)4);
 
-	public String message_id;
-	public static final int MESSAGE_ID = 1;
-	public byte[] payload;
-	public static final int PAYLOAD = 2;
-	public long expiration;
-	public static final int EXPIRATION = 3;
-	public long timestamp;
-	public static final int TIMESTAMP = 4;
+  public String message_id;
+  public static final int MESSAGE_ID = 1;
+  public byte[] payload;
+  public static final int PAYLOAD = 2;
+  public long expiration;
+  public static final int EXPIRATION = 3;
+  public long timestamp;
+  public static final int TIMESTAMP = 4;
 
-	private final Isset __isset = new Isset();
+  private final Isset __isset = new Isset();
+  private static final class Isset implements java.io.Serializable {
+    public boolean expiration = false;
+    public boolean timestamp = false;
+  }
 
-	private static final class Isset implements java.io.Serializable
-	{
-		public boolean expiration = false;
-		public boolean timestamp = false;
-	}
+  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
+    put(MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.STRING)));
+    put(PAYLOAD, new FieldMetaData("payload", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    put(EXPIRATION, new FieldMetaData("expiration", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.I64)));
+    put(TIMESTAMP, new FieldMetaData("timestamp", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.I64)));
+  }});
 
-	public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>()
-	{
-		{
-			put(MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.OPTIONAL, new FieldValueMetaData(TType.STRING)));
-			put(PAYLOAD, new FieldMetaData("payload", TFieldRequirementType.DEFAULT, new FieldValueMetaData(TType.STRING)));
-			put(EXPIRATION, new FieldMetaData("expiration", TFieldRequirementType.OPTIONAL, new FieldValueMetaData(TType.I64)));
-			put(TIMESTAMP, new FieldMetaData("timestamp", TFieldRequirementType.OPTIONAL, new FieldValueMetaData(TType.I64)));
-		}
-	});
+  static {
+    FieldMetaData.addStructMetaDataMap(BrokerMessage.class, metaDataMap);
+  }
 
-	static
-	{
-		FieldMetaData.addStructMetaDataMap(BrokerMessage.class, metaDataMap);
-	}
+  public BrokerMessage() {
+  }
 
-	public BrokerMessage()
-	{
-	}
+  public BrokerMessage(
+    String message_id,
+    byte[] payload,
+    long expiration,
+    long timestamp)
+  {
+    this();
+    this.message_id = message_id;
+    this.payload = payload;
+    this.expiration = expiration;
+    this.__isset.expiration = true;
+    this.timestamp = timestamp;
+    this.__isset.timestamp = true;
+  }
 
-	public BrokerMessage(String message_id, byte[] payload, long expiration, long timestamp)
-	{
-		this();
-		this.message_id = message_id;
-		this.payload = payload;
-		this.expiration = expiration;
-		this.__isset.expiration = true;
-		this.timestamp = timestamp;
-		this.__isset.timestamp = true;
-	}
+  /**
+   * Performs a deep copy on <i>other</i>.
+   */
+  public BrokerMessage(BrokerMessage other) {
+    if (other.isSetMessage_id()) {
+      this.message_id = other.message_id;
+    }
+    if (other.isSetPayload()) {
+      this.payload = new byte[other.payload.length];
+      System.arraycopy(other.payload, 0, payload, 0, other.payload.length);
+    }
+    __isset.expiration = other.__isset.expiration;
+    this.expiration = other.expiration;
+    __isset.timestamp = other.__isset.timestamp;
+    this.timestamp = other.timestamp;
+  }
 
-	/**
-	 * Performs a deep copy on <i>other</i>.
-	 */
-	public BrokerMessage(BrokerMessage other)
-	{
-		if (other.isSetMessage_id())
-		{
-			this.message_id = other.message_id;
-		}
-		if (other.isSetPayload())
-		{
-			this.payload = new byte[other.payload.length];
-			System.arraycopy(other.payload, 0, payload, 0, other.payload.length);
-		}
-		__isset.expiration = other.__isset.expiration;
-		this.expiration = other.expiration;
-		__isset.timestamp = other.__isset.timestamp;
-		this.timestamp = other.timestamp;
-	}
+  @Override
+  public BrokerMessage clone() {
+    return new BrokerMessage(this);
+  }
 
-	@Override
-	public BrokerMessage clone()
-	{
-		return new BrokerMessage(this);
-	}
+  public String getMessage_id() {
+    return this.message_id;
+  }
 
-	public String getMessage_id()
-	{
-		return this.message_id;
-	}
+  public void setMessage_id(String message_id) {
+    this.message_id = message_id;
+  }
 
-	public void setMessage_id(String message_id)
-	{
-		this.message_id = message_id;
-	}
+  public void unsetMessage_id() {
+    this.message_id = null;
+  }
 
-	public void unsetMessage_id()
-	{
-		this.message_id = null;
-	}
+  // Returns true if field message_id is set (has been asigned a value) and false otherwise
+  public boolean isSetMessage_id() {
+    return this.message_id != null;
+  }
 
-	// Returns true if field message_id is set (has been asigned a value) and
-	// false otherwise
-	public boolean isSetMessage_id()
-	{
-		return this.message_id != null;
-	}
+  public void setMessage_idIsSet(boolean value) {
+    if (!value) {
+      this.message_id = null;
+    }
+  }
 
-	public void setMessage_idIsSet(boolean value)
-	{
-		if (!value)
-		{
-			this.message_id = null;
-		}
-	}
+  public byte[] getPayload() {
+    return this.payload;
+  }
 
-	public byte[] getPayload()
-	{
-		return this.payload;
-	}
+  public void setPayload(byte[] payload) {
+    this.payload = payload;
+  }
 
-	public void setPayload(byte[] payload)
-	{
-		this.payload = payload;
-	}
+  public void unsetPayload() {
+    this.payload = null;
+  }
 
-	public void unsetPayload()
-	{
-		this.payload = null;
-	}
+  // Returns true if field payload is set (has been asigned a value) and false otherwise
+  public boolean isSetPayload() {
+    return this.payload != null;
+  }
 
-	// Returns true if field payload is set (has been asigned a value) and false
-	// otherwise
-	public boolean isSetPayload()
-	{
-		return this.payload != null;
-	}
+  public void setPayloadIsSet(boolean value) {
+    if (!value) {
+      this.payload = null;
+    }
+  }
 
-	public void setPayloadIsSet(boolean value)
-	{
-		if (!value)
-		{
-			this.payload = null;
-		}
-	}
+  public long getExpiration() {
+    return this.expiration;
+  }
 
-	public long getExpiration()
-	{
-		return this.expiration;
-	}
+  public void setExpiration(long expiration) {
+    this.expiration = expiration;
+    this.__isset.expiration = true;
+  }
 
-	public void setExpiration(long expiration)
-	{
-		this.expiration = expiration;
-		this.__isset.expiration = true;
-	}
+  public void unsetExpiration() {
+    this.__isset.expiration = false;
+  }
 
-	public void unsetExpiration()
-	{
-		this.__isset.expiration = false;
-	}
+  // Returns true if field expiration is set (has been asigned a value) and false otherwise
+  public boolean isSetExpiration() {
+    return this.__isset.expiration;
+  }
 
-	// Returns true if field expiration is set (has been asigned a value) and
-	// false otherwise
-	public boolean isSetExpiration()
-	{
-		return this.__isset.expiration;
-	}
+  public void setExpirationIsSet(boolean value) {
+    this.__isset.expiration = value;
+  }
 
-	public void setExpirationIsSet(boolean value)
-	{
-		this.__isset.expiration = value;
-	}
+  public long getTimestamp() {
+    return this.timestamp;
+  }
 
-	public long getTimestamp()
-	{
-		return this.timestamp;
-	}
+  public void setTimestamp(long timestamp) {
+    this.timestamp = timestamp;
+    this.__isset.timestamp = true;
+  }
 
-	public void setTimestamp(long timestamp)
-	{
-		this.timestamp = timestamp;
-		this.__isset.timestamp = true;
-	}
+  public void unsetTimestamp() {
+    this.__isset.timestamp = false;
+  }
 
-	public void unsetTimestamp()
-	{
-		this.__isset.timestamp = false;
-	}
+  // Returns true if field timestamp is set (has been asigned a value) and false otherwise
+  public boolean isSetTimestamp() {
+    return this.__isset.timestamp;
+  }
 
-	// Returns true if field timestamp is set (has been asigned a value) and
-	// false otherwise
-	public boolean isSetTimestamp()
-	{
-		return this.__isset.timestamp;
-	}
+  public void setTimestampIsSet(boolean value) {
+    this.__isset.timestamp = value;
+  }
 
-	public void setTimestampIsSet(boolean value)
-	{
-		this.__isset.timestamp = value;
-	}
+  public void setFieldValue(int fieldID, Object value) {
+    switch (fieldID) {
+    case MESSAGE_ID:
+      if (value == null) {
+        unsetMessage_id();
+      } else {
+        setMessage_id((String)value);
+      }
+      break;
 
-	public void setFieldValue(int fieldID, Object value)
-	{
-		switch (fieldID)
-		{
-		case MESSAGE_ID:
-			setMessage_id((String) value);
-			break;
+    case PAYLOAD:
+      if (value == null) {
+        unsetPayload();
+      } else {
+        setPayload((byte[])value);
+      }
+      break;
 
-		case PAYLOAD:
-			setPayload((byte[]) value);
-			break;
+    case EXPIRATION:
+      if (value == null) {
+        unsetExpiration();
+      } else {
+        setExpiration((Long)value);
+      }
+      break;
 
-		case EXPIRATION:
-			setExpiration((Long) value);
-			break;
+    case TIMESTAMP:
+      if (value == null) {
+        unsetTimestamp();
+      } else {
+        setTimestamp((Long)value);
+      }
+      break;
 
-		case TIMESTAMP:
-			setTimestamp((Long) value);
-			break;
+    default:
+      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
+    }
+  }
 
-		default:
-			throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
-		}
-	}
+  public Object getFieldValue(int fieldID) {
+    switch (fieldID) {
+    case MESSAGE_ID:
+      return getMessage_id();
 
-	public Object getFieldValue(int fieldID)
-	{
-		switch (fieldID)
-		{
-		case MESSAGE_ID:
-			return getMessage_id();
+    case PAYLOAD:
+      return getPayload();
 
-		case PAYLOAD:
-			return getPayload();
+    case EXPIRATION:
+      return new Long(getExpiration());
 
-		case EXPIRATION:
-			return new Long(getExpiration());
+    case TIMESTAMP:
+      return new Long(getTimestamp());
 
-		case TIMESTAMP:
-			return new Long(getTimestamp());
+    default:
+      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
+    }
+  }
 
-		default:
-			throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
-		}
-	}
+  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
+  public boolean isSet(int fieldID) {
+    switch (fieldID) {
+    case MESSAGE_ID:
+      return isSetMessage_id();
+    case PAYLOAD:
+      return isSetPayload();
+    case EXPIRATION:
+      return isSetExpiration();
+    case TIMESTAMP:
+      return isSetTimestamp();
+    default:
+      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
+    }
+  }
 
-	// Returns true if field corresponding to fieldID is set (has been asigned a
-	// value) and false otherwise
-	public boolean isSet(int fieldID)
-	{
-		switch (fieldID)
-		{
-		case MESSAGE_ID:
-			return isSetMessage_id();
-		case PAYLOAD:
-			return isSetPayload();
-		case EXPIRATION:
-			return isSetExpiration();
-		case TIMESTAMP:
-			return isSetTimestamp();
-		default:
-			throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
-		}
-	}
+  @Override
+  public boolean equals(Object that) {
+    if (that == null)
+      return false;
+    if (that instanceof BrokerMessage)
+      return this.equals((BrokerMessage)that);
+    return false;
+  }
 
-	@Override
-	public boolean equals(Object that)
-	{
-		if (that == null)
-			return false;
-		if (that instanceof BrokerMessage)
-			return this.equals((BrokerMessage) that);
-		return false;
-	}
+  public boolean equals(BrokerMessage that) {
+    if (that == null)
+      return false;
 
-	public boolean equals(BrokerMessage that)
-	{
-		if (that == null)
-			return false;
+    boolean this_present_message_id = true && this.isSetMessage_id();
+    boolean that_present_message_id = true && that.isSetMessage_id();
+    if (this_present_message_id || that_present_message_id) {
+      if (!(this_present_message_id && that_present_message_id))
+        return false;
+      if (!this.message_id.equals(that.message_id))
+        return false;
+    }
 
-		boolean this_present_message_id = true && this.isSetMessage_id();
-		boolean that_present_message_id = true && that.isSetMessage_id();
-		if (this_present_message_id || that_present_message_id)
-		{
-			if (!(this_present_message_id && that_present_message_id))
-				return false;
-			if (!this.message_id.equals(that.message_id))
-				return false;
-		}
+    boolean this_present_payload = true && this.isSetPayload();
+    boolean that_present_payload = true && that.isSetPayload();
+    if (this_present_payload || that_present_payload) {
+      if (!(this_present_payload && that_present_payload))
+        return false;
+      if (!java.util.Arrays.equals(this.payload, that.payload))
+        return false;
+    }
 
-		boolean this_present_payload = true && this.isSetPayload();
-		boolean that_present_payload = true && that.isSetPayload();
-		if (this_present_payload || that_present_payload)
-		{
-			if (!(this_present_payload && that_present_payload))
-				return false;
-			if (!java.util.Arrays.equals(this.payload, that.payload))
-				return false;
-		}
+    boolean this_present_expiration = true && this.isSetExpiration();
+    boolean that_present_expiration = true && that.isSetExpiration();
+    if (this_present_expiration || that_present_expiration) {
+      if (!(this_present_expiration && that_present_expiration))
+        return false;
+      if (this.expiration != that.expiration)
+        return false;
+    }
 
-		boolean this_present_expiration = true && this.isSetExpiration();
-		boolean that_present_expiration = true && that.isSetExpiration();
-		if (this_present_expiration || that_present_expiration)
-		{
-			if (!(this_present_expiration && that_present_expiration))
-				return false;
-			if (this.expiration != that.expiration)
-				return false;
-		}
+    boolean this_present_timestamp = true && this.isSetTimestamp();
+    boolean that_present_timestamp = true && that.isSetTimestamp();
+    if (this_present_timestamp || that_present_timestamp) {
+      if (!(this_present_timestamp && that_present_timestamp))
+        return false;
+      if (this.timestamp != that.timestamp)
+        return false;
+    }
 
-		boolean this_present_timestamp = true && this.isSetTimestamp();
-		boolean that_present_timestamp = true && that.isSetTimestamp();
-		if (this_present_timestamp || that_present_timestamp)
-		{
-			if (!(this_present_timestamp && that_present_timestamp))
-				return false;
-			if (this.timestamp != that.timestamp)
-				return false;
-		}
+    return true;
+  }
 
-		return true;
-	}
+  @Override
+  public int hashCode() {
+    return 0;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return 0;
-	}
+  public void read(TProtocol iprot) throws TException {
+    TField field;
+    iprot.readStructBegin();
+    while (true)
+    {
+      field = iprot.readFieldBegin();
+      if (field.type == TType.STOP) { 
+        break;
+      }
+      switch (field.id)
+      {
+        case MESSAGE_ID:
+          if (field.type == TType.STRING) {
+            this.message_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case PAYLOAD:
+          if (field.type == TType.STRING) {
+            this.payload = iprot.readBinary();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case EXPIRATION:
+          if (field.type == TType.I64) {
+            this.expiration = iprot.readI64();
+            this.__isset.expiration = true;
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case TIMESTAMP:
+          if (field.type == TType.I64) {
+            this.timestamp = iprot.readI64();
+            this.__isset.timestamp = true;
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
+          break;
+      }
+      iprot.readFieldEnd();
+    }
+    iprot.readStructEnd();
 
-	public void read(TProtocol iprot) throws TException
-	{
-		TField field;
-		iprot.readStructBegin();
-		while (true)
-		{
-			field = iprot.readFieldBegin();
-			if (field.type == TType.STOP)
-			{
-				break;
-			}
-			switch (field.id)
-			{
-			case MESSAGE_ID:
-				if (field.type == TType.STRING)
-				{
-					this.message_id = iprot.readString();
-				}
-				else
-				{
-					TProtocolUtil.skip(iprot, field.type);
-				}
-				break;
-			case PAYLOAD:
-				if (field.type == TType.STRING)
-				{
-					this.payload = iprot.readBinary();
-				}
-				else
-				{
-					TProtocolUtil.skip(iprot, field.type);
-				}
-				break;
-			case EXPIRATION:
-				if (field.type == TType.I64)
-				{
-					this.expiration = iprot.readI64();
-					this.__isset.expiration = true;
-				}
-				else
-				{
-					TProtocolUtil.skip(iprot, field.type);
-				}
-				break;
-			case TIMESTAMP:
-				if (field.type == TType.I64)
-				{
-					this.timestamp = iprot.readI64();
-					this.__isset.timestamp = true;
-				}
-				else
-				{
-					TProtocolUtil.skip(iprot, field.type);
-				}
-				break;
-			default:
-				TProtocolUtil.skip(iprot, field.type);
-				break;
-			}
-			iprot.readFieldEnd();
-		}
-		iprot.readStructEnd();
 
-		// check for required fields of primitive type, which can't be checked
-		// in the validate method
-		validate();
-	}
+    // check for required fields of primitive type, which can't be checked in the validate method
+    validate();
+  }
 
-	public void write(TProtocol oprot) throws TException
-	{
-		validate();
+  public void write(TProtocol oprot) throws TException {
+    validate();
 
-		oprot.writeStructBegin(STRUCT_DESC);
-		if (this.message_id != null)
-		{
-			oprot.writeFieldBegin(MESSAGE_ID_FIELD_DESC);
-			oprot.writeString(this.message_id);
-			oprot.writeFieldEnd();
-		}
-		if (this.payload != null)
-		{
-			oprot.writeFieldBegin(PAYLOAD_FIELD_DESC);
-			oprot.writeBinary(this.payload);
-			oprot.writeFieldEnd();
-		}
-		oprot.writeFieldBegin(EXPIRATION_FIELD_DESC);
-		oprot.writeI64(this.expiration);
-		oprot.writeFieldEnd();
-		oprot.writeFieldBegin(TIMESTAMP_FIELD_DESC);
-		oprot.writeI64(this.timestamp);
-		oprot.writeFieldEnd();
-		oprot.writeFieldStop();
-		oprot.writeStructEnd();
-	}
+    oprot.writeStructBegin(STRUCT_DESC);
+    if (this.message_id != null) {
+      oprot.writeFieldBegin(MESSAGE_ID_FIELD_DESC);
+      oprot.writeString(this.message_id);
+      oprot.writeFieldEnd();
+    }
+    if (this.payload != null) {
+      oprot.writeFieldBegin(PAYLOAD_FIELD_DESC);
+      oprot.writeBinary(this.payload);
+      oprot.writeFieldEnd();
+    }
+    oprot.writeFieldBegin(EXPIRATION_FIELD_DESC);
+    oprot.writeI64(this.expiration);
+    oprot.writeFieldEnd();
+    oprot.writeFieldBegin(TIMESTAMP_FIELD_DESC);
+    oprot.writeI64(this.timestamp);
+    oprot.writeFieldEnd();
+    oprot.writeFieldStop();
+    oprot.writeStructEnd();
+  }
 
-	@Override
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder("BrokerMessage(");
-		boolean first = true;
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder("BrokerMessage(");
+    boolean first = true;
 
-		if (isSetMessage_id())
-		{
-			sb.append("message_id:");
-			if (this.message_id == null)
-			{
-				sb.append("null");
-			}
-			else
-			{
-				sb.append(this.message_id);
-			}
-			first = false;
-		}
-		if (!first)
-			sb.append(", ");
-		sb.append("payload:");
-		if (this.payload == null)
-		{
-			sb.append("null");
-		}
-		else
-		{
-			int __payload_size = Math.min(this.payload.length, 128);
-			for (int i = 0; i < __payload_size; i++)
-			{
-				if (i != 0)
-					sb.append(" ");
-				sb.append(Integer.toHexString(this.payload[i]).length() > 1 ? Integer.toHexString(this.payload[i]).substring(Integer.toHexString(this.payload[i]).length() - 2).toUpperCase() : "0" + Integer.toHexString(this.payload[i]).toUpperCase());
-			}
-			if (this.payload.length > 128)
-				sb.append(" ...");
-		}
-		first = false;
-		if (isSetExpiration())
-		{
-			if (!first)
-				sb.append(", ");
-			sb.append("expiration:");
-			sb.append(this.expiration);
-			first = false;
-		}
-		if (isSetTimestamp())
-		{
-			if (!first)
-				sb.append(", ");
-			sb.append("timestamp:");
-			sb.append(this.timestamp);
-			first = false;
-		}
-		sb.append(")");
-		return sb.toString();
-	}
+    if (isSetMessage_id()) {
+      sb.append("message_id:");
+      if (this.message_id == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.message_id);
+      }
+      first = false;
+    }
+    if (!first) sb.append(", ");
+    sb.append("payload:");
+    if (this.payload == null) {
+      sb.append("null");
+    } else {
+        int __payload_size = Math.min(this.payload.length, 128);
+        for (int i = 0; i < __payload_size; i++) {
+          if (i != 0) sb.append(" ");
+          sb.append(Integer.toHexString(this.payload[i]).length() > 1 ? Integer.toHexString(this.payload[i]).substring(Integer.toHexString(this.payload[i]).length() - 2).toUpperCase() : "0" + Integer.toHexString(this.payload[i]).toUpperCase());
+        }
+        if (this.payload.length > 128) sb.append(" ...");
+    }
+    first = false;
+    if (isSetExpiration()) {
+      if (!first) sb.append(", ");
+      sb.append("expiration:");
+      sb.append(this.expiration);
+      first = false;
+    }
+    if (isSetTimestamp()) {
+      if (!first) sb.append(", ");
+      sb.append("timestamp:");
+      sb.append(this.timestamp);
+      first = false;
+    }
+    sb.append(")");
+    return sb.toString();
+  }
 
-	public void validate() throws TException
-	{
-		// check for required fields
-		// check that fields of type enum have valid values
-	}
+  public void validate() throws TException {
+    // check for required fields
+    // check that fields of type enum have valid values
+  }
 
 }
+

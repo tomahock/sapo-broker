@@ -20,8 +20,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import pt.com.broker.auth.AuthInfo;
-import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.AuthInfoValidator;
+import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 
 public class SapoSTSAuthInfoValidator implements AuthInfoValidator
@@ -64,8 +64,6 @@ public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 		}
 	}
 
-	private static final SapoSTSAuthValidationResult invalidToken = new SapoSTSAuthValidationResult("Invalid Token");
-	private static final SapoSTSAuthValidationResult tokenExpired = new SapoSTSAuthValidationResult("Token Expired");
 	private static final SapoSTSAuthValidationResult internalError = new SapoSTSAuthValidationResult("Internal error");
 
 	@Override
@@ -77,8 +75,6 @@ public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 
 		if (!(connection instanceof HttpURLConnection))
 		{
-			// TODO: Solve this... Something strange happened! Throw
-			// Exception...
 			return internalError;
 		}
 
@@ -99,14 +95,10 @@ public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 		}
 		else
 		{
-			// TODO: Solve this... Something strange happened! Throw
-			// Exception...
-			// BAD; VERY BAD...
 			return internalError;
 		}
 
 		Document doc = documentBuilder.parse(inputStream);
-		Element documentElement = doc.getDocumentElement();
 
 		XPath xpath = XPathFactory.newInstance().newXPath();
 		xpath.setNamespaceContext(pt.com.broker.auth.saposts.SapoSTSNamespaceContext.getInstance());
@@ -116,9 +108,6 @@ public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 		if (respCode == HttpURLConnection.HTTP_OK)
 		{
 			NodeList roleNodes = ((NodeList) xpath.evaluate("/GetRolesResponse/GetRolesResult/ESBRoles/ESBRole", doc, XPathConstants.NODESET));
-
-			// NodeList roleNodes = ((NodeList) xpath.evaluate("//Roles", doc,
-			// XPathConstants.NODESET));
 
 			List<String> roles = null;
 

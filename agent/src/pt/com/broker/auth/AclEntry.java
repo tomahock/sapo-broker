@@ -1,4 +1,4 @@
-package pt.com.broker.security.authorization;
+package pt.com.broker.auth;
 
 import java.util.List;
 

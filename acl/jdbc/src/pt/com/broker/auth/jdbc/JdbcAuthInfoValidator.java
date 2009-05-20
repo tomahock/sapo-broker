@@ -3,8 +3,8 @@ package pt.com.broker.auth.jdbc;
 import java.util.List;
 
 import pt.com.broker.auth.AuthInfo;
-import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.AuthInfoValidator;
+import pt.com.broker.auth.AuthValidationResult;
 
 public class JdbcAuthInfoValidator implements AuthInfoValidator
 {

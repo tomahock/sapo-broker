@@ -1,11 +1,11 @@
-package pt.com.broker.security.authentication;
+package pt.com.broker.auth;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 import pt.com.broker.auth.AuthInfoValidator;
 
-public class ClientAuthenticationInfoVerifierFactory
+public class AuthInfoVerifierFactory
 {
 	private static Map<String, AuthInfoValidator> validators;
 

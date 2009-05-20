@@ -1,4 +1,4 @@
-package pt.com.broker.security.authorization;
+package pt.com.broker.auth;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -8,8 +8,6 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.security.Session;
-import pt.com.broker.security.SessionProperties;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetPublish;
