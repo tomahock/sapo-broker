@@ -9,9 +9,9 @@ import pt.com.broker.functests.Test;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.NotificationConsequence;
-import pt.com.types.NetAction;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetSubscribe;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetSubscribe;
 
 public class SampleTests
 {

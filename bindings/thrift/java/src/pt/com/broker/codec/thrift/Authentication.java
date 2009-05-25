@@ -12,20 +12,24 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
+
 import org.apache.thrift.protocol.*;
+import org.apache.thrift.transport.*;
 
 public class Authentication implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Authentication");
-  private static final TField AUTHENTICATION_TYPE_FIELD_DESC = new TField("authentication_type", TType.STRING, (short)1);
+  private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
+  private static final TField AUTHENTICATION_TYPE_FIELD_DESC = new TField("authentication_type", TType.STRING, (short)2);
   private static final TField TOKEN_FIELD_DESC = new TField("token", TType.STRING, (short)3);
   private static final TField USER_ID_FIELD_DESC = new TField("user_id", TType.STRING, (short)4);
   private static final TField ROLES_FIELD_DESC = new TField("roles", TType.LIST, (short)5);
 
+  public String action_id;
+  public static final int ACTION_ID = 1;
   public String authentication_type;
-  public static final int AUTHENTICATION_TYPE = 1;
+  public static final int AUTHENTICATION_TYPE = 2;
   public byte[] token;
   public static final int TOKEN = 3;
   public String user_id;
@@ -38,6 +42,8 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   }
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
+    put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.STRING)));
     put(AUTHENTICATION_TYPE, new FieldMetaData("authentication_type", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
     put(TOKEN, new FieldMetaData("token", TFieldRequirementType.DEFAULT, 
@@ -57,12 +63,14 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   }
 
   public Authentication(
+    String action_id,
     String authentication_type,
     byte[] token,
     String user_id,
     List<String> roles)
   {
     this();
+    this.action_id = action_id;
     this.authentication_type = authentication_type;
     this.token = token;
     this.user_id = user_id;
@@ -73,6 +81,9 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
    * Performs a deep copy on <i>other</i>.
    */
   public Authentication(Authentication other) {
+    if (other.isSetAction_id()) {
+      this.action_id = other.action_id;
+    }
     if (other.isSetAuthentication_type()) {
       this.authentication_type = other.authentication_type;
     }
@@ -95,6 +106,29 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   @Override
   public Authentication clone() {
     return new Authentication(this);
+  }
+
+  public String getAction_id() {
+    return this.action_id;
+  }
+
+  public void setAction_id(String action_id) {
+    this.action_id = action_id;
+  }
+
+  public void unsetAction_id() {
+    this.action_id = null;
+  }
+
+  // Returns true if field action_id is set (has been asigned a value) and false otherwise
+  public boolean isSetAction_id() {
+    return this.action_id != null;
+  }
+
+  public void setAction_idIsSet(boolean value) {
+    if (!value) {
+      this.action_id = null;
+    }
   }
 
   public String getAuthentication_type() {
@@ -206,36 +240,24 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
 
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
+    case ACTION_ID:
+      setAction_id((String)value);
+      break;
+
     case AUTHENTICATION_TYPE:
-      if (value == null) {
-        unsetAuthentication_type();
-      } else {
-        setAuthentication_type((String)value);
-      }
+      setAuthentication_type((String)value);
       break;
 
     case TOKEN:
-      if (value == null) {
-        unsetToken();
-      } else {
-        setToken((byte[])value);
-      }
+      setToken((byte[])value);
       break;
 
     case USER_ID:
-      if (value == null) {
-        unsetUser_id();
-      } else {
-        setUser_id((String)value);
-      }
+      setUser_id((String)value);
       break;
 
     case ROLES:
-      if (value == null) {
-        unsetRoles();
-      } else {
-        setRoles((List<String>)value);
-      }
+      setRoles((List<String>)value);
       break;
 
     default:
@@ -245,6 +267,9 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
 
   public Object getFieldValue(int fieldID) {
     switch (fieldID) {
+    case ACTION_ID:
+      return getAction_id();
+
     case AUTHENTICATION_TYPE:
       return getAuthentication_type();
 
@@ -265,6 +290,8 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
   public boolean isSet(int fieldID) {
     switch (fieldID) {
+    case ACTION_ID:
+      return isSetAction_id();
     case AUTHENTICATION_TYPE:
       return isSetAuthentication_type();
     case TOKEN:
@@ -290,6 +317,15 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   public boolean equals(Authentication that) {
     if (that == null)
       return false;
+
+    boolean this_present_action_id = true && this.isSetAction_id();
+    boolean that_present_action_id = true && that.isSetAction_id();
+    if (this_present_action_id || that_present_action_id) {
+      if (!(this_present_action_id && that_present_action_id))
+        return false;
+      if (!this.action_id.equals(that.action_id))
+        return false;
+    }
 
     boolean this_present_authentication_type = true && this.isSetAuthentication_type();
     boolean that_present_authentication_type = true && that.isSetAuthentication_type();
@@ -346,6 +382,13 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
       }
       switch (field.id)
       {
+        case ACTION_ID:
+          if (field.type == TType.STRING) {
+            this.action_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
         case AUTHENTICATION_TYPE:
           if (field.type == TType.STRING) {
             this.authentication_type = iprot.readString();
@@ -401,6 +444,11 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
+    if (this.action_id != null) {
+      oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
+      oprot.writeString(this.action_id);
+      oprot.writeFieldEnd();
+    }
     if (this.authentication_type != null) {
       oprot.writeFieldBegin(AUTHENTICATION_TYPE_FIELD_DESC);
       oprot.writeString(this.authentication_type);
@@ -436,7 +484,17 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     StringBuilder sb = new StringBuilder("Authentication(");
     boolean first = true;
 
+    if (isSetAction_id()) {
+      sb.append("action_id:");
+      if (this.action_id == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.action_id);
+      }
+      first = false;
+    }
     if (isSetAuthentication_type()) {
+      if (!first) sb.append(", ");
       sb.append("authentication_type:");
       if (this.authentication_type == null) {
         sb.append("null");

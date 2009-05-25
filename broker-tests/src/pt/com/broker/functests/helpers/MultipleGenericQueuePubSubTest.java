@@ -1,7 +1,7 @@
 package pt.com.broker.functests.helpers;
 
 import pt.com.broker.client.BrokerClient;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 {

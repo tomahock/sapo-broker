@@ -1,9 +1,9 @@
 package pt.com.broker.functests.helpers;
 
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.types.NetAction;
-import pt.com.types.NetNotification;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class GenericBrokerListener implements BrokerListener
 {

@@ -409,11 +409,18 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	private void handleAuthMessage(IoSession session, NetMessage request)
 	{
+		System.out.println("########BrokerProtocolHandler.handleAuthMessage()");
+		
 		NetAuthentication netAuthentication = request.getAction().getAuthenticationMessage();
 
 		// // Validate client credentials
 		AuthInfo info = new AuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType());
 		AuthInfoValidator validator = AuthInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
+		if(validator == null)
+		{
+			session.write(NetFault.UnknownAuthenticationTypeMessage);
+			return;
+		}
 		AuthValidationResult validateResult = null;
 		try
 		{
@@ -431,14 +438,20 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			return;
 		}
 
-		// info.setRoles(validateResult.getRoles());
-
+		
 		Session plainSession = (Session) session.getAttribute("BROKER_SESSION_PROPERTIES");
-		;
+		
 
 		SessionProperties plainSessionProps = plainSession.getSessionProperties();
 		plainSessionProps.setRoles(validateResult.getRoles());
 		plainSession.updateAcl();
+		
+		if(netAuthentication.getActionId() != null){
+			sendAccepted(session, netAuthentication.getActionId());
+			System.out.println("########BrokerProtocolHandler.handleAuthMessage() -  sent accept");
+		}
+		System.out.println("########BrokerProtocolHandler.handleAuthMessage()");
+
 	}
 
 	private synchronized void sendAccepted(final IoSession ios, final String actionId)

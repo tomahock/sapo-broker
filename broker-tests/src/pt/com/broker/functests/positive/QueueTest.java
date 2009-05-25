@@ -1,7 +1,7 @@
 package pt.com.broker.functests.positive;
 
 import pt.com.broker.functests.helpers.GenericPubSubTest;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class QueueTest extends GenericPubSubTest
 {

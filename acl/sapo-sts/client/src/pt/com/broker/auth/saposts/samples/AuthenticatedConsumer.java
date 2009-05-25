@@ -1,4 +1,4 @@
-package pt.com.broker.client.sample;
+package pt.com.broker.auth.saposts.sample;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AuthInfo;
+import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.CredentialsProviderFactory;
+import pt.com.broker.auth.saposts.SapoSTSParameterProvider;
+import pt.com.broker.auth.saposts.SapoSTSProvider;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
@@ -36,8 +39,10 @@ public class AuthenticatedConsumer implements BrokerListener
 
 	private static void initSTSParams(String stsLocation)
 	{
-		SapoSTSAuthenticationParamsProvider.Parameters parameters = new SapoSTSAuthenticationParamsProvider.Parameters(stsLocation);
-		SapoSTSAuthenticationParamsProvider.setSTSParameters(parameters);
+		SapoSTSParameterProvider.Parameters parameters = new SapoSTSParameterProvider.Parameters(stsLocation);
+		SapoSTSParameterProvider.setSTSParameters(parameters);
+		
+		CredentialsProviderFactory.addProvider("SapoSTS", new SapoSTSProvider() );
 	}
 
 	public static void main(String[] args) throws Throwable
@@ -59,30 +64,41 @@ public class AuthenticatedConsumer implements BrokerListener
 
 		// Provider initialization
 		initSTSParams(consumer.stsLocation);
-		//CredentialsProviderFactory.addProvider("SapoSTS", new SapoSTSAuthenticationCredentialsProvider());
-		// Provider initialized
-
+		
+		
 		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
 
 		AuthInfo clientAuthInfo = new AuthInfo(consumer.stsUsername, consumer.stsPassword);
 		clientAuthInfo.setUserAuthenticationType("SapoSTS");
-
-		AuthInfo stsClientCredentials = CredentialsProviderFactory.getProvider("SapoSTS").getCredentials(clientAuthInfo);
+		
+		
+		CredentialsProvider credentialsProvider = CredentialsProviderFactory.getProvider("SapoSTS");
+		AuthInfo stsClientCredentials = credentialsProvider.getCredentials(clientAuthInfo);
+		
 
 		bk.setAuthenticationCredentials(stsClientCredentials);
+
+		/*
+		 * Note: Credential Provider should be set in the case of required automatic credentials access. E.g.  on agent fail, client failsover to another 
+		 * agent (eventually the same) and renewed STS credentials may be necessary to authenticate. This is not necessary in username-password scenarios.
+		 */
+		bk.setCredentialsProvider(credentialsProvider, clientAuthInfo);
+		
 		try
 		{
-			bk.authenticateClient();
+			if(!bk.authenticateClient())
+			{
+				System.out.println("Authentication failed");
+				return;
+			}
 		}
 		catch (Throwable t)
 		{
 			System.out.println("Unable to authenticate client...");
 			System.out.println(t);
+			return;
 		}
 
-		// TODO: create callback object with time out
-		System.out.println("giving time to authenticate (3s)...");
-		Thread.sleep(3000);
 		System.out.println("subscribing");
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 

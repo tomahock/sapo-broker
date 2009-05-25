@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="build" name="sapo-broker-auth-saposts">
+<project basedir="." default="build" name="sapo-broker-validation-saposts">
 	<property name="project.location" value="." />
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
-	<property name="package" value="sapo-broker-auth-saposts.jar" />
+	<property name="package" value="sapo-broker-validation-saposts.jar" />
 
 	<path id="project.classpath">
-		<pathelement location="../comm-types/dist/sapo-broker-commtypes.jar" />
-		<fileset dir="../common-libs/">
+		<pathelement location="../../../comm-types/dist/sapo-broker-commtypes.jar" />
+		<pathelement location="../client/dist/sapo-broker-clientauth-saposts.jar" />
+		<fileset dir="../../../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>

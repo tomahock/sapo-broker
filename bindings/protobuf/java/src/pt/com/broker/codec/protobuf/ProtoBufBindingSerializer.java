@@ -59,7 +59,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		}
 		catch (Throwable e)
 		{
-			// TODO: decide what to do with exception
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
 		return message;
@@ -83,7 +82,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		}
 		catch (Throwable e)
 		{
-			// TODO: decide what to do with exception
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
 		return result;
@@ -105,7 +103,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		}
 		catch (Throwable e)
 		{
-			// TODO: decide what to do with exception
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
 	}
@@ -295,6 +292,10 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		PBMessage.Atom.Authentication.Builder builder = PBMessage.Atom.Authentication.newBuilder();
 
 		builder.setToken(ByteString.copyFrom(authClientAuthrentication.getToken()));
+		
+		if (authClientAuthrentication.getActionId() != null)
+			builder.setActionId(authClientAuthrentication.getActionId());
+		
 		if (authClientAuthrentication.getAuthenticationType() != null)
 			builder.setAuthenticationType(authClientAuthrentication.getAuthenticationType());
 
@@ -450,8 +451,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		case VIRTUAL_QUEUE:
 			return PBMessage.Atom.DestinationType.VIRTUAL_QUEUE;
 		}
-		// TODO: Throw checked exception
-		return PBMessage.Atom.DestinationType.TOPIC;
+		throw new IllegalArgumentException("Unexpected destination type (pt.com.broker.types.NetAction.DestinationType): " + destinationType);
 	}
 
 	static private NetAction.DestinationType translate(PBMessage.Atom.DestinationType destinationType)
@@ -465,8 +465,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		case VIRTUAL_QUEUE:
 			return NetAction.DestinationType.VIRTUAL_QUEUE;
 		}
-		// TODO: Throw checked exception
-		return null;
+		throw new IllegalArgumentException("Unexpected destination type (PBMessage.Atom.DestinationType): " + destinationType);
 	}
 
 	static private NetAction.ActionType translate(PBMessage.Atom.Action.ActionType actionType)
@@ -497,13 +496,11 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			return NetAction.ActionType.AUTH;
 
 		}
-		// TODO: Throw checked exception
-		return NetAction.ActionType.ACCEPTED;
+		throw new IllegalArgumentException("Unexpected action type (PBMessage.Atom.Action.ActionType): " + actionType); 
 	}
 
 	private NetAccepted extractAcceptedMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		NetAccepted netAccepted = new NetAccepted(action.getAccepted().getActionId());
 
 		return netAccepted;
@@ -512,7 +509,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 	private NetAcknowledgeMessage extractAcknowledgeMessage(Action action)
 	{
 		AcknowledgeMessage protoBufAckMsg = action.getAckMessage();
-		// TODO: Verify if it's valid. Throw check exception if not
 		String destination = protoBufAckMsg.getDestination();
 		String messageId = protoBufAckMsg.getMessageId();
 		NetAcknowledgeMessage ackMessage = new NetAcknowledgeMessage(destination, messageId);
@@ -525,7 +521,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 	private NetFault extractFaultMessage(Action action)
 	{
 		Fault fault = action.getFault();
-		// TODO: Verify if it's valid. Throw check exception if not
 		String code = fault.getFaultCode();
 		String message = fault.getFaultMessage();
 
@@ -543,8 +538,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 	private NetNotification extractNotificationMessage(Action action)
 	{
 		Notification notification = action.getNotification();
-		// TODO: Verify if it's valid. Throw check exception if not
-
+		
 		String dest = notification.getDestination();
 		NetAction.DestinationType destType = translate(notification.getDestinationType());
 		NetBrokerMessage brkMsg = obtainBrokerMessage(notification.getMessage());
@@ -557,7 +551,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private NetPoll extractPoolMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Poll poll = action.getPoll();
 		String destination = poll.getDestination();
 
@@ -571,7 +564,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private NetPublish extractPublishMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Publish pub = action.getPublish();
 
 		String dest = pub.getDestination();
@@ -588,7 +580,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private NetSubscribe extractSubscribeMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Subscribe subs = action.getSubscribe();
 
 		String dest = subs.getDestination();
@@ -604,7 +595,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private NetUnsubscribe extractUnsubscribeMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Unsubscribe unsubs = action.getUnsubscribe();
 
 		String dest = unsubs.getDestination();
@@ -620,7 +610,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private NetPing extractPingMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Atom.Ping ping = action.getPing();
 
 		NetPing netPing = new NetPing(ping.getActionId());
@@ -630,7 +619,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private NetPong extractPongMessage(Action action)
 	{
-		// TODO: Verify if it's valid. Throw check exception if not
 		Atom.Pong pong = action.getPong();
 
 		NetPong netPong = new NetPong(pong.getActionId());
@@ -644,6 +632,8 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 		NetAuthentication netClientAuth = new NetAuthentication(clientAuth.getToken().toByteArray());
 
+		if (clientAuth.hasActionId())
+			netClientAuth.setActionId(clientAuth.getActionId());
 		if (clientAuth.hasAuthenticationType())
 			netClientAuth.setAuthenticationType(clientAuth.getAuthenticationType());
 		if (clientAuth.hasUserId())

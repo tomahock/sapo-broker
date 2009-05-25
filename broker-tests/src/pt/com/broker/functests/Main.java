@@ -2,7 +2,7 @@ package pt.com.broker.functests;
 
 import org.caudexorigo.concurrent.Sleep;
 
-import pt.com.types.NetProtocolType;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.functests.helpers.*;
 import pt.com.broker.functests.negative.*;
 import pt.com.broker.functests.positive.*;
@@ -139,8 +139,8 @@ public class Main
 //			new VirtualQueueNameSpecifiedRemote().run(numberOfTests);
 //			new VirtualQueueTopicNameWildcardRemote().run(numberOfTests);
 //			new SslTopicNameSpeficied().run(numberOfTests);			
-			new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests);
-			new DBRolesAuthenticationTest().run(numberOfTests);
+//			new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests);
+//			new DBRolesAuthenticationTest().run(numberOfTests);
 //		
 //			//Negative Tests
 //		
@@ -162,6 +162,7 @@ public class Main
 //			new InvalidDestinationNameInPublishTest().run(numberOfTests);
 //			new AccessDeniedTest().run(numberOfTests);
 //			new AuthenticationFailedTest().run(numberOfTests);
+			new UnknownAuthTypeFailedTest().run(numberOfTests);
 		
 		}
 		

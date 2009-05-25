@@ -4,5 +4,5 @@ public interface AuthInfoValidator
 {
 	AuthValidationResult validate(AuthInfo clientAuthInfo) throws Exception;
 
-	void init();
+	boolean init(ProviderInfo info);
 }

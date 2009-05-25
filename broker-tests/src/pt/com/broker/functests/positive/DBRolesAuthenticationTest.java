@@ -2,13 +2,10 @@ package pt.com.broker.functests.positive;
 
 import org.caudexorigo.concurrent.Sleep;
 
+import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
-import pt.com.common.security.ClientAuthInfo;
-import pt.com.common.security.authentication.AuthenticationCredentialsProviderFactory;
-import pt.com.security.authentication.sapoSts.SapoSTSAuthenticationCredentialsProvider;
-import pt.com.security.authentication.sapoSts.SapoSTSAuthenticationParamsProvider;
-import pt.com.types.NetProtocolType;
+import pt.com.broker.types.NetProtocolType;
 
 public class DBRolesAuthenticationTest extends GenericPubSubTest
 {
@@ -35,7 +32,7 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 						
 			bk = new SslBrokerClient("127.0.0.1", 3390, "tcp://mycompany.com/mysniffer", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
 			
-			ClientAuthInfo clientAuthInfo = new ClientAuthInfo(username, password);
+			AuthInfo clientAuthInfo = new AuthInfo(username, password);
 			clientAuthInfo.setUserAuthenticationType("BrokerRolesDB");
 
 			bk.setAuthenticationCredentials(clientAuthInfo);

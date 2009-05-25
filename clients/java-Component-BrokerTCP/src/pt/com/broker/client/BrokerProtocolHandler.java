@@ -132,29 +132,35 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 					long newConnectionVersion = ++this.connectionVersion;
 					this.connector.connect(getHostInfo(), newConnectionVersion);
 
-					// AUTH
-
-					// TODO: resolve this
-
-					// if (brokerClient.isAuthenticationRequired())
-					// {
-					// this.brokerClient.setState(BrokerClientState.AUTH);
-					// brokerClient.obtainCredentials();
-					// brokerClient.authenticateClient();
-					// }
-
 					this.brokerClient.setState(BrokerClientState.OK);
-
+					
 					// READ THREADS
 					start();
+					
+					// AUTH
+					if( this.brokerClient instanceof SslBrokerClient)
+					{
+						SslBrokerClient sslClient = (SslBrokerClient) this.brokerClient;
+						if (sslClient.isAuthenticationRequired())
+						{
+							this.brokerClient.setState(BrokerClientState.AUTH);
+							if( sslClient.hasCredentialsProvider())
+							{
+								sslClient.renewCredentials();
+							}
+							sslClient.authenticateClient();
+							this.brokerClient.setState(BrokerClientState.OK);
+						}
+						
+					}
 
+					
 					// Send subs
 					onConnectionOpen();
 
 					this.notifyAll();
 
 					return;
-
 				}
 				catch (Throwable t)
 				{
@@ -210,6 +216,12 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			break;
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
+			if( fault.getActionId() != null)
+			{
+				// Give pending requests a change to process error messages
+				if( PendingAcceptRequestsManager.messageFailed(fault) )
+					return;
+			}
 			brokerClient.getErrorListener().onFault(fault);
 			break;
 		case ACCEPTED:

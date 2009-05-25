@@ -4,7 +4,7 @@ public interface CredentialsProvider
 {
 	AuthInfo getCredentials(AuthInfo clientAuthInfo) throws Exception;
 
-	void init();
+	boolean init(ProviderInfo info);
 
 	String getAuthenticationType();
 }

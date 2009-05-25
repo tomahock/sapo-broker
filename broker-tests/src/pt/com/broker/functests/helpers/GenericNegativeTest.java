@@ -1,12 +1,10 @@
 package pt.com.broker.functests.helpers;
 
-import javax.xml.transform.ErrorListener;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
-import pt.com.types.NetFault;
+import pt.com.broker.types.NetFault;
 
 public class GenericNegativeTest extends BrokerTest
 {

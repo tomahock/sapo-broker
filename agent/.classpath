@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry excluding="**/.svn/*" kind="src" output="bin" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-BrokerV3-CommonLibs"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-BrokerV3-GCS"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-CommonLibs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-GCS"/>
 	<classpathentry kind="lib" path="conf"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ProtoBufCodec"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Sapo-BrokerV3-CommTypes"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-CommTypes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-XmlCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ThriftCodec"/>
 	<classpathentry kind="output" path="bin"/>

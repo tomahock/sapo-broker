@@ -112,7 +112,8 @@ struct Pong
 
 struct Authentication
 {
-	1: optional string authentication_type;
+	1: optional string action_id;
+	2: optional string authentication_type;
 	3: binary token;
 	4: optional string user_id;
 	5: optional list<string> roles;		

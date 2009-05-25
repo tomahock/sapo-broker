@@ -4,7 +4,7 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.BrokerTest;
-import pt.com.types.NetPong;
+import pt.com.broker.types.NetPong;
 
 public class PingTest extends BrokerTest
 {

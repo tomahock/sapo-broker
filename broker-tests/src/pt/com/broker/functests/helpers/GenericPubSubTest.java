@@ -8,10 +8,10 @@ import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
-import pt.com.types.NetAction;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class GenericPubSubTest extends BrokerTest
 {

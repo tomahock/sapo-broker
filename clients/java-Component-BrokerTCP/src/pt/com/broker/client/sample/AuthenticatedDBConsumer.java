@@ -18,7 +18,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 public class AuthenticatedDBConsumer implements BrokerListener
 {
 
-	private static final Logger log = LoggerFactory.getLogger(AuthenticatedConsumer.class);
+	private static final Logger log = LoggerFactory.getLogger(AuthenticatedDBConsumer.class);
 	private final AtomicInteger counter = new AtomicInteger(0);
 
 	private String host;
@@ -58,17 +58,20 @@ public class AuthenticatedDBConsumer implements BrokerListener
 		bk.setAuthenticationCredentials(clientAuthInfo);
 		try
 		{
-			bk.authenticateClient();
+			if(!bk.authenticateClient())
+			{
+				System.out.println("Authentication failed");
+				return;
+			}
 		}
 		catch (Throwable t)
 		{
 			System.out.println("Unable to authenticate client...");
 			System.out.println(t);
+			return;
 		}
 
-		// TODO: create callback object with time out
-		System.out.println("giving time to authenticate (3s)...");
-		Thread.sleep(3000);
+
 		System.out.println("subscribing");
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 

@@ -2,28 +2,31 @@ package pt.com.broker.auth.jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcRoles
 {
-	private static final String postgreSQLDriver = "org.postgresql.Driver";
+	private final String driverClass;
+	private final String databaseUrl;
+	private final String databaseUsername;
+	private final String databasePassword;
 
-	private static final String databaseLocation = "localhost";
-	private static final String databaseName = "BROKER_ROLES";
-	private static final String databaseUsername = "roles_user";
-	private static final String databasePassword = "roles_user";
+	public JdbcRoles(String driverClass, String databaseUrl, String databaseUsername, String databasePassword)
+	{
+		this.driverClass = driverClass;
+		this.databaseUrl = databaseUrl;
+		this.databaseUsername = databaseUsername;
+		this.databasePassword = databasePassword;
+	}
 
-	private static volatile Connection connection = null;
-
-	private static boolean init()
+	public boolean init()
 	{
 		try
 		{
-			Class.forName(postgreSQLDriver);
+			Class.forName(driverClass);
 		}
 		catch (ClassNotFoundException cnfe)
 		{
@@ -32,55 +35,27 @@ public class JdbcRoles
 		return true;
 	}
 
-	private static Connection getConnection()
+	private Connection getConnection() throws Throwable
 	{
 		Connection conn = null;
 
-		try
-		{
-			String databaseConnectionString = String.format("jdbc:postgresql://%s/%s", databaseLocation, databaseName);
-			conn = DriverManager.getConnection(databaseConnectionString, databaseUsername, databasePassword);
-		}
-		catch (SQLException se)
-		{
-		}
+		conn = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword);
+
 		return conn;
-	}
-
-	static
-	{
-		if (init())
-		{
-			connection = getConnection();
-		}
 
 	}
 
-	private static Statement getStatement()
+	public boolean validate(String username, String password) throws Throwable
 	{
-		if (connection != null)
-		{
-			try
-			{
-				return connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-			}
-			catch (SQLException e)
-			{
-				return null;
-			}
-		}
-		return null;
-	}
+		Connection connection = getConnection();
 
-	public static boolean validate(String username, String password) throws Throwable
-	{
-		Statement statement = getStatement();
-		if (statement == null)
-			throw new Exception("validate: Failed to obtain a valid database statement");
-		// Note: this is not the right way to do it - SQL Injection!! Have you
-		// heard of it?
-		String query = String.format("select count(*) from users where (user_name= '%s' AND user_password= '%s')", username, password);
-		ResultSet resultSet = statement.executeQuery(query);
+		PreparedStatement statement = connection.prepareStatement("select count(*) from users where (user_name= ? AND user_password= ?)");
+		
+		statement.setString(1, username);
+		statement.setString(2, password);
+		
+
+		ResultSet resultSet = statement.executeQuery();
 		resultSet.next();
 
 		int count = resultSet.getInt(1);
@@ -88,20 +63,23 @@ public class JdbcRoles
 		resultSet.close();
 		statement.close();
 
+		connection.close();
+		
 		return count == 1;
 	}
 
-	public static List<String> getRoles(String username) throws Throwable
+	public List<String> getRoles(String username) throws Throwable
 	{
-		Statement statement = getStatement();
-		if (statement == null)
-			throw new Exception("getRoles: Failed to obtain a valid database statement");
-		List<String> roles = new ArrayList<String>();
-		// Note: this is not the right way to do it - SQL Injection!! Have you
-		// heard of it?
-		String query = String.format("select user_role from users join user_roles on (users.user_id = user_roles.user_id) where (users.user_name = '%s')", username);
-		ResultSet resultSet = statement.executeQuery(query);
+		Connection connection = getConnection();
 
+		PreparedStatement statement = connection.prepareStatement("select user_role from users join user_roles on (users.user_id = user_roles.user_id) where (users.user_name = ?)");
+		
+		statement.setString(1, username);
+				
+		ResultSet resultSet = statement.executeQuery();
+
+		List<String> roles = new ArrayList<String>();
+		
 		while (resultSet.next())
 		{
 			roles.add(resultSet.getString(1).trim());
@@ -109,6 +87,7 @@ public class JdbcRoles
 
 		resultSet.close();
 		statement.close();
+		connection.close();
 
 		return roles;
 	}

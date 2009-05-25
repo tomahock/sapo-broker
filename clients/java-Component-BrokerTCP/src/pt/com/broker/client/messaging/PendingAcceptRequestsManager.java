@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.AcceptRequest;
+import pt.com.broker.types.NetFault;
 
 public class PendingAcceptRequestsManager
 {
@@ -19,12 +20,7 @@ public class PendingAcceptRequestsManager
 
 	private static Map<String, AcceptRequest> requests = new HashMap<String, AcceptRequest>();
 
-	private static Map<Long, String> timeouts = new TreeMap<Long, String>(); // access
-	// protected
-	// by
-	// requests
-	// sync
-	// object
+	private static Map<Long, String> timeouts = new TreeMap<Long, String>(); // access protected by requests sync object
 
 	static
 	{
@@ -34,34 +30,41 @@ public class PendingAcceptRequestsManager
 			@Override
 			public void run()
 			{
-				long currentTime = System.currentTimeMillis();
-				boolean deletedSomeEntry;
-				do
+				try
 				{
-					deletedSomeEntry = false;
-					AcceptRequest request = null;
-					synchronized (requests)
+					long currentTime = System.currentTimeMillis();
+					boolean deletedSomeEntry;
+					do
 					{
-						for (Map.Entry<Long, String> entry : timeouts.entrySet())
+						deletedSomeEntry = false;
+						AcceptRequest request = null;
+						synchronized (requests)
 						{
-							if (entry.getKey().longValue() <= currentTime)
+							for (Map.Entry<Long, String> entry : timeouts.entrySet())
 							{
-								request = requests.get(entry.getValue());
-								requests.remove(entry.getValue());
-								timeouts.remove(entry.getKey());
+								if (entry.getKey().longValue() <= currentTime)
+								{
+									request = requests.get(entry.getValue());
+									requests.remove(entry.getValue());
+									timeouts.remove(entry.getKey());
 
-								deletedSomeEntry = true;
+									deletedSomeEntry = true;
 
-								log.warn("Accept Request with action id " + request.getActionId() + " timedout.");
+									log.warn("Accept Request with action id " + request.getActionId() + " timedout.");
 
-								break;
+									break;
+								}
 							}
 						}
+						if (request != null)
+							onTimeout(request);
 					}
-					if (request != null)
-						onTimeout(request);
+					while (deletedSomeEntry);
 				}
-				while (deletedSomeEntry);
+				catch (Throwable t)
+				{
+					log.error("Jannitor timeout thread", t);
+				}
 			}
 
 		};
@@ -71,13 +74,48 @@ public class PendingAcceptRequestsManager
 
 	public static void addAcceptRequest(AcceptRequest request)
 	{
+		if (request.getActionId() == null)
+			return;
+
 		synchronized (requests)
 		{
 			if (requests.containsKey(request.getActionId()))
 				throw new IllegalArgumentException("Accept request wiht the same ActionId already exists");
+
 			requests.put(request.getActionId(), request);
 
 			timeouts.put(new Long(System.currentTimeMillis() + request.getTimeoutDelta()), request.getActionId());
+		}
+	}
+
+	public static boolean messageFailed(NetFault fault)
+	{
+		AcceptRequest request = null;
+		synchronized (requests)
+		{
+			request = requests.get(fault.getActionId());
+			if (request == null)
+				return false;
+
+			removeRequest(fault.getActionId());
+		}
+		request.getListner().messageFailed(fault);
+		return true;
+	}
+
+	private static void removeRequest(String actionId)
+	{
+		synchronized (requests)
+		{
+			requests.remove(actionId);
+			for (Map.Entry<Long, String> entry : timeouts.entrySet())
+			{
+				if (entry.getValue().equals(actionId))
+				{
+					timeouts.remove(entry.getKey());
+					return;
+				}
+			}
 		}
 	}
 
@@ -92,7 +130,7 @@ public class PendingAcceptRequestsManager
 				log.error("Received unexpected action id: " + actionId);
 				return;
 			}
-			requests.remove(actionId);
+			removeRequest(actionId);
 		}
 		request.getListner().messageAccepted(actionId);
 	}

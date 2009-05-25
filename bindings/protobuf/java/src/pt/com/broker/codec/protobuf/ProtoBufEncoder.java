@@ -24,8 +24,7 @@ public class ProtoBufEncoder extends SimpleFramingEncoderV2
 	{
 		if (!(message instanceof NetMessage))
 		{
-			// TODO: decide what to do with error
-			log.error("Error encoding message.");
+			log.error("Error encoding message. Unexpected type: " + message.getClass().getName());
 			return;
 		}
 

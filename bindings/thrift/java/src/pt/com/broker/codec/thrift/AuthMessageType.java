@@ -10,8 +10,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
 import org.apache.thrift.IntRangeSet;
-import java.util.Map;
-import java.util.HashMap;
 
 public class AuthMessageType {
   public static final int CLIENT_AUTH = 0;
@@ -21,11 +19,4 @@ public class AuthMessageType {
   public static final int CLIENT_ACKNOWLEDGE = 4;
 
   public static final IntRangeSet VALID_VALUES = new IntRangeSet(CLIENT_AUTH, SERVER_CHALLENGE, SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE, CLIENT_CHALLENGE_RESPONSE, CLIENT_ACKNOWLEDGE);
-  public static final Map<Integer, String> VALUES_TO_NAMES = new HashMap<Integer, String>() {{
-    put(CLIENT_AUTH, "CLIENT_AUTH");
-    put(SERVER_CHALLENGE, "SERVER_CHALLENGE");
-    put(SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE, "SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE");
-    put(CLIENT_CHALLENGE_RESPONSE, "CLIENT_CHALLENGE_RESPONSE");
-    put(CLIENT_ACKNOWLEDGE, "CLIENT_ACKNOWLEDGE");
-  }};
 }

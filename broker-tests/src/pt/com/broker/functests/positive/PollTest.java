@@ -7,8 +7,8 @@ import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.BrokerTest;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetNotification;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetNotification;
 
 public class PollTest extends BrokerTest
 {

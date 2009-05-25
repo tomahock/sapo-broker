@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="build" name="sapo-broker-agent">
-	<property name="project.location" value="." />
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
@@ -37,8 +36,9 @@
 		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="clean" />
-		<ant antfile="../sapo-sts/build.xml" inheritAll="false" target="clean" />
-		<ant antfile="../database-access-control/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../acl/sapo-sts/agent/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="clean" />
 	</target>
 
@@ -70,7 +70,8 @@
 		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="package">
 			<property name="project.location" value="../bindings/xml/java"/> 
 		</ant>
-		<ant antfile="../acl/sapo-sts/build.xml" inheritAll="false" target="package" />
+		<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="package" />
+		<ant antfile="../acl/sapo-sts/agent/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package" />
@@ -79,11 +80,9 @@
 	</target>
 
 	<target name="build-dist" depends="package, package-all">
-
 		<mkdir dir="${target-dir}/lib" />
-		
 		<copy todir="${target-dir}/lib">
-			<fileset dir="${project.location}/../common-libs/">
+			<fileset dir="../common-libs/">	
 				<include name="*.jar"/>
 			</fileset>
  		</copy>
@@ -94,7 +93,8 @@
 		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding.jar" todir="${target-dir}/lib" />
 		<copy file="../bindings/thrift/java/dist/sapo-broker-thriftbinding.jar" todir="${target-dir}/lib" />
 		<copy file="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP.jar" todir="${target-dir}/lib" />
-		<copy file="../acl/sapo-sts/dist/sapo-broker-auth-saposts.jar" todir="${target-dir}/lib" />
+		<copy file="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts.jar" todir="${target-dir}/lib" />
+		<copy file="../acl/sapo-sts/agent/dist/sapo-broker-validation-saposts.jar" todir="${target-dir}/lib" />
 		<copy file="../acl/jdbc/dist/sapo-broker-auth-jdbc.jar" todir="${target-dir}/lib" />
 		<copy file="../broker-tests/dist/sapo-broker-tests.jar" todir="${target-dir}/lib" />
 	
@@ -122,7 +122,7 @@
  		</copy>
 
 		<copy todir="${target-dir}">
-			<fileset dir="${project.location}">
+			<fileset dir=".">
 				<include name="*.sh"/>
 				<include name="*.bat"/>
 			</fileset>

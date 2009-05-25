@@ -3,7 +3,7 @@ package pt.com.broker.functests.helpers;
 import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.functests.Test;
-import pt.com.types.NetProtocolType;
+import pt.com.broker.types.NetProtocolType;
 
 public abstract class BrokerTest extends Test
 {

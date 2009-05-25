@@ -5,9 +5,9 @@ import java.util.List;
 
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
-import pt.com.types.NetAction;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetNotification;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetNotification;
 
 public class MultipleNotificationConsequence extends Consequence
 {

@@ -18,7 +18,6 @@ import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.utils.CircularContainer;
-import pt.com.broker.security.SecureSessionInfo;
 import pt.com.broker.types.NetAcknowledgeMessage;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
@@ -58,7 +57,7 @@ public abstract class BaseBrokerClient
 
 	protected BrokerProtocolHandler _netHandler;
 	protected CircularContainer<HostInfo> hosts;
-	protected SecureSessionInfo secureSessionInfo;
+//	protected SecureSessionInfo secureSessionInfo;
 
 	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
 	{

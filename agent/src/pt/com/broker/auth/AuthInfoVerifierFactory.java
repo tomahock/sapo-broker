@@ -14,16 +14,8 @@ public class AuthInfoVerifierFactory
 		validators = new TreeMap<String, AuthInfoValidator>();
 	}
 
-	public static AuthInfoValidator getDefaultValidator()
-	{
-		return getValidator(null);
-	}
-
 	public static AuthInfoValidator getValidator(String validationType)
 	{
-		if (validationType == null)
-			validationType = "SapoSTS";
-
 		return validators.get(validationType);
 	}
 

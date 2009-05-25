@@ -1,10 +1,10 @@
 package pt.com.broker.functests.negative;
 
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
-import pt.com.types.NetAction;
-import pt.com.types.NetMessage;
-import pt.com.types.NetPong;
-import pt.com.types.NetAction.ActionType;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetAction.ActionType;
 
 public class PongTest extends GenericNetMessageNegativeTest
 {

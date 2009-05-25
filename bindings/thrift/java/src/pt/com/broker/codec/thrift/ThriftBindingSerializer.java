@@ -332,6 +332,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 	{
 		Authentication auth = action.getAuth();
 		NetAuthentication netAuthentication = new NetAuthentication(auth.getToken());
+		netAuthentication.setActionId(auth.getAction_id());
 		netAuthentication.setAuthenticationType(auth.getAuthentication_type());
 		netAuthentication.setRoles(auth.getRoles());
 		netAuthentication.setUserId(auth.getUser_id());
@@ -395,7 +396,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 	private Authentication getAuth(NetMessage netMessage)
 	{
 		NetAuthentication netAuthentication = netMessage.getAction().getAuthenticationMessage();
-		Authentication auth = new Authentication(netAuthentication.getAuthenticationType(), netAuthentication.getToken(), netAuthentication.getUserId(), netAuthentication.getRoles());
+		Authentication auth = new Authentication(netAuthentication.getActionId(), netAuthentication.getAuthenticationType(), netAuthentication.getToken(), netAuthentication.getUserId(), netAuthentication.getRoles());
 		return auth;
 	}
 

@@ -29,6 +29,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import pt.com.broker.auth.ProviderInfo;
 import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 import pt.com.gcs.net.Peer;
 

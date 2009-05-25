@@ -1,20 +1,9 @@
 package pt.com.broker.functests.negative;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 
 import pt.com.broker.functests.helpers.GenericNegativeTest;
-import pt.com.protobuf.codec.ProtoBufBindingSerializer;
-import pt.com.thrift.codec.ThriftBindingSerializer;
-import pt.com.types.BindingSerializer;
-import pt.com.types.NetAction;
-import pt.com.types.NetMessage;
-import pt.com.types.NetPing;
-import pt.com.types.NetAction.ActionType;
-import pt.com.xml.codec.SoapBindingSerializer;
 
 public class InvalidRandomMessageTest extends GenericNegativeTest
 {

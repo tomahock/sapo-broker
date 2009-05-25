@@ -5,9 +5,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.types.NetNotification;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class Consumer implements Callable<Integer>, BrokerListener
 {

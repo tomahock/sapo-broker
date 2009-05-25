@@ -9,9 +9,8 @@ import java.util.concurrent.TimeUnit;
 import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.client.BrokerClient;
-import pt.com.broker.functests.Step;
-import pt.com.types.NetProtocolType;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class Test
 {

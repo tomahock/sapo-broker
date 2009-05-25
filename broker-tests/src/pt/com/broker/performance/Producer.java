@@ -3,9 +3,8 @@ package pt.com.broker.performance;
 import java.util.concurrent.Callable;
 
 import pt.com.broker.client.BrokerClient;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetPublish;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class Producer implements Callable<Integer>
 {

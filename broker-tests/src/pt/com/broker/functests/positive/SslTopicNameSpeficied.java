@@ -13,8 +13,8 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 	{
 		super(testName);
 		//TODO: save these params in configuration
-		String keyStoreLocation = "/home/lcosta/Work/SSL/clientKeystore";
-		String keystorePassword = "changeit";
+		String keyStoreLocation = "[keystore location]";
+		String keystorePassword = "[password]";
 		SslBrokerClient bk = null;
 		try
 		{

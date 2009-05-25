@@ -13,10 +13,11 @@ import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.SetValueFuture;
-import pt.com.types.NetAction;
-import pt.com.types.NetBrokerMessage;
-import pt.com.types.NetSubscribe;
-import pt.com.types.NetAction.DestinationType;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class TopicPubSubWithActionId extends BrokerTest
 {
@@ -93,6 +94,12 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 						@Override
 						public void messageTimedout(String actionId)
+						{
+							future.set(Boolean.FALSE);
+						}
+
+						@Override
+						public void messageFailed(NetFault fault)
 						{
 							future.set(Boolean.FALSE);
 						}

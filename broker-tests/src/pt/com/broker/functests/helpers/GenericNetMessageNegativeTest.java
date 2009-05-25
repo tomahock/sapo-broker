@@ -4,14 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import pt.com.protobuf.codec.ProtoBufBindingSerializer;
-import pt.com.thrift.codec.ThriftBindingSerializer;
-import pt.com.types.BindingSerializer;
-import pt.com.types.NetAction;
-import pt.com.types.NetMessage;
-import pt.com.types.NetPing;
-import pt.com.types.NetAction.ActionType;
-import pt.com.xml.codec.SoapBindingSerializer;
+import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
+import pt.com.broker.codec.thrift.ThriftBindingSerializer;
+import pt.com.broker.codec.xml.SoapBindingSerializer;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.NetMessage;
 
 public class GenericNetMessageNegativeTest extends GenericNegativeTest
 {

@@ -2,11 +2,14 @@ package pt.com.broker.client;
 
 import java.util.Collection;
 
+import org.caudexorigo.text.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AuthInfo;
-import pt.com.broker.security.SecureSessionInfo;
+import pt.com.broker.auth.CredentialsProvider;
+import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
+import pt.com.broker.client.utils.BlockingMessageAcceptedListener;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetMessage;
@@ -23,6 +26,10 @@ public final class SslBrokerClient extends BaseBrokerClient
 
 	private String keystoreLocation = null;
 	private char[] keystorePass = null;
+
+	private CredentialsProvider provider;
+
+	private AuthInfo providerCredentials;
 
 	public SslBrokerClient(String host, int portNumber) throws Throwable
 	{
@@ -95,9 +102,40 @@ public final class SslBrokerClient extends BaseBrokerClient
 		this.userCredentials = userCredentials;
 	}
 
-	public void authenticateClient() throws Throwable
+	public void setCredentialsProvider(CredentialsProvider provider, AuthInfo providerCredentials)
+	{
+		this.provider = provider;
+		this.providerCredentials = providerCredentials;
+	}
+
+	public boolean hasCredentialsProvider()
+	{
+		return provider != null;
+	}
+
+	public boolean renewCredentials()
+	{
+		if (provider != null)
+		{
+			try
+			{
+				setAuthenticationCredentials(provider.getCredentials(providerCredentials));
+			}
+			catch (Exception e)
+			{
+				log.error("Failed to renw credentials", e);
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public boolean authenticateClient() throws Throwable
 	{
 		this.requiresAuthentication = true;
+
+		setState(BrokerClientState.AUTH);
 
 		NetAuthentication clientAuth = new NetAuthentication(userCredentials.getToken());
 		if (userCredentials.getRoles() != null && userCredentials.getRoles().size() != 0)
@@ -114,23 +152,39 @@ public final class SslBrokerClient extends BaseBrokerClient
 
 		NetMessage msg = new NetMessage(action);
 
+		Object syncObj = new Object();
+		BlockingMessageAcceptedListener acceptedListener = new BlockingMessageAcceptedListener(syncObj);
+		String actionId = RandomStringUtils.random(25);
+		clientAuth.setActionId(actionId);
+
+		AcceptRequest acceptRequest = new AcceptRequest(actionId, acceptedListener, 5000);
+		PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
+
 		getNetHandler().sendMessage(msg);
-		
+		synchronized (syncObj)
+		{
+			syncObj.wait();
+		}
+
+		if (acceptedListener.wasFailure())
+		{
+			log.error("Authentication failed.", acceptedListener.getFault().getMessage());
+			setState(BrokerClientState.OK);
+			return false;
+		}
+		else if (acceptedListener.wasTimeout())
+		{
+			log.warn("Authentication failed by timeout.");
+			setState(BrokerClientState.OK);
+			return false;
+		}
+		setState(BrokerClientState.OK);
+		return true;
 	}
 
 	public boolean isAuthenticationRequired()
 	{
 		return requiresAuthentication;
-	}
-
-	public void setSecureSessionInfo(SecureSessionInfo secureSessionInfo)
-	{
-		this.secureSessionInfo = secureSessionInfo;
-	}
-
-	public SecureSessionInfo getSecureSessionInfo()
-	{
-		return secureSessionInfo;
 	}
 
 	@Override

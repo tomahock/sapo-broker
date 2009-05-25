@@ -12,10 +12,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
+
 import org.apache.thrift.protocol.*;
+import org.apache.thrift.transport.*;
 
 public class Fault implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Fault");
@@ -186,35 +187,19 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      if (value == null) {
-        unsetAction_id();
-      } else {
-        setAction_id((String)value);
-      }
+      setAction_id((String)value);
       break;
 
     case FAULT_CODE:
-      if (value == null) {
-        unsetFault_code();
-      } else {
-        setFault_code((String)value);
-      }
+      setFault_code((String)value);
       break;
 
     case FAULT_MESSAGE:
-      if (value == null) {
-        unsetFault_message();
-      } else {
-        setFault_message((String)value);
-      }
+      setFault_message((String)value);
       break;
 
     case FAULT_DETAIL:
-      if (value == null) {
-        unsetFault_detail();
-      } else {
-        setFault_detail((String)value);
-      }
+      setFault_detail((String)value);
       break;
 
     default:

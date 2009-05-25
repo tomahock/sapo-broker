@@ -12,10 +12,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
+
 import org.apache.thrift.protocol.*;
+import org.apache.thrift.transport.*;
 
 public class Atom implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Atom");
@@ -120,19 +121,11 @@ public class Atom implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case HEADER:
-      if (value == null) {
-        unsetHeader();
-      } else {
-        setHeader((Header)value);
-      }
+      setHeader((Header)value);
       break;
 
     case ACTION:
-      if (value == null) {
-        unsetAction();
-      } else {
-        setAction((Action)value);
-      }
+      setAction((Action)value);
       break;
 
     default:

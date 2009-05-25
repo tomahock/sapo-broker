@@ -2,7 +2,7 @@ package pt.com.broker.functests.helpers;
 
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
-import pt.com.types.NetFault;
+import pt.com.broker.types.NetFault;
 
 public class FaultConsequence extends Consequence
 {

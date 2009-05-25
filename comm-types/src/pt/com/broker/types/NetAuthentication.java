@@ -4,7 +4,7 @@ import java.util.List;
 
 public class NetAuthentication
 {
-
+	private String actionId;
 	private String authenticationType;
 	private byte[] token;
 	private String userId;
@@ -48,5 +48,15 @@ public class NetAuthentication
 	public List<String> getRoles()
 	{
 		return roles;
+	}
+
+	public void setActionId(String actionId)
+	{
+		this.actionId = actionId;
+	}
+
+	public String getActionId()
+	{
+		return actionId;
 	}
 }
