@@ -1,4 +1,4 @@
-package pt.com.broker.auth.saposts.sample;
+package pt.com.broker.auth.saposts.samples;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

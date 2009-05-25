@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-CommonLibs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-CommTypes"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ClientLib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
