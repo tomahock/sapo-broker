@@ -70,12 +70,12 @@
 		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="package">
 			<property name="project.location" value="../bindings/xml/java"/> 
 		</ant>
+		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../acl/sapo-sts/agent/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package" />
-		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package" />
 		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="package" />
 	</target>
 
