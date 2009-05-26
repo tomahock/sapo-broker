@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
 import org.apache.thrift.IntRangeSet;
+import java.util.Map;
+import java.util.HashMap;
 
 public class DestinationType {
   public static final int TOPIC = 0;
@@ -17,4 +19,9 @@ public class DestinationType {
   public static final int VIRTUAL_QUEUE = 2;
 
   public static final IntRangeSet VALID_VALUES = new IntRangeSet(TOPIC, QUEUE, VIRTUAL_QUEUE);
+  public static final Map<Integer, String> VALUES_TO_NAMES = new HashMap<Integer, String>() {{
+    put(TOPIC, "TOPIC");
+    put(QUEUE, "QUEUE");
+    put(VIRTUAL_QUEUE, "VIRTUAL_QUEUE");
+  }};
 }

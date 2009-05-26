@@ -12,11 +12,10 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
 public class Authentication implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Authentication");
@@ -241,23 +240,43 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      setAction_id((String)value);
+      if (value == null) {
+        unsetAction_id();
+      } else {
+        setAction_id((String)value);
+      }
       break;
 
     case AUTHENTICATION_TYPE:
-      setAuthentication_type((String)value);
+      if (value == null) {
+        unsetAuthentication_type();
+      } else {
+        setAuthentication_type((String)value);
+      }
       break;
 
     case TOKEN:
-      setToken((byte[])value);
+      if (value == null) {
+        unsetToken();
+      } else {
+        setToken((byte[])value);
+      }
       break;
 
     case USER_ID:
-      setUser_id((String)value);
+      if (value == null) {
+        unsetUser_id();
+      } else {
+        setUser_id((String)value);
+      }
       break;
 
     case ROLES:
-      setRoles((List<String>)value);
+      if (value == null) {
+        unsetRoles();
+      } else {
+        setRoles((List<String>)value);
+      }
       break;
 
     default:

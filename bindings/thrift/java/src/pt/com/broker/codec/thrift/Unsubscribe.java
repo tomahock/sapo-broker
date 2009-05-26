@@ -12,11 +12,10 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
 public class Unsubscribe implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Unsubscribe");
@@ -154,15 +153,27 @@ public class Unsubscribe implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      setAction_id((String)value);
+      if (value == null) {
+        unsetAction_id();
+      } else {
+        setAction_id((String)value);
+      }
       break;
 
     case DESTINATION:
-      setDestination((String)value);
+      if (value == null) {
+        unsetDestination();
+      } else {
+        setDestination((String)value);
+      }
       break;
 
     case DESTINATION_TYPE:
-      setDestination_type((Integer)value);
+      if (value == null) {
+        unsetDestination_type();
+      } else {
+        setDestination_type((Integer)value);
+      }
       break;
 
     default:
@@ -339,7 +350,15 @@ public class Unsubscribe implements TBase, java.io.Serializable, Cloneable {
     first = false;
     if (!first) sb.append(", ");
     sb.append("destination_type:");
+    String destination_type_name = DestinationType.VALUES_TO_NAMES.get(this.destination_type);
+    if (destination_type_name != null) {
+      sb.append(destination_type_name);
+      sb.append(" (");
+    }
     sb.append(this.destination_type);
+    if (destination_type_name != null) {
+      sb.append(")");
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -348,8 +367,8 @@ public class Unsubscribe implements TBase, java.io.Serializable, Cloneable {
   public void validate() throws TException {
     // check for required fields
     // check that fields of type enum have valid values
-    if (__isset.destination_type && !DestinationType.VALID_VALUES.contains(destination_type)){
-      throw new TProtocolException("Invalid value of field 'destination_type'!");
+    if (isSetDestination_type() && !DestinationType.VALID_VALUES.contains(destination_type)){
+      throw new TProtocolException("The field 'destination_type' has been assigned the invalid value " + destination_type);
     }
   }
 

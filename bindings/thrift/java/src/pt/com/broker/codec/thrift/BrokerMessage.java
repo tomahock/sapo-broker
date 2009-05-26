@@ -12,11 +12,10 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
 public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("BrokerMessage");
@@ -188,19 +187,35 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case MESSAGE_ID:
-      setMessage_id((String)value);
+      if (value == null) {
+        unsetMessage_id();
+      } else {
+        setMessage_id((String)value);
+      }
       break;
 
     case PAYLOAD:
-      setPayload((byte[])value);
+      if (value == null) {
+        unsetPayload();
+      } else {
+        setPayload((byte[])value);
+      }
       break;
 
     case EXPIRATION:
-      setExpiration((Long)value);
+      if (value == null) {
+        unsetExpiration();
+      } else {
+        setExpiration((Long)value);
+      }
       break;
 
     case TIMESTAMP:
-      setTimestamp((Long)value);
+      if (value == null) {
+        unsetTimestamp();
+      } else {
+        setTimestamp((Long)value);
+      }
       break;
 
     default:
