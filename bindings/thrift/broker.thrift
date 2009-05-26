@@ -22,15 +22,6 @@ enum ActionType
 	AUTH = 10;
 }
 
-enum AuthMessageType
-{
-	CLIENT_AUTH = 0;
-	SERVER_CHALLENGE = 1;
-	SERVER_CHALLENGE_RESPONSE_CLIENT_CHALLENGE = 2;
-	CLIENT_CHALLENGE_RESPONSE = 3;
-	CLIENT_ACKNOWLEDGE = 4;
-}
-
 struct Header
 {
 	1: map<string, string> parameters;
