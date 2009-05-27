@@ -1,6 +1,7 @@
 package pt.com.broker.net;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
@@ -13,8 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.AuthInfoValidator;
-import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.AuthInfoVerifierFactory;
+import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.Session;
 import pt.com.broker.auth.SessionProperties;
 import pt.com.broker.codec.xml.FaultCode;
@@ -409,7 +410,14 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	private void handleAuthMessage(IoSession session, NetMessage request)
 	{
-		System.out.println("########BrokerProtocolHandler.handleAuthMessage()");
+		
+		InetSocketAddress localAddress = (InetSocketAddress)session.getLocalAddress();
+		
+		if(localAddress.getPort() != GcsInfo.getBrokerSSLPort())
+		{
+			session.write(NetFault.InvalidAuthenticationChannelType);
+			return;
+		}
 		
 		NetAuthentication netAuthentication = request.getAction().getAuthenticationMessage();
 
@@ -448,10 +456,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		
 		if(netAuthentication.getActionId() != null){
 			sendAccepted(session, netAuthentication.getActionId());
-			System.out.println("########BrokerProtocolHandler.handleAuthMessage() -  sent accept");
 		}
-		System.out.println("########BrokerProtocolHandler.handleAuthMessage()");
-
 	}
 
 	private synchronized void sendAccepted(final IoSession ios, final String actionId)

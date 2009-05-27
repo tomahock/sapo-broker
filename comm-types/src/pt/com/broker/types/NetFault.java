@@ -19,7 +19,8 @@ public final class NetFault
 	public static final NetMessage AuthenticationFailedErrorMessage;
 	public static final NetMessage UnknownAuthenticationTypeMessage;
 	public static final NetMessage AccessDeniedErrorMessage;
-
+	public static final NetMessage InvalidAuthenticationChannelType;
+	
 	static
 	{
 		InvalidMessageSizeErrorMessage = buildNetFaultMessage("1101", "Invalid message size");
@@ -31,6 +32,7 @@ public final class NetFault
 		InvalidMessageDestinationTypeErrorMessage = buildNetFaultMessage("2002", "Invalid destination type");
 		AuthenticationFailedErrorMessage = buildNetFaultMessage("3101", "Authentication failed");
 		UnknownAuthenticationTypeMessage = buildNetFaultMessage("3102", "Unknown authentication type");
+		InvalidAuthenticationChannelType = buildNetFaultMessage("3103", "Invalid authentication channel type");
 		AccessDeniedErrorMessage = buildNetFaultMessage("3201", "Access denied");
 	}
 
