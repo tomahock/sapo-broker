@@ -234,7 +234,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			case POLL:
 				handlePollMessage(session, request);
 				break;
-			case ACKNOWLEDGE_MESSAGE:
+			case ACKNOWLEDGE:
 				handleAcknowledeMessage(session, request);
 				break;
 			case UNSUBSCRIBE:

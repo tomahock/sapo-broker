@@ -1,12 +1,12 @@
 package pt.com.broker.types;
 
-public final class NetAcknowledgeMessage
+public final class NetAcknowledge
 {
 	private String actionId;
 	private String messageId;
 	private String destination;
 
-	public NetAcknowledgeMessage(String destination, String messageId)
+	public NetAcknowledge(String destination, String messageId)
 	{
 		this.messageId = messageId;
 		this.destination = destination;

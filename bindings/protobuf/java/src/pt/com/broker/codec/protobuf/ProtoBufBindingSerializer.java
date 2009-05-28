@@ -26,7 +26,7 @@ import pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe;
 import pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAccepted;
-import pt.com.broker.types.NetAcknowledgeMessage;
+import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetBrokerMessage;
@@ -117,7 +117,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			builder.setActionType(PBMessage.Atom.Action.ActionType.ACCEPTED);
 			builder.setAccepted(getAccepted(netMessage));
 			break;
-		case ACKNOWLEDGE_MESSAGE:
+		case ACKNOWLEDGE:
 			builder.setActionType(PBMessage.Atom.Action.ActionType.ACKNOWLEDGE_MESSAGE);
 			builder.setAckMessage(getAcknowledge(netMessage));
 			break;
@@ -192,7 +192,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private AcknowledgeMessage getAcknowledge(NetMessage netMessage)
 	{
-		NetAcknowledgeMessage net = netMessage.getAction().getAcknowledgeMessage();
+		NetAcknowledge net = netMessage.getAction().getAcknowledgeMessage();
 
 		PBMessage.Atom.AcknowledgeMessage.Builder builder = PBMessage.Atom.AcknowledgeMessage.newBuilder();
 
@@ -391,7 +391,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		case ACCEPTED:
 			netAction.setAcceptedMessage(extractAcceptedMessage(action));
 			break;
-		case ACKNOWLEDGE_MESSAGE:
+		case ACKNOWLEDGE:
 			netAction.setAcknowledgeMessage(extractAcknowledgeMessage(action));
 			break;
 		case FAULT:
@@ -475,7 +475,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		case ACCEPTED:
 			return NetAction.ActionType.ACCEPTED;
 		case ACKNOWLEDGE_MESSAGE:
-			return NetAction.ActionType.ACKNOWLEDGE_MESSAGE;
+			return NetAction.ActionType.ACKNOWLEDGE;
 		case FAULT:
 			return NetAction.ActionType.FAULT;
 		case NOTIFICATION:
@@ -506,12 +506,12 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		return netAccepted;
 	}
 
-	private NetAcknowledgeMessage extractAcknowledgeMessage(Action action)
+	private NetAcknowledge extractAcknowledgeMessage(Action action)
 	{
 		AcknowledgeMessage protoBufAckMsg = action.getAckMessage();
 		String destination = protoBufAckMsg.getDestination();
 		String messageId = protoBufAckMsg.getMessageId();
-		NetAcknowledgeMessage ackMessage = new NetAcknowledgeMessage(destination, messageId);
+		NetAcknowledge ackMessage = new NetAcknowledge(destination, messageId);
 		if (action.getAckMessage().hasActionId())
 			ackMessage.setActionId(action.getAckMessage().getActionId());
 

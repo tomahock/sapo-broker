@@ -6,7 +6,7 @@ import java.util.Date;
 import org.caudexorigo.text.DateUtil;
 
 import pt.com.broker.types.NetAccepted;
-import pt.com.broker.types.NetAcknowledgeMessage;
+import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetFault;
@@ -126,8 +126,8 @@ public class Builder
 			actionId = msg.body.acknowledge.actionId;
 			Acknowledge ack = msg.body.acknowledge;
 
-			NetAction netAction = new NetAction(NetAction.ActionType.ACKNOWLEDGE_MESSAGE);
-			NetAcknowledgeMessage netAck = new NetAcknowledgeMessage(ack.destinationName, ack.messageId);
+			NetAction netAction = new NetAction(NetAction.ActionType.ACKNOWLEDGE);
+			NetAcknowledge netAck = new NetAcknowledge(ack.destinationName, ack.messageId);
 			netAck.setActionId(actionId);
 
 			message = new NetMessage(netAction);
@@ -201,9 +201,9 @@ public class Builder
 			a.actionId = netMessage.getAction().getAcceptedMessage().getActionId();
 			soap.body.accepted = a;
 			break;
-		case ACKNOWLEDGE_MESSAGE:
+		case ACKNOWLEDGE:
 			Acknowledge ack = new Acknowledge();
-			NetAcknowledgeMessage nack = netMessage.getAction().getAcknowledgeMessage();
+			NetAcknowledge nack = netMessage.getAction().getAcknowledgeMessage();
 			ack.actionId = nack.getActionId();
 			ack.destinationName = nack.getDestination();
 			ack.messageId = nack.getMessageId();

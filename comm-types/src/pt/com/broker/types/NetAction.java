@@ -5,7 +5,7 @@ public final class NetAction
 
 	public enum ActionType
 	{
-		PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE_MESSAGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH
+		PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH
 	};
 
 	public enum DestinationType
@@ -18,7 +18,7 @@ public final class NetAction
 	private NetPublish publishMessage;
 	private NetPoll pollMessage;
 	private NetAccepted acceptedMessage;
-	private NetAcknowledgeMessage acknowledgeMessage;
+	private NetAcknowledge acknowledgeMessage;
 	private NetSubscribe subscribeMessage;
 	private NetUnsubscribe unsbuscribeMessage;
 	private NetNotification notificationMessage;
@@ -67,12 +67,12 @@ public final class NetAction
 		return acceptedMessage;
 	}
 
-	public void setAcknowledgeMessage(NetAcknowledgeMessage acknowledgeMessage)
+	public void setAcknowledgeMessage(NetAcknowledge acknowledgeMessage)
 	{
 		this.acknowledgeMessage = acknowledgeMessage;
 	}
 
-	public NetAcknowledgeMessage getAcknowledgeMessage()
+	public NetAcknowledge getAcknowledgeMessage()
 	{
 		return acknowledgeMessage;
 	}

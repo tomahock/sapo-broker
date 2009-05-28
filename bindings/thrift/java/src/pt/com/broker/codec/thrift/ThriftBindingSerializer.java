@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAccepted;
-import pt.com.broker.types.NetAcknowledgeMessage;
+import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetBrokerMessage;
@@ -108,7 +108,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 		case ACCEPTED:
 			netAction.setAcceptedMessage(extractAcceptedMessage(action));
 			break;
-		case ACKNOWLEDGE_MESSAGE:
+		case ACKNOWLEDGE:
 			netAction.setAcknowledgeMessage(extractAcknowledgeMessage(action));
 			break;
 		case FAULT:
@@ -164,7 +164,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 		case ActionType.ACCEPTED:
 			return NetAction.ActionType.ACCEPTED;
 		case ActionType.ACKNOWLEDGE_MESSAGE:
-			return NetAction.ActionType.ACKNOWLEDGE_MESSAGE;
+			return NetAction.ActionType.ACKNOWLEDGE;
 		case ActionType.FAULT:
 			return NetAction.ActionType.FAULT;
 		case ActionType.PING:
@@ -208,12 +208,12 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return netAccepted;
 	}
 
-	private NetAcknowledgeMessage extractAcknowledgeMessage(Action action)
+	private NetAcknowledge extractAcknowledgeMessage(Action action)
 	{
 		AcknowledgeMessage ThriftAckMsg = action.getAck_message();
 		String destination = ThriftAckMsg.getDestination();
 		String messageId = ThriftAckMsg.getMessage_id();
-		NetAcknowledgeMessage ackMessage = new NetAcknowledgeMessage(destination, messageId);
+		NetAcknowledge ackMessage = new NetAcknowledge(destination, messageId);
 		if (action.getAck_message().isSetAction_id())
 			ackMessage.setActionId(action.getAck_message().getAction_id());
 
@@ -350,7 +350,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 			ac.setAction_type(ActionType.ACCEPTED);
 			ac.setAccepted(getAccepted(netMessage));
 			break;
-		case ACKNOWLEDGE_MESSAGE:
+		case ACKNOWLEDGE:
 			ac.setAction_type(ActionType.ACKNOWLEDGE_MESSAGE);
 			ac.setAck_message(getAcknowledge(netMessage));
 			break;
@@ -430,7 +430,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private AcknowledgeMessage getAcknowledge(NetMessage netMessage)
 	{
-		NetAcknowledgeMessage net = netMessage.getAction().getAcknowledgeMessage();
+		NetAcknowledge net = netMessage.getAction().getAcknowledgeMessage();
 
 		AcknowledgeMessage struct = new AcknowledgeMessage();
 

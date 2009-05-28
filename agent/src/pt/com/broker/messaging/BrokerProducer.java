@@ -4,7 +4,7 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.NetAcknowledgeMessage;
+import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
 import pt.com.gcs.conf.GcsInfo;
@@ -106,7 +106,7 @@ public class BrokerProducer
 		Gcs.publish(msg);
 	}
 
-	public void acknowledge(NetAcknowledgeMessage ackReq)
+	public void acknowledge(NetAcknowledge ackReq)
 	{
 		Gcs.ackMessage(ackReq.getDestination(), ackReq.getMessageId());
 	}

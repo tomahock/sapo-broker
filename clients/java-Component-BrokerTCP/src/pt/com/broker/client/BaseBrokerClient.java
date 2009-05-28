@@ -18,7 +18,7 @@ import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.utils.CircularContainer;
-import pt.com.broker.types.NetAcknowledgeMessage;
+import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
@@ -142,14 +142,14 @@ public abstract class BaseBrokerClient
 				ackDestination = notification.getDestination();
 			}
 
-			NetAcknowledgeMessage ackMsg = new NetAcknowledgeMessage(ackDestination, brkMsg.getMessageId());
+			NetAcknowledge ackMsg = new NetAcknowledge(ackDestination, brkMsg.getMessageId());
 			if (acceptRequest != null)
 			{
 				ackMsg.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 			}
 
-			NetAction action = new NetAction(ActionType.ACKNOWLEDGE_MESSAGE);
+			NetAction action = new NetAction(ActionType.ACKNOWLEDGE);
 			action.setAcknowledgeMessage(ackMsg);
 			NetMessage msg = buildMessage(action);
 
