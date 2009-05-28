@@ -203,7 +203,7 @@ public class AccessControl
 			return DestinationType.QUEUE;
 		case TOPIC:
 			return DestinationType.TOPIC;
-		case TOPIC_AS_QUEUE:
+		case VIRTUAL_QUEUE:
 			return DestinationType.VIRTUAL_QUEUE;
 		}
 		return null;

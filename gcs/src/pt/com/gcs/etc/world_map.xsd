@@ -41,7 +41,7 @@
 		<xs:restriction base="xs:string">
 		 <xs:enumeration value="TOPIC"/>
 		 <xs:enumeration value="QUEUE"/>
-		 <xs:enumeration value="TOPIC_AS_QUEUE"/>
+		 <xs:enumeration value="VIRTUAL_QUEUE"/>
 	    </xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Authorization">
