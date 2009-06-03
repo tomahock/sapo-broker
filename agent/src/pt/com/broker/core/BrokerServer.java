@@ -55,7 +55,7 @@ public class BrokerServer
 			AuthorizationFilter authFilter = AuthorizationFilter.getInstance();
 
 			DefaultIoFilterChainBuilder filterChainBuilder0 = acceptor0.getFilterChain();
-			filterChainBuilder0.addLast("BROKER_CODEC", new ProtocolCodecFilter(new SoapCodec()));
+			filterChainBuilder0.addLast("BROKER_CODEC", new ProtocolCodecFilter(new SoapCodec(GcsInfo.getMessageMaxSize())));
 			if (GcsInfo.useAccessControl())
 			{
 				filterChainBuilder0.addLast("AUTHORIZATION_FILTER", authFilter);

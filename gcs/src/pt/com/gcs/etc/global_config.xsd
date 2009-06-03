@@ -13,13 +13,34 @@
 										<xs:element name="transport">
 											<xs:complexType>
 												<xs:all>
-													<xs:element name="type" type="xs:string" />
 													<xs:element name="ip" type="xs:string" />
 													<xs:element name="port" type="xs:int" />
 												</xs:all>
 											</xs:complexType>
 										</xs:element>
 									</xs:all>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="messages">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="max-msg-size" type="xs:int" />
+							<xs:element name="queues">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="max-queues" type="xs:int" />
+										<xs:element name="store-time" type="xs:long" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="topic">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="max-distinct-subscriptions" type="xs:int" />
+									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>

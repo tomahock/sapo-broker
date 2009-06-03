@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
+import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
 
@@ -84,14 +85,14 @@ public class Gcs
 
 	}
 
-	public static void enqueue(final InternalMessage message)
+	public static boolean enqueue(final InternalMessage message)
 	{
-		instance.ienqueue(message, null);
+		return instance.ienqueue(message, null);
 	}
 
-	public static void enqueue(InternalMessage message, String queueName)
+	public static boolean enqueue(InternalMessage message, String queueName)
 	{
-		instance.ienqueue(message, queueName);
+		return instance.ienqueue(message, queueName);
 	}
 
 	protected static void reloadWorldMap()
@@ -214,12 +215,26 @@ public class Gcs
 
 	private void iackMessage(String queueName, final String msgId)
 	{
-		QueueProcessorList.get(queueName).ack(msgId);
+		try
+		{
+			QueueProcessorList.get(queueName).ack(msgId);
+		}
+		catch (MaximumQueuesAllowedReachedException e)
+		{
+			// This never happens
+		}
 	}
 
 	private void iaddQueueConsumer(String queueName, MessageListener listener)
 	{
-		QueueProcessorList.get(queueName);
+		try
+		{
+			QueueProcessorList.get(queueName);
+		}
+		catch (MaximumQueuesAllowedReachedException e)
+		{
+			// This never happens
+		}
 
 		if (listener != null)
 		{
@@ -235,9 +250,18 @@ public class Gcs
 		}
 	}
 
-	private void ienqueue(InternalMessage message, String queueName)
+	private boolean ienqueue(InternalMessage message, String queueName)
 	{
-		QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message);
+		try
+		{
+			QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message);
+			return true;
+		}
+		catch (MaximumQueuesAllowedReachedException e)
+		{
+			log.error("Tried to create a new queue. Not allowed because the limit was reached");
+		}
+		return false;
 	}
 
 	private void iinit()
@@ -254,7 +278,14 @@ public class Gcs
 
 		for (String queueName : queues)
 		{
-			QueueProcessorList.get(queueName);
+			try
+			{
+				QueueProcessorList.get(queueName);
+			}
+			catch (MaximumQueuesAllowedReachedException e)
+			{
+				// This never happens
+			}
 		}
 
 		connectToAllPeers();
@@ -280,7 +311,15 @@ public class Gcs
 	private InternalMessage ipoll(final String queueName)
 	{
 		LocalQueueConsumers.addSyncConsumer(queueName);
-		InternalMessage m = QueueProcessorList.get(queueName).poll();
+		InternalMessage m = null;
+		try
+		{
+			m = QueueProcessorList.get(queueName).poll();
+		}
+		catch (MaximumQueuesAllowedReachedException e)
+		{
+			// This never happens
+		}
 		return m;
 	}
 

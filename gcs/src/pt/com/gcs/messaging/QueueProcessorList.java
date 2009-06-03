@@ -2,15 +2,23 @@ package pt.com.gcs.messaging;
 
 import java.util.Collection;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
+import org.apache.thrift.server.TThreadPoolServer;
+import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.gcs.conf.GcsInfo;
+
 public class QueueProcessorList
 {
 
+	public static class MaximumQueuesAllowedReachedException extends Exception{ }
+	
 	private static final QueueProcessorList instance = new QueueProcessorList();
 
 	private static final Logger log = LoggerFactory.getLogger(QueueProcessorList.class);
@@ -21,6 +29,10 @@ public class QueueProcessorList
 		{
 			try
 			{
+				if (size() > GcsInfo.getMaxQueues())
+				{
+					throw new MaximumQueuesAllowedReachedException();
+				}
 				log.debug("Populate QueueProcessorList");
 				QueueProcessor qp = new QueueProcessor(destinationName);
 				return qp;
@@ -32,7 +44,7 @@ public class QueueProcessorList
 		}
 	};
 
-	protected static QueueProcessor get(String destinationName)
+	protected static QueueProcessor get(String destinationName) throws MaximumQueuesAllowedReachedException
 	{
 		return instance.i_get(destinationName);
 	}
@@ -52,11 +64,6 @@ public class QueueProcessorList
 		return instance.i_size();
 	}
 
-	// protected static int size(String destinationName)
-	// {
-	// return get(destinationName).size();
-	// }
-
 	protected static Collection<QueueProcessor> values()
 	{
 		return instance.i_values();
@@ -69,20 +76,27 @@ public class QueueProcessorList
 	{
 	}
 
-	private QueueProcessor i_get(String destinationName)
+	private QueueProcessor i_get(String destinationName) throws MaximumQueuesAllowedReachedException
 	{
 		log.debug("Get Queue for: {}", destinationName);
 
 		try
 		{
 			return qpCache.get(destinationName, qp_cf);
-
 		}
 		catch (InterruptedException ie)
 		{
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(ie);
 		}
+		catch (RuntimeException re)
+		{
+			Throwable rootCause = ErrorAnalyser.findRootCause(re);
+			if( rootCause instanceof MaximumQueuesAllowedReachedException ){
+				throw (MaximumQueuesAllowedReachedException)rootCause;
+			}
+		}
+		return null;
 	}
 
 	private synchronized void i_remove(String queueName)
@@ -100,7 +114,17 @@ public class QueueProcessorList
 				DispatcherList.removeDispatcher(queueName);
 			}
 
-			QueueProcessor qp = get(queueName);
+			QueueProcessor qp;
+			try
+			{
+				qp = get(queueName);
+			}
+			catch (MaximumQueuesAllowedReachedException e)
+			{
+				// This should never happens
+				log.error("Trying to remove an inexistent queue.");
+				return;
+			}
 
 			if (qp.hasRecipient())
 			{

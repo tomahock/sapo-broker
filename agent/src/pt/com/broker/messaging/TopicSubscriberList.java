@@ -19,6 +19,10 @@ import pt.com.gcs.messaging.InternalMessage;
 
 public class TopicSubscriberList
 {
+	
+	public static class MaximumDistinctSubscriptionsReachedException extends Exception{}
+	
+	
 	// key: destinationName
 	private static final Map<String, TopicSubscriber> topicSubscribersCache = new HashMap<String, TopicSubscriber>();
 
@@ -66,7 +70,7 @@ public class TopicSubscriberList
 		BrokerExecutor.scheduleWithFixedDelay(counter, 20, 20, TimeUnit.SECONDS);
 	}
 
-	private TopicSubscriber getSubscriber(String destinationName)
+	private TopicSubscriber getSubscriber(String destinationName) throws MaximumDistinctSubscriptionsReachedException
 	{
 		try
 		{
@@ -77,6 +81,13 @@ public class TopicSubscriberList
 				subscriber = topicSubscribersCache.get(destinationName);
 				if (subscriber == null)
 				{
+					
+					if( topicSubscribersCache.size() == GcsInfo.getMaxDistinctSubscriptions() )
+					{						
+						log.error("Maximum distinct subscriptions reached");
+						throw new MaximumDistinctSubscriptionsReachedException();
+					}
+					
 					subscriber = createSubscriber(destinationName);
 				}
 
@@ -157,7 +168,7 @@ public class TopicSubscriberList
 		instance.i_removeSubscriber(destinationName);
 	}
 
-	public static TopicSubscriber get(String destinationName)
+	public static TopicSubscriber get(String destinationName) throws MaximumDistinctSubscriptionsReachedException
 	{
 		return instance.getSubscriber(destinationName);
 	}

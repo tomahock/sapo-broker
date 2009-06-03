@@ -49,6 +49,12 @@ public class GlobalConfig
 
 	private Map<String, ProviderInfo> authenticationProviders = new TreeMap<String, ProviderInfo>();
 	private Map<String, ProviderInfo> credentialValidatiorProviders = new TreeMap<String, ProviderInfo>();
+	
+	// Messages info
+	private int msgMaxSize;
+	private int maxQueues;
+	private long maxStoreTime;
+	private int maxDistinctSubscriptions;
 
 	private GlobalConfig()
 	{
@@ -67,12 +73,14 @@ public class GlobalConfig
 		Document doc = parseXmlFile(globalConfigPath, false);
 
 		init(doc);
+	
 	}
 
 	private void init(Document doc)
 	{
 		populateWorldMap(doc);
 		extractSecurityPolicies(doc);
+		extractMessageConfiguration(doc);
 		synchronized (authenticationProviders)
 		{
 			authenticationProviders.clear();
@@ -85,6 +93,21 @@ public class GlobalConfig
 		}
 	}
 
+	private void extractMessageConfiguration(Document doc)
+	{
+		String maxSizeStr = extractElementInfo(doc, "max-msg-size")[0];
+		msgMaxSize = Integer.parseInt(maxSizeStr);
+		
+		String maxQueueSize = extractElementInfo(doc, "max-queues")[0];
+		maxQueues = Integer.parseInt(maxQueueSize);
+		
+		String maxDistinctSubscriptionsStr = extractElementInfo(doc, "max-distinct-subscriptions")[0];
+		maxDistinctSubscriptions = Integer.parseInt(maxDistinctSubscriptionsStr);
+		
+		String maxStoreTimeStr = extractElementInfo(doc, "store-time")[0];
+		maxStoreTime = Long.parseLong(maxStoreTimeStr);		
+	}
+
 	private synchronized void populateWorldMap(Document doc)
 	{
 		String selfName = GcsInfo.getAgentName();
@@ -94,9 +117,9 @@ public class GlobalConfig
 		// Get a list of all elements in the document
 
 		int npeers = doc.getElementsByTagName("peer").getLength();
-		String[] names = extractPeerInfo(doc, "name");
-		String[] hosts = extractPeerInfo(doc, "ip");
-		String[] ports = extractPeerInfo(doc, "port");
+		String[] names = extractElementInfo(doc, "name");
+		String[] hosts = extractElementInfo(doc, "ip");
+		String[] ports = extractElementInfo(doc, "port");
 
 		// System.out.println("_selfName: " + _selfName);
 
@@ -134,7 +157,7 @@ public class GlobalConfig
 		}
 	}
 
-	private String[] extractPeerInfo(Document doc, String tag)
+	private String[] extractElementInfo(Document doc, String tag)
 	{
 		NodeList nList = doc.getElementsByTagName(tag);
 		String[] value = new String[nList.getLength()];
@@ -332,6 +355,28 @@ public class GlobalConfig
 	public static BrokerSecurityPolicy getSecurityPolicies()
 	{
 		return instance.secPolicy;
+	}
+
+	public static int getMsgMaxSize()
+	{
+		return instance.msgMaxSize;
+	}
+
+	public static int getMaxQueues()
+	{
+		return instance.maxQueues;
+	}
+
+
+	public static long getMaxStoreTime()
+	{
+		return instance.maxStoreTime;
+	}
+
+
+	public static int getMaxDistinctSubscriptions()
+	{
+		return instance.maxDistinctSubscriptions;
 	}
 
 }

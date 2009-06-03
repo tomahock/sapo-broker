@@ -67,7 +67,7 @@ public class BrokerProducer
 		}
 	}
 
-	public void enqueueMessage(final NetPublish enqReq, String messageSource)
+	public boolean enqueueMessage(final NetPublish enqReq, String messageSource)
 	{
 		InternalMessage msg = prepareForSending(enqReq);
 
@@ -84,7 +84,7 @@ public class BrokerProducer
 		msg.setSourceApp(sb_source.toString());
 		msg.setType(MessageType.COM_QUEUE);
 
-		Gcs.enqueue(msg);
+		return Gcs.enqueue(msg);
 	}
 
 	public void publishMessage(final NetPublish pubReq, final String messageSource)

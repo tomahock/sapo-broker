@@ -13,10 +13,10 @@ public class ThriftCodec implements ProtocolCodecFactory
 	private ThriftEncoder encoder;
 	private ThriftDecoder decoder;
 
-	public ThriftCodec()
+	public ThriftCodec(int maxMessageSize)
 	{
 		encoder = new ThriftEncoder();
-		decoder = new ThriftDecoder();
+		decoder = new ThriftDecoder(maxMessageSize);
 	}
 
 	@Override

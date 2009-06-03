@@ -306,7 +306,18 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			_brokerProducer.publishMessage(publish, messageSource);
 			break;
 		case QUEUE:
-			_brokerProducer.enqueueMessage(publish, messageSource);
+			if(!_brokerProducer.enqueueMessage(publish, messageSource))
+			{
+				if (actionId == null)
+				{
+					session.write(NetFault.MaximumNrQueuesReachedMessage);
+				}
+				else
+				{
+					session.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumNrQueuesReachedMessage, actionId));
+				}
+				return;
+			}
 			break;
 		default:
 			if (actionId == null)
@@ -371,7 +382,19 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			_brokerConsumer.listen(subscritption, session);
 			break;
 		case TOPIC:
-			_brokerConsumer.subscribe(subscritption, session);
+			if(! _brokerConsumer.subscribe(subscritption, session) )
+			{
+				System.out.println("### BrokerProtocolHandler.handleSubscribeMessage() - subscription failed");
+				if (subscritption.getActionId() == null)
+				{
+					session.write(NetFault.MaximumDistinctSubscriptionsReachedMessage);
+				}
+				else
+				{
+					session.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumDistinctSubscriptionsReachedMessage, subscritption.getActionId()));
+				}
+				return;
+			}
 			break;
 		case VIRTUAL_QUEUE:
 			if (StringUtils.contains(subscritption.getDestination(), "@"))
@@ -410,21 +433,21 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	private void handleAuthMessage(IoSession session, NetMessage request)
 	{
-		
-		InetSocketAddress localAddress = (InetSocketAddress)session.getLocalAddress();
-		
-		if(localAddress.getPort() != GcsInfo.getBrokerSSLPort())
+
+		InetSocketAddress localAddress = (InetSocketAddress) session.getLocalAddress();
+
+		if (localAddress.getPort() != GcsInfo.getBrokerSSLPort())
 		{
 			session.write(NetFault.InvalidAuthenticationChannelType);
 			return;
 		}
-		
+
 		NetAuthentication netAuthentication = request.getAction().getAuthenticationMessage();
 
 		// // Validate client credentials
 		AuthInfo info = new AuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType());
 		AuthInfoValidator validator = AuthInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
-		if(validator == null)
+		if (validator == null)
 		{
 			session.write(NetFault.UnknownAuthenticationTypeMessage);
 			return;
@@ -446,15 +469,14 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			return;
 		}
 
-		
 		Session plainSession = (Session) session.getAttribute("BROKER_SESSION_PROPERTIES");
-		
 
 		SessionProperties plainSessionProps = plainSession.getSessionProperties();
 		plainSessionProps.setRoles(validateResult.getRoles());
 		plainSession.updateAcl();
-		
-		if(netAuthentication.getActionId() != null){
+
+		if (netAuthentication.getActionId() != null)
+		{
 			sendAccepted(session, netAuthentication.getActionId());
 		}
 	}

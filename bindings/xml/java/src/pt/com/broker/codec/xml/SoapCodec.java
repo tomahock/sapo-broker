@@ -5,8 +5,6 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
-import pt.com.broker.types.Constants;
-
 /**
  * The network protocol is as simple as could be:
  * 
@@ -28,10 +26,10 @@ public class SoapCodec implements ProtocolCodecFactory
 
 	private SoapDecoder decoder;
 
-	public SoapCodec()
+	public SoapCodec(int maxMessageSize)
 	{
 		encoder = new SoapEncoder();
-		decoder = new SoapDecoder(Constants.MAX_MESSAGE_SIZE);
+		decoder = new SoapDecoder(maxMessageSize);
 	}
 
 	@Override

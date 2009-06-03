@@ -13,10 +13,10 @@ public class ProtoBufCodec implements ProtocolCodecFactory
 	private ProtoBufEncoder encoder;
 	private ProtoBufDecoder decoder;
 
-	public ProtoBufCodec()
+	public ProtoBufCodec(int maxMessageSize)
 	{
 		encoder = new ProtoBufEncoder();
-		decoder = new ProtoBufDecoder();
+		decoder = new ProtoBufDecoder(maxMessageSize);
 	}
 
 	@Override

@@ -13,10 +13,10 @@ public class SoapCodecV2 implements ProtocolCodecFactory
 
 	private SoapDecoderV2 decoder;
 
-	public SoapCodecV2()
+	public SoapCodecV2(int maxMessageSize)
 	{
 		encoder = new SoapEncoderV2();
-		decoder = new SoapDecoderV2();
+		decoder = new SoapDecoderV2(maxMessageSize);
 	}
 
 	@Override

@@ -22,7 +22,6 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-
 				<xs:element name="persistency">
 					<xs:complexType>
 						<xs:sequence>

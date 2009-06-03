@@ -115,6 +115,11 @@ public class GcsInfo
 
 			File f = new File(filePath);
 			boolean b = f.exists();
+			if(!b)
+			{
+				log.error("Agent configuration file missing - " + filePath);
+				Shutdown.now();
+			}
 			conf = (AgentConfig) u.unmarshal(f);
 		}
 		catch (JAXBException e)
@@ -227,4 +232,28 @@ public class GcsInfo
 	{
 		return GlobalConfig.getCredentialValidatorProviders();
 	}
+	
+	
+	// Message related properties
+	
+	public static int getMessageMaxSize()
+	{
+		return GlobalConfig.getMsgMaxSize();
+	}
+	
+	public static int getMaxQueues()
+	{
+		return GlobalConfig.getMaxQueues();
+	}
+	
+	public static long getMessageStorageTime()
+	{
+		return  GlobalConfig.getMaxStoreTime();
+	}
+	
+	public static int getMaxDistinctSubscriptions()
+	{
+		return GlobalConfig.getMaxDistinctSubscriptions();
+	}
+	
 }

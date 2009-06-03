@@ -11,6 +11,7 @@ import org.caudexorigo.cryto.MD5;
 import org.caudexorigo.text.StringUtils;
 
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.gcs.conf.GcsInfo;
 
 public class InternalMessage implements Externalizable
 {
@@ -18,7 +19,7 @@ public class InternalMessage implements Externalizable
 	private static final AtomicLong SEQ = new AtomicLong(0L);
 	private static final long serialVersionUID = -3656321513130930115L;
 	public static final int DEFAULT_PRIORITY = 4;
-	private static final long DEFAULT_EXPIRY = 1000L * 3600L * 24L * 7L; // 7
+	private static final long DEFAULT_EXPIRY;// = 1000L * 3600L * 24L * 7L; // 7
 	// days
 	private static final String SEPARATOR = "<#>";
 
@@ -39,6 +40,7 @@ public class InternalMessage implements Externalizable
 	static
 	{
 		BASE_MESSAGE_ID = MD5.getHashString(UUID.randomUUID().toString());
+		DEFAULT_EXPIRY = GcsInfo.getMessageStorageTime();
 	}
 
 	protected static String getBaseMessageId()

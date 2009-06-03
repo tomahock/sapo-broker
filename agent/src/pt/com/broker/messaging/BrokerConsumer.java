@@ -3,6 +3,7 @@ package pt.com.broker.messaging;
 import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
 
+import pt.com.broker.messaging.TopicSubscriberList.MaximumDistinctSubscriptionsReachedException;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -33,7 +34,7 @@ public class BrokerConsumer
 		}
 	}
 
-	public synchronized void subscribe(NetSubscribe sb, IoSession ios)
+	public synchronized boolean subscribe(NetSubscribe sb, IoSession ios)
 	{
 		if (StringUtils.contains(sb.getDestination(), "@"))
 		{
@@ -45,14 +46,21 @@ public class BrokerConsumer
 			TopicSubscriber subscriber = TopicSubscriberList.get(sb.getDestination());
 			subscriber.addConsumer(ios);
 		}
+
 		catch (Throwable e)
 		{
+			if (e.getCause() instanceof MaximumDistinctSubscriptionsReachedException)
+			{
+				return false;
+			}
+
 			if (e instanceof InterruptedException)
 			{
 				Thread.currentThread().interrupt();
 			}
 			throw new RuntimeException(e);
 		}
+		return true;
 	}
 
 	public synchronized void unsubscribe(NetUnsubscribe unsubs, IoSession session)
@@ -61,8 +69,15 @@ public class BrokerConsumer
 		DestinationType dtype = unsubs.getDestinationType();
 		if (dtype == DestinationType.TOPIC)
 		{
-			TopicSubscriber subscriber = TopicSubscriberList.get(dname);
-			subscriber.removeSessionConsumer(session);
+			try
+			{
+				TopicSubscriber subscriber = TopicSubscriberList.get(dname);
+				subscriber.removeSessionConsumer(session);
+			}
+			catch (MaximumDistinctSubscriptionsReachedException e)
+			{
+				// Dosen't happen
+			}
 		}
 		else if (dtype == DestinationType.QUEUE || dtype == DestinationType.VIRTUAL_QUEUE)
 		{

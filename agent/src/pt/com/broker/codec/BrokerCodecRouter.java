@@ -11,7 +11,7 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import pt.com.broker.codec.protobuf.ProtoBufCodec;
 import pt.com.broker.codec.thrift.ThriftCodec;
 import pt.com.broker.codec.xml.SoapCodecV2;
-import pt.com.broker.types.Constants;
+import pt.com.gcs.conf.GcsInfo;
 
 /**
  * The network protocol has the following layout:
@@ -37,9 +37,9 @@ public class BrokerCodecRouter implements ProtocolCodecFactory
 
 	static
 	{
-		codecs.put(new Short((short) 0), new SoapCodecV2());
-		codecs.put(new Short((short) 1), new ProtoBufCodec());
-		codecs.put(new Short((short) 2), new ThriftCodec());
+		codecs.put(new Short((short) 0), new SoapCodecV2(GcsInfo.getMessageMaxSize()));
+		codecs.put(new Short((short) 1), new ProtoBufCodec(GcsInfo.getMessageMaxSize()));
+		codecs.put(new Short((short) 2), new ThriftCodec(GcsInfo.getMessageMaxSize()));
 	}
 
 	private static BrokerCodecRouter instance = new BrokerCodecRouter();
@@ -55,7 +55,7 @@ public class BrokerCodecRouter implements ProtocolCodecFactory
 	public BrokerCodecRouter()
 	{
 		encoder = new BrokerEncoderRouter();
-		decoder = new BrokerDecoderRouter(Constants.MAX_MESSAGE_SIZE);
+		decoder = new BrokerDecoderRouter(GcsInfo.getMessageMaxSize());
 	}
 
 	@Override
