@@ -75,12 +75,6 @@ public class GcsInfo
 		return iprop;
 	}
 
-	public static String getStatisticsTopic()
-	{
-		String prop = instance.conf.getStatistics().getTopic();
-		return prop;
-	}
-
 	public static String getConfigVersion()
 	{
 		String prop = instance.conf.getConfigVersion();

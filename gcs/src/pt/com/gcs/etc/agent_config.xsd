@@ -46,18 +46,6 @@
 					</xs:complexType>
 				</xs:element>
 
-				<xs:element name="statistics">
-					<xs:complexType>
-						<xs:sequence>
-
-							<xs:element name="collect_stats" type="xs:boolean" />
-							<xs:element name="send_updates" type="xs:boolean" />
-							<xs:element name="topic" type="xs:string" />
-							<xs:element name="update_interval" type="xs:int" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-
 				<xs:element minOccurs="0" maxOccurs="1" name="ssl">
 					<xs:complexType>
 						<xs:sequence>
