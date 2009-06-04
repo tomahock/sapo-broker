@@ -140,6 +140,7 @@ soap_open       = """<soap:Envelope xmlns:soap="%s"><soap:Body>""" % (escape_xml
 soap_close      = """</soap:Body></soap:Envelope>"""
 broker_ns       = NS['broker']
 soap_ns         = NS['soap']
+wsa_ns          = NS['wsa']
 
 #aux function to pre-build open/close xml tags
 def prod_tags(tagname, ns='broker'):
@@ -269,6 +270,9 @@ try:
                     (_, tag) = node.tag.split('}')[0:2]
                     fields[tag] = node.text
 
+            to = tree.find('.//{%s}To' % wsa_ns)
+            if to is not None:
+                fields['to'] = to.text
             return msgfromFields(fields)
 
 except ImportError:
@@ -374,6 +378,7 @@ def msgfromFields(fields):
         expiration    = fields.get('Expiration'),
         timestamp     = fields.get('Timestamp'),
         correlationId = fields.get('CorrelationId')
+        to            = fields.get('to')
     )
 
 
@@ -840,7 +845,7 @@ class DropBox:
 
 class Message:
     __all__ = ['__init__', 'toXML', 'fromXML']
-    def __init__(self, payload, destination, id=None, correlationId=None, timestamp=None, expiration=None, priority=None):
+    def __init__(self, payload, destination, id=None, correlationId=None, timestamp=None, expiration=None, priority=None, to=None):
         """
         Creates a Broker message given the mandatory payload and destination.
         All other fields are optional.
@@ -874,6 +879,7 @@ class Message:
         self.__expiration  = expiration
         self.priority      = priority
         self.correlationId = correlationId
+        self.to            = to
 
     #generate a static method
     fromXML = staticmethod(fromXML)
@@ -892,6 +898,7 @@ class Message:
             ('CorrelationId',   'correlationId', None),
             ('Timestamp',       'timestamp',     date2iso),
             ('Expiration',      'expiration',    date2iso),
+            ('To',              'to',            None),
         ):
             content = getattr(self, attr, None)
 
