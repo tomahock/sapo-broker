@@ -377,7 +377,7 @@ def msgfromFields(fields):
         priority      = safe_cast(int, fields.get('Priority')),
         expiration    = fields.get('Expiration'),
         timestamp     = fields.get('Timestamp'),
-        correlationId = fields.get('CorrelationId')
+        correlationId = fields.get('CorrelationId'),
         to            = fields.get('to')
     )
 
