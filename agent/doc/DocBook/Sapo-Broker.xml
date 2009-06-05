@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <article lang="">
-  <para><inlinegraphic fileref="broker_thumb.jpg" width="80px" depth="80px"/>Sapo-Broker 3
+  <para><inlinegraphic fileref="images/broker_thumb.jpg" width="80px" depth="80px"/>Sapo-Broker 3
   </para>
   <sect1>
     <title>Introduction</title>
@@ -559,14 +559,12 @@
       <title>Fault messages</title>
       <sect3>
         <title>I/O Errors</title>
-        <para>Message Format(1100)</para>
         <table frame="all" id="Table8">
-          <title>Table 1: Client compatibility matrix </title>
-          <tgroup cols="4">
+          <title>Message Format Faults</title>
+          <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
             <colspec colnum="3" colname="c3"/>
-            <colspec colnum="4" colname="c4"/>
             <tbody>
               <row>
                 <entry>
@@ -615,14 +613,12 @@
             </tbody>
           </tgroup>
         </table>
-        <para>Payload Encoding</para>
         <table frame="all" id="Table9">
-          <title>Table 1: Client compatibility matrix </title>
-          <tgroup cols="4">
+          <title>Payload Encoding Faults </title>
+          <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
             <colspec colnum="3" colname="c3"/>
-            <colspec colnum="4" colname="c4"/>
             <tbody>
               <row>
                 <entry>
@@ -662,14 +658,12 @@
         </table>
       </sect3>
       <sect3>
-        <title>Messaging Errors</title>
         <table frame="all" id="Table10">
-          <title>Table 1: Client compatibility matrix </title>
-          <tgroup cols="4">
+          <title>Messaging Errors Faults</title>
+          <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
             <colspec colnum="3" colname="c3"/>
-            <colspec colnum="4" colname="c4"/>
             <tbody>
               <row>
                 <entry>
@@ -731,15 +725,13 @@
         </table>
       </sect3>
       <sect3>
-        <title>Security Error Types</title>
-        <para>Authentication Errors</para>
+        <title>Security Fault Types</title>
         <table frame="all" id="Table11">
-          <title>Table 1: Client compatibility matrix </title>
-          <tgroup cols="4">
+          <title>Authentication Faults</title>
+          <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
             <colspec colnum="3" colname="c3"/>
-            <colspec colnum="4" colname="c4"/>
             <tbody>
               <row>
                 <entry>
@@ -788,14 +780,12 @@
             </tbody>
           </tgroup>
         </table>
-        <para>Authorization Errors</para>
         <table frame="all" id="Table12">
-          <title>Table 1: Client compatibility matrix </title>
-          <tgroup cols="4">
+          <title>Authorization Faults</title>
+          <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
             <colspec colnum="3" colname="c3"/>
-            <colspec colnum="4" colname="c4"/>
             <tbody>
               <row>
                 <entry>
@@ -830,11 +820,13 @@
     <para>In order to protect sensitive information Sapo-Broker provides an access control mechanism. This mechanism is parameterized by a security policy in the global configuration file, in the element "security-policies". Each agent may have a specific security or it may inherit the default security policy. The default policy is named "default".</para>
     <para>Security policies may be composed hierarchy, which means that a given security policy X can inherit from a policy Y adding or overriding  specific aspects to the policy. These policies may be associated with agents. If no security policy is to be used, then the element "security-policies" should be omitted for performance reasons.</para>
     <para>A security policy is composed by an Access Control List (ACL), which is composed by entries. Each entry has an action (PERMIT or DENY), a destination type (TOPIC, QUEUE or VIRTUAL_QUEUE), a destination (such as "/topic/foo" or a regular expression) and a privilege (READ or WRITE). Destination types and privileges may be declared as lists which makes the ACL entry easier to read and declare. An entry is also composed by conditions that determine when the ACL entry should be applied. Conditions represent a binary evaluation result which determines the application of the related ACL entry. They can be of the following types:</para>
-    <para>        ADDRESS – An IPv4 address and mask;</para>
-    <para>        ROLE – A text value with the role name;</para>
-    <para>        CHANNEL_TYPE – A type of security property (CONFIDENTIALITY, INTEGRITY and/or AUTHENTICITY) guaranteed by the transport channel.</para>
-    <para>        AND – A composed condition that evaluates to true if all the contained conditions are true;</para>
-    <para>        ALWAYS – The ACL entry is always applied.</para>
+    <itemizedlist>
+          <listitem><para>ADDRESS – An IPv4 address and mask;</para></listitem>
+          <listitem><para>ROLE – A text value with the role name;</para></listitem>
+          <listitem><para>CHANNEL_TYPE – A type of security property (CONFIDENTIALITY, INTEGRITY and/or AUTHENTICITY) guaranteed by the transport channel.</para></listitem>
+          <listitem><para>AND – A composed condition that evaluates to true if all the contained conditions are true;</para></listitem>
+          <listitem><para>ALWAYS – The ACL entry is always applied.</para></listitem>
+    </itemizedlist>
     <sect2>
       <title>Access control evaluation criteria </title>
       <para>Every agent as an associated security policy, except in the case of security policy absence in witch it defaults to "allow everything". In the case of policy inheritance, eventually with multiple degrees, a stack of entries is built with the most specific ACLs at the top and entries inserted by declaration order within each ACL. The result is an ordered entry stack where the most specific/priority come first, so evaluating a client request against the full access control is sequential evaluation of entries. The first entry witch results in a positive evaluation is applied.</para>
@@ -845,77 +837,65 @@
       <para>In Code 1 a security configuration sample is presented. As said before, this configuration aspect is defined in global configuration file.</para>
       <para>The sample presents a scenario where the default security policy mandates that no client can produce messages to topic or queue whose named begin with "/system/". The default policy also dictates that destination names beginning with "/private/" are forbidden for all clients. These security settings apply to all agents using the default security policy.</para>
       <para>At the bottom of the sample a section (XML element) entitled "agents" is present. Here is the place to associate specific security policies with agents. The sample states that an agent named "agent007" must used the "anotherPolicy" security policy. This policy inherits from the default security, adds some entries to the ACL and in a specific case overrides the default policy. The added entries specify that message production to the queue named "/specialQueue" is denied to all except those clients that simultaneous possess the role "VIP_role" and are using a type of communication channel that offers confidentiality (such as SSL). The declaration details are self-explanatory. </para>
-      <table frame="all" id="Table1">
-        <title>Table 1: Client compatibility matrix </title>
-        <tgroup cols="1">
-          <tbody>
-            <row>
-              <entry>
-                <para>&lt;security-policies&gt; </para>
-                <para>   &lt;policies&gt; </para>
-                <para>      &lt;policy policy-name="default"&gt; </para>
-                <para>         &lt;acl&gt; </para>
-                <para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE" destination="/system/.*"  privilege="WRITE"&gt; </para>
-                <para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
-                <para>            &lt;/entry&gt; </para>
-                <para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="WRITE READ"&gt; </para>
-                <para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
-                <para>            &lt;/entry&gt; </para>
-                <para>         &lt;/acl&gt; </para>
-                <para>      &lt;/policy&gt; </para>
-                <para>      &lt;policy policy-name="anotherPolicy" inherits="default"&gt; </para>
-                <para>         &lt;acl&gt; </para>
-                <para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="READ"&gt; </para>
-                <para>               &lt;condition condition-type="ADDRESS"&gt; </para>
-                <para>                  &lt;address  mask="24"&gt;10.11.12.0&lt;/address&gt; </para>
-                <para>               &lt;/condition&gt; </para>
-                <para>            &lt;/entry&gt; </para>
-                <para>            &lt;entry action="PERMIT" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; </para>
-                <para>               &lt;condition condition-type="AND"&gt; </para>
-                <para>                  &lt;condition condition-type="ROLE"&gt; </para>
-                <para>                     &lt;role&gt;VIP_role&lt;/role&gt; </para>
-                <para>                  &lt;/condition&gt; </para>
-                <para>                  &lt;condition condition-type="CHANNELTYPE"&gt; </para>
-                <para>                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; </para>
-                <para>                  &lt;/condition&gt; </para>
-                <para>               &lt;/condition&gt; </para>
-                <para>            &lt;/entry&gt; </para>
-                <para>            &lt;entry action="DENY" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; </para>
-                <para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
-                <para>            &lt;/entry&gt; </para>
-                <para>         &lt;/acl&gt; </para>
-                <para>         &lt;/policy&gt; </para>
-                <para>         &lt;policy policy-name="very special policy" inherits="special policy"&gt; </para>
-                <para>         &lt;acl&gt; </para>
-                <para>            &lt;entry action="PERMIT" destination-type="TOPIC" destination="/topic/sensitive"  privilege="READ WRITE"&gt; </para>
-                <para>               &lt;condition condition-type="AND"&gt; </para>
-                <para>                  &lt;condition condition-type="ROLE"&gt; </para>
-                <para>                     &lt;role&gt;brk_writer_role&lt;/role&gt; </para>
-                <para>                  &lt;/condition&gt; </para>
-                <para>                  &lt;condition condition-type="CHANNELTYPE"&gt; </para>
-                <para>                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; </para>
-                <para>                  &lt;/condition&gt; </para>
-                <para>               &lt;/condition&gt; </para>
-                <para>            &lt;/entry&gt;         </para>
-                <para>           &lt;/acl&gt; </para>
-                <para>         &lt;/policy&gt; </para>
-                <para>      &lt;/policies&gt; </para>
-                <para>     &lt;agents&gt; </para>
-                <para>         &lt;agent agent-name="agent007"&gt; </para>
-                <para>            &lt;agent-policy policy-name="anotherPolicy" /&gt; </para>
-                <para>         &lt;/agent&gt; </para>
-                <para>      &lt;/agents&gt; </para>
-                <para>&lt;/security-policies&gt;</para>
-              </entry>
-            </row>
-          </tbody>
-        </tgroup>
-      </table>
-      <para>Code 1: Security policy configuration sample</para>
-    </sect2>
-    <sect2>
-      <title>Implementation aspects</title>
-      <para>Not sure if this is important... (postpone for now)</para>
+	<example><title>Security policy configuration sample</title>
+	<programlisting>
+		<para>&lt;security-policies&gt; </para>
+		<para>   &lt;policies&gt; </para>
+		<para>      &lt;policy policy-name="default"&gt; </para>
+		<para>         &lt;acl&gt; </para>
+		<para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE" destination="/system/.*"  privilege="WRITE"&gt; </para>
+		<para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
+		<para>            &lt;/entry&gt; </para>
+		<para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="WRITE READ"&gt; </para>
+		<para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
+		<para>            &lt;/entry&gt; </para>
+		<para>         &lt;/acl&gt; </para>
+		<para>      &lt;/policy&gt; </para>
+		<para>      &lt;policy policy-name="anotherPolicy" inherits="default"&gt; </para>
+		<para>         &lt;acl&gt; </para>
+		<para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="READ"&gt; </para>
+		<para>               &lt;condition condition-type="ADDRESS"&gt; </para>
+		<para>                  &lt;address  mask="24"&gt;10.11.12.0&lt;/address&gt; </para>
+		<para>               &lt;/condition&gt; </para>
+		<para>            &lt;/entry&gt; </para>
+		<para>            &lt;entry action="PERMIT" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; </para>
+		<para>               &lt;condition condition-type="AND"&gt; </para>
+		<para>                  &lt;condition condition-type="ROLE"&gt; </para>
+		<para>                     &lt;role&gt;VIP_role&lt;/role&gt; </para>
+		<para>                  &lt;/condition&gt; </para>
+		<para>                  &lt;condition condition-type="CHANNELTYPE"&gt; </para>
+		<para>                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; </para>
+		<para>                  &lt;/condition&gt; </para>
+		<para>               &lt;/condition&gt; </para>
+		<para>            &lt;/entry&gt; </para>
+		<para>            &lt;entry action="DENY" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; </para>
+		<para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
+		<para>            &lt;/entry&gt; </para>
+		<para>         &lt;/acl&gt; </para>
+		<para>         &lt;/policy&gt; </para>
+		<para>         &lt;policy policy-name="very special policy" inherits="special policy"&gt; </para>
+		<para>         &lt;acl&gt; </para>
+		<para>            &lt;entry action="PERMIT" destination-type="TOPIC" destination="/topic/sensitive"  privilege="READ WRITE"&gt; </para>
+		<para>               &lt;condition condition-type="AND"&gt; </para>
+		<para>                  &lt;condition condition-type="ROLE"&gt; </para>
+		<para>                     &lt;role&gt;brk_writer_role&lt;/role&gt; </para>
+		<para>                  &lt;/condition&gt; </para>
+		<para>                  &lt;condition condition-type="CHANNELTYPE"&gt; </para>
+		<para>                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; </para>
+		<para>                  &lt;/condition&gt; </para>
+		<para>               &lt;/condition&gt; </para>
+		<para>            &lt;/entry&gt;         </para>
+		<para>           &lt;/acl&gt; </para>
+		<para>         &lt;/policy&gt; </para>
+		<para>      &lt;/policies&gt; </para>
+		<para>     &lt;agents&gt; </para>
+		<para>         &lt;agent agent-name="agent007"&gt; </para>
+		<para>            &lt;agent-policy policy-name="anotherPolicy" /&gt; </para>
+		<para>         &lt;/agent&gt; </para>
+		<para>      &lt;/agents&gt; </para>
+		<para>&lt;/security-policies&gt;</para>
+      	</programlisting>
+	</example>
     </sect2>
   </sect1>
   <sect1>
@@ -936,7 +916,7 @@
       <para>Authentication modules, also called validation providers, are configured at the global configuration file.  There, are defined the full name of type implementing pt.com.broker.auth.AuthInfoValidator (more on this later) in the element class and some provider specific provider parameters, under provider-params. The class must be in agent's classpath in order to be loaded.</para>
       <para>To each validation parameter must be attributed a globally known name, since it's used by clients to indicate the type of credentials used in Authentication message [link to this message]. For now there are two authentication types defined.</para>
       <table frame="all" id="Table3">
-        <title>Table 1: Client compatibility matrix </title>
+        <title>Authentication Types</title>
         <tgroup cols="2">
           <tbody>
             <row>
@@ -959,13 +939,10 @@
         </tgroup>
       </table>
       <para>Each of the available implementations are described later. </para>
-      <table frame="all" id="Table2">
-        <title>Table 1: Client compatibility matrix </title>
-        <tgroup cols="1">
-          <tbody>
-            <row>
-              <entry>
-                <para>&lt;credential-validators&gt; </para>
+
+    <example><title>Authorization providers configuration</title>
+	<programlisting>
+		<para>&lt;credential-validators&gt; </para>
                 <para>   &lt;credential-validator provider-name="SapoSTS"&gt; </para>
                 <para>      &lt;class&gt;pt.com.broker.auth.saposts.SapoSTSAuthInfoValidator&lt;/class&gt; </para>
                 <para>      &lt;provider-params&gt; </para>
@@ -988,18 +965,18 @@
                 <para>      &lt;/provider-params&gt; </para>
                 <para>   &lt;/credential-validator&gt; </para>
                 <para>&lt;/credential-validators&gt;</para>
-              </entry>
-            </row>
-          </tbody>
-        </tgroup>
-      </table>
-      <para>Code 2: Authorization providers configuration</para>
+	</programlisting>
+     </example>
     </sect2>
     <sect2>
       <title>Relevant Classes</title>
       <para>At the heart of an authorization provider lies an implementation of the interface  pt.com.broker.auth.AuthInfoValidator. This interface and reaming relevant types are presented at Figure 5. </para>
       <para>The initialization method of AuthInfoValidator gives the provider an opportunity to realize any actions  required to properly validate client's authorization information and translate that information in client roles. The ProviderInfo is used to inform the provider what is the name of the authentication type it will be performing, the class name (redundant) and the parameter specified in the configuration file. These arguments are supplied as an XML representation object.</para>
       <para>Validation operation is invoked as a consequence of an authentication message [link to this] which includes information about the user synthesized as an AuthInfo object. This information may contain an user identifier, user roles (which should be validated), an authentication token (such as password or a third party supplied token) and the type of authentication being used. The authentication token is a binary value, so, in case of representing a string such as a password is UTF-8 encoded. In response to an authentication request a result is produced (AuthValidationResult) indicating whether the credentials are valid (a reason for failure should be supplied in case their not) or not, and the list of roles associated with the user in case of valid credentials.</para>
+    <figure id="Figure-AuthorizationProvider"><title>Authorization Provider relevant types</title>
+	<mediaobject><imageobject><imagedata fileref="images/authenticationproviders.jpeg"/></imageobject></mediaobject>
+    </figure>
+
     </sect2>
     <sect2>
       <title>Implemented authentication modules</title>
@@ -1015,13 +992,8 @@
         <para>Sapo-Broker users may not have access to Sapo STS, and probably this would be the case, or they may need do provide their own authentication mechanisms. As a proof-of-concept it was implemented an authentication provider supported by a relational database. The tables creation script is presented at Code 3. As shown, salts are not used and users passwords are store in clear, not their hashes. So this may not be very useful in a production environment where the use of secure practices is mandatory.</para>
         <para>When using this authentication method, denoted by "BrokerRolesDB" authentication type, clients provide, as credentials, their user name and password.</para>
         <para>The configuration of this provider, presented in Code 2, takes the driver class to be loaded, which must be in agent's classpath, the connection URL and the credentials to access the database and respective tables. The authentication functionality is provided in sapo-broker-auth-jdbc.jar.</para>
-        <table frame="all" id="Table4">
-          <title>Table 1: Client compatibility matrix </title>
-          <tgroup cols="1">
-            <tbody>
-              <row>
-                <entry>
-                  <para>
+ 	<example><title>Database creation scripts</title>
+	 <programlisting>
 CREATE TABLE users
 (
   user_id bigserial NOT NULL,
@@ -1037,14 +1009,9 @@ CREATE TABLE user_roles
   CONSTRAINT user_roles_pkey PRIMARY KEY (user_id, user_role),
   CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id)
   REFERENCES users (user_id) MATCH SIMPLE
-)			
-</para>
-                </entry>
-              </row>
-            </tbody>
-          </tgroup>
-        </table>
-        <para>Code 3: Database creation scripts</para>
+)
+	  </programlisting>
+	</example>
       </sect3>
     </sect2>
     <sect2>
