@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-<article lang="">
-  <para><inlinegraphic fileref="images/broker_thumb.jpg" width="80px" depth="80px"/>Sapo-Broker 3
-  </para>
+<article>
+  <para><inlinegraphic fileref="images/broker_thumb.jpg" width="80px" depth="80px"/>Sapo-Broker 3</para>
   <sect1>
     <title>Introduction</title>
     <para>Sapo-Broker is a high performance distributed messaging framework. It can either work as a local daemon that has a SOAP API or embedded within your application. Among other features, it provides minimal administration overhead, Publish-Subscribe and Point-to-Point messaging, guaranteed delivery and wildcard subscriptions. </para>
@@ -11,34 +10,26 @@
       <title>Messaging</title>
       <para>When talking about messaging we are really talking about asynchronous operations. This means that broker clients can register interest in "Destinations"and return immediately, also a client can be notified in an event-driven fashion when something has happened. This allows for a loosely coupled exchange of messages between producers and consumers since they know nothing of each other, they only know about destinations (queues and topics). Immediate benefits of using messaging are:</para>
       <itemizedlist>
-        <listitem>
-          <para>Fire and Forget: Producers don't wait for consumers, as soon as the broker receives the message they may return immediately.</para>
-        </listitem>
-        <listitem>
-          <para>Scalability: Messages in a single stream can be handled in parallel by many client threads or systems </para>
-        </listitem>
-        <listitem>
-          <para>Robustness to Change: Applications on heterogeneous platforms communicate and interoperate transparently yet each application operates independently of, and asynchronously with, others. Communicating programs remain separately maintained and individually replaceable.</para>
-        </listitem>
-        <listitem>
-          <para>Time Independence: Neither the message sender nor the message recipient needs to be online at the same time. The Broker queues messages when their recipients are not available. </para>
-        </listitem>
+        <listitem>Fire and Forget: Producers don't wait for consumers, as soon as the broker receives the message they may return immediately.</listitem>
+        <listitem>Scalability: Messages in a single stream can be handled in parallel by many client threads or systems.</listitem>
+        <listitem>Robustness to Change: Applications on heterogeneous platforms communicate and interoperate transparently yet each application operates independently of, and asynchronously with, others. Communicating programs remain separately maintained and individually replaceable.</listitem>
+        <listitem>Time Independence: Neither the message sender nor the message recipient needs to be online at the same time. The Broker queues messages when their recipients are not available.</listitem>
       </itemizedlist>
       <sect3>
         <title><anchor id="MessagingModels"/>Messaging Models</title>
-        <para>The two main paradigms in Messaging are: </para>
+        <para>The two main paradigms in Messaging are:</para>
         <itemizedlist>
-          <listitem>
-            <para>Publish-Subscribe </para>
-          </listitem>
-          <listitem>
-            <para>Point-to-Point messaging</para>
-          </listitem>
+          <listitem>Publish-Subscribe</listitem>
+          <listitem>Point-to-Point messaging</listitem>
         </itemizedlist>
-        <sect4><title><anchor id="Publish-Subscribe"/>Publish-Subscribe</title>
-	<para>One message goes to 0-to-many consumers based on the current subscribers, very similar to mailing lists or discussion forums. The producer is decoupled from the consumers, it doesn’t need to know who all the consumers are. Good model for publishing business events. Allows one part of your system to notify anyone else who may be interested in an event.</para></sect4>
-        <sect4><title><anchor id="Point-to-Point"/>Point-to-Point</title>
-	<para>Queues implement reliable load balancing with optional persistence. Message delivery is load balanced across many consumers, meaning each message goes to exactly one consumer, consumers compete for messages. Messages are only removed from the Queue after the broker receives an acknowledge and if a consumer crashes during the processing of a message it is automatically redelivered to another consumer.</para></sect4>
+        <sect4>
+          <title><anchor id="Publish-Subscribe"/>Publish-Subscribe</title>
+          <para>One message goes to 0-to-many consumers based on the current subscribers, very similar to mailing lists or discussion forums. The producer is decoupled from the consumers, it doesn’t need to know who all the consumers are. Good model for publishing business events. Allows one part of your system to notify anyone else who may be interested in an event.</para>
+        </sect4>
+        <sect4>
+          <title><anchor id="Point-to-Point"/>Point-to-Point</title>
+          <para>Queues implement reliable load balancing with optional persistence. Message delivery is load balanced across many consumers, meaning each message goes to exactly one consumer, consumers compete for messages. Messages are only removed from the Queue after the broker receives an acknowledge and if a consumer crashes during the processing of a message it is automatically redelivered to another consumer.</para>
+        </sect4>
       </sect3>
     </sect2>
     <sect2>
@@ -47,7 +38,7 @@
       <para>Messages may be encoded in XML or using a binary encoding mechanism. Access control policies can be defined to constrain message production or consumption based in several criteria including role-based authorization. SSL can be configured for further message security. A dropbox functionality is also available. </para>
       <para>Clients libraries are available in a number of languages and platforms such as Java, Perl, Python, PHP, Ruby, .NET, C and Erlang.</para>
       <para>The number of agents constituting a communicating cloud is easily scalable thus providing system scalability and availability.</para>
-      <para>Overall configuration is minimum. </para>
+      <para>Overall configuration is minimum.</para>
     </sect2>
   </sect1>
   <sect1>
@@ -93,7 +84,7 @@
         <para>Events published as TOPIC messages lack the ability to be persisted and QUEUE messages once consumed by a system, can not be consumed by another, where system means a set a software entities that work collaborative with other software entities with the same system. This means that if there are two systems interested in the same type of information published to queues, the two systems wouldn't received the same messages.</para>
         <para>To overcome these handicaps a Sapo-Broker supports VIRTUAL_QUEUE Destination Type. When clients subscribe to a Virtual Queue a queue is created and all topic messages whose Destination Name match the subscription are stored in the created queue.</para>
         <para>Destination Name subscription of Virtual Queues has the form:</para>
-        <para>        [private name]@[topic name subscription pattern]</para>
+        <para>[private name]@[topic name subscription pattern]</para>
         <para>An example could be: myVirtualQueue@/topic/.*</para>
         <para>Please note that the private names must be unique across systems (as defined previously) so that the problems with Point-to-Point pattern don't arise.</para>
       </sect3>
@@ -129,37 +120,37 @@
     <sect2>
       <title>Requirements</title>
       <para>In order to start using the Sapo-Broker you need to have an installation of Java SDK 1.6 or higher and the "java" command in your PATH. You can quickly check for java by opening a shell and typing: </para>
-      <para><command>java -version</command></para>
+      <command>java -version</command>
     </sect2>
     <sect2>
       <title>Installation Procedures</title>
       <para>The installation process is very easy. These are the required steps:</para>
       <itemizedlist>
-          <listitem><para>Download the latest Sapo-Broker release from <ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">http://softwarelivre.sapo.pt/projects/broker/wiki/</ulink>
+        <listitem>Download the latest Sapo-Broker release from <ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">http://softwarelivre.sapo.pt/projects/broker/wiki/</ulink>
 <ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">Download;</ulink>
-</para></listitem>
-          <listitem><para>Extract the archive or run the installer</para></listitem>
-          <listitem><para>Run the samples</para></listitem>
+</listitem>
+        <listitem>Extract the archive or run the installer</listitem>
+        <listitem>Run the samples</listitem>
       </itemizedlist>
     </sect2>
     <sect2>
       <title>Running the samples</title>
       <para>From a shell type: </para>
-      <para><command>./broker.sh</command></para>
+      <command>./broker.sh</command>
       <para>At this moment you should have an instance of the Sapo-Broker up and running. There is nothing stopping you from using a single instance of Sapo-Broker, but since one of it's main goals is to be used in a distributed fashion you really want to have at least two instances to play with, read the <ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/UserGuide">User Guide</ulink> to know how to setup and connect multiple instances. </para>
       <para>The distribution includes a couple of sample scripts that illustrate a common use case for Sapo-Broker, event propagation. These scripts include a producer that sends messages with 100 random alpha numeric characters at the rate of one per second and a consumer that prints the message content to the console every time it receives a message. </para>
       <para>To run the producer open a shell and type: </para>
-      <para><command>./sample_producer.sh</command></para>
+      <command>./sample_producer.sh</command>
       <para>To run the consumer: </para>
-      <para><command>./sample_consumer.sh</command></para>
+      <command>./sample_consumer.sh</command>
       <para>Besides the Linux scripts, there are also available windows batch files counterparts. </para>
     </sect2>
     <sect2>
       <title>Building from the source </title>
       <para>You can fetch the latest version of the Sapo-Broker source code from our <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk">subversion server</ulink>. For checking out the code use the svn command line client as follows: </para>
-      <para><command>svn co svn://softwarelivre.sapo.pt/broker/</command></para>
+      <command>svn co svn://softwarelivre.sapo.pt/broker/</command>
       <para>To build, go to agents directory and type (you must have ant installed):</para>
-      <para><command>ant build-dist</command></para>
+      <command>ant build-dist</command>
     </sect2>
     <sect2>
       <title><anchor id="Howtogetinvolved"/>How to get involved</title>
@@ -173,26 +164,46 @@
   <sect1>
     <title>Sapo-Broker Messages</title>
     <para>Sapo-Broker makes its asynchronous messaging features available through the exchange of some well-known messages. These messages must be encoded using a supported encoding type and comply to the wire message format as well as the messaging format defined for each message.</para>
-    <para>The overall structure of a Sapo-Broker is demonstrated in <xref linkend="Figure-MessageFormat" />. The wire message serves as a transportation medium for the messaging layer message as payload, witch, in cases of message publishing or notification, contains client's data.</para>
-    <figure id="Figure-MessageFormat"><title>Message Format</title>
-	<mediaobject><imageobject><imagedata fileref="images/messageformat.jpeg"/></imageobject></mediaobject>
+    <para>The overall structure of a Sapo-Broker is demonstrated in <xref linkend="Figure-MessageFormat"/>. The wire message serves as a transportation medium for the messaging layer message as payload, witch, in cases of message publishing or notification, contains client's data.</para>
+    <figure id="Figure-MessageFormat">
+      <title>Message Format</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/messageformat.jpeg"/>
+        </imageobject>
+      </mediaobject>
     </figure>
     <sect2>
       <title>Wire Message Format</title>
-      <para>A Sapo-Broker wire message is composed by an header and a payload like <xref linkend="Figure-WireMessageFormat" /> shows.</para>
-	<figure id="Figure-WireMessageFormat"><title>Wire Message Format</title>
-	 <mediaobject><imageobject><imagedata fileref="images/wiremessageformat.jpeg"/></imageobject></mediaobject>
-	</figure>	
+      <para>A Sapo-Broker wire message is composed by an header and a payload like <xref linkend="Figure-WireMessageFormat"/> shows.</para>
+      <figure id="Figure-WireMessageFormat">
+        <title>Wire Message Format</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/wiremessageformat.jpeg"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
       <sect3>
         <title>Header</title>
-        <para>In a previous, but still supported, version the header was composed by a 32 bits value specifying the payload's length. This is intended to provide temporary retro compatibility but will be made unavailable. Header layout is presented in <xref linkend="Figure-OldHeader" />.</para>
-	<figure id="Figure-OldHeader"><title>Header layout in previous versions</title>
-	 <mediaobject><imageobject><imagedata fileref="images/oldheader.jpeg"/></imageobject></mediaobject>
-	</figure>	
-        <para>Currently, the header specifies the payload encoding protocol used (16 bits) as well as it's version (16 bits) and payload length (32 bits). Although the payload length can represent a maximum of 4GB, a message size limit is set at 256KB. Header layout is presented in <xref linkend="Figure-NewHeader" />.</para>
-	<figure id="Figure-NewHeader"><title>Header layout in current version</title>
-	 <mediaobject><imageobject><imagedata fileref="images/newheader.jpg"/></imageobject></mediaobject>
-	</figure>
+        <para>In a previous, but still supported, version the header was composed by a 32 bits value specifying the payload's length. This is intended to provide temporary retro compatibility but will be made unavailable. Header layout is presented in <xref linkend="Figure-OldHeader"/>.</para>
+        <figure id="Figure-OldHeader">
+          <title>Header layout in previous versions</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/oldheader.jpeg"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>Currently, the header specifies the payload encoding protocol used (16 bits) as well as it's version (16 bits) and payload length (32 bits). Although the payload length can represent a maximum of 4GB, a message size limit is set at 256KB. Header layout is presented in <xref linkend="Figure-NewHeader"/>.</para>
+        <figure id="Figure-NewHeader">
+          <title>Header layout in current version</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/newheader.jpg"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
       </sect3>
       <sect3>
         <title>Encoding</title>
@@ -202,61 +213,28 @@
           <tgroup cols="4">
             <tbody>
               <row>
-                <entry>
-                  <para>Encoding Type Id</para>
-                </entry>
-                <entry>
-                  <para>Encoding Version</para>
-                </entry>
-                <entry>
-                  <para>Encoding Format</para>
-                </entry>
-                <entry>
-                  <para>Notes</para>
-                </entry>
+                <entry>Encoding Type Id</entry>
+                <entry>Encoding Version</entry>
+                <entry>Encoding Format</entry>
+                <entry>Notes</entry>
               </row>
               <row>
-                <entry>
-                  <para>0</para>
-                </entry>
-                <entry>
-                  <para>0</para>
-                </entry>
-                <entry>
-                  <para>XML/SOAP</para>
-                </entry>
-                <entry>
-                  <para>Same as in previous versions</para>
-                </entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>XML/SOAP</entry>
+                <entry>Same as in previous versions</entry>
               </row>
               <row>
-                <entry>
-                  <para>1</para>
-                </entry>
-                <entry>
-                  <para>0</para>
-                </entry>
-                <entry>
-                  <para>Google Protocol </para>
-                  <para>Buffers (ProtoBufs)</para>
-                </entry>
-                <entry>
-                  <para>http://code.google.com/apis/protocolbuffers/docs/overview.html</para>
-                </entry>
+                <entry>1</entry>
+                <entry>0</entry>
+                <entry>Google Protocol Buffers (ProtoBufs)</entry>
+                <entry>http://code.google.com/apis/protocolbuffers/docs/overview.html</entry>
               </row>
               <row>
-                <entry>
-                  <para>2</para>
-                </entry>
-                <entry>
-                  <para>0</para>
-                </entry>
-                <entry>
-                  <para>Thrift</para>
-                </entry>
-                <entry>
-                  <para>http://incubator.apache.org/thrift/</para>
-                </entry>
+                <entry>2</entry>
+                <entry>0</entry>
+                <entry>Thrift</entry>
+                <entry>http://incubator.apache.org/thrift/</entry>
               </row>
             </tbody>
           </tgroup>
@@ -278,193 +256,148 @@
         <tgroup cols="2">
           <tbody>
             <row>
-              <entry>
-                <para>Publish</para>
-              </entry>
-              <entry>
-                <para>When a client wants to publish a message to the broker, whether its to a queue or topic, it sends a Publish message.</para>
-              </entry>
+              <entry>Publish</entry>
+              <entry>When a client wants to publish a message to the broker, whether its to a queue or topic, it sends a Publish message.</entry>
             </row>
             <row>
-              <entry>
-                <para>Subscribe</para>
-              </entry>
-              <entry>
-                <para>A client denotes his interest in receiving a determined type of message (TOPIC, QUEUE or VIRUTAL_QUEUE) by sending a Subscribe message specifying a destination name or pattern.</para>
-              </entry>
+              <entry>Subscribe</entry>
+              <entry>A client denotes his interest in receiving a determined type of message (TOPIC, QUEUE or VIRUTAL_QUEUE) by sending a Subscribe message specifying a destination name or pattern.</entry>
             </row>
             <row>
-              <entry>
-                <para>Notification</para>
-              </entry>
-              <entry>
-                <para>A notification message is sent by an agent to a client as a consequence of a previous subscription.</para>
-              </entry>
+              <entry>Notification</entry>
+              <entry>A notification message is sent by an agent to a client as a consequence of a previous subscription.</entry>
             </row>
             <row>
-              <entry>
-                <para>Unsubscribe</para>
-              </entry>
-              <entry>
-                <para>When a client wants to cancel a previous subscription it sends an Unsuscribe message.</para>
-              </entry>
+              <entry>Unsubscribe</entry>
+              <entry>When a client wants to cancel a previous subscription it sends an Unsuscribe message.</entry>
             </row>
             <row>
-              <entry>
-                <para>Poll</para>
-              </entry>
-              <entry>
-                <para>A client may explicit poll from a queue or virtual queue an available message by sending a Poll message.</para>
-              </entry>
+              <entry>Poll</entry>
+              <entry>A client may explicit poll from a queue or virtual queue an available message by sending a Poll message.</entry>
             </row>
             <row>
-              <entry>
-                <para>Acknowledge</para>
-              </entry>
-              <entry>
-                <para>When a client receives a message from a queue and assumes the responsibility for persisting or handle the received message it sends an Acknowledge message.</para>
-              </entry>
+              <entry>Acknowledge</entry>
+              <entry>When a client receives a message from a queue and assumes the responsibility for persisting or handle the received message it sends an Acknowledge message.</entry>
             </row>
             <row>
-              <entry>
-                <para>Accepted</para>
-              </entry>
-              <entry>
-                <para>When the client specifies a action identifier the agent receiving the message sends an Accepted message with the specified action identifier. This message can also be used as a synchronization mean (eg. Accepted messages, in response to Authentication messages, are only sent when credentials validation is concluded).</para>
-              </entry>
+              <entry>Accepted</entry>
+              <entry>When the client specifies a action identifier the agent receiving the message sends an Accepted message with the specified action identifier. This message can also be used as a synchronization mean (eg. Accepted messages, in response to Authentication messages, are only sent when credentials validation is concluded).</entry>
             </row>
             <row>
-              <entry>
-                <para>Fault</para>
-              </entry>
-              <entry>
-                <para>When an error occurs the agent sends a Fault message.</para>
-              </entry>
+              <entry>Fault</entry>
+              <entry>When an error occurs the agent sends a Fault message.</entry>
             </row>
             <row>
-              <entry>
-                <para>Ping</para>
-              </entry>
-              <entry>
-                <para>In order to the client determine an agent liveness it sends a Ping message containing a action identifier.</para>
-              </entry>
+              <entry>Ping</entry>
+              <entry>In order to the client determine an agent liveness it sends a Ping message containing a action identifier.</entry>
             </row>
             <row>
-              <entry>
-                <para>Pong</para>
-              </entry>
-              <entry>
-                <para>The agent responds to a Ping message with a Pong message.</para>
-              </entry>
+              <entry>Pong</entry>
+              <entry>The agent responds to a Ping message with a Pong message.</entry>
             </row>
             <row>
-              <entry>
-                <para>Authentication</para>
-              </entry>
-              <entry>
-                <para>The Authentication message is used in the process of establishing client's identity in order to comply to role based authorization.</para>
-              </entry>
+              <entry>Authentication</entry>
+              <entry>The Authentication message is used in the process of establishing client's identity in order to comply to role based authorization.</entry>
             </row>
           </tbody>
         </tgroup>
       </table>
       <sect3>
         <title>Payload message format</title>
-        <para>Both ProtoBufs and Thrift are binary serialization formats and frameworks witch support binary message encoding. Sapo Broker leverages<emphasis> on these frameworks to provide binary message support. Both have their own message description format (and code generating tools) but, for the intended purpose, are isomorphic.</emphasis>
-</para>
+        <para>Both ProtoBufs and Thrift are binary serialization formats and frameworks witch support binary message encoding. Sapo Broker leverages<emphasis> on these frameworks to provide binary message support. Both have their own message description format (and code generating tools) but, for the intended purpose, are isomorphic.</emphasis></para>
         <para>
           <emphasis>SOAP messages are slightly different, and since are going to be made obsolete they are not described.</emphasis>
         </para>
         <sect4>
           <title>Atom</title>
           <para>Client and broker agents exchange messages of type Atom with is composed by the mandatory message Action and a optional Message Header.</para>
-          <para>        Atom: {Header, <emphasis role="mandatory">Action</emphasis>}</para>
+          <para>Atom: {Header, <emphasis role="mandatory">Action</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Header</title>
           <para>Headers are meant to contain extra information about the message. They are represented as a unbounded set of Parameters. For now there is no associated meaning to the these fiels.</para>
-          <para>        Header: {Parameter*}</para>
+          <para>Header: {Parameter*}</para>
         </sect4>
         <sect4>
           <title>Parameter</title>
           <para>A parameter is pair name value.</para>
-          <para>        Parameter: {<emphasis role="mandatory">string</emphasis>, <emphasis role="mandatory">string</emphasis>}</para>
+          <para>Parameter: {<emphasis role="mandatory">string</emphasis>, <emphasis role="mandatory">string</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Action</title>
           <para>Action represents the action to be performed. Is composed by a enumerate that identifies the action and a set of possible messages that represent it.</para>
-          <para>        Action: { <emphasis role="mandatory">ActionType</emphasis>, Publish, Poll, Accepted, Acknowledge_message, Subscribe, Unsubscribe, Notification, Fault, Ping, Pong, Auth}</para>
+          <para>Action: { <emphasis role="mandatory">ActionType</emphasis>, Publish, Poll, Accepted, Acknowledge_message, Subscribe, Unsubscribe, Notification, Fault, Ping, Pong, Auth}</para>
         </sect4>
         <sect4>
           <title>ActionType</title>
           <para>ActionType is a enumerate that identifies a message type.</para>
-          <para>        ActionType: {PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH}</para>
+          <para>ActionType: {PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH}</para>
         </sect4>
         <sect4>
           <title>Publish</title>
           <para>Publish messages contain an optional action identifier (used by the receiving agent to notify of message acceptance), an enumerate describing the type of destiny, the destination and a Broker Message.</para>
-          <para>        Publish: {action_id, <emphasis role="mandatory">DestinationType</emphasis>, <emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">BrokerMessage</emphasis>}</para>
+          <para>Publish: {action_id, <emphasis role="mandatory">DestinationType</emphasis>, <emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">BrokerMessage</emphasis>}</para>
         </sect4>
         <sect4>
           <title>DestinationType</title>
           <para>DestinationType is a enumerate that identifies a type of destination.</para>
-          <para>        DestinationType: {TOPIC, QUEUE, VIRTUAL_QUEUE}</para>
+          <para>DestinationType: {TOPIC, QUEUE, VIRTUAL_QUEUE}</para>
         </sect4>
         <sect4>
           <title>BrokerMessage</title>
           <para>BrokerMessage contains the actual data that is meat to the recipient applications. Such data is represented by a mandatory binary field payload. message_id is the identifier of the message, expiration  determines the time frame within the message is valid and timestamp the time of creation.</para>
           <para>The payload of BrokerMessage are the client's message payload.</para>
-          <para>        BrokerMessage: {message_id, <emphasis role="mandatory">payload</emphasis>, expiration, timestamp}</para>
+          <para>BrokerMessage: {message_id, <emphasis role="mandatory">payload</emphasis>, expiration, timestamp}</para>
         </sect4>
         <sect4>
           <title>Subscribe</title>
           <para>Subscribe messages are composed by an optional action identifier field, a destination, and a destination.</para>
-          <para>        Subscribe: {action_id, <emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">destination_type</emphasis>}</para>
+          <para>Subscribe: {action_id, <emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">destination_type</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Notification</title>
           <para>This message is composed by by a destination name (such as "/topic/foo"), a subscription (witch was used by the client, such as "/topic/.*"), a DestinationType and a BrokerMessage. All of these elements are mandatory.</para>
-          <para>        Notifcation: {<emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">subscription</emphasis>, <emphasis role="mandatory">DestinationType</emphasis>, <emphasis role="mandatory">BrokerMessage</emphasis>}</para>
+          <para>Notifcation: {<emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">subscription</emphasis>, <emphasis role="mandatory">DestinationType</emphasis>, <emphasis role="mandatory">BrokerMessage</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Unsubscribe</title>
           <para>The contents of Unsubscribe message are analogue to the Subscribe's message.</para>
-          <para>        Unsubscribe: {action_id, <emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">destination_type</emphasis>}</para>
+          <para>Unsubscribe: {action_id, <emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">destination_type</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Poll</title>
           <para>A client may explicit poll a queue message intended for him by sending a a Poll message. This message is composed by an optional action identifier and a mandatory destination.</para>
-          <para>        Poll: {action_id, <emphasis role="mandatory">destination</emphasis>}</para>
+          <para>Poll: {action_id, <emphasis role="mandatory">destination</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Acknowledge</title>
           <para>This message is composed by an optional action identifier, a message identifier and destination.</para>
-          <para>        Acknowledge: {action_id, <emphasis role="mandatory">message_id</emphasis>, <emphasis role="mandatory">destination</emphasis>}</para>
+          <para>Acknowledge: {action_id, <emphasis role="mandatory">message_id</emphasis>, <emphasis role="mandatory">destination</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Accepted</title>
           <para>The only field in an Accepted message is an action identifier.</para>
-          <para>        Accepted:{<emphasis role="mandatory">action_id</emphasis>}</para>
+          <para>Accepted:{<emphasis role="mandatory">action_id</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Fault</title>
           <para>This message is composed by an optional action identifier associated with the message who cause the error , a mandatory fault code, a mandatory fault message, and an optional fault-detail.</para>
-          <para>        Fault: {action_id, <emphasis role="mandatory">fault_code</emphasis>, <emphasis role="mandatory">fault_message</emphasis>, fault_detail}</para>
+          <para>Fault: {action_id, <emphasis role="mandatory">fault_code</emphasis>, <emphasis role="mandatory">fault_message</emphasis>, fault_detail}</para>
         </sect4>
         <sect4>
           <title>Ping </title>
           <para>A Ping message contains an action identifier used to correlate with the response message.</para>
-          <para>        Ping: {<emphasis role="mandatory">action_id</emphasis>}</para>
+          <para>Ping: {<emphasis role="mandatory">action_id</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Pong</title>
           <para>Pong messages contain the action identifier contained in the Ping message.</para>
-          <para>        Pong: {<emphasis role="mandatory">action_id</emphasis>}</para>
+          <para>Pong: {<emphasis role="mandatory">action_id</emphasis>}</para>
         </sect4>
         <sect4>
           <title>Authentication</title>
           <para>The Authentication message is used in the process of establishing client's identity in order to comply to role based authorization. This message is composed by an authentication type (such as "SapoSTS" or "BrokerRolesDB"), a mandatory binary token which may be a password or a third trusted party token, an user identifier, such as an user identifier, an unbounded set of roles and and an action identifier.</para>
-          <para>        Authentication: {action_id,  authentication_type, <emphasis role="mandatory">token</emphasis>, user_id, role}</para>
+          <para>Authentication: {action_id,  authentication_type, <emphasis role="mandatory">token</emphasis>, user_id, role}</para>
         </sect4>
       </sect3>
       <sect3>
@@ -473,50 +406,56 @@
         <para>In the sample, a client C wants to subscribe too all messages under the topic /topic/xpto, so he sends a subscription to agent A. When another client P publishes a message to topic /topic/xpto/foo, client A will be notified. Client C uses ProtoBufs encoding while client P uses Thrift encoding.</para>
         <sect4>
           <title>Topic Subscription</title>
-          <para>Header:</para>
-          <para>   Type: 1</para>
-          <para>   Verion: 0</para>
-          <para>   Length: xxx</para>
-          <para>Payload:</para>
-          <para>   Atom:</para>
-          <para>      Action:</para>
-          <para>         ActionType: Subscription</para>
-          <para>         SubscribeMessage:</para>
-          <para>            destination: /topic/xpto/.*</para>
-          <para>            subscription_type: TOPIC</para>
+          <screen>
+Header:
+   Type: 1
+   Verion: 0
+   Length: xxx
+Payload:
+   Atom:
+      Action:
+ ActionType: Subscription
+ SubscribeMessage:
+    destination: /topic/xpto/.*
+    subscription_type: TOPIC
+</screen>
         </sect4>
         <sect4>
           <title>Message Publishing </title>
-          <para>Header:</para>
-          <para>   Type: 2</para>
-          <para>   Verion: 0</para>
-          <para>   Length: xxx</para>
-          <para>Payload:</para>
-          <para>   Atom:</para>
-          <para>      Action:</para>
-          <para>         ActionType: Publish</para>
-          <para>         PublishMessage:</para>
-          <para>            detination_type: TOPIC</para>
-          <para>            detination: /topic/xpto/foo</para>
-          <para>            BrokerMessage:</para>
-          <para>               payload: 01010101010101001</para>
+          <screen>
+Header:
+   Type: 2
+   Verion: 0
+   Length: xxx
+Payload:
+   Atom:
+      Action:
+ ActionType: Publish
+ PublishMessage:
+    detination_type: TOPIC
+    detination: /topic/xpto/foo
+    BrokerMessage:
+       payload: 01010101010101001
+</screen>
         </sect4>
         <sect4>
           <title>Client Notification</title>
-          <para>Header:</para>
-          <para>   Type: 1</para>
-          <para>   Verion: 0</para>
-          <para>   Length: xxx</para>
-          <para>Payload:</para>
-          <para>   Atom:</para>
-          <para>      Action:</para>
-          <para>         ActionType: Notification</para>
-          <para>         NotificationMessage:</para>
-          <para>            destination: /topic/xpto/foo</para>
-          <para>            subscription: /topic/xpto/.*</para>
-          <para>            detination_type: TOPIC</para>
-          <para>            BrokerMessage:</para>
-          <para>               payload: 01010101010101001...</para>
+          <screen>
+Header:
+   Type: 1
+   Verion: 0
+   Length: xxx
+Payload:
+   Atom:
+      Action:
+ ActionType: Notification
+ NotificationMessage:
+    destination: /topic/xpto/foo
+    subscription: /topic/xpto/.*
+    detination_type: TOPIC
+    BrokerMessage:
+       payload: 01010101010101001...
+</screen>
         </sect4>
       </sect3>
     </sect2>
@@ -529,23 +468,23 @@
       <title>Statistics</title>
       <para>Agents publish statistics regathering the number of consumers subscribed in each topic and queue.</para>
       <para>Topic consumers are published in topic:</para>
-      <para>        /system/stats/topic-consumer-count/[topic subscription]</para>
+      <screen>/system/stats/topic-consumer-count/[topic subscription]</screen>
       <para>The content of the published message, encoded using UTF-8, is:</para>
-      <para>        [agent name]#[subscription]#[number of subscription]</para>
+      <screen>[agent name]#[subscription]#[number of subscription]</screen>
       <para>Queue consumers are published in topic:</para>
-      <para>        /system/stats/queue-consumer-count/[queue name]</para>
+      <screen>/system/stats/queue-consumer-count/[queue name]</screen>
       <para>The content of the published message, encoded using UTF-8, is:</para>
-      <para>        [agent name]#[queue name]#[number of subscription]</para>
+      <screen>[agent name]#[queue name]#[number of subscription]</screen>
     </sect2>
     <sect2>
       <title>Management</title>
-      <para>→  /system/management declared in agent/src/pt/com/broker/messaging/MQ is not used by anyone.</para>
+      <para>/system/management declared in agent/src/pt/com/broker/messaging/MQ is not used by anyone.</para>
     </sect2>
     <sect2>
       <title>Faults</title>
       <para>When an unhanded exception occurs, and it's not I/O related, agents publish an fault error. The message content conforms to SOAP Fault message format.</para>
       <para>Fault messages are published to topic:</para>
-      <para>        /system/faults/[agent name]</para>
+      <para>/system/faults/[agent name]</para>
     </sect2>
   </sect1>
   <sect1>
@@ -567,48 +506,26 @@
             <colspec colnum="3" colname="c3"/>
             <tbody>
               <row>
-                <entry>
-                  <para>Fault code</para>
-                </entry>
-                <entry>
-                  <para>Fault description</para>
-                </entry>
-                <entry>
-                  <para>Observations</para>
-                </entry>
+                <entry>Fault code</entry>
+                <entry>Fault description</entry>
+                <entry>Observations</entry>
               </row>
               <row>
-                <entry>
-                  <para>1101</para>
-                </entry>
-                <entry>
-                  <para>Invalid message size</para>
-                </entry>
+                <entry>1101</entry>
+                <entry>Invalid message size</entry>
                 <entry>
                   
                 </entry>
               </row>
               <row>
-                <entry>
-                  <para>1102</para>
-                </entry>
-                <entry>
-                  <para>Unknown encoding protocol</para>
-                </entry>
-                <entry>
-                  <para>Message not sent</para>
-                </entry>
+                <entry>1102</entry>
+                <entry>Unknown encoding protocol</entry>
+                <entry>Message not sent</entry>
               </row>
               <row>
-                <entry>
-                  <para>1103</para>
-                </entry>
-                <entry>
-                  <para>Unknown encoding version</para>
-                </entry>
-                <entry>
-                  <para>Message not sent</para>
-                </entry>
+                <entry>1103</entry>
+                <entry>Unknown encoding version</entry>
+                <entry>Message not sent</entry>
               </row>
             </tbody>
           </tgroup>
@@ -621,37 +538,21 @@
             <colspec colnum="3" colname="c3"/>
             <tbody>
               <row>
-                <entry>
-                  <para>Fault code</para>
-                </entry>
-                <entry>
-                  <para>Fault description</para>
-                </entry>
-                <entry>
-                  <para>Observations</para>
-                </entry>
+                <entry>Fault code</entry>
+                <entry>Fault description</entry>
+                <entry>Observations</entry>
               </row>
               <row>
-                <entry>
-                  <para>1201</para>
-                </entry>
-                <entry>
-                  <para>Invalid message format</para>
-                </entry>
+                <entry>1201</entry>
+                <entry>Invalid message format</entry>
                 <entry>
                   
                 </entry>
               </row>
               <row>
-                <entry>
-                  <para>1202</para>
-                </entry>
-                <entry>
-                  <para>Unexpected message type</para>
-                </entry>
-                <entry>
-                  <para>e.g., when Agent receives a Notification message</para>
-                </entry>
+                <entry>1202</entry>
+                <entry>Unexpected message type</entry>
+                <entry>e.g., when Agent receives a Notification message</entry>
               </row>
             </tbody>
           </tgroup>
@@ -666,56 +567,30 @@
             <colspec colnum="3" colname="c3"/>
             <tbody>
               <row>
-                <entry>
-                  <para>Fault code</para>
-                </entry>
-                <entry>
-                  <para>Fault description</para>
-                </entry>
-                <entry>
-                  <para>Observations</para>
-                </entry>
+                <entry>Fault code</entry>
+                <entry>Fault description</entry>
+                <entry>Observations</entry>
               </row>
               <row>
-                <entry>
-                  <para>2001</para>
-                </entry>
-                <entry>
-                  <para>Invalid destination name</para>
-                </entry>
-                <entry>
-                  <para>e.g., VIRTUAL_QUEUE without "@" in name</para>
-                </entry>
+                <entry>2001</entry>
+                <entry>Invalid destination name</entry>
+                <entry>e.g., VIRTUAL_QUEUE without "@" in name</entry>
               </row>
               <row>
-                <entry>
-                  <para>2002</para>
-                </entry>
-                <entry>
-                  <para>Invalid destination type</para>
-                </entry>
-                <entry>
-                  <para>e.g., publications to VIRTUAL_QUEUE</para>
-                </entry>
+                <entry>2002</entry>
+                <entry>Invalid destination type</entry>
+                <entry>e.g., publications to VIRTUAL_QUEUE</entry>
               </row>
               <row>
-                <entry>
-                  <para>2003</para>
-                </entry>
-                <entry>
-                  <para>Maximum number of queues reached</para>
-                </entry>
+                <entry>2003</entry>
+                <entry>Maximum number of queues reached</entry>
                 <entry>
                   
                 </entry>
               </row>
               <row>
-                <entry>
-                  <para>2004</para>
-                </entry>
-                <entry>
-                  <para>Maximum distinct subscriptions reached</para>
-                </entry>
+                <entry>2004</entry>
+                <entry>Maximum distinct subscriptions reached</entry>
                 <entry>
                   
                 </entry>
@@ -734,48 +609,24 @@
             <colspec colnum="3" colname="c3"/>
             <tbody>
               <row>
-                <entry>
-                  <para>Fault code</para>
-                </entry>
-                <entry>
-                  <para>Fault description</para>
-                </entry>
-                <entry>
-                  <para>Observations</para>
-                </entry>
+                <entry>Fault code</entry>
+                <entry>Fault description</entry>
+                <entry>Observations</entry>
               </row>
               <row>
-                <entry>
-                  <para>3101</para>
-                </entry>
-                <entry>
-                  <para>Authentication failed</para>
-                </entry>
-                <entry>
-                  
-                </entry>
+                <entry>3101</entry>
+                <entry>Authentication failed</entry>
+                <entry>The supplied credentials were invalid</entry>
               </row>
               <row>
-                <entry>
-                  <para>3102</para>
-                </entry>
-                <entry>
-                  <para>Unknown authentication type</para>
-                </entry>
-                <entry>
-                  
-                </entry>
+                <entry>3102</entry>
+                <entry>Unknown authentication type</entry>
+                <entry>The client tried to use an unsupported authentication schem</entry>
               </row>
               <row>
-                <entry>
-                  <para>3103</para>
-                </entry>
-                <entry>
-                  <para>Invalid authentication channel type</para>
-                </entry>
-                <entry>
-                  <para>SSL was not used</para>
-                </entry>
+                <entry>3103</entry>
+                <entry>Invalid authentication channel type</entry>
+                <entry>The client tried to send/receive messages using an unsecured port on a Destination that only allows SSL connections</entry>
               </row>
             </tbody>
           </tgroup>
@@ -788,23 +639,13 @@
             <colspec colnum="3" colname="c3"/>
             <tbody>
               <row>
-                <entry>
-                  <para>Fault code</para>
-                </entry>
-                <entry>
-                  <para>Fault description</para>
-                </entry>
-                <entry>
-                  <para>Observations</para>
-                </entry>
+                <entry>Fault code</entry>
+                <entry>Fault description</entry>
+                <entry>Observations</entry>
               </row>
               <row>
-                <entry>
-                  <para>3201</para>
-                </entry>
-                <entry>
-                  <para>Access denied</para>
-                </entry>
+                <entry>3201</entry>
+                <entry>Access denied</entry>
                 <entry>
                   
                 </entry>
@@ -821,11 +662,11 @@
     <para>Security policies may be composed hierarchy, which means that a given security policy X can inherit from a policy Y adding or overriding  specific aspects to the policy. These policies may be associated with agents. If no security policy is to be used, then the element "security-policies" should be omitted for performance reasons.</para>
     <para>A security policy is composed by an Access Control List (ACL), which is composed by entries. Each entry has an action (PERMIT or DENY), a destination type (TOPIC, QUEUE or VIRTUAL_QUEUE), a destination (such as "/topic/foo" or a regular expression) and a privilege (READ or WRITE). Destination types and privileges may be declared as lists which makes the ACL entry easier to read and declare. An entry is also composed by conditions that determine when the ACL entry should be applied. Conditions represent a binary evaluation result which determines the application of the related ACL entry. They can be of the following types:</para>
     <itemizedlist>
-          <listitem><para>ADDRESS – An IPv4 address and mask;</para></listitem>
-          <listitem><para>ROLE – A text value with the role name;</para></listitem>
-          <listitem><para>CHANNEL_TYPE – A type of security property (CONFIDENTIALITY, INTEGRITY and/or AUTHENTICITY) guaranteed by the transport channel.</para></listitem>
-          <listitem><para>AND – A composed condition that evaluates to true if all the contained conditions are true;</para></listitem>
-          <listitem><para>ALWAYS – The ACL entry is always applied.</para></listitem>
+      <listitem>ADDRESS – An IPv4 address and mask;</listitem>
+      <listitem>ROLE – A text value with the role name;</listitem>
+      <listitem>CHANNEL_TYPE – A type of security property (CONFIDENTIALITY, INTEGRITY and/or AUTHENTICITY) guaranteed by the transport channel.</listitem>
+      <listitem>AND – A composed condition that evaluates to true if all the contained conditions are true;</listitem>
+      <listitem>ALWAYS – The ACL entry is always applied.</listitem>
     </itemizedlist>
     <sect2>
       <title>Access control evaluation criteria </title>
@@ -837,65 +678,66 @@
       <para>In Code 1 a security configuration sample is presented. As said before, this configuration aspect is defined in global configuration file.</para>
       <para>The sample presents a scenario where the default security policy mandates that no client can produce messages to topic or queue whose named begin with "/system/". The default policy also dictates that destination names beginning with "/private/" are forbidden for all clients. These security settings apply to all agents using the default security policy.</para>
       <para>At the bottom of the sample a section (XML element) entitled "agents" is present. Here is the place to associate specific security policies with agents. The sample states that an agent named "agent007" must used the "anotherPolicy" security policy. This policy inherits from the default security, adds some entries to the ACL and in a specific case overrides the default policy. The added entries specify that message production to the queue named "/specialQueue" is denied to all except those clients that simultaneous possess the role "VIP_role" and are using a type of communication channel that offers confidentiality (such as SSL). The declaration details are self-explanatory. </para>
-	<example><title>Security policy configuration sample</title>
-	<programlisting>
-		<para>&lt;security-policies&gt; </para>
-		<para>   &lt;policies&gt; </para>
-		<para>      &lt;policy policy-name="default"&gt; </para>
-		<para>         &lt;acl&gt; </para>
-		<para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE" destination="/system/.*"  privilege="WRITE"&gt; </para>
-		<para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
-		<para>            &lt;/entry&gt; </para>
-		<para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="WRITE READ"&gt; </para>
-		<para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
-		<para>            &lt;/entry&gt; </para>
-		<para>         &lt;/acl&gt; </para>
-		<para>      &lt;/policy&gt; </para>
-		<para>      &lt;policy policy-name="anotherPolicy" inherits="default"&gt; </para>
-		<para>         &lt;acl&gt; </para>
-		<para>            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="READ"&gt; </para>
-		<para>               &lt;condition condition-type="ADDRESS"&gt; </para>
-		<para>                  &lt;address  mask="24"&gt;10.11.12.0&lt;/address&gt; </para>
-		<para>               &lt;/condition&gt; </para>
-		<para>            &lt;/entry&gt; </para>
-		<para>            &lt;entry action="PERMIT" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; </para>
-		<para>               &lt;condition condition-type="AND"&gt; </para>
-		<para>                  &lt;condition condition-type="ROLE"&gt; </para>
-		<para>                     &lt;role&gt;VIP_role&lt;/role&gt; </para>
-		<para>                  &lt;/condition&gt; </para>
-		<para>                  &lt;condition condition-type="CHANNELTYPE"&gt; </para>
-		<para>                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; </para>
-		<para>                  &lt;/condition&gt; </para>
-		<para>               &lt;/condition&gt; </para>
-		<para>            &lt;/entry&gt; </para>
-		<para>            &lt;entry action="DENY" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; </para>
-		<para>               &lt;condition condition-type="ALWAYS" /&gt; </para>
-		<para>            &lt;/entry&gt; </para>
-		<para>         &lt;/acl&gt; </para>
-		<para>         &lt;/policy&gt; </para>
-		<para>         &lt;policy policy-name="very special policy" inherits="special policy"&gt; </para>
-		<para>         &lt;acl&gt; </para>
-		<para>            &lt;entry action="PERMIT" destination-type="TOPIC" destination="/topic/sensitive"  privilege="READ WRITE"&gt; </para>
-		<para>               &lt;condition condition-type="AND"&gt; </para>
-		<para>                  &lt;condition condition-type="ROLE"&gt; </para>
-		<para>                     &lt;role&gt;brk_writer_role&lt;/role&gt; </para>
-		<para>                  &lt;/condition&gt; </para>
-		<para>                  &lt;condition condition-type="CHANNELTYPE"&gt; </para>
-		<para>                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; </para>
-		<para>                  &lt;/condition&gt; </para>
-		<para>               &lt;/condition&gt; </para>
-		<para>            &lt;/entry&gt;         </para>
-		<para>           &lt;/acl&gt; </para>
-		<para>         &lt;/policy&gt; </para>
-		<para>      &lt;/policies&gt; </para>
-		<para>     &lt;agents&gt; </para>
-		<para>         &lt;agent agent-name="agent007"&gt; </para>
-		<para>            &lt;agent-policy policy-name="anotherPolicy" /&gt; </para>
-		<para>         &lt;/agent&gt; </para>
-		<para>      &lt;/agents&gt; </para>
-		<para>&lt;/security-policies&gt;</para>
-      	</programlisting>
-	</example>
+      <example>
+        <title>Security policy configuration sample</title>
+        <screen>
+&lt;security-policies&gt; 
+   &lt;policies&gt; 
+      &lt;policy policy-name="default"&gt; 
+         &lt;acl&gt; 
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE" destination="/system/.*"  privilege="WRITE"&gt; 
+               &lt;condition condition-type="ALWAYS" /&gt; 
+            &lt;/entry&gt; 
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="WRITE READ"&gt; 
+               &lt;condition condition-type="ALWAYS" /&gt; 
+            &lt;/entry&gt; 
+         &lt;/acl&gt; 
+      &lt;/policy&gt; 
+      &lt;policy policy-name="anotherPolicy" inherits="default"&gt; 
+         &lt;acl&gt; 
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="READ"&gt; 
+               &lt;condition condition-type="ADDRESS"&gt; 
+                  &lt;address  mask="24"&gt;10.11.12.0&lt;/address&gt; 
+               &lt;/condition&gt; 
+            &lt;/entry&gt; 
+            &lt;entry action="PERMIT" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; 
+               &lt;condition condition-type="AND"&gt; 
+                  &lt;condition condition-type="ROLE"&gt; 
+                     &lt;role&gt;VIP_role&lt;/role&gt; 
+                  &lt;/condition&gt; 
+                  &lt;condition condition-type="CHANNELTYPE"&gt; 
+                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; 
+                  &lt;/condition&gt; 
+               &lt;/condition&gt; 
+            &lt;/entry&gt; 
+            &lt;entry action="DENY" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; 
+               &lt;condition condition-type="ALWAYS" /&gt; 
+            &lt;/entry&gt; 
+         &lt;/acl&gt; 
+         &lt;/policy&gt; 
+         &lt;policy policy-name="very special policy" inherits="special policy"&gt; 
+         &lt;acl&gt; 
+            &lt;entry action="PERMIT" destination-type="TOPIC" destination="/topic/sensitive"  privilege="READ WRITE"&gt; 
+               &lt;condition condition-type="AND"&gt; 
+                  &lt;condition condition-type="ROLE"&gt; 
+                     &lt;role&gt;brk_writer_role&lt;/role&gt; 
+                  &lt;/condition&gt; 
+                  &lt;condition condition-type="CHANNELTYPE"&gt; 
+                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; 
+                  &lt;/condition&gt; 
+               &lt;/condition&gt; 
+            &lt;/entry&gt;         
+           &lt;/acl&gt; 
+         &lt;/policy&gt; 
+      &lt;/policies&gt; 
+     &lt;agents&gt; 
+         &lt;agent agent-name="agent007"&gt; 
+            &lt;agent-policy policy-name="anotherPolicy" /&gt; 
+         &lt;/agent&gt; 
+      &lt;/agents&gt; 
+&lt;/security-policies&gt;
+      	</screen>
+      </example>
     </sect2>
   </sect1>
   <sect1>
@@ -920,63 +762,59 @@
         <tgroup cols="2">
           <tbody>
             <row>
-              <entry>
-                <para>SapoSTS</para>
-              </entry>
-              <entry>
-                <para>Accepts SapoSTS (http://services.sapo.pt/Metadata/Service/STS?culture=EN) authentication tokens and obtains clients roles.</para>
-              </entry>
+              <entry>SapoSTS</entry>
+              <entry>Accepts SapoSTS (http://services.sapo.pt/Metadata/Service/STS?culture=EN) authentication tokens and obtains clients roles.</entry>
             </row>
             <row>
-              <entry>
-                <para>BrokerRolesDB</para>
-              </entry>
-              <entry>
-                <para>User name/password based authentication mechanism. Developed as as a proof-of-concept</para>
-              </entry>
+              <entry>BrokerRolesDB</entry>
+              <entry>User name/password based authentication mechanism. Developed as as a proof-of-concept</entry>
             </row>
           </tbody>
         </tgroup>
       </table>
       <para>Each of the available implementations are described later. </para>
-
-    <example><title>Authorization providers configuration</title>
-	<programlisting>
-		<para>&lt;credential-validators&gt; </para>
-                <para>   &lt;credential-validator provider-name="SapoSTS"&gt; </para>
-                <para>      &lt;class&gt;pt.com.broker.auth.saposts.SapoSTSAuthInfoValidator&lt;/class&gt; </para>
-                <para>      &lt;provider-params&gt; </para>
-                <para>         &lt;sts&gt; </para>
-                <para>            &lt;sts-location&gt;https://services.sapo.pt/STS/&lt;/sts-location&gt; </para>
-                <para>            &lt;sts-username&gt;username&lt;/sts-username&gt; </para>
-                <para>            &lt;sts-password&gt;password&lt;/sts-password&gt; </para>
-                <para>         &lt;/sts&gt; </para>
-                <para>      &lt;/provider-params&gt; </para>
-                <para>   &lt;/credential-validator&gt; </para>
-                <para>   &lt;credential-validator provider-name="BrokerRolesDB"&gt; </para>
-                <para>      &lt;class&gt;pt.com.broker.auth.jdbc.JdbcAuthInfoValidator&lt;/class&gt; </para>
-                <para>      &lt;provider-params&gt; </para>
-                <para>         &lt;db-roles&gt; </para>
-                <para>            &lt;driver-class&gt;org.postgresql.Driver&lt;/driver-class&gt; </para>
-                <para>            &lt;database-url&gt;jdbc:postgresql://localhost/BROKER_ROLES&lt;/database-url&gt; </para>
-                <para>            &lt;database-username&gt;username&lt;/database-username&gt; </para>
-                <para>            &lt;database-password&gt;password&lt;/database-password&gt; </para>
-                <para>         &lt;/db-roles&gt; </para>
-                <para>      &lt;/provider-params&gt; </para>
-                <para>   &lt;/credential-validator&gt; </para>
-                <para>&lt;/credential-validators&gt;</para>
-	</programlisting>
-     </example>
+      <example>
+        <title>Authorization providers configuration</title>
+        <screen>
+&lt;credential-validators&gt; 
+   &lt;credential-validator provider-name="SapoSTS"&gt; 
+      &lt;class&gt;pt.com.broker.auth.saposts.SapoSTSAuthInfoValidator&lt;/class&gt; 
+      &lt;provider-params&gt; 
+         &lt;sts&gt; 
+            &lt;sts-location&gt;https://services.sapo.pt/STS/&lt;/sts-location&gt; 
+            &lt;sts-username&gt;username&lt;/sts-username&gt; 
+            &lt;sts-password&gt;password&lt;/sts-password&gt; 
+         &lt;/sts&gt; 
+      &lt;/provider-params&gt; 
+   &lt;/credential-validator&gt; 
+   &lt;credential-validator provider-name="BrokerRolesDB"&gt; 
+      &lt;class&gt;pt.com.broker.auth.jdbc.JdbcAuthInfoValidator&lt;/class&gt; 
+      &lt;provider-params&gt; 
+         &lt;db-roles&gt; 
+            &lt;driver-class&gt;org.postgresql.Driver&lt;/driver-class&gt; 
+            &lt;database-url&gt;jdbc:postgresql://localhost/BROKER_ROLES&lt;/database-url&gt; 
+            &lt;database-username&gt;username&lt;/database-username&gt; 
+            &lt;database-password&gt;password&lt;/database-password&gt; 
+         &lt;/db-roles&gt; 
+      &lt;/provider-params&gt; 
+   &lt;/credential-validator&gt; 
+&lt;/credential-validators&gt;
+</screen>
+      </example>
     </sect2>
     <sect2>
       <title>Relevant Classes</title>
       <para>At the heart of an authorization provider lies an implementation of the interface  pt.com.broker.auth.AuthInfoValidator. This interface and reaming relevant types are presented at Figure 5. </para>
       <para>The initialization method of AuthInfoValidator gives the provider an opportunity to realize any actions  required to properly validate client's authorization information and translate that information in client roles. The ProviderInfo is used to inform the provider what is the name of the authentication type it will be performing, the class name (redundant) and the parameter specified in the configuration file. These arguments are supplied as an XML representation object.</para>
       <para>Validation operation is invoked as a consequence of an authentication message [link to this] which includes information about the user synthesized as an AuthInfo object. This information may contain an user identifier, user roles (which should be validated), an authentication token (such as password or a third party supplied token) and the type of authentication being used. The authentication token is a binary value, so, in case of representing a string such as a password is UTF-8 encoded. In response to an authentication request a result is produced (AuthValidationResult) indicating whether the credentials are valid (a reason for failure should be supplied in case their not) or not, and the list of roles associated with the user in case of valid credentials.</para>
-    <figure id="Figure-AuthorizationProvider"><title>Authorization Provider relevant types</title>
-	<mediaobject><imageobject><imagedata fileref="images/authenticationproviders.jpeg"/></imageobject></mediaobject>
-    </figure>
-
+      <figure id="Figure-AuthorizationProvider">
+        <title>Authorization Provider relevant types</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/authenticationproviders.jpeg"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
     </sect2>
     <sect2>
       <title>Implemented authentication modules</title>
@@ -992,8 +830,9 @@
         <para>Sapo-Broker users may not have access to Sapo STS, and probably this would be the case, or they may need do provide their own authentication mechanisms. As a proof-of-concept it was implemented an authentication provider supported by a relational database. The tables creation script is presented at Code 3. As shown, salts are not used and users passwords are store in clear, not their hashes. So this may not be very useful in a production environment where the use of secure practices is mandatory.</para>
         <para>When using this authentication method, denoted by "BrokerRolesDB" authentication type, clients provide, as credentials, their user name and password.</para>
         <para>The configuration of this provider, presented in Code 2, takes the driver class to be loaded, which must be in agent's classpath, the connection URL and the credentials to access the database and respective tables. The authentication functionality is provided in sapo-broker-auth-jdbc.jar.</para>
- 	<example><title>Database creation scripts</title>
-	 <programlisting>
+        <example>
+          <title>Database creation scripts</title>
+          <screen>
 CREATE TABLE users
 (
   user_id bigserial NOT NULL,
@@ -1010,56 +849,34 @@ CREATE TABLE user_roles
   CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id)
   REFERENCES users (user_id) MATCH SIMPLE
 )
-	  </programlisting>
-	</example>
+</screen>
+        </example>
       </sect3>
     </sect2>
     <sect2>
       <title>SSL Configuration</title>
-      <para>Sapo-Broker agents use SSL connections as message transport to client authentication messages and to support all communications that require authentication (role based access control). This type of connection is based on asymmetric cryptography operations and X.509 certificates. In order generate your own key pair and X.509 certificates a small tutorial on how to use SUN's keytool (http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html) is provided.</para>
+      <para>Sapo-Broker agents use SSL connections as message transport to client authentication messages and to support all communications that require authentication (role based access control). This type of connection is based on asymmetric cryptography operations and X.509 certificates. In order generate your own key pair and X.509 certificates a small tutorial on how to use <ulink url="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">SUN's keytool</ulink> is provided.</para>
       <sect3>
         <title>Keytool tutorial</title>
-        <sect4>
-          <title>Generating a pair of keys to a new keystore</title>
-          <para><command>keytool -genkey -keystore ./certs2 -keyalg rsa -alias test -storepass serverkspw -keypass serverpw</command></para>
-          <para><command>keytool -list -alias test -keystore ./certs2</command>  -  to view the keys in the new keystore</para>
-        </sect4>
-        <sect4>
-          <title>Export public key as an X.509 certificate</title>
-          <para><command>keytool -export -keystore ./certs2 -alias test -file testCert.cer</command></para>
-        </sect4>
-        <sect4>
-          <title>Importing a X.509 certificate</title>
-          <sect4>
-            <title>To the default truststore (easier, but not recommend) </title>
-            <para><command>sudo keytool -import -file ./testCert.cer -keystore  /usr/lib/jvm/java-6-sun-1.6.0.10/jre/lib/security/cacerts</command></para>
-          </sect4>
-          <sect4>
-            <title>To a new keystore</title>
-            <para><command>keytool -import -file ./testCert.cer -keystore  ./clientKeystore</command></para>
-          </sect4>
-        </sect4>
-      </sect3>
-      <sect3>
-        <title>Keystores usage </title>
+        <para>Generating a pair of keys to a new keystore:</para>
+        <command>keytool -genkey -keystore ./certs2 -keyalg rsa -alias test -storepass serverkspw -keypass serverpw</command>
+        <para>View the stored keys:</para>
+        <command>keytool -list -alias test -keystore ./certs2</command>
+        <para>Export public key as an X.509 certificate</para>
+        <command>keytool -export -keystore ./certs2 -alias test -file testCert.cer</command>
+        <para>Importing a X.509 certificate o the default truststore (easier, but not recommend)</para>
+        <command>sudo keytool -import -file ./testCert.cer -keystore  /usr/lib/jvm/java-6-sun-1.6.0.10/jre/lib/security/cacerts</command>
+        <para>To a new keystore</para>
+        <command>keytool -import -file ./testCert.cer -keystore  ./clientKeystore</command>
         <para>The generated keystore contains a public and private key. This keystore is meant to be used by the agent. A sample on how to configure SSL on the agent is presented at Code 4. This configuration element is specific to each agent, thus, it's not included in global.config file.</para>
-        <table frame="all" id="Table5">
-          <title>Table 1: Client compatibility matrix </title>
-          <tgroup cols="1">
-            <tbody>
-              <row>
-                <entry>
-                  <para>&lt;ssl&gt; </para>
-                  <para>   &lt;broker-ssl-port&gt;3390&lt;/broker-ssl-port&gt; </para>
-                  <para>   &lt;keystore-location&gt;/home/server/agent/certs2&lt;/keystore-location&gt; </para>
-                  <para>   &lt;keystore-password&gt;serverkspw&lt;/keystore-password&gt; </para>
-                  <para>   &lt;key-password&gt;serverpw&lt;/key-password&gt; </para>
-                  <para>&lt;/ssl&gt;</para>
-                </entry>
-              </row>
-            </tbody>
-          </tgroup>
-        </table>
+        <screen>
+&lt;ssl&gt; 
+   &lt;broker-ssl-port&gt;3390&lt;/broker-ssl-port&gt; 
+   &lt;keystore-location&gt;/home/server/agent/certs2&lt;/keystore-location&gt; 
+   &lt;keystore-password&gt;serverkspw&lt;/keystore-password&gt; 
+   &lt;key-password&gt;serverpw&lt;/key-password&gt; 
+&lt;/ssl&gt;
+</screen>
         <para>Code 4: Agent's SSL sample configuration</para>
         <para>In order to clients trust agents certificates, during SSL handshaking, the agent's public key, through an X.509 certificate must be added to the trusted certificates client store. It can be added to the default truststore, but it's recommended that client applications specifically used a keystore containing the agent's certificate. This is the approach used by the Java client library.</para>
       </sect3>
@@ -1081,260 +898,100 @@ CREATE TABLE user_roles
           <colspec colnum="3" colname="c3"/>
           <tbody>
             <row>
-              <entry>
-                
-              </entry>
-              <entry>
-                <para>Java</para>
-              </entry>
-              <entry>
-                <para>.NET</para>
-              </entry>
-              <entry>
-                <para>Perl</para>
-              </entry>
-              <entry>
-                <para>Python</para>
-              </entry>
-              <entry>
-                <para>PHP</para>
-              </entry>
-              <entry>
-                <para>Ruby</para>
-              </entry>
-              <entry>
-                <para>C</para>
-              </entry>
-              <entry>
-                <para>Erlang</para>
-              </entry>
-              <entry>
-                <para>Javascript</para>
-              </entry>
+              <entry/>
+              <entry>Java</entry>
+              <entry>.NET</entry>
+              <entry>Perl</entry>
+              <entry>Python</entry>
+              <entry>PHP</entry>
+              <entry>Ruby</entry>
+              <entry>C</entry>
+              <entry>Erlang</entry>
+              <entry>Javascript</entry>
             </row>
             <row>
-              <entry>
-                <para>SOAP encoding</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                <para>-</para>
-              </entry>
+              <entry>SOAP encoding</entry>
+              <entry>x</entry>
+              <entry>x</entry>
+              <entry>x</entry>
+              <entry>x</entry>
+              <entry>x</entry>
+              <entry>x</entry>
+              <entry>x</entry>
+              <entry>x</entry>
+              <entry>-</entry>
             </row>
             <row>
-              <entry>
-                <para>ProtoBuf encoding (binary)</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                <para>-</para>
-              </entry>
+              <entry>ProtoBuf encoding (binary)</entry>
+              <entry>x</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>-</entry>
             </row>
             <row>
-              <entry>
-                <para>Thrift encoding (binary)</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                <para>-</para>
-              </entry>
+              <entry>Thrift encoding (binary)</entry>
+              <entry>x</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>-</entry>
             </row>
             <row>
-              <entry>
-                <para>SSL support</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                <para>-</para>
-              </entry>
+              <entry>SSL support</entry>
+              <entry>x</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>-</entry>
             </row>
             <row>
-              <entry>
-                <para>Client authentication</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                <para>-</para>
-              </entry>
+              <entry>Client authentication</entry>
+              <entry>x</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>-</entry>
             </row>
             <row>
-              <entry>
-                <para>Client authentication with Sapo STS</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                <para>-</para>
-              </entry>
+              <entry>Client authentication with Sapo STS</entry>
+              <entry>x</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>-</entry>
             </row>
             <row>
-              <entry>
-                <para>Client failover</para>
-              </entry>
-              <entry>
-                <para>x</para>
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                
-              </entry>
-              <entry>
-                <para>-</para>
-              </entry>
+              <entry>Client failover</entry>
+              <entry>x</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>-</entry>
             </row>
           </tbody>
         </tgroup>
@@ -1367,13 +1024,13 @@ CREATE TABLE user_roles
   <sect1>
     <title>Future developments</title>
     <para>Sapo-Broker is an on going project at Sapo. As such several new features and improvements are to come. Here are some examples of planned developments:</para>
-    <para>        Improve Sapo-Broker documentation (this document is already a towards that gold);</para>
-    <para>        Update client libraries to support binary encoding, as well all other missing features in client compatibility matrix;</para>
-    <para>        Develop a Javascript client;</para>
-    <para>        Create a monitoring dashboard;</para>
-    <para>        Improve Broker's performance;</para>
-    <para>        Evaluate alternatives to MINA;</para>
-    <para>        Define and implement a mechanism for bridging agent "clouds";</para>
+    <para>Improve Sapo-Broker documentation (this document is already a towards that gold);</para>
+    <para>Update client libraries to support binary encoding, as well all other missing features in client compatibility matrix;</para>
+    <para>Develop a Javascript client;</para>
+    <para>Create a monitoring dashboard;</para>
+    <para>Improve Broker's performance;</para>
+    <para>Evaluate alternatives to MINA;</para>
+    <para>Define and implement a mechanism for bridging agent "clouds";</para>
     <para>Other developments are likely to be defined be implemented. Stay tunned. [link to mailing list or blog]</para>
   </sect1>
 </article>
