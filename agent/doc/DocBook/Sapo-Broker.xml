@@ -10,10 +10,10 @@
       <title>Messaging</title>
       <para>When talking about messaging we are really talking about asynchronous operations. This means that broker clients can register interest in "Destinations"and return immediately, also a client can be notified in an event-driven fashion when something has happened. This allows for a loosely coupled exchange of messages between producers and consumers since they know nothing of each other, they only know about destinations (queues and topics). Immediate benefits of using messaging are:</para>
       <itemizedlist>
-        <listitem>Fire and Forget: Producers don't wait for consumers, as soon as the broker receives the message they may return immediately.</listitem>
-        <listitem>Scalability: Messages in a single stream can be handled in parallel by many client threads or systems.</listitem>
-        <listitem>Robustness to Change: Applications on heterogeneous platforms communicate and interoperate transparently yet each application operates independently of, and asynchronously with, others. Communicating programs remain separately maintained and individually replaceable.</listitem>
-        <listitem>Time Independence: Neither the message sender nor the message recipient needs to be online at the same time. The Broker queues messages when their recipients are not available.</listitem>
+        <listitem>Fire and Forget: Producers don't wait for consumers, as soon as the broker receives the message they may return immediately</listitem>
+        <listitem>Scalability: Messages in a single stream can be handled in parallel by many client threads or systems</listitem>
+        <listitem>Robustness to Change: Applications on heterogeneous platforms communicate and interoperate transparently yet each application operates independently of, and asynchronously with, others. Communicating programs remain separately maintained and individually replaceable</listitem>
+        <listitem>Time Independence: Neither the message sender nor the message recipient needs to be online at the same time. The Broker queues messages when their recipients are not available</listitem>
       </itemizedlist>
       <sect3>
         <title><anchor id="MessagingModels"/>Messaging Models</title>
@@ -45,7 +45,7 @@
     <title>Sapo-Broker Features</title>
     <sect2>
       <title>Supported broker topologies</title>
-      <para>Message brokers, depending on specific products, can be configured to implement different topologies, such as hierarchal, network, single broker or a mixture of the previous.</para>
+      <para>Message brokers, depending on specific products, can be configured to implement different topologies, such as hierarchical, network, single broker or a mixture of the previous.</para>
       <para>Sapo-Broker can be used as a single instance or in network topology. Although a single agent instance could be used in small working sets, a multiple agent (network) design would better take advantage of Sapo-Broker, namely in system availability and throughput, with client failover and distributed workload, respectively. In networking topologies all agents are interconnected in what is known as agent cloud. For now it not yet possible to communicate between different agent clouds.</para>
     </sect2>
     <sect2>
@@ -69,6 +69,7 @@
       <title>Message Publication and Subscription</title>
       <para>When designing and implementing messaging-based solutions two man paradigms exist: Point-to-Point and Publish-Subscribe. Just like Java Message Service (<ulink url="http://java.sun.com/products/jms/">JMS</ulink>) we use the terms "TOPIC" to refer Publish-Subscribe messaging pattern and "QUEUE" to designate Point-to-Point messaging. Sapo-Broker supports  both of these patterns and adds "VIRTUAL_QUEUE" witch stands somewhere in between.</para>
       <para>A publication, in general terms, contains a Destination Type (TOPIC or QUEUE) witch determines the pattern intended is, and a Destination Name witch may be a TOPIC or QUEUE name. Subscriptions, on the other hand, include a Destination Type, but may also be VIRTUAL_QUEUE, witch means that subscribers desire that some TOPIC publication should be persisted and retrieved like a QUEUE publication; and TOPIC names can referred using a regular expression, not the exact name.</para>
+      <para>A use case regarding topic, queues and virtual queues is <link linkend="TOPICS_QUEUES_USE_CASE">available</link>.</para>
       <sect3>
         <title>Publish-Subscribe</title>
         <para>Messages published to the Destination Type "TOPIC" adhere to the Publish-Subscribe pattern, that is, they are delivered to any consumer subscribed in the published Destination Name. That is, they can be delivered to zero or many consumers, regardless if they are connected to the same agent as the producer or a remote one. If there are no remote clients, the local agent doesn't forward the message.</para>
@@ -101,13 +102,6 @@
           <para>To guarantee that each produced message is processed only once a global acknowledge record may be implemented. After receiving a message, clients query the global acknowledge system to determine if the message was already processed, if not, they process it and afterwards send the due Acknowledge message and inform the global acknowledge system that a given message was already processed. The  last step may be only done if the acknowledge fails.</para>
         </sect4>
       </sect3>
-      <sect3>
-        <title>Deciding witch pattern to use – a sample</title>
-        <para>In order to make the choice of what message pattern to use easier and clarify the previous discussed Destination Type options a sample is provided.</para>
-        <para>Image a company, BigCompany Inc., that uses Sapo-Broker as their messaging middleware. This company has an CRM that is interested in everything related to clients such a [...]</para>
-        <para>Every time they have a new customer an event is produced to topic /client/new with some client information. This information is important to several systems as its ERM and [...]</para>
-        <para>[Think of new great example, not just good ]</para>
-      </sect3>
     </sect2>
     <sect2>
       <title>Access Control</title>
@@ -127,7 +121,7 @@
       <para>The installation process is very easy. These are the required steps:</para>
       <itemizedlist>
         <listitem>Download the latest Sapo-Broker release from <ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">http://softwarelivre.sapo.pt/projects/broker/wiki/</ulink>
-<ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">Download;</ulink>
+<ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">Download</ulink>
 </listitem>
         <listitem>Extract the archive or run the installer</listitem>
         <listitem>Run the samples</listitem>
@@ -659,14 +653,14 @@ Payload:
   <sect1 id="ACCESS_CONTROL">
     <title>Access control</title>
     <para>In order to protect sensitive information Sapo-Broker provides an access control mechanism. This mechanism is parameterized by a security policy in the global configuration file, in the element "security-policies". Each agent may have a specific security or it may inherit the default security policy. The default policy is named "default".</para>
-    <para>Security policies may be composed hierarchy, which means that a given security policy X can inherit from a policy Y adding or overriding  specific aspects to the policy. These policies may be associated with agents. If no security policy is to be used, then the element "security-policies" should be omitted for performance reasons.</para>
+    <para>Security policies may be composed hierarchically, which means that a given security policy X can inherit from a policy Y adding or overriding  specific aspects to the policy. These policies may be associated with agents. If no security policy is to be used, then the element "security-policies" should be omitted for performance reasons.</para>
     <para>A security policy is composed by an Access Control List (ACL), which is composed by entries. Each entry has an action (PERMIT or DENY), a destination type (TOPIC, QUEUE or VIRTUAL_QUEUE), a destination (such as "/topic/foo" or a regular expression) and a privilege (READ or WRITE). Destination types and privileges may be declared as lists which makes the ACL entry easier to read and declare. An entry is also composed by conditions that determine when the ACL entry should be applied. Conditions represent a binary evaluation result which determines the application of the related ACL entry. They can be of the following types:</para>
     <itemizedlist>
-      <listitem>ADDRESS – An IPv4 address and mask;</listitem>
-      <listitem>ROLE – A text value with the role name;</listitem>
-      <listitem>CHANNEL_TYPE – A type of security property (CONFIDENTIALITY, INTEGRITY and/or AUTHENTICITY) guaranteed by the transport channel.</listitem>
-      <listitem>AND – A composed condition that evaluates to true if all the contained conditions are true;</listitem>
-      <listitem>ALWAYS – The ACL entry is always applied.</listitem>
+      <listitem>ADDRESS – An IPv4 address and mask</listitem>
+      <listitem>ROLE – A text value with the role name</listitem>
+      <listitem>CHANNEL_TYPE – A type of security property (CONFIDENTIALITY, INTEGRITY and/or AUTHENTICITY) guaranteed by the transport channel</listitem>
+      <listitem>AND – A composed condition that evaluates to true if all the contained conditions are true</listitem>
+      <listitem>ALWAYS – The ACL entry is always applied</listitem>
     </itemizedlist>
     <sect2>
       <title>Access control evaluation criteria </title>
@@ -745,10 +739,10 @@ Payload:
     <para>One of the possibilities of Sapo-Broker access control is based in client roles. The roles associated with clients are determined by pluggable components that comply to Sapo-Broker authentication extensibility model. This model defines:</para>
     <orderedlist>
       <listitem>
-        <para>Configuration aspects that lead to component loading and usage;</para>
+        <para>Configuration aspects that lead to component loading and usage</para>
       </listitem>
       <listitem>
-        <para>A set of classes and interfaces that authentication modules implement and interact with.</para>
+        <para>A set of classes and interfaces that authentication modules implement and interact with</para>
       </listitem>
     </orderedlist>
     <para>The modules are responsible for validating client credentials, directly or indirectly, and transform them in roles, if there are any associated with the authenticating client.</para>
@@ -1017,15 +1011,44 @@ CREATE TABLE user_roles
     </sect2>
   </sect1>
   <sect1>
-    <title>Sapo-Broker at SAPO</title>
+    <title>Frequently asked questions</title>
+    <para>Here are some questions that you may have and should you help you take advantaged of Sapo-Broker.</para>
     <sect2>
-      <title>Usage</title>
-      <para>How many agents are used? How is configuration updated (cfengine?)? "clouds"?</para>
-      <para>DNS...</para>
+      <title>How do configure my one hundred agents with minimum efford?</title>
+      <para>Use a global configuration file and distributed automatically!</para>
     </sect2>
     <sect2>
-      <title>Use cases</title>
-      <para>Where, how, why?</para>
+      <title>Should I configure DNS name for each agent?</title>
+      <para>No, but if you do start with 007.</para>
+    </sect2>
+    <sect2>
+      <title>Should I configure DNS name for each agent?</title>
+      <para>No, but if you do start with 007.</para>
+    </sect2>
+    <sect2>
+      <title>Is Sapo-Broker JMS compilant?</title>
+      <para>No, not for now, but it may come to be.</para>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Use cases</title>
+    <para>In this section we provide some hints on how to design a messaging solution based on Sapo-Broker.</para>
+    <sect2 id="TOPICS_QUEUES_USE_CASE">
+      <title>Topics, queues and virtual queues</title>
+      <para>In order to make the choice of what message pattern to use easier and clarify the previous discussed destination type options a sample is provided.</para>
+      <para>Image a company, BigCompany Inc., that uses Sapo-Broker as their messaging middleware. This company has several applications, many of witch produce information, such as "new client" engaged, "new sale" processed, "new product" added to products catalog. When these <emphasis>events</emphasis> occur they should be made available to other applications. Given that they are events and not work items they should be published to a topic. Applications interested in this information subscribe to the topic, but if the published information is so important and constitutes a work item to some of the subscribing applications, them they subscribe to the topic in persistent fashion, using a virtual queue.</para>
+      <para>As an example lets consider that a CRM application publishes a message to the topic /customer/new every time the company has a new customer. This information could be important to an application implementing an informal statistic on client's average age (if some client is missed, it's not a problem) so this application subscribe to the topic, however, for an application designed to initialize a workflow conducting to send the new client a welcome present as a limited time promotion, this information is crucial so it creates a durable subscription, such as promotions-app@/customer/new. Other applications could register other virtual queues (e.g., foo@/customer/.*). Given the ability that every application as to consume messages published to topic /customer/.* the format and the semantics of each message should be published to a known repository, such as a topic web catalog.</para>
+      <para>Now consider that the promotions application, after some business logic, decides what gift should be send. The gift delivery is responsibility of the stock management application so the promotions application publishes a message to the queue /client-gift including client and gift information. This work dependency was established as a consequence of a business process definition so both applications know the name of the queue, message format and semantics.To guarantee that only the promotions application could publish messages to that queue and only the stock management application could retrieve messages from the queue a security policy could be defined.</para>
+    </sect2>
+    <sect2 id="DISTRIBUTED_WORKLOAD_USE_CASE">
+      <title>Distributed workload</title>
+      <para>A classical example of workload distribution is based in queues. This can be done in-memory, in case of local process coordination, or using a messaging system in case of applications are running on different machines.</para>
+      <para>The way to implement this using Sapo-Broker is very simple. Just determine the queue name and let information producers deliver messages to that queue and consumers subscribe to the queue. Messages will be delivered in a round-robin fashion to each subscriber.</para>
+      <para>If there is a substantial difference between of work required to process each message type (e.g., type messages A are processed in 100 milliseconds, but type B messages are processed in 1 minute) each consumer may use synchronous <link linkend="POLL_MESSAGE">poll</link> to retrieve a message, doing it only when it's available to process messages.</para>
+    </sect2>
+    <sect2 id="CACHE_INVALIDATION_USE_CASE">
+      <title>Cache invalidation</title>
+      <para>Contributes on this are appreciated...</para>
     </sect2>
   </sect1>
   <sect1>
@@ -1039,7 +1062,7 @@ CREATE TABLE user_roles
         <listitem>Improve Broker's performance</listitem>
         <listitem>Evaluate alternatives to MINA</listitem>
         <listitem>Define and implement a mechanism for bridging agent "clouds"</listitem>
-        <listitem>Other developments are likely to be defined be implemented. <ulink url="http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker">Stay tunned</ulink>.</listitem>
+        <listitem>Other developments are likely to be defined be implemented. <ulink url="http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker">Stay tunned</ulink></listitem>
     </itemizedlist>   
   </sect1>
 </article>
