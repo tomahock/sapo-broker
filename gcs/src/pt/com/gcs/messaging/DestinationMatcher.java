@@ -6,6 +6,11 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * DestinationMatcher uses regular expressions to determine if a given subscription matches a given topic name.
+ *
+ */
+
 public class DestinationMatcher
 {
 	private static Logger log = LoggerFactory.getLogger(DestinationMatcher.class);

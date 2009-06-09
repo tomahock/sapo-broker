@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+/**
+ * Represents a client message payload. 
+ *
+ */
+
 public class NetBrokerMessage
 {
 	private String messageId = "";

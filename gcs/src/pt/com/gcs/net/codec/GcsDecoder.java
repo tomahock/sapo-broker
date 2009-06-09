@@ -5,6 +5,11 @@ import org.caudexorigo.io.UnsynchByteArrayInputStream;
 import pt.com.broker.types.SimpleFramingDecoder;
 import pt.com.gcs.io.SerializerHelper;
 
+/**
+ * Encoder implementation. Used to encode messages exchanged between agents.
+ *
+ */
+
 public class GcsDecoder extends SimpleFramingDecoder
 {
 	public GcsDecoder(int max_message_size)

@@ -1,10 +1,21 @@
 package pt.com.broker.client;
 
+/**
+ * 
+ * Immutable class that represents an Agent host.
+ *
+ */
+
 public final class HostInfo
 {
 	private String hostname;
 	private int port;
 
+	/**
+	 * Creates a HostInfo instance.
+	 * @param hostname The name of the host (e.g. broker.localdomain.company.com or 10.12.10.120).
+	 * @param port Connection port.
+	 */
 	public HostInfo(String hostname, int port)
 	{
 		this.hostname = hostname;

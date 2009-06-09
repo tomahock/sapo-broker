@@ -24,6 +24,12 @@ import pt.com.broker.auth.InvalidCredentialsException;
 import pt.com.broker.auth.ProviderInfo;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 
+
+/**
+ * SapoSTSProvider implements a credentials provider for Sapo STS.
+ *
+ */
+
 public class SapoSTSProvider implements CredentialsProvider
 {
 

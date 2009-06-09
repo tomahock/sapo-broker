@@ -1,5 +1,10 @@
 package pt.com.broker.types;
 
+/**
+ * Represents a Parameter. 
+ *
+ */
+
 public final class NetParameter
 {
 	private String name;

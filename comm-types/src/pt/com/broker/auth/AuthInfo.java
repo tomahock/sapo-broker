@@ -1,6 +1,12 @@
 package pt.com.broker.auth;
 
+import java.nio.charset.Charset;
 import java.util.List;
+
+/**
+ * AuthInfo represents client's authentication information.
+ *
+ */
 
 public class AuthInfo
 {
@@ -9,11 +15,23 @@ public class AuthInfo
 	private byte[] token;
 	private String userAuthenticationType;
 
+	/**
+	 * Creates an AuthInfo instance. 
+	 * @param userId User identification, such as an username. 
+	 * @param password User password. This is transformed in a binary token using UTF-8. 
+	 */
 	public AuthInfo(String userId, String password)
 	{
-		this(userId, null, password.getBytes(), null);
+		this(userId, null, password.getBytes(Charset.forName("UTF-8")), null);
 	}
 
+	/**
+	 * Creates an AuthInfo instance. 
+	 * @param userId User identification, such as an username. 
+	 * @param roles User roles associated with the roles. 
+	 * @param token User binary authentication token. 
+	 * @param userAuthenticationType The type of authentication being used (e.g., Sapo STS).
+	 */
 	public AuthInfo(String userId, List<String> roles, byte[] token, String userAuthenticationType)
 	{
 		this.userId = userId;

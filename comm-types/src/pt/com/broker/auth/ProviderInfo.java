@@ -2,6 +2,11 @@ package pt.com.broker.auth;
 
 import org.w3c.dom.Element;
 
+/**
+ * ProviderInfo represents some service provider, such as Authentication Credentials Validator, that is dynamically loaded. 
+ *
+ */
+
 public class ProviderInfo
 {
 	private String name;
@@ -25,9 +30,14 @@ public class ProviderInfo
 		return className;
 	}
 
+	/**
+	 * 
+	 * @return An XML element with provider specific information.
+	 */
 	public Element getParameters()
 	{
 		return parameters;
 	}
 
 }
+ 

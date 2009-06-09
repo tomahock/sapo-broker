@@ -33,6 +33,13 @@ import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAction.DestinationType;
 
+/**
+ * 
+ * BaseBrokerClient is the base class for Sapo-Broker Java client libraries. It implements all basic client functionality. 
+ *
+ * @see BrokerClient
+ */
+
 public abstract class BaseBrokerClient
 {
 	public enum BrokerClientState

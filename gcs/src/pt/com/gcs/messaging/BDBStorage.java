@@ -24,6 +24,11 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.OperationStatus;
 
+/**
+ * BDBStorage encapsulates database access logic.
+ *
+ */
+
 class BDBStorage
 {
 	private static Logger log = LoggerFactory.getLogger(BDBStorage.class);

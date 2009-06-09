@@ -7,6 +7,12 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Base class for decoding types. Implements MINA CumulativeProtocolDecoder that cumulates the content of received buffers to a cumulative buffer to help users implement decoders. <br/> 
+ * Processes wire message header, validating message size. Associates a message encoding type with a session.
+ * 
+ */
+
 public abstract class SimpleFramingDecoderV2 extends CumulativeProtocolDecoder
 {
 	private static final Logger log = LoggerFactory.getLogger(SimpleFramingDecoderV2.class);

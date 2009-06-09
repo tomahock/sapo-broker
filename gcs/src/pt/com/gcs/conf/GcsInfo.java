@@ -18,6 +18,10 @@ import pt.com.gcs.conf.agent.AgentConfig;
 import pt.com.gcs.conf.agent.AgentConfig.Ssl;
 import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 
+/**
+ * GcsInfo contains several information about the agent.
+ *
+ */
 public class GcsInfo
 {
 	private static Logger log = LoggerFactory.getLogger(GcsInfo.class);
@@ -26,6 +30,10 @@ public class GcsInfo
 
 	private static final GcsInfo instance = new GcsInfo();
 
+	/**
+	 * Agent's IP
+	 * @return A String with agent's IP. 
+	 */
 	public static String getAgentHost()
 	{
 		String prop = instance.conf.getNet().getIp();
@@ -37,6 +45,10 @@ public class GcsInfo
 		return prop;
 	}
 
+	/**
+	 * Agent's name
+	 * @return Agent's name. 
+	 */
 	public static String getAgentName()
 	{
 		String prop = instance.conf.getName();
@@ -48,12 +60,20 @@ public class GcsInfo
 		return prop;
 	}
 
+	/**
+	 * Agent's TCP port used for inter-agent communication.
+	 * @return TCP port
+	 */
 	public static int getAgentPort()
 	{
 		int iprop = instance.conf.getNet().getPort();
 		return iprop;
 	}
-
+	
+	/**
+	 * Base directory to store messages persistently. 
+	 * @return Base directory location
+	 */
 	public static String getBasePersistentDirectory()
 	{
 		String prop = instance.conf.getPersistency().getDirectory();
@@ -69,18 +89,30 @@ public class GcsInfo
 		}
 	}
 
+	/**
+	 * A delay time (in milliseconds) that allows broker peers to detect new producers and make sure that they are ready to receive messages. Valid values: Positive integer Default value: 100
+	 * @return A delay time in milliseconds
+	 */
 	public static int getInitialDelay()
 	{
 		int iprop = instance.conf.getNet().getDiscoveryDelay();
 		return iprop;
 	}
 
+	/**
+	 * Configuration version.
+	 * @return Configuration version
+	 */
 	public static String getConfigVersion()
 	{
 		String prop = instance.conf.getConfigVersion();
 		return prop;
 	}
 
+	/**
+	 * Global configuration file location.
+	 * @return Global configuration file location
+	 */
 	public static String getGlobalConfigFilePath()
 	{
 		String prop = instance.conf.getNet().getFileRef();
@@ -124,40 +156,68 @@ public class GcsInfo
 		}
 	}
 
+	/**
+	 * UDP port.
+	 * @return UDP port
+	 */
 	public static int getBrokerUdpPort()
 	{
 		int iprop = instance.conf.getNet().getBrokerUdpPort();
 		return iprop;
 	}
 
+	/**
+	 * HTTP port.
+	 * @return HTTP port
+	 */
 	public static int getBrokerHttpPort()
 	{
 		int iprop = instance.conf.getNet().getBrokerHttpPort();
 		return iprop;
 	}
 
+	/**
+	 * Broker TCP port (used by clients). 
+	 * @return A TCP port
+	 */
 	public static int getBrokerPort()
 	{
 		int iprop = instance.conf.getNet().getBrokerPort();
 		return iprop;
 	}
 
+	/**
+	 * Broker legacy TCP port (used by clients). Used for backward compatibility. 
+	 * @return A TCP port
+	 */
 	public static int getBrokerLegacyPort()
 	{
 		int iprop = instance.conf.getNet().getBrokerLegacyPort();
 		return iprop;
 	}
 
+	/**
+	 * Is Dropbox enabled.
+	 * @return <code>true</code> if it is enabled <code>false</code> otherwise
+	 */
 	public static boolean isDropboxEnabled()
 	{
 		return instance.conf.getMessaging().getDropbox().isEnabled();
 	}
-
+	
+	/**
+	 * Dropbox directory.
+	 * @return Dropbox directory
+	 */
 	public static String getDropBoxDir()
 	{
 		return instance.conf.getMessaging().getDropbox().getDir();
 	}
 
+	/**
+	 * Interval to check for new messages.
+	 * @return An interval in seconds
+	 */
 	public static int getDropBoxCheckInterval()
 	{
 		return instance.conf.getMessaging().getDropbox().getCheckInterval();
@@ -165,11 +225,19 @@ public class GcsInfo
 
 	// Access Control related methods
 
+	/**
+	 * Should access control be used? Determined by the existence of security policies.
+	 * @return <code>true</code> if access control is to be used <code>false</code> otherwise
+	 */
 	public static boolean useAccessControl()
 	{
 		return getSecurityPolicies() != null;
 	}
 
+	/**
+	 * Security policies.
+	 * @return Security policies
+	 */
 	public static BrokerSecurityPolicy getSecurityPolicies()
 	{
 		return GlobalConfig.getSecurityPolicies();
@@ -177,11 +245,19 @@ public class GcsInfo
 
 	// SSL related methods
 
+	/**
+	 * Should the SSL port be open? Determined by the existence of the respective configuration element.
+	 * @return <code>true</code> if SSL is to be used <code>false</code> otherwise
+	 */
 	public static boolean createSSLInterface()
 	{
 		return instance.conf.getSsl() != null;
 	}
 
+	/**
+	 * SSL Port
+	 * @return A TCP port
+	 */
 	public static int getBrokerSSLPort()
 	{
 		Ssl ssl = instance.conf.getSsl();
@@ -194,6 +270,10 @@ public class GcsInfo
 		return sslPort;
 	}
 
+	/**
+	 * Keystore containing agent's key pair.
+	 * @return KeyStore file location
+	 */
 	public static String getKeystoreLocation()
 	{
 		if (instance.conf.getSsl() != null)
@@ -201,6 +281,10 @@ public class GcsInfo
 		return null;
 	}
 
+	/**
+	 * Keystore password.
+	 * @return Keystore password 
+	 */
 	public static String getKeystorePassword()
 	{
 		if (instance.conf.getSsl() != null)
@@ -208,6 +292,10 @@ public class GcsInfo
 		return null;
 	}
 
+	/**
+	 * Private key password.
+	 * @return Private key password 
+	 */
 	public static String getKeyPassword()
 	{
 		if (instance.conf.getSsl() != null)
@@ -215,13 +303,20 @@ public class GcsInfo
 		return null;
 	}
 
-	// STS related properties
+	// Authentication providers related properties
 
+	/**
+	 * Authentication providers.
+	 * @return A map with authentication providers
+	 */
 	public static Map<String, ProviderInfo> getAuthenticationProviders()
 	{
 		return GlobalConfig.getAuthenticationProviders();
 	}
-
+	/**
+	 * Credential validator providers.
+	 * @return A map with credential validator providers
+	 */
 	public static Map<String, ProviderInfo> getCredentialValidatorProviders()
 	{
 		return GlobalConfig.getCredentialValidatorProviders();
@@ -229,22 +324,34 @@ public class GcsInfo
 	
 	
 	// Message related properties
-	
+	/**
+	 * Maximum message size.
+	 * @return Maximum number of bytes per message
+	 */
 	public static int getMessageMaxSize()
 	{
 		return GlobalConfig.getMsgMaxSize();
 	}
-	
+	/**
+	 * Maximum number of queues.
+	 * @return Maximum number of queues
+	 */
 	public static int getMaxQueues()
 	{
 		return GlobalConfig.getMaxQueues();
 	}
-	
+	/**
+	 * Time during witch a message is stored.
+	 * @return Time in milliseconds
+	 */
 	public static long getMessageStorageTime()
 	{
 		return  GlobalConfig.getMaxStoreTime();
 	}
-	
+	/**
+	 * Maximum distinct subscriptions.
+	 * @return Maximum distinct subscriptions
+	 */
 	public static int getMaxDistinctSubscriptions()
 	{
 		return GlobalConfig.getMaxDistinctSubscriptions();

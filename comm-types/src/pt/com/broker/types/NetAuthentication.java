@@ -2,6 +2,11 @@ package pt.com.broker.types;
 
 import java.util.List;
 
+/**
+ * Represents an Authentication message. 
+ *
+ */
+
 public class NetAuthentication
 {
 	private String actionId;
@@ -10,6 +15,10 @@ public class NetAuthentication
 	private String userId;
 	private List<String> roles;
 
+	/**
+	 * Initializes a NetAuthentication instance.
+	 * @param token Can represent a password or some binary token. If the original value is text then it should be encoded in UTF-8.
+	 */
 	public NetAuthentication(byte[] token)
 	{
 		this.token = token;

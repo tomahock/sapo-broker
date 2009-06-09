@@ -2,6 +2,11 @@ package pt.com.broker.types;
 
 import pt.com.broker.types.NetAction.ActionType;
 
+/**
+ * Represents a Fault message. 
+ *
+ */
+
 public final class NetFault
 {
 	private String actionId;

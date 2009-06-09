@@ -19,6 +19,11 @@ import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
 
+/**
+ * Consumer sample where an authenticate user is used. This samples uses SapoSTS.
+ *
+ */
+
 public class AuthenticatedConsumer implements BrokerListener
 {
 

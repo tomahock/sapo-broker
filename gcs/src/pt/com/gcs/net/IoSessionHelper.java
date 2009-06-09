@@ -4,6 +4,11 @@ import java.net.SocketAddress;
 
 import org.apache.mina.core.session.IoSession;
 
+/**
+ * Some utilities to get address (as String) and vice-versa from sessions. 
+ *
+ */
+
 public class IoSessionHelper
 {
 	private static final String REMOTE_ADDRESS_AS_STRING_ATTR = "pt.com.gcs.net.IoSessionHelper.REMOTE_ADDRESS_AS_STRING_ATTR";

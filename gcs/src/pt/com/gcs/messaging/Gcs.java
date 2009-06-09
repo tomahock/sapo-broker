@@ -34,6 +34,11 @@ import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedExcept
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
 
+/**
+ * Gcs is a façade for handling several message related functionality such as publish, acknowledge, etc.  
+ *
+ */
+
 public class Gcs
 {
 	private static Logger log = LoggerFactory.getLogger(Gcs.class);
@@ -190,8 +195,7 @@ public class Gcs
 
 			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), 50, 50, TimeUnit.MILLISECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
-			GcsExecutor.scheduleWithFixedDelay(new WorldMapMonitor(), 30, 30, TimeUnit.SECONDS);
-
+			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
 		}
 		catch (Throwable t)
 		{

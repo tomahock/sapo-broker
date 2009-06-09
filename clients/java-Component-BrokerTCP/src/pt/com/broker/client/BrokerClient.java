@@ -7,6 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetProtocolType;
 
+/**
+ * BrokerClient represents a connection between a client and an agent. Through it clients can produce and consume broker messages. <br/>
+ * The communication is made in clear.
+ *
+ */
+
 public class BrokerClient extends BaseBrokerClient
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);

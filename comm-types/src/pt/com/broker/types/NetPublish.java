@@ -1,5 +1,9 @@
 package pt.com.broker.types;
 
+/**
+ * Represents a Publication message. 
+ *
+ */
 public final class NetPublish
 {
 	private String actionId;

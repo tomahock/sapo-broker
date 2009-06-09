@@ -1,5 +1,10 @@
 package pt.com.broker.types;
 
+/**
+ * Represents an Acknowledge message. 
+ *
+ */
+
 public final class NetAcknowledge
 {
 	private String actionId;

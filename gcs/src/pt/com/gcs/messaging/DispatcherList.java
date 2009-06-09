@@ -6,6 +6,11 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * DispatcherList manages TopicToQueueDispatchers.
+ *
+ */
+
 public class DispatcherList
 {
 
@@ -29,8 +34,8 @@ public class DispatcherList
 				String topicName = StringUtils.substringAfter(queueName, "@");
 				TopicToQueueDispatcher qp = new TopicToQueueDispatcher(queueName);
 
-				LocalTopicConsumers.add(topicName, qp, false);
 				VirtualQueueStorage.saveVirtualQueue(queueName);
+				LocalTopicConsumers.add(topicName, qp, false);
 				return qp;
 			}
 			catch (Throwable e)

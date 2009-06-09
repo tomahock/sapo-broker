@@ -15,6 +15,11 @@ import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 
+/**
+ * GcsAcceptorProtocolHandler is an MINA IoHandlerAdapter. It handles incoming messages from other agents.
+ *
+ */
+
 class GcsRemoteProtocolHandler extends IoHandlerAdapter
 {
 	private static Logger log = LoggerFactory.getLogger(GcsRemoteProtocolHandler.class);

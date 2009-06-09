@@ -18,6 +18,11 @@ import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.net.IoSessionHelper;
 import pt.com.gcs.net.Peer;
 
+/**
+ * GcsAcceptorProtocolHandler is an MINA IoHandlerAdapter. It handles outgoing messages from other agents and respective responses.
+ *
+ */
+
 class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 {
 	private static Logger log = LoggerFactory.getLogger(GcsAcceptorProtocolHandler.class);

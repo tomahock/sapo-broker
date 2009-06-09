@@ -1,5 +1,10 @@
 package pt.com.gcs.conf;
 
+/**
+ * Result of a validation. 
+ *
+ */
+
 public class XsdValidationResult
 {
 	private final boolean _valid;

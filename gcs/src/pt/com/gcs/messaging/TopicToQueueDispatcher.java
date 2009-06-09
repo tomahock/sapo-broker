@@ -2,6 +2,11 @@ package pt.com.gcs.messaging;
 
 import pt.com.broker.types.NetAction.DestinationType;
 
+/**
+ * TopicToQueueDispatcher is responsible for enqueueing topic messages that have durable subscribers registered. 
+ *
+ */
+
 class TopicToQueueDispatcher implements MessageListener
 {
 

@@ -1,5 +1,10 @@
 package pt.com.broker.types;
 
+/**
+ * Represents a Notification message. 
+ *
+ */
+
 public final class NetNotification
 {
 	private String destination;

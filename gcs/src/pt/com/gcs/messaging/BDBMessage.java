@@ -8,6 +8,11 @@ import java.io.ObjectOutput;
 
 import org.caudexorigo.io.UnsynchByteArrayInputStream;
 
+/**
+ * BDBMessage represents a message to be stored or retrieved from the database.
+ *
+ */
+
 public class BDBMessage implements Externalizable
 {
 

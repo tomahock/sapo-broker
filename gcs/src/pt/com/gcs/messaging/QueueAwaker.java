@@ -2,6 +2,11 @@ package pt.com.gcs.messaging;
 
 import org.caudexorigo.concurrent.Sleep;
 
+/**
+ *  QueueAwaker is a Runnable type responsible form initialize the queue message deliver process.
+ *
+ */
+
 class QueueAwaker implements Runnable
 {
 	@Override

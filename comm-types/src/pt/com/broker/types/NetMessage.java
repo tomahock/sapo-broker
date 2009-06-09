@@ -3,6 +3,11 @@ package pt.com.broker.types;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a Messaging level message. 
+ *
+ */
+
 public class NetMessage
 {
 

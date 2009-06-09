@@ -8,6 +8,11 @@ import java.io.OutputStream;
 
 import pt.com.gcs.messaging.InternalMessage;
 
+/**
+ * InternalMessage serialization helper that reads from and writes to Input and Output Streams.
+ *
+ */
+
 public class SerializerHelper
 {
 	public static InternalMessage fromStream(InputStream in)

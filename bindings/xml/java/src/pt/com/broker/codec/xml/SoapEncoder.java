@@ -3,19 +3,30 @@ package pt.com.broker.codec.xml;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.caudexorigo.io.UnsynchByteArrayOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.SimpleFramingEncoder;
 
+/**
+ * Encoder implementation. Used to encode messages exchanged between client and agents.
+ *
+ */
+
 public class SoapEncoder extends SimpleFramingEncoder
 {
+	private static final Logger log = LoggerFactory.getLogger(SoapEncoder.class);
+	
 
 	@Override
 	public byte[] processBody(Object message)
 	{
 		if (!(message instanceof NetMessage))
 		{
-			throw new IllegalArgumentException("Not a valid message type for this encoder.");
+			String errorMessage = "Message to be encoded is from an unexpected type - " + message.getClass().getName();
+			log.error(errorMessage);
+			throw new IllegalArgumentException(errorMessage);
 		}
 		NetMessage gcsMessage = (NetMessage) message;
 		SoapEnvelope soap = Builder.netMessageToSoap(gcsMessage);
@@ -29,7 +40,9 @@ public class SoapEncoder extends SimpleFramingEncoder
 	{
 		if (!(message instanceof NetMessage))
 		{
-			throw new IllegalArgumentException("Not a valid message type for this encoder.");
+			String errorMessage = "Message to be encoded is from an unexpected type - " + message.getClass().getName();
+			log.error(errorMessage);
+			throw new IllegalArgumentException(errorMessage);
 		}
 
 		NetMessage gcsMessage = (NetMessage) message;

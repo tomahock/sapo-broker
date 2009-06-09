@@ -11,6 +11,11 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
+/**
+ * Validates a file given an schema. 
+ *
+ */
+
 public class SchemaValidator
 {
 	public static XsdValidationResult validate(Source schemaLocation, File xmlFile)

@@ -1,14 +1,24 @@
 package pt.com.gcs.net;
 
+/**
+ *  Peer holds information about an agent.
+ *
+ */
+
 public class Peer
 {
-
 	private String _name;
 
 	private final String _host;
 
 	private final int _port;
 
+	/**
+	 * Creates a Peer instance.
+	 * @param name Agent's name
+	 * @param host Agent's address or network name.
+	 * @param port Agent's port.
+	 */
 	public Peer(String name, String host, int port)
 	{
 		_name = name;

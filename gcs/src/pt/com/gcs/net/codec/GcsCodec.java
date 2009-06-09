@@ -6,7 +6,7 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
- * The network protocol is as simple as could be:
+ * The wire message format is as simple as could be:
  * 
  * <pre>
  * ----------- 
