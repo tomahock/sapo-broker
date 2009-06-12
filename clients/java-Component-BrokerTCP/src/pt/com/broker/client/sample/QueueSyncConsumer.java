@@ -10,6 +10,10 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.types.NetNotification;
 
+/**
+ * Queue consumer sample using Poll method - synchronous consumer.
+ *
+ */
 public class QueueSyncConsumer
 {
 	private static final Logger log = LoggerFactory.getLogger(QueueSyncConsumer.class);

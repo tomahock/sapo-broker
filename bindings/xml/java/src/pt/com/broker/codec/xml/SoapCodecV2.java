@@ -5,6 +5,10 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
+/**
+ * SOAP codec.
+ *
+ */
 public class SoapCodecV2 implements ProtocolCodecFactory
 {
 	public static final int HEADER_LENGTH = 4;

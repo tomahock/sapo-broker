@@ -4,6 +4,10 @@ import java.util.List;
 
 import pt.com.gcs.conf.global.ChannelType;
 
+/**
+ * ChannelTypePredicate represents channel type predicate, that is, one that has on of the following properties: INTEGRITY, CONFIDENTIALITY, AUTHENTICATION.
+ *
+ */
 public class ChannelTypePredicate implements AclPredicate
 {
 

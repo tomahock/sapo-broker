@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.http.HttpAction;
 
+/**
+ * StatusAction outputs agent state in HTML.
+ *
+ */
+
 public class StatusAction extends HttpAction
 {
 	private static final Logger log = LoggerFactory.getLogger(StatusAction.class);

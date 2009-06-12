@@ -14,6 +14,11 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.conf.GcsInfo;
 
+/**
+ *  QueueProcessorList contains references for all active QueueProcessor objects.
+ *
+ */
+
 public class QueueProcessorList
 {
 

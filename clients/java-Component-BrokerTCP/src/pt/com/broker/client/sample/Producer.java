@@ -13,6 +13,10 @@ import pt.com.broker.client.CliArgs;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetAction.DestinationType;
 
+/**
+ * Simple producer sample. Behavior is determined by command line arguments.
+ *
+ */
 public class Producer
 {
 	private static final Logger log = LoggerFactory.getLogger(Producer.class);

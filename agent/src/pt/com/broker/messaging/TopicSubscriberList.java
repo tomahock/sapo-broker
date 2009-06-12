@@ -17,6 +17,11 @@ import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
 
+/**
+ * TopicSubscriberList contains a list of topic subscribers.
+ *
+ */
+
 public class TopicSubscriberList
 {
 	

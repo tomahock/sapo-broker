@@ -6,6 +6,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import pt.com.broker.types.NetNotification;
 
+/**
+ * SyncConsumer represents a synchronous client.
+ *
+ */
 public class SyncConsumer
 {
 	private final AtomicInteger count = new AtomicInteger(0);

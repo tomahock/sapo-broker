@@ -8,6 +8,11 @@ import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
 
+/**
+ * BrokerConsumer is responsible for managing client subscriptions.
+ *
+ */
+
 public class BrokerConsumer
 {
 	private static BrokerConsumer instance = new BrokerConsumer();

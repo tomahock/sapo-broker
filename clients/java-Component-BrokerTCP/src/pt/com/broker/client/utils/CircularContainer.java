@@ -3,6 +3,12 @@ package pt.com.broker.client.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * CircularContainer is a utility class that provides circular access to the elements contained.<br/>
+ * If the CircularContainer object contains X, W, Y and 7 contained objects are picked the result will be:X, W, Y, X, W, Y, X.    
+ *
+ */
+
 public class CircularContainer<T>
 {
 	private ArrayList<T> innerContainer;

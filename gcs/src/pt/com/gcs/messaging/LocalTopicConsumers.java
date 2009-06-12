@@ -20,6 +20,11 @@ import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 
+/**
+ * LocalTopicConsumers maintains current local topic consumers.
+ *
+ */
+
 class LocalTopicConsumers
 {
 	private static Logger log = LoggerFactory.getLogger(LocalTopicConsumers.class);

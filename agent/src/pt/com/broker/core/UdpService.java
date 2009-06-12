@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.gcs.conf.GcsInfo;
 
+/**
+ * UdpService is responsible for initializing client's UDP interface.
+ *
+ */
+
 public class UdpService
 {
 	private static final Logger log = LoggerFactory.getLogger(UdpService.class);

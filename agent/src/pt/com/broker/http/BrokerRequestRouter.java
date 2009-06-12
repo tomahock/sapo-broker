@@ -5,6 +5,11 @@ import org.apache.mina.filter.codec.http.HttpRequest;
 import pt.com.http.HttpAction;
 import pt.com.http.RequestRouter;
 
+/**
+ * BrokerRequestRouter routes incoming HTTP request to the respective handlers.
+ *
+ */
+
 public class BrokerRequestRouter implements RequestRouter
 {
 	private final BrokerHttpAction broker_action = new BrokerHttpAction();

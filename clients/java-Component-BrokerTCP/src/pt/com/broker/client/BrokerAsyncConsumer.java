@@ -8,6 +8,11 @@ import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
 
+/**
+ * BrokerAsyncConsumer represents a Asynchronous client. 
+ *
+ */
+
 public class BrokerAsyncConsumer
 {
 	private final NetSubscribe subscription;

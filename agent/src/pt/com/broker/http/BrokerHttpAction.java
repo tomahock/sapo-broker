@@ -26,6 +26,11 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.SimpleFramingDecoderV2;
 import pt.com.http.HttpAction;
 
+/**
+ * BrokerHttpAction is an HttpAction. It supports message publishing. 
+ *
+ */
+
 public class BrokerHttpAction extends HttpAction
 {
 	private static final String content_type = "text/xml";

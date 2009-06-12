@@ -5,6 +5,11 @@ import java.util.TreeMap;
 
 import pt.com.broker.auth.AuthInfoValidator;
 
+/**
+ * AuthInfoVerifierFactory stores available AuthInfoValidator objects and retrives them by name.
+ *
+ */
+
 public class AuthInfoVerifierFactory
 {
 	private static Map<String, AuthInfoValidator> validators;

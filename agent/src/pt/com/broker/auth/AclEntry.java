@@ -4,6 +4,11 @@ import java.util.List;
 
 import pt.com.broker.types.NetAction;
 
+/**
+ * AclEntry represents an security policy Access Control Entry.
+ * 
+ */
+
 public class AclEntry
 {
 	private AccessControl.Autorization autorizationType;

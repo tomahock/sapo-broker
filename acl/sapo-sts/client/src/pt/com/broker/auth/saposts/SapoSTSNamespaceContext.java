@@ -5,6 +5,11 @@ import java.util.Iterator;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
+/**
+ * Utility class for SAPO STS XML namespac. 
+ *
+ */
+
 public class SapoSTSNamespaceContext implements NamespaceContext
 {
 	private static SapoSTSNamespaceContext instance = new SapoSTSNamespaceContext();

@@ -17,6 +17,10 @@ import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
 
+/**
+ * Consumer sample using client failover. Behavior is determined by command line arguments.
+ *
+ */
 public class ConsumerWithFailover implements BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(Consumer.class);

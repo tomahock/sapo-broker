@@ -13,6 +13,10 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
 
+/**
+ * BrokerSyncConsumer represents a queue synchronous consumer. 
+ *
+ */
 public class BrokerSyncConsumer
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerSyncConsumer.class);

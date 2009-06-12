@@ -17,6 +17,11 @@ import pt.com.broker.codec.xml.SoapFault;
 import pt.com.broker.codec.xml.SoapHeader;
 import pt.com.gcs.conf.GcsInfo;
 
+/**
+ * ErrorHandler extends MINA ExceptionMonitor. It is used to deal with uncaught exceptions.
+ *
+ */
+
 public class ErrorHandler extends ExceptionMonitor
 {
 	private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);

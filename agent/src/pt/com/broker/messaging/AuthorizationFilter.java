@@ -18,6 +18,11 @@ import pt.com.broker.types.NetMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.global.ChannelType;
 
+/**
+ * AuthorizationFilter is a MINA IoFilterAdapter. Its purpose is to filter unauthorized publications and subscriptions.
+ *
+ */
+
 public class AuthorizationFilter extends IoFilterAdapter
 {
 

@@ -14,6 +14,10 @@ import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
 
+/**
+ * Consumer sample using SSL.
+ *
+ */
 public class SslConsumer implements BrokerListener
 {
 

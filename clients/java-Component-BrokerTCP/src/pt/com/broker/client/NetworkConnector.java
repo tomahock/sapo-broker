@@ -7,6 +7,10 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * NetworkConnector is an implementation of BaseNetworkConnector for plain TCP connections.
+ *
+ */
 public class NetworkConnector extends BaseNetworkConnector
 {
 	private static final Logger log = LoggerFactory.getLogger(NetworkConnector.class);

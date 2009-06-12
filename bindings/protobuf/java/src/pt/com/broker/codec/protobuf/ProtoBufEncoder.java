@@ -8,6 +8,11 @@ import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.SimpleFramingEncoderV2;
 
+/**
+ * Google Protocol Buffer encoder. 
+ *
+ */
+
 public class ProtoBufEncoder extends SimpleFramingEncoderV2
 {
 

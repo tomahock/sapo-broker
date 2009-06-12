@@ -2,12 +2,23 @@ package pt.com.broker.client;
 
 import pt.com.broker.client.messaging.MessageAcceptedListener;
 
+/**
+ *  AcceptRequest is meat to be used by clients that specify an action identifier. 
+ *
+ */
+
 public class AcceptRequest
 {
 	private String actionId;
 	private MessageAcceptedListener listner;
 	private long timeout;
 
+	/**
+	 * Creates an instance of AcceptRequest.
+	 * @param actionId Message action identifier
+	 * @param listner An implementation of MessageAcceptedListener.
+	 * @param timeout A time interval, in milliseconds, during witch the Accept message is expected.
+	 */
 	public AcceptRequest(String actionId, MessageAcceptedListener listner, long timeout)
 	{
 		if (actionId == null)

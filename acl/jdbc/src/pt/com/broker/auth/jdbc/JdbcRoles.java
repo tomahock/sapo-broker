@@ -7,6 +7,11 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *  JdbcRoles deals with database access.
+ *
+ */
+
 public class JdbcRoles
 {
 	private final String driverClass;

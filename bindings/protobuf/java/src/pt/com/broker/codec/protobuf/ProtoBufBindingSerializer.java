@@ -43,6 +43,11 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 import com.google.protobuf.ByteString;
 
+/**
+ * Google Protocol Buffer utility class for encoding and decoding. 
+ *
+ */
+
 public class ProtoBufBindingSerializer implements BindingSerializer
 {
 

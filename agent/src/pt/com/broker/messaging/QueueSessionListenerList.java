@@ -16,6 +16,11 @@ import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageType;
 
+/**
+ * QueueSessionListenerList contains a list of queue subscribers.
+ *
+ */
+
 public class QueueSessionListenerList
 {
 	// key: destinationName

@@ -43,6 +43,11 @@ import pt.com.broker.types.NetAction.ActionType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 
+/**
+ * * BrokerProtocolHandler is an MINA IoHandlerAdapter. It handles messages from clients. 
+ *
+ */
+
 public class BrokerProtocolHandler extends IoHandlerAdapter
 {
 

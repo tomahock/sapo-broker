@@ -11,6 +11,11 @@ import org.apache.mina.core.session.IoSession;
 
 import pt.com.gcs.conf.global.ChannelType;
 
+/**
+ * SessionProperties objects contain some client specific information such channel type, address, client roles, etc.
+ *
+ */
+
 public class SessionProperties extends HashMap<String, Object>
 {
 	private static final long serialVersionUID = -5044861586951252094L;

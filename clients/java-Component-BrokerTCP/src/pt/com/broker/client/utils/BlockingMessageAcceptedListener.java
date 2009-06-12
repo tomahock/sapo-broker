@@ -3,12 +3,21 @@ package pt.com.broker.client.utils;
 import pt.com.broker.client.messaging.MessageAcceptedListener;
 import pt.com.broker.types.NetFault;
 
+
+/**
+ * BlockingMessageAcceptedListener implements MessageAcceptedListener in a way that gives clients a chance to wait synchronously on a message result by passing an object to synchrounize in.   
+ *
+ */
 public class BlockingMessageAcceptedListener implements MessageAcceptedListener
 {
 	private final Object syncObj;
 	private boolean timeout = false;
 	private NetFault fault = null;
 	
+	/**
+	 * Creates an instance of BlockingMessageAcceptedListener
+	 * @param syncObj Object were BlockingMessageAcceptedListener clients wait.
+	 */
 	public BlockingMessageAcceptedListener(Object syncObj)
 	{
 		this.syncObj = syncObj;

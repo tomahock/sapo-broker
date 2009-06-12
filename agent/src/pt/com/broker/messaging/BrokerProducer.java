@@ -12,6 +12,10 @@ import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageType;
 
+/**
+ * BrokerProducer handles message publication both topic and queues. 
+ *
+ */
 public class BrokerProducer
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerProducer.class);

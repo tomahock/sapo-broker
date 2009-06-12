@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.conf.GcsInfo;
 
+/**
+ * FilePublisher deals with dropbox functionality publishing messages 
+ *
+ */
+
 public class FilePublisher
 {
 	private static Logger log = LoggerFactory.getLogger(FilePublisher.class);

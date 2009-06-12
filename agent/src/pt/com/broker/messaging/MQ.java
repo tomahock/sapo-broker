@@ -7,6 +7,11 @@ import org.caudexorigo.text.StringUtils;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.types.NetMessage;
 
+/**
+ * MQ contains several messaging related constants provides some utility functions for handling with "FROM" headers.
+ *
+ */
+
 public class MQ
 {
 	// the default maximum message size is 256KB

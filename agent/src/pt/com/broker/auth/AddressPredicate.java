@@ -4,6 +4,10 @@ import java.net.InetAddress;
 
 import org.apache.mina.filter.firewall.Subnet;
 
+/**
+ * AddressPredicate represents an IP address predicate. 
+ *
+ */
 
 public class AddressPredicate implements AclPredicate
 {

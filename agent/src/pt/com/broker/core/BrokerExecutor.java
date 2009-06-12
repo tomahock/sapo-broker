@@ -6,6 +6,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.concurrent.CustomExecutors;
 
+/**
+ * BrokerExecutor provides execution services based on a ScheduledThreadPoolExecutor;
+ *
+ */
+
 public class BrokerExecutor
 {
 

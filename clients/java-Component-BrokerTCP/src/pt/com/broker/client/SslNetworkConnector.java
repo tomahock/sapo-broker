@@ -16,6 +16,11 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * NetworkConnector is an implementation of BaseNetworkConnector for secure TCP connections (SSL).
+ *
+ */
+
 public class SslNetworkConnector extends BaseNetworkConnector
 {
 	private static final Logger log = LoggerFactory.getLogger(SslNetworkConnector.class);

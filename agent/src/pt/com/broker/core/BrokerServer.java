@@ -22,6 +22,11 @@ import pt.com.broker.messaging.AuthorizationFilter;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.gcs.conf.GcsInfo;
 
+/**
+ * BrokerServer is responsible for initializing client's TCP interface (MINA infrastructure).
+ *
+ */
+
 public class BrokerServer
 {
 	private static Logger log = LoggerFactory.getLogger(BrokerServer.class);

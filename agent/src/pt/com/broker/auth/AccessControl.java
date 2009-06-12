@@ -26,6 +26,11 @@ import pt.com.gcs.conf.global.Policies.Policy;
 import pt.com.gcs.conf.global.Policies.Policy.Acl.Entry;
 import pt.com.gcs.messaging.DestinationMatcher;
 
+/**
+ * AccessControl class implements access control functionality, namely validation of users permission to perform intended operations such publishing or subscription.
+ * 
+ */
+
 public class AccessControl
 {
 	private static Logger log = LoggerFactory.getLogger(AccessControl.class);

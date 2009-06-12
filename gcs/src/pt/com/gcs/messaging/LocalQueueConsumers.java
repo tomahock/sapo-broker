@@ -19,7 +19,7 @@ import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 
 /**
- * 
+ * LocalQueueConsumers maintains current local queue consumers.
  *
  */
 

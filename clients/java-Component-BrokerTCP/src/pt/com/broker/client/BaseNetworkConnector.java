@@ -8,6 +8,11 @@ import java.net.SocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * BaseNetworkConnector provides the basic functionality to TCP networking. 
+ *
+ */
+
 public abstract class BaseNetworkConnector
 {
 

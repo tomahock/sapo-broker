@@ -17,6 +17,12 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
 
+/**
+ * VirtualQueueStorage stores virtual queue messages persistently.
+ * 
+ *
+ */
+
 public class VirtualQueueStorage
 {
 	private static Logger log = LoggerFactory.getLogger(BDBStorage.class);

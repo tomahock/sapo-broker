@@ -12,6 +12,11 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageListener;
 
+/**
+ * BrokerListener is a base class for types representing message consumers.
+ *
+ */
+
 public abstract class BrokerListener implements MessageListener
 {
 	protected static NetMessage buildNotification(InternalMessage msg, DestinationType dtype)

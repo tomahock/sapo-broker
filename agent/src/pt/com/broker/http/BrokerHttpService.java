@@ -5,6 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.http.MinaHttpServer;
 
+/**
+ * BrokerServer is responsible for initializing client's HTTP interface (MINA infrastructure).
+ *
+ */
+
 public class BrokerHttpService
 {
 	private static final Logger LOG = LoggerFactory.getLogger(BrokerHttpService.class);

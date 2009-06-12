@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.net.IoSessionHelper;
 
+/**
+ * RemoteQueueConsumers maintains current remote queue consumers (other agents).
+ *
+ */
 class RemoteQueueConsumers
 {
 	private static final RemoteQueueConsumers instance = new RemoteQueueConsumers();

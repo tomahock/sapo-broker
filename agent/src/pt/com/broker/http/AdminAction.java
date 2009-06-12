@@ -19,6 +19,11 @@ import pt.com.broker.core.BrokerExecutor;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.http.HttpAction;
 
+/**
+ * AdminAction is an HttpAction. It supports some administrative options such agent's shutdown or queue deletion. 
+ *
+ */
+
 public class AdminAction extends HttpAction
 {
 	private static final String content_type = "text/plain";

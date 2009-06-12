@@ -11,6 +11,11 @@ import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.CredentialsProviderFactory;
 import pt.com.gcs.conf.GlobalConfig;
 
+/**
+ * ProvidersLoader is responsible for loading available authentication providers.
+ *
+ */
+
 public class ProvidersLoader
 {
 	private static Logger log = LoggerFactory.getLogger(ProvidersLoader.class);

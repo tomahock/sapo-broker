@@ -16,6 +16,11 @@ import pt.com.broker.http.BrokerHttpService;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 
+/**
+ * Main class for Sapo-Broker agents. 
+ *
+ */
+
 public class Start
 {
 	private static final Logger log = LoggerFactory.getLogger(Start.class);

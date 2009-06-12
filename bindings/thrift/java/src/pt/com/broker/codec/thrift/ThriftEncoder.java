@@ -8,6 +8,10 @@ import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.SimpleFramingEncoderV2;
 
+/**
+ * Thrift utility class for encoder. 
+ *
+ */
 public class ThriftEncoder extends SimpleFramingEncoderV2
 {
 

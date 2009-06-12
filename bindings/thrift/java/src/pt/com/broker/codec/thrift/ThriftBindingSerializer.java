@@ -24,6 +24,11 @@ import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 
+/**
+ * Thrift utility class for encoding and decoding. 
+ *
+ */
+
 public class ThriftBindingSerializer implements BindingSerializer
 {
 	private static final Logger log = LoggerFactory.getLogger(ThriftBindingSerializer.class);

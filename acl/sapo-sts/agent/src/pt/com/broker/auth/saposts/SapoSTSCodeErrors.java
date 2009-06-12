@@ -6,6 +6,11 @@ package pt.com.broker.auth.saposts;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Error codes returned by Sapo STS and associated messages.
+ *
+ */
+
 public class SapoSTSCodeErrors
 {
 	private static Map<String, String> codeErrors = new TreeMap<String, String>();

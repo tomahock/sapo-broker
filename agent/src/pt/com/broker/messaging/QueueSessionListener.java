@@ -13,6 +13,10 @@ import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.net.IoSessionHelper;
 
+/**
+ * QueueSessionListener represents a local (agent connected) clients who subscribed to a specific topic.
+ *
+ */
 public class QueueSessionListener extends BrokerListener
 {
 	private final static int MAX_SESSION_BUFFER_SIZE = 2 * 1024 * 1024;

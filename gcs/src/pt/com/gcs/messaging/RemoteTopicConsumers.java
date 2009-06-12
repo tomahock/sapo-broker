@@ -13,6 +13,10 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.net.IoSessionHelper;
 
+/**
+ * RemoteTopicConsumers maintains current remote topic consumers (other agents).
+ *
+ */
 class RemoteTopicConsumers
 {
 	private static Logger log = LoggerFactory.getLogger(RemoteTopicConsumers.class);

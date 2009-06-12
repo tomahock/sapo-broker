@@ -22,6 +22,11 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.ActionType;
 
+/**
+ * BrokerProtocolHandler extends ProtocolHandler defining protocol aspects such as message handling (including errors),  message encoding/decoding and on failure behavior. 
+ *
+ */
+
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
 

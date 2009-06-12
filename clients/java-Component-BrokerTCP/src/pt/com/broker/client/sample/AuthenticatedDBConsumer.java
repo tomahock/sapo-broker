@@ -14,7 +14,10 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
-
+/**
+ * Consumer sample where an authenticate user is used. This samples uses database based authentication.
+ *
+ */
 public class AuthenticatedDBConsumer implements BrokerListener
 {
 

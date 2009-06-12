@@ -14,6 +14,11 @@ import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.ProviderInfo;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 
+/**
+ * SapoSTSService is responsible for managing agent's credentials (STS Token) to Sapo STS and automatically renew it.
+ *
+ */
+
 public class SapoSTSService
 {
 	private static final Logger log = LoggerFactory.getLogger(SapoSTSService.class);

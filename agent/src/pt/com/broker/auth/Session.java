@@ -4,6 +4,11 @@ import org.apache.mina.core.session.IoSession;
 
 import pt.com.broker.auth.AccessControl.Privilege;
 
+/**
+ * Session objects store session security related information such as access control lists and session properties.  
+ *
+ */
+
 public class Session
 {
 	private IoSession session;

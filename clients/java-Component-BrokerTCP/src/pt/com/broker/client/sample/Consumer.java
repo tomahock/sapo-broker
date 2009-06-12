@@ -13,6 +13,11 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
 
+/**
+ * Simple consumer sample. Behavior is determined by command line arguments.
+ *
+ */
+
 public class Consumer implements BrokerListener
 {
 

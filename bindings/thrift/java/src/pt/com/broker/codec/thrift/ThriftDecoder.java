@@ -6,6 +6,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.SimpleFramingDecoderV2;
 
+/**
+ * Thriftdecoder. 
+ *
+ */
 public class ThriftDecoder extends SimpleFramingDecoderV2
 {
 

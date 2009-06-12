@@ -7,6 +7,11 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * QueueProcessor provides several queue related features, representing each instance a distinct queue. 
+ *
+ */
+
 public class QueueProcessor
 {
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);

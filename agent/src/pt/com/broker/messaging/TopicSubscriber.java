@@ -13,6 +13,11 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.net.IoSessionHelper;
 
+/**
+ * TopicSubscriber represents a local (agent connected) clients who subscribed to a specific topic.
+ *
+ */
+
 public class TopicSubscriber extends BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(TopicSubscriber.class);
