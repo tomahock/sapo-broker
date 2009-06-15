@@ -19,7 +19,7 @@ import pt.com.gcs.net.IoSessionHelper;
 import pt.com.gcs.net.Peer;
 
 /**
- * GcsAcceptorProtocolHandler is an MINA IoHandlerAdapter. It handles outgoing messages from other agents and respective responses.
+ * GcsAcceptorProtocolHandler is an MINA IoHandlerAdapter. It handles remote subscription messages and acknowledges from other agents.
  *
  */
 

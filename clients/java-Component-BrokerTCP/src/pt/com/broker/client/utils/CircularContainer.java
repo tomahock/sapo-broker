@@ -62,6 +62,10 @@ public class CircularContainer<T>
 		}
 	}
 
+	/**
+	 * Obtains the current value. 
+	 * @return a T value.
+	 */
 	public T peek()
 	{
 		synchronized (innerContainer)
@@ -79,6 +83,10 @@ public class CircularContainer<T>
 		}
 	}
 
+	/**
+	 * Adds the indexer, moving it to the next position (or beginning).
+	 * @return a T value.
+	 */
 	public T get()
 	{
 		synchronized (innerContainer)
