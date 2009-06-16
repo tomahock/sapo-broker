@@ -218,7 +218,7 @@ class LocalTopicConsumers
 			// This exception dosen't happen: "UTF-8" is built-in in every JVM
 		}
 
-		ioSession.write(msg);
+		SystemMessagesPublisher.sendMessage(msg, ioSession);
 	}
 
 	private void broadCastNewTopicConsumer(String topicName)

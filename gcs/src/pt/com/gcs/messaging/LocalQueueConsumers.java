@@ -130,8 +130,7 @@ class LocalQueueConsumers
 			// This exception is never thrown because UTF-8 encoding is built-in
 			// in every JVM
 		}
-
-		ioSession.write(m);
+		SystemMessagesPublisher.sendMessage(m, ioSession);
 	}
 
 	protected synchronized static void delete(String queueName)

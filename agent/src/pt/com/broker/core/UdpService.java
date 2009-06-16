@@ -1,15 +1,26 @@
 package pt.com.broker.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.caudexorigo.concurrent.CustomExecutors;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.codec.BrokerCodecRouter;
 import pt.com.broker.messaging.BrokerProducer;
+import pt.com.broker.messaging.MQ;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.SimpleFramingDecoderV2;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
@@ -57,11 +68,10 @@ public class UdpService
 			try
 			{
 				socket.receive(packet);
-				byte[] receivedData = packet.getData();
-				int len = packet.getLength();
-				byte[] messageData = new byte[len];
-				System.arraycopy(receivedData, 0, messageData, 0, len);
-				exec.execute(new UdpPacketProcessor(messageData));
+				
+				NetMessage message = decodePacket(packet); 
+				
+				exec.execute(new UdpPacketProcessor(message));
 			}
 			catch (Throwable error)
 			{
@@ -70,40 +80,84 @@ public class UdpService
 		}
 	}
 
+	private NetMessage decodePacket(DatagramPacket packet)
+	{
+		byte[] receivedData = packet.getData();
+		int len = packet.getLength();
+		
+		final int HEADER_SIZE = 8;
+		
+		byte[] headerData = new byte[HEADER_SIZE];
+		System.arraycopy(receivedData, 0, headerData, 0, HEADER_SIZE);
+		
+		DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(headerData));
+		short protoType;
+		short protoVersion;
+		try
+		{
+			protoType = dataInputStream.readShort();
+			protoVersion = dataInputStream.readShort();
+			
+		}
+		catch (IOException ioEx)
+		{
+			throw new RuntimeException(ioEx);
+		}
+		
+		ProtocolCodecFactory codec = BrokerCodecRouter.getProcolCodec(new Short(protoType));
+		if (codec == null)
+		{
+			throw new RuntimeException("Invalid protocol type: " + protoType);
+		}
+		SimpleFramingDecoderV2 decoder;
+		try
+		{
+			decoder = (SimpleFramingDecoderV2) codec.getDecoder(null);
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException("Invalid protocol type decoder implementation: " + protoType, e);
+		}
+		
+		byte[] messageData = new byte[len - HEADER_SIZE];
+		System.arraycopy(receivedData, HEADER_SIZE, messageData, 0, len - HEADER_SIZE);
+		
+		return (NetMessage) decoder.processBody(messageData, protoType, protoVersion);
+	}
+
 	final static class UdpPacketProcessor implements Runnable
 	{
-		final byte[] _messageData;
+		final NetMessage message;
 
-		UdpPacketProcessor(byte[] messageData)
+		UdpPacketProcessor(NetMessage message)
 		{
-			_messageData = messageData;
+			this.message = message;
 		}
 
 		@Override
 		public void run()
 		{
-			// TODO: implement XML messages for UDP Service
+			
+			NetPublish publish = message.getAction().getPublishMessage();
+			if (StringUtils.contains(publish.getDestination(), "@"))
+			{
+				return;
+			}
+			
+			final String messageSource = MQ.requestSource(message);
 
-//			 try
-//			 {
-//			 SoapEnvelope soap = SoapSerializer.FromXml(new
-//			 UnsynchByteArrayInputStream(_messageData));
-//			
-//			 final String requestSource = MQ.requestSource(soap);
-//			
-//			 if (soap.body.publish != null)
-//			 {
-//			 _brokerProducer.publishMessage(soap.body.publish, requestSource);
-//			 }
-//			 else if (soap.body.enqueue != null)
-//			 {
-//			 _brokerProducer.enqueueMessage(soap.body.enqueue, requestSource);
-//			 }
-//			 }
-//			 catch (Throwable error)
-//			 {
-//			 log.error(error.getMessage(), error);
-//			 }
+			switch (publish.getDestinationType())
+			{
+			case TOPIC:
+				_brokerProducer.publishMessage(publish, messageSource);
+				break;
+			case QUEUE:
+				if(!_brokerProducer.enqueueMessage(publish, messageSource))
+				{
+					return;
+				}
+				break;
+			}
 
 		}
 	}

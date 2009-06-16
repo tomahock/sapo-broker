@@ -11,8 +11,10 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetAction.ActionType;
 
 /**
@@ -75,22 +77,16 @@ public class BrokerClient extends BaseBrokerClient
 
 	/**
 	 * Publish a message over UDP. <br/>
-	 * Messages published over UDP must be of type "Publication" and not carry a message identifier.
+	 * Messages published must not carry a message identifier.
 	 * 
-	 * @param message
-	 * @throws InvalidParameterException
+	 * @param message A NetPublish message
 	 */
 
-	public void publishMessageOverUdp(NetMessage message) throws InvalidParameterException
+	public void publishMessageOverUdp(NetPublish message) throws InvalidParameterException
 	{
-		if (!message.getAction().getActionType().equals(ActionType.PUBLISH))
+		if (message.getActionId() != null)
 		{
-			throw new InvalidParameterException("Only Publish messages are allowed over UDP.");
-		}
-
-		if (message.getAction().getPublishMessage().getActionId() != null)
-		{
-			throw new InvalidParameterException("Messages published over are allowed to carry a message identifier.");
+			throw new InvalidParameterException("Messages published over UDP are not allowed to carry a message identifier.");
 		}
 
 		HostInfo hostInfo = hosts.peek();
@@ -101,21 +97,26 @@ public class BrokerClient extends BaseBrokerClient
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(stream);
+		
+		NetAction action = new NetAction(ActionType.PUBLISH);
+		action.setPublishMessage(message);
+		
+		NetMessage netMessage = new NetMessage(action);
 
 		try
 		{
-			super._netHandler.encode(message, out);
+			super._netHandler.encode(netMessage, out);
 
 			out.flush();
 			out.close();
 
 			InetAddress inet = InetAddress.getByName(hostInfo.getHostname());
-			DatagramSocket socket = new DatagramSocket(hostInfo.getUdpPort(), inet);
+			DatagramSocket socket = new DatagramSocket();
 			socket.setSoTimeout(5000);
 
 			byte[] msgData = stream.toByteArray();
-
-			DatagramPacket packet = new DatagramPacket(msgData, msgData.length);
+			
+			DatagramPacket packet = new DatagramPacket(msgData, msgData.length, inet, hostInfo.getUdpPort());
 			socket.send(packet);
 		}
 		catch (Throwable t)

@@ -9,6 +9,7 @@ import pt.com.broker.auth.ProvidersLoader;
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.core.BrokerSSLServer;
 import pt.com.broker.core.BrokerServer;
+import pt.com.broker.core.BrokerUdpServer;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.core.FilePublisher;
 import pt.com.broker.core.UdpService;
@@ -74,17 +75,22 @@ public class Start
 				ssl_svr.start();
 			}
 
+			int udp_port = GcsInfo.getBrokerUdpPort();
+			BrokerUdpServer udp_srv = new BrokerUdpServer(udp_port);
+			udp_srv.start();
+			
+			
 			FilePublisher.init();
 
-			Runnable udp_srv_runner = new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					UdpService udp_srv = new UdpService();
-					udp_srv.start();
-				}
-			};
+//			Runnable udp_srv_runner = new Runnable()
+//			{
+//				@Override
+//				public void run()
+//				{
+//					UdpService udp_srv = new UdpService();
+//					udp_srv.start();
+//				}
+//			};
 
 			Thread sync_hook = new Thread()
 			{
@@ -105,7 +111,7 @@ public class Start
 
 			Runtime.getRuntime().addShutdownHook(sync_hook);
 
-			BrokerExecutor.execute(udp_srv_runner);
+//			BrokerExecutor.execute(udp_srv_runner);
 
 		}
 		catch (Throwable e)

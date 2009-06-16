@@ -389,7 +389,6 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		case TOPIC:
 			if(! _brokerConsumer.subscribe(subscritption, session) )
 			{
-				System.out.println("### BrokerProtocolHandler.handleSubscribeMessage() - subscription failed");
 				if (subscritption.getActionId() == null)
 				{
 					session.write(NetFault.MaximumDistinctSubscriptionsReachedMessage);

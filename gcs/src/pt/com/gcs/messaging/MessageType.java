@@ -4,7 +4,7 @@ public enum MessageType
 {
 	COM_TOPIC(1), COM_QUEUE(2),
 
-	SYSTEM_TOPIC(3), SYSTEM_QUEUE(4), ACK(5), PING(6), HELLO(7), UNDEF(0);
+	SYSTEM_TOPIC(3), SYSTEM_QUEUE(4), SYSTEM_ACK(5), ACK(6), PING(7), HELLO(8),UNDEF(0);
 
 	private final int _mt;
 
@@ -38,16 +38,21 @@ public enum MessageType
 		}
 		else if (value == 5)
 		{
-			return MessageType.ACK;
+			return MessageType.SYSTEM_ACK;
 		}
 		else if (value == 6)
 		{
-			return MessageType.PING;
+			return MessageType.ACK;
 		}
 		else if (value == 7)
 		{
+			return MessageType.PING;
+		}
+		else if (value == 8)
+		{
 			return MessageType.HELLO;
 		}
+		
 		else
 		{
 			return MessageType.UNDEF;

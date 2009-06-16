@@ -8,6 +8,7 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * GcsAcceptorProtocolHandler is an MINA IoHandlerAdapter. It handles incoming messages, such as publications, from other agents.
- *
+ * 
  */
 
 class GcsRemoteProtocolHandler extends IoHandlerAdapter
@@ -56,17 +57,23 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 
 		msg.setFromRemotePeer(true);
 
-		if (msg.getType() == (MessageType.COM_TOPIC))
+		switch (msg.getType())
 		{
+		case COM_TOPIC:
 			LocalTopicConsumers.notify(msg);
-		}
-		else if (msg.getType() == (MessageType.COM_QUEUE))
-		{
+			break;
+		case COM_QUEUE:
 			QueueProcessorList.get(msg.getDestination()).store(msg, true);
 			LocalQueueConsumers.acknowledgeMessage(msg, iosession);
-		}
-		else
+			break;
+		case SYSTEM_ACK:
 		{
+			String msgContent = new String(msg.getContent().getPayload(), "UTF-8");
+			String messageId = extract(msgContent, "<message-id>", "</message-id>");
+			SystemMessagesPublisher.messageAcknowledged(messageId);
+		}
+			break;
+		default:
 			log.warn("Unkwown message type. Don't know how to handle message");
 		}
 	}
@@ -172,5 +179,17 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 				}
 			}
 		}
+	}
+
+	private String extract(String ins, String prefix, String sufix)
+	{
+		if (StringUtils.isBlank(ins))
+		{
+			return "";
+		}
+
+		int s = ins.indexOf(prefix) + prefix.length();
+		int e = ins.indexOf(sufix);
+		return ins.substring(s, e);
 	}
 }

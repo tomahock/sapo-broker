@@ -1,5 +1,6 @@
 package pt.com.gcs.messaging;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.net.IoSessionHelper;
 import pt.com.gcs.net.Peer;
@@ -132,11 +134,33 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 					RemoteQueueConsumers.remove(m.getDestination(), iosession);
 				}
 			}
+			acknowledgeSystemMessage(m, iosession);
 		}
 		else
 		{
 			log.warn("Unkwown message type. Don't know how to handle message");
 		}
+	}
+
+	private void acknowledgeSystemMessage(InternalMessage message, IoSession ioSession)
+	{
+		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><message-id>%s</message-id></sysmessage>";
+		String payload = String.format(ptemplate, "SYSTEM_ACKNOWLEDGE", GcsInfo.getAgentName(), ioSession.getLocalAddress().toString(), message.getMessageId());
+		InternalMessage ackMsg = new InternalMessage();
+		NetBrokerMessage brkMsg;
+		try
+		{
+			brkMsg = new NetBrokerMessage(payload.getBytes("UTF-8"));
+			ackMsg.setType(MessageType.SYSTEM_ACK);
+
+			ackMsg.setContent(brkMsg);
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			// This exception is never thrown because UTF-8 encoding is built-in
+			// in every JVM
+		}
+		ioSession.write(ackMsg);
 	}
 
 	@Override
@@ -154,6 +178,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 		log.info("Session Closed: '{}'", IoSessionHelper.getRemoteAddress(iosession));
 		RemoteTopicConsumers.remove(iosession);
 		RemoteQueueConsumers.remove(iosession);
+		SystemMessagesPublisher.sessionClosed(iosession);
 	}
 
 	@Override
