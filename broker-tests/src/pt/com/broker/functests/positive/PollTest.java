@@ -2,6 +2,8 @@ package pt.com.broker.functests.positive;
 
 import java.util.Arrays;
 
+import org.caudexorigo.text.RandomStringUtils;
+
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
@@ -12,7 +14,8 @@ import pt.com.broker.types.NetNotification;
 
 public class PollTest extends BrokerTest
 {
-	private String queueName = "/test/foo";
+	private String baseName = RandomStringUtils.randomAlphanumeric(10);
+	private String queueName = String.format("/poll/%s",baseName);
 	public PollTest()
 	{
 		super("Poll test");
@@ -56,7 +59,7 @@ public class PollTest extends BrokerTest
 				{
 					BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
 					
-					NetNotification msg = bk.poll(queueName );
+					NetNotification msg = bk.poll(queueName);
 					
 					bk.acknowledge(msg);
 					

@@ -161,9 +161,10 @@ public class Main
 //			new InvalidDestinationType().run(numberOfTests);
 //			new InvalidDestinationNameInPublishTest().run(numberOfTests);
 //			new AccessDeniedTest().run(numberOfTests);
-			new InvalidAuthChannelTypeTest().run(numberOfTests);
+//			new InvalidAuthChannelTypeTest().run(numberOfTests);
 //			new AuthenticationFailedTest().run(numberOfTests);
 //			new UnknownAuthTypeFailedTest().run(numberOfTests);
+//			new TimeoutPollTest().run(numberOfTests);
 		
 		}
 		

@@ -6,13 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.ProvidersLoader;
-import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.core.BrokerSSLServer;
 import pt.com.broker.core.BrokerServer;
 import pt.com.broker.core.BrokerUdpServer;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.core.FilePublisher;
-import pt.com.broker.core.UdpService;
 import pt.com.broker.http.BrokerHttpService;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
@@ -81,16 +79,6 @@ public class Start
 			
 			
 			FilePublisher.init();
-
-//			Runnable udp_srv_runner = new Runnable()
-//			{
-//				@Override
-//				public void run()
-//				{
-//					UdpService udp_srv = new UdpService();
-//					udp_srv.start();
-//				}
-//			};
 
 			Thread sync_hook = new Thread()
 			{

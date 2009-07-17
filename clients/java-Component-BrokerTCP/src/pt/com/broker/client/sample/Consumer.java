@@ -58,6 +58,15 @@ public class Consumer implements BrokerListener
 		}
 		else
 		{
+			try
+			{
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return true;
 		}
 	}
@@ -65,7 +74,9 @@ public class Consumer implements BrokerListener
 	@Override
 	public void onMessage(NetNotification notification)
 	{
-		log.info(String.format("%s -> Received Message Length: %s (%s)", counter.incrementAndGet(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
+		log.info(String.format("%s -> Message destination: %s Received Message Length: %s (%s)", counter.incrementAndGet(),
+				notification.getDestination(), 
+				notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
 	}
 
 }

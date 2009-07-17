@@ -56,6 +56,8 @@ public class NetBrokerMessage
 		return timestamp;
 	}
 
+	// read and write are used by InternalMessage serialization 
+	
 	public void write(ObjectOutput out) throws IOException
 	{
 		out.writeUTF(messageId);

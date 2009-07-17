@@ -267,7 +267,7 @@
             </row>
             <row>
               <entry id="POLL_MESSAGE"><link linkend="POLL_MSG_DETAIL">Poll</link></entry>
-              <entry>A client may explicit poll from a queue or virtual queue an available message by sending a Poll message.</entry>
+              <entry>A client may explicit poll from a queue or virtual queue an available message by sending a Poll message. Client libraries wait until a message is received or timeout occurs.</entry>
             </row>
             <row>
               <entry id="ACKNOWLEDGE_MESSAGE"><link linkend="ACKNOWLEDGE_MSG_DETAIL">Acknowledge</link></entry>
@@ -360,8 +360,8 @@
         </sect4>
         <sect4 id="POLL_MSG_DETAIL">
           <title>Poll</title>
-          <para>A client may explicit poll a queue message intended for him by sending a a Poll message. This message is composed by an optional action identifier and a mandatory destination.</para>
-          <para>Poll: {action_id, <emphasis role="mandatory">destination</emphasis>}</para>
+          <para>A client may explicit poll a queue message by sending a Poll message. Client libraries wait until they receive a message or timeout occurs. This message is composed by an optional action identifier and a mandatory destination and timeout in milliseconds.</para>
+          <para>Poll: {action_id, <emphasis role="mandatory">destination</emphasis>,  <emphasis role="mandatory">timeout</emphasis>}</para>
         </sect4>
         <sect4 id="ACKNOWLEDGE_MSG_DETAIL">
           <title>Acknowledge</title>
@@ -587,6 +587,13 @@ Payload:
                 <entry>Maximum distinct subscriptions reached</entry>
                 <entry>
                   
+                </entry>
+              </row>
+              <row>
+                <entry>2005</entry>
+                <entry>Message poll timeout</entry>
+                <entry>
+                  Message sent after the timeout specified by the consumer has elapsed.
                 </entry>
               </row>
             </tbody>
@@ -853,7 +860,7 @@ CREATE TABLE user_roles
       <sect3>
         <title>Keytool tutorial</title>
         <para>Generating a pair of keys to a new keystore:</para>
-        <command>keytool -genkey -keystore ./certs2 -keyalg rsa -alias test -storepass serverkspw -keypass serverpw</command>
+        <command>keytool -genkey -validity 1000 -keystore ./certs2 -keyalg rsa -alias test -storepass serverkspw -keypass serverpw</command>
         <para>View the stored keys:</para>
         <command>keytool -list -alias test -keystore ./certs2</command>
         <para>Export public key as an X.509 certificate</para>
@@ -1012,7 +1019,7 @@ CREATE TABLE user_roles
   </sect1>
   <sect1>
     <title>Frequently asked questions</title>
-    <para>Here are some questions that you may have and should you help you take advantaged of Sapo-Broker.</para>
+    <para>Here are some questions that you may have and should help you take advantaged of Sapo-Broker.</para>
     <sect2>
       <title>How do configure my one hundred agents with minimum efford?</title>
       <para>Use a global configuration file and distributed automatically!</para>

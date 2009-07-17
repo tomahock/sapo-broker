@@ -25,6 +25,7 @@ public class SapoSTSService
 	private static final ScheduledThreadPoolExecutor exec_srv = CustomExecutors.newScheduledThreadPool(1, "SapoSTS Authentication Sevice");
 
 	private static AuthInfo agentAuthenticationInfo = null;
+	private static AuthInfo agentAuthInfo = null;
 	private static CredentialsProvider authProvider = null;
 
 	public static boolean start(ProviderInfo providerInfo)
@@ -83,7 +84,7 @@ public class SapoSTSService
 		Parameters parameters = new SapoSTSParameterProvider.Parameters(stsLocation, stsUsername, stsPassword);
 		SapoSTSParameterProvider.setSTSParameters(parameters);
 
-		AuthInfo agentAuthInfo = new AuthInfo(stsUsername, stsPassword);
+		agentAuthInfo = new AuthInfo(stsUsername, stsPassword);
 
 		authProvider = new SapoSTSProvider();
 		authProvider.init(providerInfo);
@@ -130,7 +131,7 @@ public class SapoSTSService
 		AuthInfo newAgentAuthenticationInfo = null;
 		try
 		{
-			newAgentAuthenticationInfo = authProvider.getCredentials(agentAuthenticationInfo);
+			newAgentAuthenticationInfo = authProvider.getCredentials(agentAuthInfo);
 			if (agentAuthenticationInfo == null)
 			{
 				log.warn("BrokerAuthenticationService - failed to renew credentials");

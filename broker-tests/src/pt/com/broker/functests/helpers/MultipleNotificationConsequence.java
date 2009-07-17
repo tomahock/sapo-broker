@@ -50,7 +50,7 @@ public class MultipleNotificationConsequence extends Consequence
 			if (destination != null)
 			{
 				if (destination.contains("@"))
-				{
+				{	
 					if (!netNotification.getDestination().equals(subscription))
 					{
 						String reason = String.format("Destination mismatch! Expected: %s Received: %s (because it's a virtual queue)", subscription, netNotification.getDestination());

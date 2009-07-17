@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerExecutor;
+import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -34,6 +35,17 @@ public class BrokerSyncConsumer
 			InternalMessage m = Gcs.poll(pollDest);
 			if (m == null)
 			{
+				if(poll.expired())
+				{
+					NetMessage faultMsg = NetFault.getMessageFaultWithDetail(NetFault.PollTimeoutErrorMessage, pollDest);
+					
+					if(poll.getActionId() != null)
+					{
+						faultMsg.getAction().getFaultMessage().setActionId( poll.getActionId());
+					}
+					ios.write(faultMsg);
+					return;
+				}
 				BrokerExecutor.schedule(new QueuePoller(poll, ios), 1000, TimeUnit.MILLISECONDS);
 				return;
 			}

@@ -1475,9 +1475,16 @@ public final class PBMessage {
       public boolean hasDestination() { return hasDestination; }
       public java.lang.String getDestination() { return destination_; }
       
+      // required int64 timeout = 3;
+      private boolean hasTimeout;
+      private long timeout_ = 0L;
+      public boolean hasTimeout() { return hasTimeout; }
+      public long getTimeout() { return timeout_; }
+      
       @Override
       public final boolean isInitialized() {
         if (!hasDestination) return false;
+        if (!hasTimeout) return false;
         return true;
       }
       
@@ -1489,6 +1496,9 @@ public final class PBMessage {
         }
         if (hasDestination()) {
           output.writeString(2, getDestination());
+        }
+        if (hasTimeout()) {
+          output.writeInt64(3, getTimeout());
         }
         getUnknownFields().writeTo(output);
       }
@@ -1507,6 +1517,10 @@ public final class PBMessage {
         if (hasDestination()) {
           size += com.google.protobuf.CodedOutputStream
             .computeStringSize(2, getDestination());
+        }
+        if (hasTimeout()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt64Size(3, getTimeout());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -1640,6 +1654,9 @@ public final class PBMessage {
           if (other.hasDestination()) {
             setDestination(other.getDestination());
           }
+          if (other.hasTimeout()) {
+            setTimeout(other.getTimeout());
+          }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
         }
@@ -1682,6 +1699,10 @@ public final class PBMessage {
                 setDestination(input.readString());
                 break;
               }
+              case 24: {
+                setTimeout(input.readInt64());
+                break;
+              }
             }
           }
         }
@@ -1720,6 +1741,24 @@ public final class PBMessage {
         public Builder clearDestination() {
           result.hasDestination = false;
           result.destination_ = "";
+          return this;
+        }
+        
+        // required int64 timeout = 3;
+        public boolean hasTimeout() {
+          return result.hasTimeout();
+        }
+        public long getTimeout() {
+          return result.getTimeout();
+        }
+        public Builder setTimeout(long value) {
+          result.hasTimeout = true;
+          result.timeout_ = value;
+          return this;
+        }
+        public Builder clearTimeout() {
+          result.hasTimeout = false;
+          result.timeout_ = 0L;
           return this;
         }
       }
@@ -6101,7 +6140,7 @@ public final class PBMessage {
       descriptor;
   static {
     java.lang.String descriptorData =
-      "\n\014broker.proto\022\013sapo_broker\"\225\020\n\004Atom\022(\n\006" +
+      "\n\014broker.proto\022\013sapo_broker\"\246\020\n\004Atom\022(\n\006" +
       "header\030\001 \001(\0132\030.sapo_broker.Atom.Header\022(" +
       "\n\006action\030\002 \002(\0132\030.sapo_broker.Atom.Action" +
       "\032(\n\tParameter\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002" +
@@ -6112,49 +6151,50 @@ public final class PBMessage {
       "blish\022\021\n\taction_id\030\001 \001(\t\022;\n\020destination_" +
       "type\030\002 \002(\0162!.sapo_broker.Atom.Destinatio" +
       "nType\022\023\n\013destination\030\003 \002(\t\0220\n\007message\030\004 " +
-      "\002(\0132\037.sapo_broker.Atom.BrokerMessage\032.\n\004" +
+      "\002(\0132\037.sapo_broker.Atom.BrokerMessage\032?\n\004" +
       "Poll\022\021\n\taction_id\030\001 \001(\t\022\023\n\013destination\030\002" +
-      " \002(\t\032\035\n\010Accepted\022\021\n\taction_id\030\001 \002(\t\032P\n\022A" +
-      "cknowledgeMessage\022\021\n\taction_id\030\001 \001(\t\022\022\n\n" +
-      "message_id\030\002 \002(\t\022\023\n\013destination\030\003 \002(\t\032p\n" +
-      "\tSubscribe\022\021\n\taction_id\030\001 \001(\t\022\023\n\013destina" +
-      "tion\030\002 \002(\t\022;\n\020destination_type\030\003 \002(\0162!.s" +
-      "apo_broker.Atom.DestinationType\032r\n\013Unsub" +
-      "scribe\022\021\n\taction_id\030\001 \001(\t\022\023\n\013destination" +
-      "\030\002 \002(\t\022;\n\020destination_type\030\003 \002(\0162!.sapo_" +
-      "broker.Atom.DestinationType\032\250\001\n\014Notifica" +
-      "tion\022\023\n\013destination\030\001 \002(\t\022\024\n\014subscriptio" +
-      "n\030\002 \002(\t\022;\n\020destination_type\030\003 \002(\0162!.sapo" +
-      "_broker.Atom.DestinationType\0220\n\007message\030" +
-      "\004 \002(\0132\037.sapo_broker.Atom.BrokerMessage\032[" +
-      "\n\005Fault\022\021\n\taction_id\030\001 \001(\t\022\022\n\nfault_code" +
-      "\030\002 \002(\t\022\025\n\rfault_message\030\003 \002(\t\022\024\n\014fault_d" +
-      "etail\030\004 \001(\t\032\031\n\004Ping\022\021\n\taction_id\030\001 \002(\t\032\031" +
-      "\n\004Pong\022\021\n\taction_id\030\001 \002(\t\032n\n\016Authenticat" +
-      "ion\022\021\n\taction_id\030\001 \001(\t\022\033\n\023authentication" +
-      "_type\030\002 \001(\t\022\r\n\005token\030\003 \002(\014\022\017\n\007user_id\030\004 " +
-      "\001(\t\022\014\n\004role\030\005 \003(\t\032\343\005\n\006Action\022*\n\007publish\030" +
-      "\001 \001(\0132\031.sapo_broker.Atom.Publish\022$\n\004poll" +
-      "\030\002 \001(\0132\026.sapo_broker.Atom.Poll\022,\n\010accept" +
-      "ed\030\003 \001(\0132\032.sapo_broker.Atom.Accepted\0229\n\013" +
-      "ack_message\030\004 \001(\0132$.sapo_broker.Atom.Ack" +
-      "nowledgeMessage\022.\n\tsubscribe\030\005 \001(\0132\033.sap" +
-      "o_broker.Atom.Subscribe\0222\n\013unsubscribe\030\006" +
-      " \001(\0132\035.sapo_broker.Atom.Unsubscribe\0224\n\014n" +
-      "otification\030\007 \001(\0132\036.sapo_broker.Atom.Not" +
-      "ification\022&\n\005fault\030\010 \001(\0132\027.sapo_broker.A" +
-      "tom.Fault\022$\n\004ping\030\t \001(\0132\026.sapo_broker.At" +
-      "om.Ping\022$\n\004pong\030\n \001(\0132\026.sapo_broker.Atom" +
-      ".Pong\022.\n\004auth\030\013 \001(\0132 .sapo_broker.Atom.A" +
-      "uthentication\0228\n\013action_type\030\014 \002(\0162#.sap" +
-      "o_broker.Atom.Action.ActionType\"\245\001\n\nActi" +
-      "onType\022\013\n\007PUBLISH\020\000\022\010\n\004POLL\020\001\022\014\n\010ACCEPTE" +
-      "D\020\002\022\027\n\023ACKNOWLEDGE_MESSAGE\020\003\022\r\n\tSUBSCRIB" +
-      "E\020\004\022\017\n\013UNSUBSCRIBE\020\005\022\020\n\014NOTIFICATION\020\006\022\t" +
-      "\n\005FAULT\020\007\022\010\n\004PING\020\010\022\010\n\004PONG\020\t\022\010\n\004AUTH\020\n\"" +
-      ":\n\017DestinationType\022\t\n\005TOPIC\020\000\022\t\n\005QUEUE\020\001" +
-      "\022\021\n\rVIRTUAL_QUEUE\020\002B+\n\034pt.com.broker.cod" +
-      "ec.protobufB\tPBMessageH\001";
+      " \002(\t\022\017\n\007timeout\030\003 \002(\003\032\035\n\010Accepted\022\021\n\tact" +
+      "ion_id\030\001 \002(\t\032P\n\022AcknowledgeMessage\022\021\n\tac" +
+      "tion_id\030\001 \001(\t\022\022\n\nmessage_id\030\002 \002(\t\022\023\n\013des" +
+      "tination\030\003 \002(\t\032p\n\tSubscribe\022\021\n\taction_id" +
+      "\030\001 \001(\t\022\023\n\013destination\030\002 \002(\t\022;\n\020destinati" +
+      "on_type\030\003 \002(\0162!.sapo_broker.Atom.Destina" +
+      "tionType\032r\n\013Unsubscribe\022\021\n\taction_id\030\001 \001" +
+      "(\t\022\023\n\013destination\030\002 \002(\t\022;\n\020destination_t" +
+      "ype\030\003 \002(\0162!.sapo_broker.Atom.Destination" +
+      "Type\032\250\001\n\014Notification\022\023\n\013destination\030\001 \002" +
+      "(\t\022\024\n\014subscription\030\002 \002(\t\022;\n\020destination_" +
+      "type\030\003 \002(\0162!.sapo_broker.Atom.Destinatio" +
+      "nType\0220\n\007message\030\004 \002(\0132\037.sapo_broker.Ato" +
+      "m.BrokerMessage\032[\n\005Fault\022\021\n\taction_id\030\001 " +
+      "\001(\t\022\022\n\nfault_code\030\002 \002(\t\022\025\n\rfault_message" +
+      "\030\003 \002(\t\022\024\n\014fault_detail\030\004 \001(\t\032\031\n\004Ping\022\021\n\t" +
+      "action_id\030\001 \002(\t\032\031\n\004Pong\022\021\n\taction_id\030\001 \002" +
+      "(\t\032n\n\016Authentication\022\021\n\taction_id\030\001 \001(\t\022" +
+      "\033\n\023authentication_type\030\002 \001(\t\022\r\n\005token\030\003 " +
+      "\002(\014\022\017\n\007user_id\030\004 \001(\t\022\014\n\004role\030\005 \003(\t\032\343\005\n\006A" +
+      "ction\022*\n\007publish\030\001 \001(\0132\031.sapo_broker.Ato" +
+      "m.Publish\022$\n\004poll\030\002 \001(\0132\026.sapo_broker.At" +
+      "om.Poll\022,\n\010accepted\030\003 \001(\0132\032.sapo_broker." +
+      "Atom.Accepted\0229\n\013ack_message\030\004 \001(\0132$.sap" +
+      "o_broker.Atom.AcknowledgeMessage\022.\n\tsubs" +
+      "cribe\030\005 \001(\0132\033.sapo_broker.Atom.Subscribe" +
+      "\0222\n\013unsubscribe\030\006 \001(\0132\035.sapo_broker.Atom" +
+      ".Unsubscribe\0224\n\014notification\030\007 \001(\0132\036.sap" +
+      "o_broker.Atom.Notification\022&\n\005fault\030\010 \001(" +
+      "\0132\027.sapo_broker.Atom.Fault\022$\n\004ping\030\t \001(\013" +
+      "2\026.sapo_broker.Atom.Ping\022$\n\004pong\030\n \001(\0132\026" +
+      ".sapo_broker.Atom.Pong\022.\n\004auth\030\013 \001(\0132 .s" +
+      "apo_broker.Atom.Authentication\0228\n\013action" +
+      "_type\030\014 \002(\0162#.sapo_broker.Atom.Action.Ac" +
+      "tionType\"\245\001\n\nActionType\022\013\n\007PUBLISH\020\000\022\010\n\004" +
+      "POLL\020\001\022\014\n\010ACCEPTED\020\002\022\027\n\023ACKNOWLEDGE_MESS" +
+      "AGE\020\003\022\r\n\tSUBSCRIBE\020\004\022\017\n\013UNSUBSCRIBE\020\005\022\020\n" +
+      "\014NOTIFICATION\020\006\022\t\n\005FAULT\020\007\022\010\n\004PING\020\010\022\010\n\004" +
+      "PONG\020\t\022\010\n\004AUTH\020\n\":\n\017DestinationType\022\t\n\005T" +
+      "OPIC\020\000\022\t\n\005QUEUE\020\001\022\021\n\rVIRTUAL_QUEUE\020\002B+\n\034" +
+      "pt.com.broker.codec.protobufB\tPBMessageH" +
+      "\001";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -6205,7 +6245,7 @@ public final class PBMessage {
           internal_static_sapo_broker_Atom_Poll_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_sapo_broker_Atom_Poll_descriptor,
-              new java.lang.String[] { "ActionId", "Destination", },
+              new java.lang.String[] { "ActionId", "Destination", "Timeout", },
               pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.class,
               pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.Builder.class);
           internal_static_sapo_broker_Atom_Accepted_descriptor =

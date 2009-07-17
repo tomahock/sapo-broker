@@ -52,7 +52,7 @@ public class GenericNegativeTest extends BrokerTest
 		addConsequece();
 	}
 
-	private void addConsequece()
+	protected void addConsequece()
 	{
 		FaultConsequence consequence = new FaultConsequence("fault receiver", "producer", faultFuture);
 		consequence.setFaultCode(getFaultCode());

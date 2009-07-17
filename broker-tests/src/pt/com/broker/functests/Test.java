@@ -92,7 +92,7 @@ public abstract class Test
 			do
 			{
 				executionResults = executer.invokeAll(activities, getTimeout(), TimeUnit.MILLISECONDS);
-
+				
 				for (Future<Step> executionResult : executionResults)
 				{
 					Step step = executionResult.get();
@@ -173,7 +173,7 @@ public abstract class Test
 		return consequences;
 	}
 
-	public List<Epilogue> getEpilogues()
+	private List<Epilogue> getEpilogues()
 	{
 		return epilogues;
 	}

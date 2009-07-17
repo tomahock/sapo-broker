@@ -20,7 +20,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 {
 	public static class TestClientInfo
 	{
-		public BrokerClient brokerCLient;
+		public BrokerClient brokerClient;
 		public MultipleNotificationsBrokerListener brokerListenter;
 		public int numberOfExecutions;
 	}
@@ -75,7 +75,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 			
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerCLient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), numberOfExecutions);
 			tci.numberOfExecutions = numberOfExecutions;
 
@@ -94,7 +94,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerCLient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;
 
@@ -117,7 +117,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getConsumerDestinationType());
 					for (TestClientInfo tci : getInfoConsumers())
 					{
-						tci.brokerCLient.addAsyncConsumer(subscribe, tci.brokerListenter);
+						tci.brokerClient.addAsyncConsumer(subscribe, tci.brokerListenter);
 					}
 
 					Sleep.time(1000);
@@ -149,18 +149,18 @@ public class MultipleGenericPubSubTest extends BrokerTest
 
 						if (getDestinationType().equals(DestinationType.TOPIC))
 						{
-							tci.brokerCLient.publishMessage(brokerMessage, getDestinationName());
+							tci.brokerClient.publishMessage(brokerMessage, getDestinationName());
 						}
 						else
 						{
-							tci.brokerCLient.enqueueMessage(brokerMessage, getDestinationName());
+							tci.brokerClient.enqueueMessage(brokerMessage, getDestinationName());
 						}
 
 					}
 
 					for (TestClientInfo tci : getInfoProducers())
 					{
-						tci.brokerCLient.close();
+						tci.brokerClient.close();
 					}
 
 					setDone(true);
@@ -202,14 +202,13 @@ public class MultipleGenericPubSubTest extends BrokerTest
 
 					for (TestClientInfo tci : getInfoConsumers())
 					{
-						tci.brokerCLient.unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
+						tci.brokerClient.unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
 						Sleep.time(1000);
-						tci.brokerCLient.close();
+						tci.brokerClient.close();
 					}
 
 					setDone(true);
 					setSucess(true);
-
 				}
 				catch (Throwable t)
 				{

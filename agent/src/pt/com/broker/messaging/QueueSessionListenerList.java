@@ -27,7 +27,7 @@ public class QueueSessionListenerList
 	private static final Cache<String, QueueSessionListener> queueSessionListener = new Cache<String, QueueSessionListener>();
 	private static Logger log = LoggerFactory.getLogger(QueueSessionListenerList.class);
 
-	private QueueSessionListenerList()
+	static
 	{
 		Runnable counter = new Runnable()
 		{
@@ -48,6 +48,7 @@ public class QueueSessionListenerList
 						InternalMessage intMsg = new InternalMessage();
 						intMsg.setContent(brkMessage);
 						intMsg.setDestination(ctName);
+						intMsg.setPublishDestination(ctName);
 						intMsg.setType(MessageType.COM_TOPIC);
 
 						Gcs.publish(intMsg);

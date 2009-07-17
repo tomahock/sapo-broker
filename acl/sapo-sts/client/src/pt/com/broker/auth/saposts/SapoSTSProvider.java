@@ -42,7 +42,8 @@ public class SapoSTSProvider implements CredentialsProvider
 	@Override
 	public AuthInfo getCredentials(AuthInfo clientAuthInfo) throws Exception
 	{
-		URL url = new URL(getConnectionUrl(clientAuthInfo));
+		String connectionUrl = getConnectionUrl(clientAuthInfo);
+		URL url = new URL(connectionUrl);
 
 		URLConnection connection = url.openConnection();
 

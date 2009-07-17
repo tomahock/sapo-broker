@@ -45,6 +45,7 @@ message Atom
 	{
 		optional string action_id = 1;
 		required string destination = 2;
+		required int64 timeout = 3;
 	}	
 	
 	message Accepted

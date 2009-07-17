@@ -18,7 +18,7 @@ public class MultipleNNTopic extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerCLient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), 1);
 			tci.numberOfExecutions = getInfoProducers().size();
 
@@ -38,7 +38,7 @@ public class MultipleNNTopic extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerCLient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
 			tci.brokerListenter = null;
 
 			this.addInfoProducer(tci);

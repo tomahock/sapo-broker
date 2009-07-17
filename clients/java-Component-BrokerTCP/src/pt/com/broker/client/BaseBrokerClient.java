@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeoutException;
 
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.StringUtils;
@@ -63,8 +64,7 @@ public abstract class BaseBrokerClient
 
 	protected BrokerProtocolHandler _netHandler;
 	protected CircularContainer<HostInfo> hosts;
-//	protected SecureSessionInfo secureSessionInfo;
-
+	
 	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
 	{
 		public void onFault(pt.com.broker.types.NetFault fault)
@@ -290,7 +290,7 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Checks agent's liveness by sending a Ping message. Waits synchronously by the response. 
-	 * @return Pong message.
+	 * @return A <code>Pong</code> message or <code>null</code> if the agent dosen't answer  in 2 seconds;
 	 */
 	public NetPong checkStatus() throws Throwable
 	{
@@ -421,35 +421,40 @@ public abstract class BaseBrokerClient
 	/**
 	 * Obtain a queue message synchronously.
 	 * @param queueName Name of the queue from where to retrieve a message
+	 * @param timeout Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown.
 	 * @param acceptRequest An AcceptRequest object used handling Accept messages.
 	 * @return A notification containing the queue message.  
 	 */
-	public NetNotification poll(String queueName, AcceptRequest acceptRequest) throws Throwable
+	public NetNotification poll(String queueName, long timeout, AcceptRequest acceptRequest) throws Throwable
 	{
-		if (StringUtils.isNotBlank(queueName))
+		if( StringUtils.isBlank(queueName) )
+			throw new IllegalArgumentException("Mal-formed Poll request. queueName is blank.");
+		if( timeout <= 0 )
+			throw new IllegalArgumentException("Invalid timeout value");
+		
+		
+		NetPoll poll = new NetPoll(queueName, timeout);
+		if (acceptRequest != null)
 		{
-			NetPoll poll = new NetPoll(queueName);
-			if (acceptRequest != null)
-			{
-				poll.setActionId(acceptRequest.getActionId());
-				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
-			}
-			NetAction action = new NetAction(ActionType.POLL);
-			action.setPollMessage(poll);
-
-			NetMessage message = buildMessage(action);
-			SyncConsumer sc = SyncConsumerList.get(queueName);
-			sc.increment();
-
-			getNetHandler().sendMessage(message);
-
-			NetNotification m = sc.take();
-			return m;
+			poll.setActionId(acceptRequest.getActionId());
+			PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 		}
-		else
-		{
-			throw new IllegalArgumentException("Mal-formed Poll request");
-		}
+		NetAction action = new NetAction(ActionType.POLL);
+		action.setPollMessage(poll);
+
+		NetMessage message = buildMessage(action);
+		getNetHandler().sendMessage(message);
+
+		
+		SyncConsumer sc = SyncConsumerList.get(queueName);
+		sc.increment();
+		
+		NetNotification m = sc.take();
+		if( m == SyncConsumer.UnblockNotification)
+			throw new TimeoutException();
+		return m;
+		
+
 	}
 
 	/**
@@ -459,7 +464,7 @@ public abstract class BaseBrokerClient
 	 */
 	public NetNotification poll(String queueName) throws Throwable
 	{
-		return poll(queueName, null);
+		return poll(queueName, Long.MAX_VALUE/2, null);
 	}
 
 	/**

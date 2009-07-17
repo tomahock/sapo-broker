@@ -4,10 +4,14 @@ public final class NetPoll
 {
 	private String actionId;
 	private String destination;
-
-	public NetPoll(String destination)
+	private long timeout;
+	private long expires;
+	
+	public NetPoll(String destination, long timeout)
 	{
 		this.destination = destination;
+		this.timeout = timeout;
+		this.expires = System.currentTimeMillis() + timeout;
 	}
 
 	public void setActionId(String actionId)
@@ -25,4 +29,18 @@ public final class NetPoll
 		return destination;
 	}
 
+	public long getTimeout()
+	{
+		return timeout;
+	}
+
+	public long getExpires()
+	{
+		return expires;
+	}
+
+	public boolean expired()
+	{
+		return System.currentTimeMillis() > expires;
+	}
 }

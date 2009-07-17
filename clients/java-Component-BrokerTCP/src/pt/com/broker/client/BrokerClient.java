@@ -118,6 +118,7 @@ public class BrokerClient extends BaseBrokerClient
 			
 			DatagramPacket packet = new DatagramPacket(msgData, msgData.length, inet, hostInfo.getUdpPort());
 			socket.send(packet);
+			socket.close();
 		}
 		catch (Throwable t)
 		{

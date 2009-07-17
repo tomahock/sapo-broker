@@ -19,7 +19,7 @@ public class Multiple1NTopicRemote extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerCLient = new BrokerClient("127.0.0.1", 3423, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient("127.0.0.1", 3423, "tcp://mycompany.com/mypublisher");
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), 1);
 			tci.numberOfExecutions = getInfoProducers().size();
 

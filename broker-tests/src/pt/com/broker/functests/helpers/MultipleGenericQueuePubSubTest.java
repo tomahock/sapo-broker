@@ -25,7 +25,7 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerCLient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), getConsumerNotifications());
 			tci.numberOfExecutions = getConsumerNotifications();
 
@@ -44,7 +44,7 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerCLient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;
 

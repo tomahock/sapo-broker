@@ -26,6 +26,7 @@ public abstract class SimpleFramingEncoderV2 extends ProtocolEncoderAdapter
 
 		processBody(message, wbuf, protocolType, protocolVersion);
 		int len = wbuf.position() - 8;
+		//TODO: if len equal zero serialization failed. Deal with this.
 		wbuf.putInt(4, len);
 		wbuf.flip();
 		pout.write(wbuf);

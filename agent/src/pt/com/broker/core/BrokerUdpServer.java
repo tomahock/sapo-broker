@@ -9,7 +9,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.executor.ExecutorFilter;
 import org.apache.mina.filter.executor.IoEventQueueThrottle;
 import org.apache.mina.filter.executor.OrderedThreadPoolExecutor;
-import org.apache.mina.transport.socket.SocketSessionConfig;
+import org.apache.mina.transport.socket.DatagramSessionConfig;
 import org.apache.mina.transport.socket.nio.NioDatagramAcceptor;
 import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
@@ -29,7 +29,6 @@ public class BrokerUdpServer
 
 	private static final int MAX_BUFFER_SIZE = 16 * 1024 * 1024;
 
-	private static final int NCPU = Runtime.getRuntime().availableProcessors();
 
 	public BrokerUdpServer(int portNumber)
 	{
@@ -40,6 +39,7 @@ public class BrokerUdpServer
 	{
 		try
 		{
+			
 			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE));
 
 			final NioDatagramAcceptor acceptor = new NioDatagramAcceptor();
@@ -52,6 +52,10 @@ public class BrokerUdpServer
 			}
 			filterChainBuilder1.addLast("executor", new ExecutorFilter(tpe));
 
+			
+			DatagramSessionConfig dcfg = acceptor.getSessionConfig();
+			dcfg.setReuseAddress(true);
+			
 			acceptor.setHandler(new BrokerProtocolHandler());
 
 			// Bind

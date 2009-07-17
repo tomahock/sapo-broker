@@ -114,7 +114,7 @@ public class Builder
 			Poll poll = msg.body.poll;
 
 			NetAction netAction = new NetAction(NetAction.ActionType.POLL);
-			NetPoll netPoll = new NetPoll(poll.destinationName);
+			NetPoll netPoll = new NetPoll(poll.destinationName, Long.MAX_VALUE/2);
 			netPoll.setActionId(actionId);
 
 			message = new NetMessage(netAction);
@@ -173,13 +173,17 @@ public class Builder
 			NetAction netAction = new NetAction(NetAction.ActionType.FAULT);
 			String faultCode = null;
 			String faultMessage = null;
+			String faultDetail = null;
 
 			if (msg.body.fault.faultCode != null)
 				faultCode = msg.body.fault.faultCode.value;
 			if (msg.body.fault.faultReason != null)
 				faultMessage = msg.body.fault.faultReason.text;
 
+			faultDetail = msg.body.fault.detail;
+			
 			NetFault netFault = new NetFault(faultCode, faultMessage);
+			netFault.setDetail(faultDetail);
 			message = new NetMessage(netAction);
 			message.getAction().setFaultMessage(netFault);
 		}

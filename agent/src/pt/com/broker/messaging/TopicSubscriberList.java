@@ -57,7 +57,8 @@ public class TopicSubscriberList
 							String content = GcsInfo.getAgentName() + "#" + topicSubscriber.getDestinationName() + "#" + ssize;
 
 							message.setDestination(ctName);
-
+							message.setPublishDestination(ctName);
+							
 							NetBrokerMessage brkMessage = new NetBrokerMessage(content.getBytes("UTF-8"));
 							message.setContent(brkMessage);
 

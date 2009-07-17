@@ -17,7 +17,7 @@ public class MultipleN1Topic extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerCLient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
 			tci.brokerListenter = null;
 
 			this.addInfoProducer(tci);

@@ -86,7 +86,7 @@ namespace PTCom.ApplicationBlocks.Messaging.Network
 
                 // convert length value to network order
                 int reqLenH2N = IPAddress.HostToNetworkOrder(reqLen);
-
+				
                 // get length value into a byte array -- for use with
                 // Socket.Send
                 byte[] reqLenArray = BitConverter.GetBytes(reqLenH2N);

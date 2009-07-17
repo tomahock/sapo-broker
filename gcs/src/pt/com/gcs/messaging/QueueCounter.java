@@ -45,6 +45,7 @@ class QueueCounter implements Runnable
 				InternalMessage intMsg = new InternalMessage();
 				intMsg.setContent(brkMsg);
 				intMsg.setDestination(dName);
+				intMsg.setPublishDestination(dName);
 
 				Gcs.publish(intMsg);
 			}

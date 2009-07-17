@@ -97,6 +97,7 @@ class BDBStorage
 			}
 			else
 			{
+				System.out.println("### BD operation failed: "  + op);
 				return false;
 			}
 		}
@@ -214,7 +215,7 @@ class BDBStorage
 									long k = LongBinding.entryToLong(key);
 									msg.setMessageId(InternalMessage.getBaseMessageId() + k);
 									bdbm.setDeliveryCount(deliveryCount + 1);
-									bdbm.setReserve(System.currentTimeMillis() + 900000);
+									bdbm.setReserve(System.currentTimeMillis() + 900000); // 15 minutes
 									msg_cursor.put(key, buildDatabaseEntry(bdbm));
 
 									_syncConsumerQueue.offer(msg);
@@ -342,6 +343,10 @@ class BDBStorage
 								}
 								else
 								{
+									bdbm.setDeliveryCount(deliveryCount + 1);
+									bdbm.setReserve(System.currentTimeMillis() + 900000); // 15 minutes
+									msg_cursor.put(key, buildDatabaseEntry(bdbm));
+									
 									i0++;
 								}
 							}

@@ -72,7 +72,8 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			log.debug("Session created: " + IoSessionHelper.getRemoteAddress(iosession));
 		}
 	}
-
+	
+	
 	@Override
 	public void sessionClosed(IoSession iosession)
 	{
@@ -315,11 +316,11 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			{
 				if (actionId == null)
 				{
-					session.write(NetFault.MaximumNrQueuesReachedMessage);
+					session.write(NetFault.MaximumNrQueuesReachedErrorMessage);
 				}
 				else
 				{
-					session.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumNrQueuesReachedMessage, actionId));
+					session.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumNrQueuesReachedErrorMessage, actionId));
 				}
 				return;
 			}
@@ -391,11 +392,11 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			{
 				if (subscritption.getActionId() == null)
 				{
-					session.write(NetFault.MaximumDistinctSubscriptionsReachedMessage);
+					session.write(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage);
 				}
 				else
 				{
-					session.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumDistinctSubscriptionsReachedMessage, subscritption.getActionId()));
+					session.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage, subscritption.getActionId()));
 				}
 				return;
 			}

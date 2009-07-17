@@ -221,6 +221,24 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			break;
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
+			
+			if( fault.getCode().equals ( NetFault.PollTimeoutErrorMessage.getAction().getFaultMessage().getCode() ) )
+			{
+				String destination = fault.getDetail();
+				
+				SyncConsumer syncConsumer = SyncConsumerList.get(destination);
+
+				if (syncConsumer.count() > 0)
+				{
+					syncConsumer.offer(SyncConsumer.UnblockNotification);
+					syncConsumer.decrement();
+					if( fault.getActionId() != null)
+						PendingAcceptRequestsManager.messageFailed(fault);
+						
+					return;
+				}
+			}
+			
 			if( fault.getActionId() != null)
 			{
 				// Give pending requests a change to process error messages

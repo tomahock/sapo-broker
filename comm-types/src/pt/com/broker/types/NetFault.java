@@ -21,8 +21,9 @@ public final class NetFault
 	public static final NetMessage UnexpectedMessageTypeErrorMessage;
 	public static final NetMessage InvalidDestinationNameErrorMessage;
 	public static final NetMessage InvalidMessageDestinationTypeErrorMessage;
-	public static final NetMessage MaximumNrQueuesReachedMessage;
-	public static final NetMessage MaximumDistinctSubscriptionsReachedMessage;
+	public static final NetMessage MaximumNrQueuesReachedErrorMessage;
+	public static final NetMessage MaximumDistinctSubscriptionsReachedErrorMessage;
+	public static final NetMessage PollTimeoutErrorMessage;
 	public static final NetMessage AuthenticationFailedErrorMessage;
 	public static final NetMessage UnknownAuthenticationTypeMessage;
 	public static final NetMessage AccessDeniedErrorMessage;
@@ -37,8 +38,9 @@ public final class NetFault
 		UnexpectedMessageTypeErrorMessage = buildNetFaultMessage("1202", "Unexpected message type");
 		InvalidDestinationNameErrorMessage = buildNetFaultMessage("2001", "Invalid destination name");
 		InvalidMessageDestinationTypeErrorMessage = buildNetFaultMessage("2002", "Invalid destination type");
-		MaximumNrQueuesReachedMessage = buildNetFaultMessage("2003", "Maximum number of queues reached");
-		MaximumDistinctSubscriptionsReachedMessage = buildNetFaultMessage("2004", "Maximum distinct subscriptions reached");
+		MaximumNrQueuesReachedErrorMessage = buildNetFaultMessage("2003", "Maximum number of queues reached");
+		MaximumDistinctSubscriptionsReachedErrorMessage = buildNetFaultMessage("2004", "Maximum distinct subscriptions reached");
+		PollTimeoutErrorMessage = buildNetFaultMessage("2005", "Message poll timeout");
 		AuthenticationFailedErrorMessage = buildNetFaultMessage("3101", "Authentication failed");
 		UnknownAuthenticationTypeMessage = buildNetFaultMessage("3102", "Unknown authentication type");
 		InvalidAuthenticationChannelType = buildNetFaultMessage("3103", "Invalid authentication channel type");

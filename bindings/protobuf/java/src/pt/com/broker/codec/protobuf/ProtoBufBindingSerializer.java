@@ -136,7 +136,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			break;
 		case POLL:
 			builder.setActionType(PBMessage.Atom.Action.ActionType.POLL);
-			builder.setPoll(getPool(netMessage));
+			builder.setPoll(getPoll(netMessage));
 			break;
 		case PUBLISH:
 			builder.setActionType(PBMessage.Atom.Action.ActionType.PUBLISH);
@@ -238,12 +238,13 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		return builder.build();
 	}
 
-	private Poll getPool(NetMessage netMessage)
+	private Poll getPoll(NetMessage netMessage)
 	{
 		NetPoll net = netMessage.getAction().getPollMessage();
 
 		PBMessage.Atom.Poll.Builder builder = PBMessage.Atom.Poll.newBuilder();
-		builder.setDestination(net.getDestination());
+		builder.setDestination(net.getDestination()).
+			setTimeout(net.getTimeout());
 
 		if (net.getActionId() != null)
 			builder.setActionId(net.getActionId());
@@ -406,7 +407,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			netAction.setNotificationMessage(extractNotificationMessage(action));
 			break;
 		case POLL:
-			netAction.setPollMessage(extractPoolMessage(action));
+			netAction.setPollMessage(extractPollMessage(action));
 			break;
 		case PUBLISH:
 			netAction.setPublishMessage(extractPublishMessage(action));
@@ -535,7 +536,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			netFault.setActionId(fault.getActionId());
 
 		if (fault.hasFaultDetail())
-			netFault.setDetail(fault.getFaultCode());
+			netFault.setDetail(fault.getFaultDetail());
 
 		return netFault;
 	}
@@ -554,12 +555,12 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		return netNotification;
 	}
 
-	private NetPoll extractPoolMessage(Action action)
+	private NetPoll extractPollMessage(Action action)
 	{
 		Poll poll = action.getPoll();
 		String destination = poll.getDestination();
 
-		NetPoll pollMsg = new NetPoll(destination);
+		NetPoll pollMsg = new NetPoll(destination, poll.getTimeout() );
 
 		if (poll.hasActionId())
 			pollMsg.setActionId(poll.getActionId());
