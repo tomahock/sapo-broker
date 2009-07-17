@@ -12,7 +12,7 @@ enum ActionType
 	PUBLISH = 0;
 	POLL = 1;
 	ACCEPTED = 2;
-	ACKNOWLEDGE_MESSAGE = 3;
+	ACKNOWLEDGE = 3;
 	SUBSCRIBE = 4;
 	UNSUBSCRIBE = 5;
 	NOTIFICATION = 6;
@@ -47,6 +47,7 @@ struct Poll
 {
 	1: optional string action_id;
 	2: string destination;
+	3: i64 timeout;
 }	
 
 struct Accepted
@@ -54,7 +55,7 @@ struct Accepted
 	1: string action_id;
 }
 
-struct AcknowledgeMessage
+struct Acknowledge
 {
 	1: optional string action_id;
 	2: string message_id;
@@ -115,7 +116,7 @@ struct Action
 	1: optional Publish publish;
 	2: optional Poll poll;
 	3: optional Accepted accepted;
-	4: optional AcknowledgeMessage ack_message;
+	4: optional Acknowledge ack_message;
 	5: optional Subscribe subscribe;
 	6: optional Unsubscribe unsubscribe;
 	7: optional Notification notification;

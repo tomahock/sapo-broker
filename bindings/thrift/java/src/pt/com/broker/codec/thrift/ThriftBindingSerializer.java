@@ -123,7 +123,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 			netAction.setNotificationMessage(extractNotificationMessage(action));
 			break;
 		case POLL:
-			netAction.setPollMessage(extractPoolMessage(action));
+			netAction.setPollMessage(extractPollMessage(action));
 			break;
 		case PUBLISH:
 			netAction.setPublishMessage(extractPublishMessage(action));
@@ -168,7 +168,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 		{
 		case ActionType.ACCEPTED:
 			return NetAction.ActionType.ACCEPTED;
-		case ActionType.ACKNOWLEDGE_MESSAGE:
+		case ActionType.ACKNOWLEDGE:
 			return NetAction.ActionType.ACKNOWLEDGE;
 		case ActionType.FAULT:
 			return NetAction.ActionType.FAULT;
@@ -215,7 +215,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private NetAcknowledge extractAcknowledgeMessage(Action action)
 	{
-		AcknowledgeMessage ThriftAckMsg = action.getAck_message();
+		Acknowledge ThriftAckMsg = action.getAck_message();
 		String destination = ThriftAckMsg.getDestination();
 		String messageId = ThriftAckMsg.getMessage_id();
 		NetAcknowledge ackMessage = new NetAcknowledge(destination, messageId);
@@ -237,7 +237,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 			netFault.setActionId(fault.getAction_id());
 
 		if (fault.isSetFault_detail())
-			netFault.setDetail(fault.getFault_code());
+			netFault.setDetail(fault.getFault_detail());
 
 		return netFault;
 	}
@@ -256,12 +256,12 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return netNotification;
 	}
 
-	private NetPoll extractPoolMessage(Action action)
+	private NetPoll extractPollMessage(Action action)
 	{
 		Poll poll = action.getPoll();
 		String destination = poll.getDestination();
 
-		NetPoll pollMsg = new NetPoll(destination);
+		NetPoll pollMsg = new NetPoll(destination, poll.getTimeout());
 
 		if (poll.isSetAction_id())
 			pollMsg.setActionId(poll.getAction_id());
@@ -356,7 +356,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 			ac.setAccepted(getAccepted(netMessage));
 			break;
 		case ACKNOWLEDGE:
-			ac.setAction_type(ActionType.ACKNOWLEDGE_MESSAGE);
+			ac.setAction_type(ActionType.ACKNOWLEDGE);
 			ac.setAck_message(getAcknowledge(netMessage));
 			break;
 		case FAULT:
@@ -369,7 +369,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 			break;
 		case POLL:
 			ac.setAction_type(ActionType.POLL);
-			ac.setPoll(getPool(netMessage));
+			ac.setPoll(getPoll(netMessage));
 			break;
 		case PUBLISH:
 			ac.setAction_type(ActionType.PUBLISH);
@@ -433,11 +433,11 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private AcknowledgeMessage getAcknowledge(NetMessage netMessage)
+	private Acknowledge getAcknowledge(NetMessage netMessage)
 	{
 		NetAcknowledge net = netMessage.getAction().getAcknowledgeMessage();
 
-		AcknowledgeMessage struct = new AcknowledgeMessage();
+		Acknowledge struct = new Acknowledge();
 
 		struct.setDestination(net.getDestination());
 		struct.setMessage_id(net.getMessageId());
@@ -481,12 +481,14 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Poll getPool(NetMessage netMessage)
+	private Poll getPoll(NetMessage netMessage)
 	{
 		NetPoll net = netMessage.getAction().getPollMessage();
 
 		Poll struct = new Poll();
 		struct.setDestination(net.getDestination());
+		
+		struct.setTimeout(net.getTimeout());
 
 		if (net.getActionId() != null)
 			struct.setAction_id(net.getActionId());
