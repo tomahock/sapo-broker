@@ -1,0 +1,6 @@
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\ClientTests\bin\Release\ClientTests.exe
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\ClientTests\bin\Release\BrokerClient.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\ClientTests\bin\Release\log4net.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\ClientTests\bin\Release\Thrift.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\ClientTests\obj\Release\ResolveAssemblyReference.cache
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\ClientTests\obj\Release\ClientTests.exe

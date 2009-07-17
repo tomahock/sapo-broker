@@ -1,0 +1,5 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartArguments>-hn:lcosta-desktop -port:3323 -dt:QUEUE -cer:c:\testCert.cer -dn:/queue/foo</StartArguments>
+  </PropertyGroup>
+</Project>

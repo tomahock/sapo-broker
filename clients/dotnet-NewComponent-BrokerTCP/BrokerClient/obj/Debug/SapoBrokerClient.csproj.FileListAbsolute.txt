@@ -1,0 +1,16 @@
+Z:\Work\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\obj\Debug\ResolveAssemblyReference.cache
+X:\BrokerClient\bin\Debug\BrokerClient.dll
+X:\BrokerClient\bin\Debug\BrokerClient.pdb
+X:\BrokerClient\bin\Debug\log4net.dll
+X:\BrokerClient\bin\Debug\Thrift.dll
+X:\BrokerClient\obj\Debug\ResolveAssemblyReference.cache
+X:\BrokerClient\obj\Debug\BrokerClient.dll
+X:\BrokerClient\obj\Debug\BrokerClient.pdb
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Debug\BrokerClient.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Debug\BrokerClient.pdb
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Debug\log4net.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Debug\Thrift.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Debug\Microsoft.SqlServer.BatchParser.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\obj\Debug\ResolveAssemblyReference.cache
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\obj\Debug\BrokerClient.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\obj\Debug\BrokerClient.pdb

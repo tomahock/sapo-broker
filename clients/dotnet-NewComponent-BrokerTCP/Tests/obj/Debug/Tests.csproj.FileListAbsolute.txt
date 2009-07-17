@@ -1,0 +1,11 @@
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\obj\Debug\ResolveAssemblyReference.cache
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\bin\Debug\Tests.exe
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\bin\Debug\Tests.pdb
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\obj\Debug\Tests.exe
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\obj\Debug\Tests.pdb
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\bin\Debug\BrokerClient.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\bin\Debug\ClientTests.exe
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\bin\Debug\Thrift.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\bin\Debug\log4net.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\bin\Debug\ClientTests.pdb
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\bin\Debug\BrokerClient.pdb

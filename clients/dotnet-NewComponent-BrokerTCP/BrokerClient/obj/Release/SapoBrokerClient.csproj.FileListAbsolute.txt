@@ -1,0 +1,6 @@
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Release\BrokerClient.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Release\log4net.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Release\Thrift.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\bin\Release\Microsoft.SqlServer.BatchParser.dll
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\obj\Release\ResolveAssemblyReference.cache
+X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\BrokerClient\obj\Release\BrokerClient.dll

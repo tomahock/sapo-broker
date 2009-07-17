@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<TestParams>
+  <Defaults>
+    <Param Name="agent1-host" Value="lcosta-desktop"/>
+    <Param Name="agent1-port" Value="3323"/>
+    <Param Name="agent1-ssl-port" Value="3390"/>
+    <Param Name="agent2-host" Value="lcosta-desktop"/>
+    <Param Name="agent2-port" Value="3423"/>
+    <Param Name="agent2-ssl-port" Value="3490"/>
+    <Param Name="runs" Value="1"/>
+    <Param Name="certLocation" Value="c:\testCert.cer" />
+  </Defaults>
+  <Tests>
+    <Test Name="test1">
+      <Param Name="X" Value="y"/>
+      <Param Name="X" Value="y"/>
+      <Param Name="X" Value="y"/>
+    </Test>
+    <Test Name="test2">
+      <Param Name="myName" Value="myValue"/>
+    </Test>
+  </Tests>
+</TestParams>
