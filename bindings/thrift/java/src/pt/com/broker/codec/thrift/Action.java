@@ -12,10 +12,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
+
 import org.apache.thrift.protocol.*;
+import org.apache.thrift.transport.*;
 
 public class Action implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Action");
@@ -38,7 +39,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
   public static final int POLL = 2;
   public Accepted accepted;
   public static final int ACCEPTED = 3;
-  public AcknowledgeMessage ack_message;
+  public Acknowledge ack_message;
   public static final int ACK_MESSAGE = 4;
   public Subscribe subscribe;
   public static final int SUBSCRIBE = 5;
@@ -70,7 +71,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     put(ACCEPTED, new FieldMetaData("accepted", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Accepted.class)));
     put(ACK_MESSAGE, new FieldMetaData("ack_message", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, AcknowledgeMessage.class)));
+        new StructMetaData(TType.STRUCT, Acknowledge.class)));
     put(SUBSCRIBE, new FieldMetaData("subscribe", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Subscribe.class)));
     put(UNSUBSCRIBE, new FieldMetaData("unsubscribe", TFieldRequirementType.OPTIONAL, 
@@ -100,7 +101,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     Publish publish,
     Poll poll,
     Accepted accepted,
-    AcknowledgeMessage ack_message,
+    Acknowledge ack_message,
     Subscribe subscribe,
     Unsubscribe unsubscribe,
     Notification notification,
@@ -140,7 +141,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
       this.accepted = new Accepted(other.accepted);
     }
     if (other.isSetAck_message()) {
-      this.ack_message = new AcknowledgeMessage(other.ack_message);
+      this.ack_message = new Acknowledge(other.ack_message);
     }
     if (other.isSetSubscribe()) {
       this.subscribe = new Subscribe(other.subscribe);
@@ -241,11 +242,11 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
-  public AcknowledgeMessage getAck_message() {
+  public Acknowledge getAck_message() {
     return this.ack_message;
   }
 
-  public void setAck_message(AcknowledgeMessage ack_message) {
+  public void setAck_message(Acknowledge ack_message) {
     this.ack_message = ack_message;
   }
 
@@ -450,99 +451,51 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case PUBLISH:
-      if (value == null) {
-        unsetPublish();
-      } else {
-        setPublish((Publish)value);
-      }
+      setPublish((Publish)value);
       break;
 
     case POLL:
-      if (value == null) {
-        unsetPoll();
-      } else {
-        setPoll((Poll)value);
-      }
+      setPoll((Poll)value);
       break;
 
     case ACCEPTED:
-      if (value == null) {
-        unsetAccepted();
-      } else {
-        setAccepted((Accepted)value);
-      }
+      setAccepted((Accepted)value);
       break;
 
     case ACK_MESSAGE:
-      if (value == null) {
-        unsetAck_message();
-      } else {
-        setAck_message((AcknowledgeMessage)value);
-      }
+      setAck_message((Acknowledge)value);
       break;
 
     case SUBSCRIBE:
-      if (value == null) {
-        unsetSubscribe();
-      } else {
-        setSubscribe((Subscribe)value);
-      }
+      setSubscribe((Subscribe)value);
       break;
 
     case UNSUBSCRIBE:
-      if (value == null) {
-        unsetUnsubscribe();
-      } else {
-        setUnsubscribe((Unsubscribe)value);
-      }
+      setUnsubscribe((Unsubscribe)value);
       break;
 
     case NOTIFICATION:
-      if (value == null) {
-        unsetNotification();
-      } else {
-        setNotification((Notification)value);
-      }
+      setNotification((Notification)value);
       break;
 
     case FAULT:
-      if (value == null) {
-        unsetFault();
-      } else {
-        setFault((Fault)value);
-      }
+      setFault((Fault)value);
       break;
 
     case PING:
-      if (value == null) {
-        unsetPing();
-      } else {
-        setPing((Ping)value);
-      }
+      setPing((Ping)value);
       break;
 
     case PONG:
-      if (value == null) {
-        unsetPong();
-      } else {
-        setPong((Pong)value);
-      }
+      setPong((Pong)value);
       break;
 
     case AUTH:
-      if (value == null) {
-        unsetAuth();
-      } else {
-        setAuth((Authentication)value);
-      }
+      setAuth((Authentication)value);
       break;
 
     case ACTION_TYPE:
-      if (value == null) {
-        unsetAction_type();
-      } else {
-        setAction_type((Integer)value);
-      }
+      setAction_type((Integer)value);
       break;
 
     default:
@@ -791,7 +744,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
           break;
         case ACK_MESSAGE:
           if (field.type == TType.STRUCT) {
-            this.ack_message = new AcknowledgeMessage();
+            this.ack_message = new Acknowledge();
             this.ack_message.read(iprot);
           } else { 
             TProtocolUtil.skip(iprot, field.type);
@@ -1056,15 +1009,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     }
     if (!first) sb.append(", ");
     sb.append("action_type:");
-    String action_type_name = ActionType.VALUES_TO_NAMES.get(this.action_type);
-    if (action_type_name != null) {
-      sb.append(action_type_name);
-      sb.append(" (");
-    }
     sb.append(this.action_type);
-    if (action_type_name != null) {
-      sb.append(")");
-    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -1073,8 +1018,8 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
   public void validate() throws TException {
     // check for required fields
     // check that fields of type enum have valid values
-    if (isSetAction_type() && !ActionType.VALID_VALUES.contains(action_type)){
-      throw new TProtocolException("The field 'action_type' has been assigned the invalid value " + action_type);
+    if (__isset.action_type && !ActionType.VALID_VALUES.contains(action_type)){
+      throw new TProtocolException("Invalid value of field 'action_type'!");
     }
   }
 

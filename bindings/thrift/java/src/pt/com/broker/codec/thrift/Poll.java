@@ -12,23 +12,28 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
+
 import org.apache.thrift.protocol.*;
+import org.apache.thrift.transport.*;
 
 public class Poll implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Poll");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField DESTINATION_FIELD_DESC = new TField("destination", TType.STRING, (short)2);
+  private static final TField TIMEOUT_FIELD_DESC = new TField("timeout", TType.I64, (short)3);
 
   public String action_id;
   public static final int ACTION_ID = 1;
   public String destination;
   public static final int DESTINATION = 2;
+  public long timeout;
+  public static final int TIMEOUT = 3;
 
   private final Isset __isset = new Isset();
   private static final class Isset implements java.io.Serializable {
+    public boolean timeout = false;
   }
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
@@ -36,6 +41,8 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
         new FieldValueMetaData(TType.STRING)));
     put(DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
+    put(TIMEOUT, new FieldMetaData("timeout", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.I64)));
   }});
 
   static {
@@ -47,11 +54,14 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
 
   public Poll(
     String action_id,
-    String destination)
+    String destination,
+    long timeout)
   {
     this();
     this.action_id = action_id;
     this.destination = destination;
+    this.timeout = timeout;
+    this.__isset.timeout = true;
   }
 
   /**
@@ -64,6 +74,8 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     if (other.isSetDestination()) {
       this.destination = other.destination;
     }
+    __isset.timeout = other.__isset.timeout;
+    this.timeout = other.timeout;
   }
 
   @Override
@@ -117,22 +129,40 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
+  public long getTimeout() {
+    return this.timeout;
+  }
+
+  public void setTimeout(long timeout) {
+    this.timeout = timeout;
+    this.__isset.timeout = true;
+  }
+
+  public void unsetTimeout() {
+    this.__isset.timeout = false;
+  }
+
+  // Returns true if field timeout is set (has been asigned a value) and false otherwise
+  public boolean isSetTimeout() {
+    return this.__isset.timeout;
+  }
+
+  public void setTimeoutIsSet(boolean value) {
+    this.__isset.timeout = value;
+  }
+
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      if (value == null) {
-        unsetAction_id();
-      } else {
-        setAction_id((String)value);
-      }
+      setAction_id((String)value);
       break;
 
     case DESTINATION:
-      if (value == null) {
-        unsetDestination();
-      } else {
-        setDestination((String)value);
-      }
+      setDestination((String)value);
+      break;
+
+    case TIMEOUT:
+      setTimeout((Long)value);
       break;
 
     default:
@@ -148,6 +178,9 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     case DESTINATION:
       return getDestination();
 
+    case TIMEOUT:
+      return new Long(getTimeout());
+
     default:
       throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
@@ -160,6 +193,8 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
       return isSetAction_id();
     case DESTINATION:
       return isSetDestination();
+    case TIMEOUT:
+      return isSetTimeout();
     default:
       throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
@@ -196,6 +231,15 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
         return false;
     }
 
+    boolean this_present_timeout = true;
+    boolean that_present_timeout = true;
+    if (this_present_timeout || that_present_timeout) {
+      if (!(this_present_timeout && that_present_timeout))
+        return false;
+      if (this.timeout != that.timeout)
+        return false;
+    }
+
     return true;
   }
 
@@ -229,6 +273,14 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
             TProtocolUtil.skip(iprot, field.type);
           }
           break;
+        case TIMEOUT:
+          if (field.type == TType.I64) {
+            this.timeout = iprot.readI64();
+            this.__isset.timeout = true;
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
         default:
           TProtocolUtil.skip(iprot, field.type);
           break;
@@ -256,6 +308,9 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
       oprot.writeString(this.destination);
       oprot.writeFieldEnd();
     }
+    oprot.writeFieldBegin(TIMEOUT_FIELD_DESC);
+    oprot.writeI64(this.timeout);
+    oprot.writeFieldEnd();
     oprot.writeFieldStop();
     oprot.writeStructEnd();
   }
@@ -281,6 +336,10 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     } else {
       sb.append(this.destination);
     }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("timeout:");
+    sb.append(this.timeout);
     first = false;
     sb.append(")");
     return sb.toString();
