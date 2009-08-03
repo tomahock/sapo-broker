@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
@@ -79,8 +80,9 @@ public class SslNetworkConnector extends BaseNetworkConnector
 		else
 			socketFactory = getSslSocketFactory(keystoreLocation, keystorePw);
 
-		client = new Socket(host.getHostname(), host.getPort());
-		client = socketFactory.createSocket(hostInfo.getHostname(), hostInfo.getPort());
+		//client = socketFactory.createSocket(hostInfo.getHostname(), hostInfo.getPort());
+		client = socketFactory.createSocket();
+		client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), 15 *1000);
 		getSocket().setSoTimeout(0);
 
 		rawOutput = new DataOutputStream(getSocket().getOutputStream());

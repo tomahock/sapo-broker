@@ -2,6 +2,8 @@ package pt.com.broker.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import org.slf4j.Logger;
@@ -25,7 +27,8 @@ public class NetworkConnector extends BaseNetworkConnector
 		log.warn("Trying to connect");
 		this.setConnectionVersion(connectionVersion);
 		this.hostInfo = host;
-		client = new Socket(host.getHostname(), host.getPort());
+		client = new Socket();
+		client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), 15 *1000);
 		rawOutput = new DataOutputStream(getSocket().getOutputStream());
 		rawInput = new DataInputStream(getSocket().getInputStream());
 		socketAddress = getSocket().getRemoteSocketAddress();

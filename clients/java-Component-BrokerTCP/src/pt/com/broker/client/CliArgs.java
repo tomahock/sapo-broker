@@ -27,7 +27,7 @@ public interface CliArgs
 	 * 
 	 *  @return Host UDP port.
 	 */
-	@Option(shortName = "u", defaultValue = "3366")
+	@Option(shortName = "u", defaultValue = "5445")
 	int getUdpPort();
 
 	/**
@@ -83,7 +83,7 @@ public interface CliArgs
 	 * 
 	 *  @return Message length. Useful for generate random messages with known size.
 	 */
-	@Option(shortName = "l", defaultValue = "1000")
+	@Option(shortName = "l", defaultValue = "100")
 	int getMessageLength();
 
 }
