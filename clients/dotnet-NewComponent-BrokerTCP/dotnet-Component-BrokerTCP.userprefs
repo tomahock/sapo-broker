@@ -1,23 +1,8 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="BrokerClient/Networking/NetworkHandler.cs" ctype="Workbench">
-    <Files>
-      <File FileName="BrokerClient/Networking/NetworkHandler.cs" Line="524" Column="34" />
-      <File FileName="ClientTests/Main.cs" Line="296" Column="43" />
-      <File FileName="BrokerClient/BrokerClient.cs" Line="219" Column="1" />
-      <File FileName="Tests/SimpleTestsFramework/Test.cs" Line="123" Column="10" />
-      <File FileName="Tests/Main.cs" Line="30" Column="6" />
-    </Files>
+  <MonoDevelop.Ide.Workbench ctype="Workbench">
     <Pads>
       <Pad Id="ProjectPad">
-        <State expanded="True">
-          <Node name="ClientTests" expanded="True" />
-          <Node name="SapoBrokerClient" expanded="True">
-            <Node name="Networking" expanded="True">
-              <Node name="NetworkHandler.cs" selected="True" />
-            </Node>
-          </Node>
-          <Node name="Tests" expanded="True" />
-        </State>
+        <State />
       </Pad>
       <Pad Id="ClassPad">
         <State expanded="True" selected="True" />
