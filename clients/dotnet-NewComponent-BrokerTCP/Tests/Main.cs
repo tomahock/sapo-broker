@@ -16,16 +16,17 @@ namespace Tests
     {
         static void Main(string[] args)
         {
-            TestContext.Init(@"X:\BrokerRepo\clients\dotnet-NewComponent-BrokerTCP\Tests\Tests\TestParms\TestParams.xml");
-			//TestContext.Init(@"/home/lcosta/Work/BrokerRepo/clients/dotnet-NewComponent-BrokerTCP/Tests/Tests/TestParms/TestParams.xml");
-                        
+            TestContext.Init(@"../../Tests/TestParms/TestParams.xml");
+			
+            log4net.Config.BasicConfigurator.Configure();
+
             int numberOfRuns = Int32.Parse ( TestContext.GetValue("runs") );
 
             //new C1P1Test().Run(numberOfRuns);
             //new CNPNTest().Run(numberOfRuns);
             //new CNPN_Queue().Run(numberOfRuns);
-            new PollTest().Run(numberOfRuns);
-            //new SSLTest().Run(numberOfRuns);
+            //new PollTest().Run(numberOfRuns);
+            new SSLTest().Run(numberOfRuns);
 
             Console.Read();
         }

@@ -55,7 +55,7 @@ namespace SapoBrokerClient.Messaging
 
         public static void AddAcceptRequest(AcceptRequest request)
         {
-            if( request.ActionId == null)
+			if( request.ActionId == null)
                 throw new Exception("Action identifier in AcceptRequest can not be null.");
 
             if( request.Listener == null)

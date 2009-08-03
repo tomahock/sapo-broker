@@ -32,7 +32,6 @@ namespace Tests.Tests.PositiveTests
 
             TestClientInfo tci = new TestClientInfo();
             tci.brokerClient = new SslBrokerClient(new HostInfo(TestContext.GetValue("agent1-host"), Int32.Parse(TestContext.GetValue("agent1-ssl-port"))), GetCertCollection());
-            //tci.numberOfExecutions = ProducersInfo.Count();
 
             base.AddConsumerInfo(tci);
         }
@@ -40,7 +39,8 @@ namespace Tests.Tests.PositiveTests
         private X509CertificateCollection GetCertCollection()
         {
             X509CertificateCollection certCollection = new X509CertificateCollection();
-            X509Certificate cert = X509Certificate.CreateFromCertFile(TestContext.GetValue("certLocation"));
+            string certLocation = TestContext.GetValue("certLocation");
+            X509Certificate cert = X509Certificate.CreateFromCertFile(certLocation);
             certCollection.Add(cert);
             return certCollection;
         }

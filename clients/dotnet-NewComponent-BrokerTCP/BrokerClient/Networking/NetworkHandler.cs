@@ -67,8 +67,6 @@ namespace SapoBrokerClient.Networking
         private int connectionVersion = 0;
 
         private bool closed = false;
-        private ManualResetEvent writeAllowed = new ManualResetEvent(true);
-
 				
 		#endregion
 
@@ -112,7 +110,13 @@ namespace SapoBrokerClient.Networking
         protected void CreateAndConnect(HostInfo hostInfo)
         {
             this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(hostInfo.Hostname, hostInfo.Port);
+            IAsyncResult asyncResult = socket.BeginConnect(hostInfo.Hostname, hostInfo.Port, null, null);
+            if (!asyncResult.CompletedSynchronously)
+            {
+                bool signaled =  asyncResult.AsyncWaitHandle.WaitOne(15 * 1000, false);
+                if (!signaled)
+                    throw new TimeoutException(String.Format("Connection timeout while connectig to agent {0}:{1}", hostInfo.Hostname, hostInfo.Port));
+            }
             this.communicationStream = GetCommunicationStream();
         }
 
@@ -395,39 +399,6 @@ namespace SapoBrokerClient.Networking
 		{
 			get{ return communicationStream;}
 		}
-
-
-        private static bool SocketStillConnected(Socket clientSocket)
-        {
-            // Adapted from: http://msdn.microsoft.com/en-us/library/system.net.sockets.socket.connected.aspx
-            bool blockingState = clientSocket.Blocking;
-			bool stillConnected = true;
-            try
-            {
-                byte[] tmp = new byte[1];
-
-                clientSocket.Blocking = false;
-				
-                clientSocket.Send(tmp, 0, 0);
-
-            }
-            catch (SocketException se)
-            {
-                // 10035 == WSAEWOULDBLOCK
-                if (!se.NativeErrorCode.Equals(10035))
-                {
-                    stillConnected = false;
-                }
-            }
-            catch (Exception)
-            {
-                stillConnected = false;
-            }
-            
-            clientSocket.Blocking = blockingState;
-			
-            return stillConnected;
-        }
 
 
         #region IDisposable and Close Members

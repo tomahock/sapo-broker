@@ -143,7 +143,8 @@ namespace SapoBrokerClient.Messaging
                 {
                     log.Error("Communication Failed");
                     
-                    OnCommunicationFailed();
+                    if( OnCommunicationFailed != null)
+						OnCommunicationFailed();
                 }
             };
         }
@@ -228,7 +229,7 @@ namespace SapoBrokerClient.Messaging
         public static void SendMessageOverUdp(NetMessage message, HostInfo hostInfo, IMessageSerializer messageSerializer)
         {
             byte[] encodedData = messageSerializer.Marshall(message);
-            UdpNetworkHandler.SendMessage(encodedData, hostInfo);
+            UdpNetworkHandler.SendMessage(encodedData, hostInfo, messageSerializer);
         }
 
 		public bool HandleOutgoingMessage(NetMessage message, AcceptRequest acceptRequest)

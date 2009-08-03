@@ -2,14 +2,14 @@
 
 <TestParams>
   <Defaults>
-    <Param Name="agent1-host" Value="lcosta-desktop"/>
+    <Param Name="agent1-host" Value="localhost"/>
     <Param Name="agent1-port" Value="3323"/>
     <Param Name="agent1-ssl-port" Value="3390"/>
-    <Param Name="agent2-host" Value="lcosta-desktop"/>
+    <Param Name="agent2-host" Value="localhost"/>
     <Param Name="agent2-port" Value="3423"/>
     <Param Name="agent2-ssl-port" Value="3490"/>
     <Param Name="runs" Value="1"/>
-    <Param Name="certLocation" Value="c:\testCert.cer" />
+    <Param Name="certLocation" Value="../../testCert.cer" />
   </Defaults>
   <Tests>
     <Test Name="test1">
