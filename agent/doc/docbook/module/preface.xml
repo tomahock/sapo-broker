@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<preface id="preface">
+  <title>Preface</title>
+  <para>
+ 	This guide provides an introduction to Sapo-Broker and what it is about.
+1 	</para>
+  <section>
+    <title>Introduction</title>
+    <para>Sapo-Broker is a high performance distributed messaging framework. It can either work as a local daemon that has a SOAP API or embedded within your application. Among other features, it provides minimal administration overhead, Publish-Subscribe and Point-to-Point messaging, guaranteed delivery and wildcard subscriptions.</para>
+    <para>Sapo-Broker is written in Java and has client libraries for Java, Perl, Python, PHP, Ruby, .NET, C and Erlang.</para>
+    <section>
+      <title>Messaging</title>
+      <para>When talking about messaging we are really talking about asynchronous operations. This means that broker clients can register interest in "Destinations"and return immediately, also a client can be notified in an event-driven fashion when something has happened. This allows for a loosely coupled exchange of messages between producers and consumers since they know nothing of each other, they only know about destinations (queues and topics). Immediate benefits of using messaging are:</para>
+      <itemizedlist>
+        <listitem>Fire and Forget: Producers don't wait for consumers, as soon as the broker receives the message they may return immediately</listitem>
+        <listitem>Scalability: Messages in a single stream can be handled in parallel by many client threads or systems</listitem>
+        <listitem>Robustness to Change: Applications on heterogeneous platforms communicate and interoperate transparently yet each application operates independently of, and asynchronously with, others. Communicating programs remain separately maintained and individually replaceable</listitem>
+        <listitem>Time Independence: Neither the message sender nor the message recipient needs to be online at the same time. The Broker queues messages when their recipients are not available</listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Main features overview</title>
+      <itemizedlist>
+        <listitem>Sapo-Broker supports publish-subscribe and point-to-point communication, as well durable topic subscription. Subscriptions may be defined as regular expressions.</listitem>
+        <listitem>Access control policies can be defined to constrain message production or consumption based in several criteria including role-based authorization. SSL can be configured for further message security. A dropbox functionality is also available.</listitem>
+        <listitem>Clients libraries are available in a number of languages and platforms such as Java, Perl, Python, PHP, Ruby, .NET, C and Erlang.</listitem>
+        <listitem>The number of agents constituting a communicating cloud is easily scalable thus providing system scalability and availability.</listitem>
+        <listitem>Minimum overall configuration.</listitem>
+      </itemizedlist>
+    </section>
+  </section>
+  <section>
+    <title>Sapo-Broker Features</title>
+    <section>
+      <title>Supported broker topologies</title>
+      <para>Message brokers, depending on specific products, can be configured to implement different topologies, such as hierarchical, network, single broker or a mixture of the previous.</para>
+      <para>Sapo-Broker can be used as a single instance or in network topology. Although a single agent instance could be used in small working sets, a multiple agent (network) design would better take advantage of Sapo-Broker, namely in system availability and throughput, with client failover and distributed workload, respectively. In networking topologies all agents are interconnected in what is known as agent cloud. Is is not yet possible to communicate between different agent clouds.</para>
+    </section>
+    <section>
+      <title>Configuration</title>
+      <para>Sapo-Broker configuration has a two level scope, meaning that some configuration aspects are related to Broker agents and others are global, and, as such, are applicable to all agents in the same cloud.</para>
+      <section>
+        <title>Global configuration</title>
+        <para>There are three main configuration sections in global configuration file: Domain, Messages and Access Control. The later is divided in two parts and is discussed in <link linkend="ACCESS_CONTROL">Access control</link> section.</para>
+        <para>Domain contains the agents composing the broker cloud ,that is, all the interconnected agents through witch client communication occurs. For each agent is defined a name and communication parameters  (IP and TCP port).</para>
+        <para>The configuration aspects regarding messages are defined in Messages section. There is possible to define the maximum message size, the maximum number of queues, and topic distinct subscriptions, as well the time each queue message kept without consumers. Once that time ends, the message is deleted.</para>
+      </section>
+      <section>
+        <title>Agents configuration</title>
+        <para>Agent specific configuration contains all information specific to each agent, as its name open TCP ports, such inter-agent communication port, client TCP, UDP and HTTP port as well as a legacy port through witch clients not supporting the new wire messaging protocol can still communicate. This parameters are defined in "net" section as well as the location of the global configuration file.</para>
+        <para>The directory where the queue messages are persisted is specified in "persistency" section. Dropbox functionality is configured in "messaging" section where the watch out directory, check interval, and whether the this feature is enabled or not are defined (Note: for now, this feature is disabled).</para>
+        <para>Another optional section exists witch is related to SSL support. This is discussed in <link linkend="SSL_CONFIGURATION">SSL Configuration</link>.</para>
+      </section>
+    </section>
+    <section>
+      <title>Message Publication and Subscription</title>
+      <para>When designing and implementing messaging-based solutions two man paradigms exist: Point-to-Point and Publish-Subscribe. Just like Java Message Service (<ulink url="http://java.sun.com/products/jms/">JMS</ulink>) we use the terms "TOPIC" to refer Publish-Subscribe Destinations and "QUEUE" to designate Point-to-Point Destinations. Sapo-Broker supports  both of these patterns and adds special purpose Destination named "VIRTUAL_QUEUE" witch stands somewhere in between.</para>
+      <para>A publication, in general terms, contains a Destination Type (TOPIC or QUEUE) witch determines the pattern intended is, and a Destination Name witch may be a TOPIC or QUEUE name. Subscriptions, on the other hand, include a Destination Type, but may also be VIRTUAL_QUEUE, witch means that subscribers desire that some TOPIC publication should be persisted and retrieved like a QUEUE publication; and TOPIC names can referred using a regular expression, not the exact name.</para>
+      <para>A use case regarding topic, queues and virtual queues is <link linkend="TOPICS_QUEUES_USE_CASE">available</link>.</para>
+      <section>
+        <title>Publish-Subscribe</title>
+        <para>Messages published to the Destination Type "TOPIC" adhere to the Publish-Subscribe pattern, that is, they are delivered to any consumer subscribed in the published Destination Name. That is, they can be delivered to zero or many consumers, regardless if they are connected to the same agent as the producer or a remote one. If there are no remote clients, the local agent doesn't forward the message.</para>
+        <para>Message producers, using this pattern, don't have no know what applications are interested in a particular type of message. Producers just publish events notifying of some notable occurrence and applications subscribed to it based on their needs.</para>
+      </section>
+      <section>
+        <title>Point-to-Point</title>
+        <para>When using Point-to-Point messaging pattern, message delivery is load balanced across many consumers, meaning each message goes to exactly one consumer. Consumers compete for messages and  must acknowledge they successfully process the message. Message producers and consumers may not overlap their existence in time.</para>
+        <para>This pattern is most adequate when system work load must be distribute, message processing should be done by only one entity and producers know in advanced that their will message consumers.</para>
+      </section>
+      <section>
+        <title>Virtual Queues</title>
+        <para>Events published as TOPIC messages lack the ability to be persisted and QUEUE messages once consumed by a system, can not be consumed by another, where system means a set a software entities that work collaborative with other software entities with the same system. This means that if there are two systems interested in the same type of information published to queues, the two systems wouldn't received the same messages.</para>
+        <para>To overcome these handicaps Sapo-Broker supports VIRTUAL_QUEUE Destination Type. When clients subscribe to a topic as a Virtual Queue an ordinary queue is created and all topic messages whose Destination Name match the subscription are stored in the created queue. Virtual Queues are also known as durable subscriptions.</para>
+        <para>Destination Name subscription of Virtual Queues has the form:</para>
+        <code>[private name]@[topic name subscription pattern]</code>
+        <para>An example could be: <code>myVirtualQueue@/topic/.*</code></para>
+        <para>Please note that the private names must be unique across systems (as defined previously) so that the problems with Point-to-Point pattern don't arise.</para>
+      </section>
+      <section>
+        <title>Message Queues</title>
+        <para>Queues implement reliable load balancing with persistence. Messages are only removed from the Queue after the broker receives an acknowledge, so if a consumer crashes during the processing of a message it is automatically redelivered to another consumer. Clients have a limited time to acknowledge message processing during witch the message is guaranteed not be delivered to other client. The first time the message is delivered local consumers have priority.</para>
+        <para>This design protects the system, in a broader sense, against client failure but not against agents failure. If a message is delivered to a client and, before client's Acknowledge, the agent fails, the message maybe delivered again. This violates the Point-to-Point pattern premises but in real world scenarios is near impossible to guarantee 100% robustness. Trade-offs considered and having empiric knowledge that this is a very rare case a few mitigation guidelines are offered to overcome the issue, in case that it constitutes a critical problem.</para>
+        <section>
+          <title>Solution 1 – Client persistence</title>
+          <para>Clients, once they receive the message may persist it and send the respective Acknowledge with an Action Identifier. If the connection with the agent is lost or an Accept message is not received the message should not be processed and eventually will be delivered again, otherwise the client can process the message. If meanwhile client fails its responsible for, when reactivated, process the locally persisted message.</para>
+        </section>
+        <section>
+          <title>Solution 2 – Global acknowledge record</title>
+          <para>To guarantee that each produced message is processed only once a global acknowledge record may be implemented. After receiving a message, clients query the global acknowledge system to determine if the message was already processed, if not, they process it and afterwards send the due Acknowledge message and inform the global acknowledge system that a given message was already processed. The  last step may be only done if the acknowledge fails.</para>
+        </section>
+      </section>
+    </section>
+  </section>
+</preface>
+

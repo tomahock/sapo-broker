@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="tutorial">
+  <title>User Guide</title>
+
+  <section>
+    <title>Getting started</title>
+    <section>
+      <title>Requirements</title>
+      <para>In order to start using the Sapo-Broker you need to have an installation of Java SDK 1.6 or higher and the "java" command in your PATH. You can quickly check for java by opening a shell and typing:</para>
+      <command>
+        <prompt>java -version</prompt>
+      </command>
+    </section>
+    <section>
+      <title>Installation Procedure</title>
+      <para>The installation process is very easy. These are the required steps:</para>
+      <itemizedlist>
+        <listitem>Download the latest Sapo-Broker release from <ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">http://softwarelivre.sapo.pt/projects/broker/wiki/</ulink></listitem>
+        <listitem>Extract the archive or run the installer</listitem>
+        <listitem>Run the samples</listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Running the samples</title>
+      <para>From a shell type:</para>
+      <command>
+        <prompt>./broker.sh</prompt>
+      </command>
+      <para>At this moment you should have an instance of the Sapo-Broker up and running. There is nothing stopping you from using a single instance of Sapo-Broker, but since one of it's main goals is to be used in a distributed fashion you really want to have at least two instances to play with, read the <ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/UserGuide">User Guide</ulink> to know how to setup and connect multiple instances.</para>
+      <para>The distribution includes a couple of sample scripts that illustrate a common use case for Sapo-Broker, event propagation. These scripts include a producer that sends messages with 100 random alpha numeric characters at the rate of one per second and a consumer that prints the message content to the console every time it receives a message.</para>
+      <para>To run the producer open a shell and type:</para>
+      <command>
+        <prompt>./sample_producer.sh</prompt>
+      </command>
+      <para>To run the consumer:</para>
+      <command>
+        <prompt>./sample_consumer.sh</prompt>
+      </command>
+      <para>Besides the Linux scripts, there are also available windows batch files counterparts.</para>
+    </section>
+    <section>
+      <title>Building from the source </title>
+      <para>You can fetch the latest version of the Sapo-Broker source code from our <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk">subversion server</ulink>. For checking out the code use the svn command line client as follows:</para>
+      <command>
+        <prompt>svn co svn://softwarelivre.sapo.pt/broker/</prompt>
+      </command>
+      <para>To build, go to agents directory and type (you must have ant installed):</para>
+      <command>
+        <prompt>ant build-dist</prompt>
+      </command>
+    </section>
+    <section>
+      <title><anchor id="Howtogetinvolved"/>How to get involved</title>
+      <para>Subscribe our mailing-list at <ulink url="http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker">http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker</ulink>.</para>
+    </section>
+    <section>
+      <title><anchor id="License"/>License</title>
+      <para>Sapo-Broker is distributed under the <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/license/LICENSE.txt">BSD license</ulink>.</para>
+    </section>
+  </section>
+  <section>
+    <title>System Topics</title>
+    <para>Sapo-Broker agents publish several information regarding their internal state and events. This information is published to /system/[information type] topics.</para>
+    <para>In order to guarantee that only agents produce messages to these topics an access control entry should be defined in the default <link linkend="ACCESS_CONTROL">security policy</link>.</para>
+    <section>
+      <title>Statistics</title>
+      <para>Agents publish statistics regathering the number of consumers subscribed in each topic and queue.</para>
+      <para>Topic consumers are published in topic:</para>
+      <code>/system/stats/topic-consumer-count/[topic subscription]</code>
+      <para>The content of the published message, encoded using UTF-8, is:</para>
+      <computeroutput>[agent name]#[subscription]#[number of subscription]</computeroutput>
+      <para>Queue consumers are published in topic:</para>
+      <code>/system/stats/queue-consumer-count/[queue name]</code>
+      <para>The content of the published message, encoded using UTF-8, is:</para>
+      <computeroutput>[agent name]#[queue name]#[number of subscription]</computeroutput>
+    </section>
+    <section>
+      <title>Faults</title>
+      <para>When an unhanded exception occurs, and it's not I/O related, agents publish an fault error. The message content conforms to SOAP Fault message format.</para>
+      <para>Fault messages are published to topic:</para>
+      <para>
+        <computeroutput>/system/faults/[agent name]</computeroutput>
+      </para>
+    </section>
+  </section>
+  <section id="ACCESS_CONTROL">
+
+    <title>Access control</title>
+    <para>In order to protect sensitive information Sapo-Broker provides an access control mechanism. This mechanism is parameterized by a security policy in the global configuration file, in the element "security-policies". Each agent may have a specific security or it may inherit the default security policy. The default policy is named "default".</para>
+    <para>Security policies may be composed hierarchically, which means that a given security policy X can inherit from a policy Y adding or overriding  specific aspects to the policy. These policies may be associated with agents. If no security policy is to be used, then the element "security-policies" should be omitted for performance reasons.</para>
+    <para>A security policy is composed by an Access Control List (ACL), which is composed by entries. Each entry has an action (PERMIT or DENY), a destination type (TOPIC, QUEUE or VIRTUAL_QUEUE), a destination (such as "/topic/foo" or a regular expression) and a privilege (READ or WRITE). Destination types and privileges may be declared as lists which makes the ACL entry easier to read and declare. An entry is also composed by conditions that determine when the ACL entry should be applied. Conditions represent a binary evaluation result which determines the application of the related ACL entry. They can be of the following types:</para>
+    <itemizedlist>
+      <listitem>ADDRESS – An IPv4 address and mask</listitem>
+      <listitem>ROLE – A text value with the role name</listitem>
+      <listitem>CHANNEL_TYPE – A type of security property (CONFIDENTIALITY, INTEGRITY and/or AUTHENTICITY) guaranteed by the transport channel</listitem>
+      <listitem>AND – A composed condition that evaluates to true if all the contained conditions are true</listitem>
+      <listitem>ALWAYS – The ACL entry is always applied</listitem>
+    </itemizedlist>
+    <section>
+      <title>Access control evaluation criteria </title>
+      <para>Every agent as an associated security policy, except in the case of security policy absence in witch it defaults to "allow everything". In the case of policy inheritance, eventually with multiple degrees, a stack of entries is built with the most specific ACLs at the top and entries inserted by declaration order within each ACL. The result is an ordered entry stack where the most specific/priority come first, so evaluating a client request against the full access control is sequential evaluation of entries. The first entry witch results in a positive evaluation is applied.</para>
+      <para>The entry stack is optimized for evaluation, although maintaining the described model. (More on this we I have the time).</para>
+    </section>
+    <section>
+      <title>An annotated sample</title>
+      <para>In Code 1 a security configuration sample is presented. As said before, this configuration aspect is defined in global configuration file.</para>
+      <para>The sample presents a scenario where the default security policy mandates that no client can produce messages to topic or queue whose named begin with "/system/". The default policy also dictates that destination names beginning with "/private/" are forbidden for all clients. These security settings apply to all agents using the default security policy.</para>
+      <para>At the bottom of the sample a section (XML element) entitled "agents" is present. Here is the place to associate specific security policies with agents. The sample states that an agent named "agent007" must used the "anotherPolicy" security policy. This policy inherits from the default security, adds some entries to the ACL and in a specific case overrides the default policy. The added entries specify that message production to the queue named "/specialQueue" is denied to all except those clients that simultaneous possess the role "VIP_role" and are using a type of communication channel that offers confidentiality (such as SSL). The declaration details are self-explanatory.</para>
+      <example>
+        <title>Security policy configuration sample</title>
+        <screen>
+&lt;security-policies&gt; 
+   &lt;policies&gt; 
+      &lt;policy policy-name="default"&gt; 
+         &lt;acl&gt; 
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE" destination="/system/.*"  privilege="WRITE"&gt; 
+               &lt;condition condition-type="ALWAYS" /&gt; 
+            &lt;/entry&gt; 
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="WRITE READ"&gt; 
+               &lt;condition condition-type="ALWAYS" /&gt; 
+            &lt;/entry&gt; 
+         &lt;/acl&gt; 
+      &lt;/policy&gt; 
+      &lt;policy policy-name="anotherPolicy" inherits="default"&gt; 
+         &lt;acl&gt; 
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="READ"&gt; 
+               &lt;condition condition-type="ADDRESS"&gt; 
+                  &lt;address  mask="24"&gt;10.11.12.0&lt;/address&gt; 
+               &lt;/condition&gt; 
+            &lt;/entry&gt; 
+            &lt;entry action="PERMIT" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; 
+               &lt;condition condition-type="AND"&gt; 
+                  &lt;condition condition-type="ROLE"&gt; 
+                     &lt;role&gt;VIP_role&lt;/role&gt; 
+                  &lt;/condition&gt; 
+                  &lt;condition condition-type="CHANNELTYPE"&gt; 
+                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; 
+                  &lt;/condition&gt; 
+               &lt;/condition&gt; 
+            &lt;/entry&gt; 
+            &lt;entry action="DENY" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt; 
+               &lt;condition condition-type="ALWAYS" /&gt; 
+            &lt;/entry&gt; 
+         &lt;/acl&gt; 
+         &lt;/policy&gt; 
+         &lt;policy policy-name="very special policy" inherits="special policy"&gt; 
+         &lt;acl&gt; 
+            &lt;entry action="PERMIT" destination-type="TOPIC" destination="/topic/sensitive"  privilege="READ WRITE"&gt; 
+               &lt;condition condition-type="AND"&gt; 
+                  &lt;condition condition-type="ROLE"&gt; 
+                     &lt;role&gt;brk_writer_role&lt;/role&gt; 
+                  &lt;/condition&gt; 
+                  &lt;condition condition-type="CHANNELTYPE"&gt; 
+                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt; 
+                  &lt;/condition&gt; 
+               &lt;/condition&gt; 
+            &lt;/entry&gt;         
+           &lt;/acl&gt; 
+         &lt;/policy&gt; 
+      &lt;/policies&gt; 
+     &lt;agents&gt; 
+         &lt;agent agent-name="agent007"&gt; 
+            &lt;agent-policy policy-name="anotherPolicy" /&gt; 
+         &lt;/agent&gt; 
+      &lt;/agents&gt; 
+&lt;/security-policies&gt;
+      	</screen>
+      </example>
+    </section>
+  </section>
+  <section>
+    <title>Authentication extensibility model</title>
+    <para>One of the possibilities of Sapo-Broker access control is based in client roles. The roles associated with clients are determined by pluggable components that comply to Sapo-Broker authentication extensibility model. This model defines:</para>
+    <orderedlist>
+      <listitem>Configuration aspects that lead to component loading and usage</listitem>
+      <listitem>A set of classes and interfaces that authentication modules implement and interact with</listitem>
+    </orderedlist>
+    <para>The modules are responsible for validating client credentials, directly or indirectly, and transform them in roles, if there are any associated with the authenticating client.</para>
+    <para>In order to support client authentication agents must provide an SSL channel and all role dependent communications (publications, notifications and subscriptions) should happen over a secure channel. This was a design decision. Given that client credentials are critical information they should not  be disclosed. One could argue that once authentication was established it could be used a clear channel, and therefore more efficient. However, the implementation approaches to address that design proved to be insecure or have a great deal of complexity (highly undesirable given the number of supported client libraries). Another reason drove this design: If something is so important that requires users to authenticate themselves and have a specified role, why allow this information to flow in clear? Moreover, the most significant burden of secure communication occurs during handshaking.</para>
+    <section>
+      <title>Configuration</title>
+      <para>Authentication modules, also called validation providers, are configured at the global configuration file.  There, are defined the full name of type implementing pt.com.broker.auth.AuthInfoValidator (more on this later) in the element class and some provider specific provider parameters, under provider-params. The class must be in agent's classpath in order to be loaded.</para>
+      <para>To each validation parameter must be attributed a globally known name, since it's used by clients to indicate the type of credentials used in <link linkend="AUTHENTICATION_MESSAGE">Authentication message</link>. For now there are two authentication types defined.</para>
+      <table frame="all" id="Table3">
+        <title>Authentication Types</title>
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>SapoSTS</entry>
+              <entry>Accepts SapoSTS (http://services.sapo.pt/Metadata/Service/STS?culture=EN) authentication tokens and obtains clients roles.</entry>
+            </row>
+            <row>
+              <entry>BrokerRolesDB</entry>
+              <entry>User name/password based authentication mechanism. Developed as as a proof-of-concept</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para>Each of the available implementations are described later.</para>
+      <example>
+        <title>Authorization providers configuration</title>
+        <screen>
+&lt;credential-validators&gt; 
+   &lt;credential-validator provider-name="SapoSTS"&gt; 
+      &lt;class&gt;pt.com.broker.auth.saposts.SapoSTSAuthInfoValidator&lt;/class&gt; 
+      &lt;provider-params&gt; 
+         &lt;sts&gt; 
+            &lt;sts-location&gt;https://services.sapo.pt/STS/&lt;/sts-location&gt; 
+            &lt;sts-username&gt;username&lt;/sts-username&gt; 
+            &lt;sts-password&gt;password&lt;/sts-password&gt; 
+         &lt;/sts&gt; 
+      &lt;/provider-params&gt; 
+   &lt;/credential-validator&gt; 
+   &lt;credential-validator provider-name="BrokerRolesDB"&gt; 
+      &lt;class&gt;pt.com.broker.auth.jdbc.JdbcAuthInfoValidator&lt;/class&gt; 
+      &lt;provider-params&gt; 
+         &lt;db-roles&gt; 
+            &lt;driver-class&gt;org.postgresql.Driver&lt;/driver-class&gt; 
+            &lt;database-url&gt;jdbc:postgresql://localhost/BROKER_ROLES&lt;/database-url&gt; 
+            &lt;database-username&gt;username&lt;/database-username&gt; 
+            &lt;database-password&gt;password&lt;/database-password&gt; 
+         &lt;/db-roles&gt; 
+      &lt;/provider-params&gt; 
+   &lt;/credential-validator&gt; 
+&lt;/credential-validators&gt;
+</screen>
+      </example>
+    </section>
+    <section>
+      <title>Relevant Classes</title>
+      <para>At the heart of an authorization provider lies an implementation of the interface  pt.com.broker.auth.AuthInfoValidator. This interface and reaming relevant types are presented at Figure 5.</para>
+      <para>The initialization method of AuthInfoValidator gives the provider an opportunity to realize any actions  required to properly validate client's authorization information and translate that information in client roles. The ProviderInfo is used to inform the provider what is the name of the authentication type it will be performing, the class name (redundant) and the parameter specified in the configuration file. These arguments are supplied as an XML representation object.</para>
+      <para>Validation operation is invoked as a consequence of an <link linkend="AUTHENTICATION_MESSAGE">authentication message</link> which includes information about the user synthesized as an AuthInfo object. This information may contain an user identifier, user roles (which should be validated), an authentication token (such as password or a third party supplied token) and the type of authentication being used. The authentication token is a binary value, so, in case of representing a string such as a password is UTF-8 encoded. In response to an authentication request a result is produced (AuthValidationResult) indicating whether the credentials are valid (a reason for failure should be supplied in case their not) or not, and the list of roles associated with the user in case of valid credentials.</para>
+      <figure id="Figure-AuthorizationProvider">
+        <title>Authorization Provider relevant types</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/authenticationproviders.jpeg"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </section>
+    <section>
+      <title>Implemented authentication modules</title>
+      <para>Currently, there are two authenticate modules available. One interacts with Sapo STS and it's used internally; the other was implemented as a proof-of-concept attesting broker authentication extensibility model's flexibility and provides user name-password database authentication.</para>
+      <section>
+        <title>Sapo STS</title>
+        <para>Sapo STS authentication module is divided in two parts, one regathering client validation and the other client authentication. Client authentication is the process of obtaining a SapoSTS security token. To obtain this token clients must provide their user name and password. Once obtained, the token is sent to the agent in an authentication message indicating "SapoSTS" as the authentication type. Both clients and agents use client authentication: clients because they need to supply a token to the agent; and agents need to authenticate themselves in order to extract user roles from the clients.</para>
+        <para>Client validation, and subsequent roles extraction, is performed by an agent specific module complying to what was described before. In Code 2 a configuration sample is presented. In case the agent is not using SapoSTS validation it can be removed from the configuration file. This validation module specifies three configuration parameters: Sapo STS location and agent's user name and password.</para>
+        <para>SapoSTS validation and authentication are available from sapo-broker-validation-saposts.jar and sapo-broker-clientauth-saposts.jar, respectively.</para>
+      </section>
+      <section>
+        <title>Database based authentication</title>
+        <para>Sapo-Broker users may not have access to Sapo STS, and probably this would be the case, or they may need do provide their own authentication mechanisms. As a proof-of-concept it was implemented an authentication provider supported by a relational database. The tables creation script is presented at Code 3. As shown, salts are not used and users passwords are store in clear, not their hashes. So this may not be very useful in a production environment where the use of secure practices is mandatory.</para>
+        <para>When using this authentication method, denoted by "BrokerRolesDB" authentication type, clients provide, as credentials, their user name and password.</para>
+        <para>The configuration of this provider, presented in Code 2, takes the driver class to be loaded, which must be in agent's classpath, the connection URL and the credentials to access the database and respective tables. The authentication functionality is provided in sapo-broker-auth-jdbc.jar.</para>
+        <example>
+          <title>Database creation scripts</title>
+          <screen>
+CREATE TABLE users
+(
+  user_id bigserial NOT NULL,
+  user_name character(25) NOT NULL,
+  user_password character(25) NOT NULL,
+  CONSTRAINT users_pkey PRIMARY KEY (user_id),
+  CONSTRAINT users_user_name_key UNIQUE (user_name)
+)
+CREATE TABLE user_roles
+(
+  user_id bigserial NOT NULL,
+  user_role character(50) NOT NULL,
+  CONSTRAINT user_roles_pkey PRIMARY KEY (user_id, user_role),
+  CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id)
+  REFERENCES users (user_id) MATCH SIMPLE
+)
+</screen>
+        </example>
+      </section>
+    </section>
+    <section id="SSL_CONFIGURATION">
+      <title>SSL Configuration</title>
+      <para>Sapo-Broker agents use SSL connections as message transport to client authentication messages and to support all communications that require authentication (role based access control). This type of connection is based on asymmetric cryptography operations and X.509 certificates. In order generate your own key pair and X.509 certificates a small tutorial on how to use <ulink url="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">SUN's keytool</ulink> is provided.</para>
+      <section>
+        <title>Keytool tutorial</title>
+        <para>Generating a pair of keys to a new keystore:</para>
+        <command>
+          <prompt>keytool -genkey -validity 1000 -keystore ./certs2 -keyalg rsa -alias test -storepass serverkspw -keypass serverpw</prompt>
+        </command>
+        <para>View the stored keys:</para>
+        <command>
+          <prompt>keytool -list -alias test -keystore ./certs2</prompt>
+        </command>
+        <para>Export public key as an X.509 certificate</para>
+        <command>
+          <prompt>keytool -export -keystore ./certs2 -alias test -file testCert.cer</prompt>
+        </command>
+        <para>Importing a X.509 certificate o the default truststore (easier, but not recommend)</para>
+        <command>
+          <prompt>sudo keytool -import -file ./testCert.cer -keystore  /usr/lib/jvm/java-6-sun-1.6.0.10/jre/lib/security/cacerts</prompt>
+        </command>
+        <para>To a new keystore</para>
+        <command>
+          <prompt>
+            <code>keytool -import -file ./testCert.cer -keystore  ./clientKeystore</code>
+          </prompt>
+        </command>
+        <para>The generated keystore contains a public and private key. This keystore is meant to be used by the agent. A sample on how to configure SSL on the agent is presented at Code 4. This configuration element is specific to each agent, thus, it's not included in global.config file.</para>
+        <screen>
+&lt;ssl&gt; 
+   &lt;broker-ssl-port&gt;3390&lt;/broker-ssl-port&gt; 
+   &lt;keystore-location&gt;/home/server/agent/certs2&lt;/keystore-location&gt; 
+   &lt;keystore-password&gt;serverkspw&lt;/keystore-password&gt; 
+   &lt;key-password&gt;serverpw&lt;/key-password&gt; 
+&lt;/ssl&gt;
+</screen>
+        <para>Code 4: Agent's SSL sample configuration</para>
+        <para>In order to clients trust agents certificates, during SSL handshaking, the agent's public key, through an X.509 certificate must be added to the trusted certificates client store. It can be added to the default truststore, but it's recommended that client applications specifically used a keystore containing the agent's certificate. This is the approach used by the Java client library.</para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>Client libraries</title>
+    <para>Given the environment where Sapo-Broker was developed, somewhere where several projects are interconnected, written in many different programming languages it was absolutely crucial to support several broker client libraries written in various programming languages.</para>
+    <para>For now, not all take advantaged of the features implemented in Sapo-Broker 3, but are still compatible through the use of a legacy port.</para>
+    <para>The supported programming languages or platforms are: Java, .NET, Perl, Python, PHP, Ruby, C and Erlang. These libraries may be in different states of maturity.</para>
+    <section>
+      <title>Client compatibility matrix</title>
+      <para>To help the choice of library and enlighten about what features are supported by witch libraries a client compatibility matrix is presented.</para>
+      <table frame="all" id="clientcompmatrix">
+        <title>Client library compatibility matrix</title>
+        <tgroup cols="3">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <tbody>
+            <row>
+              <entry/>
+              <entry>Java</entry>
+              <entry>.NET</entry>
+              <entry>Perl</entry>
+              <entry>Python</entry>
+              <entry>PHP</entry>
+              <entry>Ruby</entry>
+              <entry>C</entry>
+              <entry>Erlang</entry>
+              <entry>Javascript</entry>
+            </row>
+            <row>
+              <entry>SOAP encoding</entry>
+              <entry align="center">x</entry>
+              <entry align="center">x</entry>
+              <entry align="center">x</entry>
+              <entry align="center">x</entry>
+              <entry align="center">x</entry>
+              <entry align="center">x</entry>
+              <entry align="center">x</entry>
+              <entry align="center">x</entry>
+              <entry align="center">-</entry>
+            </row>
+            <row>
+              <entry>ProtoBuf encoding (binary)</entry>
+              <entry align="center">x</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">-</entry>
+            </row>
+            <row>
+              <entry>Thrift encoding (binary)</entry>
+              <entry align="center">x</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">-</entry>
+            </row>
+            <row>
+              <entry>SSL support</entry>
+              <entry align="center">x</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">-</entry>
+            </row>
+            <row>
+              <entry>Client authentication</entry>
+              <entry align="center">x</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">-</entry>
+            </row>
+            <row>
+              <entry>Client authentication with Sapo STS</entry>
+              <entry align="center">x</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">-</entry>
+            </row>
+            <row>
+              <entry>Client failover</entry>
+              <entry align="center">x</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">o</entry>
+              <entry align="center">-</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para>Specific information about each client and their features, as well some samples, should be available. Poke <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/clients">around</ulink>.</para>
+    </section>
+  </section>
+  <section>
+    <title>Sapo-Broker under the hood</title>
+    <para>The major part of components that constitute Sapo-Broker were developed in-house. Exceptions to this, besides the logging infrastructure, are the non-bocking I/O and Persistence components. Communications are implented using <ulink url="http://mina.apache.org">Apache MINA</ulink> and persistency is supported by <ulink url="http://www.oracle.com/technology/products/berkeley-db/index.html">Berkeley DB</ulink>.</para>
+    <section>
+      <title>Non-blocking IO</title>
+      <para>Broker agents use Apache MINA as their communication stack. Apache MINA is, accordantly to the <ulink url="http://mina.apache.org">official site</ulink>, <quote>a network application framework which helps users develop high performance and high scalability network applications easily. It provides an abstract · event-driven · asynchronous API over various transports such as TCP/IP and UDP/IP via Java NIO</quote>.</para>
+      <para>MINA is used to handle client connections and inter-agents communication. All client endpoints, TCP, legacy TCP (backward compatible), SSL and HTTP are implemented on top MINA. Java client library dosen't use MINA.</para>
+      <para>Although MINA's functionality as proven to be adequate to the design and implementation of Sapo-Broker, non-functional requirements may determine that alternatives should be considered. MINA gives higher priority to incoming communication. This design may be adequate in many cases, but not for Sapo-Broker: For every message received, possibly, <emphasis>N</emphasis> are sent.</para>
+    </section>
+    <section>
+      <title>Message persistence</title>
+      <para>To store messages reliably Sapo-Broker uses Berkeley DB, witch is, accordantly to the official <ulink url="http://www.oracle.com/technology/products/berkeley-db/index.html">site</ulink> an  <quote>embeddable databases [that] provides developers with fast, reliable, local persistence with zero administration. Often deployed as "edge" databases, the Oracle Berkeley DB family provides very high performance, reliability, scalability, and availability for application use cases that do not require SQL.</quote></para>
+      <para>Not always Berkeley DB was used as Sapo-Broker embedded database but tests, and usage, have proved it to be a reliable and efficient solution.</para>
+      <para>Enqueued messages, such as those that are published to a queue or topic messages that have persistent subscribers, are persistently stored in agent's filesystem. Only once messages are delivered and acknowledged are removed.</para>
+      <para>Sapo-Broker makes to attempt to give further reliability guarantees  than the database and filesystem. If this is a problem database and filesystem replication and redundancy should be considered.</para>
+    </section>
+  </section>
+  <section>
+    <title>Frequently asked questions</title>
+    <para>Here are some questions that you may have and should help you take advantaged of Sapo-Broker.</para>
+    <qandaset>
+      <qandaentry>
+        <question>
+          <para>How do configure my one hundred agents with minimum efford?</para>
+        </question>
+        <answer>
+          <para>Use a global configuration file and distributed automatically!</para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>Should I configure DNS name for each agent?</para>
+        </question>
+        <answer>
+          <para>No, but if you do start with 007.</para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>Is Sapo-Broker JMS compilant?</para>
+        </question>
+        <answer>
+          <para>No, not for now, but it may come to be.</para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </section>
+  <section>
+    <title>Use cases</title>
+    <para>In this section we provide some hints on how to design a messaging solution based on Sapo-Broker.</para>
+    <section id="TOPICS_QUEUES_USE_CASE">
+      <title>Topics, queues and virtual queues</title>
+      <para>In order to make the choice of what message pattern to use easier and clarify the previous discussed destination type options a sample is provided.</para>
+      <para>Image a company, BigCompany Inc., that uses Sapo-Broker as their messaging middleware. This company has several applications, many of witch produce information, such as "new client" engaged, "new sale" processed, "new product" added to products catalog. When these <emphasis>events</emphasis> occur they should be made available to other applications. Given that they are events and not work items they should be published to a topic. Applications interested in this information subscribe to the topic, but if the published information is so important and constitutes a work item to some of the subscribing applications, them they subscribe to the topic in persistent fashion, using a virtual queue (also known as a durable subscription).</para>
+      <para>As an example lets consider that a CRM application publishes a message to the topic /customer/new every time the company has a new customer. This information could be important to an application implementing an informal statistic on client's average age (if some client is missed, it's not a problem) so this application subscribe to the topic, however, for an application designed to initialize a workflow conducting to send the new client a welcome present as a limited time promotion, this information is crucial so it creates a durable subscription, such as promotions-app@/customer/new. Other applications could register other virtual queues (e.g., foo@/customer/.*). Given the ability that every application as to consume messages published to topic /customer/.* the format and the semantics of each message should be published to a known repository, such as a topic web catalog.</para>
+      <para>Now consider that the promotions application, after some business logic, decides what gift should be send. The gift delivery is responsibility of the stock management application so the promotions application publishes a message to the queue /client-gift including client and gift information. This work dependency was established as a consequence of a business process definition so both applications know the name of the queue, message format and semantics.To guarantee that only the promotions application could publish messages to that queue and only the stock management application could retrieve messages from the queue a security policy could be defined.</para>
+    </section>
+    <section id="DISTRIBUTED_WORKLOAD_USE_CASE">
+      <title>Distributed workload</title>
+      <para>A classical example of workload distribution is based in queues. This can be done in-memory, in case of local process coordination, or using a messaging system in case of applications are running on different machines.</para>
+      <para>The way to implement this using Sapo-Broker is very simple. Just determine the queue name and let information producers deliver messages to that queue and consumers subscribe to the queue. Messages will be delivered in a round-robin fashion to each subscriber.</para>
+      <para>If there is a substantial difference between of work required to process each message type (e.g., type messages A are processed in 100 milliseconds, but type B messages are processed in 1 minute) each consumer may use synchronous <link linkend="POLL_MESSAGE">poll</link> to retrieve a message, doing it only when it's available to process messages.</para>
+    </section>
+    <section id="CACHE_INVALIDATION_USE_CASE">
+      <title>Cache invalidation</title>
+      <para>TBD...</para>
+    </section>
+  </section>
+  <section>
+    <title>Future developments</title>
+    <para>Sapo-Broker is an on going project at Sapo. As such several new features and improvements are to come. Here are some examples of planned developments:</para>
+    <itemizedlist>
+      <listitem>Improve Sapo-Broker documentation (this document is already a step towards that gold)</listitem>
+      <listitem>Update client libraries to support binary encoding, as well all other missing features in client compatibility matrix</listitem>
+      <listitem>Develop a Javascript client</listitem>
+      <listitem>Create a monitoring dashboard</listitem>
+      <listitem>Improve Broker's performance</listitem>
+      <listitem>Evaluate alternatives to MINA</listitem>
+      <listitem>Define and implement a mechanism for bridging agent "clouds"</listitem>
+      <listitem>Other developments are likely to be defined be implemented. <ulink url="http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker">Stay tunned</ulink></listitem>
+    </itemizedlist>
+  </section>
+</chapter>
+
