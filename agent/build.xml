@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="build" name="sapo-broker-agent">
+	<tstamp/>
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
 	<property name="target-dir" value="../sapo-broker" />
-	<property name="package" value="sapo-broker-agent.jar" />
+	<property name="major-version" value="3"/>
+	<property name="minor-version" value="0"/>
+	<property name="version" value="${major-version}.${minor-version}.${DSTAMP}${TSTAMP}"/>
+	<property name="package" value="sapo-broker-agent-${version}.jar" />
+
+
+
 
 	<path id="project.classpath">
-		<pathelement location="../comm-types/dist/sapo-broker-commtypes.jar" />
-		<pathelement location="../gcs/dist/sapo-gcs.jar" />
-		<pathelement location="../bindings/xml/java/dist/sapo-broker-xmlbinding.jar" />
-		<pathelement location="../bindings/protobuf/java/dist/sapo-broker-protobufbinding.jar" />
-		<pathelement location="../bindings/thrift/java/dist/sapo-broker-thriftbinding.jar" />
+		<pathelement location="../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
+		<pathelement location="../gcs/dist/sapo-gcs-${version}.jar" />
+		<pathelement location="../bindings/xml/java/dist/sapo-broker-xmlbinding-${version}.jar" />
+		<pathelement location="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" />
+		<pathelement location="../bindings/thrift/java/dist/sapo-broker-thriftbinding-${version}.jar" />
 		<fileset dir="../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>
@@ -20,6 +27,7 @@
 	<target name="init" depends="clean">
 		<mkdir dir="${bin}" />
 		<mkdir dir="${dist}" />
+		<echo file="VERSION.txt">${version}</echo>
 	</target>
 
 	<target name="clean">
@@ -47,7 +55,7 @@
 		<tstamp/>
 		
 		<copy file="src/pt/com/broker/core/BrokerInfo.java" tofile="src/pt/com/broker/core/BrokerInfo.bak" overwrite="true"/>
-		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerVersion@" value="${DSTAMP}${TSTAMP}"/>
+		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerVersion@" value="${version}"/>
 		<javac destdir="bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
 			<src path="src" />
 			<classpath refid="project.classpath" />
@@ -65,18 +73,37 @@
 	</target>
 
 	<target name="package-all">
-		<ant antfile="../comm-types/build.xml" inheritAll="false" target="package" />
-		<ant antfile="../gcs/build.xml" inheritAll="false" target="package" />
+		<ant antfile="../comm-types/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" /> 
+		</ant>
+		<ant antfile="../gcs/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" /> 
+		</ant>
 		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="package">
 			<property name="project.location" value="../bindings/xml/java"/> 
+			<property name="version" value="${version}" /> 
 		</ant>
-		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package" />
-		<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="package" />
-		<ant antfile="../acl/sapo-sts/agent/build.xml" inheritAll="false" target="package" />
-		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package" />
-		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package" />
-		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package" />
-		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="package" />
+		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" /> 
+		</ant>
+		<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" /> 
+		</ant>
+		<ant antfile="../acl/sapo-sts/agent/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" /> 
+		</ant>
+		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" /> 
+		</ant>
+		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" /> 
+		</ant>
+		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" /> 
+		</ant>
+		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="package" >
+			<property name="version" value="${version}" /> 
+		</ant>
 	</target>
 
 	<target name="build-dist" depends="package, package-all">
@@ -86,25 +113,26 @@
 				<include name="*.jar"/>
 			</fileset>
  		</copy>
-		<copy file="./dist/sapo-broker-agent.jar" todir="${target-dir}/lib" />
-		<copy file="../comm-types/dist/sapo-broker-commtypes.jar" todir="${target-dir}/lib" />
-		<copy file="../gcs/dist/sapo-gcs.jar" todir="${target-dir}/lib" />
-		<copy file="../bindings/xml/java/dist/sapo-broker-xmlbinding.jar" todir="${target-dir}/lib" />
-		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding.jar" todir="${target-dir}/lib" />
-		<copy file="../bindings/thrift/java/dist/sapo-broker-thriftbinding.jar" todir="${target-dir}/lib" />
-		<copy file="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP.jar" todir="${target-dir}/lib" />
-		<copy file="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts.jar" todir="${target-dir}/lib" />
-		<copy file="../acl/sapo-sts/agent/dist/sapo-broker-validation-saposts.jar" todir="${target-dir}/lib" />
-		<copy file="../acl/jdbc/dist/sapo-broker-auth-jdbc.jar" todir="${target-dir}/lib" />
-		<copy file="../broker-tests/dist/sapo-broker-tests.jar" todir="${target-dir}/lib" />
+		<copy file="${dist}/${package}" todir="${target-dir}/lib" />
+		<copy file="../comm-types/dist/sapo-broker-commtypes-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../gcs/dist/sapo-gcs-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../bindings/xml/java/dist/sapo-broker-xmlbinding-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../bindings/thrift/java/dist/sapo-broker-thriftbinding-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../acl/sapo-sts/agent/dist/sapo-broker-validation-saposts-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../acl/jdbc/dist/sapo-broker-auth-jdbc-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../broker-tests/dist/sapo-broker-tests-${version}.jar" todir="${target-dir}/lib" />
 	
 		<copy todir="${target-dir}/doc">
 			<fileset dir="doc"/>
  		</copy>
 
-		<copy todir="${target-dir}/doc">
-			<fileset dir="doc"/>
+		<copy todir="${target-dir}/bin">
+			<fileset dir="examples"/>
  		</copy>
+
 		<copy todir="${target-dir}/conf">
 			<fileset dir="conf"/>
  		</copy>
@@ -121,23 +149,23 @@
 			<fileset dir="../clients" excludes="**/.*"/>
  		</copy>
 
-		<copy todir="${target-dir}">
-			<fileset dir=".">
+		<!-- copy todir="${target-dir}">
+			<fileset dir="bin">
 				<include name="*.sh"/>
 				<include name="*.bat"/>
 			</fileset>
-		</copy>
+		</copy -->
 
-		<chmod dir="${target-dir}" perm="+x" includes="*.sh"/>
+		<chmod dir="${target-dir}/bin" perm="+x" includes="*.sh"/>
 	</target>
 
 	<target name="tarball" depends="build-dist">
 		<tar tarfile="../sapo-broker.tar" >
 			<tarfileset dir="${target-dir}" prefix="sapo-broker">
-				<exclude name="**/*.sh"/>
+				<exclude name="bin/*.sh"/>
 			</tarfileset>
 			<tarfileset dir="${target-dir}" prefix="sapo-broker" filemode="755">
-				<include name="**/*.sh"/>
+				<include name="bin/*.sh"/>
 			</tarfileset>
 		</tar>
 		<gzip src="../sapo-broker.tar" destfile="../sapo-broker.tar.gz" />

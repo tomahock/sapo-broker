@@ -4,11 +4,11 @@
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
-	<property name="package" value="sapo-broker-validation-saposts.jar" />
+	<property name="package" value="sapo-broker-validation-saposts-${version}.jar" />
 
 	<path id="project.classpath">
-		<pathelement location="../../../comm-types/dist/sapo-broker-commtypes.jar" />
-		<pathelement location="../client/dist/sapo-broker-clientauth-saposts.jar" />
+		<pathelement location="../../../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
+		<pathelement location="../client/dist/sapo-broker-clientauth-saposts-${version}.jar" />
 		<fileset dir="../../../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>

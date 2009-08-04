@@ -4,15 +4,15 @@
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
-	<property name="package" value="sapo-broker-tests.jar" />
+	<property name="package" value="sapo-broker-tests-${version}.jar" />
 
 	<path id="project.classpath">
-		<pathelement location="../comm-types/dist/sapo-broker-commtypes.jar" />
-		<pathelement location="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts.jar" />
-		<pathelement location="../bindings/protobuf/java/dist/sapo-broker-protobufbinding.jar" />
-		<pathelement location="../bindings/thrift/java/dist/sapo-broker-thriftbinding.jar" />
-		<pathelement location="../bindings/xml/java/dist/sapo-broker-xmlbinding.jar" />
-		<pathelement location="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP.jar" />
+		<pathelement location="../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
+		<pathelement location="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts-${version}.jar" />
+		<pathelement location="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" />
+		<pathelement location="../bindings/thrift/java/dist/sapo-broker-thriftbinding-${version}.jar" />
+		<pathelement location="../bindings/xml/java/dist/sapo-broker-xmlbinding-${version}.jar" />
+		<pathelement location="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP-${version}.jar" />
 		<fileset dir="../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>

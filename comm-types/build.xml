@@ -4,7 +4,7 @@
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
-	<property name="package" value="sapo-broker-commtypes.jar" />
+	<property name="package" value="sapo-broker-commtypes-${version}.jar" />
 
 	<path id="project.classpath">
 		<fileset dir="../common-libs/">
