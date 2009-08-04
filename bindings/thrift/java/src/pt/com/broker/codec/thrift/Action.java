@@ -12,11 +12,10 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
 public class Action implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Action");
@@ -451,51 +450,99 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case PUBLISH:
-      setPublish((Publish)value);
+      if (value == null) {
+        unsetPublish();
+      } else {
+        setPublish((Publish)value);
+      }
       break;
 
     case POLL:
-      setPoll((Poll)value);
+      if (value == null) {
+        unsetPoll();
+      } else {
+        setPoll((Poll)value);
+      }
       break;
 
     case ACCEPTED:
-      setAccepted((Accepted)value);
+      if (value == null) {
+        unsetAccepted();
+      } else {
+        setAccepted((Accepted)value);
+      }
       break;
 
     case ACK_MESSAGE:
-      setAck_message((Acknowledge)value);
+      if (value == null) {
+        unsetAck_message();
+      } else {
+        setAck_message((Acknowledge)value);
+      }
       break;
 
     case SUBSCRIBE:
-      setSubscribe((Subscribe)value);
+      if (value == null) {
+        unsetSubscribe();
+      } else {
+        setSubscribe((Subscribe)value);
+      }
       break;
 
     case UNSUBSCRIBE:
-      setUnsubscribe((Unsubscribe)value);
+      if (value == null) {
+        unsetUnsubscribe();
+      } else {
+        setUnsubscribe((Unsubscribe)value);
+      }
       break;
 
     case NOTIFICATION:
-      setNotification((Notification)value);
+      if (value == null) {
+        unsetNotification();
+      } else {
+        setNotification((Notification)value);
+      }
       break;
 
     case FAULT:
-      setFault((Fault)value);
+      if (value == null) {
+        unsetFault();
+      } else {
+        setFault((Fault)value);
+      }
       break;
 
     case PING:
-      setPing((Ping)value);
+      if (value == null) {
+        unsetPing();
+      } else {
+        setPing((Ping)value);
+      }
       break;
 
     case PONG:
-      setPong((Pong)value);
+      if (value == null) {
+        unsetPong();
+      } else {
+        setPong((Pong)value);
+      }
       break;
 
     case AUTH:
-      setAuth((Authentication)value);
+      if (value == null) {
+        unsetAuth();
+      } else {
+        setAuth((Authentication)value);
+      }
       break;
 
     case ACTION_TYPE:
-      setAction_type((Integer)value);
+      if (value == null) {
+        unsetAction_type();
+      } else {
+        setAction_type((Integer)value);
+      }
       break;
 
     default:
@@ -1009,7 +1056,15 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     }
     if (!first) sb.append(", ");
     sb.append("action_type:");
+    String action_type_name = ActionType.VALUES_TO_NAMES.get(this.action_type);
+    if (action_type_name != null) {
+      sb.append(action_type_name);
+      sb.append(" (");
+    }
     sb.append(this.action_type);
+    if (action_type_name != null) {
+      sb.append(")");
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -1018,8 +1073,8 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
   public void validate() throws TException {
     // check for required fields
     // check that fields of type enum have valid values
-    if (__isset.action_type && !ActionType.VALID_VALUES.contains(action_type)){
-      throw new TProtocolException("Invalid value of field 'action_type'!");
+    if (isSetAction_type() && !ActionType.VALID_VALUES.contains(action_type)){
+      throw new TProtocolException("The field 'action_type' has been assigned the invalid value " + action_type);
     }
   }
 
