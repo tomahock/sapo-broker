@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.ProvidersLoader;
+import pt.com.broker.core.BrokerInfo;
 import pt.com.broker.core.BrokerSSLServer;
 import pt.com.broker.core.BrokerServer;
 import pt.com.broker.core.BrokerUdpServer;
@@ -54,6 +55,8 @@ public class Start
 
 		try
 		{
+			log.info("SAPO-BROKER starting - Version: {}", BrokerInfo.VERSION);
+			
 			Gcs.init();
 			ProvidersLoader.init();
 

@@ -25,6 +25,8 @@ public class QueueProcessor
 	private final AtomicLong _deliverSequence = new AtomicLong(0L);
 
 	protected final AtomicBoolean emptyQueueInfoDisplay = new AtomicBoolean(false);
+	
+	protected final AtomicLong _counter = new AtomicLong(0);
 
 	private final BDBStorage storage;
 
@@ -38,14 +40,18 @@ public class QueueProcessor
 		_destinationName = destinationName;
 
 		storage = new BDBStorage(this);
+		
+		long cnt = storage.count();
 
-		if (storage.count() == 0)
+		if (cnt == 0)
 		{
 			_sequence = new AtomicLong(0L);
+			_counter.set(0);
 		}
 		else
 		{
 			_sequence = new AtomicLong(storage.getLastSequenceValue());
+			_counter.set(cnt);
 		}
 
 		if (StringUtils.contains(destinationName, "@"))
@@ -57,6 +63,21 @@ public class QueueProcessor
 		log.info("Queue '{}' has {} message(s).", destinationName, getQueuedMessagesCount());
 	}
 
+	public synchronized void clearStorage()
+	{
+		storage.deleteQueue();
+	}
+
+	public long decrementQueuedMessagesCount()
+	{
+		return _counter.decrementAndGet();
+	}
+
+	public long getQueuedMessagesCount()
+	{
+		return _counter.get();
+	}
+
 	protected void ack(final String msgId)
 	{
 		if (log.isDebugEnabled())
@@ -64,47 +85,10 @@ public class QueueProcessor
 			log.debug("Ack message . MsgId: '{}'.", msgId);
 		}
 
-		if (!storage.deleteMessage(msgId))
+		if (storage.deleteMessage(msgId))
 		{
-			log.error("Failed to delete message with id '{}'", msgId);
-		}
-	}
-
-	protected final void wakeup()
-	{
-		if (isWorking.getAndSet(true))
-		{
-			log.debug("Queue '{}' is running, skip wakeup", _destinationName);
-			return;
-		}
-		long cnt = getQueuedMessagesCount();
-		if (cnt > 0)
-		{
-			emptyQueueInfoDisplay.set(false);
-
-			if (hasRecipient())
-			{
-				try
-				{
-					log.debug("Wakeup queue '{}'", _destinationName);
-					storage.recoverMessages();
-				}
-				catch (Throwable t)
-				{
-					log.error(t.getMessage(), t);
-					throw new RuntimeException(t);
-				}
-				finally
-				{
-					isWorking.set(false);
-				}
-			}
-			else
-			{
-				log.debug("Queue '{}' does not have asynchronous consumers", _destinationName);
-			}
-		}
-		isWorking.set(false);
+			_counter.decrementAndGet();
+		}	
 	}
 
 	protected boolean forward(InternalMessage message, boolean preferLocalConsumer) throws IllegalStateException
@@ -153,12 +137,27 @@ public class QueueProcessor
 		return isDelivered;
 	}
 
+	protected String getDestinationName()
+	{
+		return _destinationName;
+	}
+
 	protected boolean hasRecipient()
 	{
 		if (size() > 0)
 			return true;
 		else
 			return false;
+	}
+
+	protected InternalMessage poll()
+	{
+		return storage.poll();
+	}
+
+	protected int size()
+	{
+		return RemoteQueueConsumers.size(_destinationName) + LocalQueueConsumers.size(_destinationName);
 	}
 
 	protected void store(final InternalMessage msg)
@@ -172,6 +171,7 @@ public class QueueProcessor
 		{
 			long seq_nr = _sequence.incrementAndGet();
 			storage.insert(msg, seq_nr, 0, localConsumersOnly);
+			_counter.incrementAndGet();
 		}
 		catch (Throwable t)
 		{
@@ -179,29 +179,41 @@ public class QueueProcessor
 		}
 	}
 
-	public long getQueuedMessagesCount()
+	protected final void wakeup()
 	{
-		return storage.count();
-	}
+		if (isWorking.getAndSet(true))
+		{
+			log.debug("Queue '{}' is running, skip wakeup", _destinationName);
+			return;
+		}
+		long cnt = getQueuedMessagesCount();
+		if (cnt > 0)
+		{
+			emptyQueueInfoDisplay.set(false);
 
-	protected String getDestinationName()
-	{
-		return _destinationName;
-	}
-
-	protected int size()
-	{
-		return RemoteQueueConsumers.size(_destinationName) + LocalQueueConsumers.size(_destinationName);
-	}
-
-	protected InternalMessage poll()
-	{
-		return storage.poll();
-	}
-
-	public synchronized void clearStorage()
-	{
-		storage.deleteQueue();
+			if (hasRecipient())
+			{
+				try
+				{
+					log.debug("Wakeup queue '{}'", _destinationName);
+					storage.recoverMessages();
+				}
+				catch (Throwable t)
+				{
+					log.error(t.getMessage(), t);
+					throw new RuntimeException(t);
+				}
+				finally
+				{
+					isWorking.set(false);
+				}
+			}
+			else
+			{
+				log.debug("Queue '{}' does not have asynchronous consumers", _destinationName);
+			}
+		}
+		isWorking.set(false);
 	}
 
 }

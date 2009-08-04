@@ -26,7 +26,7 @@ import com.sleepycat.je.OperationStatus;
 
 /**
  * BDBStorage encapsulates database access logic.
- *
+ * 
  */
 
 class BDBStorage
@@ -50,6 +50,10 @@ class BDBStorage
 	private Object dbLock = new Object();
 
 	private Queue<InternalMessage> _syncConsumerQueue = new ConcurrentLinkedQueue<InternalMessage>();
+
+	private static final int RETRY_THRESHOLD = 2 * 60 * 1000; // 2minutes
+
+	private long redelivery_time = System.currentTimeMillis() + RETRY_THRESHOLD;
 
 	public BDBStorage(QueueProcessor qp)
 	{
@@ -78,6 +82,121 @@ class BDBStorage
 		}
 	}
 
+	private DatabaseEntry buildDatabaseEntry(BDBMessage bdbm) throws IOException
+	{
+		DatabaseEntry data = new DatabaseEntry();
+
+		UnsynchByteArrayOutputStream bout = new UnsynchByteArrayOutputStream();
+		ObjectOutputStream oout = new ObjectOutputStream(bout);
+		bdbm.writeExternal(oout);
+		oout.flush();
+
+		ByteArrayBinding bab = new ByteArrayBinding();
+		byte[] bdata = bout.toByteArray();
+
+		bab.objectToEntry(bdata, data);
+
+		return data;
+	}
+
+	private void closeDatabase(Database db)
+	{
+		try
+		{
+			BDBEnviroment.sync();
+			String dbName = db.getDatabaseName();
+			log.info("Try to close db '{}'", dbName);
+			db.close();
+			log.info("Closed db '{}'", dbName);
+		}
+		catch (Throwable t)
+		{
+			dealWithError(t, false);
+		}
+	}
+
+	private void closeDbCursor(Cursor msg_cursor)
+	{
+		if (msg_cursor != null)
+		{
+			try
+			{
+				msg_cursor.close();
+			}
+			catch (Throwable t)
+			{
+				dealWithError(t, false);
+			}
+		}
+	}
+
+	private void cursorDelete(Cursor msg_cursor) throws DatabaseException
+	{
+		msg_cursor.delete();
+		queueProcessor.decrementQueuedMessagesCount();
+	}
+
+	private void dealWithError(Throwable t, boolean rethrow)
+	{
+		Throwable rt = ErrorAnalyser.findRootCause(t);
+		log.error(rt.getMessage(), rt);
+		ErrorAnalyser.exitIfOOM(rt);
+		if (rethrow)
+		{
+			throw new RuntimeException(rt);
+		}
+	}
+
+	private void dumpMessage(final InternalMessage msg)
+	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("Could not deliver message. Dump: {}", msg.toString());
+		}
+	}
+
+	private void removeDatabase(String dbName)
+	{
+		int retryCount = 0;
+
+		while (retryCount < 5)
+		{
+			try
+			{
+				BDBEnviroment.sync();
+				log.info("Try to remove db '{}'", dbName);
+				env.truncateDatabase(null, dbName, false);
+				env.removeDatabase(null, dbName);
+				BDBEnviroment.sync();
+				log.info("Storage for queue '{}' was removed", queueProcessor.getDestinationName());
+
+				break;
+			}
+			catch (Throwable t)
+			{
+				retryCount++;
+				log.error(t.getMessage());
+				Sleep.time(2500);
+			}
+		}
+	}
+
+	protected long count()
+	{
+		if (isMarkedForDeletion.get())
+			return 0;
+
+		try
+		{
+			return messageDb.count();
+		}
+		catch (DatabaseException e)
+		{
+			dealWithError(e, false);
+			return 0;
+		}
+	}
+
 	protected boolean deleteMessage(String msgId)
 	{
 		if (isMarkedForDeletion.get())
@@ -97,7 +216,7 @@ class BDBStorage
 			}
 			else
 			{
-				System.out.println("### BD operation failed: "  + op);
+				System.out.println("### BD operation failed: " + op);
 				return false;
 			}
 		}
@@ -108,20 +227,44 @@ class BDBStorage
 		}
 	}
 
-	protected long count()
+	protected void deleteQueue()
+	{
+		isMarkedForDeletion.set(true);
+		Sleep.time(2500);
+
+		closeDatabase(messageDb);
+
+		removeDatabase(primaryDbName);
+	}
+
+	protected long getLastSequenceValue()
 	{
 		if (isMarkedForDeletion.get())
-			return 0;
+			return 0L;
+
+		Cursor msg_cursor = null;
+		long seqValue = 0L;
 
 		try
 		{
-			return messageDb.count();
+			msg_cursor = messageDb.openCursor(null, null);
+
+			DatabaseEntry key = new DatabaseEntry();
+			DatabaseEntry data = new DatabaseEntry();
+
+			msg_cursor.getLast(key, data, null);
+
+			seqValue = LongBinding.entryToLong(key);
 		}
-		catch (DatabaseException e)
+		catch (Throwable t)
 		{
-			dealWithError(e, false);
-			return 0;
+			dealWithError(t, false);
 		}
+		finally
+		{
+			closeDbCursor(msg_cursor);
+		}
+		return seqValue;
 	}
 
 	protected void insert(InternalMessage msg, long sequence, int deliveryCount, boolean preferLocalConsumer)
@@ -145,23 +288,6 @@ class BDBStorage
 			dealWithError(t, true);
 		}
 
-	}
-
-	private DatabaseEntry buildDatabaseEntry(BDBMessage bdbm) throws IOException
-	{
-		DatabaseEntry data = new DatabaseEntry();
-
-		UnsynchByteArrayOutputStream bout = new UnsynchByteArrayOutputStream();
-		ObjectOutputStream oout = new ObjectOutputStream(bout);
-		bdbm.writeExternal(oout);
-		oout.flush();
-
-		ByteArrayBinding bab = new ByteArrayBinding();
-		byte[] bdata = bout.toByteArray();
-
-		bab.objectToEntry(bdata, data);
-
-		return data;
 	}
 
 	protected InternalMessage poll()
@@ -204,7 +330,7 @@ class BDBStorage
 
 							if (now > expiration)
 							{
-								msg_cursor.delete();
+								cursorDelete(msg_cursor);
 								log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
 								dumpMessage(msg);
 							}
@@ -240,36 +366,6 @@ class BDBStorage
 		}
 	}
 
-	protected long getLastSequenceValue()
-	{
-		if (isMarkedForDeletion.get())
-			return 0L;
-
-		Cursor msg_cursor = null;
-		long seqValue = 0L;
-
-		try
-		{
-			msg_cursor = messageDb.openCursor(null, null);
-
-			DatabaseEntry key = new DatabaseEntry();
-			DatabaseEntry data = new DatabaseEntry();
-
-			msg_cursor.getLast(key, data, null);
-
-			seqValue = LongBinding.entryToLong(key);
-		}
-		catch (Throwable t)
-		{
-			dealWithError(t, false);
-		}
-		finally
-		{
-			closeDbCursor(msg_cursor);
-		}
-		return seqValue;
-	}
-
 	protected void recoverMessages()
 	{
 		if (isMarkedForDeletion.get())
@@ -278,11 +374,12 @@ class BDBStorage
 		synchronized (dbLock)
 		{
 			Cursor msg_cursor = null;
-			boolean redelivery = ((batchCount.incrementAndGet() % 10) == 0);
+			long now = System.currentTimeMillis();
+			boolean redelivery = now > redelivery_time;
 
 			if (redelivery)
 			{
-				batchCount.set(0);
+				redelivery_time = now + RETRY_THRESHOLD;
 			}
 
 			try
@@ -292,9 +389,9 @@ class BDBStorage
 				DatabaseEntry key = new DatabaseEntry();
 				DatabaseEntry data = new DatabaseEntry();
 
-				int i0 = 0;
-				int j0 = 0;
-				long mark = System.currentTimeMillis();
+				int i0 = 0; // delivered
+				int j0 = 0; // failed deliver
+				int k0 = 0; // redelivered messages
 
 				while (msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS)
 				{
@@ -309,14 +406,13 @@ class BDBStorage
 					final int deliveryCount = bdbm.getDeliveryCount();
 					final boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
 					final long reserved = bdbm.getReserve();
-					final boolean isReserved = reserved > 0 ? true : false;
+					final boolean isReserved = reserved > now ? true : false;
 
 					if (!isReserved && ((deliveryCount < 1) || redelivery))
 					{
-						if (mark > msg.getExpiration())
+						if (now > msg.getExpiration())
 						{
-							j0++;
-							msg_cursor.delete();
+							cursorDelete(msg_cursor);
 							log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
 							dumpMessage(msg);
 						}
@@ -324,35 +420,33 @@ class BDBStorage
 						{
 							try
 							{
+								bdbm.setDeliveryCount(deliveryCount + 1);
+								bdbm.setPreferLocalConsumer(false);
+								msg_cursor.put(key, buildDatabaseEntry(bdbm));
+
 								if (!queueProcessor.forward(msg, preferLocalConsumer))
 								{
-									bdbm.setDeliveryCount(deliveryCount + 1);
-									bdbm.setPreferLocalConsumer(false);
-									msg_cursor.put(key, buildDatabaseEntry(bdbm));
 									if (log.isDebugEnabled())
 									{
-										log.debug("Could not deliver message. Id: '{}'", msg.getMessageId());
+										log.debug("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), bdbm.getMessage().getMessageId());
 									}
 									dumpMessage(msg);
 									j0++;
-
-									if (queueProcessor.size() < 2)
-									{
-										break;
-									}
 								}
 								else
 								{
-									bdbm.setDeliveryCount(deliveryCount + 1);
-									bdbm.setReserve(System.currentTimeMillis() + 900000); // 15 minutes
-									msg_cursor.put(key, buildDatabaseEntry(bdbm));
-									
 									i0++;
+
+									if (deliveryCount > 1)
+									{
+										k0++;
+									}
 								}
 							}
 							catch (Throwable t)
 							{
 								log.error(t.getMessage());
+								break;
 							}
 						}
 					}
@@ -361,6 +455,11 @@ class BDBStorage
 				if (log.isDebugEnabled())
 				{
 					log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivered: %s, Redelivery: %s;", queueProcessor.getDestinationName(), i0, j0, redelivery));
+				}
+
+				if (redelivery && (k0 > 0))
+				{
+					log.info("Number of redelivered messages for queue '{}': {}", queueProcessor.getDestinationName(), k0);
 				}
 			}
 			catch (Throwable t)
@@ -373,92 +472,6 @@ class BDBStorage
 			}
 		}
 
-	}
-
-	private void closeDbCursor(Cursor msg_cursor)
-	{
-		if (msg_cursor != null)
-		{
-			try
-			{
-				msg_cursor.close();
-			}
-			catch (Throwable t)
-			{
-				dealWithError(t, false);
-			}
-		}
-	}
-
-	private void dumpMessage(final InternalMessage msg)
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("Could not deliver message. Dump: {}", msg.toString());
-		}
-	}
-
-	private void dealWithError(Throwable t, boolean rethrow)
-	{
-		Throwable rt = ErrorAnalyser.findRootCause(t);
-		log.error(rt.getMessage(), rt);
-		ErrorAnalyser.exitIfOOM(rt);
-		if (rethrow)
-		{
-			throw new RuntimeException(rt);
-		}
-	}
-
-	protected void deleteQueue()
-	{
-		isMarkedForDeletion.set(true);
-		Sleep.time(2500);
-
-		closeDatabase(messageDb);
-
-		removeDatabase(primaryDbName);
-	}
-
-	private void closeDatabase(Database db)
-	{
-		try
-		{
-			BDBEnviroment.sync();
-			String dbName = db.getDatabaseName();
-			log.info("Try to close db '{}'", dbName);
-			db.close();
-			log.info("Closed db '{}'", dbName);
-		}
-		catch (Throwable t)
-		{
-			dealWithError(t, false);
-		}
-	}
-
-	private void removeDatabase(String dbName)
-	{
-		int retryCount = 0;
-
-		while (retryCount < 5)
-		{
-			try
-			{
-				BDBEnviroment.sync();
-				log.info("Try to remove db '{}'", dbName);
-				env.truncateDatabase(null, dbName, false);
-				env.removeDatabase(null, dbName);
-				BDBEnviroment.sync();
-				log.info("Storage for queue '{}' was removed", queueProcessor.getDestinationName());
-
-				break;
-			}
-			catch (Throwable t)
-			{
-				retryCount++;
-				log.error(t.getMessage());
-				Sleep.time(2500);
-			}
-		}
 	}
 
 }

@@ -35,7 +35,7 @@ import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
 
 /**
- * Gcs is a façade for handling several message related functionality such as publish, acknowledge, etc.  
+ * Gcs is a facade for handling several message related functionality such as publish, acknowledge, etc.  
  *
  */
 
@@ -52,6 +52,10 @@ public class Gcs
 	private static final int MAX_BUFFER_SIZE = 8 * 1024 * 1024;
 
 	private static final Gcs instance = new Gcs();
+	
+	public static final int RECOVER_INTERVAL = 50;
+	
+	public static final int RECONNECT_INTERVAL = 5000;
 
 	public static void ackMessage(String queueName, final String msgId)
 	{
@@ -80,7 +84,7 @@ public class Gcs
 
 			if (!cf.isConnected())
 			{
-				GcsExecutor.schedule(new Connect(address), 5000, TimeUnit.MILLISECONDS);
+				GcsExecutor.schedule(new Connect(address), RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
 			}
 		}
 		else
@@ -193,7 +197,7 @@ public class Gcs
 			startAcceptor(GcsInfo.getAgentPort());
 			startConnector();
 
-			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), 50, 50, TimeUnit.MILLISECONDS);
+			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), RECOVER_INTERVAL, RECOVER_INTERVAL, TimeUnit.MILLISECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
 		}
