@@ -645,6 +645,24 @@ public abstract class BaseBrokerClient
 		return protocolType;
 	}
 
+	/**
+	 * Set the number of retries (used when a connection to the agent is lost). Default is forever.  
+	 * @param numberOfTries
+	 */
+	public void setNumberOfTries(int numberOfTries)
+	{
+		this._netHandler.setNumberOfTries(numberOfTries);
+	}
+
+	/**
+	 * Get the number of retries.
+	 * @return
+	 */
+	public int getNumberOfTries()
+	{
+		return this._netHandler.getNumberOfTries();
+	}
+	
 	// public static void saveToDropbox(String dropboxPath, BrokerMessage
 	// brkmsg, DestinationType dtype) throws Throwable
 	// {

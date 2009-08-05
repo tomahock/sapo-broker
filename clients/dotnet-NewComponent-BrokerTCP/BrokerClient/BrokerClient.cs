@@ -21,13 +21,35 @@ namespace SapoBrokerClient
             get { return defaultMessageSerializer; }
         }
 
+        private static int defaultReconnectionRetries = int.MaxValue;
+
+        /// <summary>
+        /// Default reconnection retries. Initial value is int.MaxValue.
+        /// </summary>
+        public static int DefaultReconnectionRetries
+        {
+            get { return defaultReconnectionRetries; }
+        }
+        /// <summary>
+        /// Determines how many times the client will try to reconnect to the agents. Default is DefaultReconnectionRetries.
+        /// </summary>
+        public int ReconnectionRetries
+        {
+            get { return reconnectionRetries; }
+            set { 
+                reconnectionRetries = value;
+                this.protocolHandler.ReconnectionRetries = reconnectionRetries;
+            }
+        }
+
 		#region Private members
 		
 		protected IList<HostInfo> hosts;
 		protected BrokerProtocolHandler protocolHandler;
 		protected IMessageSerializer messageSerializer = defaultMessageSerializer;
         protected bool closed = false;
-		
+        private int reconnectionRetries = DefaultReconnectionRetries;
+
 		#endregion
 
         #region Events
@@ -364,6 +386,13 @@ namespace SapoBrokerClient
             }
         }
 
+        /// <summary>
+        /// Publish a message over UDP.
+        /// </summary>
+        /// <param name="message">Message content.</param>
+        /// <param name="destination">Message destination.</param>
+        /// <param name="hostInfo">Agent information.</param>
+        /// <param name="messageSerializer">Serialization type.</param>
         public static void PublishMessageOverUdp(NetBrokerMessage message, string destination, HostInfo hostInfo, IMessageSerializer messageSerializer)
         {
             NetPublish publish = new NetPublish(destination, NetAction.DestinationType.TOPIC, message);
@@ -376,7 +405,13 @@ namespace SapoBrokerClient
             BrokerProtocolHandler.SendMessageOverUdp(netMessage, hostInfo, messageSerializer);
         }
 
-
+        /// <summary>
+        /// Enqueue a message over UDP.
+        /// </summary>
+        /// <param name="message">Message content.</param>
+        /// <param name="destination">Message destination.</param>
+        /// <param name="hostInfo">Agent information.</param>
+        /// <param name="messageSerializer">Serialization type.</param>
         public static void EnqueueMessageOverUdp(NetBrokerMessage message, string destination, HostInfo hostInfo, IMessageSerializer messageSerializer)
         {
             NetPublish publish = new NetPublish(destination, NetAction.DestinationType.QUEUE, message);

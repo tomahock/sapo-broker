@@ -82,10 +82,6 @@
       <Project>{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}</Project>
       <Name>SapoBrokerClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ClientTests\ClientTests.csproj">
-      <Project>{29A4C353-DF54-4B0B-8ADC-7D04515882AE}</Project>
-      <Name>ClientTests</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Tests\NegativeTests\" />

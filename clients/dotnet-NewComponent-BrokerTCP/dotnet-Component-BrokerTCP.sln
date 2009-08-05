@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SapoBrokerClient", "BrokerClient\SapoBrokerClient.csproj", "{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientTests", "ClientTests\ClientTests.csproj", "{29A4C353-DF54-4B0B-8ADC-7D04515882AE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{CA9B6984-B017-41B9-A0C5-423B07E98E23}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{E3973196-CBAC-446C-A70A-351FBAA45DE9}"
@@ -19,10 +17,6 @@ Global
 		{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{29A4C353-DF54-4B0B-8ADC-7D04515882AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{29A4C353-DF54-4B0B-8ADC-7D04515882AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{29A4C353-DF54-4B0B-8ADC-7D04515882AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{29A4C353-DF54-4B0B-8ADC-7D04515882AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CA9B6984-B017-41B9-A0C5-423B07E98E23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CA9B6984-B017-41B9-A0C5-423B07E98E23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA9B6984-B017-41B9-A0C5-423B07E98E23}.Release|Any CPU.ActiveCfg = Release|Any CPU

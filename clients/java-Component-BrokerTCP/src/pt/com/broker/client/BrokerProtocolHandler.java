@@ -29,8 +29,7 @@ import pt.com.broker.types.NetAction.ActionType;
 
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
-
-	private static final int MAX_NUMBER_OF_TRIES = 15;
+	private static final int DEFAULT_MAX_NUMBER_OF_TRIES = Integer.MAX_VALUE;
 
 	private static final Logger log = LoggerFactory.getLogger(BrokerProtocolHandler.class);
 
@@ -45,6 +44,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	private short proto_type = 1;
 
 	private HostInfo hostInfo = null;
+	
+	private volatile int numberOfTries = DEFAULT_MAX_NUMBER_OF_TRIES;
 
 	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
 	{
@@ -125,8 +126,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 			do
 			{
-				setHostInfo(brokerClient.getHostInfo());
-
 				try
 				{
 					// Close existing connections
@@ -169,15 +168,17 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 				}
 				catch (Throwable t)
 				{
-					Sleep.time((++count) * 1000);
+					log.error("Failed to reconnect to agent " + getHostInfo().getHostname() + ":" + getHostInfo().getPort() );
+					Sleep.time((++count) * 500);
 				}
+				setHostInfo(brokerClient.getHostInfo());
 			}
-			while (count != MAX_NUMBER_OF_TRIES);
+			while (count != getNumberOfTries());
 
 			this.brokerClient.setState(BrokerClientState.CLOSE);
 			this.notifyAll();
 
-			onError(new Exception("Unable to reconnect after " + MAX_NUMBER_OF_TRIES + " tries!"));
+			onError(new Exception("Unable to reconnect after " + getNumberOfTries() + " tries!"));
 		}
 
 	}
@@ -336,6 +337,16 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	public HostInfo getHostInfo()
 	{
 		return hostInfo;
+	}
+
+	public void setNumberOfTries(int numberOfTries)
+	{
+		this.numberOfTries = numberOfTries;
+	}
+
+	public int getNumberOfTries()
+	{
+		return numberOfTries;
 	}
 
 }

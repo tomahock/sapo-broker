@@ -360,6 +360,12 @@ namespace SapoBrokerClient.Messaging
 			}
 		}
 
+        public int ReconnectionRetries
+        {
+            get { return networkHandler.ReconnectionRetries; }
+            set { networkHandler.ReconnectionRetries = value; }
+        }
+
         public void Close()
         {
             networkHandler.Close();

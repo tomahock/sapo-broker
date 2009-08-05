@@ -59,23 +59,27 @@ namespace SapoBrokerClient.Networking
 		#region Private Members
 
         private readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly static int MAX_RETRIES = 16;
+        volatile private int retriesCount = int.MaxValue;
+
+        public int ReconnectionRetries
+        {
+            get { return retriesCount; }
+            set { retriesCount = value; }
+        }
 
         protected Socket socket;
 		private volatile Stream communicationStream;
 	    private CircularContainer<HostInfo> hosts;
+        private HostInfo hostInfo;
         private int connectionVersion = 0;
 
         private bool closed = false;
 				
 		#endregion
 
-        volatile int i = 0;
 		#region Auxiliary methods
 		private void OnMessageReceived(short protovolType, short protocolVersion, byte[] messagePayload)
 		{
-            Console.WriteLine("OnMessageReceived: "+ (++i).ToString());
-
             // Save the delegate field in a temporary field for thread safety
 			MessageReceivedHandler currentMessageReceived = MessageReceived;
 			
@@ -125,10 +129,10 @@ namespace SapoBrokerClient.Networking
             return new NetworkStream(socket, true);
         }
 
-        private void StartReading()
+        private void StartReading(HostInfo hostInfo)
         {
             // Initialize comunication
-            CreateAndConnect(hosts.Get());
+            CreateAndConnect(hostInfo);
 
 
             // Start receiving
@@ -141,7 +145,8 @@ namespace SapoBrokerClient.Networking
 		{
             try
             {
-                StartReading();
+                hostInfo = hosts.Get();
+                StartReading(hostInfo);
             }catch(Exception e) {
                 // Connection failed
                 if (!OnIoFailure(this.connectionVersion))
@@ -225,12 +230,12 @@ namespace SapoBrokerClient.Networking
                 {
                     try
                     {
-                        StartReading();
+                        StartReading(hostInfo);
                         retry = false;
                     }
                     catch (Exception)
                     {
-                        retry = (++tryCount) != MAX_RETRIES;
+                        retry = (++tryCount) != retriesCount;
                         if( ! retry)
                         {
                             closed = true;
@@ -243,6 +248,7 @@ namespace SapoBrokerClient.Networking
                         }
                         // wait for while, give the agent time to get back to life.
                         System.Threading.Thread.Sleep(tryCount * 500);
+                        hostInfo = hosts.Get();
                     }
                     if(retry)
                         log.ErrorFormat("Re-connection failed. {0}", hosts.Peek());
@@ -261,8 +267,6 @@ namespace SapoBrokerClient.Networking
             OnIoFailure(readContext.ConnectionVersion);
         }
 
-        volatile int totalReceivedBytes = 0;
-
         private void ReadCallback(IAsyncResult asyncResult)
         {
             try
@@ -280,7 +284,6 @@ namespace SapoBrokerClient.Networking
                     bytesReceived = 0;
                 }
 
-                Console.WriteLine("totalReceivedBytes: {0}", (totalReceivedBytes += bytesReceived));
                 if (bytesReceived == 0)
                 {
                     // Read as failed (bytes received == 0 or exception in EndRead)

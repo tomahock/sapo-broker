@@ -11,7 +11,7 @@ namespace Samples.Consumers
 {
     class ConsumerWithFailover
     {
-        public static void Failover(string[] args)
+        public static void Main(string[] args)
         {
             Console.WriteLine("Consumer with failover test");
 
@@ -21,7 +21,7 @@ namespace Samples.Consumers
 
             List<HostInfo> hosts = new List<HostInfo>();
             hosts.Add(new HostInfo(cliArgs.Hostname, cliArgs.PortNumber));
-            //hosts.Add(new HostInfo(cliArgs.Hostname, cliArgs.PortNumber)); // Add an alternative
+            //hosts.Add(new HostInfo(cliArgs.Hostname, 3423)); // Add an alternative
 
             BrokerClient brokerClient = new BrokerClient(hosts);
             Subscription subscription = new Subscription(cliArgs.DestinationName, cliArgs.DestinationType);
@@ -40,7 +40,6 @@ namespace Samples.Consumers
                 ;
             Console.WriteLine();
             Console.WriteLine("Unsubscribe...");
-
 
             // Note Subscription instance could other than the one used for subscription as long as it was equivelent (same destination type and subscription pattern). Since the application is ending and therefor the socket will be closed agent's will discard the previous subscription. 
             brokerClient.Unsubscribe(subscription);
