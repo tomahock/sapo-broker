@@ -12,10 +12,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
+
 import org.apache.thrift.protocol.*;
+import org.apache.thrift.transport.*;
 
 public class Header implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Header");
@@ -112,11 +113,7 @@ public class Header implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case PARAMETERS:
-      if (value == null) {
-        unsetParameters();
-      } else {
-        setParameters((Map<String,String>)value);
-      }
+      setParameters((Map<String,String>)value);
       break;
 
     default:

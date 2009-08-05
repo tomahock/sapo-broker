@@ -23,12 +23,12 @@ public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 		setSubscriptionName("/secret/foo");
 		
 		//TODO: save these params in configuration
-		String keyStoreLocation = "/home/lcosta/Work/SSL/clientKeystore";
-		String keystorePassword = "changeit";
+		String keyStoreLocation = "[location]";
+		String keystorePassword = "[password]";
 		
 		String stsLocation = "https://services.sapo.pt/sts/";
-		String stsUsername = "jose.saramago.276537@gmail.com";
-		String stsPassword = "saramago_jose";
+		String stsUsername = "[username]";
+		String stsPassword = "[password]";
 		
 		SslBrokerClient bk = null;
 		try

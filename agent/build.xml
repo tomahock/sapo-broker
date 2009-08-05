@@ -122,7 +122,9 @@
 		<copy file="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../acl/sapo-sts/agent/dist/sapo-broker-validation-saposts-${version}.jar" todir="${target-dir}/lib" />
-		<copy file="../acl/jdbc/dist/sapo-broker-auth-jdbc-${version}.jar" todir="${target-dir}/lib" />
+		<copy todir="${target-dir}/lib" overwrite="true">
+				<fileset dir="../acl/jdbc/dist"/>
+		</copy>
 		<copy file="../broker-tests/dist/sapo-broker-tests-${version}.jar" todir="${target-dir}/lib" />
 	
 		<copy todir="${target-dir}/doc">

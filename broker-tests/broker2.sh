@@ -21,6 +21,7 @@ else # we assume 1.6 here
 fi
 
 java -server \
+-Dapp=BROKER_TEST \
 -Xverify:none -Xms256M -Xmx256M \
 -Djava.awt.headless=true \
 -Djava.net.preferIPv4Stack=true \

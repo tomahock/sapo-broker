@@ -9,8 +9,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +59,13 @@ public abstract class Test
 
 	protected abstract void build() throws Throwable;
 
-	public final boolean run(int nrOfRuns)
+	public final boolean run(int nrOfRuns, TestsResults testResults)
 	{
 		boolean result = true;
 		if (skipTest())
 		{
 			System.out.println("test skiped");
+			testResults.addSkipedTest();
 			return true;
 		}
 		try
@@ -145,12 +144,17 @@ public abstract class Test
 				}
 			}
 		}
+		if( result )
+			testResults.addPositiveTest();
+		else
+			testResults.addFailedTest(getName());
+		
 		return result;
 	}
 
-	public final boolean run()
+	public final boolean run(TestsResults testResults)
 	{
-		return run(1);
+		return run(1, testResults);
 	}
 
 	public String getName()

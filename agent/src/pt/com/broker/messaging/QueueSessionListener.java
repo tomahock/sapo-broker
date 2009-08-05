@@ -42,11 +42,8 @@ public class QueueSessionListener extends BrokerListener
 		return DestinationType.QUEUE;
 	}
 
-	volatile int i = 0;
-	
 	public boolean onMessage(final InternalMessage msg)
 	{
-		
 		if (msg == null)
 			return true;
 
@@ -64,7 +61,6 @@ public class QueueSessionListener extends BrokerListener
 					}
 					final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
 					ioSession.write(response);
-					System.out.println("QueueSessionListener.onMessage()" + (++i));
 					return true;
 				}
 			}

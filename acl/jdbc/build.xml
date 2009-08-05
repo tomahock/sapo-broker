@@ -4,6 +4,7 @@
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
+	<property name="lib" value="lib" />
 	<property name="package" value="sapo-broker-auth-jdbc-${version}.jar" />
 
 	<path id="project.classpath">
@@ -42,11 +43,13 @@
 		</javac>
 	</target>
 
-
 	<target name="package" depends="build">
 		<jar destfile="${dist}/${package}">
 			<fileset dir="${bin}" />
 		</jar>
+		<copy todir="${dist}">
+			<fileset dir="${lib}"/>
+		</copy>
 	</target>
 
 </project>
