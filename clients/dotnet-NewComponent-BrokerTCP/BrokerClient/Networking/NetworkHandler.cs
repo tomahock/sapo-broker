@@ -317,24 +317,15 @@ namespace SapoBrokerClient.Networking
             hasMoreData = false;
             readIndex = 0;
             
-            Console.WriteLine("Received data length: " + dataLength);
-
             do
             {
                 workingBuffer = (msgAccumulator.Stage == MessageAccumulator.AccumatingStage.HEADER) ? msgAccumulator.Header : msgAccumulator.Payload;
-                //int bytesToCopy = (dataLength > msgAccumulator.DesiredBytes) ? (msgAccumulator.DesiredBytes - msgAccumulator.ReceivedBytes)  : dataLength;
-
+                
                 int neededBytes = msgAccumulator.DesiredBytes - msgAccumulator.ReceivedBytes;
-
                 int bytesToCopy = (dataLength > neededBytes) ? neededBytes : dataLength;
-                try
-                {
-                    Array.Copy(rawData, readIndex, workingBuffer, msgAccumulator.ReceivedBytes, bytesToCopy);
-                }
-                catch (ArgumentException ae)
-                {
-                    Console.WriteLine(String.Format("readIndex: ", readIndex)); 
-                }
+                
+                Array.Copy(rawData, readIndex, workingBuffer, msgAccumulator.ReceivedBytes, bytesToCopy);
+                
 
                 msgAccumulator.ReceivedBytes += bytesToCopy;
                 readIndex += bytesToCopy;
