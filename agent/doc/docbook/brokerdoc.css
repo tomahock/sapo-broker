@@ -40,6 +40,9 @@ h2.subtitle {
 	
 }
 
+span.mandatory {
+	text-decoration: underline;
+}
 
 /* Headings */
 

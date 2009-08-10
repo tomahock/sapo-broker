@@ -3,13 +3,14 @@
 <chapter id="protocol">
   <title>Protocol Specifiction</title>
   <section>
-    <para>Sapo-Broker makes its asynchronous messaging features available through the exchange of some well-known messages. These messages must be encoded using a supported encoding type and comply to the wire message format as well as the messaging format defined for each message.</para>
-    <para>The overall structure of a Sapo-Broker is demonstrated in <xref linkend="Figure-MessageFormat"/>. The wire message serves as a transportation medium for the messaging layer message as payload, witch, in cases of message publishing or notification, contains client's data.</para>
+    <title>Protocol Messages</title>
+    <para>Sapo-Broker makes its asynchronous messaging features available through the exchange of some well-known messages. These messages must be encoded using a supported encoding type and comply to the wire message format as well as the messaging format defined for each message. This means that messaging level message format (as opposite as wire messages), are not defined in any particular binary format, they are defined as structures composed by fields and other structures. Such approach provides a greater flexibility in terms of message encoding.</para>
+    <para>The overall structure of a Sapo-Broker message is demonstrated in <xref linkend="Figure-MessageFormat"/>. The wire message serves as a transportation medium for the messaging layer message as payload, witch, in cases of message publishing or notification, contains client's data.</para>
     <figure id="Figure-MessageFormat">
       <title>Message Format</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/messageformat.jpeg"/>
+          <imagedata fileref="images/simplemessageformat.jpeg"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -89,7 +90,7 @@
       </section>
     </section>
     <section>
-      <title>Messages</title>
+      <title>Messaging level messages</title>
       <para>The actions performed by agents and clients are determined by the following message set:</para>
       <table frame="all" id="Table13">
         <title>Message Types</title>
@@ -166,9 +167,9 @@
       </table>
       <section>
         <title>Payload message format</title>
-        <para>Both ProtoBufs and Thrift are binary serialization formats and frameworks witch support binary message encoding. Sapo Broker leverages<emphasis> on these frameworks to provide binary message support. Both have their own message description format (and code generating tools) but, for the intended purpose, are isomorphic.</emphasis></para>
+        <para>Both ProtoBufs and Thrift are binary serialization formats and frameworks witch support binary message encoding. Sapo-Broker leverages<emphasis> on these frameworks to provide binary message support. Both have their own message description format (and code generating tools) but, for the intended purpose, are isomorphic.</emphasis> ProtoBufs and Thrift message descriptions is available <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/bindings/protobuf/broker.proto">here</ulink> and <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/bindings/thrift/broker.thrift">here</ulink>, respectively.</para>
         <para>
-          <emphasis>SOAP messages are slightly different, and since are going to be made obsolete they are not described.</emphasis>
+          <emphasis>SOAP messages are slightly different, and since they are going to be made obsolete they are not described.</emphasis>
         </para>
         <section>
           <title>Atom</title>
@@ -265,9 +266,10 @@
       <section>
         <title>A "graphical" sample</title>
         <para>An example on how the messages relate to each other is presented in a "graphical" format.</para>
-        <para>In the sample, a client C wants to subscribe too all messages under the topic /topic/xpto, so he sends a subscription to agent A. When another client P publishes a message to topic /topic/xpto/foo, client A will be notified. Client C uses ProtoBufs encoding while client P uses Thrift encoding.</para>
+        <para>In the sample, a client C wants to subscribe too (consume) all messages under the topic /topic/xpto, so he sends a subscription to agent A. When another client P publishes (produces) a message to topic /topic/xpto/foo, client A will be notified. Client C uses ProtoBufs encoding while client P uses Thrift encoding.</para>
         <section>
           <title>Topic Subscription</title>
+	  <para>Client C subscribes to the intended messages using the <emphasis>/topic/xpto/.* </emphasis> subscription.</para>
           <screen>
 Header:
    Type: 1
@@ -279,11 +281,11 @@ Payload:
  ActionType: Subscription
  SubscribeMessage:
     destination: /topic/xpto/.*
-    subscription_type: TOPIC
-</screen>
+    subscription_type: TOPIC</screen>
         </section>
         <section>
-          <title>Message Publishing </title>
+          <title>Message Publishing</title>
+          <para>Client P publishes a message to topic <emphasis>/topic/xpto/foo</emphasis>.</para>
           <screen>
 Header:
    Type: 2
@@ -297,11 +299,11 @@ Payload:
     detination_type: TOPIC
     detination: /topic/xpto/foo
     BrokerMessage:
-       payload: 01010101010101001
-</screen>
+       payload: 01010101010101001...</screen>
         </section>
         <section>
           <title>Client Notification</title>
+	  <para>Client C, the subscriber, is notified of the message published by P to topic <emphasis>/topic/xpto/foo</emphasis> matching <emphasis>/topic/xpto/.*</emphasis> subscription.</para>
           <screen>
 Header:
    Type: 1
@@ -316,8 +318,7 @@ Payload:
     subscription: /topic/xpto/.*
     detination_type: TOPIC
     BrokerMessage:
-       payload: 01010101010101001...
-</screen>
+       payload: 01010101010101001...</screen>
         </section>
       </section>
     </section>
@@ -327,7 +328,7 @@ Payload:
     <para>There are several cases that result in errors. Things such as IO errors, messaging errors or security related errors are likely to occur. In most of the cases a Fault message is sent by the agent to the producer of the message that originated the error. Some errors however do not result in error messages, they are just logged. Examples of this are unknown encoding or version protocol and the reason is simple: If the message encoding or version are unknown there is no way to know how to encode the Fault message.</para>
     <section>
       <title>Logging</title>
-      <para>Some agent occurrences don't lead to Fault messages, but represent error or waring events. In these cases logging is performed. Internally Sapo-Broker uses Simple Logging Facade for Java (SLF4J) (<ulink url="http://www.slf4j.org/">http://www.slf4j.org/</ulink>).</para>
+      <para>Some agent occurrences don't lead to Fault messages, but represent error or warning events. In these cases logging is performed. Internally Sapo-Broker uses Simple Logging Facade for Java (SLF4J) (<ulink url="http://www.slf4j.org/">http://www.slf4j.org/</ulink>).</para>
     </section>
     <section>
       <title>Fault messages</title>
@@ -488,9 +489,7 @@ Payload:
               <row>
                 <entry>3201</entry>
                 <entry>Access denied</entry>
-                <entry>
-                  
-                </entry>
+                <entry></entry>
               </row>
             </tbody>
           </tgroup>

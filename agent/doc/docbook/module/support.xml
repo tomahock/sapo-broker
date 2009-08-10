@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="support">
+  <title>Community and Support</title>
+  <section>
+    <title>Building from the source </title>
+    <para>You can fetch the latest version of the Sapo-Broker source code from our <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk">subversion server</ulink>. For checking out the code use the svn command line client as follows:</para>
+    <command>
+      <prompt>svn co svn://softwarelivre.sapo.pt/broker/</prompt>
+    </command>
+    <para>To build, go to agents directory and type (you must have <ulink url="http://ant.apache.org/">ant</ulink> installed):</para>
+    <command>
+      <prompt>ant build-dist</prompt>
+    </command>
+  </section>
+  <section>
+    <title><anchor id="Howtogetinvolved"/>How to get involved</title>
+    <para>Subscribe our mailing-list at <ulink url="http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker">http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker</ulink>.</para>
+  </section>
+  <section>
+    <title><anchor id="publicbroker"/>Public broker</title>
+    <para>If you want to play with available client libraries using a live Sapo-Broker agent you can use our public server. It's available at:</para>
+    <screen>broker.labs.sapo.pt, TCP port 3322</screen>
+    <para>Currently there is only an available public topic. Messages are published to this topic every time that a blog post is created, modified or removed from <ulink url="http://blogs.sapo.pt">Sapo Blogs</ulink> ('newpost','changedpost','removedpost'). Here is the topic name.</para>
+    <screen>/sapo/blogs/activity/post</screen>
+    <para>An example of a published content is presented.</para>
+    <example>
+      <title>Public agent notification sample</title>
+      <screen>
+&lt;notification xmlns="http://uri.sapo.pt/schemas/sapo/notification.xsd"&gt;
+&lt;timestamp&gt;1169127665&lt;/timestamp&gt;
+&lt;event&gt;
+&lt;t:newpost xmlns:t="http://uri.sapo.pt/schemas/hpg/newpost.xsd"&gt;
+   &lt;t:link&gt;http://chicailheu.blogs.sapo.pt/444615.html&lt;/t:link&gt;
+   &lt;t:post_prop_taglist&gt;frases&lt;/t:post_prop_taglist>
+   &lt;t:itemid&gt;1736&lt;/t:itemid&gt;
+    &lt;t:post_prop_opt_preformatted&gt;1&lt;/t:post_prop_opt_preformatted&gt;
+    &lt;t:new_date&gt;Thu Jan 18 13:41:05 2007&lt;/t:new_date&gt;
+    &lt;t:subject&gt;Frase do dia&lt;/t:subject&gt;
+    &lt;t:journalid&gt;3434&lt;/t:journalid&gt;
+    &lt;t:post&gt;blablabla&lt;/t:post&gt;
+    &lt;t:poster&gt;chicailheu&lt;/t:poster&gt;
+    &lt;t:journal&gt;chicailheu&gt;/t:journal&gt;
+&lt;/t:newpost&gt;
+&lt;/event&gt;
+&lt;/notification&gt;
+      </screen>
+    </example>
+
+  </section>
+  <section>
+    <title>Frequently asked questions</title>
+    <para>Here are some questions that you may have and should help you take advantaged of Sapo-Broker.</para>
+    <qandaset>
+      <qandaentry>
+        <question>
+          <para>How do configure my one hundred agents with minimum efford?</para>
+        </question>
+        <answer>
+          <para>Use a global configuration file and distributed automatically!</para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>Should I configure DNS name for each agent?</para>
+        </question>
+        <answer>
+          <para>No, but if you do start with 007.</para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>Is Sapo-Broker JMS compilant?</para>
+        </question>
+        <answer>
+          <para>No, not for now, but it may come to be.</para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </section>
+</chapter>

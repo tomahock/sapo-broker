@@ -7,4 +7,3 @@
   <xsl:param name="section.autolabel" select="1"/>
   <xsl:param name="html.stylesheet" select="'brokerdoc.css'"/>
 </xsl:stylesheet>
-
