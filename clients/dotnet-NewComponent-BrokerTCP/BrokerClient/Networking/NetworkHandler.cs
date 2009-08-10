@@ -82,13 +82,10 @@ namespace SapoBrokerClient.Networking
 		{
             // Save the delegate field in a temporary field for thread safety
 			MessageReceivedHandler currentMessageReceived = MessageReceived;
-			
-			if(MessageReceived != null){
-                currentMessageReceived(messagePayload);
-                //ThreadPool.QueueUserWorkItem( (o) =>
-                //{
-                //    currentMessageReceived(messagePayload);
-                //});
+
+            if (currentMessageReceived != null)
+            {
+                currentMessageReceived.BeginInvoke(messagePayload, null, null);
 			}
 		}
 		
@@ -319,13 +316,25 @@ namespace SapoBrokerClient.Networking
             
             hasMoreData = false;
             readIndex = 0;
+            
+            Console.WriteLine("Received data length: " + dataLength);
 
             do
             {
                 workingBuffer = (msgAccumulator.Stage == MessageAccumulator.AccumatingStage.HEADER) ? msgAccumulator.Header : msgAccumulator.Payload;
-                int bytesToCopy = (dataLength > msgAccumulator.DesiredBytes) ? (msgAccumulator.DesiredBytes - msgAccumulator.ReceivedBytes)  : dataLength;
-                Array.Copy(rawData, readIndex, workingBuffer, msgAccumulator.ReceivedBytes, bytesToCopy);
-                
+                //int bytesToCopy = (dataLength > msgAccumulator.DesiredBytes) ? (msgAccumulator.DesiredBytes - msgAccumulator.ReceivedBytes)  : dataLength;
+
+                int neededBytes = msgAccumulator.DesiredBytes - msgAccumulator.ReceivedBytes;
+
+                int bytesToCopy = (dataLength > neededBytes) ? neededBytes : dataLength;
+                try
+                {
+                    Array.Copy(rawData, readIndex, workingBuffer, msgAccumulator.ReceivedBytes, bytesToCopy);
+                }
+                catch (ArgumentException ae)
+                {
+                    Console.WriteLine(String.Format("readIndex: ", readIndex)); 
+                }
 
                 msgAccumulator.ReceivedBytes += bytesToCopy;
                 readIndex += bytesToCopy;
