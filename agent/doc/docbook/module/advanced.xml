@@ -99,7 +99,7 @@
       <para>Authentication modules, also called validation providers, are configured at the global configuration file.  There, are defined the full name of type implementing pt.com.broker.auth.AuthInfoValidator (more on this later) in the element class and some provider specific provider parameters, under provider-params. The class must be in agent's classpath in order to be loaded.</para>
       <para>To each validation parameter must be attributed a globally known name, since it's used by clients to indicate the type of credentials used in <link linkend="AUTHENTICATION_MESSAGE">Authentication message</link>. For now there are two authentication types defined.</para>
       <table frame="all" id="Table3">
-        <title>Authentication Types</title>
+        <title>Authentication types</title>
         <tgroup cols="2">
           <tbody>
             <row>
@@ -143,7 +143,7 @@
       </example>
     </section>
     <section>
-      <title>Relevant Classes</title>
+      <title>Relevant classes</title>
       <para>At the heart of an authorization provider lies an implementation of the interface  pt.com.broker.auth.AuthInfoValidator. This interface and reaming relevant types are presented at Figure 5.</para>
       <para>The initialization method of AuthInfoValidator gives the provider an opportunity to realize any actions  required to properly validate client's authorization information and translate that information in client roles. The ProviderInfo is used to inform the provider what is the name of the authentication type it will be performing, the class name (redundant) and the parameter specified in the configuration file. These arguments are supplied as an XML representation object.</para>
       <para>Validation operation is invoked as a consequence of an <link linkend="AUTHENTICATION_MESSAGE">authentication message</link> which includes information about the user synthesized as an AuthInfo object. This information may contain an user identifier, user roles (which should be validated), an authentication token (such as password or a third party supplied token) and the type of authentication being used. The authentication token is a binary value, so, in case of representing a string such as a password is UTF-8 encoded. In response to an authentication request a result is produced (AuthValidationResult) indicating whether the credentials are valid (a reason for failure should be supplied in case their not) or not, and the list of roles associated with the user in case of valid credentials.</para>
@@ -193,7 +193,7 @@ CREATE TABLE user_roles
       </section>
     </section>
     <section id="SSL_CONFIGURATION">
-      <title>SSL Configuration</title>
+      <title>SSL configuration</title>
       <para>Sapo-Broker agents use SSL connections as message transport to client authentication messages and to support all communications that require authentication (role based access control). This type of connection is based on asymmetric cryptography operations and X.509 certificates. In order generate your own key pair and X.509 certificates a small tutorial on how to use <ulink url="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">SUN's keytool</ulink> is provided.</para>
       <section>
         <title>Keytool tutorial</title>

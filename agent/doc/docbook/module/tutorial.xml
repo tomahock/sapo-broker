@@ -13,7 +13,7 @@
       </command>
     </section>
     <section>
-      <title>Installation Procedure</title>
+      <title>Installation procedure</title>
       <para>The installation process is very easy. These are the required steps:</para>
       <itemizedlist>
         <listitem>Download the latest Sapo-Broker release from <ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">http://softwarelivre.sapo.pt/projects/broker/wiki/</ulink></listitem>
@@ -41,8 +41,8 @@
     </section>
   </section>
   <section>
-    <title>Sapo-Broker Reliability</title>
-    <para>bla bla bla</para>
+    <title>Sapo-Broker reliability</title>
+    <para>To be added.</para>
     <section>
     <title>Queues Reliability</title>
     <para>The persistence and delivery model of queued messages, as discussed <link linkend="INTRO_QUEUES">previously</link>, protects the system, in a broader sense, against client failure but not against agents failure. If a message is delivered to a client and, before client's Acknowledge, the agent fails, the message maybe delivered again. This violates the Point-to-Point pattern premises but in real world scenarios is near impossible to guarantee 100% robustness. Trade-offs considered and having empiric knowledge that this is a very rare case a few mitigation guidelines are offered to overcome the issue, in case that it constitutes a critical problem.</para>
@@ -461,7 +461,7 @@ class Test_Class {
     </section>
   </section>
   <section>
-    <title>System Topics</title>
+    <title>System topics</title>
     <para>Sapo-Broker agents publish several information regarding their internal state and events. This information is published to /system/[information type] topics.</para>
     <para>In order to guarantee that only agents produce messages to these topics an access control entry should be defined in the default <link linkend="ACCESS_CONTROL">security policy</link>.</para>
     <section>
@@ -509,7 +509,7 @@ class Test_Class {
       <title>Topics, queues and virtual queues</title>
       <para>In order to make the choice of what message pattern to use easier and clarify the previous discussed destination type options a sample is provided.</para>
       <para>Image a company, BigCompany Inc., that uses Sapo-Broker as their messaging middleware. This company has several applications, many of witch produce information, such as "new client" engaged, "new sale" processed, "new product" added to products catalog. When these <emphasis>events</emphasis> occur they should be made available to other applications. Given that they are events and not work items they should be published to a topic. Applications interested in this information subscribe to the topic, but if the published information is so important and constitutes a work item to some of the subscribing applications, them they subscribe to the topic in persistent fashion, using a virtual queue (also known as a durable subscription).</para>
-      <para>As an example, lets consider that a CRM application publishes a message to the topic /customer/new every time the company has a new customer. This information could be relevant to an application implementing an informal statistic on client's average age (if some client is missed, it's not a problem) so this application subscribe to the topic, however, for an application designed to initialize a workflow conducting to send the new client a welcome present as a limited time promotion, this information is crucial so it creates a Virtual Queue (or durable subscription), such as promotions@/customer/new. Other applications could register other virtual queues (e.g., foo@/customer/.*). <xref linkend="Figure-VIRTUALQUEUE"> xxxxxxx</xref> illustrates this scenario.</para>
+      <para>As an example, lets consider that a CRM application publishes a message to the topic /customer/new every time the company has a new customer. This information could be relevant to an application implementing an informal statistic on client's average age (if some client is missed, it's not a problem) so this application subscribe to the topic, however, for an application designed to initialize a workflow conducting to send the new client a welcome present as a limited time promotion, this information is crucial so it creates a Virtual Queue (or durable subscription), such as promotions@/customer/new. Other applications could register other virtual queues (e.g., foo@/customer/.*). <xref linkend="Figure-VIRTUALQUEUE" /> illustrates this scenario.</para>
       <para>Now consider that the promotions application, after some business logic, decides what gift should be send. The gift delivery is responsibility of the stock management application so the promotions application publishes a message to the queue /client-gift including client and gift information. This work dependency was established as a consequence of a business process definition so both applications know the name of the queue, message format and semantics.To guarantee that only the promotions application could publish messages to that queue and only the stock management application could retrieve messages from the queue a security policy could be defined.</para>
      <figure id="Figure-VIRTUALQUEUE">
       <title>An example with topic and virtual queue subscription</title>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <chapter id="protocol">
-  <title>Protocol Specifiction</title>
+  <title>Protocol specifiction</title>
   <section>
-    <title>Protocol Messages</title>
+    <title>Protocol messages</title>
     <para>Sapo-Broker makes its asynchronous messaging features available through the exchange of some well-known messages. These messages must be encoded using a supported encoding type and comply to the wire message format as well as the messaging format defined for each message. This means that messaging level message format (as opposite as wire messages), are not defined in any particular binary format, they are defined as structures composed by fields and other structures. Such approach provides a greater flexibility in terms of message encoding.</para>
     <para>The overall structure of a Sapo-Broker message is demonstrated in <xref linkend="Figure-MessageFormat"/>. The wire message serves as a transportation medium for the messaging layer message as payload, witch, in cases of message publishing or notification, contains client's data.</para>
     <figure id="Figure-MessageFormat">
@@ -15,10 +15,10 @@
       </mediaobject>
     </figure>
     <section>
-      <title>Wire Message Format</title>
+      <title>Wire message format</title>
       <para>A Sapo-Broker wire message is composed by an header and a payload like <xref linkend="Figure-WireMessageFormat"/> shows.</para>
       <figure id="Figure-WireMessageFormat">
-        <title>Wire Message Format</title>
+        <title>Wire message format</title>
         <mediaobject>
           <imageobject>
             <imagedata fileref="images/wiremessageformat.jpeg"/>
@@ -93,7 +93,7 @@
       <title>Messaging level messages</title>
       <para>The actions performed by agents and clients are determined by the following message set:</para>
       <table frame="all" id="Table13">
-        <title>Message Types</title>
+        <title>Message types</title>
         <tgroup cols="2">
           <tbody>
             <row>
@@ -284,7 +284,7 @@ Payload:
     subscription_type: TOPIC</screen>
         </section>
         <section>
-          <title>Message Publishing</title>
+          <title>Message publishing</title>
           <para>Client P publishes a message to topic <emphasis>/topic/xpto/foo</emphasis>.</para>
           <screen>
 Header:
@@ -335,7 +335,7 @@ Payload:
       <section>
         <title>I/O Errors</title>
         <table frame="all" id="Table8">
-          <title>Message Format Faults</title>
+          <title>Message format faults</title>
           <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
@@ -367,7 +367,7 @@ Payload:
           </tgroup>
         </table>
         <table frame="all" id="Table9">
-          <title>Payload Encoding Faults </title>
+          <title>Payload encoding faults</title>
           <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
@@ -396,7 +396,7 @@ Payload:
       </section>
       <section>
         <table frame="all" id="Table10">
-          <title>Messaging Errors Faults</title>
+          <title>Messaging errors faults</title>
           <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
@@ -443,9 +443,9 @@ Payload:
         </table>
       </section>
       <section>
-        <title>Security Fault Types</title>
+        <title>Security fault types</title>
         <table frame="all" id="Table11">
-          <title>Authentication Faults</title>
+          <title>Authentication faults</title>
           <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>
@@ -475,7 +475,7 @@ Payload:
           </tgroup>
         </table>
         <table frame="all" id="Table12">
-          <title>Authorization Faults</title>
+          <title>Authorization faults</title>
           <tgroup cols="3">
             <colspec colnum="1" colname="c1"/>
             <colspec colnum="2" colname="c2"/>

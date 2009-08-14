@@ -36,14 +36,14 @@
     </section>
   </section>
   <section>
-    <title>Sapo-Broker Features</title>
+    <title>Sapo-Broker features</title>
     <section>
       <title>Supported broker topologies</title>
       <para>Message brokers, depending on specific products, can be configured to implement different topologies, such as hierarchical, network, single broker or a mixture of the previous.</para>
       <para>Sapo-Broker can be used as a single instance or in network topology. Although a single agent instance could be used in small working sets, a multiple agent (network) design would better take advantage of Sapo-Broker, namely in system availability and throughput, with client failover and distributed workload, respectively. In networking topologies all agents are interconnected in what is known as agent cloud. Is is not yet possible to communicate between different agent clouds.</para>
     </section>
     <section>
-      <title>Message Publication and Subscription</title>
+      <title>Message publication and subscription</title>
       <para>When designing and implementing messaging-based solutions two man paradigms exist: Point-to-Point and Publish-Subscribe. Just like Java Message Service (<ulink url="http://java.sun.com/products/jms/">JMS</ulink>) we use the terms "TOPIC" to refer Publish-Subscribe Destinations and "QUEUE" to designate Point-to-Point Destinations. Sapo-Broker supports  both of these patterns and adds special purpose Destination Type named "VIRTUAL_QUEUE" witch stands somewhere in between.</para>
       <para>A publication, in general terms, contains a Destination Type (TOPIC or QUEUE) witch determines the pattern intended is, and a Destination Name witch may be a Topic or Queue name. Subscriptions, on the other hand, include a Destination Type (TOPIC, QUEUE or VIRTUAL_QUEUE) and a Destination witch is a subscription name, meaning that can be a Topic or Queue name or a regular expression (wildcard subscription) agglomerating several Topics.</para>
       <para>A use case regarding topic, queues and virtual queues is <link linkend="TOPICS_QUEUES_USE_CASE">available</link>.</para>
