@@ -106,7 +106,7 @@
               <entry id="SUBSCRIBE_MESSAGE">
                 <link linkend="SUBSCRIBE_MSG_DETAIL">Subscribe</link>
               </entry>
-              <entry>A client denotes his interest in receiving a determined type of message (TOPIC, QUEUE or VIRUTAL_QUEUE) by sending a Subscribe message specifying a destination name or pattern.</entry>
+              <entry>A client denotes his interest in receiving a determined type of message (TOPIC, QUEUE or VIRTUAL_QUEUE) by sending a Subscribe message specifying a destination name or pattern.</entry>
             </row>
             <row>
               <entry id="NOTIFICATION_MESSAGE">
@@ -166,12 +166,13 @@
         </tgroup>
       </table>
       <section>
-        <title>Payload message format</title>
+        <title>Message format definition</title>
+	<para>The structure of messaging level messages is defined as an object structure (rooted in <link linkend="ATOM_STRUCTURE">Atom</link>) composed by fields and other structures. These messages must be encoded in a supported serialization format.</para>
         <para>Both ProtoBufs and Thrift are binary serialization formats and frameworks witch support binary message encoding. Sapo-Broker leverages<emphasis> on these frameworks to provide binary message support. Both have their own message description format (and code generating tools) but, for the intended purpose, are isomorphic.</emphasis> ProtoBufs and Thrift message descriptions is available <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/bindings/protobuf/broker.proto">here</ulink> and <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/bindings/thrift/broker.thrift">here</ulink>, respectively.</para>
         <para>
           <emphasis>SOAP messages are slightly different, and since they are going to be made obsolete they are not described.</emphasis>
         </para>
-        <section>
+        <section id="ATOM_STRUCTURE">
           <title>Atom</title>
           <para>Client and broker agents exchange messages of type Atom with is composed by the mandatory message Action and a optional Message Header.</para>
           <para>Atom: {Header, <emphasis role="mandatory">Action</emphasis>}</para>
@@ -188,7 +189,7 @@
         </section>
         <section>
           <title>Action</title>
-          <para>Action represents the action to be performed. Is composed by a enumerate that identifies the action and a set of possible messages that represent it.</para>
+          <para>Action represents the action to be performed. Is composed by a enumerate that identifies the action and a set of possible messages that represent it. Only the messages type identified by the enumerate must be present.</para>
           <para>Action: { <emphasis role="mandatory">ActionType</emphasis>, Publish, Poll, Accepted, Acknowledge_message, Subscribe, Unsubscribe, Notification, Fault, Ping, Pong, Auth}</para>
         </section>
         <section>
@@ -198,7 +199,7 @@
         </section>
         <section id="PUBLISH_MSG_DETAIL">
           <title>Publish</title>
-          <para>Publish messages contain an optional action identifier (used by the receiving agent to notify of message acceptance), an enumerate describing the type of destiny, the destination and a Broker Message.</para>
+          <para>Publish messages contain an optional action identifier (used by the receiving agent to notify of message acceptance - <link linkend="ACCEPTED_MESSAGE">Accepted message</link>), an enumerate describing the type of destiny, the destination and a Broker Message.</para>
           <para>Publish: {action_id, <emphasis role="mandatory">DestinationType</emphasis>, <emphasis role="mandatory">destination</emphasis>, <emphasis role="mandatory">BrokerMessage</emphasis>}</para>
         </section>
         <section>
