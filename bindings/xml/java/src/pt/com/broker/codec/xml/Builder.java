@@ -100,7 +100,18 @@ public class Builder
 			actionId = sb.actionId;
 
 			NetAction netAction = new NetAction(NetAction.ActionType.SUBSCRIBE);
-			NetAction.DestinationType dtype = NetAction.DestinationType.valueOf(sb.destinationType);
+
+			NetAction.DestinationType dtype = null;
+
+			if (sb.destinationType.equals("TOPIC_AS_QUEUE"))
+			{
+				dtype = NetAction.DestinationType.VIRTUAL_QUEUE;
+			}
+			else
+			{
+				dtype = NetAction.DestinationType.valueOf(sb.destinationType);
+			}
+
 			NetSubscribe netSubscribe = new NetSubscribe(sb.destinationName, dtype);
 			netSubscribe.setActionId(actionId);
 
@@ -114,7 +125,7 @@ public class Builder
 			Poll poll = msg.body.poll;
 
 			NetAction netAction = new NetAction(NetAction.ActionType.POLL);
-			NetPoll netPoll = new NetPoll(poll.destinationName, Long.MAX_VALUE/2);
+			NetPoll netPoll = new NetPoll(poll.destinationName, Long.MAX_VALUE / 2);
 			netPoll.setActionId(actionId);
 
 			message = new NetMessage(netAction);
@@ -181,7 +192,7 @@ public class Builder
 				faultMessage = msg.body.fault.faultReason.text;
 
 			faultDetail = msg.body.fault.detail;
-			
+
 			NetFault netFault = new NetFault(faultCode, faultMessage);
 			netFault.setDetail(faultDetail);
 			message = new NetMessage(netAction);
