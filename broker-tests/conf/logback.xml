@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<jmxConfigurator />
+
+	<appender class="ch.qos.logback.core.ConsoleAppender" name="ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>info</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%5p #%C# [%t] - %m%n</pattern>
+		</layout>
+	</appender>
+
+	<appender class="ch.qos.logback.core.ConsoleAppender" name="Broker-ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>info</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%5p #BROKER#%C# [%t] - %m%n</pattern>
+		</layout>
+	</appender>
+
+	<appender class="ch.qos.logback.core.ConsoleAppender" name="GCS-ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>info</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%5p #GCS#%C# [%t] - %m%n</pattern>
+		</layout>
+	</appender>
+	
+	<logger additivity="false" name="org.apache">
+		<level value="error" />
+		<appender-ref ref="ConsoleAppender" />
+	</logger>
+
+	<logger additivity="false" name="pt.com.gcs">
+		<level value="info" />
+		<appender-ref ref="GCS-ConsoleAppender" />
+	</logger>
+
+	<logger additivity="false" name="pt.com.broker">
+		<level value="info" />
+		<appender-ref ref="Broker-ConsoleAppender" />
+	</logger>
+
+	<root>
+		<level value="info" />
+		<appender-ref ref="ConsoleAppender" />
+	</root>
+</configuration>
