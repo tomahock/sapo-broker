@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
-public class Authentication implements TBase, java.io.Serializable, Cloneable {
+public class Authentication implements TBase, java.io.Serializable, Cloneable, Comparable<Authentication> {
   private static final TStruct STRUCT_DESC = new TStruct("Authentication");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField AUTHENTICATION_TYPE_FIELD_DESC = new TField("authentication_type", TType.STRING, (short)2);
@@ -37,9 +39,7 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   public List<String> roles;
   public static final int ROLES = 5;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-  }
+  // isset id assignments
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
@@ -112,8 +112,9 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     return this.action_id;
   }
 
-  public void setAction_id(String action_id) {
+  public Authentication setAction_id(String action_id) {
     this.action_id = action_id;
+    return this;
   }
 
   public void unsetAction_id() {
@@ -135,8 +136,9 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     return this.authentication_type;
   }
 
-  public void setAuthentication_type(String authentication_type) {
+  public Authentication setAuthentication_type(String authentication_type) {
     this.authentication_type = authentication_type;
+    return this;
   }
 
   public void unsetAuthentication_type() {
@@ -158,8 +160,9 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     return this.token;
   }
 
-  public void setToken(byte[] token) {
+  public Authentication setToken(byte[] token) {
     this.token = token;
+    return this;
   }
 
   public void unsetToken() {
@@ -181,8 +184,9 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     return this.user_id;
   }
 
-  public void setUser_id(String user_id) {
+  public Authentication setUser_id(String user_id) {
     this.user_id = user_id;
+    return this;
   }
 
   public void unsetUser_id() {
@@ -200,27 +204,13 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
-  public int getRolesSize() {
-    return (this.roles == null) ? 0 : this.roles.size();
-  }
-
-  public java.util.Iterator<String> getRolesIterator() {
-    return (this.roles == null) ? null : this.roles.iterator();
-  }
-
-  public void addToRoles(String elem) {
-    if (this.roles == null) {
-      this.roles = new ArrayList<String>();
-    }
-    this.roles.add(elem);
-  }
-
   public List<String> getRoles() {
     return this.roles;
   }
 
-  public void setRoles(List<String> roles) {
+  public Authentication setRoles(List<String> roles) {
     this.roles = roles;
+    return this;
   }
 
   public void unsetRoles() {
@@ -241,23 +231,43 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      setAction_id((String)value);
+      if (value == null) {
+        unsetAction_id();
+      } else {
+        setAction_id((String)value);
+      }
       break;
 
     case AUTHENTICATION_TYPE:
-      setAuthentication_type((String)value);
+      if (value == null) {
+        unsetAuthentication_type();
+      } else {
+        setAuthentication_type((String)value);
+      }
       break;
 
     case TOKEN:
-      setToken((byte[])value);
+      if (value == null) {
+        unsetToken();
+      } else {
+        setToken((byte[])value);
+      }
       break;
 
     case USER_ID:
-      setUser_id((String)value);
+      if (value == null) {
+        unsetUser_id();
+      } else {
+        setUser_id((String)value);
+      }
       break;
 
     case ROLES:
-      setRoles((List<String>)value);
+      if (value == null) {
+        unsetRoles();
+      } else {
+        setRoles((List<String>)value);
+      }
       break;
 
     default:
@@ -371,6 +381,57 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
     return 0;
   }
 
+  public int compareTo(Authentication other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Authentication typedOther = (Authentication)other;
+
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetAuthentication_type()).compareTo(isSetAuthentication_type());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(authentication_type, typedOther.authentication_type);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetToken()).compareTo(isSetToken());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(token, typedOther.token);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetUser_id()).compareTo(isSetUser_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(user_id, typedOther.user_id);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetRoles()).compareTo(isSetRoles());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(roles, typedOther.roles);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    return 0;
+  }
+
   public void read(TProtocol iprot) throws TException {
     TField field;
     iprot.readStructBegin();
@@ -445,14 +506,18 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.action_id != null) {
-      oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
-      oprot.writeString(this.action_id);
-      oprot.writeFieldEnd();
+      if (isSetAction_id()) {
+        oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
+        oprot.writeString(this.action_id);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.authentication_type != null) {
-      oprot.writeFieldBegin(AUTHENTICATION_TYPE_FIELD_DESC);
-      oprot.writeString(this.authentication_type);
-      oprot.writeFieldEnd();
+      if (isSetAuthentication_type()) {
+        oprot.writeFieldBegin(AUTHENTICATION_TYPE_FIELD_DESC);
+        oprot.writeString(this.authentication_type);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.token != null) {
       oprot.writeFieldBegin(TOKEN_FIELD_DESC);
@@ -460,20 +525,24 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
       oprot.writeFieldEnd();
     }
     if (this.user_id != null) {
-      oprot.writeFieldBegin(USER_ID_FIELD_DESC);
-      oprot.writeString(this.user_id);
-      oprot.writeFieldEnd();
+      if (isSetUser_id()) {
+        oprot.writeFieldBegin(USER_ID_FIELD_DESC);
+        oprot.writeString(this.user_id);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.roles != null) {
-      oprot.writeFieldBegin(ROLES_FIELD_DESC);
-      {
-        oprot.writeListBegin(new TList(TType.STRING, this.roles.size()));
-        for (String _iter8 : this.roles)        {
-          oprot.writeString(_iter8);
+      if (isSetRoles()) {
+        oprot.writeFieldBegin(ROLES_FIELD_DESC);
+        {
+          oprot.writeListBegin(new TList(TType.STRING, this.roles.size()));
+          for (String _iter8 : this.roles)          {
+            oprot.writeString(_iter8);
+          }
+          oprot.writeListEnd();
         }
-        oprot.writeListEnd();
+        oprot.writeFieldEnd();
       }
-      oprot.writeFieldEnd();
     }
     oprot.writeFieldStop();
     oprot.writeStructEnd();
@@ -542,6 +611,9 @@ public class Authentication implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    if (token == null) {
+      throw new TProtocolException("Required field 'token' was not present! Struct: " + toString());
+    }
     // check that fields of type enum have valid values
   }
 

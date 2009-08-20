@@ -12,11 +12,13 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
 public class Atom implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Atom");
@@ -28,9 +30,7 @@ public class Atom implements TBase, java.io.Serializable, Cloneable {
   public Action action;
   public static final int ACTION = 2;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-  }
+  // isset id assignments
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(HEADER, new FieldMetaData("header", TFieldRequirementType.OPTIONAL, 
@@ -76,8 +76,9 @@ public class Atom implements TBase, java.io.Serializable, Cloneable {
     return this.header;
   }
 
-  public void setHeader(Header header) {
+  public Atom setHeader(Header header) {
     this.header = header;
+    return this;
   }
 
   public void unsetHeader() {
@@ -99,8 +100,9 @@ public class Atom implements TBase, java.io.Serializable, Cloneable {
     return this.action;
   }
 
-  public void setAction(Action action) {
+  public Atom setAction(Action action) {
     this.action = action;
+    return this;
   }
 
   public void unsetAction() {
@@ -121,11 +123,19 @@ public class Atom implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case HEADER:
-      setHeader((Header)value);
+      if (value == null) {
+        unsetHeader();
+      } else {
+        setHeader((Header)value);
+      }
       break;
 
     case ACTION:
-      setAction((Action)value);
+      if (value == null) {
+        unsetAction();
+      } else {
+        setAction((Action)value);
+      }
       break;
 
     default:
@@ -242,9 +252,11 @@ public class Atom implements TBase, java.io.Serializable, Cloneable {
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.header != null) {
-      oprot.writeFieldBegin(HEADER_FIELD_DESC);
-      this.header.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetHeader()) {
+        oprot.writeFieldBegin(HEADER_FIELD_DESC);
+        this.header.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.action != null) {
       oprot.writeFieldBegin(ACTION_FIELD_DESC);
@@ -283,6 +295,9 @@ public class Atom implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    if (action == null) {
+      throw new TProtocolException("Required field 'action' was not present! Struct: " + toString());
+    }
     // check that fields of type enum have valid values
   }
 

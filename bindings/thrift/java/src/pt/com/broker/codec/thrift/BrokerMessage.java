@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
-public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
+public class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparable<BrokerMessage> {
   private static final TStruct STRUCT_DESC = new TStruct("BrokerMessage");
   private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)1);
   private static final TField PAYLOAD_FIELD_DESC = new TField("payload", TType.STRING, (short)2);
@@ -34,11 +36,10 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
   public long timestamp;
   public static final int TIMESTAMP = 4;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-    public boolean expiration = false;
-    public boolean timestamp = false;
-  }
+  // isset id assignments
+  private static final int __EXPIRATION_ISSET_ID = 0;
+  private static final int __TIMESTAMP_ISSET_ID = 1;
+  private BitSet __isset_bit_vector = new BitSet(2);
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.OPTIONAL, 
@@ -68,15 +69,17 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
     this.message_id = message_id;
     this.payload = payload;
     this.expiration = expiration;
-    this.__isset.expiration = true;
+    setExpirationIsSet(true);
     this.timestamp = timestamp;
-    this.__isset.timestamp = true;
+    setTimestampIsSet(true);
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public BrokerMessage(BrokerMessage other) {
+    __isset_bit_vector.clear();
+    __isset_bit_vector.or(other.__isset_bit_vector);
     if (other.isSetMessage_id()) {
       this.message_id = other.message_id;
     }
@@ -84,9 +87,7 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
       this.payload = new byte[other.payload.length];
       System.arraycopy(other.payload, 0, payload, 0, other.payload.length);
     }
-    __isset.expiration = other.__isset.expiration;
     this.expiration = other.expiration;
-    __isset.timestamp = other.__isset.timestamp;
     this.timestamp = other.timestamp;
   }
 
@@ -99,8 +100,9 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
     return this.message_id;
   }
 
-  public void setMessage_id(String message_id) {
+  public BrokerMessage setMessage_id(String message_id) {
     this.message_id = message_id;
+    return this;
   }
 
   public void unsetMessage_id() {
@@ -122,8 +124,9 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
     return this.payload;
   }
 
-  public void setPayload(byte[] payload) {
+  public BrokerMessage setPayload(byte[] payload) {
     this.payload = payload;
+    return this;
   }
 
   public void unsetPayload() {
@@ -145,62 +148,80 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
     return this.expiration;
   }
 
-  public void setExpiration(long expiration) {
+  public BrokerMessage setExpiration(long expiration) {
     this.expiration = expiration;
-    this.__isset.expiration = true;
+    setExpirationIsSet(true);
+    return this;
   }
 
   public void unsetExpiration() {
-    this.__isset.expiration = false;
+    __isset_bit_vector.clear(__EXPIRATION_ISSET_ID);
   }
 
   // Returns true if field expiration is set (has been asigned a value) and false otherwise
   public boolean isSetExpiration() {
-    return this.__isset.expiration;
+    return __isset_bit_vector.get(__EXPIRATION_ISSET_ID);
   }
 
   public void setExpirationIsSet(boolean value) {
-    this.__isset.expiration = value;
+    __isset_bit_vector.set(__EXPIRATION_ISSET_ID, value);
   }
 
   public long getTimestamp() {
     return this.timestamp;
   }
 
-  public void setTimestamp(long timestamp) {
+  public BrokerMessage setTimestamp(long timestamp) {
     this.timestamp = timestamp;
-    this.__isset.timestamp = true;
+    setTimestampIsSet(true);
+    return this;
   }
 
   public void unsetTimestamp() {
-    this.__isset.timestamp = false;
+    __isset_bit_vector.clear(__TIMESTAMP_ISSET_ID);
   }
 
   // Returns true if field timestamp is set (has been asigned a value) and false otherwise
   public boolean isSetTimestamp() {
-    return this.__isset.timestamp;
+    return __isset_bit_vector.get(__TIMESTAMP_ISSET_ID);
   }
 
   public void setTimestampIsSet(boolean value) {
-    this.__isset.timestamp = value;
+    __isset_bit_vector.set(__TIMESTAMP_ISSET_ID, value);
   }
 
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case MESSAGE_ID:
-      setMessage_id((String)value);
+      if (value == null) {
+        unsetMessage_id();
+      } else {
+        setMessage_id((String)value);
+      }
       break;
 
     case PAYLOAD:
-      setPayload((byte[])value);
+      if (value == null) {
+        unsetPayload();
+      } else {
+        setPayload((byte[])value);
+      }
       break;
 
     case EXPIRATION:
-      setExpiration((Long)value);
+      if (value == null) {
+        unsetExpiration();
+      } else {
+        setExpiration((Long)value);
+      }
       break;
 
     case TIMESTAMP:
-      setTimestamp((Long)value);
+      if (value == null) {
+        unsetTimestamp();
+      } else {
+        setTimestamp((Long)value);
+      }
       break;
 
     default:
@@ -300,6 +321,49 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
     return 0;
   }
 
+  public int compareTo(BrokerMessage other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    BrokerMessage typedOther = (BrokerMessage)other;
+
+    lastComparison = Boolean.valueOf(isSetMessage_id()).compareTo(isSetMessage_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(message_id, typedOther.message_id);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetPayload()).compareTo(isSetPayload());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(payload, typedOther.payload);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetExpiration()).compareTo(isSetExpiration());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(expiration, typedOther.expiration);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetTimestamp()).compareTo(isSetTimestamp());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(timestamp, typedOther.timestamp);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    return 0;
+  }
+
   public void read(TProtocol iprot) throws TException {
     TField field;
     iprot.readStructBegin();
@@ -328,7 +392,7 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
         case EXPIRATION:
           if (field.type == TType.I64) {
             this.expiration = iprot.readI64();
-            this.__isset.expiration = true;
+            setExpirationIsSet(true);
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
@@ -336,7 +400,7 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
         case TIMESTAMP:
           if (field.type == TType.I64) {
             this.timestamp = iprot.readI64();
-            this.__isset.timestamp = true;
+            setTimestampIsSet(true);
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
@@ -359,21 +423,27 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.message_id != null) {
-      oprot.writeFieldBegin(MESSAGE_ID_FIELD_DESC);
-      oprot.writeString(this.message_id);
-      oprot.writeFieldEnd();
+      if (isSetMessage_id()) {
+        oprot.writeFieldBegin(MESSAGE_ID_FIELD_DESC);
+        oprot.writeString(this.message_id);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.payload != null) {
       oprot.writeFieldBegin(PAYLOAD_FIELD_DESC);
       oprot.writeBinary(this.payload);
       oprot.writeFieldEnd();
     }
-    oprot.writeFieldBegin(EXPIRATION_FIELD_DESC);
-    oprot.writeI64(this.expiration);
-    oprot.writeFieldEnd();
-    oprot.writeFieldBegin(TIMESTAMP_FIELD_DESC);
-    oprot.writeI64(this.timestamp);
-    oprot.writeFieldEnd();
+    if (isSetExpiration()) {
+      oprot.writeFieldBegin(EXPIRATION_FIELD_DESC);
+      oprot.writeI64(this.expiration);
+      oprot.writeFieldEnd();
+    }
+    if (isSetTimestamp()) {
+      oprot.writeFieldBegin(TIMESTAMP_FIELD_DESC);
+      oprot.writeI64(this.timestamp);
+      oprot.writeFieldEnd();
+    }
     oprot.writeFieldStop();
     oprot.writeStructEnd();
   }
@@ -423,6 +493,9 @@ public class BrokerMessage implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    if (payload == null) {
+      throw new TProtocolException("Required field 'payload' was not present! Struct: " + toString());
+    }
     // check that fields of type enum have valid values
   }
 

@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
-public class Fault implements TBase, java.io.Serializable, Cloneable {
+public class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault> {
   private static final TStruct STRUCT_DESC = new TStruct("Fault");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField FAULT_CODE_FIELD_DESC = new TField("fault_code", TType.STRING, (short)2);
@@ -34,9 +36,7 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
   public String fault_detail;
   public static final int FAULT_DETAIL = 4;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-  }
+  // isset id assignments
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
@@ -96,8 +96,9 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
     return this.action_id;
   }
 
-  public void setAction_id(String action_id) {
+  public Fault setAction_id(String action_id) {
     this.action_id = action_id;
+    return this;
   }
 
   public void unsetAction_id() {
@@ -119,8 +120,9 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
     return this.fault_code;
   }
 
-  public void setFault_code(String fault_code) {
+  public Fault setFault_code(String fault_code) {
     this.fault_code = fault_code;
+    return this;
   }
 
   public void unsetFault_code() {
@@ -142,8 +144,9 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
     return this.fault_message;
   }
 
-  public void setFault_message(String fault_message) {
+  public Fault setFault_message(String fault_message) {
     this.fault_message = fault_message;
+    return this;
   }
 
   public void unsetFault_message() {
@@ -165,8 +168,9 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
     return this.fault_detail;
   }
 
-  public void setFault_detail(String fault_detail) {
+  public Fault setFault_detail(String fault_detail) {
     this.fault_detail = fault_detail;
+    return this;
   }
 
   public void unsetFault_detail() {
@@ -187,19 +191,35 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      setAction_id((String)value);
+      if (value == null) {
+        unsetAction_id();
+      } else {
+        setAction_id((String)value);
+      }
       break;
 
     case FAULT_CODE:
-      setFault_code((String)value);
+      if (value == null) {
+        unsetFault_code();
+      } else {
+        setFault_code((String)value);
+      }
       break;
 
     case FAULT_MESSAGE:
-      setFault_message((String)value);
+      if (value == null) {
+        unsetFault_message();
+      } else {
+        setFault_message((String)value);
+      }
       break;
 
     case FAULT_DETAIL:
-      setFault_detail((String)value);
+      if (value == null) {
+        unsetFault_detail();
+      } else {
+        setFault_detail((String)value);
+      }
       break;
 
     default:
@@ -299,6 +319,49 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
     return 0;
   }
 
+  public int compareTo(Fault other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Fault typedOther = (Fault)other;
+
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetFault_code()).compareTo(isSetFault_code());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(fault_code, typedOther.fault_code);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetFault_message()).compareTo(isSetFault_message());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(fault_message, typedOther.fault_message);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetFault_detail()).compareTo(isSetFault_detail());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(fault_detail, typedOther.fault_detail);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    return 0;
+  }
+
   public void read(TProtocol iprot) throws TException {
     TField field;
     iprot.readStructBegin();
@@ -356,9 +419,11 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.action_id != null) {
-      oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
-      oprot.writeString(this.action_id);
-      oprot.writeFieldEnd();
+      if (isSetAction_id()) {
+        oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
+        oprot.writeString(this.action_id);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.fault_code != null) {
       oprot.writeFieldBegin(FAULT_CODE_FIELD_DESC);
@@ -371,9 +436,11 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
       oprot.writeFieldEnd();
     }
     if (this.fault_detail != null) {
-      oprot.writeFieldBegin(FAULT_DETAIL_FIELD_DESC);
-      oprot.writeString(this.fault_detail);
-      oprot.writeFieldEnd();
+      if (isSetFault_detail()) {
+        oprot.writeFieldBegin(FAULT_DETAIL_FIELD_DESC);
+        oprot.writeString(this.fault_detail);
+        oprot.writeFieldEnd();
+      }
     }
     oprot.writeFieldStop();
     oprot.writeStructEnd();
@@ -425,6 +492,12 @@ public class Fault implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    if (fault_code == null) {
+      throw new TProtocolException("Required field 'fault_code' was not present! Struct: " + toString());
+    }
+    if (fault_message == null) {
+      throw new TProtocolException("Required field 'fault_message' was not present! Struct: " + toString());
+    }
     // check that fields of type enum have valid values
   }
 

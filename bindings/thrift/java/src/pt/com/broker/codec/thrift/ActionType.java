@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
 import org.apache.thrift.IntRangeSet;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ActionType {
   public static final int PUBLISH = 0;
@@ -24,5 +26,30 @@ public class ActionType {
   public static final int PONG = 9;
   public static final int AUTH = 10;
 
-  public static final IntRangeSet VALID_VALUES = new IntRangeSet(PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH);
+  public static final IntRangeSet VALID_VALUES = new IntRangeSet(
+    PUBLISH, 
+    POLL, 
+    ACCEPTED, 
+    ACKNOWLEDGE, 
+    SUBSCRIBE, 
+    UNSUBSCRIBE, 
+    NOTIFICATION, 
+    FAULT, 
+    PING, 
+    PONG, 
+    AUTH );
+
+  public static final Map<Integer, String> VALUES_TO_NAMES = new HashMap<Integer, String>() {{
+    put(PUBLISH, "PUBLISH");
+    put(POLL, "POLL");
+    put(ACCEPTED, "ACCEPTED");
+    put(ACKNOWLEDGE, "ACKNOWLEDGE");
+    put(SUBSCRIBE, "SUBSCRIBE");
+    put(UNSUBSCRIBE, "UNSUBSCRIBE");
+    put(NOTIFICATION, "NOTIFICATION");
+    put(FAULT, "FAULT");
+    put(PING, "PING");
+    put(PONG, "PONG");
+    put(AUTH, "AUTH");
+  }};
 }

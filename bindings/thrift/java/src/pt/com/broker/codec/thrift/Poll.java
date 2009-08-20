@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
-public class Poll implements TBase, java.io.Serializable, Cloneable {
+public class Poll implements TBase, java.io.Serializable, Cloneable, Comparable<Poll> {
   private static final TStruct STRUCT_DESC = new TStruct("Poll");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField DESTINATION_FIELD_DESC = new TField("destination", TType.STRING, (short)2);
@@ -31,10 +33,9 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
   public long timeout;
   public static final int TIMEOUT = 3;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-    public boolean timeout = false;
-  }
+  // isset id assignments
+  private static final int __TIMEOUT_ISSET_ID = 0;
+  private BitSet __isset_bit_vector = new BitSet(1);
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
@@ -61,20 +62,21 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     this.action_id = action_id;
     this.destination = destination;
     this.timeout = timeout;
-    this.__isset.timeout = true;
+    setTimeoutIsSet(true);
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public Poll(Poll other) {
+    __isset_bit_vector.clear();
+    __isset_bit_vector.or(other.__isset_bit_vector);
     if (other.isSetAction_id()) {
       this.action_id = other.action_id;
     }
     if (other.isSetDestination()) {
       this.destination = other.destination;
     }
-    __isset.timeout = other.__isset.timeout;
     this.timeout = other.timeout;
   }
 
@@ -87,8 +89,9 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     return this.action_id;
   }
 
-  public void setAction_id(String action_id) {
+  public Poll setAction_id(String action_id) {
     this.action_id = action_id;
+    return this;
   }
 
   public void unsetAction_id() {
@@ -110,8 +113,9 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     return this.destination;
   }
 
-  public void setDestination(String destination) {
+  public Poll setDestination(String destination) {
     this.destination = destination;
+    return this;
   }
 
   public void unsetDestination() {
@@ -133,36 +137,49 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     return this.timeout;
   }
 
-  public void setTimeout(long timeout) {
+  public Poll setTimeout(long timeout) {
     this.timeout = timeout;
-    this.__isset.timeout = true;
+    setTimeoutIsSet(true);
+    return this;
   }
 
   public void unsetTimeout() {
-    this.__isset.timeout = false;
+    __isset_bit_vector.clear(__TIMEOUT_ISSET_ID);
   }
 
   // Returns true if field timeout is set (has been asigned a value) and false otherwise
   public boolean isSetTimeout() {
-    return this.__isset.timeout;
+    return __isset_bit_vector.get(__TIMEOUT_ISSET_ID);
   }
 
   public void setTimeoutIsSet(boolean value) {
-    this.__isset.timeout = value;
+    __isset_bit_vector.set(__TIMEOUT_ISSET_ID, value);
   }
 
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      setAction_id((String)value);
+      if (value == null) {
+        unsetAction_id();
+      } else {
+        setAction_id((String)value);
+      }
       break;
 
     case DESTINATION:
-      setDestination((String)value);
+      if (value == null) {
+        unsetDestination();
+      } else {
+        setDestination((String)value);
+      }
       break;
 
     case TIMEOUT:
-      setTimeout((Long)value);
+      if (value == null) {
+        unsetTimeout();
+      } else {
+        setTimeout((Long)value);
+      }
       break;
 
     default:
@@ -248,6 +265,41 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
     return 0;
   }
 
+  public int compareTo(Poll other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Poll typedOther = (Poll)other;
+
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(isSetDestination());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(destination, typedOther.destination);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetTimeout()).compareTo(isSetTimeout());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(timeout, typedOther.timeout);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    return 0;
+  }
+
   public void read(TProtocol iprot) throws TException {
     TField field;
     iprot.readStructBegin();
@@ -276,7 +328,7 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
         case TIMEOUT:
           if (field.type == TType.I64) {
             this.timeout = iprot.readI64();
-            this.__isset.timeout = true;
+            setTimeoutIsSet(true);
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
@@ -291,6 +343,9 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
 
 
     // check for required fields of primitive type, which can't be checked in the validate method
+    if (!isSetTimeout()) {
+      throw new TProtocolException("Required field 'timeout' was not found in serialized data! Struct: " + toString());
+    }
     validate();
   }
 
@@ -299,9 +354,11 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.action_id != null) {
-      oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
-      oprot.writeString(this.action_id);
-      oprot.writeFieldEnd();
+      if (isSetAction_id()) {
+        oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
+        oprot.writeString(this.action_id);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.destination != null) {
       oprot.writeFieldBegin(DESTINATION_FIELD_DESC);
@@ -347,6 +404,10 @@ public class Poll implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    if (destination == null) {
+      throw new TProtocolException("Required field 'destination' was not present! Struct: " + toString());
+    }
+    // 'timeout' is only checked in read() because it's a primitive and you chose the non-beans generator.
     // check that fields of type enum have valid values
   }
 

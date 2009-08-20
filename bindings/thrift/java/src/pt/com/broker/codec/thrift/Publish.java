@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
-public class Publish implements TBase, java.io.Serializable, Cloneable {
+public class Publish implements TBase, java.io.Serializable, Cloneable, Comparable<Publish> {
   private static final TStruct STRUCT_DESC = new TStruct("Publish");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField DESTINATION_TYPE_FIELD_DESC = new TField("destination_type", TType.I32, (short)2);
@@ -27,6 +29,10 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
 
   public String action_id;
   public static final int ACTION_ID = 1;
+  /**
+   * 
+   * @see DestinationType
+   */
   public int destination_type;
   public static final int DESTINATION_TYPE = 2;
   public String destination;
@@ -34,10 +40,9 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
   public BrokerMessage message;
   public static final int MESSAGE = 4;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-    public boolean destination_type = false;
-  }
+  // isset id assignments
+  private static final int __DESTINATION_TYPE_ISSET_ID = 0;
+  private BitSet __isset_bit_vector = new BitSet(1);
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
@@ -66,7 +71,7 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
     this();
     this.action_id = action_id;
     this.destination_type = destination_type;
-    this.__isset.destination_type = true;
+    setDestination_typeIsSet(true);
     this.destination = destination;
     this.message = message;
   }
@@ -75,10 +80,11 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
    * Performs a deep copy on <i>other</i>.
    */
   public Publish(Publish other) {
+    __isset_bit_vector.clear();
+    __isset_bit_vector.or(other.__isset_bit_vector);
     if (other.isSetAction_id()) {
       this.action_id = other.action_id;
     }
-    __isset.destination_type = other.__isset.destination_type;
     this.destination_type = other.destination_type;
     if (other.isSetDestination()) {
       this.destination = other.destination;
@@ -97,8 +103,9 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
     return this.action_id;
   }
 
-  public void setAction_id(String action_id) {
+  public Publish setAction_id(String action_id) {
     this.action_id = action_id;
+    return this;
   }
 
   public void unsetAction_id() {
@@ -116,34 +123,44 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
+  /**
+   * 
+   * @see DestinationType
+   */
   public int getDestination_type() {
     return this.destination_type;
   }
 
-  public void setDestination_type(int destination_type) {
+  /**
+   * 
+   * @see DestinationType
+   */
+  public Publish setDestination_type(int destination_type) {
     this.destination_type = destination_type;
-    this.__isset.destination_type = true;
+    setDestination_typeIsSet(true);
+    return this;
   }
 
   public void unsetDestination_type() {
-    this.__isset.destination_type = false;
+    __isset_bit_vector.clear(__DESTINATION_TYPE_ISSET_ID);
   }
 
   // Returns true if field destination_type is set (has been asigned a value) and false otherwise
   public boolean isSetDestination_type() {
-    return this.__isset.destination_type;
+    return __isset_bit_vector.get(__DESTINATION_TYPE_ISSET_ID);
   }
 
   public void setDestination_typeIsSet(boolean value) {
-    this.__isset.destination_type = value;
+    __isset_bit_vector.set(__DESTINATION_TYPE_ISSET_ID, value);
   }
 
   public String getDestination() {
     return this.destination;
   }
 
-  public void setDestination(String destination) {
+  public Publish setDestination(String destination) {
     this.destination = destination;
+    return this;
   }
 
   public void unsetDestination() {
@@ -165,8 +182,9 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
     return this.message;
   }
 
-  public void setMessage(BrokerMessage message) {
+  public Publish setMessage(BrokerMessage message) {
     this.message = message;
+    return this;
   }
 
   public void unsetMessage() {
@@ -187,19 +205,35 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      setAction_id((String)value);
+      if (value == null) {
+        unsetAction_id();
+      } else {
+        setAction_id((String)value);
+      }
       break;
 
     case DESTINATION_TYPE:
-      setDestination_type((Integer)value);
+      if (value == null) {
+        unsetDestination_type();
+      } else {
+        setDestination_type((Integer)value);
+      }
       break;
 
     case DESTINATION:
-      setDestination((String)value);
+      if (value == null) {
+        unsetDestination();
+      } else {
+        setDestination((String)value);
+      }
       break;
 
     case MESSAGE:
-      setMessage((BrokerMessage)value);
+      if (value == null) {
+        unsetMessage();
+      } else {
+        setMessage((BrokerMessage)value);
+      }
       break;
 
     default:
@@ -299,6 +333,49 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
     return 0;
   }
 
+  public int compareTo(Publish other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Publish typedOther = (Publish)other;
+
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetDestination_type()).compareTo(isSetDestination_type());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(destination_type, typedOther.destination_type);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(isSetDestination());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(destination, typedOther.destination);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetMessage()).compareTo(isSetMessage());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(message, typedOther.message);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    return 0;
+  }
+
   public void read(TProtocol iprot) throws TException {
     TField field;
     iprot.readStructBegin();
@@ -320,7 +397,7 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
         case DESTINATION_TYPE:
           if (field.type == TType.I32) {
             this.destination_type = iprot.readI32();
-            this.__isset.destination_type = true;
+            setDestination_typeIsSet(true);
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
@@ -350,6 +427,9 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
 
 
     // check for required fields of primitive type, which can't be checked in the validate method
+    if (!isSetDestination_type()) {
+      throw new TProtocolException("Required field 'destination_type' was not found in serialized data! Struct: " + toString());
+    }
     validate();
   }
 
@@ -358,9 +438,11 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.action_id != null) {
-      oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
-      oprot.writeString(this.action_id);
-      oprot.writeFieldEnd();
+      if (isSetAction_id()) {
+        oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
+        oprot.writeString(this.action_id);
+        oprot.writeFieldEnd();
+      }
     }
     oprot.writeFieldBegin(DESTINATION_TYPE_FIELD_DESC);
     oprot.writeI32(this.destination_type);
@@ -395,7 +477,15 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
     }
     if (!first) sb.append(", ");
     sb.append("destination_type:");
+    String destination_type_name = DestinationType.VALUES_TO_NAMES.get(this.destination_type);
+    if (destination_type_name != null) {
+      sb.append(destination_type_name);
+      sb.append(" (");
+    }
     sb.append(this.destination_type);
+    if (destination_type_name != null) {
+      sb.append(")");
+    }
     first = false;
     if (!first) sb.append(", ");
     sb.append("destination:");
@@ -419,9 +509,16 @@ public class Publish implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    // 'destination_type' is only checked in read() because it's a primitive and you chose the non-beans generator.
+    if (destination == null) {
+      throw new TProtocolException("Required field 'destination' was not present! Struct: " + toString());
+    }
+    if (message == null) {
+      throw new TProtocolException("Required field 'message' was not present! Struct: " + toString());
+    }
     // check that fields of type enum have valid values
-    if (__isset.destination_type && !DestinationType.VALID_VALUES.contains(destination_type)){
-      throw new TProtocolException("Invalid value of field 'destination_type'!");
+    if (isSetDestination_type() && !DestinationType.VALID_VALUES.contains(destination_type)){
+      throw new TProtocolException("The field 'destination_type' has been assigned the invalid value " + destination_type);
     }
   }
 

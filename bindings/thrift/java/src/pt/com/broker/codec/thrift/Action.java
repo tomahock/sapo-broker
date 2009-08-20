@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
-public class Action implements TBase, java.io.Serializable, Cloneable {
+public class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Action> {
   private static final TStruct STRUCT_DESC = new TStruct("Action");
   private static final TField PUBLISH_FIELD_DESC = new TField("publish", TType.STRUCT, (short)1);
   private static final TField POLL_FIELD_DESC = new TField("poll", TType.STRUCT, (short)2);
@@ -55,13 +57,16 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
   public static final int PONG = 10;
   public Authentication auth;
   public static final int AUTH = 11;
+  /**
+   * 
+   * @see ActionType
+   */
   public int action_type;
   public static final int ACTION_TYPE = 12;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-    public boolean action_type = false;
-  }
+  // isset id assignments
+  private static final int __ACTION_TYPE_ISSET_ID = 0;
+  private BitSet __isset_bit_vector = new BitSet(1);
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(PUBLISH, new FieldMetaData("publish", TFieldRequirementType.OPTIONAL, 
@@ -124,13 +129,15 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     this.pong = pong;
     this.auth = auth;
     this.action_type = action_type;
-    this.__isset.action_type = true;
+    setAction_typeIsSet(true);
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public Action(Action other) {
+    __isset_bit_vector.clear();
+    __isset_bit_vector.or(other.__isset_bit_vector);
     if (other.isSetPublish()) {
       this.publish = new Publish(other.publish);
     }
@@ -164,7 +171,6 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     if (other.isSetAuth()) {
       this.auth = new Authentication(other.auth);
     }
-    __isset.action_type = other.__isset.action_type;
     this.action_type = other.action_type;
   }
 
@@ -177,8 +183,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.publish;
   }
 
-  public void setPublish(Publish publish) {
+  public Action setPublish(Publish publish) {
     this.publish = publish;
+    return this;
   }
 
   public void unsetPublish() {
@@ -200,8 +207,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.poll;
   }
 
-  public void setPoll(Poll poll) {
+  public Action setPoll(Poll poll) {
     this.poll = poll;
+    return this;
   }
 
   public void unsetPoll() {
@@ -223,8 +231,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.accepted;
   }
 
-  public void setAccepted(Accepted accepted) {
+  public Action setAccepted(Accepted accepted) {
     this.accepted = accepted;
+    return this;
   }
 
   public void unsetAccepted() {
@@ -246,8 +255,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.ack_message;
   }
 
-  public void setAck_message(Acknowledge ack_message) {
+  public Action setAck_message(Acknowledge ack_message) {
     this.ack_message = ack_message;
+    return this;
   }
 
   public void unsetAck_message() {
@@ -269,8 +279,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.subscribe;
   }
 
-  public void setSubscribe(Subscribe subscribe) {
+  public Action setSubscribe(Subscribe subscribe) {
     this.subscribe = subscribe;
+    return this;
   }
 
   public void unsetSubscribe() {
@@ -292,8 +303,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.unsubscribe;
   }
 
-  public void setUnsubscribe(Unsubscribe unsubscribe) {
+  public Action setUnsubscribe(Unsubscribe unsubscribe) {
     this.unsubscribe = unsubscribe;
+    return this;
   }
 
   public void unsetUnsubscribe() {
@@ -315,8 +327,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.notification;
   }
 
-  public void setNotification(Notification notification) {
+  public Action setNotification(Notification notification) {
     this.notification = notification;
+    return this;
   }
 
   public void unsetNotification() {
@@ -338,8 +351,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.fault;
   }
 
-  public void setFault(Fault fault) {
+  public Action setFault(Fault fault) {
     this.fault = fault;
+    return this;
   }
 
   public void unsetFault() {
@@ -361,8 +375,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.ping;
   }
 
-  public void setPing(Ping ping) {
+  public Action setPing(Ping ping) {
     this.ping = ping;
+    return this;
   }
 
   public void unsetPing() {
@@ -384,8 +399,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.pong;
   }
 
-  public void setPong(Pong pong) {
+  public Action setPong(Pong pong) {
     this.pong = pong;
+    return this;
   }
 
   public void unsetPong() {
@@ -407,8 +423,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return this.auth;
   }
 
-  public void setAuth(Authentication auth) {
+  public Action setAuth(Authentication auth) {
     this.auth = auth;
+    return this;
   }
 
   public void unsetAuth() {
@@ -426,76 +443,133 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
+  /**
+   * 
+   * @see ActionType
+   */
   public int getAction_type() {
     return this.action_type;
   }
 
-  public void setAction_type(int action_type) {
+  /**
+   * 
+   * @see ActionType
+   */
+  public Action setAction_type(int action_type) {
     this.action_type = action_type;
-    this.__isset.action_type = true;
+    setAction_typeIsSet(true);
+    return this;
   }
 
   public void unsetAction_type() {
-    this.__isset.action_type = false;
+    __isset_bit_vector.clear(__ACTION_TYPE_ISSET_ID);
   }
 
   // Returns true if field action_type is set (has been asigned a value) and false otherwise
   public boolean isSetAction_type() {
-    return this.__isset.action_type;
+    return __isset_bit_vector.get(__ACTION_TYPE_ISSET_ID);
   }
 
   public void setAction_typeIsSet(boolean value) {
-    this.__isset.action_type = value;
+    __isset_bit_vector.set(__ACTION_TYPE_ISSET_ID, value);
   }
 
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case PUBLISH:
-      setPublish((Publish)value);
+      if (value == null) {
+        unsetPublish();
+      } else {
+        setPublish((Publish)value);
+      }
       break;
 
     case POLL:
-      setPoll((Poll)value);
+      if (value == null) {
+        unsetPoll();
+      } else {
+        setPoll((Poll)value);
+      }
       break;
 
     case ACCEPTED:
-      setAccepted((Accepted)value);
+      if (value == null) {
+        unsetAccepted();
+      } else {
+        setAccepted((Accepted)value);
+      }
       break;
 
     case ACK_MESSAGE:
-      setAck_message((Acknowledge)value);
+      if (value == null) {
+        unsetAck_message();
+      } else {
+        setAck_message((Acknowledge)value);
+      }
       break;
 
     case SUBSCRIBE:
-      setSubscribe((Subscribe)value);
+      if (value == null) {
+        unsetSubscribe();
+      } else {
+        setSubscribe((Subscribe)value);
+      }
       break;
 
     case UNSUBSCRIBE:
-      setUnsubscribe((Unsubscribe)value);
+      if (value == null) {
+        unsetUnsubscribe();
+      } else {
+        setUnsubscribe((Unsubscribe)value);
+      }
       break;
 
     case NOTIFICATION:
-      setNotification((Notification)value);
+      if (value == null) {
+        unsetNotification();
+      } else {
+        setNotification((Notification)value);
+      }
       break;
 
     case FAULT:
-      setFault((Fault)value);
+      if (value == null) {
+        unsetFault();
+      } else {
+        setFault((Fault)value);
+      }
       break;
 
     case PING:
-      setPing((Ping)value);
+      if (value == null) {
+        unsetPing();
+      } else {
+        setPing((Ping)value);
+      }
       break;
 
     case PONG:
-      setPong((Pong)value);
+      if (value == null) {
+        unsetPong();
+      } else {
+        setPong((Pong)value);
+      }
       break;
 
     case AUTH:
-      setAuth((Authentication)value);
+      if (value == null) {
+        unsetAuth();
+      } else {
+        setAuth((Authentication)value);
+      }
       break;
 
     case ACTION_TYPE:
-      setAction_type((Integer)value);
+      if (value == null) {
+        unsetAction_type();
+      } else {
+        setAction_type((Integer)value);
+      }
       break;
 
     default:
@@ -707,6 +781,113 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     return 0;
   }
 
+  public int compareTo(Action other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Action typedOther = (Action)other;
+
+    lastComparison = Boolean.valueOf(isSetPublish()).compareTo(isSetPublish());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(publish, typedOther.publish);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetPoll()).compareTo(isSetPoll());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(poll, typedOther.poll);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetAccepted()).compareTo(isSetAccepted());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(accepted, typedOther.accepted);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetAck_message()).compareTo(isSetAck_message());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(ack_message, typedOther.ack_message);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetSubscribe()).compareTo(isSetSubscribe());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(subscribe, typedOther.subscribe);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetUnsubscribe()).compareTo(isSetUnsubscribe());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(unsubscribe, typedOther.unsubscribe);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetNotification()).compareTo(isSetNotification());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(notification, typedOther.notification);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetFault()).compareTo(isSetFault());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(fault, typedOther.fault);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetPing()).compareTo(isSetPing());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(ping, typedOther.ping);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetPong()).compareTo(isSetPong());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(pong, typedOther.pong);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetAuth()).compareTo(isSetAuth());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(auth, typedOther.auth);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetAction_type()).compareTo(isSetAction_type());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(action_type, typedOther.action_type);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    return 0;
+  }
+
   public void read(TProtocol iprot) throws TException {
     TField field;
     iprot.readStructBegin();
@@ -809,7 +990,7 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
         case ACTION_TYPE:
           if (field.type == TType.I32) {
             this.action_type = iprot.readI32();
-            this.__isset.action_type = true;
+            setAction_typeIsSet(true);
           } else { 
             TProtocolUtil.skip(iprot, field.type);
           }
@@ -824,6 +1005,9 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
 
 
     // check for required fields of primitive type, which can't be checked in the validate method
+    if (!isSetAction_type()) {
+      throw new TProtocolException("Required field 'action_type' was not found in serialized data! Struct: " + toString());
+    }
     validate();
   }
 
@@ -832,59 +1016,81 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.publish != null) {
-      oprot.writeFieldBegin(PUBLISH_FIELD_DESC);
-      this.publish.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetPublish()) {
+        oprot.writeFieldBegin(PUBLISH_FIELD_DESC);
+        this.publish.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.poll != null) {
-      oprot.writeFieldBegin(POLL_FIELD_DESC);
-      this.poll.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetPoll()) {
+        oprot.writeFieldBegin(POLL_FIELD_DESC);
+        this.poll.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.accepted != null) {
-      oprot.writeFieldBegin(ACCEPTED_FIELD_DESC);
-      this.accepted.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetAccepted()) {
+        oprot.writeFieldBegin(ACCEPTED_FIELD_DESC);
+        this.accepted.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.ack_message != null) {
-      oprot.writeFieldBegin(ACK_MESSAGE_FIELD_DESC);
-      this.ack_message.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetAck_message()) {
+        oprot.writeFieldBegin(ACK_MESSAGE_FIELD_DESC);
+        this.ack_message.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.subscribe != null) {
-      oprot.writeFieldBegin(SUBSCRIBE_FIELD_DESC);
-      this.subscribe.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetSubscribe()) {
+        oprot.writeFieldBegin(SUBSCRIBE_FIELD_DESC);
+        this.subscribe.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.unsubscribe != null) {
-      oprot.writeFieldBegin(UNSUBSCRIBE_FIELD_DESC);
-      this.unsubscribe.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetUnsubscribe()) {
+        oprot.writeFieldBegin(UNSUBSCRIBE_FIELD_DESC);
+        this.unsubscribe.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.notification != null) {
-      oprot.writeFieldBegin(NOTIFICATION_FIELD_DESC);
-      this.notification.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetNotification()) {
+        oprot.writeFieldBegin(NOTIFICATION_FIELD_DESC);
+        this.notification.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.fault != null) {
-      oprot.writeFieldBegin(FAULT_FIELD_DESC);
-      this.fault.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetFault()) {
+        oprot.writeFieldBegin(FAULT_FIELD_DESC);
+        this.fault.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.ping != null) {
-      oprot.writeFieldBegin(PING_FIELD_DESC);
-      this.ping.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetPing()) {
+        oprot.writeFieldBegin(PING_FIELD_DESC);
+        this.ping.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.pong != null) {
-      oprot.writeFieldBegin(PONG_FIELD_DESC);
-      this.pong.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetPong()) {
+        oprot.writeFieldBegin(PONG_FIELD_DESC);
+        this.pong.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.auth != null) {
-      oprot.writeFieldBegin(AUTH_FIELD_DESC);
-      this.auth.write(oprot);
-      oprot.writeFieldEnd();
+      if (isSetAuth()) {
+        oprot.writeFieldBegin(AUTH_FIELD_DESC);
+        this.auth.write(oprot);
+        oprot.writeFieldEnd();
+      }
     }
     oprot.writeFieldBegin(ACTION_TYPE_FIELD_DESC);
     oprot.writeI32(this.action_type);
@@ -1009,7 +1215,15 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
     }
     if (!first) sb.append(", ");
     sb.append("action_type:");
+    String action_type_name = ActionType.VALUES_TO_NAMES.get(this.action_type);
+    if (action_type_name != null) {
+      sb.append(action_type_name);
+      sb.append(" (");
+    }
     sb.append(this.action_type);
+    if (action_type_name != null) {
+      sb.append(")");
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -1017,9 +1231,10 @@ public class Action implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    // 'action_type' is only checked in read() because it's a primitive and you chose the non-beans generator.
     // check that fields of type enum have valid values
-    if (__isset.action_type && !ActionType.VALID_VALUES.contains(action_type)){
-      throw new TProtocolException("Invalid value of field 'action_type'!");
+    if (isSetAction_type() && !ActionType.VALID_VALUES.contains(action_type)){
+      throw new TProtocolException("The field 'action_type' has been assigned the invalid value " + action_type);
     }
   }
 

@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
-public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
+public class Acknowledge implements TBase, java.io.Serializable, Cloneable, Comparable<Acknowledge> {
   private static final TStruct STRUCT_DESC = new TStruct("Acknowledge");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)2);
@@ -31,9 +33,7 @@ public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
   public String destination;
   public static final int DESTINATION = 3;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-  }
+  // isset id assignments
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
@@ -86,8 +86,9 @@ public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
     return this.action_id;
   }
 
-  public void setAction_id(String action_id) {
+  public Acknowledge setAction_id(String action_id) {
     this.action_id = action_id;
+    return this;
   }
 
   public void unsetAction_id() {
@@ -109,8 +110,9 @@ public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
     return this.message_id;
   }
 
-  public void setMessage_id(String message_id) {
+  public Acknowledge setMessage_id(String message_id) {
     this.message_id = message_id;
+    return this;
   }
 
   public void unsetMessage_id() {
@@ -132,8 +134,9 @@ public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
     return this.destination;
   }
 
-  public void setDestination(String destination) {
+  public Acknowledge setDestination(String destination) {
     this.destination = destination;
+    return this;
   }
 
   public void unsetDestination() {
@@ -154,15 +157,27 @@ public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case ACTION_ID:
-      setAction_id((String)value);
+      if (value == null) {
+        unsetAction_id();
+      } else {
+        setAction_id((String)value);
+      }
       break;
 
     case MESSAGE_ID:
-      setMessage_id((String)value);
+      if (value == null) {
+        unsetMessage_id();
+      } else {
+        setMessage_id((String)value);
+      }
       break;
 
     case DESTINATION:
-      setDestination((String)value);
+      if (value == null) {
+        unsetDestination();
+      } else {
+        setDestination((String)value);
+      }
       break;
 
     default:
@@ -248,6 +263,41 @@ public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
     return 0;
   }
 
+  public int compareTo(Acknowledge other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Acknowledge typedOther = (Acknowledge)other;
+
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetMessage_id()).compareTo(isSetMessage_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(message_id, typedOther.message_id);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(isSetDestination());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    lastComparison = TBaseHelper.compareTo(destination, typedOther.destination);
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    return 0;
+  }
+
   public void read(TProtocol iprot) throws TException {
     TField field;
     iprot.readStructBegin();
@@ -298,9 +348,11 @@ public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.action_id != null) {
-      oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
-      oprot.writeString(this.action_id);
-      oprot.writeFieldEnd();
+      if (isSetAction_id()) {
+        oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
+        oprot.writeString(this.action_id);
+        oprot.writeFieldEnd();
+      }
     }
     if (this.message_id != null) {
       oprot.writeFieldBegin(MESSAGE_ID_FIELD_DESC);
@@ -352,6 +404,12 @@ public class Acknowledge implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    if (message_id == null) {
+      throw new TProtocolException("Required field 'message_id' was not present! Struct: " + toString());
+    }
+    if (destination == null) {
+      throw new TProtocolException("Required field 'destination' was not present! Struct: " + toString());
+    }
     // check that fields of type enum have valid values
   }
 

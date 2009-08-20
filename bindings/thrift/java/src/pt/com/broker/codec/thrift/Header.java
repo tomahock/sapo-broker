@@ -12,11 +12,13 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.BitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
-
 import org.apache.thrift.protocol.*;
-import org.apache.thrift.transport.*;
 
 public class Header implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Header");
@@ -25,9 +27,7 @@ public class Header implements TBase, java.io.Serializable, Cloneable {
   public Map<String,String> parameters;
   public static final int PARAMETERS = 1;
 
-  private final Isset __isset = new Isset();
-  private static final class Isset implements java.io.Serializable {
-  }
+  // isset id assignments
 
   public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
     put(PARAMETERS, new FieldMetaData("parameters", TFieldRequirementType.DEFAULT, 
@@ -76,23 +76,13 @@ public class Header implements TBase, java.io.Serializable, Cloneable {
     return new Header(this);
   }
 
-  public int getParametersSize() {
-    return (this.parameters == null) ? 0 : this.parameters.size();
-  }
-
-  public void putToParameters(String key, String val) {
-    if (this.parameters == null) {
-      this.parameters = new HashMap<String,String>();
-    }
-    this.parameters.put(key, val);
-  }
-
   public Map<String,String> getParameters() {
     return this.parameters;
   }
 
-  public void setParameters(Map<String,String> parameters) {
+  public Header setParameters(Map<String,String> parameters) {
     this.parameters = parameters;
+    return this;
   }
 
   public void unsetParameters() {
@@ -113,7 +103,11 @@ public class Header implements TBase, java.io.Serializable, Cloneable {
   public void setFieldValue(int fieldID, Object value) {
     switch (fieldID) {
     case PARAMETERS:
-      setParameters((Map<String,String>)value);
+      if (value == null) {
+        unsetParameters();
+      } else {
+        setParameters((Map<String,String>)value);
+      }
       break;
 
     default:
@@ -252,6 +246,9 @@ public class Header implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
+    if (parameters == null) {
+      throw new TProtocolException("Required field 'parameters' was not present! Struct: " + toString());
+    }
     // check that fields of type enum have valid values
   }
 
