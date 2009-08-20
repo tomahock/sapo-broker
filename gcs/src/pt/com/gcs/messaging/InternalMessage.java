@@ -25,8 +25,7 @@ public class InternalMessage implements Externalizable
 	private static final AtomicLong SEQ = new AtomicLong(0L);
 	private static final long serialVersionUID = -3656321513130930115L;
 	public static final int DEFAULT_PRIORITY = 4;
-	private static final long DEFAULT_EXPIRY;// = 1000L * 3600L * 24L * 7L; // 7
-	// days
+	private static final long DEFAULT_EXPIRY;// = 1000L * 3600L * 24L * 7L; // 7days
 	private static final String SEPARATOR = "<#>";
 
 	private static final String BASE_MESSAGE_ID;
@@ -39,7 +38,7 @@ public class InternalMessage implements Externalizable
 	private int priority = DEFAULT_PRIORITY;
 	private String sourceApp = "Undefined Source";
 	private long timestamp = System.currentTimeMillis();
-	private long expiration = System.currentTimeMillis() + DEFAULT_EXPIRY;
+	private long expiration = timestamp + DEFAULT_EXPIRY;
 	private pt.com.gcs.messaging.MessageType type = pt.com.gcs.messaging.MessageType.UNDEF;
 	private boolean isFromRemotePeer = false;
 
