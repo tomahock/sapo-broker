@@ -39,7 +39,7 @@ public class Producer
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
-		log.info("Start sending a string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds...");
+		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds to " + producer.dname +  "...");
 
 		Thread.sleep(2000);
 
@@ -65,7 +65,7 @@ public class Producer
 
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-			Sleep.time(1000);
+			Sleep.time(2000);
 		}
 	}
 }
