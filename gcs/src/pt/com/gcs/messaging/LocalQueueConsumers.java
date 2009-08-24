@@ -114,7 +114,7 @@ class LocalQueueConsumers
 				broadcast = !instance.registreadAsyncConsumer(queueName); // Broadcast if there is no registered async consumers
 			}
 			if(!sessionList.contains(session))
-				syncConsumers.get(queueName).add(session);
+				sessionList.add(session);
 		}
 		if(broadcast)
 			instance.broadCastNewQueueConsumer(queueName);

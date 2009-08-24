@@ -279,12 +279,13 @@ namespace SapoBrokerClient
             NotifiableKeyedQueues<NetNotification>.Register(queueName, syncEntry);
 
             protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);
+            protocolHandler.AddSyncSubscription(queueName, netMessage);
 
             lock (sync)
             {
                 Monitor.Wait(sync);
             }
-
+            protocolHandler.RemoveSyncSubscription(queueName);
             syncEntry.StillInterested = false;
 
             NetNotification notification = syncEntry.Values[0];

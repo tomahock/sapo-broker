@@ -28,9 +28,8 @@ namespace SapoBrokerClient.Messaging
 		private NetworkHandler networkHandler;
 		private IMessageSerializer messageSerializer;
 		
-		// TODO: change Subscription by List<Subscription>
-        // TODO: why?...
 		private IDictionary<string, Subscription> subscriptions = new Dictionary<string, Subscription>();
+        private IDictionary<string, NetMessage> syncSubscriptions = new Dictionary<string, NetMessage>();
 
         // Send-related fieds. Ensures that only one message is sent at a time and ensures that no message are sent during reconnect.
         object sendLock = new Object(); // send-related operations should lock/synch in this object.
@@ -105,7 +104,14 @@ namespace SapoBrokerClient.Messaging
                 foreach (KeyValuePair<string, Subscription> subscription in subscriptions)
                 {
                     this.HandleOutgoingMessage(subscription.Value.ToNetMessage(), null);
-                    Console.WriteLine("Sending subscription: {0}", subscription.Value);
+                }
+
+                lock (syncSubscriptions)
+                {
+                    foreach (KeyValuePair<string, NetMessage> syncSubscription in syncSubscriptions)
+                    {
+                        this.HandleOutgoingMessage(syncSubscription.Value, null);
+                    }
                 }
             }
         }
@@ -359,6 +365,26 @@ namespace SapoBrokerClient.Messaging
 				subscriptions.Remove(subscription.DestinationPattern);
 			}
 		}
+
+        //syncSubscriptions
+
+        public void AddSyncSubscription(string queueName, NetMessage message)
+        {
+            lock (syncSubscriptions)
+            {
+                if (syncSubscriptions.ContainsKey(queueName))
+                    throw new ArgumentException("Queue " + queueName + " has already a poll runnig.");
+                syncSubscriptions.Add(queueName, message);
+            }
+        }
+
+        public void RemoveSyncSubscription(string queueName)
+        {
+            lock (syncSubscriptions)
+            {
+                syncSubscriptions.Remove(queueName);
+            }
+        }
 
         public int ReconnectionRetries
         {

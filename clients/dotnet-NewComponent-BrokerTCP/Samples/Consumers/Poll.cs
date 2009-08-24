@@ -22,23 +22,26 @@ namespace Samples.Consumers
             parser.Parse();
 
             BrokerClient brokerClient = new BrokerClient(new HostInfo(cliArgs.Hostname, cliArgs.PortNumber));
-            try
+            while (true)
             {
-                NetNotification notification = brokerClient.Poll(cliArgs.DestinationName, 10000);
-                if (notification != null)
+                try
                 {
-                    System.Console.WriteLine("Message received: {0}",
-                                                 System.Text.Encoding.UTF8.GetString(notification.Message.Payload));
-                    brokerClient.Acknowledge(notification.Destination, notification.Message.MessageId);
+                    NetNotification notification = brokerClient.Poll(cliArgs.DestinationName, 10000);
+                    if (notification != null)
+                    {
+                        System.Console.WriteLine("Message received: {0}",
+                                                     System.Text.Encoding.UTF8.GetString(notification.Message.Payload));
+                        brokerClient.Acknowledge(notification.Destination, notification.Message.MessageId);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Message not received.");
+                    }
                 }
-                else
+                catch (TimeoutException te)
                 {
-                    Console.WriteLine("Message not received.");
+                    Console.WriteLine("Message timedout...", te);
                 }
-            }
-            catch (TimeoutException te)
-            {
-                Console.WriteLine("Message timedout...", te);
             }
         }
     }

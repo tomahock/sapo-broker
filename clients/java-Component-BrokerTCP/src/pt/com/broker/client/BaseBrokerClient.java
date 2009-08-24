@@ -1,7 +1,10 @@
 package pt.com.broker.client;
 
+import java.security.InvalidParameterException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,6 +12,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
+
+import javax.crypto.BadPaddingException;
 
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.StringUtils;
@@ -58,6 +63,7 @@ public abstract class BaseBrokerClient
 	protected final ConcurrentMap<String, BrokerListener> _async_listeners = new ConcurrentHashMap<String, BrokerListener>();
 	protected final BlockingQueue<NetPong> _bstatus = new LinkedBlockingQueue<NetPong>();
 	protected final List<BrokerAsyncConsumer> _consumerList = new CopyOnWriteArrayList<BrokerAsyncConsumer>();
+	protected final Map<String, NetMessage> _syncSubscriptions = new HashMap<String, NetMessage>();
 
 	private NetProtocolType protocolType;
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
@@ -279,6 +285,14 @@ public abstract class BaseBrokerClient
 			getNetHandler().sendMessage(msg);
 			log.info("Reconnected async consumer for '{}'", subscription.getDestination());
 		}
+		synchronized(_syncSubscriptions)
+		{
+			for(String queueName : _syncSubscriptions.keySet())
+			{
+				getNetHandler().sendMessage(_syncSubscriptions.get(queueName));
+			}
+			
+		}
 	}
 
 	private NetMessage buildMessage(NetAction action)
@@ -445,11 +459,20 @@ public abstract class BaseBrokerClient
 		NetMessage message = buildMessage(action);
 		getNetHandler().sendMessage(message);
 
-		
+		synchronized(_syncSubscriptions)
+		{
+			if(_syncSubscriptions.containsKey(queueName))
+				throw new IllegalArgumentException("Queue " + queueName + " has already a poll runnig.");
+			_syncSubscriptions.put(queueName, message);
+		}
 		SyncConsumer sc = SyncConsumerList.get(queueName);
 		sc.increment();
 		
 		NetNotification m = sc.take();
+		synchronized(_syncSubscriptions)
+		{
+			_syncSubscriptions.remove(queueName);
+		}
 		if( m == SyncConsumer.UnblockNotification)
 			throw new TimeoutException();
 		return m;
