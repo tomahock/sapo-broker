@@ -51,7 +51,7 @@ public class BDBMessage implements Externalizable
 		return _sequence;
 	}
 
-	public long getReserve()
+	public long getPollReserveTimeout()
 	{
 		return _reserve;
 	}
@@ -71,7 +71,7 @@ public class BDBMessage implements Externalizable
 		_deliveryCount = count;
 	}
 
-	public void setReserve(long reserve)
+	public void setPollReserveTimeout(long reserve)
 	{
 		_reserve = reserve;
 	}

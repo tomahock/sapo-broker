@@ -299,11 +299,27 @@ class BDBStorage
 		{
 			if (!_syncConsumerQueue.isEmpty())
 			{
-				return _syncConsumerQueue.poll();
+				log.debug("Poll Memory Queue is not empty.");
+
+				InternalMessage pmsg = _syncConsumerQueue.poll();
+
+				if (pmsg.getExpiration() > System.currentTimeMillis())
+				{
+					return pmsg;
+				}
+				else
+				{
+					deleteMessage(pmsg.getMessageId());
+					log.warn("Expired message: '{}' id: '{}'", pmsg.getDestination(), pmsg.getMessageId());
+					dumpMessage(pmsg);
+					return poll();
+				}
 			}
 			else
 			{
 
+				log.debug("Poll Memory Queue is empty, fill from storage.");
+				
 				synchronized (dbLock)
 				{
 					Cursor msg_cursor = null;
@@ -316,6 +332,8 @@ class BDBStorage
 						DatabaseEntry data = new DatabaseEntry();
 
 						int counter = 0;
+						int counter_reserved = 0;
+						
 						while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && counter < 250)
 						{
 							byte[] bdata = data.getData();
@@ -323,10 +341,10 @@ class BDBStorage
 							final InternalMessage msg = bdbm.getMessage();
 							final int deliveryCount = bdbm.getDeliveryCount();
 							final long expiration = msg.getExpiration();
-							final long reserved = bdbm.getReserve();
+							final long poll_reserve_timeout = bdbm.getPollReserveTimeout();
 							final long now = System.currentTimeMillis();
-							final boolean isReserved = reserved > now ? true : false;
-							final boolean safeForPolling = ((reserved == 0) && (deliveryCount == 0)) ? true : false;
+							final boolean isReserved = (poll_reserve_timeout > now);
+							final boolean safeForPolling = !isReserved || (deliveryCount == 0) ? true : false;
 
 							if (now > expiration)
 							{
@@ -336,19 +354,32 @@ class BDBStorage
 							}
 							else
 							{
-								if (!isReserved || safeForPolling)
+								if (safeForPolling)
 								{
 									long k = LongBinding.entryToLong(key);
 									msg.setMessageId(InternalMessage.getBaseMessageId() + k);
 									bdbm.setDeliveryCount(deliveryCount + 1);
-									bdbm.setReserve(System.currentTimeMillis() + 900000); // 15 minutes
+									bdbm.setPollReserveTimeout(now + 900000); // 15 minutes
 									msg_cursor.put(key, buildDatabaseEntry(bdbm));
 
 									_syncConsumerQueue.offer(msg);
+									counter++;
+								}
+								else
+								{
+									counter_reserved++;
 								}
 							}
-
-							counter++;
+							
+							if (log.isDebugEnabled())
+							{
+								log.debug(String.format("poll_reserve_timeout: '%s'; now: '%s'; isReserved: '%s'; deliveryCount: '%s'; safeForPolling: '%s''", poll_reserve_timeout, now, isReserved, deliveryCount, safeForPolling));
+							}
+						}
+						
+						if (log.isDebugEnabled())
+						{
+							log.debug(String.format("counter: '%s; counter_reserved: '%s''", counter, counter_reserved));
 						}
 					}
 					catch (Throwable t)
@@ -405,8 +436,8 @@ class BDBStorage
 					msg.setMessageId(InternalMessage.getBaseMessageId() + k);
 					final int deliveryCount = bdbm.getDeliveryCount();
 					final boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
-					final long reserved = bdbm.getReserve();
-					final boolean isReserved = reserved > now ? true : false;
+					final long poll_reserve_timeout = bdbm.getPollReserveTimeout();
+					final boolean isReserved = (poll_reserve_timeout > now);
 
 					if (!isReserved && ((deliveryCount < 1) || redelivery))
 					{
