@@ -267,7 +267,6 @@ class LocalQueueConsumers
 	{
 		synchronized (syncConsumers)
 		{
-			System.out.println("######### registreadSyncConsumer: " + syncConsumers.containsKey(queueName));
 			return syncConsumers.containsKey(queueName);
 		}
 	}
@@ -278,7 +277,6 @@ class LocalQueueConsumers
 		{
 			CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 			boolean result = (listeners != null) && (listeners.size() != 0);
-			System.out.println("######### registreadAsyncConsumer: " +result);
 			return result;
 		}
 	}
