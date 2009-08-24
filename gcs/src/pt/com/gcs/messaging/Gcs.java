@@ -179,10 +179,16 @@ public class Gcs
 			LocalQueueConsumers.remove(listener);
 		}
 	}
-
-	public static void removeSyncConsumer(String queueName)
+	
+	public static void addSyncConsumer(String queueName, IoSession session)
 	{
-		LocalQueueConsumers.removeSyncConsumer(queueName);
+		LocalQueueConsumers.addSyncConsumer(queueName, session);
+	}
+
+	
+	public static void removeSyncConsumer(String queueName, IoSession session)
+	{
+		LocalQueueConsumers.removeSyncConsumer(queueName, session);
 	}
 
 	private SocketAcceptor acceptor;
@@ -318,7 +324,6 @@ public class Gcs
 
 	private InternalMessage ipoll(final String queueName)
 	{
-		LocalQueueConsumers.addSyncConsumer(queueName);
 		InternalMessage m = null;
 		try
 		{

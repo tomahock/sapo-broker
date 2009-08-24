@@ -79,7 +79,7 @@ public class AuthorizationFilter extends IoFilterAdapter
 		ValidationResult result = AccessControl.validate(netMessage, sessionProps);
 		if (!result.accessGranted)
 		{
-			System.out.println("AuthorizationFilter.messageReceived() -- message refused " + +System.currentTimeMillis());
+			log.info("Meessage refused ");
 			messageRefused(session, netMessage, result.reasonForRejection);
 			return;
 		}
