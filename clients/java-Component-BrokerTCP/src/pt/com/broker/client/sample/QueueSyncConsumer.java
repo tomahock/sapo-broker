@@ -38,13 +38,15 @@ public class QueueSyncConsumer
 		qsconsumer.receiveLoop(bk);
 	}
 
+	volatile int count = 0;
 	private void receiveLoop(BrokerClient bk) throws Throwable
 	{
 		while (true)
 		{
 			NetNotification m = bk.poll(dname);
 			log.info(String.format("%s -> Received Message: %s", counter.incrementAndGet(), new String(m.getMessage().getPayload())));
-			bk.acknowledge(m);
+			if((++count)%50 != 0) // 2% missed acks
+				bk.acknowledge(m);
 		}
 	}
 }

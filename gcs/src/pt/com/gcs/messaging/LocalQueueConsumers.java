@@ -34,8 +34,7 @@ class LocalQueueConsumers
 
 	public static final AtomicLong ackedMessages = new AtomicLong(0L);
 
-	private static final HashMap<String, List<IoSession>> syncConsumers = new HashMap<String, List<IoSession>>();
-	private static final Set<String> _syncConsumers = new HashSet<String>();
+	private static final Set<String> syncConsumers = new HashSet<String>();
 	
 	protected static void acknowledgeMessage(InternalMessage msg, IoSession ioSession)
 	{
@@ -101,53 +100,24 @@ class LocalQueueConsumers
 		}
 	}
 
-	protected static void addSyncConsumer(String queueName, IoSession session)
+	protected static void addSyncConsumer(String queueName)
 	{
-		boolean broadcast = false;
 		synchronized (syncConsumers)
 		{
-			List<IoSession> sessionList = syncConsumers.get(queueName);
-			if(sessionList == null)
-			{
-				sessionList = new LinkedList<IoSession>();
-				syncConsumers.put(queueName, sessionList);
-				broadcast = !instance.registreadAsyncConsumer(queueName); // Broadcast if there is no registered async consumers
-			}
-			if(!sessionList.contains(session))
-				sessionList.add(session);
+			syncConsumers.add(queueName);
 		}
-		if(broadcast)
+		
+		if(!instance.registreadAsyncConsumer(queueName))
 			instance.broadCastNewQueueConsumer(queueName);
 	}
 	
-	protected static void removeSyncConsumer(String queueName, IoSession session)
+	protected static void removeSyncConsumer(String queueName)
 	{
-		boolean broadcast = false;
 		synchronized (syncConsumers)
 		{
-			List<IoSession> syncSessions = syncConsumers.get(queueName);
-			if (syncSessions == null)
-			{
-				log.info("Tried to remove a syn consumer queue, when there was none registread. Queue name '{}'", queueName);
-				return;
-			}
-			if(!syncSessions.contains(session))
-			{
-				log.info("Tried to remove a syn consumer session, when there was none registread. Session: '{}'", session);
-				return;
-			}
-			if(syncSessions.size() == 1)
-			{
-				syncConsumers.remove(queueName);
-				broadcast = !instance.registreadAsyncConsumer(queueName); // Broadcast if there is no registered async consumers
-			}
-			else
-			{
-				syncSessions.remove(session);
-			}
-			
+			syncConsumers.remove(queueName);
 		}
-		if(broadcast)
+		if(!instance.registreadAsyncConsumer(queueName))
 			instance.broadCastRemovedQueueConsumer(queueName);
 	}
 	
@@ -267,7 +237,7 @@ class LocalQueueConsumers
 	{
 		synchronized (syncConsumers)
 		{
-			return syncConsumers.containsKey(queueName);
+			return syncConsumers.contains(queueName);
 		}
 	}
 	

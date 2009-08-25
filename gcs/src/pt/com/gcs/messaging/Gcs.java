@@ -180,15 +180,15 @@ public class Gcs
 		}
 	}
 	
-	public static void addSyncConsumer(String queueName, IoSession session)
+	public static void addSyncConsumer(String queueName)
 	{
-		LocalQueueConsumers.addSyncConsumer(queueName, session);
+		LocalQueueConsumers.addSyncConsumer(queueName);
 	}
 
 	
-	public static void removeSyncConsumer(String queueName, IoSession session)
+	public static void removeSyncConsumer(String queueName)
 	{
-		LocalQueueConsumers.removeSyncConsumer(queueName, session);
+		LocalQueueConsumers.removeSyncConsumer(queueName);
 	}
 
 	private SocketAcceptor acceptor;
