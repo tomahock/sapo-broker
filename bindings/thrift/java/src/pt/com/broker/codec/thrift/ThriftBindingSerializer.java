@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,8 @@ import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 
 /**
- * Thrift utility class for encoding and decoding. 
- *
+ * Thrift utility class for encoding and decoding.
+ * 
  */
 
 public class ThriftBindingSerializer implements BindingSerializer
@@ -40,7 +41,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 		try
 		{
-
 			Atom tm = new Atom();
 			Header header = getHeaders(netMessage);
 			Action ac = getAction(netMessage);
@@ -53,7 +53,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 			TSerializer serializer = new TSerializer(new TBinaryProtocol.Factory());
 			result = serializer.serialize(tm);
-
 		}
 		catch (Throwable e)
 		{
@@ -98,8 +97,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 	private NetMessage constructMessage(Atom tm)
 	{
-
-		NetMessage message = new NetMessage(extractAction(tm.getAction()), tm.header.parameters);
+		NetMessage message = new NetMessage(extractAction(tm.getAction()), tm.header == null ? null : tm.header.parameters);
 		return message;
 	}
 
@@ -154,9 +152,11 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 		if (message.getTimestamp() != -1)
 			brkMsg.setTimestamp(message.getTimestamp());
+		
 		if (message.getExpiration() != -1)
 			brkMsg.setExpiration(message.getExpiration());
-		if (!message.getMessage_id().equals(""))
+
+		if (StringUtils.isNotBlank(message.getMessage_id()))
 			brkMsg.setMessageId(message.getMessage_id());
 
 		return brkMsg;
@@ -487,7 +487,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 		Poll struct = new Poll();
 		struct.setDestination(net.getDestination());
-		
+
 		struct.setTimeout(net.getTimeout());
 
 		if (net.getActionId() != null)

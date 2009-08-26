@@ -89,7 +89,6 @@ class LocalQueueConsumers
 				if (listeners.size() == 0)
 				{
 					instance.localQueueConsumers.remove(listeners);
-					System.out.println("localQueue is empty");
 					if(!instance.registreadSyncConsumer(queueName))// Broadcast if there is no registered sync consumers
 					{ 
 						instance.broadCastRemovedQueueConsumer(queueName);

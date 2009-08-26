@@ -21,11 +21,22 @@ public class NetMessage
 
 	public NetMessage(NetAction action, Map<String, String> headers)
 	{
-		this.action = action;
-		if (headers != null)
-			this.headers = headers;
-		else
-			this.headers = new HashMap<String, String>();
+		try
+		{
+			this.action = action;
+			if (headers != null)
+			{
+				this.headers = headers;
+			}
+			else
+				this.headers = new HashMap<String, String>();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
 	}
 
 	public Map<String, String> getHeaders()

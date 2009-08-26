@@ -53,7 +53,6 @@ public class BrokerProducer
 			if (brkMessage.getExpiration() != -1)
 			{
 				message.setExpiration(brkMessage.getExpiration());
-				System.out.println("BrokerProducer.prepareForSending() - setExpiration");
 			}
 
 			message.setContent(brkMessage);
