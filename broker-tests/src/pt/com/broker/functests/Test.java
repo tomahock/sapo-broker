@@ -65,7 +65,7 @@ public abstract class Test
 		if (skipTest())
 		{
 			System.out.println("test skiped");
-			testResults.addSkipedTest();
+			testResults.addSkipedTest(this.getName());
 			return true;
 		}
 		try

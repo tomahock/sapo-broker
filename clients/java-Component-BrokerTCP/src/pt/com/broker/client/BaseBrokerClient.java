@@ -60,7 +60,6 @@ public abstract class BaseBrokerClient
 	private static final Logger log = LoggerFactory.getLogger(BaseBrokerClient.class);
 
 	protected String _appName;
-	protected final ConcurrentMap<String, BrokerListener> _async_listeners = new ConcurrentHashMap<String, BrokerListener>();
 	protected final BlockingQueue<NetPong> _bstatus = new LinkedBlockingQueue<NetPong>();
 	protected final List<BrokerAsyncConsumer> _consumerList = new CopyOnWriteArrayList<BrokerAsyncConsumer>();
 	protected final Map<String, NetMessage> _syncSubscriptions = new HashMap<String, NetMessage>();
@@ -261,15 +260,18 @@ public abstract class BaseBrokerClient
 	{
 		if ((subscribe != null) && (StringUtils.isNotBlank(subscribe.getDestination())))
 		{
-			synchronized (_async_listeners)
+			synchronized (_consumerList)
 			{
-				if (_async_listeners.containsKey(subscribe.getDestination()))
+				for(BrokerAsyncConsumer bac : _consumerList)
 				{
-					throw new IllegalStateException("A listener for that Destination already exists");
+					if(bac.getSubscription().getDestination().equals(subscribe.getDestination()) && bac.getSubscription().getDestinationType().equals(subscribe.getDestinationType()))
+					{
+						throw new IllegalStateException("A listener for that Destination already exists");
+					}
 				}
-
-				_async_listeners.put(subscribe.getDestination(), listener);
+				_consumerList.add(new BrokerAsyncConsumer(subscribe, listener));
 			}
+	
 			if (acceptRequest != null)
 			{
 				subscribe.setActionId(acceptRequest.getActionId());
@@ -283,7 +285,7 @@ public abstract class BaseBrokerClient
 
 			getNetHandler().sendMessage(msg);
 
-			_consumerList.add(new BrokerAsyncConsumer(subscribe, listener));
+			
 			log.info("Created new async consumer for '{}'", subscribe.getDestination());
 		}
 		else

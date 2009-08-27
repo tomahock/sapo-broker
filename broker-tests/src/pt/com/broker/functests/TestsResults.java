@@ -8,9 +8,8 @@ public class TestsResults
 {
 	private AtomicInteger positiveTests = new AtomicInteger();
 	private AtomicInteger negativeTests = new AtomicInteger();
-	private AtomicInteger skippedTests = new AtomicInteger();
 	private List<String> badTests = new ArrayList<String>();
-
+	private List<String> skippedTests = new ArrayList<String>();
 	public void addPositiveTest()
 	{
 		positiveTests.addAndGet(1);
@@ -22,9 +21,9 @@ public class TestsResults
 		badTests.add(testName);
 	}
 
-	public void addSkipedTest()
+	public void addSkipedTest(String name)
 	{
-		skippedTests.addAndGet(1);
+		skippedTests.add(name);
 	}
 
 	public int getPositiveTestsCount()
@@ -37,9 +36,9 @@ public class TestsResults
 		return negativeTests.get();
 	}
 
-	public int getSkippedTests()
+	public int getSkippedTestsCount()
 	{
-		return skippedTests.get();
+		return skippedTests.size();
 	}
 
 	public List<String> getFailedTests()
@@ -47,6 +46,11 @@ public class TestsResults
 		return badTests;
 	}
 
+	public List<String> getSkippedTests()
+	{
+		return skippedTests;
+	}
+	
 	/***
 	 * Total number of tests performed (skipped tests are excluded).
 	 * 

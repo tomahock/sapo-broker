@@ -41,22 +41,6 @@
     </section>
   </section>
   <section>
-    <title>Sapo-Broker reliability</title>
-    <para>To be added.</para>
-    <section>
-    <title>Queues Reliability</title>
-    <para>The persistence and delivery model of queued messages, as discussed <link linkend="INTRO_QUEUES">previously</link>, protects the system, in a broader sense, against client failure but not against agents failure. If a message is delivered to a client and, before client's Acknowledge, the agent fails, the message maybe delivered again. This violates the Point-to-Point pattern premises but in real world scenarios is near impossible to guarantee 100% robustness. Trade-offs considered and having empiric knowledge that this is a very rare case a few mitigation guidelines are offered to overcome the issue, in case that it constitutes a critical problem.</para>
-        <section>
-          <title>Solution 1 – Client persistence</title>
-          <para>Clients, once they receive the message may persist it and send the respective Acknowledge with an Action Identifier. If the connection with the agent is lost or an Accept message is not received the message should not be processed and eventually will be delivered again, otherwise the client can process the message. If meanwhile client fails its responsible for, when reactivated, process the locally persisted message.</para>
-        </section>
-        <section>
-          <title>Solution 2 – Global acknowledge record</title>
-          <para>To guarantee that each produced message is processed only once a global acknowledge record may be implemented. After receiving a message, clients query the global acknowledge system to determine if the message was already processed, if not, they process it and afterwards send the due Acknowledge message and inform the global acknowledge system that a given message was already processed. The  last step may be only done if the acknowledge fails.</para>
-        </section>
-    </section>
-  </section>
-  <section>
     <title>Client libraries</title>
     <para>Given the environment where Sapo-Broker was developed, somewhere where several projects are interconnected, written in many different programming languages it was absolutely crucial to support several broker client libraries written in various programming languages.</para>
     <para>For now, not all take advantaged of the features implemented in Sapo-Broker 3, but are still compatible through the use of a legacy port.</para>

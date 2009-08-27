@@ -130,6 +130,14 @@ public class Main
 		}
 
 		System.out.println("Functional tests ended!");
+		System.out.println( "	Total tests: " + testResults.getTotalTests() );
+		System.out.println( "	Successful tests: " + testResults.getPositiveTestsCount()); 
+		System.out.println( "	Failed tests: " + testResults.getFailedTestsCount());
+		for(String testName : testResults.getFailedTests())
+			System.out.println( "		- " + testName);
+		System.out.println( "	Skipped tests: " + testResults.getSkippedTestsCount());
+		for(String testName : testResults.getSkippedTests())
+			System.out.println( "		- " + testName);
 		System.out.println("	Total tests: " + testResults.getTotalTests());
 		System.out.println("	Successful tests: " + testResults.getPositiveTestsCount());
 		System.out.println("	Failed tests: " + testResults.getFailedTestsCount());
