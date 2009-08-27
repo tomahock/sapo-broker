@@ -10,10 +10,11 @@ public class QueueTest extends GenericPubSubTest
 	{
 		this("Queue with single recipient");
 	}
+
 	public QueueTest(String testName)
 	{
 		super(testName);
 		setDestinationType(DestinationType.QUEUE);
 	}
-	
+
 }

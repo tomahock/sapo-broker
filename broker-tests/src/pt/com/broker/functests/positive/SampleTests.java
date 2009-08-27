@@ -87,7 +87,7 @@ public class SampleTests
 			{
 				public Step run() throws Exception
 				{
-					
+
 					try
 					{
 						consumer.unsubscribe(NetAction.DestinationType.TOPIC, "/topic/.*");

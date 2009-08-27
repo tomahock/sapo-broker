@@ -21,7 +21,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * Consumer sample where an authenticate user is used. This samples uses SapoSTS.
- *
+ * 
  */
 
 public class AuthenticatedConsumer implements BrokerListener
@@ -46,8 +46,8 @@ public class AuthenticatedConsumer implements BrokerListener
 	{
 		SapoSTSParameterProvider.Parameters parameters = new SapoSTSParameterProvider.Parameters(stsLocation);
 		SapoSTSParameterProvider.setSTSParameters(parameters);
-		
-		CredentialsProviderFactory.addProvider("SapoSTS", new SapoSTSProvider() );
+
+		CredentialsProviderFactory.addProvider("SapoSTS", new SapoSTSProvider());
 	}
 
 	public static void main(String[] args) throws Throwable
@@ -69,29 +69,25 @@ public class AuthenticatedConsumer implements BrokerListener
 
 		// Provider initialization
 		initSTSParams(consumer.stsLocation);
-		
-		
+
 		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
 
 		AuthInfo clientAuthInfo = new AuthInfo(consumer.stsUsername, consumer.stsPassword);
 		clientAuthInfo.setUserAuthenticationType("SapoSTS");
-		
-		
+
 		CredentialsProvider credentialsProvider = CredentialsProviderFactory.getProvider("SapoSTS");
 		AuthInfo stsClientCredentials = credentialsProvider.getCredentials(clientAuthInfo);
-		
 
 		bk.setAuthenticationCredentials(stsClientCredentials);
 
 		/*
-		 * Note: Credential Provider should be set in the case of required automatic credentials access. E.g.  on agent fail, client failsover to another 
-		 * agent (eventually the same) and renewed STS credentials may be necessary to authenticate. This is not necessary in username-password scenarios.
+		 * Note: Credential Provider should be set in the case of required automatic credentials access. E.g. on agent fail, client failsover to another agent (eventually the same) and renewed STS credentials may be necessary to authenticate. This is not necessary in username-password scenarios.
 		 */
 		bk.setCredentialsProvider(credentialsProvider, clientAuthInfo);
-		
+
 		try
 		{
-			if(!bk.authenticateClient())
+			if (!bk.authenticateClient())
 			{
 				System.out.println("Authentication failed");
 				return;

@@ -18,21 +18,20 @@ import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
 
 /**
- * BrokerSyncConsumer represents a queue synchronous consumer. 
- *
+ * BrokerSyncConsumer represents a queue synchronous consumer.
+ * 
  */
 public class BrokerSyncConsumer
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerSyncConsumer.class);
 
 	private static final HashMap<String, List<IoSession>> syncConsumers = new HashMap<String, List<IoSession>>();
-	
-	
+
 	public static void poll(NetPoll poll, IoSession ios)
 	{
-		
+
 		// ADD SYNC CONSUMER (QNAME, IOS)
-		
+
 		String pollDest = poll.getDestination();
 		if (log.isDebugEnabled())
 		{
@@ -45,14 +44,14 @@ public class BrokerSyncConsumer
 			InternalMessage m = Gcs.poll(pollDest);
 			if (m == null)
 			{
-				if(poll.expired())
+				if (poll.expired())
 				{
 					removeSyncConsumer(pollDest, ios);
 					NetMessage faultMsg = NetFault.getMessageFaultWithDetail(NetFault.PollTimeoutErrorMessage, pollDest);
-					
-					if(poll.getActionId() != null)
+
+					if (poll.getActionId() != null)
 					{
-						faultMsg.getAction().getFaultMessage().setActionId( poll.getActionId());
+						faultMsg.getAction().getFaultMessage().setActionId(poll.getActionId());
 					}
 					ios.write(faultMsg);
 					return;
@@ -93,18 +92,19 @@ public class BrokerSyncConsumer
 			}
 		}
 	}
-	
+
 	protected static void addSyncConsumer(String queueName, IoSession session)
 	{
 		synchronized (syncConsumers)
 		{
 			List<IoSession> sessionList = syncConsumers.get(queueName);
-			if(sessionList == null)
+			if (sessionList == null)
 			{
 				sessionList = new LinkedList<IoSession>();
 				syncConsumers.put(queueName, sessionList);
 			}
-			if(!sessionList.contains(session)){
+			if (!sessionList.contains(session))
+			{
 				sessionList.add(session);
 				Gcs.addSyncConsumer(queueName);
 			}
@@ -121,12 +121,12 @@ public class BrokerSyncConsumer
 				log.info("Tried to remove a syn consumer queue, when there was none registread. Queue name '{}'", queueName);
 				return;
 			}
-			if(!syncSessions.contains(session))
+			if (!syncSessions.contains(session))
 			{
 				log.info("Tried to remove a syn consumer session, when there was none registread. Session: '{}'", session);
 				return;
 			}
-			if(syncSessions.size() == 1)
+			if (syncSessions.size() == 1)
 			{
 				syncConsumers.remove(queueName);
 				Gcs.removeSyncConsumer(queueName);
@@ -135,7 +135,7 @@ public class BrokerSyncConsumer
 			{
 				syncSessions.remove(session);
 			}
-			
+
 		}
 	}
 }

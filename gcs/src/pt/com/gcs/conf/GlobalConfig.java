@@ -49,7 +49,7 @@ public class GlobalConfig
 
 	private Map<String, ProviderInfo> authenticationProviders = new TreeMap<String, ProviderInfo>();
 	private Map<String, ProviderInfo> credentialValidatiorProviders = new TreeMap<String, ProviderInfo>();
-	
+
 	// Messages info
 	private int msgMaxSize;
 	private int maxQueues;
@@ -73,7 +73,7 @@ public class GlobalConfig
 		Document doc = parseXmlFile(globalConfigPath, false);
 
 		init(doc);
-	
+
 	}
 
 	private void init(Document doc)
@@ -97,15 +97,15 @@ public class GlobalConfig
 	{
 		String maxSizeStr = extractElementInfo(doc, "max-msg-size")[0];
 		msgMaxSize = Integer.parseInt(maxSizeStr);
-		
+
 		String maxQueueSize = extractElementInfo(doc, "max-queues")[0];
 		maxQueues = Integer.parseInt(maxQueueSize);
-		
+
 		String maxDistinctSubscriptionsStr = extractElementInfo(doc, "max-distinct-subscriptions")[0];
 		maxDistinctSubscriptions = Integer.parseInt(maxDistinctSubscriptionsStr);
-		
+
 		String maxStoreTimeStr = extractElementInfo(doc, "store-time")[0];
-		maxStoreTime = Long.parseLong(maxStoreTimeStr);		
+		maxStoreTime = Long.parseLong(maxStoreTimeStr);
 	}
 
 	private synchronized void populateWorldMap(Document doc)
@@ -367,12 +367,10 @@ public class GlobalConfig
 		return instance.maxQueues;
 	}
 
-
 	public static long getMaxStoreTime()
 	{
 		return instance.maxStoreTime;
 	}
-
 
 	public static int getMaxDistinctSubscriptions()
 	{

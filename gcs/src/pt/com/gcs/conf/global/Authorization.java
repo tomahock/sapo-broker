@@ -5,41 +5,44 @@
 // Generated on: 2009.06.04 at 12:31:09 PM WEST 
 //
 
-
 package pt.com.gcs.conf.global;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for Authorization.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for Authorization.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * 
  * <pre>
- * &lt;simpleType name="Authorization">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="PERMIT"/>
- *     &lt;enumeration value="DENY"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name=&quot;Authorization&quot;&gt;
+ *   &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;&gt;
+ *     &lt;enumeration value=&quot;PERMIT&quot;/&gt;
+ *     &lt;enumeration value=&quot;DENY&quot;/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */
 @XmlType(name = "Authorization")
 @XmlEnum
-public enum Authorization {
+public enum Authorization
+{
 
-    PERMIT,
-    DENY;
+	PERMIT, DENY;
 
-    public String value() {
-        return name();
-    }
+	public String value()
+	{
+		return name();
+	}
 
-    public static Authorization fromValue(String v) {
-        return valueOf(v);
-    }
+	public static Authorization fromValue(String v)
+	{
+		return valueOf(v);
+	}
 
 }

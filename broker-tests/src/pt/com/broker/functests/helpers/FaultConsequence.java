@@ -7,18 +7,18 @@ import pt.com.broker.types.NetFault;
 public class FaultConsequence extends Consequence
 {
 	private boolean okToTimeout = false;
-	
+
 	private String faultCode;
 	private String faultMessage;
 	private String faultDetail;
 	private String actionId;
-	
+
 	private SetValueFuture<NetFault> future;
-	
+
 	public FaultConsequence(String name, String actorName, SetValueFuture<NetFault> future)
 	{
 		super(name, actorName);
-		
+
 		this.future = future;
 	}
 
@@ -28,8 +28,8 @@ public class FaultConsequence extends Consequence
 		try
 		{
 			NetFault fault = future.get();
-			
-			if( faultCode != null)
+
+			if (faultCode != null)
 			{
 				if (!faultCode.equals(fault.getCode()))
 				{
@@ -39,7 +39,7 @@ public class FaultConsequence extends Consequence
 					return this;
 				}
 			}
-			if( faultMessage != null)
+			if (faultMessage != null)
 			{
 				if (!faultMessage.equals(fault.getMessage()))
 				{
@@ -49,7 +49,7 @@ public class FaultConsequence extends Consequence
 					return this;
 				}
 			}
-			if( faultDetail != null)
+			if (faultDetail != null)
 			{
 				if (!faultDetail.equals(fault.getDetail()))
 				{
@@ -59,7 +59,7 @@ public class FaultConsequence extends Consequence
 					return this;
 				}
 			}
-			if( actionId != null)
+			if (actionId != null)
 			{
 				if (!actionId.equals(fault.getActionId()))
 				{

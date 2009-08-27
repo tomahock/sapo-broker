@@ -15,7 +15,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * Simple producer sample. Behavior is determined by command line arguments.
- *
+ * 
  */
 public class Producer
 {
@@ -39,7 +39,7 @@ public class Producer
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
-		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds to " + producer.dname +  "...");
+		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds to " + producer.dname + "...");
 
 		Thread.sleep(2000);
 

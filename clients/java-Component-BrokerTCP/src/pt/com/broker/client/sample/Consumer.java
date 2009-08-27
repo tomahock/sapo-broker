@@ -15,7 +15,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * Simple consumer sample. Behavior is determined by command line arguments.
- *
+ * 
  */
 
 public class Consumer implements BrokerListener
@@ -74,9 +74,7 @@ public class Consumer implements BrokerListener
 	@Override
 	public void onMessage(NetNotification notification)
 	{
-		log.info(String.format("%s -> Message destination: %s Received Message Length: %s (%s)", counter.incrementAndGet(),
-				notification.getDestination(), 
-				notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
+		log.info(String.format("%s -> Message destination: %s Received Message Length: %s (%s)", counter.incrementAndGet(), notification.getDestination(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
 	}
 
 }

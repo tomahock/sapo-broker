@@ -79,7 +79,8 @@ public class BrokerClient extends BaseBrokerClient
 	 * Publish a message over UDP. <br/>
 	 * Messages published must not carry a message identifier.
 	 * 
-	 * @param message A NetPublish message
+	 * @param message
+	 *            A NetPublish message
 	 */
 
 	public void publishMessageOverUdp(NetPublish message) throws InvalidParameterException
@@ -97,10 +98,10 @@ public class BrokerClient extends BaseBrokerClient
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(stream);
-		
+
 		NetAction action = new NetAction(ActionType.PUBLISH);
 		action.setPublishMessage(message);
-		
+
 		NetMessage netMessage = new NetMessage(action);
 
 		try
@@ -115,7 +116,7 @@ public class BrokerClient extends BaseBrokerClient
 			socket.setSoTimeout(5000);
 
 			byte[] msgData = stream.toByteArray();
-			
+
 			DatagramPacket packet = new DatagramPacket(msgData, msgData.length, inet, hostInfo.getUdpPort());
 			socket.send(packet);
 			socket.close();

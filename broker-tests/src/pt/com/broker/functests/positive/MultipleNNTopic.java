@@ -6,10 +6,11 @@ import pt.com.broker.functests.helpers.MultipleNotificationsBrokerListener;
 
 public class MultipleNNTopic extends MultipleGenericPubSubTest
 {
-	public MultipleNNTopic(){
+	public MultipleNNTopic()
+	{
 		super("Topic - N producer N consumers");
 	}
-	
+
 	@Override
 	protected void addConsumers()
 	{
@@ -29,7 +30,7 @@ public class MultipleNNTopic extends MultipleGenericPubSubTest
 			this.setFailure(t);
 		}
 	}
-	
+
 	@Override
 	protected void addProducers()
 	{

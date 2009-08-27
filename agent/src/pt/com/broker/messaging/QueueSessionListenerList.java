@@ -18,7 +18,7 @@ import pt.com.gcs.messaging.MessageType;
 
 /**
  * QueueSessionListenerList contains a list of queue subscribers.
- *
+ * 
  */
 
 public class QueueSessionListenerList

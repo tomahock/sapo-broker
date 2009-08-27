@@ -13,7 +13,7 @@ public class FaultWithActionIdTest extends GenericNetMessageNegativeTest
 		super("Unexpected Message - Fault");
 
 		String actionId = "THISISANACTIONID";
-		
+
 		NetFault fault = new NetFault("1234", "This sould fail");
 		fault.setActionId(actionId);
 		NetAction action = new NetAction(ActionType.FAULT);

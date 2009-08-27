@@ -2,10 +2,11 @@ package pt.com.broker.codec.xml;
 
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.SimpleFramingDecoderV2;
+
 /**
-* SOAP decoder. 
-*
-*/
+ * SOAP decoder.
+ * 
+ */
 public class SoapDecoderV2 extends SimpleFramingDecoderV2
 {
 

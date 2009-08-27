@@ -4,7 +4,7 @@ import java.net.SocketAddress;
 
 /**
  * Connect is a Runnable type responsible for connecting to a specified address using GCS.connect().
- *
+ * 
  */
 
 public class Connect implements Runnable

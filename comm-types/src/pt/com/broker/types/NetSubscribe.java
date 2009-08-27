@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
 /**
- * Represents a Subscription message. 
- *
+ * Represents a Subscription message.
+ * 
  */
 
 public final class NetSubscribe

@@ -32,7 +32,7 @@ public class GenericPubSubTest extends BrokerTest
 	{
 		this("GenericPubSubTest");
 	}
-	
+
 	public GenericPubSubTest(String testName)
 	{
 		super(testName);
@@ -65,12 +65,12 @@ public class GenericPubSubTest extends BrokerTest
 
 		addEpilogues();
 	}
-	
+
 	public void setFailure(Throwable throwable)
 	{
 		constructionFailed = true;
 		reasonForFailure = throwable;
-		
+
 	}
 
 	protected void addPrerequisites()
@@ -84,7 +84,6 @@ public class GenericPubSubTest extends BrokerTest
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getDestinationType());
 					getInfoConsumer().addAsyncConsumer(subscribe, getBrokerListener());
 
-					
 					Sleep.time(1000);
 					setDone(true);
 					setSucess(true);
@@ -119,7 +118,6 @@ public class GenericPubSubTest extends BrokerTest
 					{
 						getInfoProducer().enqueueMessage(brokerMessage, getDestinationName());
 					}
-					
 
 					getInfoProducer().close();
 
@@ -157,7 +155,7 @@ public class GenericPubSubTest extends BrokerTest
 				try
 				{
 					getInfoConsumer().unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
-					
+
 					Sleep.time(1000);
 					getInfoConsumer().close();
 

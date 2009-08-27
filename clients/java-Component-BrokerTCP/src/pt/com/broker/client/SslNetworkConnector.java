@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * NetworkConnector is an implementation of BaseNetworkConnector for secure TCP connections (SSL).
- *
+ * 
  */
 
 public class SslNetworkConnector extends BaseNetworkConnector
@@ -80,9 +80,9 @@ public class SslNetworkConnector extends BaseNetworkConnector
 		else
 			socketFactory = getSslSocketFactory(keystoreLocation, keystorePw);
 
-		//client = socketFactory.createSocket(hostInfo.getHostname(), hostInfo.getPort());
+		// client = socketFactory.createSocket(hostInfo.getHostname(), hostInfo.getPort());
 		client = socketFactory.createSocket();
-		client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), 15 *1000);
+		client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), 15 * 1000);
 		getSocket().setSoTimeout(0);
 
 		rawOutput = new DataOutputStream(getSocket().getOutputStream());

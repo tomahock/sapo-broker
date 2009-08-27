@@ -3,8 +3,8 @@ package pt.com.broker.types;
 import pt.com.broker.types.NetAction.ActionType;
 
 /**
- * Represents a Fault message. 
- *
+ * Represents a Fault message.
+ * 
  */
 
 public final class NetFault
@@ -28,7 +28,7 @@ public final class NetFault
 	public static final NetMessage UnknownAuthenticationTypeMessage;
 	public static final NetMessage AccessDeniedErrorMessage;
 	public static final NetMessage InvalidAuthenticationChannelType;
-	
+
 	static
 	{
 		InvalidMessageSizeErrorMessage = buildNetFaultMessage("1101", "Invalid message size");

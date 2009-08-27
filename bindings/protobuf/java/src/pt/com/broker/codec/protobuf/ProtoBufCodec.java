@@ -6,8 +6,8 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
- * Google Protocol Buffer codec. 
- *
+ * Google Protocol Buffer codec.
+ * 
  */
 
 public class ProtoBufCodec implements ProtocolCodecFactory

@@ -23,7 +23,7 @@ import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * LocalQueueConsumers maintains current local queue consumers.
- *
+ * 
  */
 
 class LocalQueueConsumers
@@ -35,7 +35,7 @@ class LocalQueueConsumers
 	public static final AtomicLong ackedMessages = new AtomicLong(0L);
 
 	private static final Set<String> syncConsumers = new HashSet<String>();
-	
+
 	protected static void acknowledgeMessage(InternalMessage msg, IoSession ioSession)
 	{
 		log.debug("Acknowledge message with Id: '{}'.", msg.getMessageId());
@@ -72,10 +72,10 @@ class LocalQueueConsumers
 		}
 		listeners.add(listener);
 		instance.localQueueConsumers.put(queueName, listeners);
-		if(!instance.registreadSyncConsumer(queueName)) // Broadcast if there is no registered sync consumers
+		if (!instance.registreadSyncConsumer(queueName)) // Broadcast if there is no registered sync consumers
 			instance.broadCastNewQueueConsumer(queueName);
 	}
-	
+
 	protected synchronized static void remove(MessageListener listener)
 	{
 		if (listener != null)
@@ -89,8 +89,8 @@ class LocalQueueConsumers
 				if (listeners.size() == 0)
 				{
 					instance.localQueueConsumers.remove(listeners);
-					if(!instance.registreadSyncConsumer(queueName))// Broadcast if there is no registered sync consumers
-					{ 
+					if (!instance.registreadSyncConsumer(queueName))// Broadcast if there is no registered sync consumers
+					{
 						instance.broadCastRemovedQueueConsumer(queueName);
 						System.out.println("    Sending broadcast");
 					}
@@ -105,21 +105,21 @@ class LocalQueueConsumers
 		{
 			syncConsumers.add(queueName);
 		}
-		
-		if(!instance.registreadAsyncConsumer(queueName))
+
+		if (!instance.registreadAsyncConsumer(queueName))
 			instance.broadCastNewQueueConsumer(queueName);
 	}
-	
+
 	protected static void removeSyncConsumer(String queueName)
 	{
 		synchronized (syncConsumers)
 		{
 			syncConsumers.remove(queueName);
 		}
-		if(!instance.registreadAsyncConsumer(queueName))
+		if (!instance.registreadAsyncConsumer(queueName))
 			instance.broadCastRemovedQueueConsumer(queueName);
 	}
-	
+
 	protected static void broadCastQueueInfo(String destinationName, String action, IoSession ioSession)
 	{
 		if (StringUtils.isBlank(destinationName))
@@ -172,7 +172,6 @@ class LocalQueueConsumers
 		return instance.doNotify(message);
 	}
 
-	
 	protected synchronized static void removeAllListeners()
 	{
 		Set<String> queueNameSet = instance.localQueueConsumers.keySet();
@@ -239,7 +238,7 @@ class LocalQueueConsumers
 			return syncConsumers.contains(queueName);
 		}
 	}
-	
+
 	private boolean registreadAsyncConsumer(String queueName)
 	{
 		synchronized (LocalQueueConsumers.class)
@@ -249,8 +248,7 @@ class LocalQueueConsumers
 			return result;
 		}
 	}
-	
-	
+
 	private void broadCastNewQueueConsumer(String destinationName)
 	{
 		broadCastActionQueueConsumer(destinationName, "CREATE");

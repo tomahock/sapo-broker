@@ -5,8 +5,8 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 /**
- * Represents a client message payload. 
- *
+ * Represents a client message payload.
+ * 
  */
 
 public class NetBrokerMessage
@@ -56,8 +56,8 @@ public class NetBrokerMessage
 		return timestamp;
 	}
 
-	// read and write are used by InternalMessage serialization 
-	
+	// read and write are used by InternalMessage serialization
+
 	public void write(ObjectOutput out) throws IOException
 	{
 		out.writeUTF(messageId);

@@ -11,13 +11,12 @@ import pt.com.broker.types.SimpleFramingEncoder;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between client and agents.
- *
+ * 
  */
 
 public class SoapEncoder extends SimpleFramingEncoder
 {
 	private static final Logger log = LoggerFactory.getLogger(SoapEncoder.class);
-	
 
 	@Override
 	public byte[] processBody(Object message)

@@ -5,10 +5,11 @@ import pt.com.broker.functests.helpers.MultipleGenericQueuePubSubTest;
 
 public class MultipleN1Queue extends MultipleGenericQueuePubSubTest
 {
-	public MultipleN1Queue(){
+	public MultipleN1Queue()
+	{
 		super("Queue - N producers 1 consumer");
 	}
-	
+
 	@Override
 	protected void addProducers()
 	{

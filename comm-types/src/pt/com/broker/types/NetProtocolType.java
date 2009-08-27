@@ -1,7 +1,7 @@
 package pt.com.broker.types;
 
 /**
- * NetProtocolType represents message encoding alternatives. 
+ * NetProtocolType represents message encoding alternatives.
  */
 public enum NetProtocolType
 {

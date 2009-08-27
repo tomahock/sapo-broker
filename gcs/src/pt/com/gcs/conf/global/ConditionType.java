@@ -5,47 +5,47 @@
 // Generated on: 2009.06.04 at 12:31:09 PM WEST 
 //
 
-
 package pt.com.gcs.conf.global;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for ConditionType.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for ConditionType.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * 
  * <pre>
- * &lt;simpleType name="ConditionType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="ROLE"/>
- *     &lt;enumeration value="CHANNELTYPE"/>
- *     &lt;enumeration value="ADDRESS"/>
- *     &lt;enumeration value="ALWAYS"/>
- *     &lt;enumeration value="AND"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name=&quot;ConditionType&quot;&gt;
+ *   &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;&gt;
+ *     &lt;enumeration value=&quot;ROLE&quot;/&gt;
+ *     &lt;enumeration value=&quot;CHANNELTYPE&quot;/&gt;
+ *     &lt;enumeration value=&quot;ADDRESS&quot;/&gt;
+ *     &lt;enumeration value=&quot;ALWAYS&quot;/&gt;
+ *     &lt;enumeration value=&quot;AND&quot;/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */
 @XmlType(name = "ConditionType")
 @XmlEnum
-public enum ConditionType {
+public enum ConditionType
+{
 
-    ROLE,
-    CHANNELTYPE,
-    ADDRESS,
-    ALWAYS,
-    AND;
+	ROLE, CHANNELTYPE, ADDRESS, ALWAYS, AND;
 
-    public String value() {
-        return name();
-    }
+	public String value()
+	{
+		return name();
+	}
 
-    public static ConditionType fromValue(String v) {
-        return valueOf(v);
-    }
+	public static ConditionType fromValue(String v)
+	{
+		return valueOf(v);
+	}
 
 }

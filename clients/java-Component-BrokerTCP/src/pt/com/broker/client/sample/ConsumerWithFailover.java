@@ -19,7 +19,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * Consumer sample using client failover. Behavior is determined by command line arguments.
- *
+ * 
  */
 public class ConsumerWithFailover implements BrokerListener
 {

@@ -7,8 +7,8 @@ import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.SimpleFramingDecoderV2;
 
 /**
- * Thriftdecoder. 
- *
+ * Thriftdecoder.
+ * 
  */
 public class ThriftDecoder extends SimpleFramingDecoderV2
 {

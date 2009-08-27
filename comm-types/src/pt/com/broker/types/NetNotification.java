@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
 /**
- * Represents a Notification message. 
- *
+ * Represents a Notification message.
+ * 
  */
 
 public final class NetNotification

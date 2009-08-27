@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
 /**
- * Represents an Action. 
- *
+ * Represents an Action.
+ * 
  */
 
 public final class NetAction

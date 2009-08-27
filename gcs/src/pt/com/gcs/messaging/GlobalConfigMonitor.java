@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import pt.com.gcs.conf.GlobalConfig;
 
 /**
- * GlobalConfigMonitor is an runnable type responsible for triggering the validation of exiting peers and connect to new ones based on the global configuration file.  
- *
+ * GlobalConfigMonitor is an runnable type responsible for triggering the validation of exiting peers and connect to new ones based on the global configuration file.
+ * 
  */
 
 public class GlobalConfigMonitor implements Runnable

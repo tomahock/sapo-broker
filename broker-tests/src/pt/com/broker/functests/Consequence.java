@@ -9,7 +9,7 @@ public abstract class Consequence extends Step
 		super(name);
 		this.actorName = actorName;
 	}
-	
+
 	public String getActorName()
 	{
 		return actorName;

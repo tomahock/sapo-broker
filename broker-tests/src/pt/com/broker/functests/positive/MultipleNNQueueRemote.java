@@ -6,15 +6,16 @@ import pt.com.broker.functests.helpers.MultipleNotificationsBrokerListener;
 
 public class MultipleNNQueueRemote extends MultipleGenericQueuePubSubTest
 {
-	public MultipleNNQueueRemote(){
+	public MultipleNNQueueRemote()
+	{
 		super("Queue - N producer N consumers remote");
 	}
-	
+
 	@Override
 	protected void addConsumers()
 	{
 		setConsumerNotifications(1);
-		
+
 		super.addConsumers();
 		try
 		{
@@ -31,7 +32,7 @@ public class MultipleNNQueueRemote extends MultipleGenericQueuePubSubTest
 			this.setFailure(t);
 		}
 	}
-	
+
 	@Override
 	protected void addProducers()
 	{

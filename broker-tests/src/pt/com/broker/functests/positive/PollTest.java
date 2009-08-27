@@ -15,16 +15,18 @@ import pt.com.broker.types.NetNotification;
 public class PollTest extends BrokerTest
 {
 	private String baseName = RandomStringUtils.randomAlphanumeric(10);
-	private String queueName = String.format("/poll/%s",baseName);
+	private String queueName = String.format("/poll/%s", baseName);
+
 	public PollTest()
 	{
 		super("Poll test");
 	}
-	
+
 	@Override
 	protected void build() throws Throwable
 	{
-		setAction(new Action("Poll Test", "Producer"){
+		setAction(new Action("Poll Test", "Producer")
+		{
 
 			@Override
 			public Step run() throws Exception
@@ -47,36 +49,36 @@ public class PollTest extends BrokerTest
 				}
 				return this;
 			}
-			
-		}
-		);
-		
-		addConsequences(new Consequence("Poll Test", "Consumer"){
+
+		});
+
+		addConsequences(new Consequence("Poll Test", "Consumer")
+		{
 			@Override
 			public Step run() throws Exception
 			{
 				try
 				{
 					BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
-					
+
 					NetNotification msg = bk.poll(queueName);
-					
+
 					bk.acknowledge(msg);
-					
+
 					bk.close();
-					
-					if(msg.getMessage() == null)
+
+					if (msg.getMessage() == null)
 					{
 						setReasonForFailure("Broker Message is null");
 						return this;
 					}
-					if(msg.getMessage().getPayload() == null)
+					if (msg.getMessage().getPayload() == null)
 					{
 						setReasonForFailure("Message payload is null");
 						return this;
 					}
-					
-					if(!Arrays.equals(msg.getMessage().getPayload(), getData()))
+
+					if (!Arrays.equals(msg.getMessage().getPayload(), getData()))
 					{
 						setReasonForFailure("Message payload is different from expected");
 						return this;
@@ -91,9 +93,9 @@ public class PollTest extends BrokerTest
 				}
 				return this;
 			}
-			
+
 		});
-		
+
 	}
 
 }

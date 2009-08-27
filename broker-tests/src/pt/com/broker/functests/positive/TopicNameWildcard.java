@@ -8,10 +8,10 @@ public class TopicNameWildcard extends GenericPubSubTest
 	{
 		this("PubSub - Topic name is a wildcard");
 	}
-	
+
 	public TopicNameWildcard(String testName)
 	{
 		super(testName);
-		setSubscriptionName("/topic/.*");	
+		setSubscriptionName("/topic/.*");
 	}
 }

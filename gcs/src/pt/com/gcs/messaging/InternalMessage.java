@@ -14,9 +14,9 @@ import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
- *  InternalMessage is the internal representation of a message. It contains a NetBrokerMessage and other fields related with the original message. <br/> 
- *  It's used for storage and passing between agents.
- *
+ * InternalMessage is the internal representation of a message. It contains a NetBrokerMessage and other fields related with the original message. <br/>
+ * It's used for storage and passing between agents.
+ * 
  */
 
 public class InternalMessage implements Externalizable

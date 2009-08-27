@@ -6,7 +6,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 public class Main
 {
 	private static final DestinationType[] destinationTypes = new DestinationType[] { DestinationType.TOPIC, DestinationType.QUEUE };
-	private static final NetProtocolType[] protocolTypes = new NetProtocolType[]{ NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT };
+	private static final NetProtocolType[] protocolTypes = new NetProtocolType[] { NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT };
 	private static final int[] messageSizes = new int[] { 10, /* 512, 1000, 10 * 1000, 100 * 1000, */200 * 1000 };
 	// private static final int producers[] = new int[] { 1, 1, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8, 1, 1, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8 };
 	// private static final int localConsumers[] = new int[] { 1, 2, 1, 2, 1, 2, 4, 1, 2, 6, 1, 2, 8, 1, 2, 1, 2, 1, 2, 4, 1, 2, 6, 1, 2, 8 };
@@ -31,9 +31,9 @@ public class Main
 					{
 						Test test = new Test(destinationType, protocolType, messageSize, clients[index][0], clients[index][1], clients[index][2]);
 						long millis = test.run();
-						double totalNrOfMessagesSent = test.getNrOfMessages() * clients[index][0];						
+						double totalNrOfMessagesSent = test.getNrOfMessages() * clients[index][0];
 						double timePerMsg = (((double) millis)) / totalNrOfMessagesSent;
-						double messagesPerSecond = (totalNrOfMessagesSent * 1000) / (double) millis; //totalNrOfMessagesSent / (((double) millis/1000));
+						double messagesPerSecond = (totalNrOfMessagesSent * 1000) / (double) millis; // totalNrOfMessagesSent / (((double) millis/1000));
 						String result = String.format("--------> Producers: %s, Local Consumers: %s, Romete Consumers: %s. Time: %s (ms). Time per message: %s (ms). Messages per second: %s", clients[index][0], clients[index][1], clients[index][2], millis, timePerMsg, messagesPerSecond);
 						System.out.println(result);
 					}

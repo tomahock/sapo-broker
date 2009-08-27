@@ -3,8 +3,8 @@ package pt.com.broker.auth;
 import java.util.List;
 
 /**
- * RolePredicate represents a client role predicate. 
- *
+ * RolePredicate represents a client role predicate.
+ * 
  */
 public class RolePredicate implements AclPredicate
 {

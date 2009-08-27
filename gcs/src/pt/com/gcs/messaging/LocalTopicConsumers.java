@@ -22,7 +22,7 @@ import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * LocalTopicConsumers maintains current local topic consumers.
- *
+ * 
  */
 
 class LocalTopicConsumers

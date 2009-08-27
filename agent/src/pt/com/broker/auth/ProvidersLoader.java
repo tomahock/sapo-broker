@@ -13,7 +13,7 @@ import pt.com.gcs.conf.GlobalConfig;
 
 /**
  * ProvidersLoader is responsible for loading available authentication providers.
- *
+ * 
  */
 
 public class ProvidersLoader
@@ -40,7 +40,7 @@ public class ProvidersLoader
 					Class<?> provClass = Class.forName(providerInfo.getClassName());
 					AuthInfoValidator validatorProv = (AuthInfoValidator) provClass.newInstance();
 
-					if( validatorProv.init(providerInfo) )
+					if (validatorProv.init(providerInfo))
 					{
 						AuthInfoVerifierFactory.addValidator(providerInfo.getName(), validatorProv);
 						log.info(providerInfo.getName() + " credentials validator loaded.");

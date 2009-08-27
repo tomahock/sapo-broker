@@ -20,8 +20,8 @@ import pt.com.gcs.messaging.Gcs;
 import pt.com.http.HttpAction;
 
 /**
- * AdminAction is an HttpAction. It supports some administrative options such agent's shutdown or queue deletion. 
- *
+ * AdminAction is an HttpAction. It supports some administrative options such agent's shutdown or queue deletion.
+ * 
  */
 
 public class AdminAction extends HttpAction

@@ -13,8 +13,8 @@ import org.caudexorigo.concurrent.CustomExecutors;
 import pt.com.broker.client.BaseNetworkConnector;
 
 /**
- *  ProtocolHandler is an abstract class that defines the basic functionality for implementing Sapo-Broker messaging aspects. 
- *
+ * ProtocolHandler is an abstract class that defines the basic functionality for implementing Sapo-Broker messaging aspects.
+ * 
  */
 
 public abstract class ProtocolHandler<T>

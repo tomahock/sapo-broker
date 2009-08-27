@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
 /**
- * Represents a Publication message. 
- *
+ * Represents a Publication message.
+ * 
  */
 public final class NetPublish
 {

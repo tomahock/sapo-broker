@@ -27,8 +27,8 @@ import pt.com.broker.types.SimpleFramingDecoderV2;
 import pt.com.http.HttpAction;
 
 /**
- * BrokerHttpAction is an HttpAction. It supports message publishing. 
- *
+ * BrokerHttpAction is an HttpAction. It supports message publishing.
+ * 
  */
 
 public class BrokerHttpAction extends HttpAction

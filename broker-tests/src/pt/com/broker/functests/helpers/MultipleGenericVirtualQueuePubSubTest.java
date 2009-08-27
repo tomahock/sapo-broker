@@ -6,19 +6,19 @@ import pt.com.broker.types.NetAction.DestinationType;
 public class MultipleGenericVirtualQueuePubSubTest extends MultipleGenericPubSubTest
 {
 	private int consumerNotifications = 0;
-	
+
 	public MultipleGenericVirtualQueuePubSubTest()
 	{
 		this("MultipleGenericVirtualQueuePubSubTest");
 	}
+
 	public MultipleGenericVirtualQueuePubSubTest(String testName)
 	{
 		super(testName);
 		setSubscriptionName("xpto@" + getSubscriptionName());
 		setConsumerDestinationType(DestinationType.VIRTUAL_QUEUE);
 	}
-	
-	
+
 	protected void addConsumers()
 	{
 		try
@@ -49,7 +49,7 @@ public class MultipleGenericVirtualQueuePubSubTest extends MultipleGenericPubSub
 			tci.numberOfExecutions = 1;
 
 			this.addInfoProducer(tci);
-			
+
 			setConsumerNotifications(getInfoProducers().size());
 		}
 		catch (Throwable t)
@@ -58,7 +58,7 @@ public class MultipleGenericVirtualQueuePubSubTest extends MultipleGenericPubSub
 		}
 
 	}
-	
+
 	public void setConsumerNotifications(int consumerNotifications)
 	{
 		this.consumerNotifications = consumerNotifications;
@@ -68,6 +68,7 @@ public class MultipleGenericVirtualQueuePubSubTest extends MultipleGenericPubSub
 	{
 		return consumerNotifications;
 	}
+
 	public DestinationType getConsumerDestinationType()
 	{
 		return DestinationType.VIRTUAL_QUEUE;

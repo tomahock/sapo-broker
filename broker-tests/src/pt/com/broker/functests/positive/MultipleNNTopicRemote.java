@@ -4,12 +4,13 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.functests.helpers.MultipleGenericPubSubTest;
 import pt.com.broker.functests.helpers.MultipleNotificationsBrokerListener;
 
-public class MultipleNNTopicRemote  extends MultipleGenericPubSubTest
+public class MultipleNNTopicRemote extends MultipleGenericPubSubTest
 {
-	public MultipleNNTopicRemote(){
+	public MultipleNNTopicRemote()
+	{
 		super("Topic - N producer N consumers remote");
 	}
-	
+
 	@Override
 	protected void addConsumers()
 	{
@@ -17,7 +18,7 @@ public class MultipleNNTopicRemote  extends MultipleGenericPubSubTest
 		try
 		{
 			int numberOfExecutions = getInfoProducers().size();
-			
+
 			TestClientInfo tci = new TestClientInfo();
 
 			tci.brokerClient = new BrokerClient("127.0.0.1", 3423, "tcp://mycompany.com/mypublisher");
@@ -31,7 +32,7 @@ public class MultipleNNTopicRemote  extends MultipleGenericPubSubTest
 			this.setFailure(t);
 		}
 	}
-	
+
 	@Override
 	protected void addProducers()
 	{

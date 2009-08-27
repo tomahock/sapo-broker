@@ -8,7 +8,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 public class Producer implements Callable<Integer>
 {
-	
+
 	private final BrokerClient brokerClient;
 	private final DestinationType destinationType;
 	private final int numberOfMsgToSend;
@@ -19,7 +19,7 @@ public class Producer implements Callable<Integer>
 		this.brokerClient = bkCLient;
 		this.destinationType = destinationType;
 		this.numberOfMsgToSend = numberOfMsgToSend;
-		this.message = message;		
+		this.message = message;
 	}
 
 	@Override
@@ -27,20 +27,21 @@ public class Producer implements Callable<Integer>
 	{
 		NetBrokerMessage message = new NetBrokerMessage(this.message.getBytes());
 		String destination = "/test/foo";
-		if(destinationType == DestinationType.QUEUE)
+		if (destinationType == DestinationType.QUEUE)
 		{
-			for(int i = numberOfMsgToSend; i != 0; --i){
+			for (int i = numberOfMsgToSend; i != 0; --i)
+			{
 				brokerClient.enqueueMessage(message, destination);
 			}
 		}
 		else
 		{
-			for(int i = numberOfMsgToSend; i != 0; --i){
+			for (int i = numberOfMsgToSend; i != 0; --i)
+			{
 				brokerClient.publishMessage(message, destination);
 			}
 		}
-		
-		
+
 		return new Integer(0);
 	}
 

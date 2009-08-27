@@ -14,8 +14,8 @@ import pt.com.broker.client.AcceptRequest;
 import pt.com.broker.types.NetFault;
 
 /**
- * PendingAcceptRequestsManager deals with Accept requests made but still unanswered holding them and setting them as timeout if necessary. The timeout may be 500 milliseconds overdue.  
- *
+ * PendingAcceptRequestsManager deals with Accept requests made but still unanswered holding them and setting them as timeout if necessary. The timeout may be 500 milliseconds overdue.
+ * 
  */
 
 public class PendingAcceptRequestsManager

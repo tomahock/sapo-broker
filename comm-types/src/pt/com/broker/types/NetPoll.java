@@ -6,7 +6,7 @@ public final class NetPoll
 	private String destination;
 	private long timeout;
 	private long expires;
-	
+
 	public NetPoll(String destination, long timeout)
 	{
 		this.destination = destination;

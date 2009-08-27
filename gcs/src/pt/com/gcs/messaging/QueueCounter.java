@@ -10,7 +10,7 @@ import pt.com.gcs.conf.GcsInfo;
 
 /**
  * QueueCounter is responsible for counting and publishing the total number number of messages per queue.
- *
+ * 
  */
 
 class QueueCounter implements Runnable

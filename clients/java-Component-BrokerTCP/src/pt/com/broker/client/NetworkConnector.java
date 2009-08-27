@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * NetworkConnector is an implementation of BaseNetworkConnector for plain TCP connections.
- *
+ * 
  */
 public class NetworkConnector extends BaseNetworkConnector
 {
@@ -28,7 +28,7 @@ public class NetworkConnector extends BaseNetworkConnector
 		this.setConnectionVersion(connectionVersion);
 		this.hostInfo = host;
 		client = new Socket();
-		client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), 15 *1000);
+		client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), 15 * 1000);
 		rawOutput = new DataOutputStream(getSocket().getOutputStream());
 		rawInput = new DataInputStream(getSocket().getInputStream());
 		socketAddress = getSocket().getRemoteSocketAddress();

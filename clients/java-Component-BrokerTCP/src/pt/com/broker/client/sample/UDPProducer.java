@@ -22,7 +22,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * Simple UDP producer sample.
- *
+ * 
  */
 
 public class UDPProducer
@@ -43,13 +43,13 @@ public class UDPProducer
 
 		producer.host = cargs.getHost();
 		producer.port = cargs.getPort();
-		producer.udpPort = cargs.getUdpPort(); 
+		producer.udpPort = cargs.getUdpPort();
 		producer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		producer.dname = cargs.getDestination();
 
 		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
-		hosts.add( new HostInfo(producer.host, producer.port, producer.udpPort) );
-		
+		hosts.add(new HostInfo(producer.host, producer.port, producer.udpPort));
+
 		BrokerClient bk = new BrokerClient(hosts);
 
 		log.info("Start sending a string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds...");
@@ -66,13 +66,11 @@ public class UDPProducer
 			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
 
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
-			
+
 			NetPublish publishMsg = new NetPublish(dname, dtype, brokerMessage);
-			
-			
-			bk.publishMessageOverUdp(publishMsg);	
-			
-			
+
+			bk.publishMessageOverUdp(publishMsg);
+
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
 			Sleep.time(500);

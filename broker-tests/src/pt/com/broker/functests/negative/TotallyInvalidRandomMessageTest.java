@@ -11,11 +11,11 @@ public class TotallyInvalidRandomMessageTest extends GenericNegativeTest
 	public TotallyInvalidRandomMessageTest()
 	{
 		super("Invalid Message - Random content");
-		
+
 		int msgSize = 200;
 		byte[] randomData = new byte[msgSize];
 		new Random().nextBytes(randomData);
-		
+
 		setDataToSend(randomData);
 		setOkToTimeOut(true);
 	}

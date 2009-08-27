@@ -5,8 +5,8 @@ import java.util.Collection;
 
 /**
  * CircularContainer is a utility class that provides circular access to the elements contained.<br/>
- * If the CircularContainer object contains X, W, Y and 7 contained objects are picked the result will be:X, W, Y, X, W, Y, X.    
- *
+ * If the CircularContainer object contains X, W, Y and 7 contained objects are picked the result will be:X, W, Y, X, W, Y, X.
+ * 
  */
 
 public class CircularContainer<T>
@@ -63,7 +63,8 @@ public class CircularContainer<T>
 	}
 
 	/**
-	 * Obtains the current value. 
+	 * Obtains the current value.
+	 * 
 	 * @return a T value.
 	 */
 	public T peek()
@@ -85,6 +86,7 @@ public class CircularContainer<T>
 
 	/**
 	 * Adds the indexer, moving it to the next position (or beginning).
+	 * 
 	 * @return a T value.
 	 */
 	public T get()

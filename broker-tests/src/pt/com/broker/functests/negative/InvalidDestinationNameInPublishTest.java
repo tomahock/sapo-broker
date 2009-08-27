@@ -17,7 +17,7 @@ public class InvalidDestinationNameInPublishTest extends GenericNetMessageNegati
 		NetBrokerMessage brokerMsg = new NetBrokerMessage("This is the payload".getBytes());
 		NetPublish publish = new NetPublish("service@/system/foo", DestinationType.TOPIC, brokerMsg);
 		NetAction action = new NetAction(ActionType.PUBLISH);
-		action.setPublishMessage(publish);		
+		action.setPublishMessage(publish);
 		NetMessage message = new NetMessage(action);
 		setMessage(message);
 

@@ -58,8 +58,8 @@ public class SystemMessagesPublisher
 								break;
 							}
 						}
-						
-						for(TimeoutMessage tm : retryMessages)
+
+						for (TimeoutMessage tm : retryMessages)
 						{
 							tm.session.write(tm.message);
 							tm.timeout = System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL;
@@ -106,6 +106,7 @@ public class SystemMessagesPublisher
 				pending_messages.remove(msgId);
 		}
 	}
+
 	public static void messageAcknowledged(String messageId)
 	{
 		synchronized (pending_messages)

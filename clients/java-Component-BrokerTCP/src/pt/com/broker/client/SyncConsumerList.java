@@ -5,7 +5,7 @@ import org.caudexorigo.ds.CacheFiller;
 
 /**
  * SyncConsumerList contains a list of synchronous clients.
- *
+ * 
  */
 
 public class SyncConsumerList

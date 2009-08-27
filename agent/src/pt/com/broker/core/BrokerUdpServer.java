@@ -26,9 +26,7 @@ public class BrokerUdpServer
 
 	private int _portNumber;
 
-
 	private static final int MAX_BUFFER_SIZE = 16 * 1024 * 1024;
-
 
 	public BrokerUdpServer(int portNumber)
 	{
@@ -39,7 +37,7 @@ public class BrokerUdpServer
 	{
 		try
 		{
-			
+
 			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE));
 
 			final NioDatagramAcceptor acceptor = new NioDatagramAcceptor();
@@ -52,10 +50,9 @@ public class BrokerUdpServer
 			}
 			filterChainBuilder1.addLast("executor", new ExecutorFilter(tpe));
 
-			
 			DatagramSessionConfig dcfg = acceptor.getSessionConfig();
 			dcfg.setReuseAddress(true);
-			
+
 			acceptor.setHandler(new BrokerProtocolHandler());
 
 			// Bind

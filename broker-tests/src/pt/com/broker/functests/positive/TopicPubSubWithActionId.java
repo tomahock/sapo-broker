@@ -35,7 +35,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 	private Throwable reasonForFailure;
 
 	private SetValueFuture<Boolean> future = new SetValueFuture<Boolean>();
-	
+
 	public TopicPubSubWithActionId()
 	{
 		super("GenericPubSubTest");
@@ -51,7 +51,6 @@ public class TopicPubSubWithActionId extends BrokerTest
 		}
 	}
 
-	
 	@Override
 	public void build() throws Throwable
 	{
@@ -68,12 +67,12 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 		addEpilogues();
 	}
-	
+
 	public void setFailure(Throwable throwable)
 	{
 		constructionFailed = true;
 		reasonForFailure = throwable;
-		
+
 	}
 
 	protected void addPrerequisites()
@@ -84,7 +83,8 @@ public class TopicPubSubWithActionId extends BrokerTest
 			{
 				try
 				{
-					AcceptRequest accReq = new AcceptRequest("123456789", new MessageAcceptedListener(){
+					AcceptRequest accReq = new AcceptRequest("123456789", new MessageAcceptedListener()
+					{
 
 						@Override
 						public void messageAccepted(String actionId)
@@ -103,13 +103,12 @@ public class TopicPubSubWithActionId extends BrokerTest
 						{
 							future.set(Boolean.FALSE);
 						}
-						
-					}, 1000);
-					
-					NetSubscribe subscribe = new NetSubscribe(subscriptionName, destinationType);
-					infoConsumer.addAsyncConsumer(subscribe, brokerListener,accReq);
 
-					
+					}, 1000);
+
+					NetSubscribe subscribe = new NetSubscribe(subscriptionName, destinationType);
+					infoConsumer.addAsyncConsumer(subscribe, brokerListener, accReq);
+
 					Sleep.time(1000);
 					setDone(true);
 					setSucess(true);
@@ -144,7 +143,6 @@ public class TopicPubSubWithActionId extends BrokerTest
 					{
 						infoProducer.enqueueMessage(brokerMessage, destinationName);
 					}
-					
 
 					infoProducer.close();
 
@@ -163,8 +161,9 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 	protected void addConsequences()
 	{
-	
-		this.addConsequences( new Consequence("Action id receiver", "producer"){
+
+		this.addConsequences(new Consequence("Action id receiver", "producer")
+		{
 
 			@Override
 			public Step run() throws Exception
@@ -173,10 +172,10 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 				setSucess(result.booleanValue());
 				setDone(true);
-				
+
 				return this;
 			}
-			
+
 		});
 	}
 
@@ -190,7 +189,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 				try
 				{
 					infoConsumer.unsubscribe(NetAction.DestinationType.TOPIC, subscriptionName);
-					
+
 					Sleep.time(1000);
 					infoConsumer.close();
 

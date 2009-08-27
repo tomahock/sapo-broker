@@ -44,8 +44,8 @@ import pt.com.broker.types.NetAction.DestinationType;
 import com.google.protobuf.ByteString;
 
 /**
- * Google Protocol Buffer utility class for encoding and decoding. 
- *
+ * Google Protocol Buffer utility class for encoding and decoding.
+ * 
  */
 
 public class ProtoBufBindingSerializer implements BindingSerializer
@@ -243,8 +243,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		NetPoll net = netMessage.getAction().getPollMessage();
 
 		PBMessage.Atom.Poll.Builder builder = PBMessage.Atom.Poll.newBuilder();
-		builder.setDestination(net.getDestination()).
-			setTimeout(net.getTimeout());
+		builder.setDestination(net.getDestination()).setTimeout(net.getTimeout());
 
 		if (net.getActionId() != null)
 			builder.setActionId(net.getActionId());
@@ -298,10 +297,10 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		PBMessage.Atom.Authentication.Builder builder = PBMessage.Atom.Authentication.newBuilder();
 
 		builder.setToken(ByteString.copyFrom(authClientAuthrentication.getToken()));
-		
+
 		if (authClientAuthrentication.getActionId() != null)
 			builder.setActionId(authClientAuthrentication.getActionId());
-		
+
 		if (authClientAuthrentication.getAuthenticationType() != null)
 			builder.setAuthenticationType(authClientAuthrentication.getAuthenticationType());
 
@@ -502,7 +501,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			return NetAction.ActionType.AUTH;
 
 		}
-		throw new IllegalArgumentException("Unexpected action type (PBMessage.Atom.Action.ActionType): " + actionType); 
+		throw new IllegalArgumentException("Unexpected action type (PBMessage.Atom.Action.ActionType): " + actionType);
 	}
 
 	private NetAccepted extractAcceptedMessage(Action action)
@@ -544,7 +543,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 	private NetNotification extractNotificationMessage(Action action)
 	{
 		Notification notification = action.getNotification();
-		
+
 		String dest = notification.getDestination();
 		NetAction.DestinationType destType = translate(notification.getDestinationType());
 		NetBrokerMessage brkMsg = obtainBrokerMessage(notification.getMessage());
@@ -560,7 +559,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		Poll poll = action.getPoll();
 		String destination = poll.getDestination();
 
-		NetPoll pollMsg = new NetPoll(destination, poll.getTimeout() );
+		NetPoll pollMsg = new NetPoll(destination, poll.getTimeout());
 
 		if (poll.hasActionId())
 			pollMsg.setActionId(poll.getActionId());

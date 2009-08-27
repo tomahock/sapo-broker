@@ -27,7 +27,7 @@ import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 
 /**
  * SapoSTSAuthInfoValidator implements AuthInfoValidator in order to provide Sapo STS based authentication, that is, given a Sapo STS token it extracts the associated user roles.
- *
+ * 
  */
 
 public class SapoSTSAuthInfoValidator implements AuthInfoValidator
@@ -180,6 +180,6 @@ public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 	public boolean init(ProviderInfo info)
 	{
 		return SapoSTSService.start(info);
-	}	
+	}
 
 }

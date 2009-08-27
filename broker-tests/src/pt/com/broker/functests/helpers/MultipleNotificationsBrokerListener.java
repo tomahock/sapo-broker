@@ -15,18 +15,18 @@ public class MultipleNotificationsBrokerListener implements BrokerListener
 	private List<NetNotification> list;
 	private int expectedNotifications;
 	private SetValueFuture<List<NetNotification>> value = new SetValueFuture<List<NetNotification>>();
-	
+
 	public MultipleNotificationsBrokerListener(NetAction.DestinationType destinationType, int expectedNotifications)
 	{
 		this.destinationType = destinationType;
 		this.expectedNotifications = expectedNotifications;
 		this.list = new ArrayList<NetNotification>(expectedNotifications);
 	}
-	
+
 	@Override
 	public boolean isAutoAck()
 	{
-		return destinationType !=  DestinationType.TOPIC;
+		return destinationType != DestinationType.TOPIC;
 	}
 
 	@Override
@@ -35,17 +35,17 @@ public class MultipleNotificationsBrokerListener implements BrokerListener
 		synchronized (list)
 		{
 			list.add(message);
-			if( list.size() == expectedNotifications)
+			if (list.size() == expectedNotifications)
 			{
 				value.set(list);
 			}
 		}
-		
+
 	}
-	
+
 	public SetValueFuture<List<NetNotification>> getFuture()
 	{
 		return value;
 	}
-	
+
 }

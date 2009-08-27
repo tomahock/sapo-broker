@@ -9,9 +9,9 @@ public class VirtualQueueTopicNameWildcardRemote extends MultipleGenericVirtualQ
 	public VirtualQueueTopicNameWildcardRemote()
 	{
 		super("VirtualQueue Remote- Topic name wildcard");
-		setSubscriptionName(String.format("xpto@/%s/.*",getBaseName()));
+		setSubscriptionName(String.format("xpto@/%s/.*", getBaseName()));
 	}
-	
+
 	protected void addConsumers()
 	{
 		try

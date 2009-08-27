@@ -25,7 +25,7 @@ import pt.com.gcs.conf.GcsInfo;
 
 /**
  * BrokerServer is responsible for initializing client's SSL interface (MINA infrastructure).
- *
+ * 
  */
 
 public class BrokerSSLServer

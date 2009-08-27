@@ -7,7 +7,7 @@ import pt.com.gcs.io.SerializerHelper;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between agents.
- *
+ * 
  */
 
 public class GcsDecoder extends SimpleFramingDecoder

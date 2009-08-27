@@ -9,7 +9,7 @@ import pt.com.broker.types.NetMessage;
 
 /**
  * MQ contains several messaging related constants provides some utility functions for handling with "FROM" headers.
- *
+ * 
  */
 
 public class MQ

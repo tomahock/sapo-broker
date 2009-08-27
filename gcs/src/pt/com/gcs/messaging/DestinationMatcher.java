@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * DestinationMatcher uses regular expressions to determine if a given subscription matches a given topic name.
- *
+ * 
  */
 
 public class DestinationMatcher

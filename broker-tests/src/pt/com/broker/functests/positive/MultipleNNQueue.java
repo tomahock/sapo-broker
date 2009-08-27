@@ -6,15 +6,16 @@ import pt.com.broker.functests.helpers.MultipleNotificationsBrokerListener;
 
 public class MultipleNNQueue extends MultipleGenericQueuePubSubTest
 {
-	public MultipleNNQueue(){
+	public MultipleNNQueue()
+	{
 		super("Queue - N producer N consumers");
 	}
-	
+
 	@Override
 	protected void addConsumers()
 	{
 		setConsumerNotifications(1);
-		
+
 		super.addConsumers();
 		try
 		{
@@ -31,7 +32,7 @@ public class MultipleNNQueue extends MultipleGenericQueuePubSubTest
 			this.setFailure(t);
 		}
 	}
-	
+
 	@Override
 	protected void addProducers()
 	{

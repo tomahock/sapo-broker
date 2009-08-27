@@ -10,15 +10,15 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * SyncConsumer represents a synchronous client.
- *
+ * 
  */
 public class SyncConsumer
 {
 	private final AtomicInteger count = new AtomicInteger(0);
 	private final BlockingQueue<NetNotification> queue = new LinkedBlockingQueue<NetNotification>();
-	
+
 	public static final NetNotification UnblockNotification = new NetNotification("UnblockMessage", DestinationType.QUEUE, null, null);
-	
+
 	protected void increment()
 	{
 		count.incrementAndGet();

@@ -7,7 +7,7 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
  * SOAP codec.
- *
+ * 
  */
 public class SoapCodecV2 implements ProtocolCodecFactory
 {

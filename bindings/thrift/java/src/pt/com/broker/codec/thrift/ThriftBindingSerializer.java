@@ -152,7 +152,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 		if (message.getTimestamp() != -1)
 			brkMsg.setTimestamp(message.getTimestamp());
-		
+
 		if (message.getExpiration() != -1)
 			brkMsg.setExpiration(message.getExpiration());
 

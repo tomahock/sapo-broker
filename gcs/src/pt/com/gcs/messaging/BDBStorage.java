@@ -319,7 +319,7 @@ class BDBStorage
 			{
 
 				log.debug("Poll Memory Queue is empty, fill from storage.");
-				
+
 				synchronized (dbLock)
 				{
 					Cursor msg_cursor = null;
@@ -333,7 +333,7 @@ class BDBStorage
 
 						int counter = 0;
 						int counter_reserved = 0;
-						
+
 						while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && counter < 250)
 						{
 							byte[] bdata = data.getData();
@@ -370,13 +370,13 @@ class BDBStorage
 									counter_reserved++;
 								}
 							}
-							
+
 							if (log.isDebugEnabled())
 							{
 								log.debug(String.format("poll_reserve_timeout: '%s'; now: '%s'; isReserved: '%s'; deliveryCount: '%s'; safeForPolling: '%s''", poll_reserve_timeout, now, isReserved, deliveryCount, safeForPolling));
 							}
 						}
-						
+
 						if (log.isDebugEnabled())
 						{
 							log.debug(String.format("counter: '%s; counter_reserved: '%s''", counter, counter_reserved));

@@ -15,9 +15,9 @@ public class UnknownAuthTypeFailedTest extends GenericNetMessageNegativeTest
 
 		NetAuthentication clientAuth = new NetAuthentication("password".getBytes());
 		clientAuth.setUserId("username");
-		
+
 		clientAuth.setAuthenticationType("BadAuthType");
-		
+
 		NetAction action = new NetAction(ActionType.AUTH);
 		action.setAuthenticationMessage(clientAuth);
 		NetMessage message = new NetMessage(action);

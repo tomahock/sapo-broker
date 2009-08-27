@@ -17,8 +17,8 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 
 /**
- *  BDBEnviroment class is responsible for managing the database enviroment witch includes localization and synchronization. It also makes queue names accessible.
- *
+ * BDBEnviroment class is responsible for managing the database enviroment witch includes localization and synchronization. It also makes queue names accessible.
+ * 
  */
 
 public class BDBEnviroment

@@ -19,7 +19,7 @@ import pt.com.gcs.conf.GcsInfo;
 
 /**
  * ErrorHandler extends MINA ExceptionMonitor. It is used to deal with uncaught exceptions.
- *
+ * 
  */
 
 public class ErrorHandler extends ExceptionMonitor

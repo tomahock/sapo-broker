@@ -3,8 +3,8 @@ package pt.com.broker.auth;
 import java.util.List;
 
 /**
- * AndPredicate represents a set of predicates. 
- *
+ * AndPredicate represents a set of predicates.
+ * 
  */
 
 public class AndPredicate implements AclPredicate

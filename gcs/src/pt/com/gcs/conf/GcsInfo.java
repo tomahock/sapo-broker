@@ -20,7 +20,7 @@ import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 
 /**
  * GcsInfo contains several information about the agent.
- *
+ * 
  */
 public class GcsInfo
 {
@@ -32,7 +32,8 @@ public class GcsInfo
 
 	/**
 	 * Agent's IP
-	 * @return A String with agent's IP. 
+	 * 
+	 * @return A String with agent's IP.
 	 */
 	public static String getAgentHost()
 	{
@@ -47,7 +48,8 @@ public class GcsInfo
 
 	/**
 	 * Agent's name
-	 * @return Agent's name. 
+	 * 
+	 * @return Agent's name.
 	 */
 	public static String getAgentName()
 	{
@@ -62,6 +64,7 @@ public class GcsInfo
 
 	/**
 	 * Agent's TCP port used for inter-agent communication.
+	 * 
 	 * @return TCP port
 	 */
 	public static int getAgentPort()
@@ -69,9 +72,10 @@ public class GcsInfo
 		int iprop = instance.conf.getNet().getPort();
 		return iprop;
 	}
-	
+
 	/**
-	 * Base directory to store messages persistently. 
+	 * Base directory to store messages persistently.
+	 * 
 	 * @return Base directory location
 	 */
 	public static String getBasePersistentDirectory()
@@ -91,6 +95,7 @@ public class GcsInfo
 
 	/**
 	 * A delay time (in milliseconds) that allows broker peers to detect new producers and make sure that they are ready to receive messages. Valid values: Positive integer Default value: 100
+	 * 
 	 * @return A delay time in milliseconds
 	 */
 	public static int getInitialDelay()
@@ -101,6 +106,7 @@ public class GcsInfo
 
 	/**
 	 * Configuration version.
+	 * 
 	 * @return Configuration version
 	 */
 	public static String getConfigVersion()
@@ -111,6 +117,7 @@ public class GcsInfo
 
 	/**
 	 * Global configuration file location.
+	 * 
 	 * @return Global configuration file location
 	 */
 	public static String getGlobalConfigFilePath()
@@ -141,7 +148,7 @@ public class GcsInfo
 
 			File f = new File(filePath);
 			boolean b = f.exists();
-			if(!b)
+			if (!b)
 			{
 				log.error("Agent configuration file missing - " + filePath);
 				Shutdown.now();
@@ -158,6 +165,7 @@ public class GcsInfo
 
 	/**
 	 * UDP port.
+	 * 
 	 * @return UDP port
 	 */
 	public static int getBrokerUdpPort()
@@ -168,6 +176,7 @@ public class GcsInfo
 
 	/**
 	 * HTTP port.
+	 * 
 	 * @return HTTP port
 	 */
 	public static int getBrokerHttpPort()
@@ -177,7 +186,8 @@ public class GcsInfo
 	}
 
 	/**
-	 * Broker TCP port (used by clients). 
+	 * Broker TCP port (used by clients).
+	 * 
 	 * @return A TCP port
 	 */
 	public static int getBrokerPort()
@@ -187,7 +197,8 @@ public class GcsInfo
 	}
 
 	/**
-	 * Broker legacy TCP port (used by clients). Used for backward compatibility. 
+	 * Broker legacy TCP port (used by clients). Used for backward compatibility.
+	 * 
 	 * @return A TCP port
 	 */
 	public static int getBrokerLegacyPort()
@@ -198,15 +209,17 @@ public class GcsInfo
 
 	/**
 	 * Is Dropbox enabled.
+	 * 
 	 * @return <code>true</code> if it is enabled <code>false</code> otherwise
 	 */
 	public static boolean isDropboxEnabled()
 	{
 		return instance.conf.getMessaging().getDropbox().isEnabled();
 	}
-	
+
 	/**
 	 * Dropbox directory.
+	 * 
 	 * @return Dropbox directory
 	 */
 	public static String getDropBoxDir()
@@ -216,6 +229,7 @@ public class GcsInfo
 
 	/**
 	 * Interval to check for new messages.
+	 * 
 	 * @return An interval in seconds
 	 */
 	public static int getDropBoxCheckInterval()
@@ -227,6 +241,7 @@ public class GcsInfo
 
 	/**
 	 * Should access control be used? Determined by the existence of security policies.
+	 * 
 	 * @return <code>true</code> if access control is to be used <code>false</code> otherwise
 	 */
 	public static boolean useAccessControl()
@@ -236,6 +251,7 @@ public class GcsInfo
 
 	/**
 	 * Security policies.
+	 * 
 	 * @return Security policies
 	 */
 	public static BrokerSecurityPolicy getSecurityPolicies()
@@ -247,6 +263,7 @@ public class GcsInfo
 
 	/**
 	 * Should the SSL port be open? Determined by the existence of the respective configuration element.
+	 * 
 	 * @return <code>true</code> if SSL is to be used <code>false</code> otherwise
 	 */
 	public static boolean createSSLInterface()
@@ -256,6 +273,7 @@ public class GcsInfo
 
 	/**
 	 * SSL Port
+	 * 
 	 * @return A TCP port
 	 */
 	public static int getBrokerSSLPort()
@@ -272,6 +290,7 @@ public class GcsInfo
 
 	/**
 	 * Keystore containing agent's key pair.
+	 * 
 	 * @return KeyStore file location
 	 */
 	public static String getKeystoreLocation()
@@ -283,7 +302,8 @@ public class GcsInfo
 
 	/**
 	 * Keystore password.
-	 * @return Keystore password 
+	 * 
+	 * @return Keystore password
 	 */
 	public static String getKeystorePassword()
 	{
@@ -294,7 +314,8 @@ public class GcsInfo
 
 	/**
 	 * Private key password.
-	 * @return Private key password 
+	 * 
+	 * @return Private key password
 	 */
 	public static String getKeyPassword()
 	{
@@ -307,54 +328,63 @@ public class GcsInfo
 
 	/**
 	 * Authentication providers.
+	 * 
 	 * @return A map with authentication providers
 	 */
 	public static Map<String, ProviderInfo> getAuthenticationProviders()
 	{
 		return GlobalConfig.getAuthenticationProviders();
 	}
+
 	/**
 	 * Credential validator providers.
+	 * 
 	 * @return A map with credential validator providers
 	 */
 	public static Map<String, ProviderInfo> getCredentialValidatorProviders()
 	{
 		return GlobalConfig.getCredentialValidatorProviders();
 	}
-	
-	
+
 	// Message related properties
 	/**
 	 * Maximum message size.
+	 * 
 	 * @return Maximum number of bytes per message
 	 */
 	public static int getMessageMaxSize()
 	{
 		return GlobalConfig.getMsgMaxSize();
 	}
+
 	/**
 	 * Maximum number of queues.
+	 * 
 	 * @return Maximum number of queues
 	 */
 	public static int getMaxQueues()
 	{
 		return GlobalConfig.getMaxQueues();
 	}
+
 	/**
 	 * Time during witch a message is stored.
+	 * 
 	 * @return Time in milliseconds
 	 */
 	public static long getMessageStorageTime()
 	{
-		return  GlobalConfig.getMaxStoreTime();
+		return GlobalConfig.getMaxStoreTime();
 	}
+
 	/**
 	 * Maximum distinct subscriptions.
+	 * 
 	 * @return Maximum distinct subscriptions
 	 */
 	public static int getMaxDistinctSubscriptions()
 	{
 		return GlobalConfig.getMaxDistinctSubscriptions();
 	}
-	
+
 }

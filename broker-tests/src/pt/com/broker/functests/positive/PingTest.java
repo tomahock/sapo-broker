@@ -17,7 +17,8 @@ public class PingTest extends BrokerTest
 	@Override
 	protected void build() throws Throwable
 	{
-		setAction(new Action("Ping", "Client"){
+		setAction(new Action("Ping", "Client")
+		{
 
 			@Override
 			public Step run() throws Exception
@@ -25,7 +26,7 @@ public class PingTest extends BrokerTest
 				try
 				{
 					BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
-				
+
 					NetPong pong = bk.checkStatus();
 
 					bk.close();
@@ -39,7 +40,7 @@ public class PingTest extends BrokerTest
 				}
 				return this;
 			}
-			
+
 		});
 	}
 

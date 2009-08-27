@@ -69,7 +69,7 @@ public abstract class Test
 			return true;
 		}
 		try
-		{	
+		{
 			log.info("Building test - " + getName());
 			build();
 
@@ -91,7 +91,7 @@ public abstract class Test
 			do
 			{
 				executionResults = executer.invokeAll(activities, getTimeout(), TimeUnit.MILLISECONDS);
-				
+
 				for (Future<Step> executionResult : executionResults)
 				{
 					Step step = executionResult.get();
@@ -144,11 +144,11 @@ public abstract class Test
 				}
 			}
 		}
-		if( result )
+		if (result)
 			testResults.addPositiveTest();
 		else
 			testResults.addFailedTest(getName());
-		
+
 		return result;
 	}
 

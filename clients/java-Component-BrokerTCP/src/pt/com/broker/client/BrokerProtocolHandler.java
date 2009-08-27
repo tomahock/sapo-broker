@@ -23,8 +23,8 @@ import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.ActionType;
 
 /**
- * BrokerProtocolHandler extends ProtocolHandler defining protocol aspects such as message handling (including errors),  message encoding/decoding and on failure behavior. 
- *
+ * BrokerProtocolHandler extends ProtocolHandler defining protocol aspects such as message handling (including errors), message encoding/decoding and on failure behavior.
+ * 
  */
 
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
@@ -44,7 +44,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	private short proto_type = 1;
 
 	private HostInfo hostInfo = null;
-	
+
 	private volatile int numberOfTries = DEFAULT_MAX_NUMBER_OF_TRIES;
 
 	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
@@ -137,28 +137,27 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 					this.connector.connect(getHostInfo(), newConnectionVersion);
 
 					this.brokerClient.setState(BrokerClientState.OK);
-					
+
 					// READ THREADS
 					start();
-					
+
 					// AUTH
-					if( this.brokerClient instanceof SslBrokerClient)
+					if (this.brokerClient instanceof SslBrokerClient)
 					{
 						SslBrokerClient sslClient = (SslBrokerClient) this.brokerClient;
 						if (sslClient.isAuthenticationRequired())
 						{
 							this.brokerClient.setState(BrokerClientState.AUTH);
-							if( sslClient.hasCredentialsProvider())
+							if (sslClient.hasCredentialsProvider())
 							{
 								sslClient.renewCredentials();
 							}
 							sslClient.authenticateClient();
 							this.brokerClient.setState(BrokerClientState.OK);
 						}
-						
+
 					}
 
-					
 					// Send subs
 					onConnectionOpen();
 
@@ -168,7 +167,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 				}
 				catch (Throwable t)
 				{
-					log.error("Failed to reconnect to agent " + getHostInfo().getHostname() + ":" + getHostInfo().getPort() );
+					log.error("Failed to reconnect to agent " + getHostInfo().getHostname() + ":" + getHostInfo().getPort());
 					Sleep.time((++count) * 500);
 				}
 				setHostInfo(brokerClient.getHostInfo());
@@ -222,28 +221,28 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			break;
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
-			
-			if( fault.getCode().equals ( NetFault.PollTimeoutErrorMessage.getAction().getFaultMessage().getCode() ) )
+
+			if (fault.getCode().equals(NetFault.PollTimeoutErrorMessage.getAction().getFaultMessage().getCode()))
 			{
 				String destination = fault.getDetail();
-				
+
 				SyncConsumer syncConsumer = SyncConsumerList.get(destination);
 
 				if (syncConsumer.count() > 0)
 				{
 					syncConsumer.offer(SyncConsumer.UnblockNotification);
 					syncConsumer.decrement();
-					if( fault.getActionId() != null)
+					if (fault.getActionId() != null)
 						PendingAcceptRequestsManager.messageFailed(fault);
-						
+
 					return;
 				}
 			}
-			
-			if( fault.getActionId() != null)
+
+			if (fault.getActionId() != null)
 			{
 				// Give pending requests a change to process error messages
-				if( PendingAcceptRequestsManager.messageFailed(fault) )
+				if (PendingAcceptRequestsManager.messageFailed(fault))
 					return;
 			}
 			brokerClient.getErrorListener().onFault(fault);

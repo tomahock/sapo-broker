@@ -24,7 +24,7 @@ import pt.com.gcs.conf.GcsInfo;
 
 /**
  * BrokerServer is responsible for initializing client's TCP interface (MINA infrastructure).
- *
+ * 
  */
 
 public class BrokerServer

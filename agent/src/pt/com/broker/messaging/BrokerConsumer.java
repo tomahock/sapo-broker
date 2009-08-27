@@ -10,7 +10,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * BrokerConsumer is responsible for managing client subscriptions.
- *
+ * 
  */
 
 public class BrokerConsumer

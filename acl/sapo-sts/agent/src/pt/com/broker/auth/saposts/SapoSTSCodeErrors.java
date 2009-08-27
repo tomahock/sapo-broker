@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 /**
  * Error codes returned by Sapo STS and associated messages.
- *
+ * 
  */
 
 public class SapoSTSCodeErrors

@@ -20,7 +20,7 @@ public class InvalidMessageTest extends GenericNegativeTest
 	{
 		super("Invalid Message - Ping with bits inverted");
 		setDataToSend(buildMessage());
-		
+
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
 	}
@@ -49,13 +49,13 @@ public class InvalidMessageTest extends GenericNegativeTest
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-		
+
 		try
 		{
 			byte[] headerWithoutSize = new byte[] { 0, (byte) getEncodingProtocolType().ordinal(), 0, 0 };
 
 			byte[] rawData = encoder.marshal(message);
-			
+
 			bitInvert(rawData, 0, rawData.length);
 
 			dataOutputStream.write(headerWithoutSize);
@@ -68,7 +68,7 @@ public class InvalidMessageTest extends GenericNegativeTest
 		}
 
 		byte[] byteArray = byteArrayOutputStream.toByteArray();
-		
+
 		return byteArray;
 	}
 

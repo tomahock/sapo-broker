@@ -20,7 +20,7 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 	public TimeoutPollTest()
 	{
 		super("Time out poll test");
-		
+
 		setFaultCode("2005");
 		setFaultMessage("Message poll timeout");
 	}
@@ -28,7 +28,8 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 	@Override
 	protected void build() throws Throwable
 	{
-		setAction(new Action("Poll Test", "Producer"){
+		setAction(new Action("Poll Test", "Producer")
+		{
 
 			@Override
 			public Step run() throws Exception
@@ -37,9 +38,8 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 				setSucess(true);
 				return this;
 			}
-		}
-		);
-		
+		});
+
 		addConsequences(new Consequence("Poll Test", "Consumer")
 		{
 			@Override
@@ -52,7 +52,6 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 
 					bk.poll(queueName, 500, null);
 
-
 					bk.close();
 
 				}
@@ -60,7 +59,7 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 				{
 					success = true;
 				}
-				catch( Throwable t)
+				catch (Throwable t)
 				{
 				}
 				setDone(true);
@@ -71,8 +70,7 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 		});
 
 	}
-	
-	
+
 	@Override
 	public boolean skipTest()
 	{

@@ -13,11 +13,11 @@ public class AccessDeniedTest extends GenericNetMessageNegativeTest
 	public AccessDeniedTest()
 	{
 		super("Access Denied");
-		
+
 		NetBrokerMessage brokerMsg = new NetBrokerMessage("This is the payload".getBytes());
 		NetPublish publish = new NetPublish("/system/foo", DestinationType.TOPIC, brokerMsg);
 		NetAction action = new NetAction(ActionType.PUBLISH);
-		action.setPublishMessage(publish);		
+		action.setPublishMessage(publish);
 		NetMessage message = new NetMessage(action);
 		setMessage(message);
 

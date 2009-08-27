@@ -41,8 +41,8 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * 
- * BaseBrokerClient is the base class for Sapo-Broker Java client libraries. It implements all basic client functionality. 
- *
+ * BaseBrokerClient is the base class for Sapo-Broker Java client libraries. It implements all basic client functionality.
+ * 
  */
 
 public abstract class BaseBrokerClient
@@ -70,7 +70,7 @@ public abstract class BaseBrokerClient
 
 	protected BrokerProtocolHandler _netHandler;
 	protected CircularContainer<HostInfo> hosts;
-	
+
 	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
 	{
 		public void onFault(pt.com.broker.types.NetFault fault)
@@ -102,8 +102,11 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Constructs BaseBrokerClient.
-	 * @param host Host name or IP.
-	 * @param portNumber TCP ou SSL port number
+	 * 
+	 * @param host
+	 *            Host name or IP.
+	 * @param portNumber
+	 *            TCP ou SSL port number
 	 */
 	public BaseBrokerClient(String host, int portNumber) throws Throwable
 	{
@@ -112,9 +115,13 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Constructs BaseBrokerClient.
-	 * @param host Host name or IP.
-	 * @param portNumber TCP ou SSL port number
-	 * @param appName The client application name.
+	 * 
+	 * @param host
+	 *            Host name or IP.
+	 * @param portNumber
+	 *            TCP ou SSL port number
+	 * @param appName
+	 *            The client application name.
 	 */
 	public BaseBrokerClient(String host, int portNumber, String appName) throws Throwable
 	{
@@ -123,10 +130,15 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Constructs BaseBrokerClient.
-	 * @param host Host name or IP.
-	 * @param portNumber TCP ou SSL port number
-	 * @param appName The client application name.
-	 * @param ptype The encoding protocol type that should be used.
+	 * 
+	 * @param host
+	 *            Host name or IP.
+	 * @param portNumber
+	 *            TCP ou SSL port number
+	 * @param appName
+	 *            The client application name.
+	 * @param ptype
+	 *            The encoding protocol type that should be used.
 	 */
 	public BaseBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
 	{
@@ -135,18 +147,25 @@ public abstract class BaseBrokerClient
 		_appName = appName;
 		protocolType = ptype;
 	}
+
 	/**
 	 * Constructs BaseBrokerClient.
-	 * @param hosts A collection of HostInfo objects
+	 * 
+	 * @param hosts
+	 *            A collection of HostInfo objects
 	 */
 	public BaseBrokerClient(Collection<HostInfo> hosts) throws Throwable
 	{
 		this(hosts, "BrokerClient");
 	}
+
 	/**
 	 * Constructs BaseBrokerClient.
-	 * @param hosts A collection of HostInfo objects
-	 * @param appName The client application name.
+	 * 
+	 * @param hosts
+	 *            A collection of HostInfo objects
+	 * @param appName
+	 *            The client application name.
 	 */
 	public BaseBrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable
 	{
@@ -155,9 +174,13 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Constructs BaseBrokerClient.
-	 * @param hosts A collection of HostInfo objects
-	 * @param appName The client application name.
-	 * @param ptype The encoding protocol type that should be used.
+	 * 
+	 * @param hosts
+	 *            A collection of HostInfo objects
+	 * @param appName
+	 *            The client application name.
+	 * @param ptype
+	 *            The encoding protocol type that should be used.
 	 */
 	public BaseBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable
 	{
@@ -170,8 +193,11 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Acknowledges a received message.
-	 * @param notification The received notification message
-	 * @param acceptRequest An AcceptRequest object used handling Accept messages.
+	 * 
+	 * @param notification
+	 *            The received notification message
+	 * @param acceptRequest
+	 *            An AcceptRequest object used handling Accept messages.
 	 */
 	public void acknowledge(NetNotification notification, AcceptRequest acceptRequest) throws Throwable
 	{
@@ -209,21 +235,27 @@ public abstract class BaseBrokerClient
 			throw new IllegalArgumentException("Can't acknowledge invalid message.");
 		}
 	}
+
 	/**
 	 * Acknowledges a received message.
-	 * @param notification The received notification message
+	 * 
+	 * @param notification
+	 *            The received notification message
 	 */
 	public void acknowledge(NetNotification notification) throws Throwable
 	{
 		acknowledge(notification, null);
 	}
 
-
 	/**
-	 * Create a new asynchronous subscription. 
-	 * @param subscribe A subscription message.
-	 * @param listener A BrokerListener instance.
-	 * @param acceptRequest An AcceptRequest object used handling Accept messages.
+	 * Create a new asynchronous subscription.
+	 * 
+	 * @param subscribe
+	 *            A subscription message.
+	 * @param listener
+	 *            A BrokerListener instance.
+	 * @param acceptRequest
+	 *            An AcceptRequest object used handling Accept messages.
 	 */
 	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener, AcceptRequest acceptRequest) throws Throwable
 	{
@@ -261,10 +293,14 @@ public abstract class BaseBrokerClient
 	}
 
 	/**
-	 * Create a new asynchronous subscription. 
-	 * @param subscribe A subscription message.
-	 * @param listener A BrokerListener instance.
-	 * @param acceptRequest An AcceptRequest object used handling Accept messages.
+	 * Create a new asynchronous subscription.
+	 * 
+	 * @param subscribe
+	 *            A subscription message.
+	 * @param listener
+	 *            A BrokerListener instance.
+	 * @param acceptRequest
+	 *            An AcceptRequest object used handling Accept messages.
 	 */
 	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener) throws Throwable
 	{
@@ -285,13 +321,13 @@ public abstract class BaseBrokerClient
 			getNetHandler().sendMessage(msg);
 			log.info("Reconnected async consumer for '{}'", subscription.getDestination());
 		}
-		synchronized(_syncSubscriptions)
+		synchronized (_syncSubscriptions)
 		{
-			for(String queueName : _syncSubscriptions.keySet())
+			for (String queueName : _syncSubscriptions.keySet())
 			{
 				getNetHandler().sendMessage(_syncSubscriptions.get(queueName));
 			}
-			
+
 		}
 	}
 
@@ -303,8 +339,9 @@ public abstract class BaseBrokerClient
 	}
 
 	/**
-	 * Checks agent's liveness by sending a Ping message. Waits synchronously by the response. 
-	 * @return A <code>Pong</code> message or <code>null</code> if the agent dosen't answer  in 2 seconds;
+	 * Checks agent's liveness by sending a Ping message. Waits synchronously by the response.
+	 * 
+	 * @return A <code>Pong</code> message or <code>null</code> if the agent dosen't answer in 2 seconds;
 	 */
 	public NetPong checkStatus() throws Throwable
 	{
@@ -345,9 +382,13 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Publishes a message to a queue.
-	 * @param brokerMessage The Broker message containing the payload.
-	 * @param destinationName The destination name (e.g. /queue/foo).
-	 * @param acceptRequest An AcceptRequest object used handling Accept messages.
+	 * 
+	 * @param brokerMessage
+	 *            The Broker message containing the payload.
+	 * @param destinationName
+	 *            The destination name (e.g. /queue/foo).
+	 * @param acceptRequest
+	 *            An AcceptRequest object used handling Accept messages.
 	 */
 	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName, AcceptRequest acceptRequest)
 	{
@@ -381,10 +422,14 @@ public abstract class BaseBrokerClient
 			throw new IllegalArgumentException("Mal-formed Enqueue request");
 		}
 	}
+
 	/**
 	 * Publishes a message to a queue.
-	 * @param brokerMessage The Broker message containing the payload.
-	 * @param destinationName The destination name (e.g. /queue/foo).
+	 * 
+	 * @param brokerMessage
+	 *            The Broker message containing the payload.
+	 * @param destinationName
+	 *            The destination name (e.g. /queue/foo).
 	 */
 	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName)
 	{
@@ -395,7 +440,7 @@ public abstract class BaseBrokerClient
 	{
 		_bstatus.offer(pong);
 	}
-	
+
 	protected HostInfo getHostInfo()
 	{
 		return hosts.get();
@@ -403,7 +448,9 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Add information of another host. Used for failover.
-	 * @param hostInfo Host information.
+	 * 
+	 * @param hostInfo
+	 *            Host information.
 	 */
 	public void addHostInfo(HostInfo hostInfo)
 	{
@@ -434,19 +481,22 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Obtain a queue message synchronously.
-	 * @param queueName Name of the queue from where to retrieve a message
-	 * @param timeout Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown.
-	 * @param acceptRequest An AcceptRequest object used handling Accept messages.
-	 * @return A notification containing the queue message.  
+	 * 
+	 * @param queueName
+	 *            Name of the queue from where to retrieve a message
+	 * @param timeout
+	 *            Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown.
+	 * @param acceptRequest
+	 *            An AcceptRequest object used handling Accept messages.
+	 * @return A notification containing the queue message.
 	 */
 	public NetNotification poll(String queueName, long timeout, AcceptRequest acceptRequest) throws Throwable
 	{
-		if( StringUtils.isBlank(queueName) )
+		if (StringUtils.isBlank(queueName))
 			throw new IllegalArgumentException("Mal-formed Poll request. queueName is blank.");
-		if( timeout <= 0 )
+		if (timeout <= 0)
 			throw new IllegalArgumentException("Invalid timeout value");
-		
-		
+
 		NetPoll poll = new NetPoll(queueName, timeout);
 		if (acceptRequest != null)
 		{
@@ -459,42 +509,47 @@ public abstract class BaseBrokerClient
 		NetMessage message = buildMessage(action);
 		getNetHandler().sendMessage(message);
 
-		synchronized(_syncSubscriptions)
+		synchronized (_syncSubscriptions)
 		{
-			if(_syncSubscriptions.containsKey(queueName))
+			if (_syncSubscriptions.containsKey(queueName))
 				throw new IllegalArgumentException("Queue " + queueName + " has already a poll runnig.");
 			_syncSubscriptions.put(queueName, message);
 		}
 		SyncConsumer sc = SyncConsumerList.get(queueName);
 		sc.increment();
-		
+
 		NetNotification m = sc.take();
-		synchronized(_syncSubscriptions)
+		synchronized (_syncSubscriptions)
 		{
 			_syncSubscriptions.remove(queueName);
 		}
-		if( m == SyncConsumer.UnblockNotification)
+		if (m == SyncConsumer.UnblockNotification)
 			throw new TimeoutException();
 		return m;
-		
 
 	}
 
 	/**
 	 * Obtain a queue message synchronously.
-	 * @param queueName Name of the queue from where to retrieve a message
-	 * @return A notification containing the queue message.  
+	 * 
+	 * @param queueName
+	 *            Name of the queue from where to retrieve a message
+	 * @return A notification containing the queue message.
 	 */
 	public NetNotification poll(String queueName) throws Throwable
 	{
-		return poll(queueName, Long.MAX_VALUE/2, null);
+		return poll(queueName, Long.MAX_VALUE / 2, null);
 	}
 
 	/**
 	 * Publish a message to a topic.
-	 * @param brokerMessage The Broker message containing the payload.
-	 * @param destination The destination name (e.g. /topic/foo).
-	 * @param acceptRequest An AcceptRequest object used handling Accept messages.
+	 * 
+	 * @param brokerMessage
+	 *            The Broker message containing the payload.
+	 * @param destination
+	 *            The destination name (e.g. /topic/foo).
+	 * @param acceptRequest
+	 *            An AcceptRequest object used handling Accept messages.
 	 */
 	public void publishMessage(NetBrokerMessage brokerMessage, String destination, AcceptRequest acceptRequest)
 	{
@@ -526,10 +581,14 @@ public abstract class BaseBrokerClient
 			throw new IllegalArgumentException("Mal-formed Publish request");
 		}
 	}
+
 	/**
 	 * Publish a message to a topic.
-	 * @param brokerMessage The Broker message containing the payload.
-	 * @param destination The destination name (e.g. /topic/foo).
+	 * 
+	 * @param brokerMessage
+	 *            The Broker message containing the payload.
+	 * @param destination
+	 *            The destination name (e.g. /topic/foo).
 	 */
 	public void publishMessage(NetBrokerMessage brokerMessage, String destination)
 	{
@@ -538,9 +597,13 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Cancel a previous subscription.
-	 * @param destinationType The destination type (TOPIC ou QUEUE).
-	 * @param destinationName The destination name (e.g., /topic/.*).
-	 * @param acceptRequest An AcceptRequest object used handling Accept messages.
+	 * 
+	 * @param destinationType
+	 *            The destination type (TOPIC ou QUEUE).
+	 * @param destinationName
+	 *            The destination name (e.g., /topic/.*).
+	 * @param acceptRequest
+	 *            An AcceptRequest object used handling Accept messages.
 	 */
 	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName, AcceptRequest acceptRequest) throws Throwable
 	{
@@ -575,11 +638,14 @@ public abstract class BaseBrokerClient
 			throw new IllegalArgumentException("Mal-formed Unsubscribe request");
 		}
 	}
-	
+
 	/**
 	 * Cancel a previous subscription.
-	 * @param destinationType The destination type (TOPIC ou QUEUE).
-	 * @param destinationName The destination name (e.g., /topic/.*).
+	 * 
+	 * @param destinationType
+	 *            The destination type (TOPIC ou QUEUE).
+	 * @param destinationName
+	 *            The destination name (e.g., /topic/.*).
 	 */
 	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName) throws Throwable
 	{
@@ -602,6 +668,7 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Gets the default BrokerErrorListner witch prints out every error message.
+	 * 
 	 * @return A BrokerErrorListenter object.
 	 */
 	public static BrokerErrorListenter getDefaultErrorListener()
@@ -611,7 +678,9 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Sets a BrokerErrorListenter.
-	 * @param errorListener A BrokerErrorListenter object.
+	 * 
+	 * @param errorListener
+	 *            A BrokerErrorListenter object.
 	 */
 	public void setErrorListener(BrokerErrorListenter errorListener)
 	{
@@ -620,6 +689,7 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Gets current BrokerErrorListenter.
+	 * 
 	 * @return errorListener A BrokerErrorListenter object.
 	 */
 	public BrokerErrorListenter getErrorListener()
@@ -629,6 +699,7 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Gets client state.
+	 * 
 	 * @return
 	 */
 	public BrokerClientState getState()
@@ -651,7 +722,8 @@ public abstract class BaseBrokerClient
 	}
 
 	/**
-	 * Set encoding protocol type. 
+	 * Set encoding protocol type.
+	 * 
 	 * @param portocolType
 	 */
 	public void setPortocolType(NetProtocolType portocolType)
@@ -661,6 +733,7 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Get the encoding protocol type.
+	 * 
 	 * @return
 	 */
 	public NetProtocolType getPortocolType()
@@ -669,7 +742,8 @@ public abstract class BaseBrokerClient
 	}
 
 	/**
-	 * Set the number of retries (used when a connection to the agent is lost). Default is forever.  
+	 * Set the number of retries (used when a connection to the agent is lost). Default is forever.
+	 * 
 	 * @param numberOfTries
 	 */
 	public void setNumberOfTries(int numberOfTries)
@@ -679,13 +753,14 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * Get the number of retries.
+	 * 
 	 * @return
 	 */
 	public int getNumberOfTries()
 	{
 		return this._netHandler.getNumberOfTries();
 	}
-	
+
 	// public static void saveToDropbox(String dropboxPath, BrokerMessage
 	// brkmsg, DestinationType dtype) throws Throwable
 	// {

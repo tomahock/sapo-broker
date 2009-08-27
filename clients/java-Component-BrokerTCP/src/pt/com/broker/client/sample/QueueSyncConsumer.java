@@ -12,7 +12,7 @@ import pt.com.broker.types.NetNotification;
 
 /**
  * Queue consumer sample using Poll method - synchronous consumer.
- *
+ * 
  */
 public class QueueSyncConsumer
 {
@@ -39,13 +39,14 @@ public class QueueSyncConsumer
 	}
 
 	volatile int count = 0;
+
 	private void receiveLoop(BrokerClient bk) throws Throwable
 	{
 		while (true)
 		{
 			NetNotification m = bk.poll(dname);
 			log.info(String.format("%s -> Received Message: %s", counter.incrementAndGet(), new String(m.getMessage().getPayload())));
-			if((++count)%50 != 0) // 2% missed acks
+			if ((++count) % 50 != 0) // 2% missed acks
 				bk.acknowledge(m);
 		}
 	}

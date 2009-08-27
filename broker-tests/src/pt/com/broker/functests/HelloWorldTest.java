@@ -2,10 +2,11 @@ package pt.com.broker.functests;
 
 public class HelloWorldTest extends Test
 {
-	public HelloWorldTest(){
+	public HelloWorldTest()
+	{
 		super("Hello World");
 	}
-	
+
 	@Override
 	protected void build()
 	{
@@ -75,4 +76,3 @@ public class HelloWorldTest extends Test
 		});
 	}
 }
-

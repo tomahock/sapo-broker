@@ -10,7 +10,7 @@ public class VirtualQueueNameSpecifiedRemote extends MultipleGenericVirtualQueue
 	{
 		super("VirtualQueue Remote- Topic name specified");
 	}
-	
+
 	protected void addConsumers()
 	{
 		try
@@ -29,5 +29,5 @@ public class VirtualQueueNameSpecifiedRemote extends MultipleGenericVirtualQueue
 		}
 
 	}
-	
+
 }

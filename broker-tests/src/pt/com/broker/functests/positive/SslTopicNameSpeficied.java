@@ -5,14 +5,15 @@ import pt.com.broker.functests.helpers.GenericPubSubTest;
 
 public class SslTopicNameSpeficied extends GenericPubSubTest
 {
-	public SslTopicNameSpeficied(){
+	public SslTopicNameSpeficied()
+	{
 		this("PubSub - SSL Topic name specified");
 	}
-	
+
 	public SslTopicNameSpeficied(String testName)
 	{
 		super(testName);
-		//TODO: save these params in configuration
+		// TODO: save these params in configuration
 		String keyStoreLocation = "[location]";
 		String keystorePassword = "[password]";
 		SslBrokerClient bk = null;
@@ -24,7 +25,7 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 		{
 			super.setFailure(e);
 		}
-		setInfoConsumer(bk );
+		setInfoConsumer(bk);
 	}
-	
+
 }

@@ -12,49 +12,50 @@ import pt.com.broker.types.NetProtocolType;
 
 public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 {
-	public AuthenticationTopicSslTopicNameSpecified(){
+	public AuthenticationTopicSslTopicNameSpecified()
+	{
 		this("PubSub - Authentication Topic name specified");
 	}
-	
+
 	public AuthenticationTopicSslTopicNameSpecified(String testName)
 	{
 		super(testName);
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
-		
-		//TODO: save these params in configuration
+
+		// TODO: save these params in configuration
 		String keyStoreLocation = "[location]";
 		String keystorePassword = "[password]";
-		
+
 		String stsLocation = "https://services.sapo.pt/sts/";
 		String stsUsername = "[username]";
 		String stsPassword = "[password]";
-		
+
 		SslBrokerClient bk = null;
 		try
 		{
 			CredentialsProviderFactory.addProvider("SapoSTS", new SapoSTSProvider());
 			SapoSTSParameterProvider.Parameters parameters = new SapoSTSParameterProvider.Parameters(stsLocation);
 			SapoSTSParameterProvider.setSTSParameters(parameters);
-			
+
 			bk = new SslBrokerClient("127.0.0.1", 3390, "tcp://mycompany.com/mysniffer", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
-			
+
 			AuthInfo clientAuthInfo = new AuthInfo(stsUsername, stsPassword);
 			clientAuthInfo.setUserAuthenticationType("SapoSTS");
 
 			AuthInfo stsClientCredentials = CredentialsProviderFactory.getProvider("SapoSTS").getCredentials(clientAuthInfo);
-			
+
 			bk.setAuthenticationCredentials(stsClientCredentials);
-			
+
 			bk.authenticateClient();
 		}
 		catch (Throwable e)
 		{
 			super.setFailure(e);
 		}
-		setInfoConsumer(bk );
+		setInfoConsumer(bk);
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

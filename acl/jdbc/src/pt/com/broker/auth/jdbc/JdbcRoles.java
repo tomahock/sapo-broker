@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  JdbcRoles deals with database access.
- *
+ * JdbcRoles deals with database access.
+ * 
  */
 
 public class JdbcRoles
@@ -55,10 +55,9 @@ public class JdbcRoles
 		Connection connection = getConnection();
 
 		PreparedStatement statement = connection.prepareStatement("select count(*) from users where (user_name= ? AND user_password= ?)");
-		
+
 		statement.setString(1, username);
 		statement.setString(2, password);
-		
 
 		ResultSet resultSet = statement.executeQuery();
 		resultSet.next();
@@ -69,7 +68,7 @@ public class JdbcRoles
 		statement.close();
 
 		connection.close();
-		
+
 		return count == 1;
 	}
 
@@ -78,13 +77,13 @@ public class JdbcRoles
 		Connection connection = getConnection();
 
 		PreparedStatement statement = connection.prepareStatement("select user_role from users join user_roles on (users.user_id = user_roles.user_id) where (users.user_name = ?)");
-		
+
 		statement.setString(1, username);
-				
+
 		ResultSet resultSet = statement.executeQuery();
 
 		List<String> roles = new ArrayList<String>();
-		
+
 		while (resultSet.next())
 		{
 			roles.add(resultSet.getString(1).trim());

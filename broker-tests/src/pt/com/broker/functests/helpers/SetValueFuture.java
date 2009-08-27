@@ -7,64 +7,64 @@ import java.util.concurrent.TimeoutException;
 
 public class SetValueFuture<T> implements Future<T>
 {
-		private T value = null;
-		private Object syncObj = new Object();
+	private T value = null;
+	private Object syncObj = new Object();
 
-		@Override
-		public boolean cancel(boolean mayInterruptIfRunning)
-		{
-			return false;
-		}
+	@Override
+	public boolean cancel(boolean mayInterruptIfRunning)
+	{
+		return false;
+	}
 
-		@Override
-		public T get() throws InterruptedException, ExecutionException
+	@Override
+	public T get() throws InterruptedException, ExecutionException
+	{
+		synchronized (syncObj)
 		{
-			synchronized (syncObj)
+			if (value == null)
 			{
-				if (value == null)
-				{
-					syncObj.wait();
-				}
-				return value;
+				syncObj.wait();
 			}
+			return value;
 		}
+	}
 
-		@Override
-		public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
+	@Override
+	public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
+	{
+		synchronized (syncObj)
 		{
-			synchronized (syncObj)
+			if (value == null)
 			{
-				if (value == null)
-				{
-					syncObj.wait(unit.toMillis(timeout));
-					//TODO: test for timeout. Given object usage it's acceptable not to test... 
-				}
-				return value;
+				syncObj.wait(unit.toMillis(timeout));
+				// TODO: test for timeout. Given object usage it's acceptable not to test...
 			}
+			return value;
 		}
+	}
 
-		@Override
-		public boolean isCancelled()
-		{
-			return false;
-		}
+	@Override
+	public boolean isCancelled()
+	{
+		return false;
+	}
 
-		@Override
-		public boolean isDone()
+	@Override
+	public boolean isDone()
+	{
+		synchronized (syncObj)
 		{
-			synchronized (syncObj)
-			{
-				return value != null;
-			}
+			return value != null;
 		}
+	}
 
-		public void set(T value)
+	public void set(T value)
+	{
+		synchronized (syncObj)
 		{
-			synchronized (syncObj)
-			{
-				this.value = value;
-				syncObj.notifyAll();
-			}
+			this.value = value;
+			syncObj.notifyAll();
 		}
+	}
 
 }

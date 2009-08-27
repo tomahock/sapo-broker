@@ -13,19 +13,19 @@ import pt.com.broker.types.NetMessage;
 public class GenericNetMessageNegativeTest extends GenericNegativeTest
 {
 	private NetMessage message;
-	
+
 	public GenericNetMessageNegativeTest(String testName)
 	{
 		super(testName);
 	}
-	
+
 	@Override
 	protected void build() throws Throwable
 	{
-		setDataToSend( buildMessage() );
+		setDataToSend(buildMessage());
 		super.build();
 	}
-	
+
 	private byte[] buildMessage()
 	{
 		BindingSerializer encoder = null;
@@ -45,13 +45,12 @@ public class GenericNetMessageNegativeTest extends GenericNegativeTest
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-		
+
 		try
 		{
 			byte[] headerWithoutSize = new byte[] { 0, (byte) getEncodingProtocolType().ordinal(), 0, 0 };
 
 			byte[] rawData = encoder.marshal(getMessage());
-
 
 			dataOutputStream.write(headerWithoutSize);
 			dataOutputStream.writeInt(rawData.length);
@@ -64,17 +63,18 @@ public class GenericNetMessageNegativeTest extends GenericNegativeTest
 		}
 
 		byte[] byteArray = byteArrayOutputStream.toByteArray();
-		
+
 		return byteArray;
 	}
-	
+
 	public void setMessage(NetMessage message)
 	{
 		this.message = message;
 	}
+
 	public NetMessage getMessage()
 	{
 		return message;
 	}
-	
+
 }

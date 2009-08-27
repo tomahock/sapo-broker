@@ -7,7 +7,7 @@ import pt.com.broker.auth.AuthInfoValidator;
 
 /**
  * AuthInfoVerifierFactory stores available AuthInfoValidator objects and retrives them by name.
- *
+ * 
  */
 
 public class AuthInfoVerifierFactory

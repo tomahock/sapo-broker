@@ -6,7 +6,7 @@ import pt.com.broker.types.NetPoll;
 
 /**
  * QueuePoller implements Runnable and is responsible for executing a synchronous poll.
- *
+ * 
  */
 public class QueuePoller implements Runnable
 {

@@ -3,8 +3,8 @@ package pt.com.broker.auth;
 import org.w3c.dom.Element;
 
 /**
- * ProviderInfo represents some service provider, such as Authentication Credentials Validator, that is dynamically loaded. 
- *
+ * ProviderInfo represents some service provider, such as Authentication Credentials Validator, that is dynamically loaded.
+ * 
  */
 
 public class ProviderInfo
@@ -40,4 +40,3 @@ public class ProviderInfo
 	}
 
 }
- 

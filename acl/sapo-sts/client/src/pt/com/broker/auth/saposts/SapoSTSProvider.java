@@ -24,10 +24,9 @@ import pt.com.broker.auth.InvalidCredentialsException;
 import pt.com.broker.auth.ProviderInfo;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 
-
 /**
  * SapoSTSProvider implements a credentials provider for Sapo STS.
- *
+ * 
  */
 
 public class SapoSTSProvider implements CredentialsProvider
@@ -36,7 +35,7 @@ public class SapoSTSProvider implements CredentialsProvider
 	private static final Logger log = LoggerFactory.getLogger(SapoSTSProvider.class);
 
 	private static final String tokenTTL = "2:00:00";
-	
+
 	private String providerName = null;
 
 	@Override
@@ -133,7 +132,7 @@ public class SapoSTSProvider implements CredentialsProvider
 	@Override
 	public boolean init(ProviderInfo info)
 	{
-		providerName = info.getName();	
+		providerName = info.getName();
 		return true;
 	}
 

@@ -15,15 +15,17 @@ import org.slf4j.LoggerFactory;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
- *  QueueProcessorList contains references for all active QueueProcessor objects.
- *
+ * QueueProcessorList contains references for all active QueueProcessor objects.
+ * 
  */
 
 public class QueueProcessorList
 {
 
-	public static class MaximumQueuesAllowedReachedException extends Exception{ }
-	
+	public static class MaximumQueuesAllowedReachedException extends Exception
+	{
+	}
+
 	private static final QueueProcessorList instance = new QueueProcessorList();
 
 	private static final Logger log = LoggerFactory.getLogger(QueueProcessorList.class);
@@ -97,8 +99,9 @@ public class QueueProcessorList
 		catch (RuntimeException re)
 		{
 			Throwable rootCause = ErrorAnalyser.findRootCause(re);
-			if( rootCause instanceof MaximumQueuesAllowedReachedException ){
-				throw (MaximumQueuesAllowedReachedException)rootCause;
+			if (rootCause instanceof MaximumQueuesAllowedReachedException)
+			{
+				throw (MaximumQueuesAllowedReachedException) rootCause;
 			}
 		}
 		return null;

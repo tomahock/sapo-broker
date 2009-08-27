@@ -1,8 +1,8 @@
 package pt.com.broker.auth.saposts;
 
 /**
- * SapoSTSParameterProvider stores agent's credentials to Sapo STS (username-password). 
- *
+ * SapoSTSParameterProvider stores agent's credentials to Sapo STS (username-password).
+ * 
  */
 
 public class SapoSTSParameterProvider

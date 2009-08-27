@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * QueueProcessor provides several queue related features, representing each instance a distinct queue. 
- *
+ * QueueProcessor provides several queue related features, representing each instance a distinct queue.
+ * 
  */
 
 public class QueueProcessor
@@ -25,7 +25,7 @@ public class QueueProcessor
 	private final AtomicLong _deliverSequence = new AtomicLong(0L);
 
 	protected final AtomicBoolean emptyQueueInfoDisplay = new AtomicBoolean(false);
-	
+
 	protected final AtomicLong _counter = new AtomicLong(0);
 
 	private final BDBStorage storage;
@@ -40,7 +40,7 @@ public class QueueProcessor
 		_destinationName = destinationName;
 
 		storage = new BDBStorage(this);
-		
+
 		long cnt = storage.count();
 
 		if (cnt == 0)
@@ -88,7 +88,7 @@ public class QueueProcessor
 		if (storage.deleteMessage(msgId))
 		{
 			_counter.decrementAndGet();
-		}	
+		}
 	}
 
 	protected boolean forward(InternalMessage message, boolean preferLocalConsumer) throws IllegalStateException

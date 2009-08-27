@@ -41,7 +41,7 @@ public class Consumer implements Callable<Integer>, BrokerListener
 			throw new Exception(e);
 		}
 	}
-	
+
 	@Override
 	public Integer call() throws Exception
 	{
@@ -61,7 +61,7 @@ public class Consumer implements Callable<Integer>, BrokerListener
 	@Override
 	public void onMessage(NetNotification message)
 	{
-//		System.out.print(".");
+		// System.out.print(".");
 		int val = msgReceived.incrementAndGet();
 		if (val == numberOfMsgToReceive)
 		{

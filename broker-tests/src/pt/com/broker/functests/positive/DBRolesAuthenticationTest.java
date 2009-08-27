@@ -13,22 +13,21 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 public class DBRolesAuthenticationTest extends GenericPubSubTest
 {
-	public DBRolesAuthenticationTest(){
+	public DBRolesAuthenticationTest()
+	{
 		this("PubSub - Database authentication");
 	}
-	
+
 	public DBRolesAuthenticationTest(String testName)
 	{
 		super(testName);
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
-		
-		//TODO: save these params in configuration
+
+		// TODO: save these params in configuration
 		String keyStoreLocation = "[location]";
 		String keystorePassword = "[password]";
 
-		
-		
 		SslBrokerClient bk = null;
 		try
 		{
@@ -41,24 +40,24 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 		}
 		setInfoConsumer(bk);
 	}
-	
+
 	@Override
 	protected void addPrerequisites()
 	{
 		String username = "username";
 		String password = "password";
-		
+
 		try
 		{
 			SslBrokerClient bk = (SslBrokerClient) getInfoConsumer();
-			
+
 			AuthInfo clientAuthInfo = new AuthInfo(username, password);
 			clientAuthInfo.setUserAuthenticationType("BrokerRolesDB");
 
 			bk.setAuthenticationCredentials(clientAuthInfo);
-			
+
 			bk.authenticateClient();
-			
+
 			Sleep.time(1000);
 		}
 		catch (Throwable e)
@@ -66,11 +65,10 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 			super.setFailure(e);
 			return;
 		}
-		
-		
+
 		super.addPrerequisites();
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

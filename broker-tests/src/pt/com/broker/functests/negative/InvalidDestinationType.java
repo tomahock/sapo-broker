@@ -14,18 +14,18 @@ public class InvalidDestinationType extends GenericNetMessageNegativeTest
 	public InvalidDestinationType()
 	{
 		super("Invalid destination type - VirtualQueue");
-		
+
 		NetBrokerMessage brokerMsg = new NetBrokerMessage("This is the payload".getBytes());
 		NetPublish publish = new NetPublish("/topic/foo", DestinationType.VIRTUAL_QUEUE, brokerMsg);
 		NetAction action = new NetAction(ActionType.PUBLISH);
-		action.setPublishMessage(publish);		
+		action.setPublishMessage(publish);
 		NetMessage message = new NetMessage(action);
 		setMessage(message);
 
 		setFaultCode("2002");
 		setFaultMessage("Invalid destination type");
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

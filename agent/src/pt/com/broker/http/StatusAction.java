@@ -10,7 +10,7 @@ import pt.com.http.HttpAction;
 
 /**
  * StatusAction outputs agent state in HTML.
- *
+ * 
  */
 
 public class StatusAction extends HttpAction

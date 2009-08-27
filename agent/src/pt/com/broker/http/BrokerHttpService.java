@@ -7,7 +7,7 @@ import pt.com.http.MinaHttpServer;
 
 /**
  * BrokerServer is responsible for initializing client's HTTP interface (MINA infrastructure).
- *
+ * 
  */
 
 public class BrokerHttpService

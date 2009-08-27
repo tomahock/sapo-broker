@@ -7,9 +7,10 @@ import org.caudexorigo.io.UnsynchByteArrayOutputStream;
 
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
+
 /**
- * SOAP utility class for encoding and decoding. 
- *
+ * SOAP utility class for encoding and decoding.
+ * 
  */
 public class SoapBindingSerializer implements BindingSerializer
 {

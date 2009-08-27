@@ -44,8 +44,8 @@ import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 
 /**
- * * BrokerProtocolHandler is an MINA IoHandlerAdapter. It handles messages from clients. 
- *
+ * * BrokerProtocolHandler is an MINA IoHandlerAdapter. It handles messages from clients.
+ * 
  */
 
 public class BrokerProtocolHandler extends IoHandlerAdapter
@@ -72,8 +72,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			log.debug("Session created: " + IoSessionHelper.getRemoteAddress(iosession));
 		}
 	}
-	
-	
+
 	@Override
 	public void sessionClosed(IoSession iosession)
 	{
@@ -312,7 +311,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			_brokerProducer.publishMessage(publish, messageSource);
 			break;
 		case QUEUE:
-			if(!_brokerProducer.enqueueMessage(publish, messageSource))
+			if (!_brokerProducer.enqueueMessage(publish, messageSource))
 			{
 				if (actionId == null)
 				{
@@ -388,7 +387,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			_brokerConsumer.listen(subscritption, session);
 			break;
 		case TOPIC:
-			if(! _brokerConsumer.subscribe(subscritption, session) )
+			if (!_brokerConsumer.subscribe(subscritption, session))
 			{
 				if (subscritption.getActionId() == null)
 				{

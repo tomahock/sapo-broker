@@ -35,8 +35,8 @@ import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
 
 /**
- * Gcs is a facade for handling several message related functionality such as publish, acknowledge, etc.  
- *
+ * Gcs is a facade for handling several message related functionality such as publish, acknowledge, etc.
+ * 
  */
 
 public class Gcs
@@ -52,9 +52,9 @@ public class Gcs
 	private static final int MAX_BUFFER_SIZE = 8 * 1024 * 1024;
 
 	private static final Gcs instance = new Gcs();
-	
+
 	public static final int RECOVER_INTERVAL = 50;
-	
+
 	public static final int RECONNECT_INTERVAL = 5000;
 
 	public static void ackMessage(String queueName, final String msgId)
@@ -179,13 +179,12 @@ public class Gcs
 			LocalQueueConsumers.remove(listener);
 		}
 	}
-	
+
 	public static void addSyncConsumer(String queueName)
 	{
 		LocalQueueConsumers.addSyncConsumer(queueName);
 	}
 
-	
 	public static void removeSyncConsumer(String queueName)
 	{
 		LocalQueueConsumers.removeSyncConsumer(queueName);

@@ -4,7 +4,7 @@ import java.io.OutputStream;
 
 /**
  * BindingSerializer interface is implemented by the different protocol types and used as an abstraction to encoded/decode NetMessage instances.
- *
+ * 
  */
 
 public interface BindingSerializer

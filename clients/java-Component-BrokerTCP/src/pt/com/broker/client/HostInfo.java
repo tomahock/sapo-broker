@@ -3,7 +3,7 @@ package pt.com.broker.client;
 /**
  * 
  * Immutable class that represents an Agent host.
- *
+ * 
  */
 
 public final class HostInfo
@@ -12,22 +12,28 @@ public final class HostInfo
 	private int port;
 	private final int udpPort;
 
-	
 	/**
 	 * Creates a HostInfo instance.
-	 * @param hostname The name of the host (e.g. broker.localdomain.company.com or 10.12.10.120).
-	 * @param port Connection port.
+	 * 
+	 * @param hostname
+	 *            The name of the host (e.g. broker.localdomain.company.com or 10.12.10.120).
+	 * @param port
+	 *            Connection port.
 	 */
 	public HostInfo(String hostname, int port)
 	{
 		this(hostname, port, -1);
 	}
-	
+
 	/**
 	 * Creates a HostInfo instance.
-	 * @param hostname The name of the host (e.g. broker.localdomain.company.com or 10.12.10.120).
-	 * @param port Connection port.
-	 * @param udpPort UDP port
+	 * 
+	 * @param hostname
+	 *            The name of the host (e.g. broker.localdomain.company.com or 10.12.10.120).
+	 * @param port
+	 *            Connection port.
+	 * @param udpPort
+	 *            UDP port
 	 */
 	public HostInfo(String hostname, int port, int udpPort)
 	{
@@ -45,7 +51,7 @@ public final class HostInfo
 	{
 		return port;
 	}
-	
+
 	public int getUdpPort()
 	{
 		return udpPort;

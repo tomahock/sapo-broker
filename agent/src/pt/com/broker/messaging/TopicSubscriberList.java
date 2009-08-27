@@ -19,15 +19,16 @@ import pt.com.gcs.messaging.InternalMessage;
 
 /**
  * TopicSubscriberList contains a list of topic subscribers.
- *
+ * 
  */
 
 public class TopicSubscriberList
 {
-	
-	public static class MaximumDistinctSubscriptionsReachedException extends Exception{}
-	
-	
+
+	public static class MaximumDistinctSubscriptionsReachedException extends Exception
+	{
+	}
+
 	// key: destinationName
 	private static final Map<String, TopicSubscriber> topicSubscribersCache = new HashMap<String, TopicSubscriber>();
 
@@ -58,7 +59,7 @@ public class TopicSubscriberList
 
 							message.setDestination(ctName);
 							message.setPublishDestination(ctName);
-							
+
 							NetBrokerMessage brkMessage = new NetBrokerMessage(content.getBytes("UTF-8"));
 							message.setContent(brkMessage);
 
@@ -87,13 +88,13 @@ public class TopicSubscriberList
 				subscriber = topicSubscribersCache.get(destinationName);
 				if (subscriber == null)
 				{
-					
-					if( topicSubscribersCache.size() == GcsInfo.getMaxDistinctSubscriptions() )
-					{						
+
+					if (topicSubscribersCache.size() == GcsInfo.getMaxDistinctSubscriptions())
+					{
 						log.error("Maximum distinct subscriptions reached");
 						throw new MaximumDistinctSubscriptionsReachedException();
 					}
-					
+
 					subscriber = createSubscriber(destinationName);
 				}
 

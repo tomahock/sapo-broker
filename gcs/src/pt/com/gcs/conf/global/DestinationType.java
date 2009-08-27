@@ -5,43 +5,45 @@
 // Generated on: 2009.06.04 at 12:31:09 PM WEST 
 //
 
-
 package pt.com.gcs.conf.global;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for DestinationType.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for DestinationType.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * 
  * <pre>
- * &lt;simpleType name="DestinationType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="TOPIC"/>
- *     &lt;enumeration value="QUEUE"/>
- *     &lt;enumeration value="VIRTUAL_QUEUE"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name=&quot;DestinationType&quot;&gt;
+ *   &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;&gt;
+ *     &lt;enumeration value=&quot;TOPIC&quot;/&gt;
+ *     &lt;enumeration value=&quot;QUEUE&quot;/&gt;
+ *     &lt;enumeration value=&quot;VIRTUAL_QUEUE&quot;/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */
 @XmlType(name = "DestinationType")
 @XmlEnum
-public enum DestinationType {
+public enum DestinationType
+{
 
-    TOPIC,
-    QUEUE,
-    VIRTUAL_QUEUE;
+	TOPIC, QUEUE, VIRTUAL_QUEUE;
 
-    public String value() {
-        return name();
-    }
+	public String value()
+	{
+		return name();
+	}
 
-    public static DestinationType fromValue(String v) {
-        return valueOf(v);
-    }
+	public static DestinationType fromValue(String v)
+	{
+		return valueOf(v);
+	}
 
 }

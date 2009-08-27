@@ -3,8 +3,8 @@ package pt.com.broker.types;
 import java.util.List;
 
 /**
- * Represents an Authentication message. 
- *
+ * Represents an Authentication message.
+ * 
  */
 
 public class NetAuthentication
@@ -17,7 +17,9 @@ public class NetAuthentication
 
 	/**
 	 * Initializes a NetAuthentication instance.
-	 * @param token Can represent a password or some binary token. If the original value is text then it should be encoded in UTF-8.
+	 * 
+	 * @param token
+	 *            Can represent a password or some binary token. If the original value is text then it should be encoded in UTF-8.
 	 */
 	public NetAuthentication(byte[] token)
 	{

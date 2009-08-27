@@ -12,13 +12,13 @@ import pt.com.gcs.messaging.InternalMessage;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between agents.
- *
+ * 
  */
 
 public class GcsEncoder extends SimpleFramingEncoder
 {
 	private static final Logger log = LoggerFactory.getLogger(GcsEncoder.class);
-	
+
 	@Override
 	public byte[] processBody(Object message)
 	{

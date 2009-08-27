@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
 /**
- * Represents an Unsubscribe message. 
- *
+ * Represents an Unsubscribe message.
+ * 
  */
 
 public final class NetUnsubscribe

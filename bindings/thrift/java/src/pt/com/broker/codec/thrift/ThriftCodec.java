@@ -7,7 +7,7 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
  * Thrift codec.
- *
+ * 
  */
 public class ThriftCodec implements ProtocolCodecFactory
 {

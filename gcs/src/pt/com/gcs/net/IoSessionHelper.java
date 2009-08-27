@@ -5,8 +5,8 @@ import java.net.SocketAddress;
 import org.apache.mina.core.session.IoSession;
 
 /**
- * Some utilities to get address (as String) and vice-versa from sessions. 
- *
+ * Some utilities to get address (as String) and vice-versa from sessions.
+ * 
  */
 
 public class IoSessionHelper

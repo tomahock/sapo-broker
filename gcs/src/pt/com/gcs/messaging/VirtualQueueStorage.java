@@ -20,7 +20,7 @@ import com.sleepycat.je.Transaction;
 /**
  * VirtualQueueStorage stores virtual queue messages persistently.
  * 
- *
+ * 
  */
 
 public class VirtualQueueStorage

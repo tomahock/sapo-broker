@@ -4,7 +4,7 @@ public enum MessageType
 {
 	COM_TOPIC(1), COM_QUEUE(2),
 
-	SYSTEM_TOPIC(3), SYSTEM_QUEUE(4), SYSTEM_ACK(5), ACK(6), PING(7), HELLO(8),UNDEF(0);
+	SYSTEM_TOPIC(3), SYSTEM_QUEUE(4), SYSTEM_ACK(5), ACK(6), PING(7), HELLO(8), UNDEF(0);
 
 	private final int _mt;
 
@@ -52,7 +52,7 @@ public enum MessageType
 		{
 			return MessageType.HELLO;
 		}
-		
+
 		else
 		{
 			return MessageType.UNDEF;

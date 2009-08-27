@@ -13,7 +13,7 @@ import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * RemoteQueueConsumers maintains current remote queue consumers (other agents).
- *
+ * 
  */
 class RemoteQueueConsumers
 {

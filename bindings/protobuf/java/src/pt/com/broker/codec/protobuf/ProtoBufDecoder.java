@@ -4,8 +4,8 @@ import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.SimpleFramingDecoderV2;
 
 /**
- * Google Protocol Buffer decoder. 
- *
+ * Google Protocol Buffer decoder.
+ * 
  */
 
 public class ProtoBufDecoder extends SimpleFramingDecoderV2

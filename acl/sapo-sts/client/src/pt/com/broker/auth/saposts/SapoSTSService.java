@@ -16,7 +16,7 @@ import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 
 /**
  * SapoSTSService is responsible for managing agent's credentials (STS Token) to Sapo STS and automatically renew it.
- *
+ * 
  */
 
 public class SapoSTSService

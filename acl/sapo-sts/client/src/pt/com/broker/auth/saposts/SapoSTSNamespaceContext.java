@@ -6,8 +6,8 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
 /**
- * Utility class for SAPO STS XML namespac. 
- *
+ * Utility class for SAPO STS XML namespac.
+ * 
  */
 
 public class SapoSTSNamespaceContext implements NamespaceContext

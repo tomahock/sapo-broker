@@ -15,7 +15,7 @@ import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * RemoteTopicConsumers maintains current remote topic consumers (other agents).
- *
+ * 
  */
 class RemoteTopicConsumers
 {

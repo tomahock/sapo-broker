@@ -5,10 +5,11 @@ import pt.com.broker.functests.helpers.MultipleGenericPubSubTest;
 
 public class MultipleN1Topic extends MultipleGenericPubSubTest
 {
-	public MultipleN1Topic(){
+	public MultipleN1Topic()
+	{
 		super("Topic - N producers 1 consumer");
 	}
-	
+
 	@Override
 	protected void addProducers()
 	{

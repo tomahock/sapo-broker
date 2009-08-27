@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
 /**
- * Represents an Accepted message. 
- *
+ * Represents an Accepted message.
+ * 
  */
 
 public final class NetAccepted

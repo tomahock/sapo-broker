@@ -14,7 +14,7 @@ import pt.com.gcs.messaging.MessageListener;
 
 /**
  * BrokerListener is a base class for types representing message consumers.
- *
+ * 
  */
 
 public abstract class BrokerListener implements MessageListener

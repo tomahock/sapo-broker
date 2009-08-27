@@ -5,83 +5,80 @@
 // Generated on: 2009.06.04 at 12:31:09 PM WEST 
 //
 
-
 package pt.com.gcs.conf.agent;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the pt.com.gcs.conf.agent package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
- * provided in this class.
+ * This object contains factory methods for each Java content interface and Java element interface generated in the pt.com.gcs.conf.agent package.
+ * <p>
+ * An ObjectFactory allows you to programatically construct new instances of the Java representation for XML content. The Java representation of XML content can consist of schema derived interfaces and classes representing the binding of schema type definitions, element declarations and model groups. Factory methods for each of these are provided in this class.
  * 
  */
 @XmlRegistry
-public class ObjectFactory {
+public class ObjectFactory
+{
 
+	/**
+	 * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: pt.com.gcs.conf.agent
+	 * 
+	 */
+	public ObjectFactory()
+	{
+	}
 
-    /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: pt.com.gcs.conf.agent
-     * 
-     */
-    public ObjectFactory() {
-    }
+	/**
+	 * Create an instance of {@link AgentConfig.Ssl }
+	 * 
+	 */
+	public AgentConfig.Ssl createAgentConfigSsl()
+	{
+		return new AgentConfig.Ssl();
+	}
 
-    /**
-     * Create an instance of {@link AgentConfig.Ssl }
-     * 
-     */
-    public AgentConfig.Ssl createAgentConfigSsl() {
-        return new AgentConfig.Ssl();
-    }
+	/**
+	 * Create an instance of {@link AgentConfig.Messaging }
+	 * 
+	 */
+	public AgentConfig.Messaging createAgentConfigMessaging()
+	{
+		return new AgentConfig.Messaging();
+	}
 
-    /**
-     * Create an instance of {@link AgentConfig.Messaging }
-     * 
-     */
-    public AgentConfig.Messaging createAgentConfigMessaging() {
-        return new AgentConfig.Messaging();
-    }
+	/**
+	 * Create an instance of {@link AgentConfig }
+	 * 
+	 */
+	public AgentConfig createAgentConfig()
+	{
+		return new AgentConfig();
+	}
 
-    /**
-     * Create an instance of {@link AgentConfig }
-     * 
-     */
-    public AgentConfig createAgentConfig() {
-        return new AgentConfig();
-    }
+	/**
+	 * Create an instance of {@link AgentConfig.Net }
+	 * 
+	 */
+	public AgentConfig.Net createAgentConfigNet()
+	{
+		return new AgentConfig.Net();
+	}
 
-    /**
-     * Create an instance of {@link AgentConfig.Net }
-     * 
-     */
-    public AgentConfig.Net createAgentConfigNet() {
-        return new AgentConfig.Net();
-    }
+	/**
+	 * Create an instance of {@link AgentConfig.Messaging.Dropbox }
+	 * 
+	 */
+	public AgentConfig.Messaging.Dropbox createAgentConfigMessagingDropbox()
+	{
+		return new AgentConfig.Messaging.Dropbox();
+	}
 
-    /**
-     * Create an instance of {@link AgentConfig.Messaging.Dropbox }
-     * 
-     */
-    public AgentConfig.Messaging.Dropbox createAgentConfigMessagingDropbox() {
-        return new AgentConfig.Messaging.Dropbox();
-    }
-
-    /**
-     * Create an instance of {@link AgentConfig.Persistency }
-     * 
-     */
-    public AgentConfig.Persistency createAgentConfigPersistency() {
-        return new AgentConfig.Persistency();
-    }
+	/**
+	 * Create an instance of {@link AgentConfig.Persistency }
+	 * 
+	 */
+	public AgentConfig.Persistency createAgentConfigPersistency()
+	{
+		return new AgentConfig.Persistency();
+	}
 
 }

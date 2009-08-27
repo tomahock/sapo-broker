@@ -13,8 +13,8 @@ import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.ProviderInfo;
 
 /**
- *  JdbcAuthInfoValidator implements AuthInfoValidator in order to provide authentication based in database credentials and roles. This was implemented as a proof-of-concept.
- *
+ * JdbcAuthInfoValidator implements AuthInfoValidator in order to provide authentication based in database credentials and roles. This was implemented as a proof-of-concept.
+ * 
  */
 public class JdbcAuthInfoValidator implements AuthInfoValidator
 {

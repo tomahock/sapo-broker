@@ -13,8 +13,8 @@ import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageType;
 
 /**
- * BrokerProducer handles message publication both topic and queues. 
- *
+ * BrokerProducer handles message publication both topic and queues.
+ * 
  */
 public class BrokerProducer
 {

@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
 /**
- * Represents a Pong message. 
- *
+ * Represents a Pong message.
+ * 
  */
 
 public class NetPong

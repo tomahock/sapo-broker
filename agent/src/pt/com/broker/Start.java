@@ -17,8 +17,8 @@ import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 
 /**
- * Main class for Sapo-Broker agents. 
- *
+ * Main class for Sapo-Broker agents.
+ * 
  */
 
 public class Start
@@ -56,7 +56,7 @@ public class Start
 		try
 		{
 			log.info("SAPO-BROKER starting - Version: {}", BrokerInfo.VERSION);
-			
+
 			Gcs.init();
 			ProvidersLoader.init();
 
@@ -79,8 +79,7 @@ public class Start
 			int udp_port = GcsInfo.getBrokerUdpPort();
 			BrokerUdpServer udp_srv = new BrokerUdpServer(udp_port);
 			udp_srv.start();
-			
-			
+
 			FilePublisher.init();
 
 			Thread sync_hook = new Thread()
@@ -102,7 +101,7 @@ public class Start
 
 			Runtime.getRuntime().addShutdownHook(sync_hook);
 
-//			BrokerExecutor.execute(udp_srv_runner);
+			// BrokerExecutor.execute(udp_srv_runner);
 
 		}
 		catch (Throwable e)

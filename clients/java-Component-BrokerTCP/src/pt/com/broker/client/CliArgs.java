@@ -3,85 +3,85 @@ package pt.com.broker.client;
 import org.caudexorigo.cli.Option;
 
 /**
- *  Auxiliary interface that maps command line arguments.
- *
+ * Auxiliary interface that maps command line arguments.
+ * 
  */
 
 public interface CliArgs
 {
 	/**
 	 * 
-	 *  @return Host name.
+	 * @return Host name.
 	 */
 	@Option(shortName = "h", defaultValue = "localhost")
 	String getHost();
 
 	/**
 	 * 
-	 *  @return Host port.
+	 * @return Host port.
 	 */
 	@Option(shortName = "p", defaultValue = "3323")
 	int getPort();
-	
+
 	/**
 	 * 
-	 *  @return Host UDP port.
+	 * @return Host UDP port.
 	 */
 	@Option(shortName = "u", defaultValue = "5445")
 	int getUdpPort();
 
 	/**
 	 * 
-	 *  @return Destination name (e.g. "/test").
+	 * @return Destination name (e.g. "/test").
 	 */
 	@Option(shortName = "n", defaultValue = "/test")
 	String getDestination();
 
 	/**
 	 * 
-	 *  @return Destination Type (TOPIC, QUEUE, VIRTUAL_QUEUE).
+	 * @return Destination Type (TOPIC, QUEUE, VIRTUAL_QUEUE).
 	 */
 	@Option(shortName = "d", defaultValue = "TOPIC")
 	String getDestinationType();
 
 	/**
 	 * 
-	 *  @return Keystore location.
+	 * @return Keystore location.
 	 */
 	@Option(shortName = "L", defaultValue = ".")
 	String getKeystoreLocation();
 
 	/**
 	 * 
-	 *  @return Keystore password.
+	 * @return Keystore password.
 	 */
 	@Option(shortName = "W", defaultValue = "")
 	String getKeystorePassword();
 
 	/**
 	 * 
-	 *  @return STS location (e.g. https://services.sapo.pt/STS/).
+	 * @return STS location (e.g. https://services.sapo.pt/STS/).
 	 */
 	@Option(shortName = "S", defaultValue = ".")
 	String getSTSLocation();
 
 	/**
 	 * 
-	 *  @return User name.
+	 * @return User name.
 	 */
 	@Option(shortName = "U", defaultValue = "")
 	String getUsername();
 
 	/**
 	 * 
-	 *  @return User password.
+	 * @return User password.
 	 */
 	@Option(shortName = "P", defaultValue = "")
 	String getUserPassword();
 
 	/**
 	 * 
-	 *  @return Message length. Useful for generate random messages with known size.
+	 * @return Message length. Useful for generate random messages with known size.
 	 */
 	@Option(shortName = "l", defaultValue = "100")
 	int getMessageLength();

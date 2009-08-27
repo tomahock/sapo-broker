@@ -39,8 +39,9 @@ public abstract class Step implements Callable<Step>
 	{
 		return sucess;
 	}
-	
-	public boolean isFailure(){
+
+	public boolean isFailure()
+	{
 		return (done) && (!sucess);
 	}
 
@@ -55,13 +56,13 @@ public abstract class Step implements Callable<Step>
 	{
 		return reasonForFailure;
 	}
-	
+
 	@Override
 	public final Step call() throws Exception
 	{
-		if( isFailure() )
+		if (isFailure())
 			return this;
-		
+
 		return run();
 	}
 

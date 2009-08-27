@@ -6,9 +6,9 @@ import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 
 /**
- * Base class for encoding types. Implements MINA ProtocolEncoderAdapter, an abstract ProtocolEncoder implementation for those who don't have any resources to dispose.<br/> 
+ * Base class for encoding types. Implements MINA ProtocolEncoderAdapter, an abstract ProtocolEncoder implementation for those who don't have any resources to dispose.<br/>
  * Adds wire message header - Message length, encoding type and encoding version.
- *
+ * 
  */
 
 public abstract class SimpleFramingEncoderV2 extends ProtocolEncoderAdapter
@@ -26,7 +26,7 @@ public abstract class SimpleFramingEncoderV2 extends ProtocolEncoderAdapter
 
 		processBody(message, wbuf, protocolType, protocolVersion);
 		int len = wbuf.position() - 8;
-		//TODO: if len equal zero serialization failed. Deal with this.
+		// TODO: if len equal zero serialization failed. Deal with this.
 		wbuf.putInt(4, len);
 		wbuf.flip();
 		pout.write(wbuf);

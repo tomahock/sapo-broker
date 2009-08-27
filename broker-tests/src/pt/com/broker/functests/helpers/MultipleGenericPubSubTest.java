@@ -35,7 +35,6 @@ public class MultipleGenericPubSubTest extends BrokerTest
 	private List<TestClientInfo> infoConsumers;
 	private List<TestClientInfo> infoProducers;
 
-
 	public MultipleGenericPubSubTest()
 	{
 		this("MultipleGenericPubSubTest");
@@ -72,7 +71,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		try
 		{
 			int numberOfExecutions = getInfoProducers().size();
-			
+
 			TestClientInfo tci = new TestClientInfo();
 
 			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
@@ -183,7 +182,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 			MultipleNotificationConsequence notConsequence = new MultipleNotificationConsequence("Consume", "consumer", tci.brokerListenter);
 			notConsequence.setDestination(getDestinationName());
 			notConsequence.setSubscription(getSubscriptionName());
-			notConsequence.setDestinationType(getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE)? DestinationType.QUEUE : getConsumerDestinationType());
+			notConsequence.setDestinationType(getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE) ? DestinationType.QUEUE : getConsumerDestinationType());
 			notConsequence.setMessagePayload(getData());
 
 			this.addConsequences(notConsequence);
@@ -268,11 +267,12 @@ public class MultipleGenericPubSubTest extends BrokerTest
 	{
 		return destinationType;
 	}
-	
+
 	public void setConsumerDestinationType(DestinationType consumerDestinationType)
 	{
 		this.consumerDestinationType = consumerDestinationType;
 	}
+
 	public DestinationType getConsumerDestinationType()
 	{
 		return consumerDestinationType;

@@ -7,8 +7,8 @@ import com.sleepycat.je.SecondaryDatabase;
 import com.sleepycat.je.SecondaryKeyCreator;
 
 /**
- *  BDBMessageKeyCreator implements SecondaryKeyCreator witch is used for extracting single-valued secondary keys from primary records. 
- *
+ * BDBMessageKeyCreator implements SecondaryKeyCreator witch is used for extracting single-valued secondary keys from primary records.
+ * 
  */
 
 public class BDBMessageKeyCreator implements SecondaryKeyCreator

@@ -10,9 +10,9 @@ public class GenericNegativeTest extends BrokerTest
 {
 
 	private BrokerClient brokerClient = null;
-	
+
 	private boolean okToTimeout = false;
-	
+
 	private BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
 	{
 		@Override
@@ -27,18 +27,16 @@ public class GenericNegativeTest extends BrokerTest
 			faultFuture.set(fault);
 		}
 	};
-	
-	private byte[] dataToSend = new byte[]{};
-	
+
+	private byte[] dataToSend = new byte[] {};
+
 	private SetValueFuture<NetFault> faultFuture = new SetValueFuture<NetFault>();
-	
+
 	private String faultCode = null;
 	private String faultMessage = null;
 	private String faultActionId = null;
 	private String faultDetail = null;
-	
-	
-	
+
 	public GenericNegativeTest(String testName)
 	{
 		super(testName);
@@ -48,7 +46,7 @@ public class GenericNegativeTest extends BrokerTest
 	protected void build() throws Throwable
 	{
 		addAction();
-		
+
 		addConsequece();
 	}
 
@@ -57,9 +55,9 @@ public class GenericNegativeTest extends BrokerTest
 		FaultConsequence consequence = new FaultConsequence("fault receiver", "producer", faultFuture);
 		consequence.setFaultCode(getFaultCode());
 		consequence.setFaultMessage(getFaultMessage());
-		
+
 		addConsequences(consequence);
-		
+
 	}
 
 	private void addAction()
@@ -74,12 +72,10 @@ public class GenericNegativeTest extends BrokerTest
 				{
 					brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
 
-					
-					
 					brokerClient.setErrorListener(getErrorListener());
 
 					brokerClient.getNetHandler().getConnector().getOutput().write(getDataToSend());
-					
+
 					setDone(true);
 					setSucess(true);
 				}
@@ -91,7 +87,7 @@ public class GenericNegativeTest extends BrokerTest
 			}
 
 		});
-		
+
 	}
 
 	public void setBrokerClient(BrokerClient brokerClient)

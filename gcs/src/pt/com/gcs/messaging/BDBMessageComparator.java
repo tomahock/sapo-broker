@@ -7,7 +7,7 @@ import com.sleepycat.je.DatabaseEntry;
 
 /**
  * BDBMessageComparator compares two database entries.
- *
+ * 
  */
 
 public class BDBMessageComparator implements Comparator<byte[]>

@@ -15,7 +15,7 @@ import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * QueueSessionListener represents a local (agent connected) clients who subscribed to a specific topic.
- *
+ * 
  */
 public class QueueSessionListener extends BrokerListener
 {

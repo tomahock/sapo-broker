@@ -6,7 +6,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 {
 	private int consumerNotifications = 0;
-	
+
 	public MultipleGenericQueuePubSubTest()
 	{
 		this("MultipleGenericQueuePubSubTest");
@@ -49,7 +49,7 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 			tci.numberOfExecutions = 1;
 
 			this.addInfoProducer(tci);
-			
+
 			setConsumerNotifications(getInfoProducers().size());
 		}
 		catch (Throwable t)
