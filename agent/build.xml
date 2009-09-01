@@ -7,7 +7,7 @@
 	<property name="target-dir" value="../sapo-broker" />
 	<property name="major-version" value="3"/>
 	<property name="minor-version" value="0"/>
-	<property name="version" value="${major-version}.${minor-version}.${DSTAMP}${TSTAMP}"/>
+	<property name="version" value="${major-version}.${minor-version}"/>
 	<property name="package" value="sapo-broker-agent-${version}.jar" />
 
 

@@ -6,7 +6,6 @@
 	<property name="bin" value="bin" />
 	<property name="package" value="sapo-broker-thriftbinding-${version}.jar" />
 
-
 	<path id="project.classpath">
 		<pathelement location="../../../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
 		<fileset dir="../../../common-libs/">

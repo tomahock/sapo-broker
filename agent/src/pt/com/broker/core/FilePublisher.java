@@ -2,15 +2,29 @@ package pt.com.broker.core;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.text.Collator;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.codec.xml.SoapBindingSerializer;
+import pt.com.broker.codec.xml.SoapEnvelope;
+import pt.com.broker.codec.xml.SoapSerializer;
+import pt.com.broker.messaging.BrokerProducer;
+import pt.com.broker.messaging.MQ;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.messaging.Gcs;
+import pt.com.gcs.messaging.InternalMessage;
 
 /**
  * FilePublisher deals with dropbox functionality publishing messages
@@ -20,8 +34,8 @@ import pt.com.gcs.conf.GcsInfo;
 public class FilePublisher
 {
 	private static Logger log = LoggerFactory.getLogger(FilePublisher.class);
-
-	private static FilePublisher instance = new FilePublisher();
+	
+		private static FilePublisher instance = new FilePublisher();
 
 	private static final long INITIAL_DELAY = 10L; // 10 segundos
 
@@ -78,108 +92,133 @@ public class FilePublisher
 
 	final Runnable publisher = new Runnable()
 	{
+		private SoapBindingSerializer soapBindingSerializer = new SoapBindingSerializer();
+		byte[] buffer = new byte[1024];
+		//volatile boolean running = false;m
+		
 		public void run()
 		{
-			// log.debug("Checking for files in the DropBox.");
-			// try
-			// {
-			// fileCount = 0;
-			// File[] files = dropBoxDir.listFiles(fileFilter);
-			// int goodFileCount = files.length;
-			//
-			//				
-			// Message cnt_message = new Message();
-			// String dName = String.format("/system/stats/dropbox/#%s#",
-			// GcsInfo.getAgentName());
-			// String content = GcsInfo.getAgentName() + "#" +
-			// dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" +
-			// goodFileCount;
-			// cnt_message.setDestination(dName);
-			// cnt_message.setContent(content);
-			//				
-			// InternalMessage intMessage = new InternalMessage();
-			//				
-			//				
-			// Gcs.publish(cnt_message);
-			//				
-			//
-			// if ((files != null) && (files.length > 0))
-			// {
-			// if (log.isDebugEnabled())
-			// {
-			// log.debug("Will try to publish " + files.length + " file(s).");
-			// }
-			//
-			// Arrays.sort(files, fileComparator);
-			//
-			// for (File msgf : files)
-			// {
-			// FileInputStream fis = new FileInputStream(msgf);
-			// SoapEnvelope soap = null;
-			// boolean isFileValid = false;
-			// try
-			// {
-			// soap = SoapSerializer.FromXml(fis);
-			// isFileValid = true;
-			// }
-			// catch (Throwable e)
-			// {
-			// log.error("Error processing file \"" + msgf.getAbsolutePath() +
-			// "\". Error message: " +
-			// ErrorAnalyser.findRootCause(e).getMessage());
-			// }
-			//
-			// if (isFileValid)
-			// {
-			// try
-			// {
-			// if (soap.body.publish != null)
-			// {
-			// BrokerTextProducer.getInstance().publishMessage(soap.body.publish,
-			// MQ.requestSource(soap));
-			// }
-			// else if (soap.body.enqueue != null)
-			// {
-			// BrokerTextProducer.getInstance().enqueueMessage(soap.body.enqueue,
-			// MQ.requestSource(soap));
-			// }
-			// }
-			// catch (Throwable e)
-			// {
-			// log.error("Error publishing file \"" + msgf.getAbsolutePath() +
-			// "\". Error message: " +
-			// ErrorAnalyser.findRootCause(e).getMessage());
-			// }
-			// finally
-			// {
-			// try
-			// {
-			// fis.close();
-			// msgf.delete();
-			// }
-			// catch (Throwable t)
-			// {
-			// log.error("Error deleting file", t);
-			// }
-			// }
-			// }
-			// else
-			// {
-			// fis.close();
-			// File badFile = new File(msgf.getAbsolutePath() + ".bad");
-			// msgf.renameTo(badFile);
-			// }
-			// }
-			// }
-			// else
-			// {
-			// log.debug("No files to publish.");
-			// }
-			// }
-			// catch (Throwable e)
-			// {
-			// log.error(e.getMessage(), e);
-			// }
+			log.debug("Checking for files in the DropBox.");
+			try
+			{
+				fileCount = 0;
+				File[] files = dropBoxDir.listFiles(fileFilter);
+				int goodFileCount = files.length;
+
+				//Message cnt_message = new Message();
+				InternalMessage statsMessage = new InternalMessage();
+				
+				String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
+				String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
+				statsMessage.setDestination(dName);
+				statsMessage.setPublishDestination(dName);
+				statsMessage.setContent( new NetBrokerMessage(content) );
+
+
+				Gcs.publish(statsMessage);
+
+				if ((files != null) && (files.length > 0))
+				{
+					if (log.isDebugEnabled())
+					{
+						log.debug("Will try to publish " + files.length + " file(s).");
+					}
+
+					Arrays.sort(files, fileComparator);
+
+					for (File msgf : files)
+					{
+						FileInputStream fis = new FileInputStream(msgf);
+						
+						byte[] inputFileData = new byte[1024];
+						int dataRead = 0;
+						
+						SoapEnvelope soap = null;
+						NetMessage netMessage = null;
+						
+						boolean isFileValid = false;
+						try
+						{
+							while( fis.available() != 0 )
+							{
+								int count = fis.read(buffer);
+								if( (inputFileData.length - dataRead) <= count)
+								{
+									inputFileData = Arrays.copyOf(inputFileData, inputFileData.length * 2);
+								}
+								System.arraycopy(buffer, 0, inputFileData, dataRead, count);
+								dataRead += count;
+							}
+							
+							inputFileData = Arrays.copyOf(inputFileData, dataRead);
+							netMessage = soapBindingSerializer.unmarshal(inputFileData);
+							
+							//soap = SoapSerializer.FromXml(fis);
+							isFileValid = true;
+						}
+						catch (Throwable e)
+						{
+							log.error("Error processing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
+						}
+
+						if (isFileValid)
+						{
+							try
+							{
+								
+								if( netMessage.getAction().getActionType().equals(NetAction.ActionType.PUBLISH) )
+								{
+									BrokerProducer.getInstance().publishMessage(netMessage.getAction().getPublishMessage(), MQ.requestSource(netMessage));
+								} 
+								else 
+								{
+									log.error("Error publishing file \"" + msgf.getAbsolutePath() + "\". Not a publish message." );
+								}
+								
+//								if (soap.body.publish != null)
+//								{
+//									BrokerProducer.getInstance().publishMessage(soap.body.publish, requestSource(soap));
+//								}
+//								else if (soap.body.enqueue != null)
+//								{
+//									
+//									BrokerProducer.getInstance().enqueueMessage(soap.body.enqueue, requestSource(soap));
+//								}
+							}
+							catch (Throwable e)
+							{
+								log.error("Error publishing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
+							}
+							finally
+							{
+								try
+								{
+									fis.close();
+									msgf.delete();
+								}
+								catch (Throwable t)
+								{
+									log.error("Error deleting file", t);
+								}
+							}
+						}
+						else
+						{
+							fis.close();
+							File badFile = new File(msgf.getAbsolutePath() + ".bad");
+							msgf.renameTo(badFile);
+						}
+					}
+				}
+				else
+				{
+					log.debug("No files to publish.");
+				}
+			}
+			catch (Throwable e)
+			{
+				log.error(e.getMessage(), e);
+			}
 		}
 	};
 
@@ -207,5 +246,14 @@ public class FilePublisher
 	private static void abort()
 	{
 		log.info("Drop box functionality disabled.");
+	}
+	
+	public static String requestSource(SoapEnvelope soap)
+	{
+		if (soap.header != null)
+			if (soap.header.wsaFrom != null)
+					if (StringUtils.isNotBlank(soap.header.wsaFrom.address))
+							return soap.header.wsaFrom.address;
+		return null;
 	}
 }

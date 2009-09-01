@@ -16,6 +16,11 @@ public class NetBrokerMessage
 	private long expiration = -1;
 	private long timestamp = -1;
 
+	public NetBrokerMessage(String payload)
+	{
+		this.payload = payload.getBytes();
+	}
+	
 	public NetBrokerMessage(byte[] payload)
 	{
 		this.payload = payload;

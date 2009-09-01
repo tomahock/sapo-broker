@@ -103,7 +103,8 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			if (header != null)
 				atomBuilder.setHeader(header);
 
-			atomBuilder.build().writeTo(out);
+			Atom build = atomBuilder.build();
+			build.writeTo(out);
 
 		}
 		catch (Throwable e)
