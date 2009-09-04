@@ -36,6 +36,8 @@ public abstract class BrokerListener implements MessageListener
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("FROM", msg.getSourceApp());
 		params.put("ACTION", "http://services.sapo.pt/broker/notification/" + msg.getMessageId());
+		params.put("PUBLISHING_AGENT", msg.getPublishingAgent());
+		
 
 		NetMessage message = new NetMessage(action, params);
 

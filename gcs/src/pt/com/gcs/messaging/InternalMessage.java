@@ -41,6 +41,7 @@ public class InternalMessage implements Externalizable
 	private long expiration = timestamp + DEFAULT_EXPIRY;
 	private pt.com.gcs.messaging.MessageType type = pt.com.gcs.messaging.MessageType.UNDEF;
 	private boolean isFromRemotePeer = false;
+	private String publishingAgent = GcsInfo.getAgentName(); // Agent through which the message entered the messaging system
 
 	static
 	{
@@ -195,6 +196,16 @@ public class InternalMessage implements Externalizable
 	{
 		return isFromRemotePeer;
 	}
+	
+	public void setPublishingAgent(String publishingAgent)
+	{
+		this.publishingAgent = publishingAgent;
+	}
+
+	public String getPublishingAgent()
+	{
+		return publishingAgent;
+	}
 
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
@@ -215,7 +226,11 @@ public class InternalMessage implements Externalizable
 		id = in.readUTF();
 		if (id.equals(""))
 			id = null;
-
+		
+		setPublishingAgent(in.readUTF());
+		if (getPublishingAgent().equals(""))
+			setPublishingAgent(null);
+		
 		priority = in.readInt();
 		sourceApp = in.readUTF();
 		if (sourceApp.equals(""))
@@ -230,11 +245,11 @@ public class InternalMessage implements Externalizable
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException
 	{
-
 		out.writeUTF((correlationId != null) ? correlationId : "");
 		out.writeUTF((destination != null) ? destination : "");
 		out.writeUTF((publishDestination != null) ? publishDestination : "");
 		out.writeUTF((id != null) ? id : "");
+		out.writeUTF((getPublishingAgent() != null) ? getPublishingAgent() : "");
 		out.writeInt(priority);
 		out.writeUTF((sourceApp != null) ? sourceApp : "");
 		out.writeLong(timestamp);
@@ -257,6 +272,8 @@ public class InternalMessage implements Externalizable
 		buf.append(getDestination());
 		buf.append(SEPARATOR);
 		buf.append(getMessageId());
+		buf.append(SEPARATOR);
+		buf.append(getPublishingAgent());
 		buf.append(SEPARATOR);
 		buf.append(getPriority());
 		buf.append(SEPARATOR);

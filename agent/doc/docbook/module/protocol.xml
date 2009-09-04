@@ -498,5 +498,33 @@ Payload:
       </section>
     </section>
   </section>
+  <section>
+    <title id="TYPICAL HEADERS">Typical headers</title>
+    <para>Most messages carry some well-known message headers. This section describes its format and meaning.</para>
+    <section>
+	<title>Action type</title>
+	<para>Messages sent to clients may be of several types, witch represent an intended action. This parameter explicits the action and message id. This information is now redundant and may be suppressed.</para>
+	<itemizedlist>
+	  <listitem>Name: <emphasis>ACTION</emphasis></listitem>
+	  <listitem>Example: <emphasis>http://services.sapo.pt/broker/notification/864a7e2ae1d1ff4c383095c5a0dd87ef#59</emphasis></listitem>
+	</itemizedlist>
+    </section>
+    <section>
+	<title>Message origin</title>
+	<para>Clients may desire to know the name of the application that published the message, if any. To obtain that information exists the <emphasis>FROM</emphasis> parameter. The format may change in the future.</para>
+	<itemizedlist>
+	  <listitem>Name: <emphasis>FROM</emphasis></listitem>
+	  <listitem>Example: <emphasis>topic@broker1:///topic/foo?app=broker://agent/broker1/</emphasis></listitem>
+	</itemizedlist>
+    </section>
+    <section>
+	<title>Publishing agent</title>
+	<para>Messages published by clients enter the messaging system through a Broker agent, denominated publishing agent. To know the name of that agent check this parameter.</para>
+	<itemizedlist>
+	  <listitem>Name: <emphasis>PUBLISHING_AGENT</emphasis></listitem>
+	  <listitem>Example: <emphasis>agent1</emphasis></listitem>
+	</itemizedlist>
+    </section>
+  </section>
 </chapter>
 
