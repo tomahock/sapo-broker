@@ -47,7 +47,6 @@ public class GlobalConfig
 
 	private BrokerSecurityPolicy secPolicy;
 
-	private Map<String, ProviderInfo> authenticationProviders = new TreeMap<String, ProviderInfo>();
 	private Map<String, ProviderInfo> credentialValidatiorProviders = new TreeMap<String, ProviderInfo>();
 
 	// Messages info
@@ -81,11 +80,6 @@ public class GlobalConfig
 		populateWorldMap(doc);
 		extractSecurityPolicies(doc);
 		extractMessageConfiguration(doc);
-		synchronized (authenticationProviders)
-		{
-			authenticationProviders.clear();
-			loadAuthenticationProviders(doc);
-		}
 		synchronized (credentialValidatiorProviders)
 		{
 			credentialValidatiorProviders.clear();
@@ -227,11 +221,6 @@ public class GlobalConfig
 		}
 	}
 
-	public static Map<String, ProviderInfo> getAuthenticationProviders()
-	{
-		return instance.authenticationProviders;
-	}
-
 	public static Map<String, ProviderInfo> getCredentialValidatorProviders()
 	{
 		return instance.credentialValidatiorProviders;
@@ -279,52 +268,6 @@ public class GlobalConfig
 		catch (Exception e)
 		{
 			log.error("Error parsing credential-validators", e);
-		}
-	}
-
-	private void loadAuthenticationProviders(Document doc)
-	{
-		try
-		{
-			XPath xpath = XPathFactory.newInstance().newXPath();
-
-			NodeList nodes = (NodeList) xpath.evaluate("/global-config/authorization-providers/authorization-provider", doc, XPathConstants.NODESET);
-
-			for (int i = 0; i != nodes.getLength(); ++i)
-			{
-				try
-				{
-					if (!(nodes.item(i) instanceof Element))
-						continue;
-
-					String provName = null;
-					String provPath = null;
-					Element provParams = null;
-
-					Element elem = (Element) nodes.item(i);
-
-					provName = elem.getAttribute("provider-name");
-					provPath = elem.getElementsByTagName("class").item(0).getTextContent();
-
-					NodeList paramsNodeList = elem.getElementsByTagName("provider-params");
-					if (paramsNodeList.getLength() != 0)
-					{
-						provParams = (Element) paramsNodeList.item(0);
-					}
-
-					ProviderInfo provInfo = new ProviderInfo(provName, provPath, provParams);
-
-					authenticationProviders.put(provName, provInfo);
-				}
-				catch (Exception e)
-				{
-					log.error("Error parsing an authorization-provider", e);
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			log.error("Error parsing authorization-providers", e);
 		}
 	}
 

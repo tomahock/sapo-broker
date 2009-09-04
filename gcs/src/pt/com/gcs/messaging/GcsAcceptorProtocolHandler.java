@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
+import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
 import pt.com.gcs.net.IoSessionHelper;
 import pt.com.gcs.net.Peer;
 
@@ -34,6 +35,15 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	static
 	{
 		createPeersList();
+		GlobalConfigMonitor.addGlobalConfigModifiedListener(new GlobalConfigModifiedListener(){
+
+			@Override
+			public void globalConfigModified()
+			{
+				globalConfigReloaded();				
+			}
+			
+		});
 	}
 
 	private static void createPeersList()
@@ -45,6 +55,11 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 			InetSocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
 			peersAddressList.add(addr);
 		}
+	}
+	
+	public static void globalConfigReloaded()
+	{
+		createPeersList();
 	}
 
 	@Override

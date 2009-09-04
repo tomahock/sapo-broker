@@ -25,6 +25,8 @@ import pt.com.gcs.conf.global.Condition.Address;
 import pt.com.gcs.conf.global.Policies.Policy;
 import pt.com.gcs.conf.global.Policies.Policy.Acl.Entry;
 import pt.com.gcs.messaging.DestinationMatcher;
+import pt.com.gcs.messaging.GlobalConfigMonitor;
+import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
 
 /**
  * AccessControl class implements access control functionality, namely validation of users permission to perform intended operations such publishing or subscription.
@@ -101,6 +103,25 @@ public class AccessControl
 		refused_authRequired.accessGranted = false;
 		refused_authRequired.reasonForRejection = "Authentication Required!";
 
+		loadSecurityPolicies();
+
+		// ADD IT HERE
+		GlobalConfigMonitor.addGlobalConfigModifiedListener(new GlobalConfigModifiedListener()
+		{
+
+			@Override
+			public void globalConfigModified()
+			{
+				synchronized(agentAcl) {
+					loadSecurityPolicies();
+				}
+			}
+
+		});
+	}
+
+	static private void loadSecurityPolicies()
+	{
 		BrokerSecurityPolicy securityPolicy = GcsInfo.getSecurityPolicies();
 		if (securityPolicy == null)
 		{
@@ -109,7 +130,6 @@ public class AccessControl
 		}
 
 		// Get Policies
-
 		Policies secPolicies = securityPolicy.getPolicies();
 		if (secPolicies == null)
 		{
@@ -264,14 +284,16 @@ public class AccessControl
 	{
 		SessionAcl sessionAcl = new SessionAcl();
 
-		for (AclEntry entry : agentAcl)
-		{
-			for (AclPredicate pred : entry.getConditions())
+		synchronized(agentAcl) {
+			for (AclEntry entry : agentAcl)
 			{
-				if (pred.match(sessionProperties))
+				for (AclPredicate pred : entry.getConditions())
 				{
-					sessionAcl.add(entry);
-					break;
+					if (pred.match(sessionProperties))
+					{
+						sessionAcl.add(entry);
+						break;
+					}
 				}
 			}
 		}

@@ -324,17 +324,7 @@ public class GcsInfo
 		return null;
 	}
 
-	// Authentication providers related properties
-
-	/**
-	 * Authentication providers.
-	 * 
-	 * @return A map with authentication providers
-	 */
-	public static Map<String, ProviderInfo> getAuthenticationProviders()
-	{
-		return GlobalConfig.getAuthenticationProviders();
-	}
+	// Authentication validators
 
 	/**
 	 * Credential validator providers.
