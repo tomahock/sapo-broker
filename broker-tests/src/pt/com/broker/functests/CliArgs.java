@@ -59,9 +59,15 @@ public interface CliArgs
 
 	/**
 	 * 
+	 * @return Perform just UDP related tests.
+	 */
+	@Option(shortName = "u", defaultValue = "1")
+	int getUdp();
+
+	/**
+	 * 
 	 * @return Specify the number of runs
 	 */
 	@Option(shortName = "r", defaultValue = "1")
 	int getNumberOfRuns();
-
 }

@@ -36,13 +36,15 @@ public class Main
 		boolean runQueue = cargs.getQueue() == 1;
 		boolean runVirtualQueue = cargs.getVirtualQueue() == 1;
 		boolean runSSLandAuth = cargs.getSslAndAuthentication() == 1;
+		boolean runUdp = cargs.getUdp() == 1;
 
 		int numberOfTests = cargs.getNumberOfRuns();
 
 		for (NetProtocolType protoType : protoTypes)
 		{
-
 			System.out.println(String.format(" ---> Using %s encoding protocol", protoType));
+			
+			testResults.addProperty("Encoding", protoType.toString());
 
 			BrokerTest.setDefaultimeout(12 * 1000);
 			BrokerTest.setDefaultEncodingProtocolType(protoType);
@@ -99,6 +101,12 @@ public class Main
 				new VirtualQueueTopicNameWildcard().run(numberOfTests, testResults);
 				new VirtualQueueNameSpecifiedRemote().run(numberOfTests, testResults);
 				new VirtualQueueTopicNameWildcardRemote().run(numberOfTests, testResults);
+			}
+			
+			if(runAll || runPositive || runUdp)
+			{
+				new UdpTopicPublishTest().run(numberOfTests, testResults);
+				new UdpQueuePublishTest().run(numberOfTests, testResults);
 			}
 
 			// Negative Tests

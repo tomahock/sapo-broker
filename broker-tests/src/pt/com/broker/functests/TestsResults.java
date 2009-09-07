@@ -1,7 +1,9 @@
 package pt.com.broker.functests;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestsResults
@@ -10,6 +12,9 @@ public class TestsResults
 	private AtomicInteger negativeTests = new AtomicInteger();
 	private List<String> badTests = new ArrayList<String>();
 	private List<String> skippedTests = new ArrayList<String>();
+	
+	public Map <String, String> properties = new HashMap<String, String>();
+	
 	public void addPositiveTest()
 	{
 		positiveTests.addAndGet(1);
@@ -49,6 +54,21 @@ public class TestsResults
 	public List<String> getSkippedTests()
 	{
 		return skippedTests;
+	}
+	
+	public void addProperty(String name, String value)
+	{
+		properties.put(name, value);
+	}
+	
+	public String getProperty(String name)
+	{
+		return properties.get(name);
+	}
+	
+	public void deleteProperty(String name)
+	{
+		properties.remove(name);
 	}
 	
 	/***

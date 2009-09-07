@@ -65,7 +65,7 @@ public abstract class Test
 		if (skipTest())
 		{
 			System.out.println("test skiped");
-			testResults.addSkipedTest(this.getName());
+			testResults.addSkipedTest( getNameAndEncoding(testResults) );
 			return true;
 		}
 		try
@@ -147,9 +147,17 @@ public abstract class Test
 		if (result)
 			testResults.addPositiveTest();
 		else
-			testResults.addFailedTest(getName());
+			testResults.addFailedTest(getNameAndEncoding(testResults));
 
 		return result;
+	}
+	
+	private String getNameAndEncoding(TestsResults testResults)
+	{
+		String encoding = testResults.getProperty("Encoding");
+		if(encoding == null)
+			return getName();
+		return getName() + " : " + encoding;
 	}
 
 	public final boolean run(TestsResults testResults)
