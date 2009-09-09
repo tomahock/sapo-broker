@@ -1,24 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
-<TestParams>
-  <Defaults>
-    <Param Name="agent1-host" Value="localhost"/>
-    <Param Name="agent1-port" Value="3323"/>
-    <Param Name="agent1-ssl-port" Value="3390"/>
-    <Param Name="agent2-host" Value="localhost"/>
-    <Param Name="agent2-port" Value="3423"/>
-    <Param Name="agent2-ssl-port" Value="3490"/>
-    <Param Name="runs" Value="1"/>
-    <Param Name="certLocation" Value="../../testCert.cer" />
-  </Defaults>
-  <Tests>
-    <Test Name="test1">
-      <Param Name="X" Value="y"/>
-      <Param Name="X" Value="y"/>
-      <Param Name="X" Value="y"/>
-    </Test>
-    <Test Name="test2">
-      <Param Name="myName" Value="myValue"/>
-    </Test>
-  </Tests>
-</TestParams>
+<test-params>
+  <defaults>
+    <param param-name="agent1-host" param-value="localhost"/>
+    <param param-name="agent1-port" param-value="3323"/>
+    <param param-name="agent1-ssl-port" param-value="3390"/>
+    <param param-name="agent1-udp-port" param-value="3366"/>
+    <param param-name="agent2-host" param-value="localhost"/>
+    <param param-name="agent2-port" param-value="3423"/>
+    <param param-name="agent2-ssl-port" param-value="3490"/>
+    <param param-name="agent2-udp-port" param-value="3466"/>
+    <param param-name="certLocation" param-value="[location]" />
+  </defaults>
+  <tests>
+    <test test-name="jdbcTest">
+      <param param-name="userparam-name" param-value="[username]"/>
+      <param param-name="password" param-value="[password]"/>
+    </test>
+    <test test-name="sapoSts">
+      <param param-name="userparam-name" param-value="[username]"/>
+      <param param-name="password" param-value="[password]"/>
+    </test>
+  </tests>
+</test-params>
