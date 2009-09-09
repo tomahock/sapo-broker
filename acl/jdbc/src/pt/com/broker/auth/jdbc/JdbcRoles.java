@@ -54,7 +54,7 @@ public class JdbcRoles
 	{
 		Connection connection = getConnection();
 
-		PreparedStatement statement = connection.prepareStatement("select count(*) from users where (user_name= ? AND user_password= ?)");
+		PreparedStatement statement = connection.prepareStatement("select count(*) from users where (username= ? AND password= ?)");
 
 		statement.setString(1, username);
 		statement.setString(2, password);
@@ -76,7 +76,7 @@ public class JdbcRoles
 	{
 		Connection connection = getConnection();
 
-		PreparedStatement statement = connection.prepareStatement("select user_role from users join user_roles on (users.user_id = user_roles.user_id) where (users.user_name = ?)");
+		PreparedStatement statement = connection.prepareStatement("select role from users join roles on (users.username = roles.username) where (users.username = ?)");
 
 		statement.setString(1, username);
 

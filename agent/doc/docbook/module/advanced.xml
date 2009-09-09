@@ -21,11 +21,11 @@
     </section>
     <section>
       <title>An annotated sample</title>
-      <para>In Code 1 a security configuration sample is presented. As said before, this configuration aspect is defined in global configuration file.</para>
+      <para>In <link linkend="CODE_SEC_POLICY_CONF" endterm="CODE_SEC_POLICY_CONF" /> a security configuration sample is presented. As said before, this configuration aspect is defined in global configuration file.</para>
       <para>The sample presents a scenario where the default security policy mandates that no client can produce messages to topic or queue whose named begin with "/system/". The default policy also dictates that destination names beginning with "/private/" are forbidden for all clients. These security settings apply to all agents using the default security policy.</para>
       <para>At the bottom of the sample a section (XML element) entitled "agents" is present. Here is the place to associate specific security policies with agents. The sample states that an agent named "agent007" must used the "anotherPolicy" security policy. This policy inherits from the default security, adds some entries to the ACL and in a specific case overrides the default policy. The added entries specify that message production to the queue named "/specialQueue" is denied to all except those clients that simultaneous possess the role "VIP_role" and are using a type of communication channel that offers confidentiality (such as SSL). The declaration details are self-explanatory.</para>
       <example>
-        <title>Security policy configuration sample</title>
+        <title id="CODE_SEC_POLICY_CONF">Security policy configuration sample</title>
         <screen>
 &lt;security-policies&gt; 
    &lt;policies&gt; 
@@ -115,7 +115,7 @@
       </table>
       <para>Each of the available implementations are described later.</para>
       <example>
-        <title>Authorization providers configuration</title>
+        <title id="CODE_AUTH_PROV_CONF">Authorization providers configuration</title>
         <screen>
 &lt;credential-validators&gt; 
    &lt;credential-validator provider-name="SapoSTS"&gt; 
@@ -162,33 +162,31 @@
       <section>
         <title>Sapo STS</title>
         <para>Sapo STS authentication module is divided in two parts, one regathering client validation and the other client authentication. Client authentication is the process of obtaining a SapoSTS security token. To obtain this token clients must provide their user name and password. Once obtained, the token is sent to the agent in an authentication message indicating "SapoSTS" as the authentication type. Both clients and agents use client authentication: clients because they need to supply a token to the agent; and agents need to authenticate themselves in order to extract user roles from the clients.</para>
-        <para>Client validation, and subsequent roles extraction, is performed by an agent specific module complying to what was described before. In Code 2 a configuration sample is presented. In case the agent is not using SapoSTS validation it can be removed from the configuration file. This validation module specifies three configuration parameters: Sapo STS location and agent's user name and password.</para>
+        <para>Client validation, and subsequent roles extraction, is performed by an agent specific module complying to what was described before. <link linkend="CODE_AUTH_PROV_CONF">Here</link> a configuration sample is presented. In case the agent is not using SapoSTS validation it can be removed from the configuration file. This validation module specifies three configuration parameters: Sapo STS location and agent's user name and password.</para>
         <para>SapoSTS validation and authentication are available from sapo-broker-validation-saposts.jar and sapo-broker-clientauth-saposts.jar, respectively.</para>
       </section>
       <section>
         <title>Database based authentication</title>
-        <para>Sapo-Broker users may not have access to Sapo STS, and probably this would be the case, or they may need do provide their own authentication mechanisms. As a proof-of-concept it was implemented an authentication provider supported by a relational database. The tables creation script is presented at Code 3. As shown, salts are not used and users passwords are store in clear, not their hashes. So this may not be very useful in a production environment where the use of secure practices is mandatory.</para>
+        <para>Sapo-Broker users may not have access to Sapo STS, and probably this would be the case, or they may need do provide their own authentication mechanisms. As a proof-of-concept it was implemented an authentication provider supported by a relational database. <link linkend="CODE_DATABASE_SCRIPTS">Here</link> is the script used to create the tables. As shown, salts are not used and users passwords are store in clear, not their hashes. This approach won't cope with production environment requirements where the use of secure practices is (should be) mandatory. As said, this is just a proof-of-concept.</para>
         <para>When using this authentication method, denoted by "BrokerRolesDB" authentication type, clients provide, as credentials, their user name and password.</para>
-        <para>The configuration of this provider, presented in Code 2, takes the driver class to be loaded, which must be in agent's classpath, the connection URL and the credentials to access the database and respective tables. The authentication functionality is provided in sapo-broker-auth-jdbc.jar.</para>
+        <para>The configuration of this provider, presented in <link linkend="CODE_AUTH_PROV_CONF" endterm="CODE_AUTH_PROV_CONF" />, takes the driver class to be loaded, which must be in agent's classpath, the connection URL and the credentials to access the database and respective tables. The authentication functionality is provided in sapo-broker-auth-jdbc.jar.</para>
         <example>
-          <title>Database creation scripts</title>
+          <title id="CODE_DATABASE_SCRIPTS">Database creation scripts</title>
           <screen>
 CREATE TABLE users
 (
-  user_id bigserial NOT NULL,
-  user_name character(25) NOT NULL,
-  user_password character(25) NOT NULL,
-  CONSTRAINT users_pkey PRIMARY KEY (user_id),
-  CONSTRAINT users_user_name_key UNIQUE (user_name)
-)
-CREATE TABLE user_roles
+ username varchar(50),
+ password varchar(50)
+);
+ALTER TABLE users ADD PRIMARY KEY (username);
+
+CREATE TABLE roles
 (
-  user_id bigserial NOT NULL,
-  user_role character(50) NOT NULL,
-  CONSTRAINT user_roles_pkey PRIMARY KEY (user_id, user_role),
-  CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id)
-  REFERENCES users (user_id) MATCH SIMPLE
-)</screen>
+ username varchar(50),
+ role varchar(50)
+);
+ALTER TABLE roles ADD PRIMARY KEY (username, role);
+ALTER TABLE roles ADD FOREIGN KEY (username) REFERENCES users(username);</screen>
         </example>
       </section>
     </section>
@@ -219,15 +217,17 @@ CREATE TABLE user_roles
             <code>keytool -import -file ./testCert.cer -keystore  ./clientKeystore</code>
           </prompt>
         </command>
-        <para>The generated keystore contains a public and private key. This keystore is meant to be used by the agent. A sample on how to configure SSL on the agent is presented at Code 4. This configuration element is specific to each agent, thus, it's not included in global.config file.</para>
-        <screen>
+        <para>The generated keystore contains a public and private key. This keystore is meant to be used by the agent. A sample on how to configure SSL on the agent is presented <link linkend="CODE_AGENTS_SSL_CONF">here</link> Code 4. This configuration element is specific to each agent, thus, it's not included in global.config file.</para>
+	<example>
+	  <title id="CODE_AGENTS_SSL_CONF">Agent's SSL sample configuration</title>
+          <screen>
 &lt;ssl&gt; 
    &lt;broker-ssl-port&gt;3390&lt;/broker-ssl-port&gt; 
    &lt;keystore-location&gt;/home/server/agent/certs2&lt;/keystore-location&gt; 
    &lt;keystore-password&gt;serverkspw&lt;/keystore-password&gt; 
    &lt;key-password&gt;serverpw&lt;/key-password&gt; 
 &lt;/ssl&gt;</screen>
-        <para>Code 4: Agent's SSL sample configuration</para>
+	</example>
         <para>In order to clients trust agents certificates, during SSL handshaking, the agent's public key, through an X.509 certificate must be added to the trusted certificates client store. It can be added to the default truststore, but it's recommended that client applications specifically used a keystore containing the agent's certificate. This is the approach used by the Java client library.</para>
       </section>
     </section>
