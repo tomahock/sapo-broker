@@ -36,8 +36,9 @@ java -server \
 -Djava.net.preferIPv4Stack=true \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
+-Dconfig-file=./conf/testparams.xml \
 -cp $classpath \
-pt.com.broker.functests.Main -u 1
+pt.com.broker.functests.Main -a 1
 
 # all
 #pt.com.broker.functests.Main -a 1
