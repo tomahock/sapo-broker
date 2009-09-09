@@ -8,6 +8,7 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
@@ -20,18 +21,21 @@ public class UdpPublishTest extends GenericPubSubTest
 	public UdpPublishTest(String testName)
 	{
 		super(testName);
-		
-		HostInfo hostInfo = new HostInfo("localhost", 3323, 3366);
+		HostInfo hostInfo = new HostInfo(ConfigurationInfo.getParameter("agent1-host"),
+				Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")),
+				Integer.parseInt(ConfigurationInfo.getParameter("agent1-udp-port")));
 		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
 		hosts.add(hostInfo);
 		try
 		{
-			client =  new BrokerClient(hosts, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
+			client =  new BrokerClient(hosts, "tcp://mycompany.com/test", this.getEncodingProtocolType());
 		}
 		catch (Throwable e)
 		{
 			setFailure(e);
 		}
+		
+		super.dataLenght = 250;
 		
 	}
 	

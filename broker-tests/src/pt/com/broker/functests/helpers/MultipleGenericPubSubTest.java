@@ -11,6 +11,7 @@ import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetSubscribe;
@@ -74,7 +75,8 @@ public class MultipleGenericPubSubTest extends BrokerTest
 
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), numberOfExecutions);
 			tci.numberOfExecutions = numberOfExecutions;
 
@@ -93,7 +95,8 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;
 

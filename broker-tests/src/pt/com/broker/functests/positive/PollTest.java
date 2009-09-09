@@ -8,6 +8,7 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
@@ -33,7 +34,8 @@ public class PollTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 					bk.enqueueMessage(brokerMessage, queueName);
@@ -59,7 +61,8 @@ public class PollTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 					NetNotification msg = bk.poll(queueName);
 

@@ -7,6 +7,7 @@ import pt.com.broker.auth.CredentialsProviderFactory;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
 import pt.com.broker.client.SslBrokerClient;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetProtocolType;
 
@@ -23,13 +24,13 @@ public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
 
-		// TODO: save these params in configuration
-		String keyStoreLocation = "[location]";
-		String keystorePassword = "[password]";
+		
+		String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
+		String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
 
 		String stsLocation = "https://services.sapo.pt/sts/";
-		String stsUsername = "[username]";
-		String stsPassword = "[password]";
+		String stsUsername =  ConfigurationInfo.getParameter("sapoSts", "username");
+		String stsPassword =  ConfigurationInfo.getParameter("sapoSts", "password");
 
 		SslBrokerClient bk = null;
 		try
@@ -38,7 +39,8 @@ public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 			SapoSTSParameterProvider.Parameters parameters = new SapoSTSParameterProvider.Parameters(stsLocation);
 			SapoSTSParameterProvider.setSTSParameters(parameters);
 
-			bk = new SslBrokerClient("127.0.0.1", 3390, "tcp://mycompany.com/mysniffer", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
+			bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
 
 			AuthInfo clientAuthInfo = new AuthInfo(stsUsername, stsPassword);
 			clientAuthInfo.setUserAuthenticationType("SapoSTS");

@@ -1,6 +1,7 @@
 package pt.com.broker.functests.positive;
 
 import pt.com.broker.client.BrokerClient;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.MultipleGenericPubSubTest;
 import pt.com.broker.functests.helpers.MultipleNotificationsBrokerListener;
 
@@ -19,7 +20,8 @@ public class Multiple1NTopic extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test");
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), 1);
 			tci.numberOfExecutions = getInfoProducers().size();
 

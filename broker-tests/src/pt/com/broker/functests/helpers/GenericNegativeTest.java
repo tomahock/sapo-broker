@@ -4,6 +4,7 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetFault;
 
 public class GenericNegativeTest extends BrokerTest
@@ -70,7 +71,8 @@ public class GenericNegativeTest extends BrokerTest
 			{
 				try
 				{
-					brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
+					brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 					brokerClient.setErrorListener(getErrorListener());
 
@@ -158,5 +160,15 @@ public class GenericNegativeTest extends BrokerTest
 	public String getFaultDetail()
 	{
 		return faultDetail;
+	}
+
+	public void setOkToTimeout(boolean okToTimeout)
+	{
+		this.okToTimeout = okToTimeout;
+	}
+
+	public boolean isOkToTimeout()
+	{
+		return okToTimeout;
 	}
 }

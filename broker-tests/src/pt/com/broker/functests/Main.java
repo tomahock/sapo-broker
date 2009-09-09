@@ -3,6 +3,7 @@ package pt.com.broker.functests;
 import org.caudexorigo.cli.CliFactory;
 
 import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.*;
 import pt.com.broker.functests.negative.*;
 import pt.com.broker.functests.positive.*;
@@ -14,7 +15,7 @@ public class Main
 	{
 		// Positive Tests
 
-		NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT };
+		NetProtocolType[] protoTypes = new NetProtocolType[] { /*NetProtocolType.SOAP,*/ NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT };
 
 		TestsResults testResults = new TestsResults();
 
@@ -37,6 +38,8 @@ public class Main
 		boolean runVirtualQueue = cargs.getVirtualQueue() == 1;
 		boolean runSSLandAuth = cargs.getSslAndAuthentication() == 1;
 		boolean runUdp = cargs.getUdp() == 1;
+		
+		ConfigurationInfo.init();
 
 		int numberOfTests = cargs.getNumberOfRuns();
 
@@ -137,6 +140,7 @@ public class Main
 			}
 		}
 
+		System.out.println();
 		System.out.println("Functional tests ended!");
 		System.out.println( "	Total tests: " + testResults.getTotalTests() );
 		System.out.println( "	Successful tests: " + testResults.getPositiveTestsCount()); 
@@ -146,12 +150,6 @@ public class Main
 		System.out.println( "	Skipped tests: " + testResults.getSkippedTestsCount());
 		for(String testName : testResults.getSkippedTests())
 			System.out.println( "		- " + testName);
-		System.out.println("	Total tests: " + testResults.getTotalTests());
-		System.out.println("	Successful tests: " + testResults.getPositiveTestsCount());
-		System.out.println("	Failed tests: " + testResults.getFailedTestsCount());
-		for (String testName : testResults.getFailedTests())
-			System.out.println("		- " + testName);
-		System.out.println("	Skipped tests: " + testResults.getSkippedTests());
 		System.exit(0);
 	}
 

@@ -61,7 +61,7 @@ public interface CliArgs
 	 * 
 	 * @return Perform just UDP related tests.
 	 */
-	@Option(shortName = "u", defaultValue = "1")
+	@Option(shortName = "u", defaultValue = "0")
 	int getUdp();
 
 	/**

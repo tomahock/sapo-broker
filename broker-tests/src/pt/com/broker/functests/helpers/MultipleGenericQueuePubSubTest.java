@@ -1,6 +1,7 @@
 package pt.com.broker.functests.helpers;
 
 import pt.com.broker.client.BrokerClient;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction.DestinationType;
 
 public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
@@ -25,7 +26,8 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test");
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), getConsumerNotifications());
 			tci.numberOfExecutions = getConsumerNotifications();
 
@@ -44,7 +46,8 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test");
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;
 

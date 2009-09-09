@@ -6,6 +6,7 @@ import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.Test;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.NotificationConsequence;
@@ -32,7 +33,8 @@ public class SampleTests
 				{
 					try
 					{
-						consumer = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mysniffer", getEncodingProtocolType());
+						consumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+								Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 						NetSubscribe subscribe = new NetSubscribe("/topic/.*", NetAction.DestinationType.TOPIC);
 						consumer.addAsyncConsumer(subscribe, brokerListener);
@@ -56,7 +58,8 @@ public class SampleTests
 
 					try
 					{
-						BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
+						BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+								Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 						bk.publishMessage(brokerMessage, topicName);

@@ -1,6 +1,7 @@
 package pt.com.broker.functests.positive;
 
 import pt.com.broker.client.SslBrokerClient;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 
 public class SslTopicNameSpeficied extends GenericPubSubTest
@@ -13,13 +14,15 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 	public SslTopicNameSpeficied(String testName)
 	{
 		super(testName);
-		// TODO: save these params in configuration
-		String keyStoreLocation = "[location]";
-		String keystorePassword = "[password]";
+		
+		String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
+		String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
+		
 		SslBrokerClient bk = null;
 		try
 		{
-			bk = new SslBrokerClient("127.0.0.1", 3390, "tcp://mycompany.com/mysniffer", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
+			bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
 		}
 		catch (Throwable e)
 		{

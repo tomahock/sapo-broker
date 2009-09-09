@@ -1,6 +1,7 @@
 package pt.com.broker.functests.positive;
 
 import pt.com.broker.client.BrokerClient;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.MultipleGenericQueuePubSubTest;
 import pt.com.broker.functests.helpers.MultipleNotificationsBrokerListener;
 
@@ -21,7 +22,8 @@ public class MultipleNNQueueRemote extends MultipleGenericQueuePubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient("127.0.0.1", 3423, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent2-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent2-port")), "tcp://mycompany.com/test");
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), getConsumerNotifications());
 			tci.numberOfExecutions = getConsumerNotifications();
 
@@ -41,7 +43,8 @@ public class MultipleNNQueueRemote extends MultipleGenericQueuePubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient("127.0.0.1", 3423, "tcp://mycompany.com/mypublisher");
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent2-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent2-port")), "tcp://mycompany.com/test");
 			tci.brokerListenter = null;
 
 			this.addInfoProducer(tci);

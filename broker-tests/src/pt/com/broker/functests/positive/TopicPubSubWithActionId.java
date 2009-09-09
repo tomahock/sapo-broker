@@ -10,6 +10,7 @@ import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.SetValueFuture;
@@ -41,8 +42,10 @@ public class TopicPubSubWithActionId extends BrokerTest
 		super("GenericPubSubTest");
 		try
 		{
-			infoConsumer = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
-			infoProducer = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", getEncodingProtocolType());
+			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
+			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 		}
 		catch (Throwable t)
 		{

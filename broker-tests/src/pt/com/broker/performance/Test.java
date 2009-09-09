@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.client.BrokerClient;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -26,10 +27,10 @@ public class Test
 	private final int nrLocalConsumers;
 	private final int nrRemoteConsumers;
 
-	private static final String localAgentAddress = "localhost";
-	private static final int localAgentPort = 3323;
-	private static final String remotAgentAddress = "localhost";
-	private static final int remoteAgentPort = 3423;
+	private static final String localAgentAddress = ConfigurationInfo.getParameter("agent1-host");
+	private static final int localAgentPort = Integer.parseInt(ConfigurationInfo.getParameter("agent1-port"));
+	private static final String remotAgentAddress = ConfigurationInfo.getParameter("agent2-host");
+	private static final int remoteAgentPort = Integer.parseInt(ConfigurationInfo.getParameter("agent2-port"));
 
 	public Test(DestinationType destinationType, NetProtocolType protocolType, int messageSize, int nrProducers, int nrLocalConsumers, int nrRemoteConsumers)
 	{

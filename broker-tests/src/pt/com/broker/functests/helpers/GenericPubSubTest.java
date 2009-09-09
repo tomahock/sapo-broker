@@ -8,6 +8,7 @@ import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetSubscribe;
@@ -38,8 +39,10 @@ public class GenericPubSubTest extends BrokerTest
 		super(testName);
 		try
 		{
-			infoConsumer = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
-			infoProducer = new BrokerClient("127.0.0.1", 3323, "tcp://mycompany.com/mypublisher", this.getEncodingProtocolType());
+			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 		}
 		catch (Throwable t)
 		{
