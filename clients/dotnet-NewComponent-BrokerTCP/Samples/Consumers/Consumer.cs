@@ -38,8 +38,7 @@ namespace Samples.Consumers
                 ;
             Console.WriteLine();
             Console.WriteLine("Unsubscribe...");
-
-
+            
             // Note Subscription instance could other than the one used for subscription as long as it was equivelent (same destination type and subscription pattern). Since the application is ending and therefor the socket will be closed agent's will discard the previous subscription. 
             brokerClient.Unsubscribe(subscription);
 

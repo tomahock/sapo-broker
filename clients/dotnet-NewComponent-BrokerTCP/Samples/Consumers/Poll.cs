@@ -26,7 +26,7 @@ namespace Samples.Consumers
             {
                 try
                 {
-                    NetNotification notification = brokerClient.Poll(cliArgs.DestinationName, 10000);
+                    NetNotification notification = brokerClient.Poll(cliArgs.DestinationName, -1);
                     if (notification != null)
                     {
                         System.Console.WriteLine("Message received: {0}",
@@ -35,7 +35,7 @@ namespace Samples.Consumers
                     }
                     else
                     {
-                        Console.WriteLine("Message not received.");
+                        Console.WriteLine("No message received");
                     }
                 }
                 catch (TimeoutException te)

@@ -23,6 +23,7 @@ namespace SapoBrokerClient.Messaging
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static NetNotification UnblockNotification = new NetNotification("UnblockNotification", NetAction.DestinationType.QUEUE, null, null);
+        public static NetNotification NoMessageNotification = new NetNotification("NoMessagekNotification", NetAction.DestinationType.QUEUE, null, null);
 		
 		#region Private data members
 		private NetworkHandler networkHandler;
@@ -159,7 +160,7 @@ namespace SapoBrokerClient.Messaging
 		
 		public void HandleIncommingMessage(NetMessage message)
 		{
-            if (log.IsInfoEnabled) log.DebugFormat("Handling incomming message! Message type: {0}", message.Action.Action.ToString());
+            if (log.IsDebugEnabled) log.DebugFormat("Handling incomming message! Message type: {0}", message.Action.Action.ToString());
 			try{
 				switch( message.Action.Action )
 				{
@@ -188,7 +189,7 @@ namespace SapoBrokerClient.Messaging
 		{
 			string subscription = message.Action.NotificationMessage.Subscription;
 			
-            if (!NotifiableKeyedQueues<NetNotification>.Offer(message.Action.NotificationMessage.Destination, message.Action.NotificationMessage))
+            if ( !NotifiableKeyedQueues<NetNotification>.Offer(message.Action.NotificationMessage.Subscription, message.Action.NotificationMessage))
             {
                 lock (subscriptions)
                 {
@@ -216,6 +217,11 @@ namespace SapoBrokerClient.Messaging
             if( message.Action.FaultMessage.Code.Equals( NetFault.PollTimeoutErrorMessage.Action.FaultMessage.Code ) )
             {
                 if (NotifiableKeyedQueues<NetNotification>.Offer(message.Action.FaultMessage.Detail, UnblockNotification))
+                    return;
+            }
+            if (message.Action.FaultMessage.Code.Equals(NetFault.NoMessageInQueueErrorMessage.Action.FaultMessage.Code))
+            {
+                if (NotifiableKeyedQueues<NetNotification>.Offer(message.Action.FaultMessage.Detail, NoMessageNotification))
                     return;
             }
             if (!PendingAcceptRequestsManager.MessageFailed(message.Action.FaultMessage))

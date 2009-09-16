@@ -436,6 +436,7 @@ namespace SapoBrokerClient
         public static readonly NetMessage MaximumNrQueuesReachedMessage;
         public static readonly NetMessage MaximumDistinctSubscriptionsReachedMessage;
         public static readonly NetMessage PollTimeoutErrorMessage;
+        public static readonly NetMessage NoMessageInQueueErrorMessage;
         public static readonly NetMessage AuthenticationFailedErrorMessage;
         public static readonly NetMessage UnknownAuthenticationTypeMessage;
         public static readonly NetMessage AccessDeniedErrorMessage;
@@ -453,6 +454,7 @@ namespace SapoBrokerClient
             MaximumNrQueuesReachedMessage = buildNetFaultMessage("2003", "Maximum number of queues reached");
             MaximumDistinctSubscriptionsReachedMessage = buildNetFaultMessage("2004", "Maximum distinct subscriptions reached");
             PollTimeoutErrorMessage = buildNetFaultMessage("2005", "Message poll timeout");
+            NoMessageInQueueErrorMessage = buildNetFaultMessage("2006", "No message in local agent queue.");
             AuthenticationFailedErrorMessage = buildNetFaultMessage("3101", "Authentication failed");
             UnknownAuthenticationTypeMessage = buildNetFaultMessage("3102", "Unknown authentication type");
             InvalidAuthenticationChannelType = buildNetFaultMessage("3103", "Invalid authentication channel type");
