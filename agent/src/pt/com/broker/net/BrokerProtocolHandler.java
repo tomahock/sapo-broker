@@ -7,7 +7,7 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteTimeoutException;
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.io.UnsynchByteArrayOutputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,7 +201,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 	{
 		try
 		{
-			UnsynchByteArrayOutputStream out = new UnsynchByteArrayOutputStream();
+			UnsynchronizedByteArrayOutputStream out = new UnsynchronizedByteArrayOutputStream();
 			SoapSerializer.ToXml(faultMessage, out);
 
 			NetBrokerMessage xfaultMessage = new NetBrokerMessage(out.toByteArray());

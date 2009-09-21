@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.Sleep;
-import org.caudexorigo.io.UnsynchByteArrayOutputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ class BDBStorage
 	{
 		DatabaseEntry data = new DatabaseEntry();
 
-		UnsynchByteArrayOutputStream bout = new UnsynchByteArrayOutputStream();
+		UnsynchronizedByteArrayOutputStream bout = new UnsynchronizedByteArrayOutputStream();
 		ObjectOutputStream oout = new ObjectOutputStream(bout);
 		bdbm.writeExternal(oout);
 		oout.flush();
@@ -276,7 +276,6 @@ class BDBStorage
 
 	}
 
-	
 	protected void recoverMessages()
 	{
 		if (isMarkedForDeletion.get())
@@ -291,12 +290,12 @@ class BDBStorage
 
 		try
 		{
-			msg_cursor = messageDb.openCursor(null, null );
+			msg_cursor = messageDb.openCursor(null, null);
 
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
 
-			while ( (msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && queueProcessor.hasRecipient() ) 
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && queueProcessor.hasRecipient())
 			{
 				if (isMarkedForDeletion.get())
 					break;
@@ -347,8 +346,8 @@ class BDBStorage
 								++i0;
 							}
 							else
-							{								
-								
+							{
+
 								if (log.isDebugEnabled())
 								{
 									log.debug("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());

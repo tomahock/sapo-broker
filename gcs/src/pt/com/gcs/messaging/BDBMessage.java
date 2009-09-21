@@ -6,7 +6,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 
-import org.caudexorigo.io.UnsynchByteArrayInputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 
 /**
  * BDBMessage represents a message to be stored or retrieved from the database.
@@ -104,7 +104,7 @@ public class BDBMessage implements Externalizable
 		BDBMessage bm = new BDBMessage();
 		ObjectInputStream oIn;
 
-		oIn = new ObjectInputStream(new UnsynchByteArrayInputStream(buf));
+		oIn = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(buf));
 		bm.readExternal(oIn);
 		return bm;
 	}

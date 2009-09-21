@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.caudexorigo.io.IOUtils;
 import org.jibx.runtime.IMarshallingContext;
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
@@ -61,7 +62,7 @@ public class SoapSerializer
 
 			try
 			{
-				String invalidMessage = slurp(in);
+				String invalidMessage = IOUtils.toString(in);
 				log.error("\n" + invalidMessage + "\n");
 			}
 			catch (IOException ioe)
@@ -71,18 +72,6 @@ public class SoapSerializer
 
 			throw new RuntimeException(e);
 		}
-	}
-
-	private static String slurp(InputStream in) throws IOException
-	{
-		in.reset();
-		StringBuilder out = new StringBuilder();
-		byte[] b = new byte[4096];
-		for (int n; (n = in.read(b)) != -1;)
-		{
-			out.append(new String(b, 0, n));
-		}
-		return out.toString();
 	}
 
 }

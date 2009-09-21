@@ -2,7 +2,7 @@ package pt.com.gcs.net.codec;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import org.caudexorigo.io.UnsynchByteArrayOutputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class GcsEncoder extends SimpleFramingEncoder
 			log.error(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
 		}
-		UnsynchByteArrayOutputStream holder = new UnsynchByteArrayOutputStream();
+		UnsynchronizedByteArrayOutputStream holder = new UnsynchronizedByteArrayOutputStream();
 		SerializerHelper.toStream((InternalMessage) message, holder);
 
 		return holder.toByteArray();

@@ -2,7 +2,7 @@ package pt.com.broker.codec.xml;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import org.caudexorigo.io.UnsynchByteArrayOutputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class SoapEncoder extends SimpleFramingEncoder
 		}
 		NetMessage gcsMessage = (NetMessage) message;
 		SoapEnvelope soap = Builder.netMessageToSoap(gcsMessage);
-		UnsynchByteArrayOutputStream holder = new UnsynchByteArrayOutputStream();
+		UnsynchronizedByteArrayOutputStream holder = new UnsynchronizedByteArrayOutputStream();
 		SoapSerializer.ToXml(soap, holder);
 		return holder.toByteArray();
 	}

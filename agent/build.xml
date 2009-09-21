@@ -34,7 +34,6 @@
 		<delete dir="${bin}" />
 		<delete dir="${dist}" />
 		<delete dir="${target-dir}" />
-		<delete file="../sapo-broker.tar.gz" />
 	</target>
 
 	<target name="clean-all" depends="clean">
@@ -163,14 +162,14 @@
 
 	<target name="tarball" depends="build-dist">
 		<tar tarfile="../sapo-broker.tar" >
-			<tarfileset dir="${target-dir}" prefix="sapo-broker">
+			<tarfileset dir="${target-dir}" prefix="sapo-broker-${version}">
 				<exclude name="bin/*.sh"/>
 			</tarfileset>
-			<tarfileset dir="${target-dir}" prefix="sapo-broker" filemode="755">
+			<tarfileset dir="${target-dir}" prefix="sapo-broker-${version}" filemode="755">
 				<include name="bin/*.sh"/>
 			</tarfileset>
 		</tar>
-		<gzip src="../sapo-broker.tar" destfile="../sapo-broker.tar.gz" />
+		<gzip src="../sapo-broker.tar" destfile="../sapo-broker-${version}.tar.gz" />
 		<delete file="../sapo-broker.tar" />
 		<delete dir="${target-dir}" />
 	</target>

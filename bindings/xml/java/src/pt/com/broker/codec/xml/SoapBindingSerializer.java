@@ -2,8 +2,8 @@ package pt.com.broker.codec.xml;
 
 import java.io.OutputStream;
 
-import org.caudexorigo.io.UnsynchByteArrayInputStream;
-import org.caudexorigo.io.UnsynchByteArrayOutputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
@@ -19,7 +19,7 @@ public class SoapBindingSerializer implements BindingSerializer
 	public byte[] marshal(NetMessage message)
 	{
 		SoapEnvelope soap = Builder.netMessageToSoap(message);
-		UnsynchByteArrayOutputStream holder = new UnsynchByteArrayOutputStream();
+		UnsynchronizedByteArrayOutputStream holder = new UnsynchronizedByteArrayOutputStream();
 		SoapSerializer.ToXml(soap, holder);
 		return holder.toByteArray();
 	}
@@ -34,7 +34,7 @@ public class SoapBindingSerializer implements BindingSerializer
 	@Override
 	public NetMessage unmarshal(byte[] packet)
 	{
-		UnsynchByteArrayInputStream bin = new UnsynchByteArrayInputStream(packet);
+		UnsynchronizedByteArrayInputStream bin = new UnsynchronizedByteArrayInputStream(packet);
 		SoapEnvelope msg = SoapSerializer.FromXml(bin);
 
 		return Builder.soapToNetMessage(msg);

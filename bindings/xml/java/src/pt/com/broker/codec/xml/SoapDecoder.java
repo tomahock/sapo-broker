@@ -1,6 +1,6 @@
 package pt.com.broker.codec.xml;
 
-import org.caudexorigo.io.UnsynchByteArrayInputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 
 import pt.com.broker.types.SimpleFramingDecoder;
 
@@ -14,7 +14,7 @@ public class SoapDecoder extends SimpleFramingDecoder
 	@Override
 	public Object processBody(byte[] packet)
 	{
-		UnsynchByteArrayInputStream bin = new UnsynchByteArrayInputStream(packet);
+		UnsynchronizedByteArrayInputStream bin = new UnsynchronizedByteArrayInputStream(packet);
 		SoapEnvelope msg = SoapSerializer.FromXml(bin);
 
 		return Builder.soapToNetMessage(msg);

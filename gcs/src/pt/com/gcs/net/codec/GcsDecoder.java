@@ -1,6 +1,6 @@
 package pt.com.gcs.net.codec;
 
-import org.caudexorigo.io.UnsynchByteArrayInputStream;
+import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 
 import pt.com.broker.types.SimpleFramingDecoder;
 import pt.com.gcs.io.SerializerHelper;
@@ -20,7 +20,7 @@ public class GcsDecoder extends SimpleFramingDecoder
 	@Override
 	public Object processBody(byte[] packet)
 	{
-		UnsynchByteArrayInputStream bin = new UnsynchByteArrayInputStream(packet);
+		UnsynchronizedByteArrayInputStream bin = new UnsynchronizedByteArrayInputStream(packet);
 		Object msg = SerializerHelper.fromStream(bin);
 		return msg;
 	}
