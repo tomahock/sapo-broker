@@ -20,6 +20,12 @@ namespace SapoBrokerClient.Messaging
     
     public class BrokerProtocolHandler
 	{
+        private struct PollRequest
+        {
+            public NetMessage Subscription;
+            public HandoverSyncObject<NetNotification> Handover;
+        }
+
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static NetNotification UnblockNotification = new NetNotification("UnblockNotification", NetAction.DestinationType.QUEUE, null, null);
@@ -30,13 +36,14 @@ namespace SapoBrokerClient.Messaging
 		private IMessageSerializer messageSerializer;
 		
 		private IDictionary<string, Subscription> subscriptions = new Dictionary<string, Subscription>();
-        private IDictionary<string, NetMessage> syncSubscriptions = new Dictionary<string, NetMessage>();
+
+        private IDictionary<string, PollRequest> syncSubscriptions = new Dictionary<string, PollRequest>();
 
         // Send-related fieds. Ensures that only one message is sent at a time and ensures that no message are sent during reconnect.
-        object sendLock = new Object(); // send-related operations should lock/synch in this object.
-        bool sendSuspended = false; // informs is send is suspended (reconnecting) or not.
-        bool sendOk; // after failure, is it ok to send message?
-		
+        private object sendLock = new Object(); // send-related operations should lock/synch in this object.
+        private bool sendSuspended = false; // informs is send is suspended (reconnecting) or not.
+        private bool sendOk; // after failure, is it ok to send message?
+
 		#endregion
 				
 		#region Auxiliar methods
@@ -58,8 +65,6 @@ namespace SapoBrokerClient.Messaging
             if (handler != null)
                 OnException(exception);
 		}
-
-           
 
 		#endregion
 
@@ -109,9 +114,9 @@ namespace SapoBrokerClient.Messaging
 
                 lock (syncSubscriptions)
                 {
-                    foreach (KeyValuePair<string, NetMessage> syncSubscription in syncSubscriptions)
+                    foreach (KeyValuePair<string, PollRequest> request in syncSubscriptions)
                     {
-                        this.HandleOutgoingMessage(syncSubscription.Value, null);
+                        this.HandleOutgoingMessage(request.Value.Subscription, null);
                     }
                 }
             }
@@ -160,8 +165,7 @@ namespace SapoBrokerClient.Messaging
 		
 		public void HandleIncommingMessage(NetMessage message)
 		{
-            if (log.IsDebugEnabled) log.DebugFormat("Handling incomming message! Message type: {0}", message.Action.Action.ToString());
-			try{
+            try{
 				switch( message.Action.Action )
 				{
 				case NetAction.ActionType.ACCEPTED:
@@ -188,19 +192,30 @@ namespace SapoBrokerClient.Messaging
 		private void HandleNotification(NetMessage message)
 		{
 			string subscription = message.Action.NotificationMessage.Subscription;
-			
-            if ( !NotifiableKeyedQueues<NetNotification>.Offer(message.Action.NotificationMessage.Subscription, message.Action.NotificationMessage))
+
+            if (message.Action.NotificationMessage.DestinationType != NetAction.DestinationType.TOPIC)
             {
-                lock (subscriptions)
+                lock (this.syncSubscriptions)
                 {
-                    if (subscriptions.ContainsKey(subscription))
+                    string subs = message.Action.NotificationMessage.Subscription;
+                    if (syncSubscriptions.ContainsKey(subscription))
                     {
-                        subscriptions[subscription].FireOnMessage(message.Action.NotificationMessage);
+                        PollRequest request = syncSubscriptions[subs];
+                        request.Handover.Offer(message.Action.NotificationMessage);
+                        return;
                     }
-                    else
-                    {
-                       DealWithException( new UnexpectedMessageException( "No registered subscribers for received message.", message));
-                    }
+                }
+            }
+
+            lock (subscriptions)
+            {
+                if (subscriptions.ContainsKey(subscription))
+                {
+                    subscriptions[subscription].FireOnMessage(message.Action.NotificationMessage);
+                }
+                else
+                {
+                    DealWithException(new UnexpectedMessageException("No registered subscribers for received message.", message));
                 }
             }
 		}
@@ -214,15 +229,27 @@ namespace SapoBrokerClient.Messaging
 
         private void HandleFault(NetMessage message)
         {
-            if( message.Action.FaultMessage.Code.Equals( NetFault.PollTimeoutErrorMessage.Action.FaultMessage.Code ) )
+            string msgDest = message.Action.FaultMessage.Detail;
+
+            if( message.Action.FaultMessage.Code.Equals( NetFault.PollTimeoutErrorMessage.Action.FaultMessage.Code ) ||
+                message.Action.FaultMessage.Code.Equals(NetFault.NoMessageInQueueErrorMessage.Action.FaultMessage.Code) )
             {
-                if (NotifiableKeyedQueues<NetNotification>.Offer(message.Action.FaultMessage.Detail, UnblockNotification))
+                lock (this.syncSubscriptions)
+                {
+                    if (syncSubscriptions.ContainsKey(msgDest))
+                    {
+                        PollRequest request = syncSubscriptions[msgDest];
+                        if( message.Action.FaultMessage.Code.Equals( NetFault.PollTimeoutErrorMessage.Action.FaultMessage.Code ) )
+                        {
+                            request.Handover.Offer(UnblockNotification);
+                        }
+                        else
+                        {
+                            request.Handover.Offer(NoMessageNotification);
+                        }
+                    }
                     return;
-            }
-            if (message.Action.FaultMessage.Code.Equals(NetFault.NoMessageInQueueErrorMessage.Action.FaultMessage.Code))
-            {
-                if (NotifiableKeyedQueues<NetNotification>.Offer(message.Action.FaultMessage.Detail, NoMessageNotification))
-                    return;
+                }
             }
             if (!PendingAcceptRequestsManager.MessageFailed(message.Action.FaultMessage))
             {
@@ -374,22 +401,27 @@ namespace SapoBrokerClient.Messaging
 
         //syncSubscriptions
 
-        public void AddSyncSubscription(string queueName, NetMessage message)
+        internal NetNotification GetSyncMessage(string queueName, NetMessage message)
         {
+            NetNotification receivedMessage = null;
+            HandoverSyncObject<NetNotification> synObj = null;
             lock (syncSubscriptions)
             {
                 if (syncSubscriptions.ContainsKey(queueName))
                     throw new ArgumentException("Queue " + queueName + " has already a poll runnig.");
-                syncSubscriptions.Add(queueName, message);
+                PollRequest pr = new PollRequest();
+                pr.Subscription = message;
+                pr.Handover = synObj = new HandoverSyncObject<NetNotification>();
+                syncSubscriptions.Add(queueName, pr);
             }
-        }
 
-        public void RemoveSyncSubscription(string queueName)
-        {
+            receivedMessage = synObj.Get();
             lock (syncSubscriptions)
             {
                 syncSubscriptions.Remove(queueName);
             }
+
+            return receivedMessage;
         }
 
         public int ReconnectionRetries
@@ -404,6 +436,6 @@ namespace SapoBrokerClient.Messaging
         }
 
 		#endregion
-	}
+    }
 	
 }

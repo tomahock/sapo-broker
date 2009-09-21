@@ -21,12 +21,12 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.ActionType;
+import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * BrokerProtocolHandler extends ProtocolHandler defining protocol aspects such as message handling (including errors), message encoding/decoding and on failure behavior.
  * 
  */
-
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
 	private static final int DEFAULT_MAX_NUMBER_OF_TRIES = Integer.MAX_VALUE;
@@ -46,8 +46,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	private HostInfo hostInfo = null;
 
 	private volatile int numberOfTries = DEFAULT_MAX_NUMBER_OF_TRIES;
-
-	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
+	
+		public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
 	{
 		this.brokerClient = brokerClient;
 		this.connector = connector;
@@ -55,7 +55,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		setHostInfo(brokerClient.getHostInfo());
 
 		connector.connect();
-
+		
 		try
 		{
 			if (ptype == null)
@@ -188,6 +188,15 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		brokerClient.getErrorListener().onError(error);
 	}
 
+	
+	public final static String PollTimeoutErrorMessageCode = NetFault.PollTimeoutErrorMessage.getAction().getFaultMessage().getCode();
+	public final static String NoMessageInQueueErrorMessageCode = NetFault.NoMessageInQueueErrorMessage.getAction().getFaultMessage().getCode();
+	
+	public static final NetMessage TimeoutUnblockNotification = new NetMessage(new NetAction(NetAction.ActionType.FAULT));
+	public static final NetMessage NoMessageUnblockNotification  = new NetMessage(new NetAction(NetAction.ActionType.FAULT)); 
+	
+	
+	
 	@Override
 	protected void handleReceivedMessage(NetMessage message)
 	{
@@ -197,17 +206,18 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		{
 		case NOTIFICATION:
 			NetNotification notification = action.getNotificationMessage();
-			SyncConsumer sc = SyncConsumerList.get(notification.getDestination());
+			if ( !notification.getDestinationType().equals(NetAction.DestinationType.TOPIC) )
+			{
+				boolean received = brokerClient.offerPollResponse(notification.getSubscription(), message);
+				if( received )
+				{
+					return;
+				}
+					
+			}
 
-			if (sc.count() > 0)
-			{
-				sc.offer(notification);
-				sc.decrement();
-			}
-			else
-			{
-				brokerClient.notifyListener(notification);
-			}
+			brokerClient.notifyListener(notification);
+
 			break;
 		case PONG:
 			try
@@ -222,21 +232,21 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
 
-			if (fault.getCode().equals(NetFault.PollTimeoutErrorMessage.getAction().getFaultMessage().getCode()))
+			if (fault.getCode().equals(PollTimeoutErrorMessageCode) || 
+					fault.getCode().equals(NoMessageInQueueErrorMessageCode))
 			{
 				String destination = fault.getDetail();
-
-				SyncConsumer syncConsumer = SyncConsumerList.get(destination);
-
-				if (syncConsumer.count() > 0)
+				
+				if (fault.getCode().equals(PollTimeoutErrorMessageCode)
+						&& brokerClient.offerPollResponse(destination, TimeoutUnblockNotification))
 				{
-					syncConsumer.offer(SyncConsumer.UnblockNotification);
-					syncConsumer.decrement();
-					if (fault.getActionId() != null)
-						PendingAcceptRequestsManager.messageFailed(fault);
-
 					return;
 				}
+				else if(brokerClient.offerPollResponse(destination, NoMessageUnblockNotification))
+				{
+					return;
+				}
+				log.error("A PollTimeout or NoMessageInQueue fault message was received but there wasn't a sync consumer.");
 			}
 
 			if (fault.getActionId() != null)
@@ -296,7 +306,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	{
 		if (brokerClient.getState() == BrokerClientState.CLOSE)
 		{
-			onError(new Exception("Message cannot be sent because clien was closed"));
+			onError(new Exception("Message cannot be sent because client was closed"));
 			return;
 		}
 

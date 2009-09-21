@@ -42,10 +42,10 @@ public class QueueSessionListener extends BrokerListener
 		return DestinationType.QUEUE;
 	}
 
-	public boolean onMessage(final InternalMessage msg)
+	public long onMessage(final InternalMessage msg)
 	{
 		if (msg == null)
-			return true;
+			return -1;
 
 		final IoSession ioSession = pick();
 
@@ -57,11 +57,12 @@ public class QueueSessionListener extends BrokerListener
 				{
 					if (ioSession.getScheduledWriteBytes() > MAX_SESSION_BUFFER_SIZE)
 					{
-						return false;
+						return -1;
 					}
 					final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
 					ioSession.write(response);
-					return true;
+										
+					return 2 * 60 * 1000; // reserve for 2mn
 				}
 			}
 		}
@@ -83,7 +84,7 @@ public class QueueSessionListener extends BrokerListener
 			}
 		}
 
-		return false;
+		return -1;
 	}
 
 	private IoSession pick()

@@ -1,5 +1,6 @@
 package pt.com.broker.client.sample;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
@@ -52,29 +53,23 @@ public class Consumer implements BrokerListener
 	@Override
 	public boolean isAutoAck()
 	{
-		if (dtype == DestinationType.TOPIC)
-		{
-			return false;
-		}
-		else
-		{
-			try
-			{
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return true;
-		}
+		return dtype != DestinationType.TOPIC;
 	}
 
+	long time = 0;
+	volatile long count = 0;
 	@Override
-	public void onMessage(NetNotification notification)
+	public void onMessage(NetNotification notification) 
 	{
-		log.info(String.format("%s -> Message destination: %s Received Message Length: %s (%s)", counter.incrementAndGet(), notification.getDestination(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
+		log.info(String.format(" [%s] %s -> Message destination: %s Received Message Length: %s (%s)", new Date(System.currentTimeMillis()), counter.incrementAndGet(), notification.getDestination(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
+//		if( ((++count) % 1000 ) == 0)
+//		{
+//			log.info(String.format(" [%s] %s -> Message destination: %s Received Message Length: %s (%s)", new Date(System.currentTimeMillis()), count, notification.getDestination(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
+//			System.out.println("Time: " + (System.nanoTime() - time));
+//			time = System.nanoTime();
+//		}
+		
+		
 	}
 
 }

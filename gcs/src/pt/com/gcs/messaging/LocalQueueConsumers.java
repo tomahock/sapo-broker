@@ -26,7 +26,7 @@ import pt.com.gcs.net.IoSessionHelper;
  * 
  */
 
-class LocalQueueConsumers
+public class LocalQueueConsumers
 {
 	private static Logger log = LoggerFactory.getLogger(LocalQueueConsumers.class);
 
@@ -63,7 +63,7 @@ class LocalQueueConsumers
 		}
 	}
 
-	protected synchronized static void add(String queueName, MessageListener listener)
+	public synchronized static void add(String queueName, MessageListener listener)
 	{
 		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 		if (listeners == null)
@@ -72,11 +72,11 @@ class LocalQueueConsumers
 		}
 		listeners.add(listener);
 		instance.localQueueConsumers.put(queueName, listeners);
-		if (!instance.registreadSyncConsumer(queueName)) // Broadcast if there is no registered sync consumers
+		if (listeners.size() == 1)
 			instance.broadCastNewQueueConsumer(queueName);
 	}
 
-	protected synchronized static void remove(MessageListener listener)
+	public synchronized static void remove(MessageListener listener)
 	{
 		if (listener != null)
 		{
@@ -84,40 +84,15 @@ class LocalQueueConsumers
 			CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 			if (listeners != null)
 			{
-				listeners.remove(listener);
-
+				boolean removed = listeners.remove(listener);
+				
 				if (listeners.size() == 0)
 				{
 					instance.localQueueConsumers.remove(listeners);
-					if (!instance.registreadSyncConsumer(queueName))// Broadcast if there is no registered sync consumers
-					{
-						instance.broadCastRemovedQueueConsumer(queueName);
-						System.out.println("    Sending broadcast");
-					}
+					instance.broadCastRemovedQueueConsumer(queueName);
 				}
 			}
 		}
-	}
-
-	protected static void addSyncConsumer(String queueName)
-	{
-		synchronized (syncConsumers)
-		{
-			syncConsumers.add(queueName);
-		}
-
-		if (!instance.registreadAsyncConsumer(queueName))
-			instance.broadCastNewQueueConsumer(queueName);
-	}
-
-	protected static void removeSyncConsumer(String queueName)
-	{
-		synchronized (syncConsumers)
-		{
-			syncConsumers.remove(queueName);
-		}
-		if (!instance.registreadAsyncConsumer(queueName))
-			instance.broadCastRemovedQueueConsumer(queueName);
 	}
 
 	protected static void broadCastQueueInfo(String destinationName, String action, IoSession ioSession)
@@ -167,7 +142,7 @@ class LocalQueueConsumers
 		return Collections.unmodifiableSet(instance.localQueueConsumers.keySet());
 	}
 
-	protected static boolean notify(InternalMessage message)
+	protected static long notify(InternalMessage message)
 	{
 		return instance.doNotify(message);
 	}
@@ -185,7 +160,7 @@ class LocalQueueConsumers
 		}
 	}
 
-	protected static int size(String destinationName)
+	public static int size(String destinationName)
 	{
 		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
 		if (listeners != null)
@@ -193,6 +168,31 @@ class LocalQueueConsumers
 			return listeners.size();
 		}
 		return 0;
+	}
+	
+	public static int readyQueueSize(String destinationName)
+	{
+		int size  = 0;
+		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
+		if (listeners != null)
+		{
+			for(MessageListener ml : listeners)
+				if(ml.ready())
+					++size;
+		}
+		return size;
+	}
+	
+	public static boolean hasReadyRecipients(String destinationName)
+	{
+		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
+		if (listeners != null)
+		{
+			for(MessageListener ml : listeners)
+				if(ml.ready())
+					return true;
+		}
+		return false;
 	}
 
 	private Map<String, CopyOnWriteArrayList<MessageListener>> localQueueConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<MessageListener>>();
@@ -259,7 +259,7 @@ class LocalQueueConsumers
 		broadCastActionQueueConsumer(destinationName, "DELETE");
 	}
 
-	protected boolean doNotify(InternalMessage message)
+	protected long doNotify(InternalMessage message)
 	{
 		CopyOnWriteArrayList<MessageListener> listeners = localQueueConsumers.get(message.getDestination());
 		if (listeners != null)
@@ -280,7 +280,7 @@ class LocalQueueConsumers
 			log.debug("There are no local listeners for queue: {}", message.getDestination());
 		}
 
-		return false;
+		return -1;
 	}
 
 	private MessageListener pick(CopyOnWriteArrayList<MessageListener> listeners)
@@ -302,14 +302,22 @@ class LocalQueueConsumers
 
 			try
 			{
-				return listeners.get(currentQEP);
+				MessageListener messageListener = listeners.get(currentQEP);
+				if( messageListener.ready() )
+					return messageListener;
+
+				return pick(listeners);
 			}
 			catch (Exception e)
 			{
 				try
 				{
 					currentQEP = 0;
-					return listeners.get(currentQEP);
+					MessageListener messageListener = listeners.get(currentQEP);
+					if( messageListener.ready() )
+						return messageListener;
+					
+					return pick(listeners);
 				}
 				catch (Throwable t)
 				{
@@ -318,5 +326,4 @@ class LocalQueueConsumers
 			}
 		}
 	}
-
 }

@@ -436,7 +436,14 @@ Payload:
                 <entry>2005</entry>
                 <entry>Message poll timeout</entry>
                 <entry>
-                  Message sent after the timeout specified by the consumer has elapsed.
+                  Message sent after the timeout specified by the consumer has elapsed. Timeout of zero means that the client is willing to wait forever.
+                </entry>
+              </row>
+              <row>
+                <entry>2006</entry>
+                <entry>No message in local agent queue</entry>
+                <entry>
+                  Message sent if a poll request cannot be immediately satisfied because there are no available messages in local agent queue. Clients denote the intention of not wainting by sending a negative timeout.
                 </entry>
               </row>
             </tbody>

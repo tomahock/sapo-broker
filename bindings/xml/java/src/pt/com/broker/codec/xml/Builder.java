@@ -125,7 +125,7 @@ public class Builder
 			Poll poll = msg.body.poll;
 
 			NetAction netAction = new NetAction(NetAction.ActionType.POLL);
-			NetPoll netPoll = new NetPoll(poll.destinationName, Long.MAX_VALUE / 2);
+			NetPoll netPoll = new NetPoll(poll.destinationName, 0);
 			netPoll.setActionId(actionId);
 
 			message = new NetMessage(netAction);
@@ -257,6 +257,8 @@ public class Builder
 		case POLL:
 			Poll poll = new Poll();
 			NetPoll npoll = netMessage.getAction().getPollMessage();
+			if(npoll.getTimeout() != 0)
+				throw new IllegalArgumentException("When using XML encoding timeout must be zero (wait forever).");
 			poll.actionId = npoll.getActionId();
 			poll.destinationName = npoll.getDestination();
 			soap.body.poll = poll;

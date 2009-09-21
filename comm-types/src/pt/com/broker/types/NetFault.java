@@ -24,6 +24,7 @@ public final class NetFault
 	public static final NetMessage MaximumNrQueuesReachedErrorMessage;
 	public static final NetMessage MaximumDistinctSubscriptionsReachedErrorMessage;
 	public static final NetMessage PollTimeoutErrorMessage;
+	public static final NetMessage NoMessageInQueueErrorMessage;
 	public static final NetMessage AuthenticationFailedErrorMessage;
 	public static final NetMessage UnknownAuthenticationTypeMessage;
 	public static final NetMessage AccessDeniedErrorMessage;
@@ -41,6 +42,7 @@ public final class NetFault
 		MaximumNrQueuesReachedErrorMessage = buildNetFaultMessage("2003", "Maximum number of queues reached");
 		MaximumDistinctSubscriptionsReachedErrorMessage = buildNetFaultMessage("2004", "Maximum distinct subscriptions reached");
 		PollTimeoutErrorMessage = buildNetFaultMessage("2005", "Message poll timeout");
+		NoMessageInQueueErrorMessage = buildNetFaultMessage("2006", "No message in local agent queue.");
 		AuthenticationFailedErrorMessage = buildNetFaultMessage("3101", "Authentication failed");
 		UnknownAuthenticationTypeMessage = buildNetFaultMessage("3102", "Unknown authentication type");
 		InvalidAuthenticationChannelType = buildNetFaultMessage("3103", "Invalid authentication channel type");

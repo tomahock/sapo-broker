@@ -27,6 +27,7 @@ import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
 import pt.com.broker.messaging.QueueSessionListenerList;
+import pt.com.broker.messaging.SynchronousMessageListener;
 import pt.com.broker.messaging.TopicSubscriberList;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
@@ -79,9 +80,12 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		try
 		{
 			String remoteClient = IoSessionHelper.getRemoteAddress(iosession);
-			log.info("Session closed: " + remoteClient);
 			QueueSessionListenerList.removeSession(iosession);
 			TopicSubscriberList.removeSession(iosession);
+			SynchronousMessageListener.removeSession(iosession);
+
+			
+			log.info("Session closed: " + remoteClient);
 		}
 		catch (Throwable e)
 		{

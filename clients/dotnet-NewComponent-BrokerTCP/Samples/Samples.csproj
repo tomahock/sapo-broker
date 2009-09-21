@@ -12,7 +12,7 @@
     <AssemblyName>Samples</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>Samples.Consumers.Consumer</StartupObject>
+    <StartupObject>Samples.Consumers.IntensivePolling</StartupObject>
     <TargetFrameworkSubset>Client</TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -58,6 +58,7 @@
     <Compile Include="Consumers\Consumer.cs" />
     <Compile Include="Consumers\ConsumerWithFailover.cs" />
     <Compile Include="Consumers\DbAuthConsumer.cs" />
+    <Compile Include="Consumers\IntensivePolling.cs" />
     <Compile Include="Consumers\SslConsumer.cs" />
     <Compile Include="Consumers\StsAuthConsumer.cs" />
     <Compile Include="Consumers\Ping.cs" />

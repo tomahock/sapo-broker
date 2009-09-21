@@ -99,6 +99,7 @@
     <Compile Include="Networking\UdpNetworkHandler.cs" />
     <Compile Include="SslBrokerClient.cs" />
     <Compile Include="Utils\CircularContainer.cs" />
+    <Compile Include="Utils\HandoverSyncObject.cs" />
     <Compile Include="Utils\NotifiableEvent.cs" />
     <Compile Include="Utils\NotifiableKeyedQueues.cs" />
     <Compile Include="Networking\MessageAccumulator.cs" />

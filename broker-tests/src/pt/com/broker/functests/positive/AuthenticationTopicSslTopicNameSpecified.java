@@ -1,7 +1,5 @@
 package pt.com.broker.functests.positive;
 
-import org.caudexorigo.concurrent.Sleep;
-
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProviderFactory;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider;
@@ -16,6 +14,7 @@ public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 	public AuthenticationTopicSslTopicNameSpecified()
 	{
 		this("PubSub - Authentication Topic name specified");
+		setTimeout(2000);
 	}
 
 	public AuthenticationTopicSslTopicNameSpecified(String testName)
@@ -24,13 +23,12 @@ public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
 
-		
 		String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
 		String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
 
 		String stsLocation = "https://services.sapo.pt/sts/";
-		String stsUsername =  ConfigurationInfo.getParameter("sapoSts", "username");
-		String stsPassword =  ConfigurationInfo.getParameter("sapoSts", "password");
+		String stsUsername = ConfigurationInfo.getParameter("sapoSts", "username");
+		String stsPassword = ConfigurationInfo.getParameter("sapoSts", "password");
 
 		SslBrokerClient bk = null;
 		try
@@ -39,8 +37,7 @@ public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 			SapoSTSParameterProvider.Parameters parameters = new SapoSTSParameterProvider.Parameters(stsLocation);
 			SapoSTSParameterProvider.setSTSParameters(parameters);
 
-			bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
+			bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
 
 			AuthInfo clientAuthInfo = new AuthInfo(stsUsername, stsPassword);
 			clientAuthInfo.setUserAuthenticationType("SapoSTS");

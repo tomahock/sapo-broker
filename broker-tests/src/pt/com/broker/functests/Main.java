@@ -10,12 +10,11 @@ import pt.com.broker.functests.positive.*;
 
 public class Main
 {
-
 	public static void main(String[] args)
 	{
 		// Positive Tests
 
-		NetProtocolType[] protoTypes = new NetProtocolType[] { /*NetProtocolType.SOAP,*/ NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT };
+		NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT};
 
 		TestsResults testResults = new TestsResults();
 
@@ -42,7 +41,7 @@ public class Main
 		ConfigurationInfo.init();
 
 		int numberOfTests = cargs.getNumberOfRuns();
-
+		
 		for (NetProtocolType protoType : protoTypes)
 		{
 			System.out.println(String.format(" ---> Using %s encoding protocol", protoType));
@@ -51,8 +50,8 @@ public class Main
 
 			BrokerTest.setDefaultimeout(12 * 1000);
 			BrokerTest.setDefaultEncodingProtocolType(protoType);
-			BrokerTest.setDefaultDataLenght(1024);
-
+			BrokerTest.setDefaultDataLenght(512);
+			
 			if (runAll || runPositive)
 			{
 				new PingTest().run(numberOfTests, testResults);
@@ -86,6 +85,8 @@ public class Main
 			{
 				new QueueTest().run(numberOfTests, testResults);
 				new PollTest().run(numberOfTests, testResults);
+				new PollVirtualQueueTest().run(numberOfTests, testResults);
+				new PollNoWaitTest().run(numberOfTests, testResults);
 
 				new QueueTestDist().run(numberOfTests, testResults);
 

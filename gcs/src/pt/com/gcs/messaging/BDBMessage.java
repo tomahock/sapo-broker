@@ -19,7 +19,6 @@ public class BDBMessage implements Externalizable
 	private long _sequence;
 	private boolean _preferLocalConsumer;
 	private long _reserve;
-	private int _deliveryCount;
 	private InternalMessage _message;
 	private static final String SEPARATOR = "<#>";
 
@@ -27,9 +26,8 @@ public class BDBMessage implements Externalizable
 	{
 	}
 
-	public BDBMessage(InternalMessage msg, long sequence, int deliveryCount, boolean preferLocalConsumer)
+	public BDBMessage(InternalMessage msg, long sequence, boolean preferLocalConsumer)
 	{
-		_deliveryCount = deliveryCount;
 		_preferLocalConsumer = preferLocalConsumer;
 		_message = msg;
 		_sequence = sequence;
@@ -51,14 +49,9 @@ public class BDBMessage implements Externalizable
 		return _sequence;
 	}
 
-	public long getPollReserveTimeout()
+	public long getReserveTimeout()
 	{
 		return _reserve;
-	}
-
-	public int getDeliveryCount()
-	{
-		return _deliveryCount;
 	}
 
 	public InternalMessage getMessage()
@@ -66,12 +59,7 @@ public class BDBMessage implements Externalizable
 		return _message;
 	}
 
-	public void setDeliveryCount(int count)
-	{
-		_deliveryCount = count;
-	}
-
-	public void setPollReserveTimeout(long reserve)
+	public void setReserveTimeout(long reserve)
 	{
 		_reserve = reserve;
 	}
@@ -80,7 +68,6 @@ public class BDBMessage implements Externalizable
 	{
 		_sequence = oin.readLong();
 		_preferLocalConsumer = oin.readBoolean();
-		_deliveryCount = oin.readInt();
 		_reserve = oin.readLong();
 		InternalMessage m = new InternalMessage();
 
@@ -93,7 +80,6 @@ public class BDBMessage implements Externalizable
 	{
 		oout.writeLong(_sequence);
 		oout.writeBoolean(_preferLocalConsumer);
-		oout.writeInt(_deliveryCount);
 		oout.writeLong(_reserve);
 		_message.writeExternal(oout);
 	}

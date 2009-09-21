@@ -122,7 +122,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 						tci.brokerClient.addAsyncConsumer(subscribe, tci.brokerListenter);
 					}
 
-					Sleep.time(1000);
+					Sleep.time(250);
 					setDone(true);
 					setSucess(true);
 				}
@@ -205,7 +205,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					for (TestClientInfo tci : getInfoConsumers())
 					{
 						tci.brokerClient.unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
-						Sleep.time(1000);
+						Sleep.time(250);
 						tci.brokerClient.close();
 					}
 

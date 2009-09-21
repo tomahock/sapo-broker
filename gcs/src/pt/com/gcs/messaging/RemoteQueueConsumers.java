@@ -47,7 +47,7 @@ class RemoteQueueConsumers
 		instance.remoteQueueConsumers.remove(queueName);
 	}
 
-	protected static boolean notify(InternalMessage message)
+	protected static long notify(InternalMessage message)
 	{
 		return instance.doNotify(message);
 	}
@@ -102,7 +102,7 @@ class RemoteQueueConsumers
 	{
 	}
 
-	protected boolean doNotify(InternalMessage message)
+	protected long doNotify(InternalMessage message)
 	{
 		CopyOnWriteArrayList<IoSession> sessions = remoteQueueConsumers.get(message.getDestination());
 		if (sessions != null)
@@ -117,7 +117,7 @@ class RemoteQueueConsumers
 					try
 					{
 						ioSession.write(message);
-						return true;
+						return 2 * 60 * 1000; //2mn
 					}
 					catch (Throwable ct)
 					{
@@ -140,7 +140,7 @@ class RemoteQueueConsumers
 			log.debug("There are no remote consumers for queue: {}", message.getDestination());
 		}
 
-		return false;
+		return -1;
 	}
 
 	private IoSession pick(CopyOnWriteArrayList<IoSession> sessions)

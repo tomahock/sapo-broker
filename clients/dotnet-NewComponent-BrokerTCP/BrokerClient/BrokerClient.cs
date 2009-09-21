@@ -270,22 +270,25 @@ namespace SapoBrokerClient
             action.PollMessage = poll;
             NetMessage netMessage = new NetMessage(action);
 
-            object sync = new object();
-            NotifiableKeyedQueues<NetNotification>.SynchronizationEntry syncEntry = new NotifiableKeyedQueues<NetNotification>.SynchronizationEntry(sync, false);
-
-            NotifiableKeyedQueues<NetNotification>.Register(queueName, syncEntry);
-
             protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);
-            protocolHandler.AddSyncSubscription(queueName, netMessage);
+            NetNotification notification = protocolHandler.GetSyncMessage(queueName, netMessage);
+            
+            //object sync = new object();
+            //NotifiableKeyedQueues<NetNotification>.SynchronizationEntry syncEntry = new NotifiableKeyedQueues<NetNotification>.SynchronizationEntry(sync, false);
 
-            lock (sync)
-            {
-                Monitor.Wait(sync);
-            }
-            protocolHandler.RemoveSyncSubscription(queueName);
-            syncEntry.StillInterested = false;
+            //NotifiableKeyedQueues<NetNotification>.Register(queueName, syncEntry);
 
-            NetNotification notification = syncEntry.Values[0];
+            //protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);
+            //protocolHandler.AddSyncSubscription(queueName, netMessage);
+
+            //lock (sync)
+            //{
+            //    Monitor.Wait(sync);
+            //}
+            //protocolHandler.RemoveSyncSubscription(queueName);
+            //syncEntry.StillInterested = false;
+
+            //NetNotification notification = syncEntry.Values[0];
             if (notification == BrokerProtocolHandler.UnblockNotification)
                 throw new TimeoutException();
             

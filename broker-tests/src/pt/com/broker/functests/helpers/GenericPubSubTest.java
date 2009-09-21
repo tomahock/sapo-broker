@@ -87,7 +87,7 @@ public class GenericPubSubTest extends BrokerTest
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getDestinationType());
 					getInfoConsumer().addAsyncConsumer(subscribe, getBrokerListener());
 
-					Sleep.time(1000);
+					Sleep.time(250);
 					setDone(true);
 					setSucess(true);
 				}
@@ -159,7 +159,7 @@ public class GenericPubSubTest extends BrokerTest
 				{
 					getInfoConsumer().unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
 
-					Sleep.time(1000);
+					Sleep.time(250);
 					getInfoConsumer().close();
 
 					setDone(true);

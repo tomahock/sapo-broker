@@ -91,50 +91,50 @@ public class QueueProcessor
 		}
 	}
 
-	protected boolean forward(InternalMessage message, boolean preferLocalConsumer) throws IllegalStateException
+	protected long forward(InternalMessage message, boolean preferLocalConsumer) throws IllegalStateException
 	{
 
 		message.setType((MessageType.COM_QUEUE));
-		int lqsize = LocalQueueConsumers.size(_destinationName);
+		int lqsize = LocalQueueConsumers.readyQueueSize(_destinationName);
 		int rqsize = RemoteQueueConsumers.size(_destinationName);
 		int size = lqsize + rqsize;
 
-		boolean isDelivered = false;
+		long result = -1;
 
 		if (size == 0)
 		{
-			throw new IllegalStateException("There are no consumers.");
+			return -1;
 		}
 		else
 		{
 			if ((lqsize != 0) && preferLocalConsumer)
 			{
-				isDelivered = LocalQueueConsumers.notify(message);
+				result = LocalQueueConsumers.notify(message);
 			}
 			else if ((lqsize == 0) && (rqsize != 0))
 			{
-				isDelivered = RemoteQueueConsumers.notify(message);
+				result = RemoteQueueConsumers.notify(message);
 			}
 			else if ((rqsize == 0) && (lqsize != 0))
 			{
-				isDelivered = LocalQueueConsumers.notify(message);
+				result = LocalQueueConsumers.notify(message);
 			}
 			else if ((lqsize > 0) && (rqsize > 0))
 			{
 				long n = _deliverSequence.incrementAndGet() % 2;
 				if (n == 0)
-					isDelivered = LocalQueueConsumers.notify(message);
+					result = LocalQueueConsumers.notify(message);
 				else
-					isDelivered = RemoteQueueConsumers.notify(message);
+					result = RemoteQueueConsumers.notify(message);
 			}
 		}
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("forward-> isDelivered: " + isDelivered + ", lqsize: " + lqsize + ", rqsize: " + rqsize + ", message.id: " + message.getMessageId());
+			log.debug("forward-> isDelivered: " + result + ", lqsize: " + lqsize + ", rqsize: " + rqsize + ", message.id: " + message.getMessageId());
 		}
 
-		return isDelivered;
+		return result;
 	}
 
 	protected String getDestinationName()
@@ -144,20 +144,14 @@ public class QueueProcessor
 
 	protected boolean hasRecipient()
 	{
-		if (size() > 0)
+		if(RemoteQueueConsumers.size(_destinationName) != 0 )
 			return true;
-		else
-			return false;
-	}
-
-	protected InternalMessage poll()
-	{
-		return storage.poll();
+		return LocalQueueConsumers.hasReadyRecipients(_destinationName);
 	}
 
 	protected int size()
 	{
-		return RemoteQueueConsumers.size(_destinationName) + LocalQueueConsumers.size(_destinationName);
+		return RemoteQueueConsumers.size(_destinationName) + LocalQueueConsumers.readyQueueSize(_destinationName);
 	}
 
 	protected void store(final InternalMessage msg)
@@ -170,7 +164,7 @@ public class QueueProcessor
 		try
 		{
 			long seq_nr = _sequence.incrementAndGet();
-			storage.insert(msg, seq_nr, 0, localConsumersOnly);
+			storage.insert(msg, seq_nr, localConsumersOnly);
 			_counter.incrementAndGet();
 		}
 		catch (Throwable t)

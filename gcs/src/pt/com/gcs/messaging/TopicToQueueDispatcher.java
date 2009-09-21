@@ -23,7 +23,7 @@ class TopicToQueueDispatcher implements MessageListener
 		return DestinationType.TOPIC;
 	}
 
-	public boolean onMessage(InternalMessage message)
+	public long onMessage(InternalMessage message)
 	{
 		if (!message.isFromRemotePeer())
 		{
@@ -31,11 +31,17 @@ class TopicToQueueDispatcher implements MessageListener
 			Gcs.enqueue(message);
 			// Gcs.enqueue(message, _queueName);
 		}
-		return true;
+		return 0;
 	}
 
 	public String getDestinationName()
 	{
 		return _queueName;
+	}
+
+	@Override
+	public boolean ready()
+	{
+		return true;
 	}
 }

@@ -2,10 +2,7 @@ package pt.com.gcs.messaging;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
@@ -43,17 +40,7 @@ class BDBStorage
 
 	private final AtomicBoolean isMarkedForDeletion = new AtomicBoolean(false);
 
-	private AtomicInteger batchCount = new AtomicInteger(0);
-
-	private Object mutex = new Object();
-
-	private Object dbLock = new Object();
-
-	private Queue<InternalMessage> _syncConsumerQueue = new ConcurrentLinkedQueue<InternalMessage>();
-
-	private static final int RETRY_THRESHOLD = 2 * 60 * 1000; // 2minutes
-
-	private long redelivery_time = System.currentTimeMillis() + RETRY_THRESHOLD;
+	private static final int MAX_REDELIVERY_PER_MESSAGE = 3;
 
 	public BDBStorage(QueueProcessor qp)
 	{
@@ -216,7 +203,6 @@ class BDBStorage
 			}
 			else
 			{
-				System.out.println("### BD operation failed: " + op);
 				return false;
 			}
 		}
@@ -267,14 +253,14 @@ class BDBStorage
 		return seqValue;
 	}
 
-	protected void insert(InternalMessage msg, long sequence, int deliveryCount, boolean preferLocalConsumer)
+	protected void insert(InternalMessage msg, long sequence, boolean preferLocalConsumer)
 	{
 		if (isMarkedForDeletion.get())
 			return;
 
 		try
 		{
-			BDBMessage bdbm = new BDBMessage(msg, sequence, deliveryCount, preferLocalConsumer);
+			BDBMessage bdbm = new BDBMessage(msg, sequence, preferLocalConsumer);
 
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = buildDatabaseEntry(bdbm);
@@ -290,219 +276,115 @@ class BDBStorage
 
 	}
 
-	protected InternalMessage poll()
-	{
-		if (isMarkedForDeletion.get())
-			return null;
-
-		synchronized (mutex)
-		{
-			if (!_syncConsumerQueue.isEmpty())
-			{
-				log.debug("Poll Memory Queue is not empty.");
-
-				InternalMessage pmsg = _syncConsumerQueue.poll();
-
-				if (pmsg.getExpiration() > System.currentTimeMillis())
-				{
-					return pmsg;
-				}
-				else
-				{
-					deleteMessage(pmsg.getMessageId());
-					log.warn("Expired message: '{}' id: '{}'", pmsg.getDestination(), pmsg.getMessageId());
-					dumpMessage(pmsg);
-					return poll();
-				}
-			}
-			else
-			{
-
-				log.debug("Poll Memory Queue is empty, fill from storage.");
-
-				synchronized (dbLock)
-				{
-					Cursor msg_cursor = null;
-
-					try
-					{
-						msg_cursor = messageDb.openCursor(null, null);
-
-						DatabaseEntry key = new DatabaseEntry();
-						DatabaseEntry data = new DatabaseEntry();
-
-						int counter = 0;
-						int counter_reserved = 0;
-
-						while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && counter < 250)
-						{
-							byte[] bdata = data.getData();
-							BDBMessage bdbm = BDBMessage.fromByteArray(bdata);
-							final InternalMessage msg = bdbm.getMessage();
-							final int deliveryCount = bdbm.getDeliveryCount();
-							final long expiration = msg.getExpiration();
-							final long poll_reserve_timeout = bdbm.getPollReserveTimeout();
-							final long now = System.currentTimeMillis();
-							final boolean isReserved = (poll_reserve_timeout > now);
-							final boolean safeForPolling = !isReserved || (deliveryCount == 0) ? true : false;
-
-							if (now > expiration)
-							{
-								cursorDelete(msg_cursor);
-								log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
-								dumpMessage(msg);
-							}
-							else
-							{
-								if (safeForPolling)
-								{
-									long k = LongBinding.entryToLong(key);
-									msg.setMessageId(InternalMessage.getBaseMessageId() + k);
-									bdbm.setDeliveryCount(deliveryCount + 1);
-									bdbm.setPollReserveTimeout(now + 900000); // 15 minutes
-									msg_cursor.put(key, buildDatabaseEntry(bdbm));
-
-									_syncConsumerQueue.offer(msg);
-									counter++;
-								}
-								else
-								{
-									counter_reserved++;
-								}
-							}
-
-							if (log.isDebugEnabled())
-							{
-								log.debug(String.format("poll_reserve_timeout: '%s'; now: '%s'; isReserved: '%s'; deliveryCount: '%s'; safeForPolling: '%s''", poll_reserve_timeout, now, isReserved, deliveryCount, safeForPolling));
-							}
-						}
-
-						if (log.isDebugEnabled())
-						{
-							log.debug(String.format("counter: '%s; counter_reserved: '%s''", counter, counter_reserved));
-						}
-					}
-					catch (Throwable t)
-					{
-						dealWithError(t, false);
-					}
-					finally
-					{
-						closeDbCursor(msg_cursor);
-					}
-				}
-
-				return _syncConsumerQueue.poll();
-			}
-		}
-	}
-
+	
 	protected void recoverMessages()
 	{
 		if (isMarkedForDeletion.get())
 			return;
 
-		synchronized (dbLock)
+		long now = System.currentTimeMillis();
+		int i0 = 0; // delivered
+		int j0 = 0; // failed deliver
+		int k0 = 0; // redelivered messages
+
+		Cursor msg_cursor = null;
+
+		try
 		{
-			Cursor msg_cursor = null;
-			long now = System.currentTimeMillis();
-			boolean redelivery = now > redelivery_time;
+			msg_cursor = messageDb.openCursor(null, null );
 
-			if (redelivery)
+			DatabaseEntry key = new DatabaseEntry();
+			DatabaseEntry data = new DatabaseEntry();
+
+			while ( (msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && queueProcessor.hasRecipient() ) 
 			{
-				redelivery_time = now + RETRY_THRESHOLD;
-			}
+				if (isMarkedForDeletion.get())
+					break;
 
-			try
-			{
-				msg_cursor = messageDb.openCursor(null, null);
+				byte[] bdata = data.getData();
+				BDBMessage bdbm = BDBMessage.fromByteArray(bdata);
+				final InternalMessage msg = bdbm.getMessage();
 
-				DatabaseEntry key = new DatabaseEntry();
-				DatabaseEntry data = new DatabaseEntry();
+				long k = LongBinding.entryToLong(key);
+				msg.setMessageId(InternalMessage.getBaseMessageId() + k);
 
-				int i0 = 0; // delivered
-				int j0 = 0; // failed deliver
-				int k0 = 0; // redelivered messages
+				final boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
+				long reserveTimeout = bdbm.getReserveTimeout();
+				final boolean isReserved = reserveTimeout > now;
 
-				while (msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS)
+				if (!isReserved)
 				{
-					if (isMarkedForDeletion.get())
-						break;
-
-					byte[] bdata = data.getData();
-					BDBMessage bdbm = BDBMessage.fromByteArray(bdata);
-					final InternalMessage msg = bdbm.getMessage();
-					long k = LongBinding.entryToLong(key);
-					msg.setMessageId(InternalMessage.getBaseMessageId() + k);
-					final int deliveryCount = bdbm.getDeliveryCount();
-					final boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
-					final long poll_reserve_timeout = bdbm.getPollReserveTimeout();
-					final boolean isReserved = (poll_reserve_timeout > now);
-
-					if (!isReserved && ((deliveryCount < 1) || redelivery))
+					if (now > msg.getExpiration())
 					{
-						if (now > msg.getExpiration())
+						cursorDelete(msg_cursor);
+						log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
+						dumpMessage(msg);
+					}
+					else
+					{
+						try
 						{
-							cursorDelete(msg_cursor);
-							log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
-							dumpMessage(msg);
+							bdbm.setPreferLocalConsumer(false);
+
+							int tries = 0;
+							long reserveTime = -1;
+
+							do
+							{
+								reserveTime = queueProcessor.forward(msg, preferLocalConsumer);
+							}
+							while (!(reserveTime > 0) && ((++tries) != MAX_REDELIVERY_PER_MESSAGE));
+
+							if (reserveTime > 0)
+							{
+								if (bdbm.getReserveTimeout() != 0)
+								{
+									++k0; // It's a re-delivery
+								}
+
+								bdbm.setReserveTimeout(reserveTime + now);
+
+								++i0;
+							}
+							else
+							{								
+								
+								if (log.isDebugEnabled())
+								{
+									log.debug("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());
+								}
+								dumpMessage(msg);
+								++j0;
+							}
+							msg_cursor.put(key, buildDatabaseEntry(bdbm));
 						}
-						else
+						catch (Throwable t)
 						{
-							try
-							{
-								bdbm.setDeliveryCount(deliveryCount + 1);
-								bdbm.setPreferLocalConsumer(false);
-								msg_cursor.put(key, buildDatabaseEntry(bdbm));
-
-								if (!queueProcessor.forward(msg, preferLocalConsumer))
-								{
-									if (log.isDebugEnabled())
-									{
-										log.debug("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), bdbm.getMessage().getMessageId());
-									}
-									dumpMessage(msg);
-									j0++;
-								}
-								else
-								{
-									i0++;
-
-									if (deliveryCount > 1)
-									{
-										k0++;
-									}
-								}
-							}
-							catch (Throwable t)
-							{
-								log.error(t.getMessage());
-								break;
-							}
+							log.error(t.getMessage());
+							break;
 						}
 					}
 				}
-
-				if (log.isDebugEnabled())
-				{
-					log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivered: %s, Redelivery: %s;", queueProcessor.getDestinationName(), i0, j0, redelivery));
-				}
-
-				if (redelivery && (k0 > 0))
-				{
-					log.info("Number of redelivered messages for queue '{}': {}", queueProcessor.getDestinationName(), k0);
-				}
 			}
-			catch (Throwable t)
+
+			if (log.isDebugEnabled())
 			{
-				dealWithError(t, false);
+				log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivered: %s", queueProcessor.getDestinationName(), i0, j0));
 			}
-			finally
+
+			if (k0 > 0)
 			{
-				closeDbCursor(msg_cursor);
+				log.info("Number of redelivered messages for queue '{}': {}", queueProcessor.getDestinationName(), k0);
 			}
 		}
-
+		catch (Throwable t)
+		{
+			dealWithError(t, false);
+		}
+		finally
+		{
+			closeDbCursor(msg_cursor);
+		}
 	}
 
 }

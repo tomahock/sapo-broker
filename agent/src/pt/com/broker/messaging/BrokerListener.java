@@ -43,6 +43,11 @@ public abstract class BrokerListener implements MessageListener
 
 		return message;
 	}
+	
+	public boolean ready()
+	{
+		return true;
+	}
 
 	public abstract int addConsumer(IoSession iosession);
 

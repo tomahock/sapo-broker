@@ -13,11 +13,7 @@ import pt.com.broker.client.CliArgs;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetAction.DestinationType;
 
-/**
- * Simple producer sample. Behavior is determined by command line arguments.
- * 
- */
-public class Producer
+public class IntensiveProducer
 {
 	private static final Logger log = LoggerFactory.getLogger(Producer.class);
 	private final AtomicInteger counter = new AtomicInteger(0);
@@ -30,7 +26,7 @@ public class Producer
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);
-		Producer producer = new Producer();
+		IntensiveProducer producer = new IntensiveProducer();
 
 		producer.host = cargs.getHost();
 		producer.port = cargs.getPort();
@@ -39,7 +35,7 @@ public class Producer
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
-		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds to " + producer.dname + "...");
+		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds to " + producer.dname +  "...");
 
 		Thread.sleep(2000);
 
@@ -48,28 +44,28 @@ public class Producer
 
 	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
 	{
-		for (int i = 0; i < 1000; i++)
+		for(int i = 0; i < 100; ++i)
 		{
-			//final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
-
-			
-			final String msg = i + "";
-			
-			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
-
-			if (dtype == DestinationType.QUEUE)
+			for (int j = 0; j < 500; j++)
 			{
-				bk.enqueueMessage(brokerMessage, dname);
+				final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
+		
+				NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
+		
+				if (dtype == DestinationType.QUEUE)
+				{
+					bk.enqueueMessage(brokerMessage, dname);
+				}
+				else
+				{
+					bk.publishMessage(brokerMessage, dname);
+				}
+		
+				log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
+		
+				Sleep.time(100);
 			}
-			else
-			{
-				bk.publishMessage(brokerMessage, dname);
-			}
-
-			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
-
-			//Sleep.time(100);
+			Sleep.time(30000);
 		}
-		bk.close();
 	}
 }

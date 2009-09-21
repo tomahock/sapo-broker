@@ -1,5 +1,6 @@
 package pt.com.broker.client.sample;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
@@ -45,9 +46,8 @@ public class QueueSyncConsumer
 		while (true)
 		{
 			NetNotification m = bk.poll(dname);
-			log.info(String.format("%s -> Received Message: %s", counter.incrementAndGet(), new String(m.getMessage().getPayload())));
-			if ((++count) % 50 != 0) // 2% missed acks
-				bk.acknowledge(m);
+			log.info(String.format("[%s] %s -> Received Message: %s", new Date(System.currentTimeMillis()), counter.incrementAndGet(), new String(m.getMessage().getPayload())));
+			bk.acknowledge(m);
 		}
 	}
 }

@@ -1,19 +1,16 @@
 package pt.com.broker.client;
 
-import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeoutException;
-
-import javax.crypto.BadPaddingException;
 
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.StringUtils;
@@ -44,7 +41,6 @@ import pt.com.broker.types.NetAction.DestinationType;
  * BaseBrokerClient is the base class for Sapo-Broker Java client libraries. It implements all basic client functionality.
  * 
  */
-
 public abstract class BaseBrokerClient
 {
 	public enum BrokerClientState
@@ -63,12 +59,17 @@ public abstract class BaseBrokerClient
 	protected final BlockingQueue<NetPong> _bstatus = new LinkedBlockingQueue<NetPong>();
 	protected final List<BrokerAsyncConsumer> _consumerList = new CopyOnWriteArrayList<BrokerAsyncConsumer>();
 	protected final Map<String, NetMessage> _syncSubscriptions = new HashMap<String, NetMessage>();
+	protected final Map<String, SynchronousQueue<NetMessage> >  pendingPolls = new HashMap<String, SynchronousQueue<NetMessage>>();
+	
 
 	private NetProtocolType protocolType;
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
 
 	protected BrokerProtocolHandler _netHandler;
 	protected CircularContainer<HostInfo> hosts;
+	
+	
+	
 
 	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
 	{
@@ -487,52 +488,86 @@ public abstract class BaseBrokerClient
 	 * @param queueName
 	 *            Name of the queue from where to retrieve a message
 	 * @param timeout
-	 *            Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown.
+	 *            Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown. Zero means that the client wants to wait for ever. A negative value means that the client dosen't want to wait if there are no messages is local agent's queue.
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
-	 * @return A notification containing the queue message.
+	 * @return A notification containing the queue message. Or null if timeout was a negative value and there was no message in local agent's queue.
 	 */
 	public NetNotification poll(String queueName, long timeout, AcceptRequest acceptRequest) throws Throwable
 	{
 		if (StringUtils.isBlank(queueName))
 			throw new IllegalArgumentException("Mal-formed Poll request. queueName is blank.");
-		if (timeout <= 0)
-			throw new IllegalArgumentException("Invalid timeout value");
 
 		NetPoll poll = new NetPoll(queueName, timeout);
-		if (acceptRequest != null)
-		{
-			poll.setActionId(acceptRequest.getActionId());
-			PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
-		}
 		NetAction action = new NetAction(ActionType.POLL);
 		action.setPollMessage(poll);
-
+		
 		NetMessage message = buildMessage(action);
-		getNetHandler().sendMessage(message);
 
+		SynchronousQueue<NetMessage> synQueue = new SynchronousQueue<NetMessage>();
+		
 		synchronized (_syncSubscriptions)
 		{
 			if (_syncSubscriptions.containsKey(queueName))
 				throw new IllegalArgumentException("Queue " + queueName + " has already a poll runnig.");
 			_syncSubscriptions.put(queueName, message);
+			
+			pendingPolls.put(queueName, synQueue);
 		}
-		SyncConsumer sc = SyncConsumerList.get(queueName);
-		sc.increment();
 
-		NetNotification m = sc.take();
+		if (acceptRequest != null)
+		{
+			poll.setActionId(acceptRequest.getActionId());
+			PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
+		}
+
+		getNetHandler().sendMessage(message);
+
+		NetMessage receivedMsg = synQueue.take();
+		
 		synchronized (_syncSubscriptions)
 		{
 			_syncSubscriptions.remove(queueName);
+			pendingPolls.remove(queueName);
 		}
-		if (m == SyncConsumer.UnblockNotification)
-			throw new TimeoutException();
-		return m;
 
+		if (receivedMsg == BrokerProtocolHandler.TimeoutUnblockNotification)
+			throw new TimeoutException();
+		if( receivedMsg == BrokerProtocolHandler.NoMessageUnblockNotification)
+			return null;
+		
+		NetNotification m = null;
+		if( receivedMsg.getAction().getActionType().equals(ActionType.NOTIFICATION))
+		{
+			m = receivedMsg.getAction().getNotificationMessage();
+		} else {
+			log.error("Poll unbloqued by a message that wasn't of any of the expeceted error nor a notification.");
+			return null;
+		}			
+		
+		return m;
+	}
+	
+	/**
+	 * Offer a message that may have a synchronous consumer waiting.
+	 * @param destination Queue name
+	 * @param message Received message. Can be NetFault or NetNotification
+	 */
+	protected boolean offerPollResponse(String destination, NetMessage message)
+	{
+		synchronized (_syncSubscriptions)
+		{
+			SynchronousQueue<NetMessage> synchronousQueue = pendingPolls.get(destination);
+			if(synchronousQueue != null )
+			{
+				return synchronousQueue.offer(message);
+			}
+			return false;
+		}
 	}
 
 	/**
-	 * Obtain a queue message synchronously.
+	 * Obtain a queue message synchronously, waiting forever.
 	 * 
 	 * @param queueName
 	 *            Name of the queue from where to retrieve a message
@@ -540,7 +575,7 @@ public abstract class BaseBrokerClient
 	 */
 	public NetNotification poll(String queueName) throws Throwable
 	{
-		return poll(queueName, Long.MAX_VALUE / 2, null);
+		return poll(queueName, 0, null);
 	}
 
 	/**

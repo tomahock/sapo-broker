@@ -41,10 +41,10 @@ public class TopicSubscriber extends BrokerListener
 		return DestinationType.TOPIC;
 	}
 
-	public boolean onMessage(InternalMessage amsg)
+	public long onMessage(InternalMessage amsg)
 	{
 		if (amsg == null)
-			return true;
+			return -1;
 
 		try
 		{
@@ -89,7 +89,7 @@ public class TopicSubscriber extends BrokerListener
 		{
 			log.error("Error on message listener for '{}': {}", e.getMessage(), _dname);
 		}
-		return false;
+		return 0;
 	}
 
 	public int removeSessionConsumer(IoSession iosession)

@@ -51,7 +51,7 @@ public class QueueProcessorList
 		}
 	};
 
-	protected static QueueProcessor get(String destinationName) throws MaximumQueuesAllowedReachedException
+	public static QueueProcessor get(String destinationName) throws MaximumQueuesAllowedReachedException
 	{
 		return instance.i_get(destinationName);
 	}

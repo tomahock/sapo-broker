@@ -158,11 +158,6 @@ public class Gcs
 		instance.iinit();
 	}
 
-	public static InternalMessage poll(final String queueName)
-	{
-		return instance.ipoll(queueName);
-	}
-
 	public static void publish(InternalMessage message)
 	{
 		instance.ipublish(message);
@@ -178,16 +173,6 @@ public class Gcs
 		{
 			LocalQueueConsumers.remove(listener);
 		}
-	}
-
-	public static void addSyncConsumer(String queueName)
-	{
-		LocalQueueConsumers.addSyncConsumer(queueName);
-	}
-
-	public static void removeSyncConsumer(String queueName)
-	{
-		LocalQueueConsumers.removeSyncConsumer(queueName);
 	}
 
 	private SocketAcceptor acceptor;
@@ -319,20 +304,6 @@ public class Gcs
 		{
 			log.error(te.getMessage(), te);
 		}
-	}
-
-	private InternalMessage ipoll(final String queueName)
-	{
-		InternalMessage m = null;
-		try
-		{
-			m = QueueProcessorList.get(queueName).poll();
-		}
-		catch (MaximumQueuesAllowedReachedException e)
-		{
-			// This never happens
-		}
-		return m;
 	}
 
 	private void ipublish(final InternalMessage message)
