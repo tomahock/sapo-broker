@@ -27,7 +27,8 @@ public class SessionProperties extends HashMap<String, Object>
 
 	public SessionProperties(IoSession session)
 	{
-		address = ((InetSocketAddress) session.getRemoteAddress()).getAddress();
+		if( session != null)
+			address = ((InetSocketAddress) session.getRemoteAddress()).getAddress();
 	}
 
 	// InetSocketAddress

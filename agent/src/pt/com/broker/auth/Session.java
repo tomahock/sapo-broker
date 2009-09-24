@@ -16,6 +16,11 @@ public class Session
 	private SessionAcl readSessionAcl;
 	private SessionAcl writeSessionAcl;
 
+	public Session()
+	{
+		this(null);
+	}
+	
 	public Session(IoSession session)
 	{
 		this(session, new SessionProperties(session));
