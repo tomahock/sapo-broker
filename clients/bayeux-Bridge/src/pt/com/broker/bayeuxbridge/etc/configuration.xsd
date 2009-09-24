@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:complexType name="Settings"> 
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="bridge">
+          <xs:complexType>
+             <xs:attribute name="port" type="xs:decimal" use="required" />
+             <!-- probably others -->
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+
+
+	<xs:complexType name="Clouds">
+		<xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="unbounded" name="cloud">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="1" maxOccurs="unbounded" name="agent" >
+							<xs:complexType>
+								<xs:attribute name="hostname" type="xs:string" use="required" />
+								<xs:attribute name="port" type="xs:decimal" use="required" />
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="cloud-name" type="xs:string" use="required" />
+					<xs:attribute name="mapping" type="xs:string" use="optional" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+    <xs:complexType name="Mappings"> 
+      <xs:sequence>
+		<xs:element minOccurs="1" maxOccurs="unbounded" name="mapping-set">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element minOccurs="1" maxOccurs="unbounded" name="mapping">
+						<xs:complexType>
+							<xs:attribute name="channel" type="xs:string" use="required" />
+							<xs:attribute name="subscription" type="xs:string" use="required" />
+							<xs:attribute name="publication" type="xs:string" use="required" />
+							<xs:attribute name="to-agent-transformation-class" type="xs:string" use="optional" />
+							<xs:attribute name="from-agent-transformation-class" type="xs:string" use="optional" />
+							<xs:attribute name="denyPublication" type="xs:boolean" default="false" use="optional" />
+							<xs:attribute name="denySubscription" type="xs:boolean" default="false" use="optional" />
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="set-name" type="xs:string" use="required" />
+				<xs:attribute name="include-set" type="xs:string" use="optional" />
+			</xs:complexType>
+		
+		</xs:element>
+      </xs:sequence>
+    </xs:complexType>
+	
+	<xs:element name="bridge-configuration">
+		<xs:complexType>
+		  <xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="1" name="settings" type="Settings" />
+			<xs:element minOccurs="1" maxOccurs="unbounded" name="broker-clouds" type="Clouds" />
+			<xs:element minOccurs="1" maxOccurs="1" name="mappings" type="Mappings" />
+		  </xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
