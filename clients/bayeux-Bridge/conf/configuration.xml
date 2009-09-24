@@ -5,7 +5,6 @@
 	<broker-clouds>
 		<cloud cloud-name="cloud A" mapping="X">
 			<agent hostname="127.0.0.1" port="3323" />
-			<agent hostname="10.135.5.110" port="3323" />
 		</cloud>
 		<!--<cloud cloud-name="cloud B" mapping="Y">
 			<agent hostname="127.0.0.1" port="3423" />
