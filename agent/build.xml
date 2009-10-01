@@ -44,7 +44,6 @@
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="clean" />
-		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="clean" />
 	</target>
 
 	<target name="build" depends="init, package-all">
@@ -116,9 +115,6 @@
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" />
 		</ant>
-		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" />
-		</ant>
 	</target>
 
 	<target name="build-dist" depends="package, package-all, docs">
@@ -140,7 +136,6 @@
 		<copy todir="${target-dir}/lib" overwrite="true">
 			<fileset dir="../acl/jdbc/dist" />
 		</copy>
-		<copy file="../broker-tests/dist/sapo-broker-tests-${version}.jar" todir="${target-dir}/lib" />
 
 		<copy todir="${target-dir}/doc">
 			<fileset dir="doc" />
