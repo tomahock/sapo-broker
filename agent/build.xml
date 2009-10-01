@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="build" name="sapo-broker-agent">
-	<tstamp/>
+	<tstamp />
 	<property name="dist" value="dist" />
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
 	<property name="target-dir" value="../sapo-broker" />
-	<property name="major-version" value="3"/>
-	<property name="minor-version" value="0"/>
-	<property name="version" value="${major-version}.${minor-version}"/>
+	<property name="major-version" value="3" />
+	<property name="minor-version" value="0" />
+	<property name="version" value="${major-version}.${minor-version}" />
 	<property name="package" value="sapo-broker-agent-${version}.jar" />
 
 
@@ -49,17 +49,17 @@
 
 	<target name="build" depends="init, package-all">
 		<echo message="${ant.project.name}: ${ant.file}" />
-		<tstamp/>
-		
-		<copy file="src/pt/com/broker/core/BrokerInfo.java" tofile="src/pt/com/broker/core/BrokerInfo.bak" overwrite="true"/>
-		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerVersion@" value="${version}"/>
+		<tstamp />
+
+		<copy file="src/pt/com/broker/core/BrokerInfo.java" tofile="src/pt/com/broker/core/BrokerInfo.bak" overwrite="true" />
+		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerVersion@" value="${version}" />
 		<javac destdir="bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
 			<src path="src" />
 			<classpath refid="project.classpath" />
 		</javac>
-		<move file="src/pt/com/broker/core/BrokerInfo.bak" tofile="src/pt/com/broker/core/BrokerInfo.java" overwrite="true"/>
+		<move file="src/pt/com/broker/core/BrokerInfo.bak" tofile="src/pt/com/broker/core/BrokerInfo.java" overwrite="true" />
 		<copy todir="bin">
-			<fileset dir="src" excludes="**/*.java"/>
+			<fileset dir="src" excludes="**/*.java" />
 		</copy>
 	</target>
 
@@ -68,32 +68,38 @@
 			<fileset dir="${bin}" />
 		</jar>
 	</target>
-	<target name="docs" depends="build">
-	   <delete dir="./agent/docbook/gen" />
-	   <mkdir dir="./agent/docbook/gen" />
-	   <mkdir dir="./agent/docbook/gen/images" />
-	   <exec command="xmlto">
-		 <arg line="--skip-validation -m config.xsl xhtml-nochunks master.xml -o gen"/>
-	   </exec>
-	   <copy todir="./agent/docbook/gen/images">
-	     <fileset dir="./agent/docbook/images"/>
-	   </copy>
-      <copy file="./agent/docbook/brokerdoc.css" todir="./agent/docbook/gen/brokerdoc.css"/>
+	<target name="docs">
+		<delete dir="./doc/docbook/gen" />
+		<mkdir dir="./doc/docbook/gen" />
+		<mkdir dir="./doc/docbook/gen/images" />
+		<exec executable="xmlto" dir="./doc/docbook/">
+			<arg value="--skip-validation" />
+			<arg value="-m" />
+			<arg value="config.xsl" />
+			<arg value="xhtml-nochunks" />
+			<arg value="master.xml" />
+			<arg value="-o" />
+			<arg value="./gen" />
+		</exec>
+		<copy todir="./doc/docbook/gen/images">
+			<fileset dir="./doc/docbook/images" />
+		</copy>
+		<copy file="./doc/docbook/brokerdoc.css" todir="./doc/docbook/gen" />
 	</target>
 
 	<target name="package-all">
 		<ant antfile="../comm-types/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" /> 
+			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../gcs/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" /> 
+			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="package">
-			<property name="project.location" value="../bindings/xml/java"/> 
-			<property name="version" value="${version}" /> 
+			<property name="project.location" value="../bindings/xml/java" />
+			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" /> 
+			<property name="version" value="${version}" />
 		</ant>
 		<!--<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" /> 
@@ -102,26 +108,26 @@
 			<property name="version" value="${version}" /> 
 		</ant>-->
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" /> 
+			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" /> 
+			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" /> 
+			<property name="version" value="${version}" />
 		</ant>
-		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="package" >
-			<property name="version" value="${version}" /> 
+		<ant antfile="../broker-tests/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" />
 		</ant>
 	</target>
 
 	<target name="build-dist" depends="package, package-all, docs">
 		<mkdir dir="${target-dir}/lib" />
 		<copy todir="${target-dir}/lib">
-			<fileset dir="../common-libs/">	
-				<include name="*.jar"/>
+			<fileset dir="../common-libs/">
+				<include name="*.jar" />
 			</fileset>
- 		</copy>
+		</copy>
 		<copy file="${dist}/${package}" todir="${target-dir}/lib" />
 		<copy file="../comm-types/dist/sapo-broker-commtypes-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../gcs/dist/sapo-gcs-${version}.jar" todir="${target-dir}/lib" />
@@ -132,33 +138,33 @@
 		<!-- <copy file="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts-${version}.jar" todir="${target-dir}/lib" /> -->
 		<!-- <copy file="../acl/sapo-sts/agent/dist/sapo-broker-validation-saposts-${version}.jar" todir="${target-dir}/lib" /> -->
 		<copy todir="${target-dir}/lib" overwrite="true">
-				<fileset dir="../acl/jdbc/dist"/>
+			<fileset dir="../acl/jdbc/dist" />
 		</copy>
 		<copy file="../broker-tests/dist/sapo-broker-tests-${version}.jar" todir="${target-dir}/lib" />
-	
+
 		<copy todir="${target-dir}/doc">
-			<fileset dir="doc"/>
- 		</copy>
+			<fileset dir="doc" />
+		</copy>
 
 		<copy todir="${target-dir}/bin">
-			<fileset dir="examples"/>
- 		</copy>
+			<fileset dir="examples" />
+		</copy>
 
 		<copy todir="${target-dir}/conf">
-			<fileset dir="conf"/>
- 		</copy>
+			<fileset dir="conf" />
+		</copy>
 
 		<copy todir="${target-dir}/license">
-			<fileset dir="../license"/>
- 		</copy>
+			<fileset dir="../license" />
+		</copy>
 
 		<copy todir="${target-dir}/jvm15">
-			<fileset dir="../bindings/xml/java/jvm15"/>
- 		</copy>
+			<fileset dir="../bindings/xml/java/jvm15" />
+		</copy>
 
 		<copy todir="${target-dir}/clients">
-			<fileset dir="../clients" excludes="**/.*"/>
- 		</copy>
+			<fileset dir="../clients" excludes="**/.*" />
+		</copy>
 
 		<!-- copy todir="${target-dir}">
 			<fileset dir="bin">
@@ -167,16 +173,16 @@
 			</fileset>
 		</copy -->
 
-		<chmod dir="${target-dir}/bin" perm="+x" includes="*.sh"/>
+		<chmod dir="${target-dir}/bin" perm="+x" includes="*.sh" />
 	</target>
 
 	<target name="tarball" depends="build-dist">
-		<tar tarfile="../sapo-broker.tar" >
+		<tar tarfile="../sapo-broker.tar">
 			<tarfileset dir="${target-dir}" prefix="sapo-broker-${version}">
-				<exclude name="bin/*.sh"/>
+				<exclude name="bin/*.sh" />
 			</tarfileset>
 			<tarfileset dir="${target-dir}" prefix="sapo-broker-${version}" filemode="755">
-				<include name="bin/*.sh"/>
+				<include name="bin/*.sh" />
 			</tarfileset>
 		</tar>
 		<gzip src="../sapo-broker.tar" destfile="../sapo-broker-${version}.tar.gz" />
