@@ -12,122 +12,125 @@ using Thrift;
 using Thrift.Collections;
 using Thrift.Protocol;
 using Thrift.Transport;
-
-[Serializable]
-public class Atom : TBase
+namespace SapoBrokerClient.Encoding.Thrift.Messages
 {
-  private Header header;
-  private Action action;
 
-  public Header Header
-  {
-    get
-    {
-      return header;
-    }
-    set
-    {
-      __isset.header = true;
-      header = value;
-    }
-  }
-
-  public Action Action
-  {
-    get
-    {
-      return action;
-    }
-    set
-    {
-      __isset.action = true;
-      action = value;
-    }
-  }
-
-
-  public Isset __isset;
   [Serializable]
-  public struct Isset {
-    public bool header;
-    public bool action;
-  }
-
-  public Atom() {
-  }
-
-  public void Read (TProtocol iprot)
+  public partial class Atom : TBase
   {
-    TField field;
-    iprot.ReadStructBegin();
-    while (true)
+    private Header header;
+    private Action action;
+
+    public Header Header
     {
-      field = iprot.ReadFieldBegin();
-      if (field.Type == TType.Stop) { 
-        break;
-      }
-      switch (field.ID)
+      get
       {
-        case 1:
-          if (field.Type == TType.Struct) {
-            this.header = new Header();
-            this.header.Read(iprot);
-            this.__isset.header = true;
-          } else { 
-            TProtocolUtil.Skip(iprot, field.Type);
-          }
-          break;
-        case 2:
-          if (field.Type == TType.Struct) {
-            this.action = new Action();
-            this.action.Read(iprot);
-            this.__isset.action = true;
-          } else { 
-            TProtocolUtil.Skip(iprot, field.Type);
-          }
-          break;
-        default: 
-          TProtocolUtil.Skip(iprot, field.Type);
-          break;
+        return header;
       }
-      iprot.ReadFieldEnd();
+      set
+      {
+        __isset.header = true;
+        this.header = value;
+      }
     }
-    iprot.ReadStructEnd();
-  }
 
-  public void Write(TProtocol oprot) {
-    TStruct struc = new TStruct("Atom");
-    oprot.WriteStructBegin(struc);
-    TField field = new TField();
-    if (this.header != null && __isset.header) {
-      field.Name = "header";
-      field.Type = TType.Struct;
-      field.ID = 1;
-      oprot.WriteFieldBegin(field);
-      this.header.Write(oprot);
-      oprot.WriteFieldEnd();
+    public Action Action
+    {
+      get
+      {
+        return action;
+      }
+      set
+      {
+        __isset.action = true;
+        this.action = value;
+      }
     }
-    if (this.action != null && __isset.action) {
-      field.Name = "action";
-      field.Type = TType.Struct;
-      field.ID = 2;
-      oprot.WriteFieldBegin(field);
-      this.action.Write(oprot);
-      oprot.WriteFieldEnd();
-    }
-    oprot.WriteFieldStop();
-    oprot.WriteStructEnd();
-  }
 
-  public override string ToString() {
-    StringBuilder sb = new StringBuilder("Atom(");
-    sb.Append("header: ");
-    sb.Append(this.header== null ? "<null>" : this.header.ToString());
-    sb.Append(",action: ");
-    sb.Append(this.action== null ? "<null>" : this.action.ToString());
-    sb.Append(")");
-    return sb.ToString();
+
+    public Isset __isset;
+    [Serializable]
+    public struct Isset {
+      public bool header;
+      public bool action;
+    }
+
+    public Atom() {
+    }
+
+    public void Read (TProtocol iprot)
+    {
+      TField field;
+      iprot.ReadStructBegin();
+      while (true)
+      {
+        field = iprot.ReadFieldBegin();
+        if (field.Type == TType.Stop) { 
+          break;
+        }
+        switch (field.ID)
+        {
+          case 1:
+            if (field.Type == TType.Struct) {
+              this.header = new Header();
+              this.header.Read(iprot);
+              this.__isset.header = true;
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 2:
+            if (field.Type == TType.Struct) {
+              this.action = new Action();
+              this.action.Read(iprot);
+              this.__isset.action = true;
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          default: 
+            TProtocolUtil.Skip(iprot, field.Type);
+            break;
+        }
+        iprot.ReadFieldEnd();
+      }
+      iprot.ReadStructEnd();
+    }
+
+    public void Write(TProtocol oprot) {
+      TStruct struc = new TStruct("Atom");
+      oprot.WriteStructBegin(struc);
+      TField field = new TField();
+      if (this.header != null && __isset.header) {
+        field.Name = "header";
+        field.Type = TType.Struct;
+        field.ID = 1;
+        oprot.WriteFieldBegin(field);
+        this.header.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (this.action != null && __isset.action) {
+        field.Name = "action";
+        field.Type = TType.Struct;
+        field.ID = 2;
+        oprot.WriteFieldBegin(field);
+        this.action.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      oprot.WriteFieldStop();
+      oprot.WriteStructEnd();
+    }
+
+    public override string ToString() {
+      StringBuilder sb = new StringBuilder("Atom(");
+      sb.Append("header: ");
+      sb.Append(this.header== null ? "<null>" : this.header.ToString());
+      sb.Append(",action: ");
+      sb.Append(this.action== null ? "<null>" : this.action.ToString());
+      sb.Append(")");
+      return sb.ToString();
+    }
+
   }
 
 }
-

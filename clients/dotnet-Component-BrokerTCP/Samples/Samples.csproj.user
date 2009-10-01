@@ -1,5 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <StartArguments>-hn:10.134.132.183 -port:3323 -dt:QUEUE -cer:c:\testCert.cer -dn:/queue/performance</StartArguments>
+    <StartArguments>-hn:10.134.132.183 -port:3323 -dt:TOPIC -dn:/topic/foo</StartArguments>
   </PropertyGroup>
 </Project>

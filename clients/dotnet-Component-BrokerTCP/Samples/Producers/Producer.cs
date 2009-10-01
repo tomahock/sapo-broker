@@ -15,6 +15,12 @@ namespace Samples.Producers
         {
             Console.WriteLine("Producer test");
 
+            if (args.Length == 0)
+            {
+                System.Console.WriteLine(CommandLineArguments.Usage());
+                return;
+            }
+
             log4net.Config.BasicConfigurator.Configure();
 
             CommandLineArguments cliArgs = new CommandLineArguments();

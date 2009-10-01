@@ -39,10 +39,13 @@ public class BDBEnviroment
 	{
 		try
 		{
-			dbFile = GcsInfo.getBasePersistentDirectory().concat("/");
-			dbName = MD5.getHashString(GcsInfo.getAgentName());
+			//dbFile = GcsInfo.getBasePersistentDirectory().concat("/");
+			//dbName = MD5.getHashString(GcsInfo.getAgentName());
 
-			dbDir = dbFile.concat(dbName);
+			//dbDir = dbFile.concat(dbName);
+			
+			dbFile = GcsInfo.getBasePersistentDirectory();
+			dbDir = dbFile.concat(File.separator);
 			(new File(dbDir)).mkdirs();
 
 			EnvironmentConfig envConfig = new EnvironmentConfig();

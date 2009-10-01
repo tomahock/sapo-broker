@@ -4,17 +4,20 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  */
 
-public enum ActionType
+namespace SapoBrokerClient.Encoding.Thrift.Messages
 {
-  PUBLISH = 0,
-  POLL = 1,
-  ACCEPTED = 2,
-  ACKNOWLEDGE = 3,
-  SUBSCRIBE = 4,
-  UNSUBSCRIBE = 5,
-  NOTIFICATION = 6,
-  FAULT = 7,
-  PING = 8,
-  PONG = 9,
-  AUTH = 10,
+  public enum ActionType
+  {
+    PUBLISH = 0,
+    POLL = 1,
+    ACCEPTED = 2,
+    ACKNOWLEDGE = 3,
+    SUBSCRIBE = 4,
+    UNSUBSCRIBE = 5,
+    NOTIFICATION = 6,
+    FAULT = 7,
+    PING = 8,
+    PONG = 9,
+    AUTH = 10,
+  }
 }

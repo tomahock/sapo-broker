@@ -1,4 +1,6 @@
 namespace java pt.com.broker.codec.thrift
+namespace csharp SapoBrokerClient.Encoding.Thrift.Messages
+
 
 enum DestinationType
 {

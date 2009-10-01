@@ -33,6 +33,14 @@ public class BDBMessage implements Externalizable
 		_sequence = sequence;
 		_reserve = 0L;
 	}
+	
+	public BDBMessage(InternalMessage msg, long sequence, boolean preferLocalConsumer, long reserveTimeout)
+	{
+		_preferLocalConsumer = preferLocalConsumer;
+		_message = msg;
+		_sequence = sequence;
+		_reserve = reserveTimeout;
+	}
 
 	public boolean getPreferLocalConsumer()
 	{

@@ -17,6 +17,12 @@ namespace Samples.Consumers
         {
             Console.WriteLine("Database authenticated Consumer test");
 
+            if (args.Length == 0)
+            {
+                System.Console.WriteLine(CommandLineArguments.Usage());
+                return;
+            }
+
             CommandLineArguments cliArgs = new CommandLineArguments();
             Parser parser = new Parser(System.Environment.CommandLine, cliArgs);
             parser.Parse();

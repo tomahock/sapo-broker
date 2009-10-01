@@ -62,7 +62,8 @@ public class Consumer implements BrokerListener
 	public void onMessage(NetNotification notification) 
 	{
 		log.info(String.format(" [%s] %s -> Message destination: %s Received Message Length: %s (%s)", new Date(System.currentTimeMillis()), counter.incrementAndGet(), notification.getDestination(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
-//		if( ((++count) % 1000 ) == 0)
+		System.out.println("Msg Id: " + notification.getMessage().getMessageId());
+		if( ((++count) % 1000 ) == 0){}
 //		{
 //			log.info(String.format(" [%s] %s -> Message destination: %s Received Message Length: %s (%s)", new Date(System.currentTimeMillis()), count, notification.getDestination(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
 //			System.out.println("Time: " + (System.nanoTime() - time));

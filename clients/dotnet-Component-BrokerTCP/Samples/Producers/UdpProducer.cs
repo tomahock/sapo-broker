@@ -14,7 +14,13 @@ namespace Samples.Producers
         public static void Main(string[] args)
         {
             Console.WriteLine("UDP Producer test");
-            
+
+            if (args.Length == 0)
+            {
+                System.Console.WriteLine(CommandLineArguments.Usage());
+                return;
+            }
+
             log4net.Config.BasicConfigurator.Configure();
 
             CommandLineArguments cliArgs = new CommandLineArguments();

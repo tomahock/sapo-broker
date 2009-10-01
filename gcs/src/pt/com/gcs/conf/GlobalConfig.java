@@ -111,7 +111,7 @@ public class GlobalConfig
 		// Get a list of all elements in the document
 
 		int npeers = doc.getElementsByTagName("peer").getLength();
-		String[] names = extractElementInfo(doc, "name");
+		
 		String[] hosts = extractElementInfo(doc, "ip");
 		String[] ports = extractElementInfo(doc, "port");
 
@@ -124,7 +124,8 @@ public class GlobalConfig
 
 		for (int i = 0; i < npeers; i++)
 		{
-			if (selfName.equalsIgnoreCase(names[i]))
+			String agentName = GcsInfo.constructAgentName(hosts[i] , Integer.parseInt(ports[i]) );
+			if (selfName.equalsIgnoreCase( agentName ) )
 			{
 				if (selfHost.equalsIgnoreCase(hosts[i]))
 				{
@@ -136,8 +137,7 @@ public class GlobalConfig
 			}
 			else
 			{
-				// System.out.println("names[i]: " + names[i]);
-				Peer p = new Peer(names[i], hosts[i], Integer.parseInt(ports[i]));
+				Peer p = new Peer(agentName, hosts[i], Integer.parseInt(ports[i]));
 				InetSocketAddress inet = new InetSocketAddress(p.getHost(), p.getPort());
 				peerList.add(p);
 				peerSet.add(inet);

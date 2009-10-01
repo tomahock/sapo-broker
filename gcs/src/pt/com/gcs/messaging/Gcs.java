@@ -3,6 +3,7 @@ package pt.com.gcs.messaging;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
+import pt.com.gcs.messaging.adapt.QueueProcessor;
+import pt.com.gcs.messaging.adapt.BDBEnviroment.DBQueue;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
 
@@ -285,6 +288,132 @@ public class Gcs
 				// This never happens
 			}
 		}
+
+		// / Compatibility mode
+
+		String[] old_virtual_queues = pt.com.gcs.messaging.adapt.VirtualQueueStorage.getVirtualQueueNames();
+
+		List<String> virtualQueues = new ArrayList<String>();
+		for (int i = 0; i != virtual_queues.length; ++i)
+		{
+			virtualQueues.add(virtual_queues[i]);
+		}
+
+		List<String> removedVirtualQueues = new ArrayList<String>();
+		for (String vqueue : old_virtual_queues)
+		{
+			log.debug("Add VirtualQueue '{}' from OLD storage", vqueue);
+			if (!virtualQueues.contains(vqueue))
+			{
+				iaddQueueConsumer(vqueue, null);
+				VirtualQueueStorage.saveVirtualQueue(vqueue);
+				virtualQueues.add(vqueue);
+			}
+			if(!removedVirtualQueues.contains(vqueue))
+			{
+				pt.com.gcs.messaging.adapt.VirtualQueueStorage.deleteVirtualQueue(vqueue);
+				removedVirtualQueues.add(vqueue);
+			}
+		}
+		
+		//----------------------------------------
+		
+		String[] queueNames = pt.com.gcs.messaging.adapt.BDBEnviroment.getQueueNames();
+		
+		for (String queueName : queueNames)
+		{
+			pt.com.gcs.messaging.adapt.QueueProcessor queueProcessor = new pt.com.gcs.messaging.adapt.QueueProcessor(
+					new DBQueue(pt.com.gcs.messaging.adapt.BDBEnviroment.getLastChangedDatabaseEnv(),queueName ));
+			
+		
+			if (queueProcessor.getQueuedMessagesCount() != 0)
+			{
+				long lastSeqValue = queueProcessor.getStorage().getLastSequenceValue();
+				
+				try
+				{
+					pt.com.gcs.messaging.QueueProcessor qp = QueueProcessorList.get(queueName);
+					
+					qp.setSequenceNumber(lastSeqValue);
+										
+					qp.setCounter( queueProcessor.getQueuedMessagesCount() );
+					
+					queueProcessor.wakeup();
+				}
+				catch (MaximumQueuesAllowedReachedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			queueProcessor.getStorage().deleteQueue();
+		}
+		
+		
+		DBQueue[] old_queues = pt.com.gcs.messaging.adapt.BDBEnviroment.getQueues();
+
+		for (DBQueue dbQueue : old_queues)
+		{
+			if(dbQueue.env ==  pt.com.gcs.messaging.adapt.BDBEnviroment.getLastChangedDatabaseEnv())
+				continue;
+			
+			pt.com.gcs.messaging.adapt.QueueProcessor queueProcessor = new pt.com.gcs.messaging.adapt.QueueProcessor(dbQueue);
+			
+			if (queueProcessor.getQueuedMessagesCount() != 0)
+			{
+				queueProcessor.wakeup();
+			}
+			queueProcessor.getStorage().deleteQueue();
+		}
+
+		
+//		// This was the "one dir version"
+		
+//		String[] old_virtual_queues = pt.com.gcs.messaging.adapt.VirtualQueueStorage.getVirtualQueueNames();
+//		
+//				List<String> virtualQueues = new ArrayList<String>();
+//				for (int i = 0; i != old_virtual_queues.length; ++i)
+//				{
+//					virtualQueues.add(virtual_queues[i]);
+//				}
+//
+//				for (String vqueue : virtual_queues)
+//				{
+//					log.debug("Add VirtualQueue '{}' from OLD storage", vqueue);
+//					if (!virtualQueues.contains(vqueue))
+//					{
+//						iaddQueueConsumer(vqueue, null);
+//						VirtualQueueStorage.saveVirtualQueue(vqueue);
+//						pt.com.gcs.messaging.adapt.VirtualQueueStorage.deleteVirtualQueue(vqueue);
+//					}
+//				}
+		
+//		String[] old_queues = pt.com.gcs.messaging.adapt.BDBEnviroment.getQueueNames();
+//
+//		for (String queueName : old_queues)
+//		{
+//			pt.com.gcs.messaging.adapt.QueueProcessor queueProcessor = new pt.com.gcs.messaging.adapt.QueueProcessor(queueName);
+//			if (queueProcessor.getQueuedMessagesCount() != 0)
+//			{
+//				long lastSeqValue = queueProcessor.getStorage().getLastSequenceValue();
+//				try
+//				{
+//					pt.com.gcs.messaging.QueueProcessor qp = QueueProcessorList.get(queueName);
+//					qp.setSequenceNumber(lastSeqValue);
+//					qp.setCounter(queueProcessor.getQueuedMessagesCount());
+//					queueProcessor.wakeup();
+//				}
+//				catch (MaximumQueuesAllowedReachedException e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//			queueProcessor.getStorage().deleteQueue();
+//		}
+
+		
+		// / End compatibility mode
 
 		connectToAllPeers();
 

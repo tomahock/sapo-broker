@@ -70,7 +70,6 @@
     <Compile Include="Authentication\ICredentialsProvider.cs" />
     <Compile Include="Authentication\InvalidCredentialsException.cs" />
     <Compile Include="Authentication\ProviderInfo.cs" />
-    <Compile Include="Authentication\SapoStsProvider.cs" />
     <Compile Include="Encoding\Messages.cs" />
     <Compile Include="Encoding\MessagesSerializer.cs" />
     <Compile Include="Encoding\Thrift\ThriftMessageSerializer.cs" />

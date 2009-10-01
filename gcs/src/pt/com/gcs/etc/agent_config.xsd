@@ -4,7 +4,6 @@
 	<xs:element name="agent-config">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="name" type="xs:string" />
 				<xs:element name="config-version" type="xs:string" />
 
 				<xs:element name="net">
@@ -14,7 +13,6 @@
 							<xs:element name="port" type="xs:int" />
 							<xs:element name="setTcpNoDelay" type="xs:boolean" />
 							<xs:element name="discovery_delay" type="xs:int" />
-							<xs:element name="file_ref" type="xs:string" />
 							<xs:element name="broker-port" type="xs:int" />
 							<xs:element name="broker-legacy-port" type="xs:int" />
 							<xs:element name="broker-http-port" type="xs:int" />

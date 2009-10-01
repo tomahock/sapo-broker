@@ -68,6 +68,18 @@
 			<fileset dir="${bin}" />
 		</jar>
 	</target>
+	<target name="docs" depends="build">
+	   <delete dir="./agent/docbook/gen" />
+	   <mkdir dir="./agent/docbook/gen" />
+	   <mkdir dir="./agent/docbook/gen/images" />
+	   <exec command="xmlto">
+		 <arg line="--skip-validation -m config.xsl xhtml-nochunks master.xml -o gen"/>
+	   </exec>
+	   <copy todir="./agent/docbook/gen/images">
+	     <fileset dir="./agent/docbook/images"/>
+	   </copy>
+      <copy file="./agent/docbook/brokerdoc.css" todir="./agent/docbook/gen/brokerdoc.css"/>
+	</target>
 
 	<target name="package-all">
 		<ant antfile="../comm-types/build.xml" inheritAll="false" target="package">
@@ -83,12 +95,12 @@
 		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" /> 
 		</ant>
-		<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="package">
+		<!--<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" /> 
 		</ant>
 		<ant antfile="../acl/sapo-sts/agent/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" /> 
-		</ant>
+		</ant>-->
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" /> 
 		</ant>
@@ -103,7 +115,7 @@
 		</ant>
 	</target>
 
-	<target name="build-dist" depends="package, package-all">
+	<target name="build-dist" depends="package, package-all, docs">
 		<mkdir dir="${target-dir}/lib" />
 		<copy todir="${target-dir}/lib">
 			<fileset dir="../common-libs/">	
@@ -117,8 +129,8 @@
 		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../bindings/thrift/java/dist/sapo-broker-thriftbinding-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP-${version}.jar" todir="${target-dir}/lib" />
-		<copy file="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts-${version}.jar" todir="${target-dir}/lib" />
-		<copy file="../acl/sapo-sts/agent/dist/sapo-broker-validation-saposts-${version}.jar" todir="${target-dir}/lib" />
+		<!-- <copy file="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts-${version}.jar" todir="${target-dir}/lib" /> -->
+		<!-- <copy file="../acl/sapo-sts/agent/dist/sapo-broker-validation-saposts-${version}.jar" todir="${target-dir}/lib" /> -->
 		<copy todir="${target-dir}/lib" overwrite="true">
 				<fileset dir="../acl/jdbc/dist"/>
 		</copy>

@@ -4,7 +4,7 @@ cd `dirname $0`
 cd ..
 
 # check version
-java -version 2>&1 | grep 1.5 > /dev/null
+/opt/sapojvm/bin/java -version 2>&1 | grep 1.5 > /dev/null
 if [ $? = 0 ] ; then # Yup, 1.5 still
   echo Found Java version 1.5
   classpath="./conf"
@@ -21,11 +21,12 @@ else # we assume 1.6 here
   classpath="./conf:./lib/*"
 fi
 
-java -server \
+/opt/sapojvm/bin/java -server \
 -Xverify:none -Xms16M -Xmx16M \
 -Djava.awt.headless=true \
 -Djava.net.preferIPv4Stack=true \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
 -cp $classpath \
-pt.com.broker.client.sample.Producer -n /test/foo -d TOPIC
+pt.com.broker.client.sample.Producer $*
+#pt.com.broker.client.sample.Producer -n /test/foo -d TOPIC

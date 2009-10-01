@@ -154,12 +154,12 @@ public class QueueProcessor
 		return RemoteQueueConsumers.size(_destinationName) + LocalQueueConsumers.readyQueueSize(_destinationName);
 	}
 
-	protected void store(final InternalMessage msg)
+	public void store(final InternalMessage msg)
 	{
 		store(msg, false);
 	}
 
-	protected void store(final InternalMessage msg, boolean localConsumersOnly)
+	public void store(final InternalMessage msg, boolean localConsumersOnly)
 	{
 		try
 		{
@@ -209,5 +209,24 @@ public class QueueProcessor
 		}
 		isWorking.set(false);
 	}
-
+	
+	public void setSequenceNumber(long seqNumber)
+	{
+		_sequence.set(seqNumber);
+	}
+	
+	public void setCounter(long counter)
+	{
+		_counter.set(counter);
+	}
+	
+	public long getCounter()
+	{
+		return _counter.get();
+	}
+	
+	public BDBStorage getStorage()
+	{
+		return storage;
+	}
 }

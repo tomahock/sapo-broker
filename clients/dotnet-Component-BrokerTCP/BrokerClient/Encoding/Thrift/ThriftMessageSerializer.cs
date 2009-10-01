@@ -6,6 +6,8 @@ using Thrift.Transport;
 
 using SapoBrokerClient.Encoding;
 
+using SapoBrokerClient.Encoding.Thrift.Messages;
+
 namespace SapoBrokerClient.Encoding.Thrift
 {
 	public class ThriftMessageSerializer : IMessageSerializer

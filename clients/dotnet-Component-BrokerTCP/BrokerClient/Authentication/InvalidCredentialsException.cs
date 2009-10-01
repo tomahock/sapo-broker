@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SapoBrokerClient.Authentication
 {
-    class InvalidCredentialsException : Exception
+    public class InvalidCredentialsException : Exception
     {
 
     }

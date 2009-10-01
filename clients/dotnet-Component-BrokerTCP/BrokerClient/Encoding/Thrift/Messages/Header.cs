@@ -12,107 +12,110 @@ using Thrift;
 using Thrift.Collections;
 using Thrift.Protocol;
 using Thrift.Transport;
-
-[Serializable]
-public class Header : TBase
+namespace SapoBrokerClient.Encoding.Thrift.Messages
 {
-  private Dictionary<string, string> parameters;
 
-  public Dictionary<string, string> Parameters
-  {
-    get
-    {
-      return parameters;
-    }
-    set
-    {
-      __isset.parameters = true;
-      parameters = value;
-    }
-  }
-
-
-  public Isset __isset;
   [Serializable]
-  public struct Isset {
-    public bool parameters;
-  }
-
-  public Header() {
-  }
-
-  public void Read (TProtocol iprot)
+  public partial class Header : TBase
   {
-    TField field;
-    iprot.ReadStructBegin();
-    while (true)
+    private Dictionary<string, string> parameters;
+
+    public Dictionary<string, string> Parameters
     {
-      field = iprot.ReadFieldBegin();
-      if (field.Type == TType.Stop) { 
-        break;
-      }
-      switch (field.ID)
+      get
       {
-        case 1:
-          if (field.Type == TType.Map) {
-            {
-              this.parameters = new Dictionary<string, string>();
-              TMap _map0 = iprot.ReadMapBegin();
-              for( int _i1 = 0; _i1 < _map0.Count; ++_i1)
-              {
-                string _key2;
-                string _val3;
-                _key2 = iprot.ReadString();
-                _val3 = iprot.ReadString();
-                this.parameters[_key2] = _val3;
-              }
-              iprot.ReadMapEnd();
-            }
-            this.__isset.parameters = true;
-          } else { 
-            TProtocolUtil.Skip(iprot, field.Type);
-          }
-          break;
-        default: 
-          TProtocolUtil.Skip(iprot, field.Type);
-          break;
+        return parameters;
       }
-      iprot.ReadFieldEnd();
+      set
+      {
+        __isset.parameters = true;
+        this.parameters = value;
+      }
     }
-    iprot.ReadStructEnd();
-  }
 
-  public void Write(TProtocol oprot) {
-    TStruct struc = new TStruct("Header");
-    oprot.WriteStructBegin(struc);
-    TField field = new TField();
-    if (this.parameters != null && __isset.parameters) {
-      field.Name = "parameters";
-      field.Type = TType.Map;
-      field.ID = 1;
-      oprot.WriteFieldBegin(field);
+
+    public Isset __isset;
+    [Serializable]
+    public struct Isset {
+      public bool parameters;
+    }
+
+    public Header() {
+    }
+
+    public void Read (TProtocol iprot)
+    {
+      TField field;
+      iprot.ReadStructBegin();
+      while (true)
       {
-        oprot.WriteMapBegin(new TMap(TType.String, TType.String, this.parameters.Count));
-        foreach (string _iter4 in this.parameters.Keys)
-        {
-          oprot.WriteString(_iter4);
-          oprot.WriteString(this.parameters[_iter4]);
-          oprot.WriteMapEnd();
+        field = iprot.ReadFieldBegin();
+        if (field.Type == TType.Stop) { 
+          break;
         }
+        switch (field.ID)
+        {
+          case 1:
+            if (field.Type == TType.Map) {
+              {
+                this.parameters = new Dictionary<string, string>();
+                TMap _map0 = iprot.ReadMapBegin();
+                for( int _i1 = 0; _i1 < _map0.Count; ++_i1)
+                {
+                  string _key2;
+                  string _val3;
+                  _key2 = iprot.ReadString();
+                  _val3 = iprot.ReadString();
+                  this.parameters[_key2] = _val3;
+                }
+                iprot.ReadMapEnd();
+              }
+              this.__isset.parameters = true;
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          default: 
+            TProtocolUtil.Skip(iprot, field.Type);
+            break;
+        }
+        iprot.ReadFieldEnd();
       }
-      oprot.WriteFieldEnd();
+      iprot.ReadStructEnd();
     }
-    oprot.WriteFieldStop();
-    oprot.WriteStructEnd();
-  }
 
-  public override string ToString() {
-    StringBuilder sb = new StringBuilder("Header(");
-    sb.Append("parameters: ");
-    sb.Append(this.parameters);
-    sb.Append(")");
-    return sb.ToString();
+    public void Write(TProtocol oprot) {
+      TStruct struc = new TStruct("Header");
+      oprot.WriteStructBegin(struc);
+      TField field = new TField();
+      if (this.parameters != null && __isset.parameters) {
+        field.Name = "parameters";
+        field.Type = TType.Map;
+        field.ID = 1;
+        oprot.WriteFieldBegin(field);
+        {
+          oprot.WriteMapBegin(new TMap(TType.String, TType.String, this.parameters.Count));
+          foreach (string _iter4 in this.parameters.Keys)
+          {
+            oprot.WriteString(_iter4);
+            oprot.WriteString(this.parameters[_iter4]);
+            oprot.WriteMapEnd();
+          }
+        }
+        oprot.WriteFieldEnd();
+      }
+      oprot.WriteFieldStop();
+      oprot.WriteStructEnd();
+    }
+
+    public override string ToString() {
+      StringBuilder sb = new StringBuilder("Header(");
+      sb.Append("parameters: ");
+      sb.Append(this.parameters);
+      sb.Append(")");
+      return sb.ToString();
+    }
+
   }
 
 }
-

@@ -26,7 +26,7 @@ import com.sleepycat.je.OperationStatus;
  * 
  */
 
-class BDBStorage
+public class BDBStorage
 {
 	private static Logger log = LoggerFactory.getLogger(BDBStorage.class);
 
@@ -253,7 +253,7 @@ class BDBStorage
 		return seqValue;
 	}
 
-	protected void insert(InternalMessage msg, long sequence, boolean preferLocalConsumer)
+	public void insert(InternalMessage msg, long sequence, boolean preferLocalConsumer)
 	{
 		if (isMarkedForDeletion.get())
 			return;
@@ -275,7 +275,34 @@ class BDBStorage
 		}
 
 	}
+	
+	
+	// Added for compatibility reasons --- BEGIN
+	public void insert(InternalMessage msg, long sequence, boolean preferLocalConsumer, long reserveTimeout)
+	{
+		if (isMarkedForDeletion.get())
+			return;
 
+		try
+		{
+			BDBMessage bdbm = new BDBMessage(msg, sequence, preferLocalConsumer, reserveTimeout);
+
+			DatabaseEntry key = new DatabaseEntry();
+			DatabaseEntry data = buildDatabaseEntry(bdbm);
+
+			LongBinding.longToEntry(sequence, key);
+
+			messageDb.put(null, key, data);
+		}
+		catch (Throwable t)
+		{
+			dealWithError(t, true);
+		}
+
+	}
+	// Added for compatibility reasons --- END
+	
+	
 	protected void recoverMessages()
 	{
 		if (isMarkedForDeletion.get())

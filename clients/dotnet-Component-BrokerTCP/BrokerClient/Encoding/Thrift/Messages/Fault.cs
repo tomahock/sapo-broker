@@ -12,186 +12,189 @@ using Thrift;
 using Thrift.Collections;
 using Thrift.Protocol;
 using Thrift.Transport;
-
-[Serializable]
-public class Fault : TBase
+namespace SapoBrokerClient.Encoding.Thrift.Messages
 {
-  private string action_id;
-  private string fault_code;
-  private string fault_message;
-  private string fault_detail;
 
-  public string Action_id
-  {
-    get
-    {
-      return action_id;
-    }
-    set
-    {
-      __isset.action_id = true;
-      action_id = value;
-    }
-  }
-
-  public string Fault_code
-  {
-    get
-    {
-      return fault_code;
-    }
-    set
-    {
-      __isset.fault_code = true;
-      fault_code = value;
-    }
-  }
-
-  public string Fault_message
-  {
-    get
-    {
-      return fault_message;
-    }
-    set
-    {
-      __isset.fault_message = true;
-      fault_message = value;
-    }
-  }
-
-  public string Fault_detail
-  {
-    get
-    {
-      return fault_detail;
-    }
-    set
-    {
-      __isset.fault_detail = true;
-      fault_detail = value;
-    }
-  }
-
-
-  public Isset __isset;
   [Serializable]
-  public struct Isset {
-    public bool action_id;
-    public bool fault_code;
-    public bool fault_message;
-    public bool fault_detail;
-  }
-
-  public Fault() {
-  }
-
-  public void Read (TProtocol iprot)
+  public partial class Fault : TBase
   {
-    TField field;
-    iprot.ReadStructBegin();
-    while (true)
+    private string action_id;
+    private string fault_code;
+    private string fault_message;
+    private string fault_detail;
+
+    public string Action_id
     {
-      field = iprot.ReadFieldBegin();
-      if (field.Type == TType.Stop) { 
-        break;
-      }
-      switch (field.ID)
+      get
       {
-        case 1:
-          if (field.Type == TType.String) {
-            this.action_id = iprot.ReadString();
-            this.__isset.action_id = true;
-          } else { 
-            TProtocolUtil.Skip(iprot, field.Type);
-          }
-          break;
-        case 2:
-          if (field.Type == TType.String) {
-            this.fault_code = iprot.ReadString();
-            this.__isset.fault_code = true;
-          } else { 
-            TProtocolUtil.Skip(iprot, field.Type);
-          }
-          break;
-        case 3:
-          if (field.Type == TType.String) {
-            this.fault_message = iprot.ReadString();
-            this.__isset.fault_message = true;
-          } else { 
-            TProtocolUtil.Skip(iprot, field.Type);
-          }
-          break;
-        case 4:
-          if (field.Type == TType.String) {
-            this.fault_detail = iprot.ReadString();
-            this.__isset.fault_detail = true;
-          } else { 
-            TProtocolUtil.Skip(iprot, field.Type);
-          }
-          break;
-        default: 
-          TProtocolUtil.Skip(iprot, field.Type);
-          break;
+        return action_id;
       }
-      iprot.ReadFieldEnd();
+      set
+      {
+        __isset.action_id = true;
+        this.action_id = value;
+      }
     }
-    iprot.ReadStructEnd();
-  }
 
-  public void Write(TProtocol oprot) {
-    TStruct struc = new TStruct("Fault");
-    oprot.WriteStructBegin(struc);
-    TField field = new TField();
-    if (this.action_id != null && __isset.action_id) {
-      field.Name = "action_id";
-      field.Type = TType.String;
-      field.ID = 1;
-      oprot.WriteFieldBegin(field);
-      oprot.WriteString(this.action_id);
-      oprot.WriteFieldEnd();
+    public string Fault_code
+    {
+      get
+      {
+        return fault_code;
+      }
+      set
+      {
+        __isset.fault_code = true;
+        this.fault_code = value;
+      }
     }
-    if (this.fault_code != null && __isset.fault_code) {
-      field.Name = "fault_code";
-      field.Type = TType.String;
-      field.ID = 2;
-      oprot.WriteFieldBegin(field);
-      oprot.WriteString(this.fault_code);
-      oprot.WriteFieldEnd();
-    }
-    if (this.fault_message != null && __isset.fault_message) {
-      field.Name = "fault_message";
-      field.Type = TType.String;
-      field.ID = 3;
-      oprot.WriteFieldBegin(field);
-      oprot.WriteString(this.fault_message);
-      oprot.WriteFieldEnd();
-    }
-    if (this.fault_detail != null && __isset.fault_detail) {
-      field.Name = "fault_detail";
-      field.Type = TType.String;
-      field.ID = 4;
-      oprot.WriteFieldBegin(field);
-      oprot.WriteString(this.fault_detail);
-      oprot.WriteFieldEnd();
-    }
-    oprot.WriteFieldStop();
-    oprot.WriteStructEnd();
-  }
 
-  public override string ToString() {
-    StringBuilder sb = new StringBuilder("Fault(");
-    sb.Append("action_id: ");
-    sb.Append(this.action_id);
-    sb.Append(",fault_code: ");
-    sb.Append(this.fault_code);
-    sb.Append(",fault_message: ");
-    sb.Append(this.fault_message);
-    sb.Append(",fault_detail: ");
-    sb.Append(this.fault_detail);
-    sb.Append(")");
-    return sb.ToString();
+    public string Fault_message
+    {
+      get
+      {
+        return fault_message;
+      }
+      set
+      {
+        __isset.fault_message = true;
+        this.fault_message = value;
+      }
+    }
+
+    public string Fault_detail
+    {
+      get
+      {
+        return fault_detail;
+      }
+      set
+      {
+        __isset.fault_detail = true;
+        this.fault_detail = value;
+      }
+    }
+
+
+    public Isset __isset;
+    [Serializable]
+    public struct Isset {
+      public bool action_id;
+      public bool fault_code;
+      public bool fault_message;
+      public bool fault_detail;
+    }
+
+    public Fault() {
+    }
+
+    public void Read (TProtocol iprot)
+    {
+      TField field;
+      iprot.ReadStructBegin();
+      while (true)
+      {
+        field = iprot.ReadFieldBegin();
+        if (field.Type == TType.Stop) { 
+          break;
+        }
+        switch (field.ID)
+        {
+          case 1:
+            if (field.Type == TType.String) {
+              this.action_id = iprot.ReadString();
+              this.__isset.action_id = true;
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 2:
+            if (field.Type == TType.String) {
+              this.fault_code = iprot.ReadString();
+              this.__isset.fault_code = true;
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 3:
+            if (field.Type == TType.String) {
+              this.fault_message = iprot.ReadString();
+              this.__isset.fault_message = true;
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 4:
+            if (field.Type == TType.String) {
+              this.fault_detail = iprot.ReadString();
+              this.__isset.fault_detail = true;
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          default: 
+            TProtocolUtil.Skip(iprot, field.Type);
+            break;
+        }
+        iprot.ReadFieldEnd();
+      }
+      iprot.ReadStructEnd();
+    }
+
+    public void Write(TProtocol oprot) {
+      TStruct struc = new TStruct("Fault");
+      oprot.WriteStructBegin(struc);
+      TField field = new TField();
+      if (this.action_id != null && __isset.action_id) {
+        field.Name = "action_id";
+        field.Type = TType.String;
+        field.ID = 1;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteString(this.action_id);
+        oprot.WriteFieldEnd();
+      }
+      if (this.fault_code != null && __isset.fault_code) {
+        field.Name = "fault_code";
+        field.Type = TType.String;
+        field.ID = 2;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteString(this.fault_code);
+        oprot.WriteFieldEnd();
+      }
+      if (this.fault_message != null && __isset.fault_message) {
+        field.Name = "fault_message";
+        field.Type = TType.String;
+        field.ID = 3;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteString(this.fault_message);
+        oprot.WriteFieldEnd();
+      }
+      if (this.fault_detail != null && __isset.fault_detail) {
+        field.Name = "fault_detail";
+        field.Type = TType.String;
+        field.ID = 4;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteString(this.fault_detail);
+        oprot.WriteFieldEnd();
+      }
+      oprot.WriteFieldStop();
+      oprot.WriteStructEnd();
+    }
+
+    public override string ToString() {
+      StringBuilder sb = new StringBuilder("Fault(");
+      sb.Append("action_id: ");
+      sb.Append(this.action_id);
+      sb.Append(",fault_code: ");
+      sb.Append(this.fault_code);
+      sb.Append(",fault_message: ");
+      sb.Append(this.fault_message);
+      sb.Append(",fault_detail: ");
+      sb.Append(this.fault_detail);
+      sb.Append(")");
+      return sb.ToString();
+    }
+
   }
 
 }
-

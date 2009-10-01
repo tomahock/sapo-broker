@@ -53,7 +53,7 @@ public class GcsInfo
 	 */
 	public static String getAgentName()
 	{
-		String prop = instance.conf.getName();
+		String prop = constructAgentName(instance.conf.getNet().getIp(), instance.conf.getNet().getPort());
 		if (StringUtils.isBlank(prop))
 		{
 			log.error("Fatal error: Must define an Agent name.");
@@ -122,7 +122,8 @@ public class GcsInfo
 	 */
 	public static String getGlobalConfigFilePath()
 	{
-		String prop = instance.conf.getNet().getFileRef();
+		String prop = System.getProperty("broker-global-config-path");
+		//String prop = instance.conf.getNet().getFileRef();
 		if (StringUtils.isBlank(prop))
 		{
 			log.error("Fatal error: Must define a valid path for the world map file.");
@@ -135,7 +136,7 @@ public class GcsInfo
 
 	private GcsInfo()
 	{
-		String filePath = System.getProperty("config-path");
+		String filePath = System.getProperty("agent-config-path");
 		if (StringUtils.isBlank(filePath))
 		{
 			log.error("Fatal error: No configuration file defined. Please set the enviroment variable 'config-path' to valid path for the configuration file");
@@ -376,5 +377,9 @@ public class GcsInfo
 	{
 		return GlobalConfig.getMaxDistinctSubscriptions();
 	}
-
+	
+	public static String constructAgentName(String ip, int port)
+	{
+		return ip + ":" + port;
+	}
 }

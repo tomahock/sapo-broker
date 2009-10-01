@@ -7,8 +7,6 @@ using System;
  * 
  */
 
-
-
 namespace RJH.CommandLineHelper
 {
 	/// <summary>Implements a basic command-line switch by taking the

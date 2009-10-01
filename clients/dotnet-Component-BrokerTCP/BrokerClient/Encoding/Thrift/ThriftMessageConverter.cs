@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 
+using SapoBrokerClient.Encoding.Thrift.Messages;
+
 namespace SapoBrokerClient
 {
 	public class ThriftMessageConverter
@@ -252,12 +254,12 @@ namespace SapoBrokerClient
 			
 			return ping;
 		}
-		
-		private static global::Authentication getAuthMessage(NetMessage message)
+
+        private static SapoBrokerClient.Encoding.Thrift.Messages.Authentication getAuthMessage(NetMessage message)
 		{
 			NetAuthentication  netAuth = message.Action.AuthenticationMessage;
 
-            global::Authentication auth = new global::Authentication();
+            SapoBrokerClient.Encoding.Thrift.Messages.Authentication auth = new SapoBrokerClient.Encoding.Thrift.Messages.Authentication();
 			auth.Action_id = netAuth.ActionId;
 			auth.Authentication_type = netAuth.AuthenticationType;
             if (netAuth.Roles != null)
