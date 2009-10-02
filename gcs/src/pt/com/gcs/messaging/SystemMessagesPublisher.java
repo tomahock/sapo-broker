@@ -54,7 +54,7 @@ public class SystemMessagesPublisher
 							if (entry.getValue().timeout <= currentTime)
 							{
 								retryMessages.add(entry.getValue());
-								log.warn("System message with message id" + entry.getValue().message.getMessageId() + " timedout.");
+								log.warn("System message with message id" + entry.getValue().message.getMessageId() + " timed out.");
 								break;
 							}
 						}
