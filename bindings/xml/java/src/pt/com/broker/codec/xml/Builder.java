@@ -235,7 +235,16 @@ public class Builder
 		case NOTIFICATION:
 			Notification notf = new Notification();
 			NetNotification nnotf = netMessage.getAction().getNotificationMessage();
+			
+		
+			
+			
 			notf.brokerMessage = buildXmlBrokerMessage(nnotf.getMessage(), nnotf.getDestination());
+			
+			// FIXME: para suportar os clientes antigos de topic_as_queue
+			notf.brokerMessage.destinationName = nnotf.getSubscription();			
+			///
+			
 			notf.actionId = nnotf.getMessage().getMessageId();
 
 			SoapEnvelope soap_env = new SoapEnvelope();
