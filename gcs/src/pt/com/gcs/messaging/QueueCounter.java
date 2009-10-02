@@ -30,30 +30,36 @@ class QueueCounter implements Runnable
 			if (cnt > 0)
 			{
 				log.info("Queue '{}' has {} message(s).", qp.getDestinationName(), cnt);
+				publishCount(qp, cnt);
 			}
 			else if ((cnt == 0) && !qp.emptyQueueInfoDisplay.getAndSet(true))
 			{
 				log.info("Queue '{}' is empty.", qp.getDestinationName());
+				publishCount(qp, cnt);
 			}
+			
+		}
+	}
 
-			try
-			{
-				String dName = String.format("/system/stats/queue-size/#%s#", qp.getDestinationName());
-				String content = GcsInfo.getAgentName() + "#" + qp.getDestinationName() + "#" + cnt;
+	private void publishCount(QueueProcessor qp, long cnt)
+	{
+		try
+		{
+			String dName = String.format("/system/stats/queue-size/#%s#", qp.getDestinationName());
+			String content = GcsInfo.getAgentName() + "#" + qp.getDestinationName() + "#" + cnt;
 
-				NetBrokerMessage brkMsg = new NetBrokerMessage(content.getBytes("UTF-8"));
-				InternalMessage intMsg = new InternalMessage();
-				intMsg.setContent(brkMsg);
-				intMsg.setDestination(dName);
-				intMsg.setPublishDestination(dName);
+			NetBrokerMessage brkMsg = new NetBrokerMessage(content.getBytes("UTF-8"));
+			InternalMessage intMsg = new InternalMessage();
+			intMsg.setContent(brkMsg);
+			intMsg.setDestination(dName);
+			intMsg.setPublishDestination(dName);
 
-				Gcs.publish(intMsg);
-			}
-			catch (Throwable error)
-			{
-				String emsg = String.format("Could not publish queue counter for '{}'", qp.getDestinationName());
-				log.error(emsg, error);
-			}
+			Gcs.publish(intMsg);
+		}
+		catch (Throwable error)
+		{
+			String emsg = String.format("Could not publish queue counter for '{}'", qp.getDestinationName());
+			log.error(emsg, error);
 		}
 	}
 }
