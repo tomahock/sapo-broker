@@ -19,7 +19,6 @@ import pt.com.broker.auth.Session;
 import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.codec.xml.SoapEnvelope;
-import pt.com.broker.codec.xml.SoapSerializer;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
 import pt.com.broker.types.NetAction;
@@ -174,7 +173,15 @@ public class FilePublisher
 								{
 									if (netMessage.getAction().getActionType().equals(NetAction.ActionType.PUBLISH))
 									{
-										BrokerProducer.getInstance().publishMessage(netMessage.getAction().getPublishMessage(), MQ.requestSource(netMessage));
+										if (netMessage.getAction().getPublishMessage().getDestinationType() == NetAction.DestinationType.TOPIC)
+										{
+											BrokerProducer.getInstance().publishMessage(netMessage.getAction().getPublishMessage(), MQ.requestSource(netMessage));
+										}
+										else if (netMessage.getAction().getPublishMessage().getDestinationType() == NetAction.DestinationType.QUEUE)
+										{
+											BrokerProducer.getInstance().enqueueMessage(netMessage.getAction().getPublishMessage(), MQ.requestSource(netMessage));
+										}
+
 									}
 									else
 									{

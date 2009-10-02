@@ -119,7 +119,15 @@ public class BrokerHttpAction extends HttpAction
 					return;
 				}
 
-				_http_broker.publishMessage(message.getAction().getPublishMessage(), MQ.requestSource(message));
+				if (message.getAction().getPublishMessage().getDestinationType() == NetAction.DestinationType.TOPIC)
+				{
+					_http_broker.publishMessage(message.getAction().getPublishMessage(), MQ.requestSource(message));
+				}
+				else if (message.getAction().getPublishMessage().getDestinationType() == NetAction.DestinationType.QUEUE)
+				{
+					_http_broker.enqueueMessage(message.getAction().getPublishMessage(), MQ.requestSource(message));
+				}
+
 				response.setStatus(HttpResponseStatus.ACCEPTED);
 			}
 			else
