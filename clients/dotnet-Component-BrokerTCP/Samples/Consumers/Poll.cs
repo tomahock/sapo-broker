@@ -32,7 +32,7 @@ namespace Samples.Consumers
             {
                 try
                 {
-                    NetNotification notification = brokerClient.Poll(cliArgs.DestinationName, -1);
+                    NetNotification notification = brokerClient.Poll(cliArgs.DestinationName, 2000);
                     if (notification != null)
                     {
                         System.Console.WriteLine("Message received: {0}",
