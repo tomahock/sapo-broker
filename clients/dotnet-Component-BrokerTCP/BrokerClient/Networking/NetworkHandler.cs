@@ -148,7 +148,7 @@ namespace SapoBrokerClient.Networking
                 // Connection failed
                 if (!OnIoFailure(this.connectionVersion))
                 {
-                    log.Error("Re-Connection failed");
+                    log.Error("Re-Connection failed", e);
                     throw e;
                 }
             }
