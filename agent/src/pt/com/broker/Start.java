@@ -76,8 +76,9 @@ public class Start
 				ssl_svr.start();
 			}
 
-			int udp_port = GcsInfo.getBrokerUdpPort();
-			BrokerUdpServer udp_srv = new BrokerUdpServer(udp_port);
+			int udp_legacy_port = GcsInfo.getBrokerUdpPort();
+			int udp_bin_port = broker_port;
+			BrokerUdpServer udp_srv = new BrokerUdpServer(udp_legacy_port, udp_bin_port);
 			udp_srv.start();
 
 			FilePublisher.init();
