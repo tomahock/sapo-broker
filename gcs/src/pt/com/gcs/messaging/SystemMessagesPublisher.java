@@ -1,5 +1,7 @@
 package pt.com.gcs.messaging;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pt.com.gcs.conf.GcsInfo;
 
 /**
  * SystemMessagesPublisher is responsible for holding and delivering system messages such as SYSTEM_TOPIC and SYSTEM_QUEUE. If these messages are not acknowledged them are resent.
@@ -54,16 +58,26 @@ public class SystemMessagesPublisher
 							if (entry.getValue().timeout <= currentTime)
 							{
 								retryMessages.add(entry.getValue());
-								log.warn("System message with message id" + entry.getValue().message.getMessageId() + " timed out.");
 								break;
 							}
 						}
 
-						for (TimeoutMessage tm : retryMessages)
+					}
+
+					for (TimeoutMessage tm : retryMessages)
+					{
+						SocketAddress remoteAddress = tm.session.getRemoteAddress();
+						String agent = "Unknown agent";
+						if( remoteAddress instanceof InetSocketAddress)
 						{
-							tm.session.write(tm.message);
-							tm.timeout = System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL;
+							InetSocketAddress i_remoteAddress = (InetSocketAddress) remoteAddress;
+							int port = i_remoteAddress.getPort();
+							String ip = i_remoteAddress.getAddress().toString();
+							agent = GcsInfo.constructAgentName(ip, port);
 						}
+						log.warn("System message with message id" + tm.message.getMessageId() + " timed out. Agent: " + agent);
+						tm.session.write(tm.message);
+						tm.timeout = System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL;
 					}
 
 				}
