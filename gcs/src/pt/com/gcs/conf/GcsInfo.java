@@ -123,10 +123,9 @@ public class GcsInfo
 	public static String getGlobalConfigFilePath()
 	{
 		String prop = System.getProperty("broker-global-config-path");
-		//String prop = instance.conf.getNet().getFileRef();
 		if (StringUtils.isBlank(prop))
 		{
-			log.error("Fatal error: Must define a valid path for the world map file.");
+			log.error("Fatal error: No global configuration file defined. Please set the enviroment variable 'broker-global-config-path' to valid path for the global configuration file");
 			Shutdown.now();
 		}
 		return prop;
@@ -139,7 +138,7 @@ public class GcsInfo
 		String filePath = System.getProperty("agent-config-path");
 		if (StringUtils.isBlank(filePath))
 		{
-			log.error("Fatal error: No configuration file defined. Please set the enviroment variable 'config-path' to valid path for the configuration file");
+			log.error("Fatal error: No agent configuration file defined. Please set the enviroment variable 'agent-config-path' to valid path for the configuration file");
 			Shutdown.now();
 		}
 		try
