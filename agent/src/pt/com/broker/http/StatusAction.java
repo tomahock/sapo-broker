@@ -1,15 +1,20 @@
 package pt.com.broker.http;
 
+import java.io.OutputStream;
+
+import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.http.HttpRequest;
+import org.apache.mina.filter.codec.http.HttpResponseStatus;
 import org.apache.mina.filter.codec.http.MutableHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.codec.xml.Status;
 import pt.com.http.HttpAction;
 
 /**
- * StatusAction outputs agent state in HTML.
+ * StatusAction outputs agent status in XML.
  * 
  */
 
@@ -26,36 +31,34 @@ public class StatusAction extends HttpAction
 	@Override
 	public void writeResponse(IoSession iosession, HttpRequest request, MutableHttpResponse response)
 	{
-		// IoBuffer bbo = IoBuffer.allocate(1024);
-		// bbo.setAutoExpand(true);
-		//
-		// OutputStream out = bbo.asOutputStream();
-		//
-		// try
-		// {
-		// Status status = new Status();
-		//
-		// String smessage = String.format(template, status.message,
-		// status.timestamp, status.version);
-		// byte[] bmessage = smessage.getBytes("UTF-8");
-		// response.setHeader("Pragma", "no-cache");
-		// response.setHeader("Cache-Control", "no-cache");
-		// response.setContentType("text/xml");
-		//
-		// response.setStatus(HttpResponseStatus.OK);
-		//
-		// out.write(bmessage);
-		// }
-		// catch (Throwable e)
-		// {
-		// response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-		// log.error("HTTP Service error, cause:" + e.getMessage() + " client:"
-		// + iosession.getRemoteAddress());
-		// }
-		// finally
-		// {
-		// bbo.flip();
-		// response.setContent(bbo);
-		// }
+		IoBuffer bbo = IoBuffer.allocate(1024);
+		bbo.setAutoExpand(true);
+
+		OutputStream out = bbo.asOutputStream();
+
+		try
+		{
+			Status status = new Status();
+
+			String smessage = String.format(template, status.message, status.timestamp, status.version);
+			byte[] bmessage = smessage.getBytes("UTF-8");
+			response.setHeader("Pragma", "no-cache");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setContentType("text/xml");
+
+			response.setStatus(HttpResponseStatus.OK);
+
+			out.write(bmessage);
+		}
+		catch (Throwable e)
+		{
+			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+			log.error("HTTP Service error, cause:" + e.getMessage() + " client:" + iosession.getRemoteAddress());
+		}
+		finally
+		{
+			bbo.flip();
+			response.setContent(bbo);
+		}
 	}
 }
