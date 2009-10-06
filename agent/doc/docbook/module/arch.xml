@@ -75,7 +75,7 @@
     <title>Future developments</title>
     <para>Sapo-Broker is an on going project at Sapo. As such several new features and improvements are to come. Here are some examples of planned developments:</para>
     <itemizedlist>
-      <listitem>Improve Sapo-Broker documentation (this document is already a step towards that gold)</listitem>
+      <listitem>Improve Sapo-Broker documentation (this document is already a step towards that goal)</listitem>
       <listitem>Update client libraries to support binary encoding, as well all other missing features in client compatibility matrix</listitem>
       <listitem>Develop a Javascript client</listitem>
       <listitem>Create a monitoring dashboard</listitem>
