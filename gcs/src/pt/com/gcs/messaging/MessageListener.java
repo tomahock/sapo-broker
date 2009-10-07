@@ -12,7 +12,7 @@ public interface MessageListener
 	/**
 	 * 
 	 * @param message Message to be delivered.
-	 * @return Negative value if the message wasn't delivered or a positive value indicating for how long the message should be reserved (if it aplies).
+	 * @return Negative value if the message wasn't delivered or a positive value indicating for how long the message should be reserved (if applicable).
 	 */
 	public long onMessage(InternalMessage message);
 

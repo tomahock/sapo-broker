@@ -5,6 +5,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
@@ -22,6 +24,7 @@ import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedExcept
  */
 public class SynchronousMessageListener implements MessageListener
 {
+	private static final Logger log = LoggerFactory.getLogger(SynchronousMessageListener.class);
 
 	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
 
@@ -57,20 +60,20 @@ public class SynchronousMessageListener implements MessageListener
 	public long onMessage(InternalMessage message)
 	{
 		if (!ready.get())
+		{
+			log.error("We shouldn't be here. A SynchronousMessageListener should not be called when in a 'not ready' state.");
 			return -1;
+		}
+
+		ready.set(false);
 
 		if ((ioSession != null) && ioSession.isConnected() && !ioSession.isClosing())
 		{
-			ready.set(false);
 			final NetMessage response = BrokerListener.buildNotification(message, getDestinationName(), getDestinationType());
 			ioSession.write(response);
 		}
 		else
 		{
-			// Session is closing or is unconnected
-
-			ready.set(false);
-			// Remove
 			LocalQueueConsumers.remove(this);
 			return -1;
 		}
@@ -137,7 +140,7 @@ public class SynchronousMessageListener implements MessageListener
 				setInNoWaitMode(false);
 				return;
 			}
-			// There is, at least one message. That is no guarantee that the sync client will receive it, so set a timeout of a second and set mode to no wait (inNoWaitMode)
+			// There is, at least one message. That is no guarantee that the sync client will receive it, so set a timeout of one second and set mode to no wait (inNoWaitMode)
 
 			timeout = 1000;
 		}

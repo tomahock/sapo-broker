@@ -37,23 +37,23 @@ public class GlobalConfigMonitor implements Runnable
 		}
 	}
 
-	public synchronized static void addGlobalConfigModifiedListener(GlobalConfigModifiedListener listner)
+	public synchronized static void addGlobalConfigModifiedListener(GlobalConfigModifiedListener listener)
 	{
-		listeners.add(listner);
+		listeners.add(listener);
 	}
 
-	public synchronized static void removeGlobalConfigModifiedListener(GlobalConfigModifiedListener listner)
+	public synchronized static void removeGlobalConfigModifiedListener(GlobalConfigModifiedListener listener)
 	{
-		listeners.remove(listner);
+		listeners.remove(listener);
 	}
 
 	private synchronized static void fireGlobalConfigModified()
 	{
-		for (GlobalConfigModifiedListener listner : listeners)
+		for (GlobalConfigModifiedListener listener : listeners)
 		{
 			try
 			{
-				listner.globalConfigModified();
+				listener.globalConfigModified();
 			}
 			catch (Throwable t)
 			{
