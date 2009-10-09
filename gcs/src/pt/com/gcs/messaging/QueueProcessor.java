@@ -159,12 +159,12 @@ public class QueueProcessor
 		store(msg, false);
 	}
 
-	public void store(final InternalMessage msg, boolean localConsumersOnly)
+	public void store(final InternalMessage msg, boolean preferLocalConsumer)
 	{
 		try
 		{
 			long seq_nr = _sequence.incrementAndGet();
-			storage.insert(msg, seq_nr, localConsumersOnly);
+			storage.insert(msg, seq_nr, preferLocalConsumer);
 			_counter.incrementAndGet();
 		}
 		catch (Throwable t)

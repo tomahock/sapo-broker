@@ -255,7 +255,7 @@ public class Gcs
 	{
 		try
 		{
-			QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message);
+			QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message, true);
 			return true;
 		}
 		catch (MaximumQueuesAllowedReachedException e)
