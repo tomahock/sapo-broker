@@ -56,21 +56,14 @@ public class Consumer implements BrokerListener
 		return dtype != DestinationType.TOPIC;
 	}
 
-	long time = 0;
-	volatile long count = 0;
+
 	@Override
-	public void onMessage(NetNotification notification) 
+	public void onMessage(NetNotification notification)
 	{
-		log.info(String.format(" [%s] %s -> Message destination: %s Received Message Length: %s (%s)", new Date(System.currentTimeMillis()), counter.incrementAndGet(), notification.getDestination(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
-		System.out.println("Msg Id: " + notification.getMessage().getMessageId());
-		if( ((++count) % 1000 ) == 0){}
-//		{
-//			log.info(String.format(" [%s] %s -> Message destination: %s Received Message Length: %s (%s)", new Date(System.currentTimeMillis()), count, notification.getDestination(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
-//			System.out.println("Time: " + (System.nanoTime() - time));
-//			time = System.nanoTime();
-//		}
-		
-		
+		System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
+		System.out.printf("Destination: '%s'%n", notification.getDestination());
+		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
+		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
 	}
 
 }

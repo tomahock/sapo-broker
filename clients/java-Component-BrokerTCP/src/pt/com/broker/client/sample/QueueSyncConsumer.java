@@ -45,9 +45,14 @@ public class QueueSyncConsumer
 	{
 		while (true)
 		{
-			NetNotification m = bk.poll(dname);
-			log.info(String.format("[%s] %s -> Received Message: %s", new Date(System.currentTimeMillis()), counter.incrementAndGet(), new String(m.getMessage().getPayload())));
-			bk.acknowledge(m);
+			NetNotification notification = bk.poll(dname);
+			
+			System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
+			System.out.printf("Destination: '%s'%n", notification.getDestination());
+			System.out.printf("Subscription: '%s'%n", notification.getSubscription());
+			System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+			
+			bk.acknowledge(notification);
 		}
 	}
 }

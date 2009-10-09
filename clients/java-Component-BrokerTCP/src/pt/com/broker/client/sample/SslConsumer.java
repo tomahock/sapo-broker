@@ -1,5 +1,6 @@
 package pt.com.broker.client.sample;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
@@ -69,7 +70,11 @@ public class SslConsumer implements BrokerListener
 	@Override
 	public void onMessage(NetNotification notification)
 	{
-		log.info(String.format("%s -> Received Message Length: %s (%s)", counter.incrementAndGet(), notification.getMessage().getPayload().length, new String(notification.getMessage().getPayload())));
+		System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
+		System.out.printf("Destination: '%s'%n", notification.getDestination());
+		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
+		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+		
 	}
 
 }
