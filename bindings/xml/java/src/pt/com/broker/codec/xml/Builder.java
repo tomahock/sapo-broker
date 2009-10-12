@@ -18,6 +18,7 @@ import pt.com.broker.types.NetPong;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class Builder
 {
@@ -242,7 +243,10 @@ public class Builder
 			notf.brokerMessage = buildXmlBrokerMessage(nnotf.getMessage(), nnotf.getDestination());
 			
 			// FIXME: para suportar os clientes antigos de topic_as_queue
-			notf.brokerMessage.destinationName = nnotf.getSubscription();			
+			if (nnotf.getDestinationType() != DestinationType.TOPIC)
+			{
+				notf.brokerMessage.destinationName = nnotf.getSubscription();		
+			}				
 			///
 			
 			notf.actionId = nnotf.getMessage().getMessageId();
