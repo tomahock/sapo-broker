@@ -302,7 +302,7 @@ window.onload = jsTestInit;</screen>
   </section>
   <section>
     <title>Known issues</title>
-    <para>Sapo-Broker Javascript is still experimental and relies on some beta or immature software such <ulink url="http://viewvc.jboss.org/cgi-bin/viewvc.cgi/netty/subproject/bayeux/">Bayeux4Netty</ulink> or <ulink url="http://api.dojotoolkit.org/jsdoc/1.3/dojox.cometd">DojoX Cometd</ulink>, so it's quite understandable that some issues exist. This sections states the kwon issues.</para>
+    <para>Sapo-Broker Javascript is still experimental and relies on some beta or immature software such <ulink url="http://viewvc.jboss.org/cgi-bin/viewvc.cgi/netty/subproject/bayeux/">Bayeux4Netty</ulink> or <ulink url="http://api.dojotoolkit.org/jsdoc/1.3/dojox.cometd">DojoX Cometd</ulink>, so it's quite understandable that some issues exist. This sections states the known issues.</para>
     <section>
       <title>Duplicate subscriptions</title>
       <para>User agents Subscription Requests are transformed by Bayeux Bridge to Topic Subscriptions and sent to each agent cloud connected to the bridge. When a message it's published to a given topic,

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <chapter id="protocol">
-  <title>Protocol specifiction</title>
+  <title>Protocol specification</title>
   <section>
     <title>Protocol messages</title>
     <para>Sapo-Broker makes its asynchronous messaging features available through the exchange of some well-known messages. These messages must be encoded using a supported encoding type and comply to the wire message format as well as the messaging format defined for each message. This means that messaging level message format (as opposite as wire messages), are not defined in any particular binary format, they are defined as structures composed by fields and other structures. Such approach provides a greater flexibility in terms of message encoding.</para>
@@ -118,7 +118,7 @@
               <entry id="UNSUBSCRIBE_MESSAGE">
                 <link linkend="UNSUBSCRIBE_MSG_DETAIL">Unsubscribe</link>
               </entry>
-              <entry>When a client wants to cancel a previous subscription it sends an Unsuscribe message.</entry>
+              <entry>When a client wants to cancel a previous subscription it sends an Unsubscribe message.</entry>
             </row>
             <row>
               <entry id="POLL_MESSAGE">
@@ -443,7 +443,7 @@ Payload:
                 <entry>2006</entry>
                 <entry>No message in local agent queue</entry>
                 <entry>
-                  Message sent if a poll request cannot be immediately satisfied because there are no available messages in local agent queue. Clients denote the intention of not wainting by sending a negative timeout.
+                  Message sent if a poll request cannot be immediately satisfied because there are no available messages in local agent queue. Clients denote the intention of not waiting by sending a negative timeout.
                 </entry>
               </row>
             </tbody>
@@ -472,7 +472,7 @@ Payload:
               <row>
                 <entry>3102</entry>
                 <entry>Unknown authentication type</entry>
-                <entry>The client tried to use an unsupported authentication schem</entry>
+                <entry>The client tried to use an unsupported authentication schema</entry>
               </row>
               <row>
                 <entry>3103</entry>
