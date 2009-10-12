@@ -1,5 +1,7 @@
 package pt.com.broker.http;
 
+import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +32,11 @@ public class BrokerHttpService
 			server.setRouter(new BrokerRequestRouter());
 			server.start();
 		}
-		catch (Throwable e)
+		catch (Throwable ex)
 		{
-			LOG.error("Failed to start HTTP container!", e);
-			System.exit(1);
+			Throwable rootCause = ErrorAnalyser.findRootCause(ex);
+			LOG.error("Failed to start HTTP container!", rootCause);
+			Shutdown.now();
 		}
 	}
 }
