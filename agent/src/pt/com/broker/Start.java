@@ -51,7 +51,9 @@ public class Start
 			log.warn("Aalto was not found in the classpath, will fallback to use the native parser");
 		}
 
-		ExceptionMonitor.setInstance(new ErrorHandler());
+		ErrorHandler errorHandler = new ErrorHandler();
+		
+		ExceptionMonitor.setInstance(errorHandler);
 
 		try
 		{

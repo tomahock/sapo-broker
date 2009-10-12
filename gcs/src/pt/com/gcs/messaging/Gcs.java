@@ -115,6 +115,7 @@ public class Gcs
 		{
 			InetSocketAddress inet = (InetSocketAddress) ioSession.getRemoteAddress();
 
+			// remove connections to agents that were removed from world map
 			if (!GlobalConfig.contains(inet))
 			{
 				log.info("Remove peer '{}'", inet.toString());
@@ -122,10 +123,23 @@ public class Gcs
 			}
 		}
 		List<Peer> peerList = GlobalConfig.getPeerList();
+		
+		
+		
+		List<InetSocketAddress> remoteSessions = new ArrayList<InetSocketAddress>(connectedSessions.size());
+		for(IoSession session : connectedSessions)
+		{
+			remoteSessions.add( (InetSocketAddress)session.getRemoteAddress());
+		}
+		
 		for (Peer peer : peerList)
 		{
 			SocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
-			connect(addr);
+			// Connect only if not already connected
+			if(!remoteSessions.contains(addr))
+			{
+				connect(addr);
+			}
 		}
 
 	}
@@ -416,6 +430,8 @@ public class Gcs
 		// / End compatibility mode
 
 		connectToAllPeers();
+		
+		Shutdown.isShutingDown();
 
 		log.info("{} initialized.", SERVICE_NAME);
 	}
@@ -424,8 +440,8 @@ public class Gcs
 	{
 		try
 		{
-			LocalQueueConsumers.removeAllListeners();
-			LocalTopicConsumers.removeAllListeners();
+			//LocalQueueConsumers.removeAllListeners();
+			//LocalTopicConsumers.removeAllListeners();
 			log.info("Flush buffers");
 			BDBEnviroment.sync();
 		}

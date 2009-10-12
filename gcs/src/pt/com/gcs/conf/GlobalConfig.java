@@ -115,8 +115,6 @@ public class GlobalConfig
 		String[] hosts = extractElementInfo(doc, "ip");
 		String[] ports = extractElementInfo(doc, "port");
 
-		// System.out.println("_selfName: " + _selfName);
-
 		boolean isSelfPeerInWorldMap = false;
 
 		peerList.clear();

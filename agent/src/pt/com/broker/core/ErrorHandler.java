@@ -24,6 +24,12 @@ import pt.com.gcs.conf.GcsInfo;
 
 public class ErrorHandler extends ExceptionMonitor
 {
+	
+	static
+	{
+		ErrorAnalyser.findRootCause(new RuntimeException());
+	}
+	
 	private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);
 
 	public void exceptionCaught(Throwable cause)

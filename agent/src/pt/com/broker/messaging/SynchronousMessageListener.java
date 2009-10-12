@@ -66,7 +66,7 @@ public class SynchronousMessageListener implements MessageListener
 		}
 
 		ready.set(false);
-
+		
 		if ((ioSession != null) && ioSession.isConnected() && !ioSession.isClosing())
 		{
 			final NetMessage response = BrokerListener.buildNotification(message, getDestinationName(), getDestinationType());

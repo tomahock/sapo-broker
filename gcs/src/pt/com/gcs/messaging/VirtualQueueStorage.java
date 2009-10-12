@@ -77,6 +77,7 @@ public class VirtualQueueStorage
 		catch (Throwable t)
 		{
 			Throwable rt = ErrorAnalyser.findRootCause(t);
+			ErrorAnalyser.exitIfOOM(rt);
 			log.error(rt.getMessage(), rt);
 		}
 
@@ -97,6 +98,7 @@ public class VirtualQueueStorage
 		catch (Throwable t)
 		{
 			Throwable rt = ErrorAnalyser.findRootCause(t);
+			ErrorAnalyser.exitIfOOM(rt);
 			log.error(rt.getMessage(), rt);
 		}
 
@@ -136,6 +138,7 @@ public class VirtualQueueStorage
 		catch (Throwable t)
 		{
 			Throwable rt = ErrorAnalyser.findRootCause(t);
+			ErrorAnalyser.exitIfOOM(rt);
 			log.error(rt.getMessage(), rt);
 			return new String[0];
 		}
@@ -150,6 +153,7 @@ public class VirtualQueueStorage
 				catch (Throwable t)
 				{
 					Throwable rt = ErrorAnalyser.findRootCause(t);
+					ErrorAnalyser.exitIfOOM(rt);
 					log.error(rt.getMessage(), rt);
 				}
 			}

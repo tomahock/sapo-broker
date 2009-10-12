@@ -102,7 +102,9 @@ public class SystemMessagesPublisher
 			for (Map.Entry<String, TimeoutMessage> entry : pending_messages.entrySet())
 			{
 				if (entry.getValue().session.equals(session))
+				{
 					message_identifiers.add(entry.getValue().message.getMessageId());
+				}
 			}
 			for (String msgId : message_identifiers)
 				pending_messages.remove(msgId);

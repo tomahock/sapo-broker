@@ -10,6 +10,7 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	public void exceptionCaught(IoSession iosession, Throwable cause) throws Exception
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+		ErrorAnalyser.exitIfOOM(rootCause);
 		log.error("Exception Caught:'{}', '{}'", IoSessionHelper.getRemoteAddress(iosession), rootCause.getMessage());
 		if (iosession.isConnected() && !iosession.isClosing())
 		{
@@ -175,6 +177,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 			// This exception is never thrown because UTF-8 encoding is built-in
 			// in every JVM
 		}
+		
 		ioSession.write(ackMsg);
 	}
 
@@ -193,7 +196,6 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 		log.info("Session Closed: '{}'", IoSessionHelper.getRemoteAddress(iosession));
 		RemoteTopicConsumers.remove(iosession);
 		RemoteQueueConsumers.remove(iosession);
-		SystemMessagesPublisher.sessionClosed(iosession);
 	}
 
 	@Override

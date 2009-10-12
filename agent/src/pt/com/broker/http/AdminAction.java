@@ -121,6 +121,7 @@ public class AdminAction extends HttpAction
 			bbf.setAutoExpand(true);
 			OutputStream out = bbf.asOutputStream();
 			Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+			ErrorAnalyser.exitIfOOM(rootCause);
 			out.write(("Error: " + rootCause.getMessage() + "\n").getBytes("UTF-8"));
 			bbf.flip();
 			response.setContentType(content_type);

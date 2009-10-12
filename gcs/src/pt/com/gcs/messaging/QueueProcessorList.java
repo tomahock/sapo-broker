@@ -99,6 +99,7 @@ public class QueueProcessorList
 		catch (RuntimeException re)
 		{
 			Throwable rootCause = ErrorAnalyser.findRootCause(re);
+			ErrorAnalyser.exitIfOOM(rootCause);
 			if (rootCause instanceof MaximumQueuesAllowedReachedException)
 			{
 				throw (MaximumQueuesAllowedReachedException) rootCause;

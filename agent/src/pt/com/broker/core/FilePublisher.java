@@ -161,7 +161,9 @@ public class FilePublisher
 						}
 						catch (Throwable e)
 						{
-							log.error("Error processing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
+							Throwable tr = ErrorAnalyser.findRootCause(e);
+							ErrorAnalyser.exitIfOOM(tr);
+							log.error("Error processing file \"" + msgf.getAbsolutePath() + "\". Error message: " + tr.getMessage());
 						}
 
 						if (isFileValid)
@@ -195,7 +197,9 @@ public class FilePublisher
 							}
 							catch (Throwable e)
 							{
-								log.error("Error publishing file \"" + msgf.getAbsolutePath() + "\". Error message: " + ErrorAnalyser.findRootCause(e).getMessage());
+								Throwable tr = ErrorAnalyser.findRootCause(e);
+								ErrorAnalyser.exitIfOOM(tr);
+								log.error("Error publishing file \"" + msgf.getAbsolutePath() + "\". Error message: " + tr.getMessage());
 							}
 							finally
 							{

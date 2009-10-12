@@ -379,7 +379,8 @@ public class AccessControl
 
 							ValidationResult res = new ValidationResult();
 							res.accessGranted = false;
-							res.reasonForRejection = "Access denied! Reason: " + pred.toString();
+							res.reasonForRejection = String.format("Access denied! Destination type: %s, Destination name: %s, Privilege: %s",
+									destinationType, destinationName, privilege);
 							return res;
 						}
 

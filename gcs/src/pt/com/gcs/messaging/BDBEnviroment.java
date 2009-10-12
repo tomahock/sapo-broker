@@ -107,6 +107,7 @@ public class BDBEnviroment
 		catch (Throwable t)
 		{
 			Throwable rt = ErrorAnalyser.findRootCause(t);
+			ErrorAnalyser.exitIfOOM(rt);
 			log.error(rt.getMessage(), rt);
 			return new String[0];
 		}

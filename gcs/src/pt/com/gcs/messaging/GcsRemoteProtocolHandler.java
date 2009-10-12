@@ -29,6 +29,7 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 	public void exceptionCaught(IoSession iosession, Throwable cause) throws Exception
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+		ErrorAnalyser.exitIfOOM(rootCause);
 		log.error("Exception Caught:{}, {}", IoSessionHelper.getRemoteAddress(iosession), rootCause.getMessage());
 		if (iosession.isConnected() && !iosession.isClosing())
 		{
@@ -43,6 +44,7 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 		{
 			log.error("STACKTRACE", t);
 		}
+		
 	}
 
 	@Override
@@ -91,6 +93,8 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 	public void sessionClosed(final IoSession iosession) throws Exception
 	{
 		log.info("Session Closed: '{}'", IoSessionHelper.getRemoteAddress(iosession));
+		
+		SystemMessagesPublisher.sessionClosed(iosession);
 		GcsExecutor.schedule(new Connect((SocketAddress) IoSessionHelper.getRemoteInetAddress(iosession)), 5000, TimeUnit.MILLISECONDS);
 	}
 

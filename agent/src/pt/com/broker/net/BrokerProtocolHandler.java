@@ -101,6 +101,8 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 	public void exceptionCaught(IoSession iosession, Throwable cause, String actionId)
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+		
+		ErrorAnalyser.exitIfOOM(rootCause);
 
 		NetFault fault = new NetFault("CODE:99999", rootCause.getMessage());
 		fault.setActionId(actionId);
