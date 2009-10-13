@@ -10,12 +10,9 @@ public class Status
 
 	public String timestamp;
 
-	public String version;
-
 	public Status()
 	{
-		message = "Agent is alive";
+		message = ":)";
 		timestamp = DateUtil.formatISODate(new Date());
-		version = "3.0";
 	}
 }

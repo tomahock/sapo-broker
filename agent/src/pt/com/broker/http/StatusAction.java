@@ -1,16 +1,19 @@
 package pt.com.broker.http;
 
 import java.io.OutputStream;
+import java.util.Date;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.http.HttpRequest;
 import org.apache.mina.filter.codec.http.HttpResponseStatus;
 import org.apache.mina.filter.codec.http.MutableHttpResponse;
+import org.caudexorigo.text.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.codec.xml.Status;
+import pt.com.broker.core.BrokerInfo;
 import pt.com.http.HttpAction;
 
 /**
@@ -38,9 +41,7 @@ public class StatusAction extends HttpAction
 
 		try
 		{
-			Status status = new Status();
-
-			String smessage = String.format(template, status.message, status.timestamp, status.version);
+			String smessage = String.format(template, "Agent is alive", DateUtil.formatISODate(new Date()), BrokerInfo.getVersion());
 			byte[] bmessage = smessage.getBytes("UTF-8");
 			response.setHeader("Pragma", "no-cache");
 			response.setHeader("Cache-Control", "no-cache");

@@ -26,7 +26,7 @@ public class GcsInfo
 {
 	private static Logger log = LoggerFactory.getLogger(GcsInfo.class);
 
-	public static final String VERSION = "3.0";
+	//public static final String VERSION = "3.0";
 
 	private static final GcsInfo instance = new GcsInfo();
 
