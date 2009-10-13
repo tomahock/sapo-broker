@@ -62,7 +62,7 @@
 	<target name="package" depends="build">
 		<jar destfile="${dist}/${package}">
 			<fileset dir="${bin}" />
-			<fileset file="VERSION.txt"/>
+			<fileset file="${src}/VERSION.txt"/>
 		</jar>
 	</target>
 	<target name="docs">
