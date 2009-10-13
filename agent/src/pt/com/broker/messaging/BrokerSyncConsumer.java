@@ -4,6 +4,7 @@ import org.apache.mina.core.session.IoSession;
 
 import pt.com.broker.types.NetPoll;
 import pt.com.gcs.messaging.LocalQueueConsumers;
+import pt.com.gcs.messaging.QueueProcessorList;
 
 /**
  * BrokerSyncConsumer represents a queue synchronous consumer.
@@ -18,6 +19,8 @@ public class BrokerSyncConsumer
 
 		try
 		{
+			QueueProcessorList.get(poll.getDestination());
+			
 			String destination = poll.getDestination();
 			String composedQueueName = SynchronousMessageListener.getComposedQueueName(destination);
 			Object attribute = ios.getAttribute(composedQueueName);

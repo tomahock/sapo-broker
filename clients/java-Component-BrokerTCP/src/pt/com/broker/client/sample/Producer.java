@@ -48,14 +48,12 @@ public class Producer
 
 	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
 	{
-		final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
-	
 		for (int i = 0; i < 100000; i++)
 		{
 	
-//			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
+			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
 
-			//final String msg = i + "";
+//			final String msg = i + "";
 			
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
 
@@ -70,7 +68,7 @@ public class Producer
 
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-			//Sleep.time(250);
+			Sleep.time(250);
 		}
 		bk.close();
 	}
