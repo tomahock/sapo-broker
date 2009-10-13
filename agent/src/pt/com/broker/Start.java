@@ -57,7 +57,7 @@ public class Start
 
 		try
 		{
-			log.info("SAPO-BROKER starting - Version: {}", BrokerInfo.VERSION);
+			log.info("SAPO-BROKER starting - Version: {}", BrokerInfo.getVersion());
 
 			Gcs.init();
 			ProvidersLoader.init();

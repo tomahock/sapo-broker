@@ -5,13 +5,11 @@
 	<property name="src" value="src" />
 	<property name="bin" value="bin" />
 	<property name="target-dir" value="../sapo-broker" />
-	<property name="major-version" value="3" />
-	<property name="minor-version" value="0" />
-	<property name="version" value="${major-version}.${minor-version}" />
+	
+	<loadfile property="version" srcFile="VERSION.txt" />
 	<property name="package" value="sapo-broker-agent-${version}.jar" />
 
-
-
+	<echo message="Building version: ${version}" />
 
 	<path id="project.classpath">
 		<pathelement location="../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
@@ -27,7 +25,6 @@
 	<target name="init" depends="clean">
 		<mkdir dir="${bin}" />
 		<mkdir dir="${dist}" />
-		<echo file="VERSION.txt">${version}</echo>
 	</target>
 
 	<target name="clean">
@@ -50,13 +47,13 @@
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<tstamp />
 
-		<copy file="src/pt/com/broker/core/BrokerInfo.java" tofile="src/pt/com/broker/core/BrokerInfo.bak" overwrite="true" />
-		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerVersion@" value="${version}" />
+		<!--<copy file="src/pt/com/broker/core/BrokerInfo.java" tofile="src/pt/com/broker/core/BrokerInfo.bak" overwrite="true" />
+		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerVersion@" value="${version}" /> -->
 		<javac destdir="bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
 			<src path="src" />
 			<classpath refid="project.classpath" />
 		</javac>
-		<move file="src/pt/com/broker/core/BrokerInfo.bak" tofile="src/pt/com/broker/core/BrokerInfo.java" overwrite="true" />
+		<!-- <move file="src/pt/com/broker/core/BrokerInfo.bak" tofile="src/pt/com/broker/core/BrokerInfo.java" overwrite="true" /> -->
 		<copy todir="bin">
 			<fileset dir="src" excludes="**/*.java" />
 		</copy>
@@ -65,6 +62,7 @@
 	<target name="package" depends="build">
 		<jar destfile="${dist}/${package}">
 			<fileset dir="${bin}" />
+			<fileset file="VERSION.txt"/>
 		</jar>
 	</target>
 	<target name="docs">
@@ -100,12 +98,6 @@
 		<ant antfile="../clients/java-Component-BrokerTCP/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" />
 		</ant>
-		<!--<ant antfile="../acl/sapo-sts/client/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" /> 
-		</ant>
-		<ant antfile="../acl/sapo-sts/agent/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" /> 
-		</ant>-->
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" />
 		</ant>
@@ -131,8 +123,6 @@
 		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../bindings/thrift/java/dist/sapo-broker-thriftbinding-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP-${version}.jar" todir="${target-dir}/lib" />
-		<!-- <copy file="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts-${version}.jar" todir="${target-dir}/lib" /> -->
-		<!-- <copy file="../acl/sapo-sts/agent/dist/sapo-broker-validation-saposts-${version}.jar" todir="${target-dir}/lib" /> -->
 		<copy todir="${target-dir}/lib" overwrite="true">
 			<fileset dir="../acl/jdbc/dist" />
 		</copy>
