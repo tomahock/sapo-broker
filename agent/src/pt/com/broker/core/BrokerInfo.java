@@ -15,7 +15,7 @@ public class BrokerInfo
 			InputStreamReader isr = new InputStreamReader(in);
 			BufferedReader br = new BufferedReader(isr);
 			
-			VERSION = br.readLine();
+			VERSION = br.readLine().trim();
 		}
 		catch (Exception e)
 		{

@@ -6,7 +6,7 @@
 	<property name="bin" value="bin" />
 	<property name="target-dir" value="../sapo-broker" />
 	
-	<loadfile property="version" srcFile="VERSION.txt" />
+	<loadfile property="version" srcFile="${src}/VERSION.txt" />
 	<property name="package" value="sapo-broker-agent-${version}.jar" />
 
 	<echo message="Building version: ${version}" />
