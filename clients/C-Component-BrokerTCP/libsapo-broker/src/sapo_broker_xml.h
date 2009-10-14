@@ -6,7 +6,6 @@
 #include "sapo_broker_xml_templates.h"
 
 #define BUFFSIZE	8192
-char Buff[BUFFSIZE];
 
 enum {
     XML_NOP = 0,
