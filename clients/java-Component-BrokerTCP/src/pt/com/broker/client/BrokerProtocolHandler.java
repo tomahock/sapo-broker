@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
@@ -46,16 +47,31 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	private HostInfo hostInfo = null;
 
 	private volatile int numberOfTries = DEFAULT_MAX_NUMBER_OF_TRIES;
-	
-		public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
+
+	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
 	{
 		this.brokerClient = brokerClient;
 		this.connector = connector;
 
 		setHostInfo(brokerClient.getHostInfo());
 
-		connector.connect();
-		
+		try
+		{
+			connector.connect();
+		}
+		catch (Throwable error)
+		{
+			final Throwable rootCause = ErrorAnalyser.findRootCause(error);
+			if (rootCause instanceof IOException)
+			{
+				onIOFailure(connector.getConnectionVersion());
+			}
+			else
+			{
+				throw error;
+			}
+		}
+
 		try
 		{
 			if (ptype == null)
@@ -188,15 +204,12 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		brokerClient.getErrorListener().onError(error);
 	}
 
-	
 	public final static String PollTimeoutErrorMessageCode = NetFault.PollTimeoutErrorMessage.getAction().getFaultMessage().getCode();
 	public final static String NoMessageInQueueErrorMessageCode = NetFault.NoMessageInQueueErrorMessage.getAction().getFaultMessage().getCode();
-	
+
 	public static final NetMessage TimeoutUnblockNotification = new NetMessage(new NetAction(NetAction.ActionType.FAULT));
-	public static final NetMessage NoMessageUnblockNotification  = new NetMessage(new NetAction(NetAction.ActionType.FAULT)); 
-	
-	
-	
+	public static final NetMessage NoMessageUnblockNotification = new NetMessage(new NetAction(NetAction.ActionType.FAULT));
+
 	@Override
 	protected void handleReceivedMessage(NetMessage message)
 	{
@@ -206,14 +219,14 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		{
 		case NOTIFICATION:
 			NetNotification notification = action.getNotificationMessage();
-			if ( !notification.getDestinationType().equals(NetAction.DestinationType.TOPIC) )
+			if (!notification.getDestinationType().equals(NetAction.DestinationType.TOPIC))
 			{
 				boolean received = brokerClient.offerPollResponse(notification.getSubscription(), message);
-				if( received )
+				if (received)
 				{
 					return;
 				}
-					
+
 			}
 
 			brokerClient.notifyListener(notification);
@@ -232,17 +245,15 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
 
-			if (fault.getCode().equals(PollTimeoutErrorMessageCode) || 
-					fault.getCode().equals(NoMessageInQueueErrorMessageCode))
+			if (fault.getCode().equals(PollTimeoutErrorMessageCode) || fault.getCode().equals(NoMessageInQueueErrorMessageCode))
 			{
 				String destination = fault.getDetail();
-				
-				if (fault.getCode().equals(PollTimeoutErrorMessageCode)
-						&& brokerClient.offerPollResponse(destination, TimeoutUnblockNotification))
+
+				if (fault.getCode().equals(PollTimeoutErrorMessageCode) && brokerClient.offerPollResponse(destination, TimeoutUnblockNotification))
 				{
 					return;
 				}
-				else if(brokerClient.offerPollResponse(destination, NoMessageUnblockNotification))
+				else if (brokerClient.offerPollResponse(destination, NoMessageUnblockNotification))
 				{
 					return;
 				}

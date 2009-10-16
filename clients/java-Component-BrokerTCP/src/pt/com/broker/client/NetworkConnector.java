@@ -24,7 +24,7 @@ public class NetworkConnector extends BaseNetworkConnector
 
 	public synchronized void connect(HostInfo host, long connectionVersion) throws Throwable
 	{
-		log.warn("Trying to connect");
+		log.info("Trying to connect");
 		this.setConnectionVersion(connectionVersion);
 		this.hostInfo = host;
 		client = new Socket();
