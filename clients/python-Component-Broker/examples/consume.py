@@ -15,6 +15,5 @@ broker = Minimal(codec=Protobuf(), transport=TCP(host=server))
 broker.send(Subscribe(destination=destination, destination_type=destination_type))
 for n in xrange(N):
     message = broker.receive()
-    if destination_type == 'QUEUE':
-        #acknowledge
-        broker.send(Acknowledge(message_id=message.message.id, destination=destination))
+    broker.send(Acknowledge(message_id=message.message.id, destination=message.destination))
+    print message.message.payload
