@@ -8,5 +8,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ProtoBufCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-ThriftCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV3-XmlCodec"/>
+	<classpathentry kind="lib" path="lib"/>
+	<classpathentry kind="lib" path="lib/h2-1.2.121.jar" sourcepath="/home/lcosta/Work/Projects/h2/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
