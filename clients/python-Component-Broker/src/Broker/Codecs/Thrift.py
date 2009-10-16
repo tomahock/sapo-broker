@@ -118,7 +118,7 @@ def parse_notification(action):
     notification = action.notification
     msg = notification.message
     message = BrokerMessage(payload=msg.payload, id=msg.message_id, timestamp=msg.timestamp, expiration=msg.expiration)
-    return Notification(destination=notification.destination, destination_type=notification.destination_type, subscription=notification.subscription, message=message)
+    return Notification(destination=notification.destination, destination_type=kind2string(notification.destination_type), subscription=notification.subscription, message=message)
 
 def parse_fault(action):
     fault = action.fault

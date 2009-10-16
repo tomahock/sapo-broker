@@ -127,4 +127,4 @@ class Authentication:
         self.role = role
         self.token = token
         self.authentication_type = authentication_type
-        sefl.action_id = None
+        self.action_id = None

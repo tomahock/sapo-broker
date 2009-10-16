@@ -49,7 +49,7 @@ def serialize_publish(message, action):
         action.action_id = action_id
 
 def serialize_poll(message, action):
-    action.action_type = action.PUBLISH
+    action.action_type = action.POLL
 
     poll = action.poll
     poll.destination = message.destination
@@ -85,7 +85,7 @@ def serialize_subscribe(message, action):
         action.action_id = action_id
 
 def serialize_unsubscribe(message, action):
-    action.action_type = action.SUBSCRIBE
+    action.action_type = action.UNSUBSCRIBE
 
     unsubscribe = action.unsubscribe
     unsubscribe.destination = message.destination
@@ -99,7 +99,7 @@ def parse_notification(action):
     notification = action.notification
     msg = notification.message
     message = BrokerMessage(payload=msg.payload, id=msg.message_id, timestamp=msg.timestamp, expiration=msg.expiration)
-    return Notification(destination=notification.destination, destination_type=notification.destination_type, subscription=notification.subscription, message=message)
+    return Notification(destination=notification.destination, destination_type=kind2string(notification.destination_type), subscription=notification.subscription, message=message)
 
 def parse_fault(action):
     fault = action.fault
