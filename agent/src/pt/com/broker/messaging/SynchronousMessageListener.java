@@ -204,6 +204,7 @@ public class SynchronousMessageListener implements MessageListener
 				if (attributeValue instanceof SynchronousMessageListener)
 				{
 					SynchronousMessageListener listener = (SynchronousMessageListener) attributeValue;
+					BrokerSyncConsumer.pollStoped(listener.getDestinationName());
 					LocalQueueConsumers.remove(listener);
 				}
 			}

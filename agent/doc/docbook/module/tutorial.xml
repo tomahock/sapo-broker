@@ -451,14 +451,41 @@ class Test_Class {
     <section>
       <title>Statistics</title>
       <para>Agents publish statistics regathering the number of consumers subscribed in each topic and queue.</para>
-      <para>Topic consumers are published in topic:</para>
-      <code>/system/stats/topic-consumer-count/[topic subscription]</code>
-      <para>The content of the published message, encoded using UTF-8, is:</para>
-      <computeroutput>[agent name]#[subscription]#[number of subscription]</computeroutput>
-      <para>Queue consumers are published in topic:</para>
-      <code>/system/stats/queue-consumer-count/[queue name]</code>
-      <para>The content of the published message, encoded using UTF-8, is:</para>
-      <computeroutput>[agent name]#[queue name]#[number of subscription]</computeroutput>
+      <section>
+        <title>Topic consumers</title>
+        <para>Topic consumers are published in topic:</para>
+        <code>/system/stats/topic-consumer-count/#[topic subscription]#</code>
+        <para>The content of the published message, encoded using UTF-8, is:</para>
+        <computeroutput>[agent name]#[subscription]#[number of subscription]</computeroutput>
+      </section>
+      <section>
+        <title>Queue consumers</title>
+        <para>Queue consumers are published in topic:</para>
+        <code>/system/stats/queue-consumer-count/#[queue name]#</code>
+        <para>The content of the published message, encoded using UTF-8, is:</para>
+        <computeroutput>[agent name]#[queue name]#[number of subscription]</computeroutput>
+      </section>
+      <section>
+        <title>Synchronous Queue Consumers</title>
+        <para>Synchronous queue consumers are published in topic:</para>
+        <code>/system/stats/queue-sync-consumer-count/#[queue name]#</code>
+        <para>The content of the published message, encoded using UTF-8, is:</para>
+        <computeroutput>[agent name]#[queue name]#[number of consumers]</computeroutput>
+      </section>
+      <section>
+        <title>Queue Count</title>
+        <para>The number of messages by queue are published in topic:</para>
+        <code>/system/stats/queue-consumer-count/#%[agent name]#</code>
+        <para>The content of the published message, encoded using UTF-8, is:</para>
+        <computeroutput>[agent name]#[queue name]#[number of messages]</computeroutput>
+      </section>
+      <section>
+        <title>Dropbox messages</title>
+        <para>The number of messages by the dropbox are published in topic:</para>
+        <code>/system/stats/dropbox/#[agent name]#</code>
+        <para>The content of the published message, encoded using UTF-8, is:</para>
+        <computeroutput>[agent name]#[dropbox location]#[number of messages]#[number of good messages]</computeroutput>
+      </section>
     </section>
     <section>
       <title>Faults</title>

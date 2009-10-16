@@ -5,7 +5,7 @@
     <title>The Sapo-Broker 3.0 User Guide</title>
     <subtitle>High performance distributed messaging framework</subtitle>
     <releaseinfo>
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../../VERSION.txt" parse="text"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../../src/VERSION.txt" parse="text"/>
     </releaseinfo>
   </bookinfo>
   <toc/>
