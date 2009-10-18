@@ -713,7 +713,7 @@ class Client:
 
         return self
 
-    def request(self, destination):
+    def request(self, destination, auto_acknowledge=True):
         """
         Requests that a notification for the destination QUEUE be delivered.
         Doesn't guarantee that the very next notification is from destination when multiple destinations have been subscribed or polled.
@@ -722,7 +722,8 @@ class Client:
         self.__lock_w()
         try:
             self.__write_raw(build_msg('request', request_msg(destination)))
-            self.__add_request_ack(destination)
+            if auto_acknowledge:
+                self.__add_request_ack(destination)
         finally:
             self.__unlock_w()
 
