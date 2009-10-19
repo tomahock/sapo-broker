@@ -3,10 +3,11 @@
 	<property name="dist" value="./dist" />
 	<property name="src" value="./src" />
 	<property name="bin" value="./bin" />
+	<property name="broker-public-repo" value="../../../BrokerPublicRepo" />
+	<loadfile property="version" srcFile="${broker-public-repo}/agent/${src}/VERSION.txt" />
 	<property name="package" value="bayeux-Bridge-${version}.jar" />
 
 	<path id="project.classpath">
-			
 		<fileset dir="../../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>
