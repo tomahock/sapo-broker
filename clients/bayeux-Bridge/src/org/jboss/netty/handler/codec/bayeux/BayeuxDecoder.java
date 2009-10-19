@@ -57,9 +57,10 @@ public class BayeuxDecoder extends OneToOneDecoder {
         HttpRequest request = (HttpRequest) msg;
         HttpMethod method = request.getMethod();
         HttpVersion version = request.getProtocolVersion();
-        String json = "";
-        String jsonp = "";
-        if (HttpMethod.POST == method && HttpVersion.HTTP_1_1 == version) {//Callback polling connection type
+        StringBuilder json = new StringBuilder();
+        StringBuilder jsonp = new StringBuilder();
+        String paramString = null;
+        if (HttpMethod.POST == method && HttpVersion.HTTP_1_1 == version && request.getContent().capacity() > 0) {//Callback polling connection type
             String charset = "utf-8";//Default unicode char encoding
             if (request.containsHeader(HttpHeaders.Names.CONTENT_TYPE)) {
                 String contentType = request.getHeader(HttpHeaders.Names.CONTENT_TYPE);
@@ -69,36 +70,36 @@ public class BayeuxDecoder extends OneToOneDecoder {
 
             String httpContent = ((ChannelBuffer) request.getContent()).toString(charset);
             logger.debug("HTTP POST: " + httpContent);
-            String content = URLDecoder.decode(httpContent, charset);
-
-            int begin = content.indexOf("message=");
-            if (begin == -1) {
-                json = content;
-            } else {
-                int end = content.indexOf("\n", begin) == -1 ? content.length() : content.indexOf("\n", begin);
-                json = content.substring(begin + 8, end);
-            }
-        } else if (HttpMethod.GET == method) {//Callback polling
+            paramString = "?" + httpContent;
+        } else if (HttpMethod.GET == method && request.getUri().length() > 0) {//Callback polling
             logger.debug("HTTP GET: " + request.getUri());
-            QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.getUri());
-            Map<String, List<String>> params = queryStringDecoder.getParameters();
-            if (!params.isEmpty() && params.containsKey("message")) {
-                List<String> vals = params.get("message");
-                for (String val : vals) {
-                    json += val;
+            paramString = request.getUri();
+
+        } else {
+            return msg;
+        }
+        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(paramString);
+        Map<String, List<String>> paramMaps = queryStringDecoder.getParameters();
+        if (paramMaps.isEmpty() && HttpMethod.POST == method && HttpVersion.HTTP_1_1 == version) {
+            json.append(paramString).deleteCharAt(0);
+        } else if (!paramMaps.isEmpty()) {
+            if (paramMaps.containsKey("message")) {
+                for (String param : paramMaps.get("message")) {
+                    json.append("&").append(param);
                 }
-                vals = params.get("jsonp");
-                for (String val : vals) {
-                    jsonp += val;
+                json.deleteCharAt(0);
+            }
+            if (paramMaps.containsKey("jsonp")) {
+                for (String param : paramMaps.get("jsonp")) {
+                	jsonp.append("&").append( param);
                 }
-            } else {
-                return msg;
+                jsonp.deleteCharAt(0);
             }
         } else {
             return msg;
         }
         logger.info("Request:" + json);
-        Object jsonObject = new JSONParser().parse(json);
+        Object jsonObject = new JSONParser().parse(json.toString());
         if (jsonObject == null || !(jsonObject instanceof Object[]) || ((Object[]) jsonObject).length == 0) {
             return null;
         }
@@ -110,32 +111,37 @@ public class BayeuxDecoder extends OneToOneDecoder {
             BayeuxMessage bayeux = factory.create((Map) o);
             connection = BayeuxRouter.getInstance().getConnection(bayeux.clientId);
             if (connection == null) {//New client, when handshakeing or publishing withoud connect before
-                connection = new BayeuxConnection(channel);
+                connection = new BayeuxConnection();
+                connection.setClientAddress(channel.getRemoteAddress());
+                connection.setServerAddress(channel.getLocalAddress());
+                connection.setRequestedUri(request.getUri());
+                String requestedHost = request.containsHeader(HttpHeaders.Names.HOST) ? request.getHeader(HttpHeaders.Names.HOST) : connection.getServerAddress().toString();
+                connection.setRequestedHost(requestedHost);
             } else if (connection.getChannel() != channel) {//Client is polling. Replace the older HTTP connection with the new one.
-                ConnectResponse[] responses=new ConnectResponse[1];
-                responses[0]=new ConnectResponse(connection.getClientId(),true);
+                ConnectResponse[] responses = new ConnectResponse[1];
+                responses[0] = new ConnectResponse(connection.getClientId(), true);
                 responses[0].setId(connection.getId());
                 responses[0].setTimestamp(BayeuxUtil.getCurrentTime());
                 connection.send(JSONParser.toJSON(responses));
-                connection.setChannel(channel);
             }
+            connection.setChannel(channel);
             connection.setId(bayeux.id);
             if (jsonp.length() > 0) {
-                connection.setJsonp(jsonp);
+                connection.setJsonp(jsonp.toString());
             }
             if (HandshakeRequest.isValid(bayeux)) {
-                connection.receiveToQueue(new HandshakeRequest(bayeux));
+                connection.putToUpstream(new HandshakeRequest(bayeux));
                 BayeuxRouter.getInstance().addConnection(connection);
             } else if (ConnectRequest.isValid(bayeux)) {
-                connection.receiveToQueue(new ConnectRequest(bayeux));
+                connection.putToUpstream(new ConnectRequest(bayeux));
             } else if (DisconnectRequest.isValid(bayeux)) {
-                connection.receiveToQueue(new DisconnectRequest(bayeux));
+                connection.putToUpstream(new DisconnectRequest(bayeux));
             } else if (SubscribeRequest.isValid(bayeux)) {
-                connection.receiveToQueue(new SubscribeRequest(bayeux));
+                connection.putToUpstream(new SubscribeRequest(bayeux));
             } else if (UnsubscribeRequest.isValid(bayeux)) {
-                connection.receiveToQueue(new UnsubscribeRequest(bayeux));
+                connection.putToUpstream(new UnsubscribeRequest(bayeux));
             } else if (PublishRequest.isValid(bayeux)) {
-                connection.receiveToQueue(new PublishRequest(bayeux));
+                connection.putToUpstream(new PublishRequest(bayeux));
             }
         }
         return connection;

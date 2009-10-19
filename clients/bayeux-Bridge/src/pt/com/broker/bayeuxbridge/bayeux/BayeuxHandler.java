@@ -243,8 +243,9 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 	{
 		List<BayeuxMessage> receivedMessages = new ArrayList<BayeuxMessage>();
 
-		BayeuxMessage bayeuxMessage = connection.pollFromUpstream();
-
+		//BayeuxMessage bayeuxMessage = connection.pollFromUpstream();
+		BayeuxMessage bayeuxMessage = connection.getFromUpstream();
+		
 		while (bayeuxMessage != null)
 		{
 			if(bayeuxMessage instanceof DisconnectRequest)
@@ -277,10 +278,11 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 				receivedMessages.add(bayeuxMessage);
 			}
 			
-			bayeuxMessage = connection.pollFromUpstream();
+			//bayeuxMessage = connection.pollFromUpstream();
+			bayeuxMessage = connection.getFromUpstream();
 		}
 
-		connection.receiveToQueue(receivedMessages);
+		connection.putToUpstream(receivedMessages);
 
 		ctx.getChannel().write(connection);
 	}
@@ -314,7 +316,7 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 
 		PublishResponse response=new PublishResponse(bayeuxMessage);
 		response.setSuccessful(true);
-		connection.sendToQueue(response);
+		connection.putToDownstream(response);
 		
 		return false;
 	}

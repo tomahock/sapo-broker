@@ -179,7 +179,7 @@ public class BayeuxRouter {
             deliverEvent.setId(connection.getId());
             if (connection.getClientId().equals(publishRequest.getClientId())) {
                 connection.setId(publishRequest.getId());
-                connection.sendToQueue(deliverEvent);
+                connection.putToDownstream(deliverEvent);
             } else {
                 connection.send(deliverEvent);
             }
@@ -232,7 +232,7 @@ public class BayeuxRouter {
 
         for (BayeuxConnection connection : matchedConnections) {
             if (connection == publisher) {
-                connection.sendToQueue(deliver);
+                connection.putToDownstream(deliver);
             } else {
                 connection.send(deliver);
             }

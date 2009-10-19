@@ -15,6 +15,7 @@
  */
 package org.jboss.netty.handler.codec.bayeux;
 
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,6 +51,10 @@ public class BayeuxConnection {
     private final LinkedList<BayeuxMessage> upstreamQueue = new LinkedList<BayeuxMessage>();//Receiving queue
     private final LinkedList<BayeuxMessage> downstreamQueue = new LinkedList<BayeuxMessage>();//Sending queue
     private final LinkedList<String> subscriptions = new LinkedList<String>();//Subscriptions, which are listenning to
+    private String requestedUri;
+    private String requestedHost;
+    private SocketAddress clientAddress;
+    private SocketAddress serverAddress;
 
     public enum TYPE {
 
@@ -86,8 +91,7 @@ public class BayeuxConnection {
      * 
      * @param channel
      */
-    public BayeuxConnection(Channel channel) {
-        this.channel = channel;
+    public BayeuxConnection() {
         this.state = STATE.INITIAL;
     }
 
@@ -96,7 +100,7 @@ public class BayeuxConnection {
      *
      * @param bayeux
      */
-    public void receiveToQueue(BayeuxMessage bayeux) {
+    public void putToUpstream(BayeuxMessage bayeux) {
         upstreamQueue.add(bayeux);
     }
 
@@ -105,9 +109,9 @@ public class BayeuxConnection {
      *
      * @param list
      */
-    public void receiveToQueue(List<BayeuxMessage> list) {
+    public void putToUpstream(List<BayeuxMessage> list) {
         for (BayeuxMessage bayeux : list) {
-            receiveToQueue(bayeux);
+            putToUpstream(bayeux);
         }
     }
 
@@ -117,7 +121,7 @@ public class BayeuxConnection {
      *
      * @return
      */
-    public BayeuxMessage pollFromUpstream() {
+    public BayeuxMessage getFromUpstream() {
         return upstreamQueue.pollFirst();
     }
 
@@ -150,7 +154,7 @@ public class BayeuxConnection {
      *
      * @param bayeux
      */
-    public void sendToQueue(BayeuxMessage bayeux) {
+    public void putToDownstream(BayeuxMessage bayeux) {
         if (bayeux != null) {
             downstreamQueue.add(bayeux);
         }
@@ -162,9 +166,9 @@ public class BayeuxConnection {
      *
      * @param bayeux
      */
-    public void sendToQueue(List<BayeuxMessage> bayeuxes) {
+    public void putToDownstream(List<BayeuxMessage> bayeuxes) {
         for (BayeuxMessage bayeux : bayeuxes) {
-            sendToQueue(bayeux);
+            putToDownstream(bayeux);
         }
     }
 
@@ -174,7 +178,7 @@ public class BayeuxConnection {
      * @param bayeux
      */
     public void send(BayeuxMessage bayeux) {
-        sendToQueue(bayeux);
+        putToDownstream(bayeux);
         flush();
     }
 
@@ -185,7 +189,7 @@ public class BayeuxConnection {
      */
     public void send(List<BayeuxMessage> bayeuxes) {
         for (BayeuxMessage bayeux : bayeuxes) {
-            sendToQueue(bayeux);
+            putToDownstream(bayeux);
         }
         flush();
     }
@@ -248,7 +252,7 @@ public class BayeuxConnection {
             handshakeResponse.setSuccessful(false);
             handshakeResponse.setError(getValueOfError(ERROR.UNSUPPORTED_CONNECTION_TYPES, JSONParser.toJSON(clientSupportedConnectTypeList)));
             handshakeResponse.setSupportedConnectionTypes((new ArrayList<TYPE>(serverSupportedConnectTypeList.values())).toArray(new TYPE[0]));
-            sendToQueue(handshakeResponse);
+            putToDownstream(handshakeResponse);
             BayeuxRouter.getInstance().removeConnection(this);
             return;
         } else {
@@ -281,7 +285,7 @@ public class BayeuxConnection {
             handshakeResponse.setError(getValueOfError(ERROR.UNSUPPORTED_VERSION, clientMinimumVersion + "," + clientVersion));
             BayeuxRouter.getInstance().removeConnection(this);
         }
-        sendToQueue(handshakeResponse);
+        putToDownstream(handshakeResponse);
     }
 
     /**
@@ -295,16 +299,16 @@ public class BayeuxConnection {
             this.state = STATE.CONNECTED;
             ConnectResponse connectResponse = new ConnectResponse(connectRequest);
             connectResponse.setSuccessful(true);
-            sendToQueue(connectResponse);
+            putToDownstream(connectResponse);
         } else if (this.state == STATE.CONNECTED) {
             return;
         } else {
             ConnectResponse connectResponse = new ConnectResponse(connectRequest);
             connectResponse.setSuccessful(false);
-            connectResponse.setAdvice(new BayeuxAdvice("handshake", 0, false));
             //connectResponse.setAdvice(new BayeuxAdvice("retry", 0, false));
+            connectResponse.setAdvice(new BayeuxAdvice("handshake", 0, false));
             connectResponse.setError(getValueOfError(ERROR.UNKNOWN_ERROR, null));
-            sendToQueue(connectResponse);
+            putToDownstream(connectResponse);
             this.state = STATE.DISCONNECTED;
             BayeuxRouter.getInstance().removeConnection(this);
         }
@@ -323,7 +327,7 @@ public class BayeuxConnection {
         if (!successful) {
             disconnectResponse.setError(getValueOfError(ERROR.UNKNOWN_CLIENT_ID, disconnectResponse.getClientId()));
         }
-        sendToQueue(disconnectResponse);
+        putToDownstream(disconnectResponse);
     }
 
     /**
@@ -342,7 +346,7 @@ public class BayeuxConnection {
             subscribeResponse.setAdvice(new BayeuxAdvice("retry", 0, false));
             subscribeResponse.setError(getValueOfError(ERROR.REPEAT_SUBSCRIBE, subscribeRequest.getClientId() + "," + subscribeRequest.getSubscription()));
         }
-        sendToQueue(subscribeResponse);
+        putToDownstream(subscribeResponse);
     }
 
     /**
@@ -361,7 +365,7 @@ public class BayeuxConnection {
             unsubscribeResponse.setAdvice(new BayeuxAdvice("retry", 0, false));
             unsubscribeResponse.setError(getValueOfError(ERROR.UNKNOWN_CHANNEL, unsubscribeRequest.getClientId() + "," + unsubscribeRequest.getSubscription()));
         }
-        sendToQueue(unsubscribeResponse);
+        putToDownstream(unsubscribeResponse);
     }
 
     /**
@@ -379,7 +383,7 @@ public class BayeuxConnection {
         if (!successful) {
             publishResponse.setError(getValueOfError(ERROR.UNKNOWN_CHANNEL, publishRequest.getClientId() + "," + publishRequest.getChannel()));
         }
-        sendToQueue(publishResponse);
+        putToDownstream(publishResponse);
     }
 
     /**
@@ -521,4 +525,46 @@ public class BayeuxConnection {
     public LinkedList<BayeuxMessage> getUpstreamQueue() {
         return upstreamQueue;
     }
+
+    public boolean isIsCommented() {
+        return isCommented;
+    }
+
+    public void setIsCommented(boolean isCommented) {
+        this.isCommented = isCommented;
+    }
+
+    public String getRequestedHost() {
+        return requestedHost;
+    }
+
+    public void setRequestedHost(String requestedHost) {
+        this.requestedHost = requestedHost;
+    }
+
+    public String getRequestedUri() {
+        return requestedUri;
+    }
+
+    public void setRequestedUri(String requestedUri) {
+        this.requestedUri = requestedUri;
+    }
+
+    public SocketAddress getClientAddress() {
+        return clientAddress;
+    }
+
+    public void setClientAddress(SocketAddress clientAddress) {
+        this.clientAddress = clientAddress;
+    }
+
+    public SocketAddress getServerAddress() {
+        return serverAddress;
+    }
+
+    public void setServerAddress(SocketAddress serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+
+    
 }

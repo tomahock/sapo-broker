@@ -66,7 +66,7 @@ public class BayeuxEncoder implements ChannelDownstreamHandler {
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
         if (msg instanceof BayeuxConnection) {
             BayeuxConnection connection = (BayeuxConnection) msg;
-            BayeuxMessage bayeux=connection.pollFromUpstream();
+            BayeuxMessage bayeux=connection.getFromUpstream();
             while(bayeux!=null) {
                 if (bayeux instanceof HandshakeRequest) {
                     connection.handshake((HandshakeRequest) bayeux);
@@ -81,7 +81,7 @@ public class BayeuxEncoder implements ChannelDownstreamHandler {
                 } else if (bayeux instanceof PublishRequest) {
                      connection.publish((PublishRequest) bayeux);
                 }
-                bayeux=connection.pollFromUpstream();
+                bayeux=connection.getFromUpstream();
             }
             connection.flush();
             return null;

@@ -34,7 +34,7 @@ public class BayeuxMessageFactory {
         return instance;
     }
 
-    public BayeuxMessage create(Map map) {
+    public BayeuxMessage create(Map<String, Object> map) {
         String channel = (String) map.get("channel");
         Object[] objs = (Object[]) map.get("supportedConnectionTypes");
         BayeuxConnection.TYPE[] supportedConnectionTypes = null;

@@ -44,7 +44,7 @@ public class BayeuxUtil {
      *
      * @return
      */
-    public static String getCurrentTime() {
+    public static synchronized String getCurrentTime() {
         return df.format(new Date());
     }
 
