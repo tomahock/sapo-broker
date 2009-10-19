@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Date;
 
 import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.text.StringUtils;
 
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAcknowledge;
@@ -70,6 +71,22 @@ public class Builder
 
 			NetBrokerMessage netBkMsg = new NetBrokerMessage(xmsg.textPayload.getBytes(CHARSET));
 			netBkMsg.setMessageId(xmsg.messageId);
+			try
+			{
+				if (StringUtils.isNotBlank(xmsg.timestamp))
+				{
+					Date parsedTimestamp = DateUtil.parseISODate(xmsg.timestamp);
+					netBkMsg.setTimestamp(parsedTimestamp.getTime());
+				}
+				if (StringUtils.isNotBlank(xmsg.expiration))
+				{
+					Date parsedExpiration = DateUtil.parseISODate(xmsg.expiration);
+					netBkMsg.setExpiration(parsedExpiration.getTime());
+				}
+			}
+			catch (Throwable t)
+			{
+			}
 
 			NetPublish netPublish = new NetPublish(xmsg.destinationName, dtype, netBkMsg);
 			netPublish.setActionId(actionId);
@@ -236,19 +253,16 @@ public class Builder
 		case NOTIFICATION:
 			Notification notf = new Notification();
 			NetNotification nnotf = netMessage.getAction().getNotificationMessage();
-			
-		
-			
-			
+
 			notf.brokerMessage = buildXmlBrokerMessage(nnotf.getMessage(), nnotf.getDestination());
-			
+
 			// FIXME: para suportar os clientes antigos de topic_as_queue
 			if (nnotf.getDestinationType() != DestinationType.TOPIC)
 			{
-				notf.brokerMessage.destinationName = nnotf.getSubscription();		
-			}				
-			///
-			
+				notf.brokerMessage.destinationName = nnotf.getSubscription();
+			}
+			// /
+
 			notf.actionId = nnotf.getMessage().getMessageId();
 
 			SoapEnvelope soap_env = new SoapEnvelope();
@@ -270,7 +284,7 @@ public class Builder
 		case POLL:
 			Poll poll = new Poll();
 			NetPoll npoll = netMessage.getAction().getPollMessage();
-			if(npoll.getTimeout() != 0)
+			if (npoll.getTimeout() != 0)
 				throw new IllegalArgumentException("When using XML encoding timeout must be zero (wait forever).");
 			poll.actionId = npoll.getActionId();
 			poll.destinationName = npoll.getDestination();
