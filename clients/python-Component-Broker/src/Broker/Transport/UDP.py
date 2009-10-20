@@ -1,6 +1,6 @@
 from INET import Transport as INET
 
-DEFAULT_PORT=3366
+DEFAULT_PORT=3323
 DEFAULT_HOST='localhost'
 
 import socket
