@@ -456,14 +456,14 @@ class Test_Class {
         <para>Topic consumers are published in topic:</para>
         <code>/system/stats/topic-consumer-count/#[topic subscription]#</code>
         <para>The content of the published message, encoded using UTF-8, is:</para>
-        <computeroutput>[agent name]#[subscription]#[number of subscription]</computeroutput>
+        <computeroutput>[agent name]#[subscription]#[number of subscriptions]</computeroutput>
       </section>
       <section>
         <title>Queue consumers</title>
         <para>Queue consumers are published in topic:</para>
         <code>/system/stats/queue-consumer-count/#[queue name]#</code>
         <para>The content of the published message, encoded using UTF-8, is:</para>
-        <computeroutput>[agent name]#[queue name]#[number of subscription]</computeroutput>
+        <computeroutput>[agent name]#[queue name]#[number of subscriptions]</computeroutput>
       </section>
       <section>
         <title>Synchronous Queue Consumers</title>
