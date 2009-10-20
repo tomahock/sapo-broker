@@ -6,10 +6,19 @@
 	<property name="bin" value="bin" />
 	<property name="target-dir" value="../sapo-broker" />
 	
-	<loadfile property="version" srcFile="${src}/VERSION.txt" />
+	<loadfile srcfile="${src}/VERSION.txt" property="version">
+		<filterchain>
+			<striplinebreaks />
+			<tokenfilter>
+				<trim />
+				<ignoreblank />
+			</tokenfilter>
+		</filterchain>		
+	</loadfile>
+
 	<property name="package" value="sapo-broker-agent-${version}.jar" />
 
-	<echo message="Building version: ${version}" />
+	<echo message="Building version: '${version}'" />	
 
 	<path id="project.classpath">
 		<pathelement location="../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
