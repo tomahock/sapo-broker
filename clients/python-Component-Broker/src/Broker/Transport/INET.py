@@ -42,7 +42,7 @@ class Transport(BaseTransport):
                 data = data + read
                 length = length - read_length
 
-        return read
+        return data
 
     def receive(self):
         meta = Message.meta_from_header(self.__read_len(8))
