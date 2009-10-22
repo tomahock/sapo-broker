@@ -40,6 +40,7 @@
 		<delete dir="${bin}" />
 		<delete dir="${dist}" />
 		<delete dir="${target-dir}" />
+		<delete dir="./doc/docbook/gen" />
 	</target>
 
 	<target name="clean-all" depends="clean">
@@ -48,7 +49,7 @@
 		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="clean" />
-		<ant antfile="../clients/java-component-broker/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../clients/java-component/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="clean" />
 	</target>
 
@@ -104,7 +105,7 @@
 			<property name="project.location" value="../bindings/xml/java" />
 			<property name="version" value="${version}" />
 		</ant>
-		<ant antfile="../clients/java-component-broker/build.xml" inheritAll="false" target="package">
+		<ant antfile="../clients/java-component/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package">
@@ -131,13 +132,13 @@
 		<copy file="../bindings/xml/java/dist/sapo-broker-xmlbinding-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../bindings/thrift/java/dist/sapo-broker-thriftbinding-${version}.jar" todir="${target-dir}/lib" />
-		<copy file="../clients/java-component-broker/dist/java-component-broker-${version}.jar" todir="${target-dir}/lib" />
+		<copy file="../clients/java-component/dist/java-component-${version}.jar" todir="${target-dir}/lib" />
 		<copy todir="${target-dir}/lib" overwrite="true">
 			<fileset dir="../acl/jdbc/dist" />
 		</copy>
 
 		<copy todir="${target-dir}/doc">
-			<fileset dir="doc" />
+			<fileset dir="doc/docbook/gen" />
 		</copy>
 
 		<copy todir="${target-dir}/bin">
@@ -159,6 +160,8 @@
 		<copy todir="${target-dir}/clients">
 			<fileset dir="../clients" excludes="**/.*" />
 		</copy>
+
+		<delete dir="${target-dir}/clients/java-component/bin" />
 
 		<!-- copy todir="${target-dir}">
 			<fileset dir="bin">
