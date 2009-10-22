@@ -466,16 +466,9 @@ class Test_Class {
         <computeroutput>[agent name]#[queue name]#[number of subscriptions]</computeroutput>
       </section>
       <section>
-        <title>Synchronous Queue Consumers</title>
-        <para>Synchronous queue consumers are published in topic:</para>
-        <code>/system/stats/queue-sync-consumer-count/#[queue name]#</code>
-        <para>The content of the published message, encoded using UTF-8, is:</para>
-        <computeroutput>[agent name]#[queue name]#[number of consumers]</computeroutput>
-      </section>
-      <section>
-        <title>Queue Count</title>
+        <title>Queue Size</title>
         <para>The number of messages by queue are published in topic:</para>
-        <code>/system/stats/queue-consumer-count/#%[agent name]#</code>
+        <code>/system/stats/queue-size/#[queue name]#</code>
         <para>The content of the published message, encoded using UTF-8, is:</para>
         <computeroutput>[agent name]#[queue name]#[number of messages]</computeroutput>
       </section>
