@@ -51,6 +51,8 @@
   <section>
     <title>Frequently asked questions</title>
     <para>Here are some questions that you may have and should help you take advantaged of Sapo-Broker.</para>
+    <para>Coming soon...</para>
+<!--
     <qandaset>
       <qandaentry>
         <question>
@@ -77,5 +79,6 @@
         </answer>
       </qandaentry>
     </qandaset>
+-->
   </section>
 </chapter>
