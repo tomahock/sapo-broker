@@ -12,9 +12,10 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.monitorization.collectors.JsonEncodable;
 import pt.com.broker.types.NetAction.DestinationType;
 
-public class DbSubscription
+public class DbSubscription implements JsonEncodable
 {
 	private static final Logger log = LoggerFactory.getLogger(DbSubscription.class);
 	
@@ -65,6 +66,15 @@ public class DbSubscription
 	public String getSubscriptionType()
 	{
 		return subscriptionType;
+	}
+
+	@Override
+	public String toJson()
+	{
+		if (agentName == null)
+			return String.format("{\"subscription\":\"%s\",\"subscriptionType\":\"%s\",\"count\":%s}", this.subscription, this.subscriptionType, this.count+ "");
+		else
+			return String.format("{\"subscription\":\"%s\",\"subscriptionType\":\"%s\",\"count\":%s, \"agentName\":\"%s\", \"date\":\"%s\" }", this.subscription, this.subscriptionType, this.count+ "", agentName, DateFormat.getInstance().format(new Date(date)));
 	}
 	
 	public static void addSusbscriptionCount(String agentName, String subscription, String subscriptionType, int count)
@@ -188,6 +198,47 @@ public class DbSubscription
 		return subscriptions;
 	}
 	
+	public static Collection<DbSubscription> getSubscription(String name)
+	{
+		Collection<DbSubscription> subscriptions = new ArrayList<DbSubscription>();
+		Connection connection = H2ConsolidatorManager.getConnection();
+		try
+		{
+			if (connection == null)
+			{
+				log.error("Failed to get a valid connection");
+				return subscriptions;
+			}
+			PreparedStatement prepareStatement = connection.prepareStatement("select SUBSCRIPTION , AGENTNAME, SUBSCRIPTIONTYPE, COUNT, TIME from SUBSCRIPTIONS where SUBSCRIPTION = ? order by SUBSCRIPTION desc");
+			prepareStatement.setString(1, name);
+			
+			ResultSet queryResult = prepareStatement.executeQuery();
+			while (queryResult.next())
+			{
+				DbSubscription dbQueue = new DbSubscription(queryResult.getString(1), queryResult.getString(3), queryResult.getInt(4));
+				dbQueue.setDate(queryResult.getLong(5));
+				dbQueue.setAgentName(queryResult.getString(2));
+				subscriptions.add(dbQueue);
+			}
+		}
+		catch (Throwable t)
+		{
+			log.error("Failed to get agent subscriptions", t);
+		}
+		if (connection != null)
+		{
+			try
+			{
+				connection.close();
+			}
+			catch (SQLException e)
+			{
+				log.error("Failed to close db connection", e);
+			}
+		}
+		return subscriptions;
+	}
+	
 	public static Collection<DbSubscription> getConsolidatedSubscriptionCount()
 	{
 		Collection<DbSubscription> subscriptions = new ArrayList<DbSubscription>();
@@ -224,4 +275,5 @@ public class DbSubscription
 		}
 		return subscriptions;
 	}
+
 }

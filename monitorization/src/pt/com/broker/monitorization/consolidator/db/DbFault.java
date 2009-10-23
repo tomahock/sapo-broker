@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import org.caudexorigo.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DbFault
+import pt.com.broker.monitorization.collectors.JsonEncodable;
+
+public class DbFault implements JsonEncodable
 {
 	private static final Logger log = LoggerFactory.getLogger(DbFault.class);
 
@@ -40,6 +43,12 @@ public class DbFault
 	public String getDate()
 	{
 		return DateFormat.getInstance().format(new Date(date));
+	}
+	
+	@Override
+	public String toJson()
+	{
+		return String.format("{\"name\":\"%s\",\"message\":\"%s\",\"date\":\"%s\"}", this.agentName, StringEscapeUtils.escapeHtml(this.message), DateFormat.getInstance().format(new Date(date)));
 	}
 
 	public static void add(String agentName, String message)
@@ -91,7 +100,7 @@ public class DbFault
 				log.error("Failed to get a valid connection");
 				return faults;
 			}
-			PreparedStatement prepareStatement = connection.prepareStatement("select message, agentName, time from Fault");
+			PreparedStatement prepareStatement = connection.prepareStatement("select message, agentName, time from Fault order by time desc");
 			ResultSet queryResult = prepareStatement.executeQuery();
 			while (queryResult.next())
 			{
@@ -127,7 +136,7 @@ public class DbFault
 				log.error("Failed to get a valid connection");
 				return faults;
 			}
-			PreparedStatement prepareStatement = connection.prepareStatement("select message, agentName, time from Fault where agentName = ?");
+			PreparedStatement prepareStatement = connection.prepareStatement("select message, agentName, time from Fault where agentName = ? order by time desc");
 			prepareStatement.setString(1, agentName);
 
 			ResultSet queryResult = prepareStatement.executeQuery();
@@ -153,4 +162,5 @@ public class DbFault
 		}
 		return faults;
 	}
+
 }

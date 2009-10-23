@@ -10,7 +10,9 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DbDropbox
+import pt.com.broker.monitorization.collectors.JsonEncodable;
+
+public class DbDropbox implements JsonEncodable
 {
 	private static final Logger log = LoggerFactory.getLogger(DbSubscription.class);
 
@@ -47,6 +49,13 @@ public class DbDropbox
 		return goodMessages;
 	}
 
+	@Override
+	public String toJson()
+	{
+
+			return String.format("{\"agentName\":\"%s\",\"dropboxLocation\":\"%s\",\"messages\":%s,\"goodMessages\":%s}", agentName, dropboxLocation, messages+"", goodMessages+"");
+	}
+	
 	public static void addDropboxInfo(String agentName, String dropboxLocation, int messages, int goodMessages)
 	{
 		Connection connection = H2ConsolidatorManager.getConnection();
@@ -58,7 +67,7 @@ public class DbDropbox
 				return;
 			}
 
-			PreparedStatement insertStatement = connection.prepareStatement("merge into dropbox (agentname ,dropboxlocation , messages, goodmessages, time) values (?,?,?,?,?)");
+			PreparedStatement insertStatement = connection.prepareStatement("merge into dropbox (agentname, dropboxlocation, messages, goodmessages, time) values (?,?,?,?,?)");
 			insertStatement.setString(1, agentName);
 			insertStatement.setString(2, dropboxLocation);
 			insertStatement.setInt(3, messages);
@@ -70,7 +79,6 @@ public class DbDropbox
 			PreparedStatement deletetStatement = connection.prepareStatement("delete from dropbox where time < ?");
 			deletetStatement.setLong(1, (System.currentTimeMillis() - (5 * 60 * 1000)));
 			deletetStatement.execute();
-
 		}
 		catch (Throwable t)
 		{
@@ -91,6 +99,16 @@ public class DbDropbox
 
 	public static Collection<DbDropbox> getDropboxes()
 	{
+		return getDropboxesOrderBy("goodmessages");
+	}
+	
+	public static Collection<DbDropbox> getDropboxesOrderByMessages()
+	{
+		return getDropboxesOrderBy("messages");
+	}
+	
+	private static Collection<DbDropbox> getDropboxesOrderBy(String col)
+	{
 		Collection<DbDropbox> dropboxes = new ArrayList<DbDropbox>();
 		Connection connection = H2ConsolidatorManager.getConnection();
 		try
@@ -100,7 +118,7 @@ public class DbDropbox
 				log.error("Failed to get a valid connection");
 				return dropboxes;
 			}
-			PreparedStatement prepareStatement = connection.prepareStatement("select agentname ,dropboxlocation , messages, goodmessages from  dropbox");
+			PreparedStatement prepareStatement = connection.prepareStatement(String.format("select agentname ,dropboxlocation , messages, goodmessages from  dropbox order by %s desc", col) );
 			ResultSet queryResult = prepareStatement.executeQuery();
 			while (queryResult.next())
 			{
@@ -137,7 +155,7 @@ public class DbDropbox
 				log.error("Failed to get a valid connection");
 				return new DbDropbox(agentName, "", 0, 0);
 			}
-			PreparedStatement prepareStatement = connection.prepareStatement("select agentname ,dropboxlocation , messages, goodmessages from  dropbox where agentname = ?");
+			PreparedStatement prepareStatement = connection.prepareStatement("select agentname, dropboxlocation, messages, goodmessages from  dropbox where agentname = ? order by goodmessages desc");
 			prepareStatement.setString(1, agentName);
 
 			ResultSet queryResult = prepareStatement.executeQuery();

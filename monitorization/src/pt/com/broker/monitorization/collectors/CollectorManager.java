@@ -30,8 +30,8 @@ public class CollectorManager
 		CollectorManager.worldmapLocation = worldmapLocation;
 		
 		/* This shouldn't be hard-coded */
-		//HostInfo hostInfo = new HostInfo("broker.bk.sapo.pt", 3323);
-		HostInfo hostInfo = new HostInfo("127.0.0.1", 3323);
+		HostInfo hostInfo = new HostInfo("broker.bk.sapo.pt", 3323);
+		//HostInfo hostInfo = new HostInfo("127.0.0.1", 3323);
 		
 		try
 		{

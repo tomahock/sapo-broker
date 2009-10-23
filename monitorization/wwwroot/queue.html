@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>Sapo-Broker Monitorization HTTP Server</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script type="text/javascript" src="sapolib.js" ></script>
+	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
+        <script type="text/javascript" src="monitor.js"></script>
+	<script type="text/javascript">
+		window.onload = queueMonitorizationInit;
+	</script>
+    </head>
+    <body>
+	<h1>Queue Information</h1><hr/>
+	<h2>Queue name: <div id='queue_name'> </div></h2>
+	<table style="width:90%">
+	  <tr>
+	    <td style="width:40%">
+		<div class="brokerInfo">
+		   <h2>Agents</h2>
+		   <div id="queue_agents">
+		   </div>
+		</div>
+	    </td>
+	    <td style="width:40%"
+		<div class="brokerInfo">
+		   <h2>Subscriptions</h2>
+		   <div id="queue_subscriptions">
+		   </div>
+		</div>
+	    </td>
+	  </tr>
+	</table>
+    </body>
+</html>
