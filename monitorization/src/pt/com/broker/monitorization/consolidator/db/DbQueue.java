@@ -12,6 +12,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.monitorization.Utils;
 import pt.com.broker.monitorization.collectors.JsonEncodable;
 
 public class DbQueue implements JsonEncodable
@@ -66,7 +67,7 @@ public class DbQueue implements JsonEncodable
 		if (agentName == null)
 			return String.format("{\"name\":\"%s\",\"count\":%s}", this.name, this.count + "");
 		else
-			return String.format("{\"name\":\"%s\",\"count\":%s,\"agentName\":\"%s\",\"date\":\"%s\"}", this.name, this.count + "", agentName, DateFormat.getInstance().format(new Date(date)));
+			return String.format("{\"name\":\"%s\",\"count\":%s,\"agentName\":\"%s\",\"date\":\"%s\"}", this.name, this.count + "", agentName,Utils.formatDate(date));
 	}
 
 	public static void addQueueCount(String agentName, String queueName, int count)
@@ -157,7 +158,7 @@ public class DbQueue implements JsonEncodable
 				log.error("Failed to get a valid connection");
 				return queues;
 			}
-			PreparedStatement prepareStatement = connection.prepareStatement("select name, agentName, count, time from QUEUES where agentName = ?  order by time desc");
+			PreparedStatement prepareStatement = connection.prepareStatement("select name, agentName, count, time from QUEUES where agentName = ?  order by count desc, time desc");
 			prepareStatement.setString(1, agentName);
 
 			ResultSet queryResult = prepareStatement.executeQuery();
@@ -198,7 +199,7 @@ public class DbQueue implements JsonEncodable
 				log.error("Failed to get a valid connection");
 				return queues;
 			}
-			PreparedStatement prepareStatement = connection.prepareStatement("select name, agentName, count, time from QUEUES where name = ?  order by agentName desc");
+			PreparedStatement prepareStatement = connection.prepareStatement("select name, agentName, count, time from QUEUES where name = ?  order by  count desc, time desc");
 			prepareStatement.setString(1, queueName);
 
 			ResultSet queryResult = prepareStatement.executeQuery();

@@ -13,6 +13,7 @@ import org.caudexorigo.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.monitorization.Utils;
 import pt.com.broker.monitorization.collectors.JsonEncodable;
 
 public class DbFault implements JsonEncodable
@@ -48,7 +49,7 @@ public class DbFault implements JsonEncodable
 	@Override
 	public String toJson()
 	{
-		return String.format("{\"name\":\"%s\",\"message\":\"%s\",\"date\":\"%s\"}", this.agentName, StringEscapeUtils.escapeHtml(this.message), DateFormat.getInstance().format(new Date(date)));
+		return String.format("{\"agentName\":\"%s\",\"message\":\"%s\",\"date\":\"%s\"}", this.agentName, "FAULT MESSAGE"/*StringEscapeUtils.escapeHtml(this.message)*/, Utils.formatDate(date));
 	}
 
 	public static void add(String agentName, String message)

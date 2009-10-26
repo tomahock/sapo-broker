@@ -12,6 +12,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.monitorization.Utils;
 import pt.com.broker.monitorization.collectors.JsonEncodable;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -74,7 +75,7 @@ public class DbSubscription implements JsonEncodable
 		if (agentName == null)
 			return String.format("{\"subscription\":\"%s\",\"subscriptionType\":\"%s\",\"count\":%s}", this.subscription, this.subscriptionType, this.count+ "");
 		else
-			return String.format("{\"subscription\":\"%s\",\"subscriptionType\":\"%s\",\"count\":%s, \"agentName\":\"%s\", \"date\":\"%s\" }", this.subscription, this.subscriptionType, this.count+ "", agentName, DateFormat.getInstance().format(new Date(date)));
+			return String.format("{\"subscription\":\"%s\",\"subscriptionType\":\"%s\",\"count\":%s, \"agentName\":\"%s\", \"date\":\"%s\" }", this.subscription, this.subscriptionType, this.count+ "", agentName, Utils.formatDate(date));
 	}
 	
 	public static void addSusbscriptionCount(String agentName, String subscription, String subscriptionType, int count)

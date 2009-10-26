@@ -122,7 +122,7 @@ public class DataFetcher
 	
 	public static String getData(String resource, Map<String, List<String>> arguments)
 	{
-		String[] parts = resource.split("/");;
+		String[] parts = resource.split("/");
 		ItemFetcher itemFetcher = fetchers.get(parts[0]);
 		if(itemFetcher == null)
 		{

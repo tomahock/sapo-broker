@@ -1,0 +1,20 @@
+Database creation scripts
+-------------------------
+
+
+drop table fault;
+drop table subscriptions;
+drop table queues;
+drop table dropbox;
+
+CREATE TABLE QUEUES(name VARCHAR(255) NOT NULL, agentName VARCHAR(255) NOT NULL, count INT, time BIGINT);
+ALTER TABLE QUEUES ADD PRIMARY KEY(name, agentName);
+
+CREATE TABLE FAULT(id INT PRIMARY KEY AUTO_INCREMENT, message VARCHAR(4096), agentName VARCHAR(255), time BIGINT);
+
+CREATE TABLE SUBSCRIPTIONS(subscription VARCHAR(255) NOT NULL, agentName VARCHAR(255) NOT NULL, subscriptionType VARCHAR(15), count INT, time BIGINT);
+ALTER TABLE SUBSCRIPTIONS ADD PRIMARY KEY(subscription, agentName);
+
+
+CREATE TABLE dropbox( agentName VARCHAR(255) PRIMARY KEY, dropboxLocation VARCHAR(1024), messages INT, goodMessages INT,time BIGINT);
+

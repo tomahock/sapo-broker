@@ -118,7 +118,8 @@ public class DbDropbox implements JsonEncodable
 				log.error("Failed to get a valid connection");
 				return dropboxes;
 			}
-			PreparedStatement prepareStatement = connection.prepareStatement(String.format("select agentname ,dropboxlocation , messages, goodmessages from  dropbox order by %s desc", col) );
+			PreparedStatement prepareStatement = connection.prepareStatement(String.format("select agentname ,dropboxlocation , messages, goodmessages from  dropbox where goodmessages > 0 or messages > 0 order by %s desc", col) );
+			
 			ResultSet queryResult = prepareStatement.executeQuery();
 			while (queryResult.next())
 			{

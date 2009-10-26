@@ -12,7 +12,7 @@ public class GlobalSystemInfo
 	
 	public static Collection<DbQueue> getBiggestQueues()
 	{
-		Collection<DbQueue> queueCollection = DbQueue.getConsolidatedQueueCount(-1);
+		Collection<DbQueue> queueCollection = DbQueue.getConsolidatedQueueCount(0);
 		Collection<DbQueue> biggest = new ArrayList<DbQueue>(BIGGEST_QUEUES_COUNT);
 		for(DbQueue queue : queueCollection)
 		{
@@ -58,7 +58,7 @@ public class GlobalSystemInfo
 	
 	public static Collection<DbDropbox> getBiggestDropbox()
 	{
-		Collection<DbDropbox> dropboxCollection = DbDropbox.getDropboxes();
+		Collection<DbDropbox> dropboxCollection = DbDropbox.getDropboxesOrderByMessages();
 		Collection<DbDropbox> dropboxes = new ArrayList<DbDropbox>(BIGGEST_DROPBOX_COUNT);
 		for(DbDropbox dropbox : dropboxCollection)
 		{
