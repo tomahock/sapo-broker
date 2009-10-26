@@ -2,7 +2,7 @@ function jsTestInit()
 {
 	// This are the available channels
 	var publishChannels = new Array("/topic/foo", "/topic/xml");
-	var subscribeChannels = new Array("/topic/foo","/topic/system", "/topic/json");
+	var subscribeChannels = new Array("/topic/foo","/topic/system", "/topic/json", "/blogs/post");
 
 	// Add available channels to subscription and publication select elements
 	var channelsToSubscribe = s$('channelsToSubscribe');
@@ -36,12 +36,14 @@ function jsTestInit()
 				++receivedMessagesListIdx;
 				if(receivedMessagesListIdx == MAX_ITEMS)
 					receivedMessagesListIdx = 0;
+				//sampleAddHtml(msg);
+				
 				receivedMessagesList[ receivedMessagesListIdx ] = msg;
 
 				var newText = "";
 				if(receivedMessagesListIdx +1 != MAX_ITEMS)
 				{
-					var receivedLen = receivedMessagesList.length
+					var receivedLen = receivedMessagesList.length;
 					for( var i = receivedMessagesListIdx+1 ; i != receivedLen ; ++i)
 					{
 						newText =  receivedMessagesList[i].data.subscription + ": " + receivedMessagesList[i].data.data +"\n" + newText;
@@ -49,7 +51,7 @@ function jsTestInit()
 				}
 				for( var i = 0; i != receivedMessagesListIdx+1; ++i)
 				{
-					newText =  receivedMessagesList[i].data.subscription + ": " + receivedMessagesList[i].data.data +"\n" + newText;
+					newText = receivedMessagesList[i].data.subscription + ": " + receivedMessagesList[i].data.data +"\n" + newText;
 				}
 				
 				receivedMessages.value = newText;
@@ -85,6 +87,15 @@ function jsTestInit()
 		return false;
 	}
 }
+
+
+function sampleAddHtml(message)
+{
+	//var data = response.evalJSON()
+	//var htmlPlaceholder = s$('htmlContent');
+	//htmlPlaceholder.innerHTML = message.data.data.
+}
+
 
 var sbJsBridge= new sbJsBridge();
 function getBridge()

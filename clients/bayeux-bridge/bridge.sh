@@ -2,7 +2,7 @@
 
 cd `dirname $0`
 
-classpath="./conf:./lib/*:./dist/*:../../common-libs/*:../../comm-types/dist/*:../../bindings/protobuf/java/dist/*:../../bindings/thrift/java/dist/*:../../clients/java-Component-BrokerTCP/dist/*"
+classpath="./conf:./lib/*:./dist/*:../../common-libs/*:../../comm-types/dist/*:../../bindings/protobuf/java/dist/*:../../bindings/thrift/java/dist/*:../../clients/java-component/dist/*"
 
 
 

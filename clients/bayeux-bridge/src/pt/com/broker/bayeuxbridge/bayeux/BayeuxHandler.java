@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.HashMap;
 
+import org.caudexorigo.ErrorAnalyser;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFuture;
@@ -92,95 +93,101 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
 	{
-		if (e.getMessage() instanceof BayeuxConnection)
+		try
 		{
-			handleBayeuxMessage(ctx, (BayeuxConnection) e.getMessage(), e);
-		}
-		else if (!readingChunks && e.getMessage() instanceof HttpRequest)
-		{
-			request = (HttpRequest) e.getMessage();
-
-			File file = new File(root + File.separator + request.getUri());
-			if (file.exists() && file.isFile())
+			if (e.getMessage() instanceof BayeuxConnection)
 			{
-				FileReader reader = new FileReader(file);
-				BufferedReader bufread = new BufferedReader(reader);
-				String read;
-				while ((read = bufread.readLine()) != null)
-				{
-					responseContent.append(read + "\r\n");
-				}
-				writeResponse(e);
+				handleBayeuxMessage(ctx, (BayeuxConnection) e.getMessage(), e);
 			}
-			else
+			else if (!readingChunks && e.getMessage() instanceof HttpRequest)
 			{
-				responseContent.append("Sapo-Broker Javascript Bridge<br/>");
-				responseContent.append("===================================<br/>");
-				responseContent.append("VERSION: " + request.getProtocolVersion().getText() + "<br/>");
-				if (request.containsHeader(HttpHeaders.Names.HOST))
-				{
-					responseContent.append("HOSTNAME: " + request.getHeader(HttpHeaders.Names.HOST) + "<br/>");
-				}
-				responseContent.append("REQUEST_URI: " + request.getUri() + "<br/><br/>");
-				if (!request.getHeaderNames().isEmpty())
-				{
-					for (String name : request.getHeaderNames())
-					{
-						for (String value : request.getHeaders(name))
-						{
-							responseContent.append("HEADER: " + name + " = " + value + "<br/>");
-						}
-					}
-					responseContent.append("<br/>");
-				}
+				request = (HttpRequest) e.getMessage();
 
-				QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.getUri());
-				Map<String, List<String>> params = queryStringDecoder.getParameters();
-				if (!params.isEmpty())
+				File file = new File(root + File.separator + request.getUri());
+				if (file.exists() && file.isFile())
 				{
-					for (Entry<String, List<String>> p : params.entrySet())
+					FileReader reader = new FileReader(file);
+					BufferedReader bufread = new BufferedReader(reader);
+					String read;
+					while ((read = bufread.readLine()) != null)
 					{
-						String key = p.getKey();
-						List<String> vals = p.getValue();
-						for (String val : vals)
-						{
-							responseContent.append("PARAM: " + key + " = " + val + "<br/>");
-						}
-					}
-					responseContent.append("<br/>");
-				}
-
-				if (request.isChunked())
-				{
-					readingChunks = true;
-				}
-				else
-				{
-					ChannelBuffer content = request.getContent();
-					if (content.readable())
-					{
-						responseContent.append("CONTENT: " + content.toString("UTF-8") + "<br/>");
+						responseContent.append(read + "\r\n");
 					}
 					writeResponse(e);
 				}
-			}
-		}
-		else
-		{
-			HttpChunk chunk = (HttpChunk) e.getMessage();
-			if (chunk.isLast())
-			{
-				readingChunks = false;
-				responseContent.append("END OF CONTENT<\r\n>");
-				writeResponse(e);
+				else
+				{
+					responseContent.append("Sapo-Broker Javascript Bridge<br/>");
+					responseContent.append("===================================<br/>");
+					responseContent.append("VERSION: " + request.getProtocolVersion().getText() + "<br/>");
+					if (request.containsHeader(HttpHeaders.Names.HOST))
+					{
+						responseContent.append("HOSTNAME: " + request.getHeader(HttpHeaders.Names.HOST) + "<br/>");
+					}
+					responseContent.append("REQUEST_URI: " + request.getUri() + "<br/><br/>");
+					if (!request.getHeaderNames().isEmpty())
+					{
+						for (String name : request.getHeaderNames())
+						{
+							for (String value : request.getHeaders(name))
+							{
+								responseContent.append("HEADER: " + name + " = " + value + "<br/>");
+							}
+						}
+						responseContent.append("<br/>");
+					}
+
+					QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.getUri());
+					Map<String, List<String>> params = queryStringDecoder.getParameters();
+					if (!params.isEmpty())
+					{
+						for (Entry<String, List<String>> p : params.entrySet())
+						{
+							String key = p.getKey();
+							List<String> vals = p.getValue();
+							for (String val : vals)
+							{
+								responseContent.append("PARAM: " + key + " = " + val + "<br/>");
+							}
+						}
+						responseContent.append("<br/>");
+					}
+
+					if (request.isChunked())
+					{
+						readingChunks = true;
+					}
+					else
+					{
+						ChannelBuffer content = request.getContent();
+						if (content.readable())
+						{
+							responseContent.append("CONTENT: " + content.toString("UTF-8") + "<br/>");
+						}
+						writeResponse(e);
+					}
+				}
 			}
 			else
 			{
-				responseContent.append("CHUNK: " + chunk.getContent().toString("UTF-8") + "\r\n");
+				HttpChunk chunk = (HttpChunk) e.getMessage();
+				if (chunk.isLast())
+				{
+					readingChunks = false;
+					responseContent.append("END OF CONTENT<\r\n>");
+					writeResponse(e);
+				}
+				else
+				{
+					responseContent.append("CHUNK: " + chunk.getContent().toString("UTF-8") + "\r\n");
+				}
 			}
 		}
+		catch (Throwable t)
+		{
+			ErrorAnalyser.exitIfOOM(t);
+		}
 	}
-
 
 	private void writeResponse(MessageEvent e)
 	{
@@ -237,48 +244,45 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 		e.getChannel().close();
 	}
 
-	
 	/****************/
 	private void handleBayeuxMessage(ChannelHandlerContext ctx, BayeuxConnection connection, MessageEvent e)
 	{
 		List<BayeuxMessage> receivedMessages = new ArrayList<BayeuxMessage>();
 
-		//BayeuxMessage bayeuxMessage = connection.pollFromUpstream();
+		// BayeuxMessage bayeuxMessage = connection.pollFromUpstream();
 		BayeuxMessage bayeuxMessage = connection.getFromUpstream();
-		
+
 		while (bayeuxMessage != null)
 		{
-			if(bayeuxMessage instanceof DisconnectRequest)
+			if (bayeuxMessage instanceof DisconnectRequest)
 			{
-				if( handleDisconnectRequest((DisconnectRequest) bayeuxMessage, ctx, connection, e) )
+				if (handleDisconnectRequest((DisconnectRequest) bayeuxMessage, ctx, connection, e))
 					receivedMessages.add(bayeuxMessage);
 			}
 			else if (bayeuxMessage instanceof HandshakeRequest)
 			{
-				if( handleHandshakeRequest((HandshakeRequest) bayeuxMessage, ctx, connection, e) )
+				if (handleHandshakeRequest((HandshakeRequest) bayeuxMessage, ctx, connection, e))
 					receivedMessages.add(bayeuxMessage);
 			}
 			else if (bayeuxMessage instanceof SubscribeRequest)
 			{
-				if( handleSubscribeRequest((SubscribeRequest) bayeuxMessage, ctx, connection, e) )
+				if (handleSubscribeRequest((SubscribeRequest) bayeuxMessage, ctx, connection, e))
 					receivedMessages.add(bayeuxMessage);
 			}
 			else if (bayeuxMessage instanceof UnsubscribeRequest)
 			{
-				if(handleUnsubscribeRequest((UnsubscribeRequest) bayeuxMessage, ctx, connection, e))
+				if (handleUnsubscribeRequest((UnsubscribeRequest) bayeuxMessage, ctx, connection, e))
 					receivedMessages.add(bayeuxMessage);
 			}
 			else if (bayeuxMessage instanceof PublishRequest)
 			{
-				if( handlePublishRequest((PublishRequest) bayeuxMessage, ctx, connection, e) )
+				if (handlePublishRequest((PublishRequest) bayeuxMessage, ctx, connection, e))
 					receivedMessages.add(bayeuxMessage);
 			}
 			else
 			{
 				receivedMessages.add(bayeuxMessage);
 			}
-			
-			//bayeuxMessage = connection.pollFromUpstream();
 			bayeuxMessage = connection.getFromUpstream();
 		}
 
@@ -286,7 +290,6 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 
 		ctx.getChannel().write(connection);
 	}
-
 
 	private boolean handleDisconnectRequest(DisconnectRequest bayeuxMessage, ChannelHandlerContext ctx, BayeuxConnection connection, MessageEvent e)
 	{
@@ -296,28 +299,18 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 
 	private boolean handleHandshakeRequest(HandshakeRequest bayeuxMessage, ChannelHandlerContext ctx, BayeuxConnection connection, MessageEvent e)
 	{
-		/*
-		// How to add information to ext field
-		if(bayeuxMessage.getExt() == null)
-			bayeuxMessage.setExt( new BayeuxExt(new HashMap() ) );
-		
-		System.out.println("#########Setting bayeux ext!!");
-		bayeuxMessage.getExt().put("Teste", "a,b");
-		*/
-		
 		return true;
 	}
-	
+
 	private boolean handlePublishRequest(PublishRequest bayeuxMessage, ChannelHandlerContext ctx, BayeuxConnection connection, MessageEvent e)
 	{
-		//bayeuxMessage.setBypassPublish(true);
 		System.out.println("########## Publish: " + bayeuxMessage.getData().get("subscription"));
 		CommunicationManager.publish((String) bayeuxMessage.getData().get("subscription"), (String) bayeuxMessage.getData().get("data"));
 
-		PublishResponse response=new PublishResponse(bayeuxMessage);
+		PublishResponse response = new PublishResponse(bayeuxMessage);
 		response.setSuccessful(true);
 		connection.putToDownstream(response);
-		
+
 		return false;
 	}
 
@@ -325,16 +318,6 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 	{
 		System.out.println("########## Subscription: " + bayeuxMessage.getSubscription());
 		boolean sucess = CommunicationManager.registerChannel(bayeuxMessage.getSubscription(), connection.getClientId());
-		
-//		if(!sucess)
-//		{
-//			SubscribeResponse subscribeResponse = new SubscribeResponse(bayeuxMessage);
-//			subscribeResponse.setSuccessful(false);
-//			subscribeResponse.setError("403:"+ bayeuxMessage.getSubscription() + ":Permission Denied");
-//			connection.sendToQueue(subscribeResponse);
-//		}
-			
-		
 		return sucess;
 	}
 
@@ -342,7 +325,7 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 	{
 		System.out.println("########## Unubscription: " + bayeuxMessage.getSubscription());
 		CommunicationManager.unregisterChannel(bayeuxMessage.getSubscription(), connection.getClientId());
-		
+
 		return true;
 	}
 

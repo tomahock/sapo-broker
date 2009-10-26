@@ -5,7 +5,7 @@
 
 	<appender class="ch.qos.logback.core.ConsoleAppender" name="ConsoleAppender">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>warn</level>
+			<level>info</level>
 		</filter>
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<pattern>%5p #%C# [%t] - %m%n</pattern>

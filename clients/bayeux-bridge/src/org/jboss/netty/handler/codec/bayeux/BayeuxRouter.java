@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
+
 /**
  * BayeuxRouter is another core part of Bayeux. It's a singleton class holding
  * all connections with routing table and their subscriptions.
@@ -29,6 +32,9 @@ import java.util.Map.Entry;
  */
 public class BayeuxRouter {
 
+	private static final InternalLogger log =
+        InternalLoggerFactory.getInstance(BayeuxRouter.class.getName());
+	
     private final Map<String, BayeuxConnection> connections = new HashMap<String, BayeuxConnection>();
     private final Map<String, List<BayeuxConnection>> subscriptions = new HashMap<String, List<BayeuxConnection>>();
     private static final BayeuxRouter instance = new BayeuxRouter();
@@ -79,6 +85,7 @@ public class BayeuxRouter {
         } while (connections.containsKey(clientId));
         connection.setClientId(clientId);
         connections.put(clientId, connection);
+        log.info(String.format("Connection added. Client Id: %s, Count: %s",clientId,  connections.size()));
     }
 
     /**
@@ -93,6 +100,7 @@ public class BayeuxRouter {
                 removeListener(subscription, connection);
             }
             connections.remove(connection.getClientId());
+            log.info(String.format("Connection removed. Client Id: %s, Count: %s",connection.getClientId(),  connections.size()));
             return true;
         } else {
             return false;

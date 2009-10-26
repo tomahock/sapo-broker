@@ -5,6 +5,7 @@
 	<broker-clouds>
 		<cloud cloud-name="cloud A" mapping="X">
 			<agent hostname="127.0.0.1" port="3323" />
+			<!-- <agent hostname="broker.bk.sapo.pt" port="3323" /> -->
 		</cloud>
 		<!--<cloud cloud-name="cloud B" mapping="Y">
 			<agent hostname="127.0.0.1" port="3423" />
@@ -15,6 +16,7 @@
 		<mapping-set set-name="X">
 			<mapping channel="/topic/foo" subscription="/topic/foo" publication="/topic/foo" />
 			<mapping channel="/topic/system" subscription="/system/.*" publication="" denyPublication="true" />
+			<mapping channel="/blogs/post" subscription="/sapo/blogs/activity/post" publication="" denyPublication="true" from-agent-transformation-class="pt.com.broker.bayeuxbridge.transformers.Xml2JsonTransformer" />
 			<mapping channel="/topic/json" subscription="/topic/xml" publication="" denyPublication="true"  from-agent-transformation-class="pt.com.broker.bayeuxbridge.transformers.Xml2JsonTransformer" />
 			<mapping channel="/topic/xml" subscription="" publication="/topic/xml" denySubscription="true" />
 			

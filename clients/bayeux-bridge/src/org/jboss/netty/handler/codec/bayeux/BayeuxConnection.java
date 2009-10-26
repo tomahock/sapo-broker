@@ -17,10 +17,12 @@ package org.jboss.netty.handler.codec.bayeux;
 
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -132,7 +134,7 @@ public class BayeuxConnection {
     public synchronized void flush() {
         String response = null;
         if (!downstreamQueue.isEmpty()) {
-            response = JSONParser.toJSON(downstreamQueue);
+            response = JSONParser.toJSON( (LinkedList)downstreamQueue.clone() );
             if (isCommented) {
                 response = "/*" + response + "*/";
             }

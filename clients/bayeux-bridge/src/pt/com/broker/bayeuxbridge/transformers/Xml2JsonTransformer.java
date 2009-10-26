@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import org.caudexorigo.text.StringEscapeUtils;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,7 @@ public class Xml2JsonTransformer implements MessageTransformer
 		{
 			javax.xml.transform.Transformer trans = transFact.newTransformer(xsltSource);
 			trans.transform(xmlSource, result);
+			//jsonMessage = StringEscapeUtils.escapeHtml(sw.toString() );
 			jsonMessage = sw.toString();
 		}
 		catch (Throwable t)
