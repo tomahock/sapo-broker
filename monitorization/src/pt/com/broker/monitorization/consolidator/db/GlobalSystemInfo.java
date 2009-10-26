@@ -56,6 +56,21 @@ public class GlobalSystemInfo
 		return latest;
 	}
 	
+	public static Collection<DbFault> getFaultsFromAgent(String agentName)
+	{
+		Collection<DbFault> faultsCollection = DbFault.getAgentFaults(agentName);
+		
+		return faultsCollection;
+	}
+	
+	public static DbFault getFault(int faultId)
+	{
+		DbFault fault = DbFault.getFault(faultId);
+		if(fault == null)
+			throw new RuntimeException("No fault wiht id " + faultId);
+		return fault;
+	}
+	
 	public static Collection<DbDropbox> getBiggestDropbox()
 	{
 		Collection<DbDropbox> dropboxCollection = DbDropbox.getDropboxesOrderByMessages();

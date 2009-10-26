@@ -105,8 +105,7 @@ function setFaultInfo(faultInfo, panel)
 	{
 		for(var i = 0; i != faultInfo.length; ++i)
 		{
-			newContent = newContent + "<p>"+ faultInfo[i].agentName+ " : " + faultInfo[i].date +"</p>";
-			//newContent = newContent + "<p>"+ faultInfo[i].agentName+ " : " + faultInfo[i].message + " : " + faultInfo[i].date +"</p>";
+			newContent = newContent + "<p>"+ faultInfo[i].agentName+ ": <a href='./fault.html?faultid="+faultInfo[i].id+"'>"  + faultInfo[i].shortMessage + "</a> : " + faultInfo[i].date +"</p>";
 		}
 	}
 	panel.innerHTML = newContent;
@@ -194,3 +193,40 @@ function setQueueSubscriptionsInfo(subscriptionsQueueInfo, panel)
 	panel.innerHTML = newContent;
 }
 
+//
+// FAULT PAGE
+//
+function faultInformationInit()
+{
+var params = SAPO.Utility.Url.getQueryString();
+  var params = SAPO.Utility.Url.getQueryString();
+  var idPanel = s$('fault_id');
+  var faultId = params.faultid;
+  if (faultId == null)
+  {
+        idPanel.innerHTML = "<b>Fault id not specified</b>";
+	return;
+  }
+  idPanel.innerHTML = faultId;
+  new Ajax.Request('/data/faults/faultid?id='+faultId,
+   {
+    method:'get',
+    onSuccess: function(transport){
+      var response = transport.responseText;
+      var data = response.evalJSON();
+
+      var shortMsgPanel = s$('fault_shortmsg');
+      shortMsgPanel.innerHTML = data[0].shortMessage;
+
+      var datePanel = s$('fault_date');
+      datePanel.innerHTML = data[0].date;
+
+      var agentPanel = s$('agent_name');
+      agentPanel.innerHTML = data[0].agentName;
+
+      var msgPanel = s$('fault_msg');
+      msgPanel.innerHTML = data[0].message;
+    },
+    onFailure: function(){ alert('Something went wrong...') }
+   });
+}
