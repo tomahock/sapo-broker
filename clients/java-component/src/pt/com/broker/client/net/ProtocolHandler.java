@@ -52,6 +52,8 @@ public abstract class ProtocolHandler<T>
 
 			boolean continueReading = true;
 
+			long connectionVersion = connector.getConnectionVersion();
+			
 			while (continueReading)
 			{
 
@@ -66,7 +68,7 @@ public abstract class ProtocolHandler<T>
 					if (rootCause instanceof IOException)
 					{
 						if (!connector.isClosed())
-							onIOFailure(connector.getConnectionVersion());
+							onIOFailure(connectionVersion);
 						continueReading = false;
 					}
 					else
@@ -86,12 +88,12 @@ public abstract class ProtocolHandler<T>
 		}
 	};
 
-	private Throwable resetConnection(final BaseNetworkConnector connector, Throwable error)
+	private Throwable resetConnection(final BaseNetworkConnector connector, Throwable error, long connectionVersion)
 	{
 		final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 		if (rootCause instanceof IOException)
 		{
-			onIOFailure(connector.getConnectionVersion());
+			onIOFailure(connectionVersion);
 		}
 		return rootCause;
 	}
@@ -115,6 +117,7 @@ public abstract class ProtocolHandler<T>
 	public void sendMessage(final T message) throws Throwable
 	{
 		final BaseNetworkConnector connector = getConnector();
+		long connectionVersion = connector.getConnectionVersion();
 		try
 		{
 			DataOutputStream out = connector.getOutput();
@@ -122,7 +125,7 @@ public abstract class ProtocolHandler<T>
 		}
 		catch (Throwable error)
 		{
-			Throwable rootCause = resetConnection(connector, error);
+			Throwable rootCause = resetConnection(connector, error, connectionVersion);
 			throw rootCause;
 		}
 	}
