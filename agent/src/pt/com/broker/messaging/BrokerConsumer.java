@@ -1,7 +1,6 @@
 package pt.com.broker.messaging;
 
 import org.apache.mina.core.session.IoSession;
-import org.caudexorigo.text.StringUtils;
 
 import pt.com.broker.messaging.TopicSubscriberList.MaximumDistinctSubscriptionsReachedException;
 import pt.com.broker.types.NetSubscribe;
