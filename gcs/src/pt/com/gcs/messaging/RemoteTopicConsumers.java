@@ -11,6 +11,7 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 
 /**
@@ -25,7 +26,7 @@ class RemoteTopicConsumers
 
 	private Map<String, CopyOnWriteArrayList<IoSession>> remoteTopicConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<IoSession>>();
 
-	private static final int WRITE_BUFFER_SIZE = 2048 * 1024;
+	private static final int WRITE_BUFFER_SIZE = 1024 * 1024;
 
 	private RemoteTopicConsumers()
 	{
@@ -161,11 +162,22 @@ class RemoteTopicConsumers
 				{
 					if (ioSession != null)
 					{
-						if (ioSession.getScheduledWriteBytes() > WRITE_BUFFER_SIZE)
+						if (ioSession.getScheduledWriteBytes() < WRITE_BUFFER_SIZE)
 						{
-							Sleep.time(2);
+							ioSession.write(message);
 						}
-						ioSession.write(message);
+						else
+						{
+							// Discard message
+							String log_msg = String.format("Write Queue is full, discard message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
+							log.warn(log_msg);
+							
+							String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
+							String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
+							InternalPublisher.send(dname, info_msg);
+
+						}
+
 					}
 				}
 			}

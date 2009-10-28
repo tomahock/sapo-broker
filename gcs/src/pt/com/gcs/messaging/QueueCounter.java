@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
@@ -37,7 +36,7 @@ class QueueCounter implements Runnable
 				log.info("Queue '{}' is empty.", qp.getDestinationName());
 				publishCount(qp, cnt);
 			}
-			
+
 		}
 	}
 
@@ -48,13 +47,7 @@ class QueueCounter implements Runnable
 			String dName = String.format("/system/stats/queue-size/#%s#", qp.getDestinationName());
 			String content = GcsInfo.getAgentName() + "#" + qp.getDestinationName() + "#" + cnt;
 
-			NetBrokerMessage brkMsg = new NetBrokerMessage(content.getBytes("UTF-8"));
-			InternalMessage intMsg = new InternalMessage();
-			intMsg.setContent(brkMsg);
-			intMsg.setDestination(dName);
-			intMsg.setPublishDestination(dName);
-
-			Gcs.publish(intMsg);
+			InternalPublisher.send(dName, content);
 		}
 		catch (Throwable error)
 		{

@@ -9,6 +9,7 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 
 /**
@@ -20,6 +21,8 @@ class RemoteQueueConsumers
 	private static final RemoteQueueConsumers instance = new RemoteQueueConsumers();
 
 	private static Logger log = LoggerFactory.getLogger(RemoteQueueConsumers.class);
+
+	private static final int WRITE_BUFFER_SIZE = 1024 * 1024;
 
 	protected synchronized static void add(String queueName, IoSession iosession)
 	{
@@ -116,8 +119,22 @@ class RemoteQueueConsumers
 				{
 					try
 					{
-						ioSession.write(message);
-						return 2 * 60 * 1000; //2mn
+						if (ioSession.getScheduledWriteBytes() < WRITE_BUFFER_SIZE)
+						{
+							ioSession.write(message);
+							return 2 * 60 * 1000; // 2mn
+						}
+						else
+						{
+							String log_msg = String.format("Write Queue is full, delay message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
+							log.warn(log_msg);
+							
+							String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
+							String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
+							InternalPublisher.send(dname, info_msg);
+							
+							return -1;
+						}
 					}
 					catch (Throwable ct)
 					{
