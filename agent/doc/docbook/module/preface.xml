@@ -54,8 +54,7 @@
       </section>
       <section>
         <title id="INTRO_POINT2POINT">Point-to-Point</title>
-        <para>When using Point-to-Point messaging pattern, message delivery is load balanced across many consumers, meaning each message goes to exactly one consumer. Consumers compete for messages and  must acknowledge they successfully process the message. Message producers and consumers may not overlap their existence in time.</para>
-        <para>This pattern is most adequate when system work load must be distribute, message processing should be done by only one entity and producers know in advanced that their will message consumers.</para>
+        <para>When using Point-to-Point messaging, delivery is load balanced across many consumers, meaning each message goes to exactly one consumer. Consumers compete for messages and must send an acknowledgement after successfully processing the message. This pattern is useful when one wants to distribute jobs across many workers.</para>
       </section>
       <section>
         <title id="INTRO_VIRTUAL_QUEUES">Virtual Queues</title>
