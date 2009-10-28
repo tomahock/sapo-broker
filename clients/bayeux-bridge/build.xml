@@ -1,11 +1,22 @@
-<project basedir="." default="build" name="bayeux-Bridge">
+<project basedir="." default="build" name="bayeux-bridge">
 	<property name="project.location" value="." />
 	<property name="dist" value="./dist" />
 	<property name="src" value="./src" />
 	<property name="bin" value="./bin" />
 	<property name="broker-public-repo" value="../../../BrokerPublicRepo" />
-	<loadfile property="version" srcFile="${broker-public-repo}/agent/${src}/VERSION.txt" />
-	<property name="package" value="bayeux-Bridge-${version}.jar" />
+	<!-- loadfile property="version" srcFile="${broker-public-repo}/agent/${src}/VERSION.txt" / -->
+
+	<loadfile srcfile="${broker-public-repo}/agent/${src}/VERSION.txt" property="version">
+		<filterchain>
+			<striplinebreaks />
+			<tokenfilter>
+				<trim />
+				<ignoreblank />
+			</tokenfilter>
+		</filterchain>		
+	</loadfile>
+
+	<property name="package" value="bayeux-bridge-${version}.jar" />
 
 	<path id="project.classpath">
 		<fileset dir="../../common-libs/">
@@ -23,7 +34,7 @@
 		<fileset dir="../../bindings/xml/java/dist/">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="../../clients/java-Component-BrokerTCP/dist/">
+		<fileset dir="../../clients/java-component/dist/">
 			<include name="**/*.jar" />
 		</fileset>
 		
