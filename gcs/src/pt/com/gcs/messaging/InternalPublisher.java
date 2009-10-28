@@ -14,6 +14,9 @@ public class InternalPublisher
 		InternalMessage intr_msg = new InternalMessage();
 		intr_msg.setContent(brk_msg);
 		intr_msg.setDestination(destination_name);
+		
+		//FIXME: setting the publishDestination field is redundant but necessary for now, it should be removed in the near future
+		intr_msg.setPublishDestination(destination_name);
 
 		Gcs.publish(intr_msg);
 	}
