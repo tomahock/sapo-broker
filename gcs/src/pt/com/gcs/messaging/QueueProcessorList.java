@@ -118,10 +118,7 @@ public class QueueProcessorList
 				throw new IllegalArgumentException(String.format("Queue named '%s' doesn't exist", queueName));
 			}
 
-			if (StringUtils.contains(queueName, "@"))
-			{
-				DispatcherList.removeDispatcher(queueName);
-			}
+
 
 			QueueProcessor qp;
 			try
@@ -139,6 +136,11 @@ public class QueueProcessorList
 			{
 				String m = String.format("Queue '%s' has active consumers.", queueName);
 				throw new IllegalStateException(m);
+			}
+			
+			if (StringUtils.contains(queueName, "@"))
+			{
+				DispatcherList.removeDispatcher(queueName);
 			}
 
 			LocalQueueConsumers.delete(queueName);

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.net.IoSessionHelper;
 
@@ -117,7 +118,17 @@ class LocalTopicConsumers
 	{
 		if (listener != null)
 		{
-			String topicName = listener.getDestinationName();
+			String topicName;
+			
+			if (listener.getTargetDestinationType() == DestinationType.QUEUE)
+			{
+				topicName = StringUtils.substringAfter(listener.getDestinationName(), "@");
+			}
+			else
+			{
+				topicName = listener.getDestinationName();
+			}
+			
 			CopyOnWriteArrayList<MessageListener> listeners = instance.localTopicConsumers.get(topicName);
 			if (listeners != null)
 			{
@@ -126,7 +137,12 @@ class LocalTopicConsumers
 				{
 					instance.localTopicConsumers.remove(listeners);
 					instance.broadCastableTopics.remove(topicName);
-					instance.broadCastRemovedTopicConsumer(topicName);
+					
+					if (listener.getTargetDestinationType() == DestinationType.TOPIC)
+					{
+						instance.broadCastRemovedTopicConsumer(topicName);
+					}
+					
 				}
 			}
 		}

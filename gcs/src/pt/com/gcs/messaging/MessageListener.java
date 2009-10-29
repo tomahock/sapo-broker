@@ -18,7 +18,9 @@ public interface MessageListener
 
 	public String getDestinationName();
 
-	public DestinationType getDestinationType();
+	public DestinationType getSourceDestinationType();
+	
+	public DestinationType getTargetDestinationType();
 	
 	public boolean ready();
 }

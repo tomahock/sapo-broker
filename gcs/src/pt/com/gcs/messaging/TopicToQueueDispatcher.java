@@ -18,9 +18,15 @@ class TopicToQueueDispatcher implements MessageListener
 	}
 
 	@Override
-	public DestinationType getDestinationType()
+	public DestinationType getSourceDestinationType()
 	{
 		return DestinationType.TOPIC;
+	}
+	
+	@Override
+	public DestinationType getTargetDestinationType()
+	{
+		return DestinationType.QUEUE;
 	}
 
 	public long onMessage(InternalMessage message)
@@ -44,4 +50,6 @@ class TopicToQueueDispatcher implements MessageListener
 	{
 		return true;
 	}
+
+
 }

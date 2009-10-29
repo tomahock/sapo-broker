@@ -51,7 +51,13 @@ public class SynchronousMessageListener implements MessageListener
 	}
 
 	@Override
-	public DestinationType getDestinationType()
+	public DestinationType getSourceDestinationType()
+	{
+		return DestinationType.QUEUE;
+	}
+	
+	@Override
+	public DestinationType getTargetDestinationType()
 	{
 		return DestinationType.QUEUE;
 	}
@@ -69,7 +75,7 @@ public class SynchronousMessageListener implements MessageListener
 		
 		if ((ioSession != null) && ioSession.isConnected() && !ioSession.isClosing())
 		{
-			final NetMessage response = BrokerListener.buildNotification(message, getDestinationName(), getDestinationType());
+			final NetMessage response = BrokerListener.buildNotification(message, getDestinationName(), getSourceDestinationType());
 			ioSession.write(response);
 		}
 		else

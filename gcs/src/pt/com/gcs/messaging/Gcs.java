@@ -67,11 +67,11 @@ public class Gcs
 
 	public static void addAsyncConsumer(String destinationName, MessageListener listener)
 	{
-		if (listener.getDestinationType() == DestinationType.TOPIC)
+		if (listener.getSourceDestinationType() == DestinationType.TOPIC)
 		{
 			instance.iaddTopicConsumer(destinationName, listener);
 		}
-		else if (listener.getDestinationType() == DestinationType.QUEUE)
+		else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
 		{
 			instance.iaddQueueConsumer(destinationName, listener);
 		}
@@ -182,14 +182,15 @@ public class Gcs
 
 	public static void removeAsyncConsumer(MessageListener listener)
 	{
-		if (listener.getDestinationType() == DestinationType.TOPIC)
+		if (listener.getSourceDestinationType() == DestinationType.TOPIC)
 		{
 			LocalTopicConsumers.remove(listener);
 		}
-		else if (listener.getDestinationType() == DestinationType.QUEUE)
+		else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
 		{
 			LocalQueueConsumers.remove(listener);
 		}
+			
 	}
 
 	private SocketAcceptor acceptor;

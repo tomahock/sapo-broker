@@ -36,7 +36,13 @@ public class TopicSubscriber extends BrokerListener
 	}
 
 	@Override
-	public DestinationType getDestinationType()
+	public DestinationType getSourceDestinationType()
+	{
+		return DestinationType.TOPIC;
+	}
+	
+	@Override
+	public DestinationType getTargetDestinationType()
 	{
 		return DestinationType.TOPIC;
 	}

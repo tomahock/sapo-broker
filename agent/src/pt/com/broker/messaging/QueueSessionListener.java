@@ -37,7 +37,13 @@ public class QueueSessionListener extends BrokerListener
 	}
 
 	@Override
-	public DestinationType getDestinationType()
+	public DestinationType getSourceDestinationType()
+	{
+		return DestinationType.QUEUE;
+	}
+	
+	@Override
+	public DestinationType getTargetDestinationType()
 	{
 		return DestinationType.QUEUE;
 	}
