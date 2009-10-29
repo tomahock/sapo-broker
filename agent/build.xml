@@ -75,6 +75,7 @@
 			<!-- <fileset file="${src}/VERSION.txt"/> -->
 		</jar>
 	</target>
+
 	<target name="docs">
 		<delete dir="./doc/docbook/gen" />
 		<mkdir dir="./doc/docbook/gen" />

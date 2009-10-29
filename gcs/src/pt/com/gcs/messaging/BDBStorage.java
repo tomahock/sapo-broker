@@ -43,7 +43,7 @@ public class BDBStorage
 	private static final int MAX_REDELIVERY_PER_MESSAGE = 3;
 
 	public BDBStorage(QueueProcessor qp)
-	{
+	{	
 		try
 		{
 			if (isMarkedForDeletion.get())
