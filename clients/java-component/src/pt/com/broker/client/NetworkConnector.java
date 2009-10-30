@@ -24,7 +24,7 @@ public class NetworkConnector extends BaseNetworkConnector
 
 	public synchronized void connect(HostInfo host, long connectionVersion) throws Throwable
 	{
-		log.info("Trying to connect");
+		log.debug("Trying to connect");
 		this.setConnectionVersion(connectionVersion);
 		this.hostInfo = host;
 		client = new Socket();
@@ -33,7 +33,7 @@ public class NetworkConnector extends BaseNetworkConnector
 		rawInput = new DataInputStream(getSocket().getInputStream());
 		socketAddress = getSocket().getRemoteSocketAddress();
 		socketAddressLiteral = socketAddress.toString();
-		log.info("Connection established: " + socketAddressLiteral);
+		log.debug("Connection established: " + socketAddressLiteral);
 		closed = false;
 	}
 }

@@ -118,7 +118,7 @@ public class GlobalSystemInfo
 	{
 		return DbAgents.getAllAgents();
 	}
-	public static Collection<DbAgents> getXAllAgents(AgentStatus status)
+	public static Collection<DbAgents> getAgentsByStatus(AgentStatus status)
 	{
 		return DbAgents.getAgentsWithStatus(status);
 	}

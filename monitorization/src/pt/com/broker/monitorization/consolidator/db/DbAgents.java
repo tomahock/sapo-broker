@@ -135,12 +135,12 @@ public class DbAgents implements JsonEncodable
 				log.error("Failed to get a valid connection");
 				return agents;
 			}
-			PreparedStatement prepareStatement = connection.prepareStatement("select agentName, status, time from agents order by agentName desc where staus = ?");
-			prepareStatement.setString(0, status.toString());
+			PreparedStatement prepareStatement = connection.prepareStatement("select agentName, status, time from agents where status = ? order by agentName desc ");
+			prepareStatement.setString(1, status.toString());
 			ResultSet queryResult = prepareStatement.executeQuery();
 			while (queryResult.next())
 			{
-				DbAgents dbAgent = new DbAgents(queryResult.getString(1), AgentStatus.valueOf(queryResult.getString(2)),queryResult.getInt(3));
+				DbAgents dbAgent = new DbAgents(queryResult.getString(1), AgentStatus.valueOf(queryResult.getString(2)),queryResult.getLong(3));
 				agents.add(dbAgent);
 			}
 		}

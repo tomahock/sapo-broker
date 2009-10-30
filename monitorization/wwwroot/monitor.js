@@ -48,12 +48,29 @@ function mainMonitorizationInit()
    });  
   }
 
+  // agents
+  var f_agents = function() {
+   new Ajax.Request('/data/agents/down',
+   {
+    method:'get',
+    onSuccess: function(transport){
+      var response = transport.responseText;
+      var panel = s$('agentsDownInformationPanel');
+      var data = response.evalJSON();
+      setAgentsInfo(data, panel);
+    },
+    onFailure: function(){ alert('Something went wrong...') }
+   });  
+  }
+
   f_queues();
   setInterval(f_queues, 3000);
   f_dropboxes();
   setInterval(f_dropboxes, 3000);
   f_faults();
   setInterval(f_faults, 3000);
+  f_agents();
+  setInterval(f_agents, 30000);
 }
 // general queue info
 function setQueueInfo(queueInfo, panel)
@@ -110,6 +127,27 @@ function setFaultInfo(faultInfo, panel)
 	}
 	panel.innerHTML = newContent;
 }
+
+// general agents info
+function setAgentsInfo(agentInfo, panel)
+{
+	var newContent = "";
+
+	if (agentInfo.length == 0)
+	{
+        	newContent = "<p>There are no agents down</P>";
+  	}
+	else
+	{
+		for(var i = 0; i != agentInfo.length; ++i)
+		{
+			newContent = newContent + "<p>"+ agentInfo[i].agentName+ " : "  + agentInfo[i].status + " : " + agentInfo[i].date +"</p>";
+		}
+	}
+	panel.innerHTML = newContent;
+}
+
+
 //
 // QUEUE PAGE
 //

@@ -116,7 +116,6 @@ public class FilePublisher
 				String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
 				String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
 				statsMessage.setDestination(dName);
-				statsMessage.setPublishDestination(dName);
 				statsMessage.setContent(new NetBrokerMessage(content));
 
 				Gcs.publish(statsMessage);

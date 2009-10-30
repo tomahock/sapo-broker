@@ -9,6 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.monitorization.collectors.AgentStatus;
 import pt.com.broker.monitorization.collectors.JsonEncodable;
 import pt.com.broker.monitorization.consolidator.db.DbAgents;
 import pt.com.broker.monitorization.consolidator.db.DbDropbox;
@@ -57,7 +58,7 @@ public class DataFetcher
 						DbFault fault = GlobalSystemInfo.getFault(id);
 						faults.add(fault);
 					}
-					else if(resource.startsWith(AGENTS_PREFIX))
+					else if (resource.startsWith(AGENTS_PREFIX))
 					{
 						List<String> agentArg = arguments.get(AGENT_NAME);
 						if (agentArg == null)
@@ -67,7 +68,7 @@ public class DataFetcher
 						String agentName = agentArg.get(0);
 
 						Collection<DbFault> dbFaults = GlobalSystemInfo.getFaultsFromAgent(agentName);
-						for(DbFault fault : dbFaults)
+						for (DbFault fault : dbFaults)
 							faults.add(fault);
 					}
 					else
@@ -168,24 +169,29 @@ public class DataFetcher
 				return subscriptions;
 			}
 		});
-		
+
 		fetchers.put("agents", new ItemFetcher()
 		{
-			final String STATUS_PREFIX = "status";
-			
+			final String OK_STATUS_PREFIX = "ok";
+			final String DOWN_STATUS_PREFIX = "down";
+
 			@Override
 			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
 			{
 				Collection<JsonEncodable> jsonAgents = new ArrayList<JsonEncodable>();
-
-				if (resource.startsWith(STATUS_PREFIX))
+				Collection<DbAgents> agents = null;
+				if (resource.startsWith(OK_STATUS_PREFIX))
 				{
-				
-				} else {
-					
+					agents = GlobalSystemInfo.getAgentsByStatus(AgentStatus.Ok);
 				}
-				Collection<DbAgents> agents = GlobalSystemInfo.getAllAgents();
-
+				else if(resource.startsWith(DOWN_STATUS_PREFIX))
+				{
+					agents = GlobalSystemInfo.getAgentsByStatus(AgentStatus.Down);
+				}
+				else
+				{
+					agents = GlobalSystemInfo.getAllAgents();
+				}
 				for (JsonEncodable agent : agents)
 				{
 					jsonAgents.add(agent);

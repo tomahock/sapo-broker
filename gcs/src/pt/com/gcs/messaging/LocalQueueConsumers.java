@@ -231,24 +231,6 @@ public class LocalQueueConsumers
 		}
 	}
 
-	private boolean registreadSyncConsumer(String queueName)
-	{
-		synchronized (syncConsumers)
-		{
-			return syncConsumers.contains(queueName);
-		}
-	}
-
-	private boolean registreadAsyncConsumer(String queueName)
-	{
-		synchronized (LocalQueueConsumers.class)
-		{
-			CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
-			boolean result = (listeners != null) && (listeners.size() != 0);
-			return result;
-		}
-	}
-
 	private void broadCastNewQueueConsumer(String destinationName)
 	{
 		broadCastActionQueueConsumer(destinationName, "CREATE");

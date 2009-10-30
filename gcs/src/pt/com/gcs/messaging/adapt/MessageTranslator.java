@@ -9,7 +9,6 @@ public class MessageTranslator
 	{
 		InternalMessage intMsg = new InternalMessage();
 		intMsg.setDestination(message.getDestination());
-		intMsg.setPublishDestination(message.getDestination());
 		intMsg.setContent( new NetBrokerMessage(message.getContent()) );
 		intMsg.setPriority( message.getPriority() );
 		intMsg.setExpiration(message.getExpiration() );

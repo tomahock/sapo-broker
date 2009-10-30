@@ -2,11 +2,13 @@ package pt.com.broker.monitorization.collectors;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.HostInfo;
+import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 import pt.com.broker.monitorization.consolidator.Agent;
 
 public class CollectorManager
@@ -24,13 +26,11 @@ public class CollectorManager
 	public static void init()
 	{
 		
-		/* This shouldn't be hard-coded */
-		HostInfo hostInfo = new HostInfo("broker.bk.sapo.pt", 3323);
-		//HostInfo hostInfo = new HostInfo("127.0.0.1", 3323);
+		List<HostInfo> localAgents = ConfigurationInfo.getAgents();
 		
 		try
 		{
-			brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort());
+			brokerClient = new BrokerClient(localAgents);
 		}
 		catch (Throwable e)
 		{

@@ -75,7 +75,7 @@ public class BrokerUdpServer
 			final NioDatagramAcceptor acceptor_legacy_proto = new NioDatagramAcceptor();
 
 			DefaultIoFilterChainBuilder filterChainBuilder1 = acceptor_legacy_proto.getFilterChain();
-			filterChainBuilder1.addLast("BROKER_BINARY_CODEC", new ProtocolCodecFilter(new NoFrammingSoapCodec()));
+			filterChainBuilder1.addLast("BROKER_UDP_LEGACY_CODEC", new ProtocolCodecFilter(new NoFrammingSoapCodec()));
 			if (GcsInfo.useAccessControl())
 			{
 				filterChainBuilder1.addLast("AUTHORIZATION_FILTER", AuthorizationFilter.getInstance());

@@ -45,7 +45,6 @@ public class BrokerProducer
 			if (StringUtils.isNotBlank(publish.getDestination()))
 			{
 				message.setDestination(publish.getDestination());
-				message.setPublishDestination(publish.getDestination());
 			}
 			if (brkMessage.getTimestamp() != -1)
 				message.setTimestamp(brkMessage.getTimestamp());

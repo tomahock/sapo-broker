@@ -32,6 +32,13 @@ public class BrokerClient extends BaseBrokerClient
 		super(host, portNumber);
 		init();
 	}
+	
+	public BrokerClient(String host, int portNumber, int retries) throws Throwable
+	{
+		super(host, portNumber);
+		this.setNumberOfTries(retries);
+		init();
+	}
 
 	public BrokerClient(String host, int portNumber, String appName) throws Throwable
 	{

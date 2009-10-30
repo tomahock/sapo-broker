@@ -22,7 +22,6 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.ActionType;
-import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * BrokerProtocolHandler extends ProtocolHandler defining protocol aspects such as message handling (including errors), message encoding/decoding and on failure behavior.
@@ -30,7 +29,6 @@ import pt.com.broker.types.NetAction.DestinationType;
  */
 public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 {
-	private static final int DEFAULT_MAX_NUMBER_OF_TRIES = Integer.MAX_VALUE;
 
 	private static final Logger log = LoggerFactory.getLogger(BrokerProtocolHandler.class);
 
@@ -45,8 +43,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	private short proto_type = 1;
 
 	private HostInfo hostInfo = null;
-
-	private volatile int numberOfTries = DEFAULT_MAX_NUMBER_OF_TRIES;
 
 	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
 	{
@@ -184,6 +180,10 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 				catch (Throwable t)
 				{
 					log.error("Failed to reconnect to agent " + getHostInfo().getHostname() + ":" + getHostInfo().getPort());
+					if (getNumberOfTries() == 0)
+					{
+						throw new RuntimeException(t);
+					}
 					Sleep.time((++count) * 500);
 				}
 				setHostInfo(brokerClient.getHostInfo());
@@ -361,12 +361,11 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	public void setNumberOfTries(int numberOfTries)
 	{
-		this.numberOfTries = numberOfTries;
+		this.brokerClient.setNumberOfTries(numberOfTries);
 	}
 
 	public int getNumberOfTries()
 	{
-		return numberOfTries;
+		return this.brokerClient.getNumberOfTries();
 	}
-
 }

@@ -1,11 +1,12 @@
 <monitorization-configuration>
 	<agents>
 		<agent hostname="broker.bk.sapo.pt" port="3323" />
-		<agent hostname="broker2.bk.sapo.pt" port="3323" />
-		<agent hostname="broker2.bk.sapo.pt" port="3323" />
 	</agents>
 	<tcp-port-exceptions>
+<!--
 		<agent agent-name="127.0.0.1:3315" tcp-port="3323" />
+		<agent agent-name="127.0.0.1:3415" tcp-port="3423" />
+-->
 	</tcp-port-exceptions>
 	<global-config-file location="./conf/global.config" />
 </monitorization-configuration>

@@ -11,6 +11,8 @@ import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.core.joran.action.NewRuleAction;
+
 import com.sleepycat.bind.ByteArrayBinding;
 import com.sleepycat.bind.tuple.LongBinding;
 import com.sleepycat.je.Cursor;
@@ -18,6 +20,7 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.DeadlockException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.OperationStatus;
 
@@ -43,7 +46,7 @@ public class BDBStorage
 	private static final int MAX_REDELIVERY_PER_MESSAGE = 3;
 
 	public BDBStorage(QueueProcessor qp)
-	{	
+	{
 		try
 		{
 			if (isMarkedForDeletion.get())
@@ -193,24 +196,41 @@ public class BDBStorage
 		long k = Long.parseLong(msgId.substring(33));
 		LongBinding.longToEntry(k, key);
 
-		try
+		int count = 5;
+		DeadlockException lastDeadlockException = null;
+		do
 		{
-			OperationStatus op = messageDb.delete(null, key);
+			try
+			{
+				OperationStatus op = messageDb.delete(null, key);
 
-			if (op.equals(OperationStatus.SUCCESS))
-			{
-				return true;
+				if (op.equals(OperationStatus.SUCCESS))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
-			else
+			catch (DeadlockException de)
 			{
+				--count;
+				lastDeadlockException = de;
+				log.error("DeadlockException. Number of retries left: " + count, de);
+			}
+			catch (DatabaseException e)
+			{
+				dealWithError(e, true);
 				return false;
 			}
 		}
-		catch (DatabaseException e)
-		{
-			dealWithError(e, true);
-			return false;
-		}
+		while (count != 0);
+		
+		// Stop trying to deal with DeadlockException 
+		dealWithError(lastDeadlockException, true);
+		
+		return false;
 	}
 
 	protected void deleteQueue()
@@ -275,8 +295,7 @@ public class BDBStorage
 		}
 
 	}
-	
-	
+
 	// Added for compatibility reasons --- BEGIN
 	public void insert(InternalMessage msg, long sequence, boolean preferLocalConsumer, long reserveTimeout)
 	{
@@ -300,9 +319,9 @@ public class BDBStorage
 		}
 
 	}
+
 	// Added for compatibility reasons --- END
-	
-	
+
 	protected void recoverMessages()
 	{
 		if (isMarkedForDeletion.get())

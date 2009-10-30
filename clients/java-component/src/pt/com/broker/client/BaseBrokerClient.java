@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeoutException;
@@ -68,7 +67,8 @@ public abstract class BaseBrokerClient
 	protected BrokerProtocolHandler _netHandler;
 	protected CircularContainer<HostInfo> hosts;
 	
-	
+	private static final int DEFAULT_MAX_NUMBER_OF_TRIES = Integer.MAX_VALUE;
+	private volatile int numberOfTries = DEFAULT_MAX_NUMBER_OF_TRIES;
 	
 
 	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
@@ -134,7 +134,7 @@ public abstract class BaseBrokerClient
 	 * @param host
 	 *            Host name or IP.
 	 * @param portNumber
-	 *            TCP ou SSL port number
+	 *            TCP or SSL port number
 	 * @param appName
 	 *            The client application name.
 	 * @param ptype
@@ -785,7 +785,7 @@ public abstract class BaseBrokerClient
 	 */
 	public void setNumberOfTries(int numberOfTries)
 	{
-		this._netHandler.setNumberOfTries(numberOfTries);
+		this.numberOfTries = numberOfTries;
 	}
 
 	/**
@@ -795,45 +795,7 @@ public abstract class BaseBrokerClient
 	 */
 	public int getNumberOfTries()
 	{
-		return this._netHandler.getNumberOfTries();
+		return this.numberOfTries;
 	}
 
-	// public static void saveToDropbox(String dropboxPath, BrokerMessage
-	// brkmsg, DestinationType dtype) throws Throwable
-	// {
-	// if ((brkmsg != null) && (StringUtils.isNotBlank(brkmsg.destinationName))
-	// && (StringUtils.isNotBlank(dropboxPath)))
-	// {
-	// SoapEnvelope soap = new SoapEnvelope();
-	//
-	// if (dtype == DestinationType.TOPIC)
-	// {
-	// Publish pubreq = new Publish();
-	// pubreq.brokerMessage = brkmsg;
-	// soap.body.publish = pubreq;
-	// }
-	// else if (dtype == DestinationType.QUEUE)
-	// {
-	// Enqueue enqreq = new Enqueue();
-	// enqreq.brokerMessage = brkmsg;
-	// soap.body.enqueue = enqreq;
-	// }
-	//
-	// String baseFileName = dropboxPath + File.separator +
-	// UUID.randomUUID().toString();
-	// String tempfileName = baseFileName + ".temp";
-	// String fileName = baseFileName + ".good";
-	//
-	// FileOutputStream fos = new FileOutputStream(tempfileName);
-	// SoapSerializer.ToXml(soap, fos);
-	// fos.flush();
-	// fos.close();
-	// (new File(tempfileName)).renameTo(new File(fileName));
-	// }
-	// else
-	// {
-	// throw new
-	// IllegalArgumentException("Missing arguments for Dropbox persistence");
-	// }
-	// }
 }

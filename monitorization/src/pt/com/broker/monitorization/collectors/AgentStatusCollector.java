@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.monitorization.Utils;
@@ -36,23 +35,23 @@ public class AgentStatusCollector
 				for (HostInfo agent : cloudAgents)
 				{
 					BrokerClient bk = null;
+					NetPong checkStatus = null;
 					try
 					{
-						bk = new BrokerClient(agent.getHostname(), agent.getPort());
-						NetPong checkStatus = bk.checkStatus();
-						notifyListeners( agent.getHostname()+":"+ agent.getPort(), (checkStatus != null) ? AgentStatus.Ok : AgentStatus.Down);						
+						bk = new BrokerClient(agent.getHostname(), agent.getPort(), 0);
+						checkStatus = bk.checkStatus();
 					}
 					catch (Throwable t)
 					{
-
 					}
+					notifyListeners( agent.getHostname()+":"+ agent.getPort(), (checkStatus != null) ? AgentStatus.Ok : AgentStatus.Down);						
 					if(bk != null)
 						bk.close();
 				}
 			}
 		};
 
-		Utils.schedule(statusVerifier, 30, 30, TimeUnit.SECONDS);
+		Utils.schedule(statusVerifier, 10, 30, TimeUnit.SECONDS);
 	}
 	
 	private void notifyListeners(String agentName, AgentStatus status)

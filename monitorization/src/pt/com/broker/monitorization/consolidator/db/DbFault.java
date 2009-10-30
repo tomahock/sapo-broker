@@ -101,11 +101,11 @@ public class DbFault implements JsonEncodable
 			}
 			PreparedStatement prepareStatement = connection.prepareStatement("insert into fault (message, shortmessage, agentname, time) values (?, ?, ?, ?)");
 			
-			String escapedMsg =  StringEscapeUtils.escapeHtml(message.replace("\n", "\\n"));
+			ErrorInfo errorInfo= extractShortMessage(message);
 			
-			String shortMessage = extractShortMessage(message);
+			String escapedMsg =  StringEscapeUtils.escapeHtml(errorInfo.content.replace("\n", "\\n"));
 			
-			shortMessage = StringEscapeUtils.escapeHtml(shortMessage.replace("\n", "\\n"));
+			String shortMessage = StringEscapeUtils.escapeHtml(errorInfo.shortMessage.replace("\n", "\\n"));
 			
 			prepareStatement.setString(1, escapedMsg.substring(0, (escapedMsg.length() > MESSAGE_MAX_SIZE) ? MESSAGE_MAX_SIZE : escapedMsg.length()));
 			prepareStatement.setString(2, shortMessage.substring(0, (shortMessage.length() > SHORT_MESSAGE_MAX_SIZE) ? SHORT_MESSAGE_MAX_SIZE : shortMessage.length()));
@@ -278,33 +278,46 @@ public class DbFault implements JsonEncodable
 		}
 	}
 	
-	private static String extractShortMessage(String message)
+	static class ErrorInfo
+	{
+		public String content;
+		public String shortMessage;
+		
+		public ErrorInfo(String shortMessage, String content)
+		{
+			this.content = content;
+			this.shortMessage = shortMessage;			
+		}
+	}
+	
+	private static ErrorInfo extractShortMessage(String message)
 	{
 		
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		String shortMessage = "[failed to extract 'Text' from Fault message]";
+		String content = message;
 
 		try
 		{
 			DocumentBuilder documentBuilder = docBuilderFactory.newDocumentBuilder();
 			Document doc = documentBuilder.parse(new ByteArrayInputStream(message.getBytes()));
 			
-			Element documentElement = doc.getDocumentElement();
-			
 			XPath xpath = XPathFactory.newInstance().newXPath();
 
 			xpath.setNamespaceContext(SoapFaultNS.getInstance());
 			
 			Element codeElem = (Element) ((NodeList) xpath.evaluate("/Envelope/Body/Fault/Reason/Text", doc, XPathConstants.NODESET)).item(0);
-			
 			shortMessage = codeElem.getTextContent();
+			
+			Element contentElem = (Element) ((NodeList) xpath.evaluate("/Envelope/Body/Fault/Detail", doc, XPathConstants.NODESET)).item(0);
+			content = contentElem.getTextContent();
 		}
 		catch (Throwable t)
 		{
-			return shortMessage;
+			return new ErrorInfo(shortMessage, content);
 		}
 		
-		return shortMessage;
+		return new ErrorInfo(shortMessage, content);
 	}
 
 }

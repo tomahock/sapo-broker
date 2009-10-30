@@ -48,7 +48,7 @@ public class QueueSessionListenerList
 						InternalMessage intMsg = new InternalMessage();
 						intMsg.setContent(brkMessage);
 						intMsg.setDestination(ctName);
-						intMsg.setPublishDestination(ctName);
+//						intMsg.setPublishDestination(ctName);
 						intMsg.setType(MessageType.COM_TOPIC);
 
 						Gcs.publish(intMsg);

@@ -29,6 +29,6 @@ public class InvalidDestinationType extends GenericNetMessageNegativeTest
 	@Override
 	public boolean skipTest()
 	{
-		return getEncodingProtocolType() == NetProtocolType.SOAP;
+		return getEncodingProtocolType() == NetProtocolType.SOAP; // SOAP codec throws exception while encondig message. The others don't.
 	}
 }
