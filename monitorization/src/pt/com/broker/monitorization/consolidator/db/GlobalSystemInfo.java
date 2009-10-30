@@ -3,6 +3,8 @@ package pt.com.broker.monitorization.consolidator.db;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import pt.com.broker.monitorization.collectors.AgentStatus;
+
 public class GlobalSystemInfo
 {
 
@@ -10,6 +12,9 @@ public class GlobalSystemInfo
 	private static final int LATEST_FAULTS_COUNT = 20;
 	private static final int BIGGEST_DROPBOX_COUNT = 20;
 	
+	/*
+	 *  Queues
+	 */
 	public static Collection<DbQueue> getBiggestQueues()
 	{
 		Collection<DbQueue> queueCollection = DbQueue.getConsolidatedQueueCount(0);
@@ -23,13 +28,15 @@ public class GlobalSystemInfo
 		
 		return biggest;
 	}
-	
 	public static Collection<DbQueue> getQueue(String queueName)
 	{
 		Collection<DbQueue> queueCollection = DbQueue.getQueue(queueName);		
 		return queueCollection;
 	}
 	
+	/*
+	 *  Subscriptions
+	 */
 	public static Collection<DbSubscription> getSubscription(String subscriptionName)
 	{
 		Collection<DbSubscription> subscriptions = DbSubscription.getSubscription(subscriptionName);		
@@ -42,6 +49,9 @@ public class GlobalSystemInfo
 		return subscriptions;
 	}
 	
+	/*
+	 *  Faults
+	 */
 	public static Collection<DbFault> getLatestFaults()
 	{
 		Collection<DbFault> faultsCollection = DbFault.getAllFaults();
@@ -71,6 +81,9 @@ public class GlobalSystemInfo
 		return fault;
 	}
 	
+	/*
+	 *  Dropbox
+	 */
 	public static Collection<DbDropbox> getBiggestDropbox()
 	{
 		Collection<DbDropbox> dropboxCollection = DbDropbox.getDropboxesOrderByMessages();
@@ -97,5 +110,16 @@ public class GlobalSystemInfo
 		}
 		
 		return dropboxes;
+	}
+	/*
+	 *  Agents
+	 */
+	public static Collection<DbAgents> getAllAgents()
+	{
+		return DbAgents.getAllAgents();
+	}
+	public static Collection<DbAgents> getXAllAgents(AgentStatus status)
+	{
+		return DbAgents.getAgentsWithStatus(status);
 	}
 }

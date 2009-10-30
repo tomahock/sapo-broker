@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>Sapo-Broker Monitorization HTTP Server</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script type="text/javascript" src="sapolib.js" ></script>
+	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
+        <script type="text/javascript" src="monitor.js"></script>
+	<script type="text/javascript">
+		window.onload = faultInformationInit;
+	</script>
+    </head>
+    <body>
+	<h1>Fault Information</h1><hr/>
+	<p>Fault id: <span id='fault_id'> </span></p>
+	<p>Agent: <span id='agent_name'> </span></p>
+	<p>Fault short description: <span id='fault_shortmsg'> </span></p>
+	<p>Fault date: <span id='fault_date'> </span></p>
+	<p>Fault:</p>
+	<p><span id='fault_msg'></span></p>
+    </body>
+</html>

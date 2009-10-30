@@ -8,14 +8,9 @@ import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.monitorization.consolidator.Agent;
-import pt.com.broker.monitorization.consolidator.Fault;
-import pt.com.broker.monitorization.consolidator.Queue;
-import pt.com.broker.monitorization.consolidator.Subscription;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class CollectorManager
 {
-	private static String worldmapLocation;
 	private static BaseBrokerClient brokerClient; 
 
 	private static Map<String, Agent> agents = new HashMap<String, Agent>();
@@ -24,10 +19,10 @@ public class CollectorManager
 	private static QueueSizeCollector queueSizeCollector;
 	private static FaultsCollector faultsCollector;
 	private static DropboxCollector dropboxCollector;
+	private static AgentStatusCollector agentStatusCollector;
 	
-	public static void init(String worldmapLocation)
+	public static void init()
 	{
-		CollectorManager.worldmapLocation = worldmapLocation;
 		
 		/* This shouldn't be hard-coded */
 		HostInfo hostInfo = new HostInfo("broker.bk.sapo.pt", 3323);
@@ -89,12 +84,23 @@ public class CollectorManager
 			throw new RuntimeException("Failed to create DropboxCollector", e);
 		}
 		
+		// Init agents collector;
+		try
+		{
+			agentStatusCollector = new AgentStatusCollector();
+		}
+		catch (Throwable e)
+		{
+			throw new RuntimeException("Failed to create AgentStatusCollector", e);
+		}
+		
 		try
 		{
 			getSubscriptionCountCollector().start();
 			getQueueSizeCollector().start();
 			getFaultsCollector().start();
 			getDropboxCollector().start();
+			getAgentStatusCollector().start();			
 		}
 		catch (Throwable e)
 		{
@@ -149,5 +155,9 @@ public class CollectorManager
 	{
 		return dropboxCollector;
 	}
-
+	
+	public static AgentStatusCollector getAgentStatusCollector()
+	{
+		return agentStatusCollector;
+	}
 }

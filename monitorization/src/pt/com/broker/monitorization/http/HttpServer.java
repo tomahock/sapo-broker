@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.monitorization.collectors.CollectorManager;
+import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 import pt.com.broker.monitorization.consolidator.db.H2ConsolidatorManager;
 
 public class HttpServer
@@ -38,7 +39,9 @@ public class HttpServer
 		bootstrap.bind(new InetSocketAddress(8877));
 		
 		
-		CollectorManager.init("THIS SHOULD BE A FILE PATH");
+		ConfigurationInfo.init();
+		
+		CollectorManager.init();
 		
 		//ConsolidatorManager.init();
 		H2ConsolidatorManager.init();

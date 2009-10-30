@@ -10,6 +10,8 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.monitorization.collectors.AgentStatus;
+import pt.com.broker.monitorization.collectors.AgentStatusListener;
 import pt.com.broker.monitorization.collectors.CollectorManager;
 import pt.com.broker.monitorization.collectors.DropboxListener;
 import pt.com.broker.monitorization.collectors.FaultListener;
@@ -43,7 +45,6 @@ public class H2ConsolidatorManager
 	private static void initConsolidators()
 	{
 		// Init subscription count collector
-
 		CollectorManager.getSubscriptionCountCollector().addListener(new SubscriptionCountListener()
 		{
 			@Override
@@ -80,6 +81,15 @@ public class H2ConsolidatorManager
 			public void onUpdate(String agentName, String dropboxLocation, int messages, int goodMessages)
 			{
 				DbDropbox.addDropboxInfo(agentName, dropboxLocation, messages, goodMessages);				
+			}
+		});
+		
+		CollectorManager.getAgentStatusCollector().addListener(new AgentStatusListener()
+		{
+			@Override
+			public void onUpdate(String agentName, AgentStatus status)
+			{
+				DbAgents.add(agentName, status);
 			}
 		});
 

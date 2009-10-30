@@ -120,7 +120,7 @@ public class DbFault implements JsonEncodable
 		}
 		catch (Throwable t)
 		{
-			log.error("Failed to get all faults", t);
+			log.error("Failed to add a fault", t);
 		}
 		if (connection != null)
 		{

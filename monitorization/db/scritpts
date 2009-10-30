@@ -6,6 +6,7 @@ drop table fault;
 drop table subscriptions;
 drop table queues;
 drop table dropbox;
+drop table agents;
 
 CREATE TABLE QUEUES(name VARCHAR(255) NOT NULL, agentName VARCHAR(255) NOT NULL, count INT, time BIGINT);
 ALTER TABLE QUEUES ADD PRIMARY KEY(name, agentName);
@@ -15,6 +16,7 @@ CREATE TABLE FAULT(id INT PRIMARY KEY AUTO_INCREMENT, message VARCHAR(8192), sho
 CREATE TABLE SUBSCRIPTIONS(subscription VARCHAR(255) NOT NULL, agentName VARCHAR(255) NOT NULL, subscriptionType VARCHAR(15), count INT, time BIGINT);
 ALTER TABLE SUBSCRIPTIONS ADD PRIMARY KEY(subscription, agentName);
 
-
 CREATE TABLE dropbox( agentName VARCHAR(255) PRIMARY KEY, dropboxLocation VARCHAR(1024), messages INT, goodMessages INT,time BIGINT);
+
+CREATE TABLE agents( agentName VARCHAR(255) PRIMARY KEY, status VARCHAR(20), time BIGINT);
 

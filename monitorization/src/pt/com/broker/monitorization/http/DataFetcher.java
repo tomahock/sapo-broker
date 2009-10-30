@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.monitorization.collectors.JsonEncodable;
+import pt.com.broker.monitorization.consolidator.db.DbAgents;
 import pt.com.broker.monitorization.consolidator.db.DbDropbox;
 import pt.com.broker.monitorization.consolidator.db.DbFault;
 import pt.com.broker.monitorization.consolidator.db.DbQueue;
@@ -167,6 +168,32 @@ public class DataFetcher
 				return subscriptions;
 			}
 		});
+		
+		fetchers.put("agents", new ItemFetcher()
+		{
+			final String STATUS_PREFIX = "status";
+			
+			@Override
+			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
+			{
+				Collection<JsonEncodable> jsonAgents = new ArrayList<JsonEncodable>();
+
+				if (resource.startsWith(STATUS_PREFIX))
+				{
+				
+				} else {
+					
+				}
+				Collection<DbAgents> agents = GlobalSystemInfo.getAllAgents();
+
+				for (JsonEncodable agent : agents)
+				{
+					jsonAgents.add(agent);
+				}
+				return jsonAgents;
+			}
+		});
+
 	}
 
 	public static String getData(String resource, Map<String, List<String>> arguments)

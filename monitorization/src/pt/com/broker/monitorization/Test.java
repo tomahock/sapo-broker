@@ -23,7 +23,7 @@ public class Test
 			System.out.println("Sapo-Broker monitorization (almost)");
 			System.out.println("Press X to exit.");
 			
-			CollectorManager.init("THIS SHOULD BE A FILE PATH");
+			CollectorManager.init();
 			
 			//ConsolidatorManager.init();
 			H2ConsolidatorManager.init();
