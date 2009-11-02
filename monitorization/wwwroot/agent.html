@@ -4,37 +4,23 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<script type="text/javascript" src="sapolib.js" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
         <script type="text/javascript" src="monitor.js"></script>
 	<script type="text/javascript">
-		window.onload = mainMonitorizationInit;
+		window.onload = agentMonitorizationInit;
 	</script>
     </head>
     <body>
-	<h1>Sapo-Broker Monitorization HTTP Server</h1><hr/>
+	<h1>Agent Information</h1><hr/>
+	<h2>Agent name:</h2> <span id='agent_name'> </span>
 	<table style="width:90%">
 	  <tr>
 	    <td style="width:40%; vertical-align:text-top;">
 		<div class="brokerInfo">
-		   <h2>Queues size</h2>
+		   <h2>Queues</h2>
   		   <div class="queue_information" id="queuesInformationPanel">
                       
   		   </div>
-		</div>
-	    </td>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Health check</h2>
-		   <div class="agents_down_information" id="agentsDownInformationPanel">
-                   </div>
-		</div>
-	    </td>
-	  </tr>
-	  <tr>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Dropbox</h2>
-		   <div class="dropbox_information" id="dropboxInformationPanel">
-                   </div>
 		</div>
 	    </td>
 	    <td style="width:40%; vertical-align:text-top;">
@@ -44,6 +30,20 @@
                    </div>
 		</div>
 	    </td>
+	  </tr>
+	  <tr>
+	    <td style="width:40%; vertical-align:text-top;">
+		<div class="brokerInfo">
+		   <h2>Subscriptions</h2>
+		   <div class="subscription_information" id="subscriptionInformationPanel">
+                   </div>
+		</div>
+	    </td>
+	    <td style="width:40%; vertical-align:text-top;">
+		<h2>Misc</h2>
+		<h3>State:</h3><span id='agent_state'></span>
+		<h3>Dropbox:</h3><span id='agent_dropbox'></span>
+	    </td>	    
 	  </tr>
 
 	</table>

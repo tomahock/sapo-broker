@@ -8,6 +8,7 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.monitorization.Utils;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
+import pt.com.broker.monitorization.configuration.ConfigurationInfo.AgentInfo;
 import pt.com.broker.types.NetPong;
 
 public class AgentStatusCollector
@@ -30,28 +31,28 @@ public class AgentStatusCollector
 				if( listeners.size() == 0)
 					return;
 				
-				List<HostInfo> cloudAgents = ConfigurationInfo.getCloudAgents();
+				List<AgentInfo> cloudAgents = ConfigurationInfo.getCloudAgents();
 
-				for (HostInfo agent : cloudAgents)
+				for (AgentInfo agent : cloudAgents)
 				{
 					BrokerClient bk = null;
 					NetPong checkStatus = null;
 					try
 					{
-						bk = new BrokerClient(agent.getHostname(), agent.getPort(), 0);
+						bk = new BrokerClient(agent.hostInfo.getHostname(), agent.hostInfo.getPort(), 0);
 						checkStatus = bk.checkStatus();
 					}
 					catch (Throwable t)
 					{
 					}
-					notifyListeners( agent.getHostname()+":"+ agent.getPort(), (checkStatus != null) ? AgentStatus.Ok : AgentStatus.Down);						
+					notifyListeners( agent.hostname, (checkStatus != null) ? AgentStatus.Ok : AgentStatus.Down);						
 					if(bk != null)
 						bk.close();
 				}
 			}
 		};
 
-		Utils.schedule(statusVerifier, 60, 60, TimeUnit.SECONDS);
+		Utils.schedule(statusVerifier, 15, 60, TimeUnit.SECONDS);
 	}
 	
 	private void notifyListeners(String agentName, AgentStatus status)

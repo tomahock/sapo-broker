@@ -141,12 +141,28 @@ public class DataFetcher
 		});
 		fetchers.put("dropbox", new ItemFetcher()
 		{
+			final String AGENTS_PREFIX = "agent";
+			
+			final String AGENT_NAME = "agentname";
 			@Override
 			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
 			{
-				Collection<DbDropbox> biggestDropboxes = GlobalSystemInfo.getBiggestDropbox();
+				Collection<JsonEncodable> dropboxes = new ArrayList<JsonEncodable>();
+				Collection<DbDropbox> biggestDropboxes = null;
+				if(resource.startsWith(AGENTS_PREFIX))
+				{
+					List<String> agentNameList = arguments.get(AGENT_NAME);
+					if (agentNameList == null)
+						return dropboxes;
+					
+					String agentName = agentNameList.get(0);
+					biggestDropboxes = GlobalSystemInfo.getAgentDropbox(agentName);
+				}
+				else{
+					biggestDropboxes = GlobalSystemInfo.getBiggestDropbox();
+				}
 
-				Collection<JsonEncodable> dropboxes = new ArrayList<JsonEncodable>(biggestDropboxes.size());
+				
 				for (DbDropbox dropbox : biggestDropboxes)
 				{
 					dropboxes.add(dropbox);
@@ -156,12 +172,31 @@ public class DataFetcher
 		});
 		fetchers.put("subscriptions", new ItemFetcher()
 		{
+			final String AGENTS_PREFIX = "agent";
+			
+			final String AGENT_NAME = "agentname";
+
 			@Override
 			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
 			{
-				Collection<DbSubscription> allSubscriptions = GlobalSystemInfo.getSubscriptions();
-
-				Collection<JsonEncodable> subscriptions = new ArrayList<JsonEncodable>(allSubscriptions.size());
+				Collection<JsonEncodable> subscriptions = new ArrayList<JsonEncodable>();
+				Collection<DbSubscription> allSubscriptions = null;
+				if (resource.startsWith(AGENTS_PREFIX))
+				{
+					List<String> agentNameList = arguments.get(AGENT_NAME);
+					if (agentNameList == null)
+						return subscriptions;
+					
+					String agentName = agentNameList.get(0);
+					allSubscriptions = GlobalSystemInfo.getAgentSubscriptions(agentName);
+				}else if(resource.startsWith(AGENTS_PREFIX))
+				{
+					
+				}
+				else
+				{
+					allSubscriptions = GlobalSystemInfo.getSubscriptions();
+				}
 				for (JsonEncodable subscription : allSubscriptions)
 				{
 					subscriptions.add(subscription);
@@ -174,6 +209,9 @@ public class DataFetcher
 		{
 			final String OK_STATUS_PREFIX = "ok";
 			final String DOWN_STATUS_PREFIX = "down";
+			final String AGENT_PREFIX = "agent";
+			
+			final String AGENT_NAME = "agentname";
 
 			@Override
 			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
@@ -184,9 +222,18 @@ public class DataFetcher
 				{
 					agents = GlobalSystemInfo.getAgentsByStatus(AgentStatus.Ok);
 				}
-				else if(resource.startsWith(DOWN_STATUS_PREFIX))
+				else if (resource.startsWith(DOWN_STATUS_PREFIX))
 				{
 					agents = GlobalSystemInfo.getAgentsByStatus(AgentStatus.Down);
+				}
+				else if (resource.startsWith(AGENT_PREFIX))
+				{
+					List<String> agentNameList = arguments.get(AGENT_NAME);
+					if (agentNameList == null)
+						return jsonAgents;
+					
+					String agentName = agentNameList.get(0);
+					agents = GlobalSystemInfo.getAgentsStatus(agentName);
 				}
 				else
 				{

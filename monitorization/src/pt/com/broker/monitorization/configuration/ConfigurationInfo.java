@@ -26,6 +26,18 @@ public class ConfigurationInfo
 
 	private static MonitorizationConfiguration configuration;
 
+	public static class AgentInfo
+	{
+		public final String hostname;
+		public final HostInfo hostInfo;
+
+		AgentInfo(String hostname, HostInfo hostInfo)
+		{
+			this.hostname = hostname;
+			this.hostInfo = hostInfo;
+		}
+	}
+	
 	static
 	{
 		JAXBContext jc;
@@ -54,7 +66,7 @@ public class ConfigurationInfo
 	// Agents through which the monitorization console connects to a agent cloud
 	private static List<HostInfo> agents = new ArrayList<HostInfo>();
 	// Agent in the cloud
-	public static List<HostInfo> cloudAgents = new ArrayList<HostInfo>();
+	public static List<AgentInfo> cloudAgents = new ArrayList<AgentInfo>();
 
 	public static void init()
 	{
@@ -68,7 +80,7 @@ public class ConfigurationInfo
 		return globalConfigFile;
 	}
 
-	public static List<HostInfo> getCloudAgents()
+	public static List<AgentInfo> getCloudAgents()
 	{
 		return cloudAgents;
 	}
@@ -94,7 +106,7 @@ public class ConfigurationInfo
 		for (HostInfo agent : allAgents)
 		{
 			int port = getPortForAgent(agent.getHostname() + ":" + agent.getPort());
-			cloudAgents.add(new HostInfo(agent.getHostname(), port));
+			cloudAgents.add( new AgentInfo(agent.getHostname() + ":" + agent.getPort(),new HostInfo(agent.getHostname(), port)));
 		}
 	}
 

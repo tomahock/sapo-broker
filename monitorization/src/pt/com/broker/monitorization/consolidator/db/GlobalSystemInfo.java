@@ -2,6 +2,7 @@ package pt.com.broker.monitorization.consolidator.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import pt.com.broker.monitorization.collectors.AgentStatus;
 
@@ -37,17 +38,24 @@ public class GlobalSystemInfo
 	/*
 	 *  Subscriptions
 	 */
+	public static Collection<DbSubscription> getSubscriptions()
+	{
+		Collection<DbSubscription> subscriptions = DbSubscription.getConsolidatedSubscriptionCount();
+		return subscriptions;
+	}
+
 	public static Collection<DbSubscription> getSubscription(String subscriptionName)
 	{
 		Collection<DbSubscription> subscriptions = DbSubscription.getSubscription(subscriptionName);		
 		return subscriptions;
 	}
 	
-	public static Collection<DbSubscription> getSubscriptions()
+	public static Collection<DbSubscription> getAgentSubscriptions(String agentname)
 	{
-		Collection<DbSubscription> subscriptions = DbSubscription.getConsolidatedSubscriptionCount();
+		Collection<DbSubscription> subscriptions = DbSubscription.getAgentSubscriptions(agentname);		
 		return subscriptions;
 	}
+
 	
 	/*
 	 *  Faults
@@ -111,6 +119,14 @@ public class GlobalSystemInfo
 		
 		return dropboxes;
 	}
+	public static Collection<DbDropbox> getAgentDropbox(String agentName)
+	{
+		DbDropbox dropbox = DbDropbox.getAgentDropbox(agentName);
+		List<DbDropbox> dropboxCollection = new ArrayList<DbDropbox>(1);
+		dropboxCollection.add(dropbox);
+		
+		return dropboxCollection;
+	}
 	/*
 	 *  Agents
 	 */
@@ -121,5 +137,9 @@ public class GlobalSystemInfo
 	public static Collection<DbAgents> getAgentsByStatus(AgentStatus status)
 	{
 		return DbAgents.getAgentsWithStatus(status);
+	}
+	public static Collection<DbAgents> getAgentsStatus(String agentName)
+	{
+		return DbAgents.getAgentStatus(agentName);
 	}
 }

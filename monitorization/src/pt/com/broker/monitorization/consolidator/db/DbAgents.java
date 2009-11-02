@@ -161,4 +161,42 @@ public class DbAgents implements JsonEncodable
 		}
 		return agents;
 	}
+	
+	public static Collection<DbAgents> getAgentStatus(String agentname)
+	{
+		Collection<DbAgents> agents = new ArrayList<DbAgents>();
+		Connection connection = H2ConsolidatorManager.getConnection();
+		try
+		{
+			if (connection == null)
+			{
+				log.error("Failed to get a valid connection");
+				return agents;
+			}
+			PreparedStatement prepareStatement = connection.prepareStatement("select agentName, status, time from agents where agentName = ? ");
+			prepareStatement.setString(1, agentname);
+			ResultSet queryResult = prepareStatement.executeQuery();
+			while (queryResult.next())
+			{
+				DbAgents dbAgent = new DbAgents(queryResult.getString(1), AgentStatus.valueOf(queryResult.getString(2)),queryResult.getLong(3));
+				agents.add(dbAgent);
+			}
+		}
+		catch (Throwable t)
+		{
+			log.error("Failed to get agent: " + agentname, t);
+		}
+		if (connection != null)
+		{
+			try
+			{
+				connection.close();
+			}
+			catch (SQLException e)
+			{
+				log.error("Failed to close db connection", e);
+			}
+		}
+		return agents;
+	}
 }

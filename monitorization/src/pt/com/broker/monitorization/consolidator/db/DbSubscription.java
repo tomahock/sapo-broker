@@ -240,6 +240,47 @@ public class DbSubscription implements JsonEncodable
 		return subscriptions;
 	}
 	
+	public static Collection<DbSubscription> getAgentSubscriptions(String agentname)
+	{
+		Collection<DbSubscription> subscriptions = new ArrayList<DbSubscription>();
+		Connection connection = H2ConsolidatorManager.getConnection();
+		try
+		{
+			if (connection == null)
+			{
+				log.error("Failed to get a valid connection");
+				return subscriptions;
+			}
+			PreparedStatement prepareStatement = connection.prepareStatement("select SUBSCRIPTION , AGENTNAME, SUBSCRIPTIONTYPE, COUNT, TIME from SUBSCRIPTIONS where AGENTNAME = ? order by SUBSCRIPTION desc");
+			prepareStatement.setString(1, agentname);
+			
+			ResultSet queryResult = prepareStatement.executeQuery();
+			while (queryResult.next())
+			{
+				DbSubscription dbQueue = new DbSubscription(queryResult.getString(1), queryResult.getString(3), queryResult.getInt(4));
+				dbQueue.setDate(queryResult.getLong(5));
+				dbQueue.setAgentName(queryResult.getString(2));
+				subscriptions.add(dbQueue);
+			}
+		}
+		catch (Throwable t)
+		{
+			log.error("Failed to get agent subscriptions", t);
+		}
+		if (connection != null)
+		{
+			try
+			{
+				connection.close();
+			}
+			catch (SQLException e)
+			{
+				log.error("Failed to close db connection", e);
+			}
+		}
+		return subscriptions;
+	}
+	
 	public static Collection<DbSubscription> getConsolidatedSubscriptionCount()
 	{
 		Collection<DbSubscription> subscriptions = new ArrayList<DbSubscription>();

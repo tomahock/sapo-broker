@@ -59,7 +59,7 @@ public class H2ConsolidatorManager
 				return;
 			}
 
-			// Read script
+			// Porcess script
 			String filePath = "./conf/scripts";
 
 			StringBuffer fileData = new StringBuffer();
@@ -76,12 +76,6 @@ public class H2ConsolidatorManager
 				}
 			}
 			reader.close();
-			String sqlScript = fileData.toString();
-
-			// Execute script
-
-			// Statement statement = connection.createStatement();
-			// statement.execute(sqlScript);
 		}
 		catch (Throwable t)
 		{
