@@ -51,7 +51,7 @@ public class AgentStatusCollector
 			}
 		};
 
-		Utils.schedule(statusVerifier, 10, 30, TimeUnit.SECONDS);
+		Utils.schedule(statusVerifier, 60, 60, TimeUnit.SECONDS);
 	}
 	
 	private void notifyListeners(String agentName, AgentStatus status)

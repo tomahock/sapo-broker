@@ -1,9 +1,8 @@
-Database creation scripts
--------------------------
+;Database creation scripts
+;-------------------------
 
-
-drop table fault;
 drop table subscriptions;
+drop table fault;
 drop table queues;
 drop table dropbox;
 drop table agents;

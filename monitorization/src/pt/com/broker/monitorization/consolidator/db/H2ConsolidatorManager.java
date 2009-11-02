@@ -1,11 +1,15 @@
 package pt.com.broker.monitorization.consolidator.db;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.sql.DataSource;
 
 import org.caudexorigo.Shutdown;
+import org.caudexorigo.text.StringUtils;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +43,50 @@ public class H2ConsolidatorManager
 
 	public static void init()
 	{
+		clearDatabase();
+
 		initConsolidators();
+	}
+
+	private static void clearDatabase()
+	{
+		try
+		{
+			Connection connection = H2ConsolidatorManager.getConnection();
+			if (connection == null)
+			{
+				log.error("Unable to get connection");
+				return;
+			}
+
+			// Read script
+			String filePath = "./conf/scripts";
+
+			StringBuffer fileData = new StringBuffer();
+			BufferedReader reader = new BufferedReader(new FileReader(filePath));
+
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				fileData.append(line);
+				if ((!line.startsWith(";")) && StringUtils.isNotBlank(line))
+				{
+					Statement statement = connection.createStatement();
+					statement.execute(line);
+				}
+			}
+			reader.close();
+			String sqlScript = fileData.toString();
+
+			// Execute script
+
+			// Statement statement = connection.createStatement();
+			// statement.execute(sqlScript);
+		}
+		catch (Throwable t)
+		{
+			log.error("Failed to update database.", t);
+		}
 	}
 
 	private static void initConsolidators()
@@ -73,17 +120,17 @@ public class H2ConsolidatorManager
 				DbFault.add(agentName, message);
 			}
 		});
-		
+
 		// Init dropbox collector
 		CollectorManager.getDropboxCollector().addListener(new DropboxListener()
 		{
 			@Override
 			public void onUpdate(String agentName, String dropboxLocation, int messages, int goodMessages)
 			{
-				DbDropbox.addDropboxInfo(agentName, dropboxLocation, messages, goodMessages);				
+				DbDropbox.addDropboxInfo(agentName, dropboxLocation, messages, goodMessages);
 			}
 		});
-		
+
 		CollectorManager.getAgentStatusCollector().addListener(new AgentStatusListener()
 		{
 			@Override
