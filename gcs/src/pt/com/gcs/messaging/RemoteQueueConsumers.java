@@ -128,12 +128,12 @@ class RemoteQueueConsumers
 						{
 							String log_msg = String.format("Write Queue is full, delay message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
 							log.warn(log_msg);
-							
+
 							String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
 							String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
 							InternalPublisher.send(dname, info_msg);
-							
-							return -1;
+
+							return 30 * 1000;
 						}
 					}
 					catch (Throwable ct)

@@ -52,7 +52,7 @@ public class Gcs
 
 	private static final String SERVICE_NAME = "SAPO GCS";
 
-	private static final int MAX_BUFFER_SIZE = 8 * 1024 * 1024;
+	private static final int MAX_BUFFER_SIZE = 1024 * 1024;
 
 	private static final Gcs instance = new Gcs();
 
@@ -477,7 +477,7 @@ public class Gcs
 		// Add CPU-bound job first,
 		filterChainBuilder.addLast("GCS_CODEC", new ProtocolCodecFilter(new GcsCodec()));
 		// and then a thread pool.
-		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle())));
+		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE))));
 
 		acceptor.setHandler(new GcsAcceptorProtocolHandler());
 

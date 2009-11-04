@@ -636,7 +636,7 @@ public abstract class BaseBrokerClient
 	 * Cancel a previous subscription.
 	 * 
 	 * @param destinationType
-	 *            The destination type (TOPIC ou QUEUE).
+	 *            The destination type (TOPIC or QUEUE).
 	 * @param destinationName
 	 *            The destination name (e.g., /topic/.*).
 	 * @param acceptRequest

@@ -11,8 +11,6 @@ import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.core.joran.action.NewRuleAction;
-
 import com.sleepycat.bind.ByteArrayBinding;
 import com.sleepycat.bind.tuple.LongBinding;
 import com.sleepycat.je.Cursor;
@@ -301,7 +299,6 @@ public class BDBStorage
 	{
 		if (isMarkedForDeletion.get())
 			return;
-
 		try
 		{
 			BDBMessage bdbm = new BDBMessage(msg, sequence, preferLocalConsumer, reserveTimeout);
@@ -317,7 +314,6 @@ public class BDBStorage
 		{
 			dealWithError(t, true);
 		}
-
 	}
 
 	// Added for compatibility reasons --- END
@@ -341,7 +337,7 @@ public class BDBStorage
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
 
-			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && queueProcessor.hasRecipient())
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && !queueProcessor.deliverySuspended() && queueProcessor.hasRecipient() )
 			{
 				if (isMarkedForDeletion.get())
 					break;
@@ -430,6 +426,76 @@ public class BDBStorage
 		{
 			closeDbCursor(msg_cursor);
 		}
+	}
+
+	public void recoverReservedMessages()
+	{
+		if (isMarkedForDeletion.get())
+			return;
+
+		long now = System.currentTimeMillis();
+		int recoveredMessages = 0; // delivered
+
+		Cursor msg_cursor = null;
+
+		try
+		{
+			msg_cursor = messageDb.openCursor(null, null);
+
+			DatabaseEntry key = new DatabaseEntry();
+			DatabaseEntry data = new DatabaseEntry();
+
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) )
+			{
+				if (isMarkedForDeletion.get())
+					break;
+
+				byte[] bdata = data.getData();
+				BDBMessage bdbm = BDBMessage.fromByteArray(bdata);
+				final InternalMessage msg = bdbm.getMessage();
+
+				long k = LongBinding.entryToLong(key);
+				msg.setMessageId(InternalMessage.getBaseMessageId() + k);
+
+				long reserveTimeout = bdbm.getReserveTimeout();
+									
+				final boolean isReserved = (reserveTimeout == 0) ? false : (reserveTimeout > now);
+				
+				if (!isReserved)
+				{
+					if (now > msg.getExpiration())
+					{
+						cursorDelete(msg_cursor);
+						log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
+						dumpMessage(msg);
+					}
+					else
+					{
+						if (bdbm.getReserveTimeout() != 0)
+						{
+							queueProcessor.decrementPendingAck();
+							++recoveredMessages;
+							bdbm.setReserveTimeout(0);
+							msg_cursor.put(key, buildDatabaseEntry(bdbm));
+						}						
+					}
+				}
+			}
+			if (recoveredMessages > 0)
+			{
+				log.info("Recover  {} messages with pending ack from queue '{}'.",recoveredMessages, queueProcessor.getDestinationName());
+			}
+
+		}
+		catch (Throwable t)
+		{
+			dealWithError(t, false);
+		}
+		finally
+		{
+			closeDbCursor(msg_cursor);
+		}
+		
 	}
 
 }

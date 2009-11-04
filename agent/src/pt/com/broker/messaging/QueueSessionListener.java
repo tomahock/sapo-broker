@@ -61,6 +61,11 @@ public class QueueSessionListener extends BrokerListener
 			{
 				if (ioSession.isConnected() && !ioSession.isClosing())
 				{
+//					log.info("ScheduledWriteMessages: " + ioSession.getScheduledWriteMessages());
+//					if (ioSession.getScheduledWriteMessages() > 50)
+//					{
+//						return -1;
+//					}
 					if (ioSession.getScheduledWriteBytes() > MAX_SESSION_BUFFER_SIZE)
 					{
 						return -1;

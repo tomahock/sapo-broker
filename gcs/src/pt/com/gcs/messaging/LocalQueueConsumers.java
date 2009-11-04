@@ -2,16 +2,16 @@ package pt.com.gcs.messaging;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.mina.core.future.IoFutureListener;
+import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
@@ -85,7 +85,7 @@ public class LocalQueueConsumers
 			if (listeners != null)
 			{
 				boolean removed = listeners.remove(listener);
-				
+
 				if (listeners.size() == 0)
 				{
 					instance.localQueueConsumers.remove(listeners);
@@ -169,27 +169,27 @@ public class LocalQueueConsumers
 		}
 		return 0;
 	}
-	
+
 	public static int readyQueueSize(String destinationName)
 	{
-		int size  = 0;
+		int size = 0;
 		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
 		if (listeners != null)
 		{
-			for(MessageListener ml : listeners)
-				if(ml.ready())
+			for (MessageListener ml : listeners)
+				if (ml.ready())
 					++size;
 		}
 		return size;
 	}
-	
+
 	public static boolean hasReadyRecipients(String destinationName)
 	{
 		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
 		if (listeners != null)
 		{
-			for(MessageListener ml : listeners)
-				if(ml.ready())
+			for (MessageListener ml : listeners)
+				if (ml.ready())
 					return true;
 		}
 		return false;
@@ -285,7 +285,7 @@ public class LocalQueueConsumers
 			try
 			{
 				MessageListener messageListener = listeners.get(currentQEP);
-				if( messageListener.ready() )
+				if (messageListener.ready())
 					return messageListener;
 
 				return pick(listeners);
@@ -296,9 +296,9 @@ public class LocalQueueConsumers
 				{
 					currentQEP = 0;
 					MessageListener messageListener = listeners.get(currentQEP);
-					if( messageListener.ready() )
+					if (messageListener.ready())
 						return messageListener;
-					
+
 					return pick(listeners);
 				}
 				catch (Throwable t)

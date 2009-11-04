@@ -363,7 +363,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	{
 		this.brokerClient.setNumberOfTries(numberOfTries);
 	}
-
+    
+	@Override
 	public int getNumberOfTries()
 	{
 		return this.brokerClient.getNumberOfTries();

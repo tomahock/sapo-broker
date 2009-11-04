@@ -33,7 +33,7 @@ public class BDBMessage implements Externalizable
 		_sequence = sequence;
 		_reserve = 0L;
 	}
-	
+
 	public BDBMessage(InternalMessage msg, long sequence, boolean preferLocalConsumer, long reserveTimeout)
 	{
 		_preferLocalConsumer = preferLocalConsumer;
@@ -81,7 +81,6 @@ public class BDBMessage implements Externalizable
 
 		m.readExternal(oin);
 		_message = m;
-
 	}
 
 	public void writeExternal(ObjectOutput oout) throws IOException
@@ -116,5 +115,4 @@ public class BDBMessage implements Externalizable
 		bm.readExternal(oIn);
 		return bm;
 	}
-
 }
