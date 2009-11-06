@@ -22,7 +22,7 @@ class RemoteQueueConsumers
 
 	private static Logger log = LoggerFactory.getLogger(RemoteQueueConsumers.class);
 
-	private static final int WRITE_BUFFER_SIZE = 1024 * 1024;
+	private static final int WRITE_BUFFER_SIZE = 128 * 1024;
 
 	protected synchronized static void add(String queueName, IoSession iosession)
 	{
@@ -133,7 +133,7 @@ class RemoteQueueConsumers
 							String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
 							InternalPublisher.send(dname, info_msg);
 
-							return 30 * 1000;
+							return -1;
 						}
 					}
 					catch (Throwable ct)

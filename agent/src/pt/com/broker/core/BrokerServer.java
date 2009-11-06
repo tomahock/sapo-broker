@@ -35,8 +35,6 @@ public class BrokerServer
 
 	private int _legacyPortNumber;
 
-	private static final int MAX_BUFFER_SIZE = 16 * 1024 * 1024;
-
 	private static final int NCPU = Runtime.getRuntime().availableProcessors();
 
 	public BrokerServer(int portNumber, int legacyPortNumber)
@@ -49,7 +47,7 @@ public class BrokerServer
 	{
 		try
 		{
-			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE));
+			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle());
 			final SocketAcceptor acceptor0 = new NioSocketAcceptor(NCPU);
 
 			acceptor0.setReuseAddress(true);

@@ -25,9 +25,6 @@ import pt.com.gcs.conf.global.ChannelType;
 
 public class AuthorizationFilter extends IoFilterAdapter
 {
-
-	private static final int MAX_WRITE_BUFFER_SIZE = 5000;
-
 	private static final Logger log = LoggerFactory.getLogger(AuthorizationFilter.class);
 
 	private static AuthorizationFilter instance = new AuthorizationFilter();

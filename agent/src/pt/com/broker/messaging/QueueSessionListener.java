@@ -19,8 +19,6 @@ import pt.com.gcs.net.IoSessionHelper;
  */
 public class QueueSessionListener extends BrokerListener
 {
-	private final static int MAX_SESSION_BUFFER_SIZE = 2 * 1024 * 1024;
-
 	private int currentQEP = 0;
 
 	private static final Logger log = LoggerFactory.getLogger(QueueSessionListener.class);
@@ -30,7 +28,7 @@ public class QueueSessionListener extends BrokerListener
 	private final String _dname;
 
 	private final Object mutex = new Object();
-
+	
 	public QueueSessionListener(String destinationName)
 	{
 		_dname = destinationName;
@@ -61,13 +59,9 @@ public class QueueSessionListener extends BrokerListener
 			{
 				if (ioSession.isConnected() && !ioSession.isClosing())
 				{
-//					log.info("ScheduledWriteMessages: " + ioSession.getScheduledWriteMessages());
-//					if (ioSession.getScheduledWriteMessages() > 50)
-//					{
-//						return -1;
-//					}
 					if (ioSession.getScheduledWriteBytes() > MAX_SESSION_BUFFER_SIZE)
 					{
+						log.info("MAX_SESSION_BUFFER_SIZE reached in session '{}'", ioSession.toString());
 						return -1;
 					}
 					final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
@@ -117,14 +111,16 @@ public class QueueSessionListener extends BrokerListener
 
 			try
 			{
-				return _sessions.get(currentQEP);
+				IoSession session = _sessions.get(currentQEP);
+				
+				return session;
 			}
 			catch (Exception e)
 			{
 				try
 				{
 					currentQEP = 0;
-					return _sessions.get(currentQEP);
+					return _sessions.get(currentQEP);	
 				}
 				catch (Exception e2)
 				{
@@ -141,6 +137,7 @@ public class QueueSessionListener extends BrokerListener
 			if (!_sessions.contains(iosession))
 			{
 				_sessions.add(iosession);
+	
 				log.info("Create message consumer for queue: " + _dname + ", address: " + IoSessionHelper.getRemoteAddress(iosession));
 			}
 			return _sessions.size();
@@ -175,5 +172,11 @@ public class QueueSessionListener extends BrokerListener
 		{
 			return _sessions.size();
 		}
+	}
+
+	@Override
+	public boolean ready() 
+	{
+		return true;
 	}
 }

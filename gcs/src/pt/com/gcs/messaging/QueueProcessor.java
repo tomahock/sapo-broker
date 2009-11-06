@@ -1,11 +1,8 @@
 package pt.com.gcs.messaging;
 
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
-import javax.xml.soap.Text;
 
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
@@ -34,9 +31,9 @@ public class QueueProcessor
 
 	protected final int MAX_PENDING_ACK = 500;
 	protected AtomicInteger ack_pending = new AtomicInteger(0);
-	
+
 	protected AtomicInteger deliver_cycles_skipped = new AtomicInteger(0);
-	
+
 	private final BDBStorage storage;
 
 	protected QueueProcessor(String destinationName)
@@ -143,12 +140,13 @@ public class QueueProcessor
 		{
 			log.debug("forward-> isDelivered: " + result + ", lqsize: " + lqsize + ", rqsize: " + rqsize + ", message.id: " + message.getMessageId());
 		}
-		
-		if(result >= 0)
+
+		if (result >= 0)
 		{
-			int ackPendingCount = ack_pending.incrementAndGet();
-			if(ackPendingCount == MAX_PENDING_ACK)
-				log.info("Pending ack limit has been reached {}", java.text.DateFormat.getDateTimeInstance().format( new Date(System.currentTimeMillis())));			
+			if (ack_pending.incrementAndGet() >= MAX_PENDING_ACK)
+			{
+				log.info("Pending ack limit has been reached for queue '{}'", _destinationName);
+			}
 		}
 
 		return result;
@@ -161,12 +159,12 @@ public class QueueProcessor
 
 	protected boolean hasRecipient()
 	{
-		if(RemoteQueueConsumers.size(_destinationName) != 0 )
+		if (RemoteQueueConsumers.size(_destinationName) != 0)
 			return true;
 		return LocalQueueConsumers.hasReadyRecipients(_destinationName);
 	}
 
-	protected int size()
+	public int size()
 	{
 		return RemoteQueueConsumers.size(_destinationName) + LocalQueueConsumers.readyQueueSize(_destinationName);
 	}
@@ -189,7 +187,7 @@ public class QueueProcessor
 			throw new RuntimeException(t);
 		}
 	}
-
+	
 	protected final void wakeup()
 	{
 		if (isWorking.getAndSet(true))
@@ -201,17 +199,19 @@ public class QueueProcessor
 		if (cnt > 0)
 		{
 			emptyQueueInfoDisplay.set(false);
-			
-			if( deliverySuspended() )
+
+			if (deliverySuspended())
 			{
-				// The limit of pending ack as been reached. Skip 200 delivery cycles (1s) and then recover reserved messages
-				if(deliver_cycles_skipped.incrementAndGet() == 20)
+				// The limit of pending ack as been reached. Skip 20 delivery cycles (1s) and then recover reserved messages
+				if (deliver_cycles_skipped.incrementAndGet() == 20)
 				{
-					if( hasRecipient() )
+					if (hasRecipient())
 					{
-						System.out.println("## recipient count: " + size() );
-						log.info("Recovering reserved messages - {}", java.text.DateFormat.getDateTimeInstance().format( new Date(System.currentTimeMillis())));
-						storage.recoverReservedMessages();
+						log.info("Recovering reserved messages for queue '{}'",_destinationName);
+						if( ack_pending.get() >= MAX_PENDING_ACK)
+						{
+							storage.recoverReservedMessages();
+						}
 					}
 					deliver_cycles_skipped.set(0);
 				}
@@ -243,22 +243,22 @@ public class QueueProcessor
 		}
 		isWorking.set(false);
 	}
-	
+
 	public void setSequenceNumber(long seqNumber)
 	{
 		_sequence.set(seqNumber);
 	}
-	
+
 	public void setCounter(long counter)
 	{
 		_counter.set(counter);
 	}
-	
+
 	public long getCounter()
 	{
 		return _counter.get();
 	}
-	
+
 	public BDBStorage getStorage()
 	{
 		return storage;
@@ -266,23 +266,24 @@ public class QueueProcessor
 
 	public boolean deliverySuspended()
 	{
-		boolean limitReached = pendingAckLimitReached(); 
-		if(limitReached)
+		boolean limitReached = pendingAckLimitReached();
+		if (limitReached)
 		{
 			deliver_cycles_skipped.compareAndSet(0, 1);
 			return true;
 		}
 		return deliver_cycles_skipped.get() != 0;
 	}
-	
+
 	public boolean pendingAckLimitReached()
 	{
 		return ack_pending.get() >= MAX_PENDING_ACK;
 	}
+
 	public int decrementPendingAck()
 	{
 		int value = ack_pending.decrementAndGet();
-		if(value < 0)
+		if (value < 0)
 		{
 			value = 0;
 			ack_pending.set(value);

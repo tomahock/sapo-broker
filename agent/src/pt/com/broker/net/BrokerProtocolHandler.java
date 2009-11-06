@@ -58,8 +58,6 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	private static final BrokerConsumer _brokerConsumer = BrokerConsumer.getInstance();
 
-	private static final int MAX_WRITE_BUFFER_SIZE = 5000;
-
 	public BrokerProtocolHandler()
 	{
 	}
@@ -355,7 +353,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	private void handleAcknowledeMessage(IoSession session, NetMessage request)
 	{
-		_brokerProducer.acknowledge(request.getAction().getAcknowledgeMessage());
+		_brokerProducer.acknowledge(request.getAction().getAcknowledgeMessage(), session);
 	}
 
 	private void handleUnsubscribeMessage(IoSession session, NetMessage request)

@@ -26,7 +26,7 @@ class RemoteTopicConsumers
 
 	private Map<String, CopyOnWriteArrayList<IoSession>> remoteTopicConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<IoSession>>();
 
-	private static final int WRITE_BUFFER_SIZE = 1024 * 1024;
+	private static final int WRITE_BUFFER_SIZE = 128 * 1024;
 
 	private RemoteTopicConsumers()
 	{

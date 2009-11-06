@@ -10,7 +10,6 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +35,15 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	static
 	{
 		createPeersList();
-		GlobalConfigMonitor.addGlobalConfigModifiedListener(new GlobalConfigModifiedListener(){
+		GlobalConfigMonitor.addGlobalConfigModifiedListener(new GlobalConfigModifiedListener()
+		{
 
 			@Override
 			public void globalConfigModified()
 			{
-				globalConfigReloaded();				
+				globalConfigReloaded();
 			}
-			
+
 		});
 	}
 
@@ -57,7 +57,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 			peersAddressList.add(addr);
 		}
 	}
-	
+
 	public static void globalConfigReloaded()
 	{
 		createPeersList();
@@ -177,7 +177,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 			// This exception is never thrown because UTF-8 encoding is built-in
 			// in every JVM
 		}
-		
+
 		ioSession.write(ackMsg);
 	}
 

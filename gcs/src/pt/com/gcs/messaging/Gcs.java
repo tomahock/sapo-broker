@@ -52,8 +52,6 @@ public class Gcs
 
 	private static final String SERVICE_NAME = "SAPO GCS";
 
-	private static final int MAX_BUFFER_SIZE = 1024 * 1024;
-
 	private static final Gcs instance = new Gcs();
 
 	public static final int RECOVER_INTERVAL = 50;
@@ -275,7 +273,7 @@ public class Gcs
 		}
 		catch (MaximumQueuesAllowedReachedException e)
 		{
-			log.error("Tried to create a new queue. Not allowed because the limit was reached");
+			log.error("Tried to create a new queue ('{}'). Not allowed because the limit was reached", queueName);
 		}
 		return false;
 	}
@@ -477,7 +475,7 @@ public class Gcs
 		// Add CPU-bound job first,
 		filterChainBuilder.addLast("GCS_CODEC", new ProtocolCodecFilter(new GcsCodec()));
 		// and then a thread pool.
-		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE))));
+		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle())));
 
 		acceptor.setHandler(new GcsAcceptorProtocolHandler());
 
@@ -499,7 +497,7 @@ public class Gcs
 		filterChainBuilder.addLast("GCS_CODEC", new ProtocolCodecFilter(new GcsCodec()));
 
 		// and then a thread pool.
-		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE))));
+		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle())));
 
 		connector.setHandler(new GcsRemoteProtocolHandler());
 		connector.setConnectTimeoutMillis(5000); // 5 seconds timeout

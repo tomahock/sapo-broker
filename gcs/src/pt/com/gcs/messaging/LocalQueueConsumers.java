@@ -7,11 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.mina.core.future.IoFutureListener;
-import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
@@ -34,8 +31,6 @@ public class LocalQueueConsumers
 
 	public static final AtomicLong ackedMessages = new AtomicLong(0L);
 
-	private static final Set<String> syncConsumers = new HashSet<String>();
-
 	protected static void acknowledgeMessage(InternalMessage msg, IoSession ioSession)
 	{
 		log.debug("Acknowledge message with Id: '{}'.", msg.getMessageId());
@@ -46,6 +41,7 @@ public class LocalQueueConsumers
 
 			InternalMessage m = new InternalMessage(msg.getMessageId(), msg.getDestination(), brkMsg);
 			m.setType(MessageType.ACK);
+			
 			ioSession.write(m);
 		}
 		catch (Throwable ct)
@@ -84,7 +80,7 @@ public class LocalQueueConsumers
 			CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 			if (listeners != null)
 			{
-				boolean removed = listeners.remove(listener);
+				listeners.remove(listener);
 
 				if (listeners.size() == 0)
 				{

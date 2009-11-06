@@ -1,5 +1,8 @@
 package pt.com.broker.messaging;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +75,7 @@ public class BrokerProducer
 	public boolean enqueueMessage(final NetPublish enqReq, String messageSource)
 	{
 		InternalMessage msg = prepareForSending(enqReq);
-
+		
 		StringBuffer sb_source = new StringBuffer();
 		sb_source.append("queue@");
 		sb_source.append(GcsInfo.getAgentName());
@@ -89,6 +92,7 @@ public class BrokerProducer
 		return Gcs.enqueue(msg);
 	}
 
+	
 	public void publishMessage(final NetPublish pubReq, final String messageSource)
 	{
 		InternalMessage msg = prepareForSending(pubReq);
@@ -108,8 +112,10 @@ public class BrokerProducer
 		Gcs.publish(msg);
 	}
 
-	public void acknowledge(NetAcknowledge ackReq)
+	
+	public void acknowledge(NetAcknowledge ackReq, IoSession session)
 	{
-		Gcs.ackMessage(ackReq.getDestination(), ackReq.getMessageId());
+		String destination = ackReq.getDestination();
+		Gcs.ackMessage(destination, ackReq.getMessageId());
 	}
 }

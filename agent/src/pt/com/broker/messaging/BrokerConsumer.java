@@ -40,11 +40,6 @@ public class BrokerConsumer
 
 	public synchronized boolean subscribe(NetSubscribe sb, IoSession ios)
 	{
-//		if (StringUtils.contains(sb.getDestination(), "@"))
-//		{
-//			throw new IllegalArgumentException("'@' character not allowed in TOPIC name");
-//		}
-
 		try
 		{
 			TopicSubscriber subscriber = TopicSubscriberList.get(sb.getDestination());

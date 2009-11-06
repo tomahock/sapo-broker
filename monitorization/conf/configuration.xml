@@ -1,6 +1,6 @@
 <monitorization-configuration>
 	<agents>
-		<agent hostname="127.0.0.1" port="3323" />
+		<agent hostname="broker.bk.sapo.pt" port="3323" />
 	</agents>
 	<tcp-port-exceptions>
 <!--

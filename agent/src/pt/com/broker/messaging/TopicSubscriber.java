@@ -26,8 +26,6 @@ public class TopicSubscriber extends BrokerListener
 
 	private final String _dname;
 
-	private final static int MAX_SESSION_BUFFER_SIZE = 512 * 1024;
-
 	private Object slock = new Object();
 
 	public TopicSubscriber(String destinationName)
@@ -67,9 +65,6 @@ public class TopicSubscriber extends BrokerListener
 								String message = String.format("Slow client for '%s'. Message with id '%s' will be discarded. Client Address: '%s'", _dname, amsg.getMessageId(), IoSessionHelper.getRemoteAddress(ios));
 								log.warn(message);
 							}
-							Sleep.time(1);
-
-							// return false;
 						}
 						else
 						{

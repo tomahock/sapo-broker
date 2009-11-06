@@ -3,6 +3,7 @@ package pt.com.gcs.messaging;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
@@ -224,10 +225,10 @@ public class BDBStorage
 			}
 		}
 		while (count != 0);
-		
-		// Stop trying to deal with DeadlockException 
+
+		// Stop trying to deal with DeadlockException
 		dealWithError(lastDeadlockException, true);
-		
+
 		return false;
 	}
 
@@ -271,6 +272,8 @@ public class BDBStorage
 		return seqValue;
 	}
 
+	AtomicInteger entryCount = new AtomicInteger();
+
 	public void insert(InternalMessage msg, long sequence, boolean preferLocalConsumer)
 	{
 		if (isMarkedForDeletion.get())
@@ -285,7 +288,10 @@ public class BDBStorage
 
 			LongBinding.longToEntry(sequence, key);
 
-			messageDb.put(null, key, data);
+			if (messageDb.put(null, key, data) != OperationStatus.SUCCESS)
+			{
+				log.error("Failed to insert message in queue '{}'", this.queueProcessor.getDestinationName());
+			}
 		}
 		catch (Throwable t)
 		{
@@ -308,7 +314,10 @@ public class BDBStorage
 
 			LongBinding.longToEntry(sequence, key);
 
-			messageDb.put(null, key, data);
+			if (messageDb.put(null, key, data) != OperationStatus.SUCCESS)
+			{
+				log.error("Failed to insert message in queue '{}'", this.queueProcessor.getDestinationName());
+			}
 		}
 		catch (Throwable t)
 		{
@@ -320,6 +329,7 @@ public class BDBStorage
 
 	protected void recoverMessages()
 	{
+
 		if (isMarkedForDeletion.get())
 			return;
 
@@ -337,7 +347,7 @@ public class BDBStorage
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
 
-			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && !queueProcessor.deliverySuspended() && queueProcessor.hasRecipient() )
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && !queueProcessor.deliverySuspended() && queueProcessor.hasRecipient())
 			{
 				if (isMarkedForDeletion.get())
 					break;
@@ -373,6 +383,10 @@ public class BDBStorage
 							do
 							{
 								reserveTime = queueProcessor.forward(msg, preferLocalConsumer);
+								if (reserveTime <= 0)
+								{
+									log.info("Failed to forward message");
+								}
 							}
 							while (!(reserveTime > 0) && ((++tries) != MAX_REDELIVERY_PER_MESSAGE));
 
@@ -384,20 +398,25 @@ public class BDBStorage
 								}
 
 								bdbm.setReserveTimeout(reserveTime + now);
+								msg_cursor.put(key, buildDatabaseEntry(bdbm));
 
 								++i0;
 							}
 							else
 							{
+								log.debug("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());
 
-								if (log.isDebugEnabled())
-								{
-									log.debug("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());
-								}
 								dumpMessage(msg);
+
+								if(queueProcessor.size() == 1)
+								{
+									// The only queue consumer was not ready to receive more messages. Suspend deliver cycle.
+									break;
+								}
+								
 								++j0;
 							}
-							msg_cursor.put(key, buildDatabaseEntry(bdbm));
+
 						}
 						catch (Throwable t)
 						{
@@ -445,7 +464,7 @@ public class BDBStorage
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
 
-			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) )
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
 			{
 				if (isMarkedForDeletion.get())
 					break;
@@ -458,9 +477,9 @@ public class BDBStorage
 				msg.setMessageId(InternalMessage.getBaseMessageId() + k);
 
 				long reserveTimeout = bdbm.getReserveTimeout();
-									
+
 				final boolean isReserved = (reserveTimeout == 0) ? false : (reserveTimeout > now);
-				
+
 				if (!isReserved)
 				{
 					if (now > msg.getExpiration())
@@ -477,13 +496,13 @@ public class BDBStorage
 							++recoveredMessages;
 							bdbm.setReserveTimeout(0);
 							msg_cursor.put(key, buildDatabaseEntry(bdbm));
-						}						
+						}
 					}
 				}
 			}
 			if (recoveredMessages > 0)
 			{
-				log.info("Recover  {} messages with pending ack from queue '{}'.",recoveredMessages, queueProcessor.getDestinationName());
+				log.info("Recover  {} messages with pending ack from queue '{}'.", recoveredMessages, queueProcessor.getDestinationName());
 			}
 
 		}
@@ -495,7 +514,7 @@ public class BDBStorage
 		{
 			closeDbCursor(msg_cursor);
 		}
-		
+
 	}
 
 }

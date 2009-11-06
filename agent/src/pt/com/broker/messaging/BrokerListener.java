@@ -19,6 +19,8 @@ import pt.com.gcs.messaging.MessageListener;
 
 public abstract class BrokerListener implements MessageListener
 {
+	protected final static int MAX_SESSION_BUFFER_SIZE = 128 * 1024;
+	
 	protected static NetMessage buildNotification(InternalMessage msg, DestinationType dtype)
 	{
 		return buildNotification(msg, null, dtype);
