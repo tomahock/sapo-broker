@@ -1,11 +1,11 @@
 ;Database creation scripts
 ;-------------------------
 
-drop table subscriptions;
-drop table fault;
-drop table queues;
-drop table dropbox;
-drop table agents;
+drop table if exists subscriptions;
+drop table if exists fault;
+drop table if exists queues;
+drop table if exists dropbox;
+drop table if exists agents;
 
 CREATE TABLE QUEUES(name VARCHAR(255) NOT NULL, agentName VARCHAR(255) NOT NULL, count INT, time BIGINT);
 ALTER TABLE QUEUES ADD PRIMARY KEY(name, agentName);

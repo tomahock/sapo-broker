@@ -72,31 +72,19 @@ public class H2ConsolidatorManager
 			String line;
 			while ((line = reader.readLine()) != null)
 			{
-				try
+				if ((!line.startsWith(";")) && StringUtils.isNotBlank(line))
 				{
-					if ((!line.startsWith(";")) && StringUtils.isNotBlank(line))
-					{
-						Statement statement = connection.createStatement();
-						statement.execute(line);
-					}
+					Statement statement = connection.createStatement();
+					statement.execute(line);
+				}
 
-				}
-				catch (Throwable t)
-				{
-					log.error("Statement '{}' failed", line);
-				}
 			}
 			reader.close();
 
 		}
-		catch (FileNotFoundException fnfe)
+		catch (Throwable t)
 		{
-			log.error("Failed to open file '{}'", filePath);
-			Shutdown.now();
-		}
-		catch(IOException ioe)
-		{
-			log.error("Error while reading file '{}'", filePath);
+			log.error("Database initialization failed.", t);
 			Shutdown.now();
 		}
 
