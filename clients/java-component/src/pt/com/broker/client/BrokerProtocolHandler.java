@@ -3,6 +3,7 @@ package pt.com.broker.client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -214,6 +215,10 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	protected void handleReceivedMessage(NetMessage message)
 	{
 		NetAction action = message.getAction();
+		// NetAction action = null;
+		// try
+		// {
+		message.getAction();
 
 		switch (action.getActionType())
 		{
@@ -276,25 +281,41 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			throw new RuntimeException("Unexepected ActionType in received message. ActionType: " + action.getActionType());
 
 		}
+		// }
+		// catch (NullPointerException npe)
+		// {
+		// System.err.println("Null Pointer ex");
+		// }
 	}
 
 	@Override
 	public NetMessage decode(DataInputStream in) throws IOException
 	{
-		short protocolType = in.readShort();
-		short protocolVersion = in.readShort();
-		int len = in.readInt();
-
-		if (serializer == null)
+		try
 		{
-			throw new RuntimeException("Received message uses an unknown encoding");
+			short protocolType = in.readShort();
+			short protocolVersion = in.readShort();
+			int len = in.readInt();
+
+			if (serializer == null)
+			{
+				throw new RuntimeException("Received message uses an unknown encoding");
+			}
+
+			byte[] data = new byte[len];
+			in.readFully(data);
+
+			NetMessage message = (NetMessage) serializer.unmarshal(data);
+			return message;
 		}
-
-		byte[] data = new byte[len];
-		in.readFully(data);
-
-		NetMessage message = (NetMessage) serializer.unmarshal(data);
-		return message;
+		catch (SocketException se)
+		{
+			if (!closed.get())
+			{
+				log.error("Failed to read socket...", se);
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -363,7 +384,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	{
 		this.brokerClient.setNumberOfTries(numberOfTries);
 	}
-    
+
 	@Override
 	public int getNumberOfTries()
 	{

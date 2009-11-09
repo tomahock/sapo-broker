@@ -18,7 +18,7 @@ import pt.com.broker.monitorization.consolidator.db.H2ConsolidatorManager;
 public class HttpServer
 {
 	private static final Logger log = LoggerFactory.getLogger(HttpServer.class);
-	
+
 	public static void main(String[] args)
 	{
 		System.out.println("Starting Sapo-Broker HTTP Monitorization Server...");
@@ -33,17 +33,14 @@ public class HttpServer
 		bootstrap.setPipelineFactory(new MonitorizationPipelineFactory());
 		bootstrap.setOption("child.tcpNoDelay", true);
 		bootstrap.setOption("child.keepAlive", true);
-		
-		
+
+		ConfigurationInfo.init();
+
+		CollectorManager.init();
+
+		H2ConsolidatorManager.init();
+
 		// Bind and start to accept incoming connections.
 		bootstrap.bind(new InetSocketAddress(8877));
-		
-		
-		ConfigurationInfo.init();
-		
-		CollectorManager.init();
-		
-		//ConsolidatorManager.init();
-		H2ConsolidatorManager.init();
 	}
 }

@@ -1,7 +1,9 @@
 package pt.com.broker.monitorization.consolidator.db;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -43,44 +45,74 @@ public class H2ConsolidatorManager
 
 	public static void init()
 	{
-		clearDatabase();
+		initDatabaseStructure();
 
 		initConsolidators();
 	}
 
-	private static void clearDatabase()
+	private static void initDatabaseStructure()
 	{
+		Connection connection = null;
+
+		connection = H2ConsolidatorManager.getConnection();
+		if (connection == null)
+		{
+			log.error("Unable to get connection");
+			return;
+		}
+
+		// Porcess script
+		String filePath = "./conf/scripts";
+
+		BufferedReader reader = null;
 		try
 		{
-			Connection connection = H2ConsolidatorManager.getConnection();
-			if (connection == null)
-			{
-				log.error("Unable to get connection");
-				return;
-			}
-
-			// Porcess script
-			String filePath = "./conf/scripts";
-
-			StringBuffer fileData = new StringBuffer();
-			BufferedReader reader = new BufferedReader(new FileReader(filePath));
+			reader = new BufferedReader(new FileReader(filePath));
 
 			String line;
 			while ((line = reader.readLine()) != null)
 			{
-				fileData.append(line);
-				if ((!line.startsWith(";")) && StringUtils.isNotBlank(line))
+				try
 				{
-					Statement statement = connection.createStatement();
-					statement.execute(line);
+					if ((!line.startsWith(";")) && StringUtils.isNotBlank(line))
+					{
+						Statement statement = connection.createStatement();
+						statement.execute(line);
+					}
+
+				}
+				catch (Throwable t)
+				{
+					log.error("Statement '{}' failed", line);
 				}
 			}
 			reader.close();
+
 		}
-		catch (Throwable t)
+		catch (FileNotFoundException fnfe)
 		{
-			log.error("Failed to update database.", t);
+			log.error("Failed to open file '{}'", filePath);
+			Shutdown.now();
 		}
+		catch(IOException ioe)
+		{
+			log.error("Error while reading file '{}'", filePath);
+			Shutdown.now();
+		}
+
+		if (connection != null)
+		{
+
+			try
+			{
+				connection.close();
+			}
+			catch (SQLException e)
+			{
+				log.error("Failed to close database connection");
+			}
+		}
+
 	}
 
 	private static void initConsolidators()

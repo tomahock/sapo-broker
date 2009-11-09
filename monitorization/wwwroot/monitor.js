@@ -70,7 +70,7 @@ function mainMonitorizationInit()
   f_faults();
   setInterval(f_faults, 3000);
   f_agents();
-  setInterval(f_agents, 30000);
+  setInterval(f_agents, 3000);
 }
 // general queue info
 function setQueueInfo(queueInfo, panel)

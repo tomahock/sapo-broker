@@ -42,7 +42,7 @@ public abstract class ProtocolHandler<T>
 	public abstract BaseNetworkConnector getConnector();
 
 	protected abstract void handleReceivedMessage(T request);
-	
+
 	protected abstract int getNumberOfTries();
 
 	private final Runnable reader = new Runnable()
@@ -55,7 +55,7 @@ public abstract class ProtocolHandler<T>
 			boolean continueReading = true;
 
 			long connectionVersion = connector.getConnectionVersion();
-			
+
 			while (continueReading)
 			{
 
@@ -67,13 +67,16 @@ public abstract class ProtocolHandler<T>
 				catch (Throwable error)
 				{
 					final Throwable rootCause = ErrorAnalyser.findRootCause(error);
-					
-					if(getNumberOfTries() == 0)
+
+					if (getNumberOfTries() == 0)
 					{
-						onError(rootCause);
+						if(!closed.get())
+						{
+							onError(rootCause);
+						}
 						return;
 					}
-					
+
 					if (rootCause instanceof IOException)
 					{
 						if (!connector.isClosed())
@@ -84,7 +87,10 @@ public abstract class ProtocolHandler<T>
 					{
 						try
 						{
-							onError(rootCause);
+							if (!closed.get())
+							{
+								onError(rootCause);
+							}
 						}
 						catch (Throwable t)
 						{
@@ -102,7 +108,7 @@ public abstract class ProtocolHandler<T>
 		final Throwable rootCause = ErrorAnalyser.findRootCause(error);
 		if (rootCause instanceof IOException)
 		{
-			if(getNumberOfTries() == 0)
+			if (getNumberOfTries() == 0)
 				return rootCause;
 			onIOFailure(connectionVersion);
 		}
