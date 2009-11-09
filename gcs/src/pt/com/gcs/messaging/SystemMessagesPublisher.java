@@ -35,7 +35,7 @@ public class SystemMessagesPublisher
 
 	private static Logger log = LoggerFactory.getLogger(SystemMessagesPublisher.class);
 
-	private static final long ACKNOWLEDGE_INTERVAL = 15 * 1000;
+	private static final long ACKNOWLEDGE_INTERVAL = 5 * 1000;
 
 	static
 	{
