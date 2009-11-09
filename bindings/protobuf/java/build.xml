@@ -33,7 +33,8 @@
 			<arg value="${src}"/>
 			<arg value="../broker.proto"/>
 		</exec>
-
+		<!-- PBMessage class and inner classes shouldn't be public -->
+		<replace file="${src}/pt/com/broker/codec/protobuf/PBMessage.java" token="public final class" value="final class"/>
 	</target>
 
 

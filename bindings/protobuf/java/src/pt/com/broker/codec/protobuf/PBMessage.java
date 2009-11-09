@@ -2,7 +2,7 @@
 
 package pt.com.broker.codec.protobuf;
 
-public final class PBMessage {
+final class PBMessage {
   private PBMessage() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {

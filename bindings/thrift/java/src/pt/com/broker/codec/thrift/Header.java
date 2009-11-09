@@ -20,7 +20,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-public class Header implements TBase, java.io.Serializable, Cloneable {
+class Header implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Header");
   private static final TField PARAMETERS_FIELD_DESC = new TField("parameters", TType.MAP, (short)1);
 

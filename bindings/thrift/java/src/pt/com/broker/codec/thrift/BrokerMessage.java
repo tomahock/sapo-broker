@@ -20,7 +20,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-public class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparable<BrokerMessage> {
+class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparable<BrokerMessage> {
   private static final TStruct STRUCT_DESC = new TStruct("BrokerMessage");
   private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)1);
   private static final TField PAYLOAD_FIELD_DESC = new TField("payload", TType.STRING, (short)2);

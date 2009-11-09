@@ -20,7 +20,7 @@ import org.apache.thrift.protocol.TProtocolUtil;
 import org.apache.thrift.protocol.TStruct;
 import org.apache.thrift.protocol.TType;
 
-public class ClientAcknowledge implements TBase, java.io.Serializable, Cloneable
+class ClientAcknowledge implements TBase, java.io.Serializable, Cloneable
 {
 	private static final TStruct STRUCT_DESC = new TStruct("ClientAcknowledge");
 	private static final TField COMMUNICATION_ID_FIELD_DESC = new TField("communication_id", TType.STRING, (short) 1);

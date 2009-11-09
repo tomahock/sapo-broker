@@ -20,7 +20,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-public class Notification implements TBase, java.io.Serializable, Cloneable, Comparable<Notification> {
+class Notification implements TBase, java.io.Serializable, Cloneable, Comparable<Notification> {
   private static final TStruct STRUCT_DESC = new TStruct("Notification");
   private static final TField DESTINATION_FIELD_DESC = new TField("destination", TType.STRING, (short)1);
   private static final TField SUBSCRIPTION_FIELD_DESC = new TField("subscription", TType.STRING, (short)2);

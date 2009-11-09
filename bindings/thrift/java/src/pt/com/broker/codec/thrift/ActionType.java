@@ -13,7 +13,7 @@ import org.apache.thrift.IntRangeSet;
 import java.util.Map;
 import java.util.HashMap;
 
-public class ActionType {
+class ActionType {
   public static final int PUBLISH = 0;
   public static final int POLL = 1;
   public static final int ACCEPTED = 2;

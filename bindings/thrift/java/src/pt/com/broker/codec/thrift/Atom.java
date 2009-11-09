@@ -20,7 +20,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-public class Atom implements TBase, java.io.Serializable, Cloneable {
+class Atom implements TBase, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Atom");
   private static final TField HEADER_FIELD_DESC = new TField("header", TType.STRUCT, (short)1);
   private static final TField ACTION_FIELD_DESC = new TField("action", TType.STRUCT, (short)2);

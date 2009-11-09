@@ -20,7 +20,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-public class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault> {
+class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault> {
   private static final TStruct STRUCT_DESC = new TStruct("Fault");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField FAULT_CODE_FIELD_DESC = new TField("fault_code", TType.STRING, (short)2);

@@ -13,7 +13,7 @@ import org.apache.thrift.IntRangeSet;
 import java.util.Map;
 import java.util.HashMap;
 
-public class DestinationType {
+class DestinationType {
   public static final int TOPIC = 0;
   public static final int QUEUE = 1;
   public static final int VIRTUAL_QUEUE = 2;

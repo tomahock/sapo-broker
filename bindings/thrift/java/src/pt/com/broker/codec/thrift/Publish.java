@@ -20,7 +20,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-public class Publish implements TBase, java.io.Serializable, Cloneable, Comparable<Publish> {
+class Publish implements TBase, java.io.Serializable, Cloneable, Comparable<Publish> {
   private static final TStruct STRUCT_DESC = new TStruct("Publish");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField DESTINATION_TYPE_FIELD_DESC = new TField("destination_type", TType.I32, (short)2);

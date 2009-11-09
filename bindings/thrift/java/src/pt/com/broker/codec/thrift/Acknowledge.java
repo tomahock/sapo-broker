@@ -20,7 +20,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-public class Acknowledge implements TBase, java.io.Serializable, Cloneable, Comparable<Acknowledge> {
+class Acknowledge implements TBase, java.io.Serializable, Cloneable, Comparable<Acknowledge> {
   private static final TStruct STRUCT_DESC = new TStruct("Acknowledge");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)2);

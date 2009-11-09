@@ -20,7 +20,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-public class Pong implements TBase, java.io.Serializable, Cloneable, Comparable<Pong> {
+class Pong implements TBase, java.io.Serializable, Cloneable, Comparable<Pong> {
   private static final TStruct STRUCT_DESC = new TStruct("Pong");
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
 

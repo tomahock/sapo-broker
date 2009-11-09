@@ -34,6 +34,14 @@
 		<copy todir="src">
 			<fileset dir="gen-java"/>
 		</copy>
+		
+		<property name="codedir" value="${src}/pt/com/broker/codec/thrift/" />
+		
+		<replace dir="${codedir}" token="public class" value="class">
+		  <include name="*.java"/>
+		  <exclude name="Thrift*.java"/>
+		</replace>
+
 
 		<delete dir="gen-java" />
 	</target>

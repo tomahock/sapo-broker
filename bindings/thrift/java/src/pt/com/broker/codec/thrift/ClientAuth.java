@@ -24,7 +24,7 @@ import org.apache.thrift.protocol.TProtocolUtil;
 import org.apache.thrift.protocol.TStruct;
 import org.apache.thrift.protocol.TType;
 
-public class ClientAuth implements TBase, java.io.Serializable, Cloneable
+class ClientAuth implements TBase, java.io.Serializable, Cloneable
 {
 	private static final TStruct STRUCT_DESC = new TStruct("ClientAuth");
 	private static final TField AUTHENTICATION_TYPE_FIELD_DESC = new TField("authentication_type", TType.STRING, (short) 1);
