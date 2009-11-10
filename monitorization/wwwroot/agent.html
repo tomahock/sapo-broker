@@ -2,50 +2,45 @@
     <head>
         <title>Sapo-Broker Monitorization HTTP Server</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<script type="text/javascript" src="sapolib.js" ></script>
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+	<script type="text/javascript" src="scripts/sapolib.js" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
-        <script type="text/javascript" src="monitor.js"></script>
+        <script type="text/javascript" src="scripts/monitor.js"></script>
 	<script type="text/javascript">
 		window.onload = agentMonitorizationInit;
 	</script>
     </head>
     <body>
-	<h1>Agent Information</h1><hr/>
-	<h2>Agent name:</h2> <span id='agent_name'> </span>
-	<table style="width:90%">
-	  <tr>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Queues</h2>
-  		   <div class="queue_information" id="queuesInformationPanel">
-                      
-  		   </div>
-		</div>
-	    </td>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Faults</h2>
-		   <div class="faults_information" id="faultsInformationPanel">
-                   </div>
-		</div>
-	    </td>
-	  </tr>
-	  <tr>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Subscriptions</h2>
-		   <div class="subscription_information" id="subscriptionInformationPanel">
-                   </div>
-		</div>
-	    </td>
-	    <td style="width:40%; vertical-align:text-top;">
-		<h2>Misc</h2>
-		<h3>State:</h3><span id='agent_state'></span>
-		<h3>Dropbox:</h3><span id='agent_dropbox'></span>
-	    </td>	    
-	  </tr>
+	<h1 class="title">Agent Information (<span id='agent_name'> </span>) </h1>
 
-	</table>
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Queues</div>
+		<div class="infoPannelBody" id="queuesInformationPanel">
+		</div>
+	</span>
+
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Faults</div>
+		<div class="infoPannelBody" id="faultsInformationPanel">
+		</div>
+	</span>
+	
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Subscriptions</div>
+		<div class="infoPannelBody" id="subscriptionInformationPanel">
+		</div>
+	</span>
+
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Misc</div>
+		<div class="infoPannelBody" id="dropboxInformationPanel">
+			<div class="infoLabel"><span class="labelName">State:</span><span class="labelBody" id='agent_state'></span></div>
+			<div class="infoLabel"><span class="labelName">Dropbox:</span><span class="labelBody" id='agent_dropbox'></span></div>
+		</div>
+	</span>
+	<div class="footer">
+		<a href="./main.html">Back to main</a>		
+	</div>
     </body>
 </html>

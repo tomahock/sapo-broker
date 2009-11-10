@@ -2,35 +2,30 @@
     <head>
         <title>Sapo-Broker Monitorization HTTP Server</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<script type="text/javascript" src="sapolib.js" ></script>
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+	<script type="text/javascript" src="scripts/sapolib.js" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
-        <script type="text/javascript" src="monitor.js"></script>
+        <script type="text/javascript" src="scripts/monitor.js"></script>
 	<script type="text/javascript">
 		window.onload = queueMonitorizationInit;
 	</script>
     </head>
     <body>
-	<h1>Queue Information</h1><hr/>
-	<h2>Queue name:</h2> <span id='queue_name'> </span>
-	<h2>Total messages:</h2> <span id='queue_msg_count'> </span>
-	<table style="width:90%">
-	  <tr>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Agents</h2>
-		   <div id="queue_agents">
-		   </div>
+	<h1 class="title">Queue Information (<span id='queue_name'> </span>)</h1>
+	<div class="infoLabel"><span class="labelName">Total messages:</span><span class="labelBody" id='queue_msg_count'></span></div>
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Agents</div>
+		<div class="infoPannelBody" id="queue_agents">
 		</div>
-	    </td>
-	    <td style="width:40%; vertical-align:text-top;"
-		<div class="brokerInfo">
-		   <h2>Subscriptions</h2>
-		   <div id="queue_subscriptions">
-		   </div>
-		</div>
-	    </td>
-	  </tr>
-	</table>
+	</span>
+
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Subscriptions</div>
+		<div class="infoPannelBody" id="queue_subscriptions"></div>
+	</span>
+	<div class="footer">
+		<a href="./main.html">Back to main</a>		
+	</div>
     </body>
 </html>

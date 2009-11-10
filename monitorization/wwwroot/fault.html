@@ -2,21 +2,31 @@
     <head>
         <title>Sapo-Broker Monitorization HTTP Server</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<script type="text/javascript" src="sapolib.js" ></script>
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+	<script type="text/javascript" src="scripts/sapolib.js" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
-        <script type="text/javascript" src="monitor.js"></script>
+        <script type="text/javascript" src="scripts/monitor.js"></script>
 	<script type="text/javascript">
 		window.onload = faultInformationInit;
 	</script>
     </head>
     <body>
-	<h1>Fault Information</h1><hr/>
-	<p>Fault id: <span id='fault_id'> </span></p>
-	<p>Agent: <span id='agent_name'> </span></p>
-	<p>Fault short description: <span id='fault_shortmsg'> </span></p>
-	<p>Fault date: <span id='fault_date'> </span></p>
-	<p>Fault:</p>
-	<p><span id='fault_msg'></span></p>
+	<h1 class="title">Fault Information (<span id='fault_id'> </span>)</h1>
+
+	<div class="infoLabel"><span class="labelName">Agent:</span><span class="labelBody" id='agent_name'></span></div>
+	<div class="infoLabel"><span class="labelName">Fault short description:</span><span class="labelBody" id='fault_shortmsg'></span></div>
+	<div class="infoLabel"><span class="labelName">Fault date:</span><span class="labelBody" id='fault_date'></span></div>
+
+	<div class="infoPannelTitle">Fault</div>
+	<div class="infoPannelBody" id="fault_msg"></div>
+
+	<!--	<span class="infoPannel">
+		<div class="infoPannelTitle">Fault</div>
+		<div class="infoPannelBody" id="fault_msg"></div>
+	</span> -->
+	<div class="footer">
+		<a href="./main.html">Back to main</a>		
+	</div>
     </body>
 </html>

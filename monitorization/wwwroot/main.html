@@ -2,50 +2,35 @@
     <head>
         <title>Sapo-Broker Monitorization HTTP Server</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<script type="text/javascript" src="sapolib.js" ></script>
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+	<script type="text/javascript" src="scripts/sapolib.js" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
-        <script type="text/javascript" src="monitor.js"></script>
+        <script type="text/javascript" src="scripts/monitor.js"></script>
 	<script type="text/javascript">
 		window.onload = mainMonitorizationInit;
 	</script>
     </head>
     <body>
-	<h1>Sapo-Broker Monitorization HTTP Server</h1><hr/>
-	<table style="width:90%">
-	  <tr>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Queues size</h2>
-  		   <div class="queue_information" id="queuesInformationPanel">
-                      
-  		   </div>
+	<h1 class="title"> Sapo-Broker Monitorization</h1>
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Queues size</div>
+		<div class="infoPannelBody" id="queuesInformationPanel">
 		</div>
-	    </td>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Health check</h2>
-		   <div class="agents_down_information" id="agentsDownInformationPanel">
-                   </div>
+	</span>
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Health check</div>
+		<div class="infoPannelBody" id="agentsDownInformationPanel">
 		</div>
-	    </td>
-	  </tr>
-	  <tr>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Dropbox</h2>
-		   <div class="dropbox_information" id="dropboxInformationPanel">
-                   </div>
+	</span>
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Dropbox</div>
+		<div class="infoPannelBody" id="dropboxInformationPanel">
 		</div>
-	    </td>
-	    <td style="width:40%; vertical-align:text-top;">
-		<div class="brokerInfo">
-		   <h2>Faults</h2>
-		   <div class="faults_information" id="faultsInformationPanel">
-                   </div>
+	</span>
+	<span class="infoPannel">
+		<div class="infoPannelTitle">Faults</div>
+		<div class="infoPannelBody" id="faultsInformationPanel">
 		</div>
-	    </td>
-	  </tr>
-
-	</table>
+	</span>
     </body>
 </html>

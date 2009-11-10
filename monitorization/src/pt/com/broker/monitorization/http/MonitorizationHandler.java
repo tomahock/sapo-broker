@@ -25,6 +25,7 @@ package pt.com.broker.monitorization.http;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,8 @@ public class MonitorizationHandler extends SimpleChannelUpstreamHandler
 			if (file.exists() && file.isFile())
 			{
 				FileReader reader = new FileReader(file);
+				//InputStreamReader isr = new InputStreamReader(reader);
+				
 				BufferedReader bufread = new BufferedReader(reader);
 				String read;
 				while ((read = bufread.readLine()) != null)
