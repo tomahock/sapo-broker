@@ -22,16 +22,16 @@ public class BDBEnviroment
 	private static Logger log = LoggerFactory.getLogger(BDBEnviroment.class);
 
 	private List<Environment> databaseDirs = new ArrayList<Environment>();
-	private Environment env;
+	//private Environment env;
 	
 	private long lastChangedDate = 0;
 	private Environment lastChangedDatabaseEnv = null;
 
 	private String dbFile;
 
-	private String dbName;
-
-	private String dbDir;
+//	private String dbName;
+//
+//	private String dbDir;
 
 	private static final BDBEnviroment instance = new BDBEnviroment();
 
@@ -62,8 +62,8 @@ public class BDBEnviroment
 					EnvironmentConfig envConfig = new EnvironmentConfig();
 					envConfig.setAllowCreate(true);
 					envConfig.setTransactional(true);
-					envConfig.setTxnWriteNoSync(true);
-					envConfig.setTxnNoSync(true);
+//					envConfig.setTxnWriteNoSync(true);
+//					envConfig.setTxnNoSync(true);
 					Environment environment = new Environment(databaseDir, envConfig);
 					
 					databaseDirs.add( environment  );

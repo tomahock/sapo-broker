@@ -29,7 +29,7 @@ public class BDBEnviroment
 
 	private String dbFile;
 
-	private String dbName;
+	//private String dbName;
 
 	private String dbDir;
 
@@ -51,8 +51,8 @@ public class BDBEnviroment
 			EnvironmentConfig envConfig = new EnvironmentConfig();
 			envConfig.setAllowCreate(true);
 			envConfig.setTransactional(true);
-			envConfig.setTxnWriteNoSync(true);
-			envConfig.setTxnNoSync(true);
+//			envConfig.setTxnWriteNoSync(true);
+//			envConfig.setTxnNoSync(true);
 			envConfig.setCachePercent(40);
 			env = new Environment(new File(dbDir), envConfig);
 		}

@@ -45,9 +45,9 @@ public class BDBStorage
 
 	private Queue<Message> _syncConsumerQueue = new ConcurrentLinkedQueue<Message>();
 
-	private static final int RETRY_THRESHOLD = 2 * 60 * 1000; // 2minutes
+	//private static final int RETRY_THRESHOLD = 2 * 60 * 1000; // 2minutes
 
-	private long redelivery_time = System.currentTimeMillis() + RETRY_THRESHOLD;
+	//private long redelivery_time = System.currentTimeMillis() + RETRY_THRESHOLD;
 
 	public BDBStorage(QueueProcessor qp, Environment environment)
 	{

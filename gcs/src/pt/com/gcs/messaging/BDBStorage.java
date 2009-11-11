@@ -19,8 +19,8 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.DeadlockException;
 import com.sleepycat.je.Environment;
+import com.sleepycat.je.LockConflictException;
 import com.sleepycat.je.OperationStatus;
 
 /**
@@ -196,7 +196,7 @@ public class BDBStorage
 		LongBinding.longToEntry(k, key);
 
 		int count = 5;
-		DeadlockException lastDeadlockException = null;
+		LockConflictException lastDeadlockException = null;
 		do
 		{
 			try
@@ -212,7 +212,7 @@ public class BDBStorage
 					return false;
 				}
 			}
-			catch (DeadlockException de)
+			catch (LockConflictException de)
 			{
 				--count;
 				lastDeadlockException = de;
@@ -353,8 +353,21 @@ public class BDBStorage
 					break;
 
 				byte[] bdata = data.getData();
-				BDBMessage bdbm = BDBMessage.fromByteArray(bdata);
-				final InternalMessage msg = bdbm.getMessage();
+
+				
+				BDBMessage bdbm = null;
+				InternalMessage msg = null;
+
+				try
+				{
+					bdbm = BDBMessage.fromByteArray(bdata);
+					msg = bdbm.getMessage();
+				}
+				catch (Throwable e)
+				{
+					cursorDelete(msg_cursor);
+					continue;
+				}
 
 				long k = LongBinding.entryToLong(key);
 				msg.setMessageId(InternalMessage.getBaseMessageId() + k);
@@ -408,12 +421,12 @@ public class BDBStorage
 
 								dumpMessage(msg);
 
-								if(queueProcessor.size() == 1)
+								if (queueProcessor.size() == 1)
 								{
 									// The only queue consumer was not ready to receive more messages. Suspend deliver cycle.
 									break;
 								}
-								
+
 								++j0;
 							}
 
@@ -470,8 +483,20 @@ public class BDBStorage
 					break;
 
 				byte[] bdata = data.getData();
-				BDBMessage bdbm = BDBMessage.fromByteArray(bdata);
-				final InternalMessage msg = bdbm.getMessage();
+
+				BDBMessage bdbm = null;
+				InternalMessage msg = null;
+
+				try
+				{
+					bdbm = BDBMessage.fromByteArray(bdata);
+					msg = bdbm.getMessage();
+				}
+				catch (Throwable e)
+				{
+					cursorDelete(msg_cursor);
+					continue;
+				}
 
 				long k = LongBinding.entryToLong(key);
 				msg.setMessageId(InternalMessage.getBaseMessageId() + k);
