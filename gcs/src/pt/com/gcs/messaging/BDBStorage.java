@@ -398,7 +398,10 @@ public class BDBStorage
 								reserveTime = queueProcessor.forward(msg, preferLocalConsumer);
 								if (reserveTime <= 0)
 								{
-									log.info("Failed to forward message");
+									if(log.isDebugEnabled())
+									{
+										log.info("Failed to forward message");
+									}
 								}
 							}
 							while (!(reserveTime > 0) && ((++tries) != MAX_REDELIVERY_PER_MESSAGE));

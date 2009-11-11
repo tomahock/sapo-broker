@@ -135,7 +135,7 @@ class LocalTopicConsumers
 				listeners.remove(listener);
 				if (listeners.size() == 0)
 				{
-					instance.localTopicConsumers.remove(listeners);
+					instance.localTopicConsumers.remove(topicName);
 					instance.broadCastableTopics.remove(topicName);
 					
 					if (listener.getTargetDestinationType() == DestinationType.TOPIC)

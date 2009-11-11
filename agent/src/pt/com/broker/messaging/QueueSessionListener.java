@@ -28,7 +28,7 @@ public class QueueSessionListener extends BrokerListener
 	private final String _dname;
 
 	private final Object mutex = new Object();
-	
+
 	public QueueSessionListener(String destinationName)
 	{
 		_dname = destinationName;
@@ -39,7 +39,7 @@ public class QueueSessionListener extends BrokerListener
 	{
 		return DestinationType.QUEUE;
 	}
-	
+
 	@Override
 	public DestinationType getTargetDestinationType()
 	{
@@ -61,12 +61,15 @@ public class QueueSessionListener extends BrokerListener
 				{
 					if (ioSession.getScheduledWriteBytes() > MAX_SESSION_BUFFER_SIZE)
 					{
-						log.info("MAX_SESSION_BUFFER_SIZE reached in session '{}'", ioSession.toString());
+						if (log.isDebugEnabled())
+						{
+							log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'", ioSession.toString());
+						}
 						return -1;
 					}
 					final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
 					ioSession.write(response);
-										
+
 					return 2 * 60 * 1000; // reserve for 2mn
 				}
 			}
@@ -112,7 +115,7 @@ public class QueueSessionListener extends BrokerListener
 			try
 			{
 				IoSession session = _sessions.get(currentQEP);
-				
+
 				return session;
 			}
 			catch (Exception e)
@@ -120,7 +123,7 @@ public class QueueSessionListener extends BrokerListener
 				try
 				{
 					currentQEP = 0;
-					return _sessions.get(currentQEP);	
+					return _sessions.get(currentQEP);
 				}
 				catch (Exception e2)
 				{
@@ -137,9 +140,8 @@ public class QueueSessionListener extends BrokerListener
 			if (!_sessions.contains(iosession))
 			{
 				_sessions.add(iosession);
-	
-				log.info( String.format("Create message consumer for queue: '%s', address: %s, Total sessions: %s",
-						_dname, IoSessionHelper.getRemoteAddress(iosession)), _sessions.size());
+
+				log.info(String.format("Create message consumer for queue: '%s', address: '%s', Total sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), _sessions.size()));
 			}
 			return _sessions.size();
 		}
@@ -151,7 +153,7 @@ public class QueueSessionListener extends BrokerListener
 		{
 			if (_sessions.remove(iosession))
 			{
-				log.info( String.format("Remove message consumer for queue: '%s', address: %s, Remaining sessions: %s", _dname, IoSessionHelper.getRemoteAddress(iosession)), _sessions.size());
+				log.info(String.format("Remove message consumer for queue: '%s', address: '%s', Remaining sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), _sessions.size()));
 			}
 
 			if (_sessions.isEmpty())
@@ -178,7 +180,7 @@ public class QueueSessionListener extends BrokerListener
 	}
 
 	@Override
-	public boolean ready() 
+	public boolean ready()
 	{
 		return true;
 	}
