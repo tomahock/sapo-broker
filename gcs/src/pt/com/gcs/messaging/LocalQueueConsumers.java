@@ -81,10 +81,14 @@ public class LocalQueueConsumers
 			if (listeners != null)
 			{
 				listeners.remove(listener);
+				
 
+				log.info("Removed. Listeners: {}", listeners.size());
+				
+				
 				if (listeners.size() == 0)
 				{
-					instance.localQueueConsumers.remove(listeners);
+					instance.localQueueConsumers.remove(queueName);
 					instance.broadCastRemovedQueueConsumer(queueName);
 				}
 			}

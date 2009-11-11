@@ -100,9 +100,7 @@ public class BDBEnviroment
 					out_lst.add(dbName);
 				}
 			}
-
 			return out_lst.toArray(new String[out_lst.size()]);
-
 		}
 		catch (Throwable t)
 		{
@@ -111,6 +109,5 @@ public class BDBEnviroment
 			log.error(rt.getMessage(), rt);
 			return new String[0];
 		}
-
 	}
 }

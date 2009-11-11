@@ -517,10 +517,10 @@ public class BDBStorage
 					{
 						if (bdbm.getReserveTimeout() != 0)
 						{
-							queueProcessor.decrementPendingAck();
-							++recoveredMessages;
 							bdbm.setReserveTimeout(0);
 							msg_cursor.put(key, buildDatabaseEntry(bdbm));
+							queueProcessor.decrementPendingAck();
+							++recoveredMessages;
 						}
 					}
 				}

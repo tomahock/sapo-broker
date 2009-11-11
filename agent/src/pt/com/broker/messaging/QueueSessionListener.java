@@ -138,7 +138,8 @@ public class QueueSessionListener extends BrokerListener
 			{
 				_sessions.add(iosession);
 	
-				log.info("Create message consumer for queue: " + _dname + ", address: " + IoSessionHelper.getRemoteAddress(iosession));
+				log.info( String.format("Create message consumer for queue: '%s', address: %s, Total sessions: %s",
+						_dname, IoSessionHelper.getRemoteAddress(iosession)), _sessions.size());
 			}
 			return _sessions.size();
 		}
@@ -149,7 +150,9 @@ public class QueueSessionListener extends BrokerListener
 		synchronized (mutex)
 		{
 			if (_sessions.remove(iosession))
-				log.info("Remove message consumer for queue: " + _dname + ", address: " + IoSessionHelper.getRemoteAddress(iosession));
+			{
+				log.info( String.format("Remove message consumer for queue: '%s', address: %s, Remaining sessions: %s", _dname, IoSessionHelper.getRemoteAddress(iosession)), _sessions.size());
+			}
 
 			if (_sessions.isEmpty())
 			{

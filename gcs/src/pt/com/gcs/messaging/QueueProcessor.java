@@ -145,7 +145,7 @@ public class QueueProcessor
 		{
 			if (ack_pending.incrementAndGet() >= MAX_PENDING_ACK)
 			{
-				log.info("Pending ack limit has been reached for queue '{}'", _destinationName);
+				log.debug("Pending ack limit has been reached for queue '{}'", _destinationName);
 			}
 		}
 
@@ -207,9 +207,9 @@ public class QueueProcessor
 				{
 					if (hasRecipient())
 					{
-						log.info("Recovering reserved messages for queue '{}'",_destinationName);
 						if( ack_pending.get() >= MAX_PENDING_ACK)
 						{
+							log.debug("Recovering reserved messages for queue '{}'",_destinationName);
 							storage.recoverReservedMessages();
 						}
 					}
@@ -285,8 +285,9 @@ public class QueueProcessor
 		int value = ack_pending.decrementAndGet();
 		if (value < 0)
 		{
-			value = 0;
-			ack_pending.set(value);
+			// ack_pending could go to <0 after agent restart and there are messages whose reserve timeout has expired or get ack after restart
+			// compensate previous decrement
+			ack_pending.incrementAndGet();
 		}
 		return value;
 	}
