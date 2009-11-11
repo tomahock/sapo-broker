@@ -291,8 +291,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public NetMessage decode(DataInputStream in) throws IOException
 	{
-		try
-		{
+//		try
+//		{
 			short protocolType = in.readShort();
 			short protocolVersion = in.readShort();
 			int len = in.readInt();
@@ -307,15 +307,15 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 			NetMessage message = (NetMessage) serializer.unmarshal(data);
 			return message;
-		}
-		catch (SocketException se)
-		{
-			if (!closed.get())
-			{
-				log.error("Failed to read socket...", se);
-			}
-		}
-		return null;
+//		}
+//		catch (SocketException se)
+//		{
+//			if (!closed.get())
+//			{
+//				log.error("Failed to read socket...", se);
+//			}
+//		}
+//		return null;
 	}
 
 	@Override
