@@ -58,28 +58,33 @@ public abstract class BaseBrokerClient
 	protected final BlockingQueue<NetPong> _bstatus = new LinkedBlockingQueue<NetPong>();
 	protected final List<BrokerAsyncConsumer> _consumerList = new CopyOnWriteArrayList<BrokerAsyncConsumer>();
 	protected final Map<String, NetMessage> _syncSubscriptions = new HashMap<String, NetMessage>();
-	protected final Map<String, SynchronousQueue<NetMessage> >  pendingPolls = new HashMap<String, SynchronousQueue<NetMessage>>();
-	
+	protected final Map<String, SynchronousQueue<NetMessage>> pendingPolls = new HashMap<String, SynchronousQueue<NetMessage>>();
 
 	private NetProtocolType protocolType;
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
 
 	protected BrokerProtocolHandler _netHandler;
 	protected CircularContainer<HostInfo> hosts;
-	
+
 	private static final int DEFAULT_MAX_NUMBER_OF_TRIES = Integer.MAX_VALUE;
 	private volatile int numberOfTries = DEFAULT_MAX_NUMBER_OF_TRIES;
-	
 
 	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
 	{
 		public void onFault(pt.com.broker.types.NetFault fault)
 		{
-			log.error("Fault message received");
-			log.error("	Fault code: '{}'", fault.getCode());
-			log.error("	Fault message: '{}'", fault.getMessage());
-			log.error("	Fault action identifier: '{}'", fault.getActionId());
-			log.error("	Fault detail: '{}'", fault.getDetail());
+			try
+			{
+				log.error("Fault message received");
+				log.error("	Fault code: '{}'", fault.getCode());
+				log.error("	Fault message: '{}'", fault.getMessage());
+				log.error("	Fault action identifier: '{}'", fault.getActionId());
+				log.error("	Fault detail: '{}'", fault.getDetail());
+			}
+			catch (Throwable t)
+			{
+				log.error("Fault message format is unsuported.");
+			}
 		}
 
 		public void onError(Throwable throwable)
@@ -263,16 +268,16 @@ public abstract class BaseBrokerClient
 		{
 			synchronized (_consumerList)
 			{
-				for(BrokerAsyncConsumer bac : _consumerList)
+				for (BrokerAsyncConsumer bac : _consumerList)
 				{
-					if(bac.getSubscription().getDestination().equals(subscribe.getDestination()) && bac.getSubscription().getDestinationType().equals(subscribe.getDestinationType()))
+					if (bac.getSubscription().getDestination().equals(subscribe.getDestination()) && bac.getSubscription().getDestinationType().equals(subscribe.getDestinationType()))
 					{
 						throw new IllegalStateException("A listener for that Destination already exists");
 					}
 				}
 				_consumerList.add(new BrokerAsyncConsumer(subscribe, listener));
 			}
-	
+
 			if (acceptRequest != null)
 			{
 				subscribe.setActionId(acceptRequest.getActionId());
@@ -286,7 +291,6 @@ public abstract class BaseBrokerClient
 
 			getNetHandler().sendMessage(msg);
 
-			
 			log.info("Created new async consumer for '{}'", subscribe.getDestination());
 		}
 		else
@@ -501,17 +505,17 @@ public abstract class BaseBrokerClient
 		NetPoll poll = new NetPoll(queueName, timeout);
 		NetAction action = new NetAction(ActionType.POLL);
 		action.setPollMessage(poll);
-		
+
 		NetMessage message = buildMessage(action);
 
 		SynchronousQueue<NetMessage> synQueue = new SynchronousQueue<NetMessage>();
-		
+
 		synchronized (_syncSubscriptions)
 		{
 			if (_syncSubscriptions.containsKey(queueName))
 				throw new IllegalArgumentException("Queue " + queueName + " has already a poll runnig.");
 			_syncSubscriptions.put(queueName, message);
-			
+
 			pendingPolls.put(queueName, synQueue);
 		}
 
@@ -524,7 +528,7 @@ public abstract class BaseBrokerClient
 		getNetHandler().sendMessage(message);
 
 		NetMessage receivedMsg = synQueue.take();
-		
+
 		synchronized (_syncSubscriptions)
 		{
 			_syncSubscriptions.remove(queueName);
@@ -533,32 +537,37 @@ public abstract class BaseBrokerClient
 
 		if (receivedMsg == BrokerProtocolHandler.TimeoutUnblockNotification)
 			throw new TimeoutException();
-		if( receivedMsg == BrokerProtocolHandler.NoMessageUnblockNotification)
+		if (receivedMsg == BrokerProtocolHandler.NoMessageUnblockNotification)
 			return null;
-		
+
 		NetNotification m = null;
-		if( receivedMsg.getAction().getActionType().equals(ActionType.NOTIFICATION))
+		if (receivedMsg.getAction().getActionType().equals(ActionType.NOTIFICATION))
 		{
 			m = receivedMsg.getAction().getNotificationMessage();
-		} else {
+		}
+		else
+		{
 			log.error("Poll unbloqued by a message that wasn't of any of the expeceted error nor a notification.");
 			return null;
-		}			
-		
+		}
+
 		return m;
 	}
-	
+
 	/**
 	 * Offer a message that may have a synchronous consumer waiting.
-	 * @param destination Queue name
-	 * @param message Received message. Can be NetFault or NetNotification
+	 * 
+	 * @param destination
+	 *            Queue name
+	 * @param message
+	 *            Received message. Can be NetFault or NetNotification
 	 */
 	protected boolean offerPollResponse(String destination, NetMessage message)
 	{
 		synchronized (_syncSubscriptions)
 		{
 			SynchronousQueue<NetMessage> synchronousQueue = pendingPolls.get(destination);
-			if(synchronousQueue != null )
+			if (synchronousQueue != null)
 			{
 				return synchronousQueue.offer(message);
 			}
