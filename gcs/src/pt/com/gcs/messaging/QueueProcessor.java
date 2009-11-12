@@ -145,7 +145,7 @@ public class QueueProcessor
 		{
 			if (ack_pending.incrementAndGet() >= MAX_PENDING_ACK)
 			{
-				log.debug("Pending ack limit has been reached for queue '{}'", _destinationName);
+				log.info("Pending ack limit has been reached for queue '{}'", _destinationName);
 			}
 		}
 
@@ -209,7 +209,7 @@ public class QueueProcessor
 					{
 						if( ack_pending.get() >= MAX_PENDING_ACK)
 						{
-							log.debug("Recovering reserved messages for queue '{}'",_destinationName);
+							log.info("Recovering reserved messages for queue '{}'",_destinationName);
 							storage.recoverReservedMessages();
 						}
 					}
