@@ -44,6 +44,8 @@ public class BDBStorage
 
 	private static final int MAX_REDELIVERY_PER_MESSAGE = 3;
 
+	private long nextCycleTime = System.currentTimeMillis();
+
 	public BDBStorage(QueueProcessor qp)
 	{
 		try
@@ -334,6 +336,12 @@ public class BDBStorage
 			return;
 
 		long now = System.currentTimeMillis();
+
+		if (nextCycleTime > now)
+		{
+			return;
+		}
+
 		int i0 = 0; // delivered
 		int j0 = 0; // failed deliver
 		int k0 = 0; // redelivered messages
@@ -347,14 +355,13 @@ public class BDBStorage
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
 
-			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && !queueProcessor.deliverySuspended() && queueProcessor.hasRecipient())
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS) && queueProcessor.hasRecipient())
 			{
 				if (isMarkedForDeletion.get())
 					break;
 
 				byte[] bdata = data.getData();
 
-				
 				BDBMessage bdbm = null;
 				InternalMessage msg = null;
 
@@ -396,13 +403,6 @@ public class BDBStorage
 							do
 							{
 								reserveTime = queueProcessor.forward(msg, preferLocalConsumer);
-								if (reserveTime <= 0)
-								{
-									if(log.isDebugEnabled())
-									{
-										log.info("Failed to forward message");
-									}
-								}
 							}
 							while (!(reserveTime > 0) && ((++tries) != MAX_REDELIVERY_PER_MESSAGE));
 
@@ -420,17 +420,15 @@ public class BDBStorage
 							}
 							else
 							{
-								log.debug("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());
+								
+								log.info("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());
 
 								dumpMessage(msg);
 
-								if (queueProcessor.size() == 1)
-								{
-									// The only queue consumer was not ready to receive more messages. Suspend deliver cycle.
-									break;
-								}
-
 								++j0;
+								
+								nextCycleTime = System.currentTimeMillis() + 1000;
+								break;
 							}
 
 						}
@@ -462,87 +460,4 @@ public class BDBStorage
 			closeDbCursor(msg_cursor);
 		}
 	}
-
-	public void recoverReservedMessages()
-	{
-		if (isMarkedForDeletion.get())
-			return;
-
-		long now = System.currentTimeMillis();
-		int recoveredMessages = 0; // delivered
-
-		Cursor msg_cursor = null;
-
-		try
-		{
-			msg_cursor = messageDb.openCursor(null, null);
-
-			DatabaseEntry key = new DatabaseEntry();
-			DatabaseEntry data = new DatabaseEntry();
-
-			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
-			{
-				if (isMarkedForDeletion.get())
-					break;
-
-				byte[] bdata = data.getData();
-
-				BDBMessage bdbm = null;
-				InternalMessage msg = null;
-
-				try
-				{
-					bdbm = BDBMessage.fromByteArray(bdata);
-					msg = bdbm.getMessage();
-				}
-				catch (Throwable e)
-				{
-					cursorDelete(msg_cursor);
-					continue;
-				}
-
-				long k = LongBinding.entryToLong(key);
-				msg.setMessageId(InternalMessage.getBaseMessageId() + k);
-
-				long reserveTimeout = bdbm.getReserveTimeout();
-
-				final boolean isReserved = (reserveTimeout == 0) ? false : (reserveTimeout > now);
-
-				if (!isReserved)
-				{
-					if (now > msg.getExpiration())
-					{
-						cursorDelete(msg_cursor);
-						log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
-						dumpMessage(msg);
-					}
-					else
-					{
-						if (bdbm.getReserveTimeout() != 0)
-						{
-							bdbm.setReserveTimeout(0);
-							msg_cursor.put(key, buildDatabaseEntry(bdbm));
-							queueProcessor.decrementPendingAck();
-							++recoveredMessages;
-						}
-					}
-				}
-			}
-			if (recoveredMessages > 0)
-			{
-				log.info("Recover  {} messages with pending ack from queue '{}'.", recoveredMessages, queueProcessor.getDestinationName());
-			}
-
-		}
-		catch (Throwable t)
-		{
-			dealWithError(t, false);
-		}
-		finally
-		{
-			closeDbCursor(msg_cursor);
-		}
-
-	}
-
 }

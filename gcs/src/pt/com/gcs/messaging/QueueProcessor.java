@@ -29,11 +29,6 @@ public class QueueProcessor
 
 	protected final AtomicLong _counter = new AtomicLong(0);
 
-	protected final int MAX_PENDING_ACK = 500;
-	protected AtomicInteger ack_pending = new AtomicInteger(0);
-
-	protected AtomicInteger deliver_cycles_skipped = new AtomicInteger(0);
-
 	private final BDBStorage storage;
 
 	protected QueueProcessor(String destinationName)
@@ -93,7 +88,6 @@ public class QueueProcessor
 
 		if (storage.deleteMessage(msgId))
 		{
-			ack_pending.decrementAndGet();
 			_counter.decrementAndGet();
 		}
 	}
@@ -141,14 +135,6 @@ public class QueueProcessor
 			log.debug("forward-> isDelivered: " + result + ", lqsize: " + lqsize + ", rqsize: " + rqsize + ", message.id: " + message.getMessageId());
 		}
 
-		if (result >= 0)
-		{
-			if (ack_pending.incrementAndGet() >= MAX_PENDING_ACK)
-			{
-				log.info("Pending ack limit has been reached for queue '{}'", _destinationName);
-			}
-		}
-
 		return result;
 	}
 
@@ -187,7 +173,7 @@ public class QueueProcessor
 			throw new RuntimeException(t);
 		}
 	}
-	
+
 	protected final void wakeup()
 	{
 		if (isWorking.getAndSet(true))
@@ -200,30 +186,14 @@ public class QueueProcessor
 		{
 			emptyQueueInfoDisplay.set(false);
 
-			if (deliverySuspended())
-			{
-				// The limit of pending ack as been reached. Skip 20 delivery cycles (1s) and then recover reserved messages
-				if (deliver_cycles_skipped.incrementAndGet() == 20)
-				{
-					if (hasRecipient())
-					{
-						if( ack_pending.get() >= MAX_PENDING_ACK)
-						{
-							log.info("Recovering reserved messages for queue '{}'",_destinationName);
-							storage.recoverReservedMessages();
-						}
-					}
-					deliver_cycles_skipped.set(0);
-				}
-				isWorking.set(false);
-				return;
-			}
-
 			if (hasRecipient())
 			{
 				try
 				{
-					log.debug("Wakeup queue '{}'", _destinationName);
+					if(log.isDebugEnabled())
+					{
+						log.debug("Wakeup queue '{}'", _destinationName);
+					}
 					storage.recoverMessages();
 				}
 				catch (Throwable t)
@@ -264,31 +234,4 @@ public class QueueProcessor
 		return storage;
 	}
 
-	public boolean deliverySuspended()
-	{
-		boolean limitReached = pendingAckLimitReached();
-		if (limitReached)
-		{
-			deliver_cycles_skipped.compareAndSet(0, 1);
-			return true;
-		}
-		return deliver_cycles_skipped.get() != 0;
-	}
-
-	public boolean pendingAckLimitReached()
-	{
-		return ack_pending.get() >= MAX_PENDING_ACK;
-	}
-
-	public int decrementPendingAck()
-	{
-		int value = ack_pending.decrementAndGet();
-		if (value < 0)
-		{
-			// ack_pending could go to <0 after agent restart and there are messages whose reserve timeout has expired or get ack after restart
-			// compensate previous decrement
-			ack_pending.incrementAndGet();
-		}
-		return value;
-	}
 }
