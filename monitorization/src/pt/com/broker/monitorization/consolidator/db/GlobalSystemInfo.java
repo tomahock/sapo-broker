@@ -9,9 +9,9 @@ import pt.com.broker.monitorization.collectors.AgentStatus;
 public class GlobalSystemInfo
 {
 
-	private static final int BIGGEST_QUEUES_COUNT = 20;
-	private static final int LATEST_FAULTS_COUNT = 20;
-	private static final int BIGGEST_DROPBOX_COUNT = 20;
+	private static final int BIGGEST_QUEUES_COUNT = 50;
+	private static final int LATEST_FAULTS_COUNT = 50;
+	private static final int BIGGEST_DROPBOX_COUNT = 50;
 	
 	/*
 	 *  Queues
@@ -29,6 +29,19 @@ public class GlobalSystemInfo
 		
 		return biggest;
 	}
+	
+	public static Collection<DbQueue> getAllQueues()
+	{
+		Collection<DbQueue> queueCollection = DbQueue.getConsolidatedQueueCount(-1);
+		return queueCollection;
+	}
+	
+	public static Collection<DbSubscription> getAllSubscriptions()
+	{
+		Collection<DbSubscription> subscriptions = DbSubscription.getConsolidatedSubscriptionCount();
+		return subscriptions;
+	}
+	
 	public static Collection<DbQueue> getQueue(String queueName)
 	{
 		Collection<DbQueue> queueCollection = DbQueue.getQueue(queueName);		

@@ -17,6 +17,23 @@ a:link {color:#0066cc;}
 
 a:visited {color:#6699cc;}
 
+a img {
+	ext-decoration : none;
+	border-bottom-style: none;
+	border-bottom-width: 0px;
+	border-top-style: none;
+	border-top-width: 0px;
+	border-left-style: none;
+	border-left-width: 0px;
+	border-right-style: none;
+	border-right-width: 0px;
+}
+
+.jsLink
+{
+	color:#0066cc;
+	cursor:pointer;
+}
 
 /* Headings */
 
@@ -56,15 +73,20 @@ h5.formalpara {
     margin-bottom:.8em;
 }
 
+img.logo{
+	float: left;
+}
+
 h1.title {
-	background-image:url("http://softwarelivre.sapo.pt/broker/docs/images/broker_thumb.jpg");
-    	background-repeat:no-repeat;
+	/*background-image:url("http://softwarelivre.sapo.pt/broker/docs/images/broker_thumb.jpg");
+    	 background-repeat:no-repeat;*/
 	height:50px;
 	min-height:50px;
 	padding-left:90px;
 	padding-top:20px;
 	padding-bottom: 10px;
-}
+	
+} 
 
 /* Element rules */
 
@@ -80,7 +102,7 @@ h1.title {
 .infoPannelTitle {
 	font-size:2em;
 	color:#182737;
-	padding: 5px;
+	padding: 10px;
 }
 
 .infoPannelBody {
@@ -89,9 +111,6 @@ h1.title {
 	height:35%;	
 	overflow: auto;
 	text-align: left;
-}
-.infoPannelBody{
-	/*float:none;*/
 }
 
 .labelName {

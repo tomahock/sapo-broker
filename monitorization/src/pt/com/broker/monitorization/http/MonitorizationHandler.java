@@ -57,12 +57,15 @@ import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
+import pt.com.broker.monitorization.actions.DeleteQueue;
+
 @ChannelPipelineCoverage("one")
 public class MonitorizationHandler extends SimpleChannelUpstreamHandler
 {
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(MonitorizationHandler.class.getName());
 
 	private static final String DATA_PREFIX = "/data/";
+	private static final String ACTION_PREFIX = "/action/";
 
 	private volatile HttpRequest request;
 	private volatile boolean readingChunks;
@@ -87,6 +90,8 @@ public class MonitorizationHandler extends SimpleChannelUpstreamHandler
 		String path = queryStringDecoder.getPath();
 		Map<String, List<String>> params = queryStringDecoder.getParameters();
 		
+		String lowerUri = request.getUri().toLowerCase();
+		
 		if (!readingChunks && e.getMessage() instanceof HttpRequest)
 		{
 			File file = new File(root + path);
@@ -103,13 +108,19 @@ public class MonitorizationHandler extends SimpleChannelUpstreamHandler
 				}
 				writeResponse(e);
 			}
-			else if (request.getUri().toLowerCase().startsWith(DATA_PREFIX))
+			else if (lowerUri.startsWith(DATA_PREFIX))
 			{
-
-
 				path = path.substring(DATA_PREFIX.length()).toLowerCase();
 				
 				String data = DataFetcher.getData(path, params);
+				responseContent.append(data);
+				writeResponse(e, "application/json");
+			}
+			else if (lowerUri.startsWith(ACTION_PREFIX))
+			{
+				path = path.substring(ACTION_PREFIX.length()).toLowerCase();
+				
+				String data = ActionExecutor.execute(path, params);
 				responseContent.append(data);
 				writeResponse(e, "application/json");
 			}

@@ -5,22 +5,17 @@
 	<link rel="stylesheet" href="css/style.css" type="text/css" />
 	<script type="text/javascript" src="scripts/sapolib.js" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
-	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
         <script type="text/javascript" src="scripts/monitor.js"></script>
 	<script type="text/javascript">
-		window.onload = faultInformationInit;
+		window.onload = allQueuesInformationInit;
 	</script>
     </head>
     <body>
 	<a href="./main.html"><img src="http://softwarelivre.sapo.pt/broker/docs/images/broker_thumb.jpg" class="logo" /> </a>
-	<h1 class="title">Fault Information (<span id='fault_id'> </span>)</h1>
+	<h1 class="title">All (known) queues </h1>
 
-	<div class="infoLabel"><span class="labelName">Agent:</span><span class="labelBody" id='agent_name'></span></div>
-	<div class="infoLabel"><span class="labelName">Fault short description:</span><span class="labelBody" id='fault_shortmsg'></span></div>
-	<div class="infoLabel"><span class="labelName">Fault date:</span><span class="labelBody" id='fault_date'></span></div>
-
-	<div class="infoPannelTitle">Fault</div>
-	<pre id="fault_msg"></pre>
+	<div class="infoPannelTitle">Queues</div>
+	<pre id="queue_list"></pre>
 	
 	<div class="footer">
 		<a href="./main.html">Back to main</a>		

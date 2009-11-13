@@ -39,7 +39,7 @@ public class AgentStatusCollector
 					NetPong checkStatus = null;
 					try
 					{
-						bk = new BrokerClient(agent.hostInfo.getHostname(), agent.hostInfo.getPort(), 0);
+						bk = new BrokerClient(agent.tcpInfo.getHostname(), agent.tcpInfo.getPort(), 0);
 						checkStatus = bk.checkStatus();
 					}
 					catch (Throwable t)

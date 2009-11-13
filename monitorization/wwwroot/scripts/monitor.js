@@ -11,9 +11,8 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('queuesInformationPanel');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setQueueInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -25,9 +24,8 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('dropboxInformationPanel');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setDropboxInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -39,9 +37,8 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('faultsInformationPanel');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setFaultInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -54,9 +51,8 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('agentsDownInformationPanel');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setAgentsInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -174,9 +170,8 @@ function queueMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('queue_agents');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setQueueAgentInfo(data,panel,countPanel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -187,9 +182,8 @@ function queueMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('queue_subscriptions');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setQueueSubscriptionsInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -224,6 +218,21 @@ function setQueueAgentInfo(agentQueueInfo, panel,countPanel)
 	panel.innerHTML = newContent;
 	countPanel.innerHTML = count;
 }
+// Delete queue confirmation
+function confirmDelete()
+{
+	var qnPanel =  s$('queue_name'); 
+	var queueName = qnPanel.innerHTML;
+	var res = confirm('Are you sure you want to delete queue: ' + queueName);
+	if(res)
+	{
+		open('deletequeue.html?queuename='+queueName);
+	}		
+	
+	
+	return false;
+}
+
 // queue subscription info
 function setQueueSubscriptionsInfo(subscriptionsQueueInfo, panel)
 {
@@ -245,11 +254,66 @@ function setQueueSubscriptionsInfo(subscriptionsQueueInfo, panel)
 }
 
 //
+// DELETE QUEUE PAGE
+//
+function queueDeleteInit()
+{
+	var params = SAPO.Utility.Url.getQueryString();
+	var qnPanel =  s$('queue_name'); 
+	var queueName = params.queuename;
+
+	if (queueName == null)
+	{
+		qnPanel.innerHTML = "<b>Queue name not specified</b>";
+		return;
+	}
+	qnPanel.innerHTML = queueName;
+	var msgPanel =  s$('msg_pannel'); 
+	msgPanel.innerHTML = "Deleting queue. This may take some time...";
+	new Ajax.Request('/action/deletequeue?queuename='+queueName,
+	{
+	    method:'get',
+	    onSuccess: function(transport){
+	      var data = transport.responseJSON;
+	      var newContent = "";
+
+	      if (data.length == 0)
+	      {
+	      	newContent = "There is no queue info";
+	      }
+	      else
+	      {	      var fail = false;
+		      for(var i = 0; i != data.length; ++i)
+		      {
+				if(data[i].sucess == "true")
+				{
+					newContent = newContent + "<a href='./agent.html?agentname="+data[i].agentName+"'>"+ data[i].agentName+ "</a> : OK" +"\n";
+				}
+				else
+				{
+					newContent = newContent + "<a href='./agent.html?agentname="+data[i].agentName+"'>"+ data[i].agentName+ "</a> : Failed : " + data[i].reason +"\n";
+					fail = true;
+				}
+		      }
+		      if(fail)
+		      {
+				newContent = newContent + "\n\n Message delete failures caused by connection failure or the existence of active subscribers will be retried later."
+		      }
+			
+	      }
+	      
+	      msgPanel.innerHTML = newContent;
+	    },
+	    onFailure: function(){ alert('Something went wrong...') }
+	 });
+}
+
+//
 // FAULT PAGE
 //
 function faultInformationInit()
 {
-var params = SAPO.Utility.Url.getQueryString();
+  var params = SAPO.Utility.Url.getQueryString();
   var params = SAPO.Utility.Url.getQueryString();
   var idPanel = s$('fault_id');
   var faultId = params.faultid;
@@ -263,8 +327,7 @@ var params = SAPO.Utility.Url.getQueryString();
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
-      var data = response.evalJSON();
+      var data = transport.responseJSON; 
 
       var shortMsgPanel = s$('fault_shortmsg');
       shortMsgPanel.innerHTML = data[0].shortMessage;
@@ -301,9 +364,8 @@ function agentMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('queuesInformationPanel');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setAgentQueueInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -315,9 +377,8 @@ function agentMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('faultsInformationPanel');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setAgentFaultInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -329,9 +390,8 @@ function agentMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('subscriptionInformationPanel');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       setAgentSubscriptionInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
@@ -344,9 +404,8 @@ function agentMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('agent_state');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       var content = "<p>Agent status not available.</p>";
       if(data.length != 0)
 	content = data[0].status +" : " + data[0].date;
@@ -361,9 +420,8 @@ function agentMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var response = transport.responseText;
       var panel = s$('agent_dropbox');
-      var data = response.evalJSON();
+      var data = transport.responseJSON;      
       var content = "Agent dropbox information not available.";
       if(data.length != 0)
 	content = data[0].dropboxLocation +" : " + data[0].messages +" : " + data[0].goodMessages;
@@ -380,7 +438,7 @@ function agentMonitorizationInit()
   f_faults();
   setInterval(f_faults, 3000);
   f_state();
-  setInterval(f_state, 30000);
+  setInterval(f_state, 3000);
   f_dropbox();
   setInterval(f_dropbox, 30000);
 }
@@ -438,5 +496,28 @@ function setAgentFaultInfo(faultInfo, panel)
 		}
 	}
 	panel.innerHTML = newContent;
+}
+//
+// ALL QUEUES
+//
+function allQueuesInformationInit()
+{
+  var infoPanel = s$('queue_list');
+  infoPanel.innerHTML = "Information not available";
+  var f_allQueues = function(){
+	  new Ajax.Request('/data/queues/allqueues',
+	   {
+	    method:'get',
+	    onSuccess: function(transport){
+	      var infoPanel = s$('queue_list');
+	var response = transport.responseText;
+	      var data = transport.responseJSON;
+	      setQueueInfo(data, infoPanel);
+	    },
+	    onFailure: function(){ alert('Something went wrong...') }
+	   });
+	}
+  f_allQueues();
+  setInterval(f_allQueues, 30000);
 }
 

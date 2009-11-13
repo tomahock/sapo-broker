@@ -41,6 +41,6 @@ public class HttpServer
 		H2ConsolidatorManager.init();
 
 		// Bind and start to accept incoming connections.
-		bootstrap.bind(new InetSocketAddress(8877));
+		bootstrap.bind(new InetSocketAddress(ConfigurationInfo.getConsoleHttpPort()));
 	}
 }

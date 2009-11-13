@@ -92,6 +92,8 @@ public class DataFetcher
 		{
 			final String AGENTS_PREFIX = "agents";
 			final String SUBSCRIPTIONS_PREFIX = "subscriptions";
+			final String ALL_PREFIX = "all";
+			
 
 			final String QUEUE_NAME = "queuename";
 
@@ -124,6 +126,14 @@ public class DataFetcher
 					for (DbSubscription subscription : subscriptionCollection)
 					{
 						queuesInfo.add(subscription);
+					}
+				}
+				else if (resource.startsWith(ALL_PREFIX))
+				{
+					Collection<DbQueue> queueCollection = GlobalSystemInfo.getAllQueues();
+					for (DbQueue dbQueue : queueCollection)
+					{
+						queuesInfo.add(dbQueue);
 					}
 				}
 				else
