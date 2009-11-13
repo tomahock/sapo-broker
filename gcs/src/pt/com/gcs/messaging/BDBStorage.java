@@ -44,7 +44,7 @@ public class BDBStorage
 
 	private static final int MAX_REDELIVERY_PER_MESSAGE = 3;
 
-	private long nextCycleTime = System.currentTimeMillis();
+	private volatile long nextCycleTime = System.currentTimeMillis();
 
 	public BDBStorage(QueueProcessor qp)
 	{
@@ -339,6 +339,7 @@ public class BDBStorage
 
 		if (nextCycleTime > now)
 		{
+			log.debug("Skip delivery cycle");
 			return;
 		}
 
@@ -379,7 +380,7 @@ public class BDBStorage
 				long k = LongBinding.entryToLong(key);
 				msg.setMessageId(InternalMessage.getBaseMessageId() + k);
 
-				final boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
+				boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
 				long reserveTimeout = bdbm.getReserveTimeout();
 				final boolean isReserved = reserveTimeout > now;
 
@@ -403,8 +404,10 @@ public class BDBStorage
 							do
 							{
 								reserveTime = queueProcessor.forward(msg, preferLocalConsumer);
+								preferLocalConsumer = false;
+								++tries;
 							}
-							while (!(reserveTime > 0) && ((++tries) != MAX_REDELIVERY_PER_MESSAGE));
+							while ((reserveTime < 0) && (tries != MAX_REDELIVERY_PER_MESSAGE));
 
 							if (reserveTime > 0)
 							{
@@ -415,22 +418,18 @@ public class BDBStorage
 
 								bdbm.setReserveTimeout(reserveTime + now);
 								msg_cursor.put(key, buildDatabaseEntry(bdbm));
-
 								++i0;
 							}
 							else
 							{
-								
 								log.info("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());
-
 								dumpMessage(msg);
 
 								++j0;
-								
+
 								nextCycleTime = System.currentTimeMillis() + 1000;
 								break;
 							}
-
 						}
 						catch (Throwable t)
 						{
