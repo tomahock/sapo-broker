@@ -68,6 +68,9 @@ function mainMonitorizationInit()
   f_agents();
   setInterval(f_agents, 3000);
 }
+
+var previousQueueInfo = new Object();
+
 // general queue info
 function setQueueInfo(queueInfo, panel)
 {
@@ -81,7 +84,11 @@ function setQueueInfo(queueInfo, panel)
 	{
 		for(var i = 0; i != queueInfo.length; ++i)
 		{
-			newContent = newContent + "<p><a href='./queue.html?queuename="+queueInfo[i].name+"'>"+ queueInfo[i].name+ "</a> - " + queueInfo[i].count +"</p>";
+			var currentCount = queueInfo[i].count;
+			var previousValue = previousQueueInfo[queueInfo[i].name];
+			var pic = getLocalPic(previousValue, currentCount);
+			previousQueueInfo[queueInfo[i].name] = currentCount;
+			newContent = newContent + "<p><a href='./queue.html?queuename="+queueInfo[i].name+"'>"+ queueInfo[i].name+ "</a> : " + currentCount + "<img src='" + pic + "' /></p>";
 		}
 	}
 	panel.innerHTML = newContent;
@@ -195,6 +202,9 @@ function queueMonitorizationInit()
   f_subscriptions();
   setInterval(f_subscriptions, 3000);
 }
+
+var previousAgentQueueInfo = new Object();
+var previousCount = undefined;
 // queue agent info
 function setQueueAgentInfo(agentQueueInfo, panel,countPanel)
 {
@@ -211,12 +221,21 @@ function setQueueAgentInfo(agentQueueInfo, panel,countPanel)
 			var agentCount = agentQueueInfo[i].count;
 			var agentname = agentQueueInfo[i].agentName;
 
-			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentname + "</a> :  " + agentCount + " : " + agentQueueInfo[i].date +"</p>";
+			var previousAgentCount = previousAgentQueueInfo[agentname];
+			
+			var pic = getLocalPic(previousAgentCount, agentCount);
+			
+			previousAgentQueueInfo[agentname] = agentCount;
+			
+			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentname + "</a> :  " + agentCount + " : " + agentQueueInfo[i].date + "<img src='" + pic + "' /></p>";
 			count += agentCount;
 		}
 	}
+	var tendencyPic = getLocalPic(previousCount, count);
+	previousCount = count;
+	
 	panel.innerHTML = newContent;
-	countPanel.innerHTML = count;
+	countPanel.innerHTML = count + "<img src='" + tendencyPic + " />";
 }
 // Delete queue confirmation
 function confirmDelete()
@@ -521,3 +540,17 @@ function allQueuesInformationInit()
   setInterval(f_allQueues, 30000);
 }
 
+
+//
+// UTILS
+//
+
+function getLocalPic(oldValue, newValue)
+{
+	var tendencyPic = "images/new.jpg";
+	if( oldValue !== undefined)
+	{
+		tendencyPic = (oldValue == newValue)? "images/equal.jpg" : (newValue > oldValue)? "images/up.jpg" : "images/down.jpg";
+	}
+	return tendencyPic;
+}

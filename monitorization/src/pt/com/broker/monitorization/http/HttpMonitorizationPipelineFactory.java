@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
  *
- * Copyright 2008, Red Hat Middleware LLC, and individual contributors
+ * Copyright 2009, Red Hat Middleware LLC, and individual contributors
  * by the @author tags. See the COPYRIGHT.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -22,36 +22,35 @@
  */
 package pt.com.broker.monitorization.http;
 
-import static org.jboss.netty.channel.Channels.pipeline;
+import static org.jboss.netty.channel.Channels.*;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 
-public class MonitorizationPipelineFactory implements ChannelPipelineFactory
-{
-
-	@Override
-	public ChannelPipeline getPipeline() throws Exception
-	{
-		// Create a default pipeline implementation.
-		ChannelPipeline pipeline = pipeline();
-
+/**
+ * @author The Netty Project (netty-dev@lists.jboss.org)
+ * @author Trustin Lee (tlee@redhat.com)
+ */
+public class HttpMonitorizationPipelineFactory implements ChannelPipelineFactory {
+    public ChannelPipeline getPipeline() throws Exception {
+        // Create a default pipeline implementation.
+        ChannelPipeline pipeline = pipeline();
+        
 		// Uncomment the following line if you want HTTPS
 		// SSLEngine engine = SecureChatSslContextFactory.getServerContext().createSSLEngine();
 		// engine.setUseClientMode(false);
 		// pipeline.addLast("ssl", new SslHandler(engine));
 
-		pipeline.addLast("httpDecoder", new HttpRequestDecoder());
+        pipeline.addLast("decoder", new HttpRequestDecoder());
+        pipeline.addLast("encoder", new HttpResponseEncoder());
+        pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
 		// Uncomment the following line if you don't want to handle HttpChunks.
 		// pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
 
-		pipeline.addLast("httpEncoder", new HttpResponseEncoder());
-		
-		pipeline.addLast("handler", new MonitorizationHandler("./wwwroot/"));
-
-		return pipeline;
-	}
-
+        pipeline.addLast("handler", new HttpMonitorizationHandler("./wwwroot"));
+        return pipeline;
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
  *
- * Copyright 2008, Red Hat Middleware LLC, and individual contributors
+ * Copyright 2009, Red Hat Middleware LLC, and individual contributors
  * by the @author tags. See the COPYRIGHT.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -22,20 +22,18 @@
  */
 package pt.com.broker.monitorization.http;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.util.HashMap;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
-import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -43,40 +41,40 @@ import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.jboss.netty.handler.codec.http.CookieDecoder;
 import org.jboss.netty.handler.codec.http.CookieEncoder;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import org.jboss.netty.handler.stream.ChunkedFile;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
-import pt.com.broker.monitorization.actions.DeleteQueue;
 
+/**
+ * @author The Netty Project (netty-dev@lists.jboss.org)
+ * @author Trustin Lee (tlee@redhat.com)
+ */
 @ChannelPipelineCoverage("one")
-public class MonitorizationHandler extends SimpleChannelUpstreamHandler
+public class HttpMonitorizationHandler extends SimpleChannelUpstreamHandler
 {
-	private static final InternalLogger logger = InternalLoggerFactory.getInstance(MonitorizationHandler.class.getName());
-
+	private static final InternalLogger log = InternalLoggerFactory.getInstance(HttpMonitorizationHandler.class.getName());
+	
 	private static final String DATA_PREFIX = "/data/";
 	private static final String ACTION_PREFIX = "/action/";
 
-	private volatile HttpRequest request;
-	private volatile boolean readingChunks;
-	private final StringBuilder responseContent = new StringBuilder();
 	private String root;
+	private final StringBuilder responseContent = new StringBuilder();
+	private HttpRequest request;
 
-	public MonitorizationHandler()
-	{
-	}
-
-	public MonitorizationHandler(String root)
+	public HttpMonitorizationHandler(String root)
 	{
 		this.root = root;
 	}
@@ -92,128 +90,154 @@ public class MonitorizationHandler extends SimpleChannelUpstreamHandler
 		
 		String lowerUri = request.getUri().toLowerCase();
 		
-		if (!readingChunks && e.getMessage() instanceof HttpRequest)
+		if (request.getMethod() != HttpMethod.GET)
 		{
-			File file = new File(root + path);
-			if (file.exists() && file.isFile())
-			{
-				FileReader reader = new FileReader(file);
-				//InputStreamReader isr = new InputStreamReader(reader);
-				
-				BufferedReader bufread = new BufferedReader(reader);
-				String read;
-				while ((read = bufread.readLine()) != null)
-				{
-					responseContent.append(read + "\r\n");
-				}
-				writeResponse(e);
-			}
-			else if (lowerUri.startsWith(DATA_PREFIX))
+			sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED);
+			return;
+		}
+
+		if (request.isChunked())
+		{
+			sendError(ctx, HttpResponseStatus.BAD_REQUEST);
+			return;
+		}
+
+		if (path == null)
+		{
+			sendError(ctx, HttpResponseStatus.FORBIDDEN);
+			return;
+		}
+
+		File file = new File(root + path);
+
+		if (!file.isFile())
+		{
+			
+			if (lowerUri.startsWith(DATA_PREFIX))
 			{
 				path = path.substring(DATA_PREFIX.length()).toLowerCase();
-				
+
 				String data = DataFetcher.getData(path, params);
 				responseContent.append(data);
-				writeResponse(e, "application/json");
+				writeJSON(e);
+				return;
 			}
 			else if (lowerUri.startsWith(ACTION_PREFIX))
 			{
 				path = path.substring(ACTION_PREFIX.length()).toLowerCase();
-				
+
 				String data = ActionExecutor.execute(path, params);
 				responseContent.append(data);
-				writeResponse(e, "application/json");
+				writeJSON(e);
+				return;
 			}
 			else
 			{
-				responseContent.append("Sapo-Broker Monitorization HTTP Server<br/>");
-				responseContent.append("======================================<br/>");
-				responseContent.append("VERSION: " + request.getProtocolVersion().getText() + "<br/>");
-				if (request.containsHeader(HttpHeaders.Names.HOST))
-				{
-					responseContent.append("HOSTNAME: " + request.getHeader(HttpHeaders.Names.HOST) + "<br/>");
-				}
-				responseContent.append("REQUEST_URI: " + request.getUri() + "<br/><br/>");
-				if (!request.getHeaderNames().isEmpty())
-				{
-					for (String name : request.getHeaderNames())
-					{
-						for (String value : request.getHeaders(name))
-						{
-							responseContent.append("HEADER: " + name + " = " + value + "<br/>");
-						}
-					}
-					responseContent.append("<br/>");
-				}
-
-				
-				if (!params.isEmpty())
-				{
-					for (Entry<String, List<String>> p : params.entrySet())
-					{
-						String key = p.getKey();
-						List<String> vals = p.getValue();
-						for (String val : vals)
-						{
-							responseContent.append("PARAM: " + key + " = " + val + "<br/>");
-						}
-					}
-					responseContent.append("<br/>");
-				}
-
-				if (request.isChunked())
-				{
-					readingChunks = true;
-				}
-				else
-				{
-					ChannelBuffer content = request.getContent();
-					if (content.readable())
-					{
-						responseContent.append("CONTENT: " + content.toString("UTF-8") + "<br/>");
-					}
-					writeResponse(e);
-				}
+				sendError(ctx, HttpResponseStatus.FORBIDDEN);
+				return;
 			}
 		}
-		else
+		if (file.isHidden() || !file.exists())
 		{
-			HttpChunk chunk = (HttpChunk) e.getMessage();
-			if (chunk.isLast())
-			{
-				readingChunks = false;
-				responseContent.append("END OF CONTENT<\r\n>");
-				writeResponse(e);
-			}
-			else
-			{
-				responseContent.append("CHUNK: " + chunk.getContent().toString("UTF-8") + "\r\n");
-			}
+			sendError(ctx, HttpResponseStatus.NOT_FOUND);
+			return;
+		}
+
+		RandomAccessFile raf;
+		try
+		{
+			raf = new RandomAccessFile(file, "r");
+		}
+		catch (FileNotFoundException fnfe)
+		{
+			sendError(ctx, HttpResponseStatus.NOT_FOUND);
+			return;
+		}
+		long fileLength = raf.length();
+
+		HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+		response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(fileLength));
+
+		Channel ch = e.getChannel();
+
+		// Write the initial line and the header.
+		ch.write(response);
+
+		// Write the content.
+		ChannelFuture writeFuture = ch.write(new ChunkedFile(raf, 0, fileLength, 8192));
+
+		// Decide whether to close the connection or not.
+		boolean close = HttpHeaders.Values.CLOSE.equalsIgnoreCase(request.getHeader(HttpHeaders.Names.CONNECTION)) || request.getProtocolVersion().equals(HttpVersion.HTTP_1_0) && !HttpHeaders.Values.KEEP_ALIVE.equalsIgnoreCase(request.getHeader(HttpHeaders.Names.CONNECTION));
+
+		if (close)
+		{
+			// Close the connection when the whole content is written out.
+			writeFuture.addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 
-	private Pattern equalsPattern = Pattern.compile("=");
-	private Map<String, String> extractParameters(String queryString)
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception
 	{
-		Map<String, String> params = new HashMap<String, String>();
-		String[] parts =  queryString.split("&");
-		
-		for(String part : parts)
+		Channel ch = e.getChannel();
+		Throwable cause = e.getCause();
+		if (cause instanceof TooLongFrameException)
 		{
-			String[] paramParts = equalsPattern.split(part);
-			if(paramParts.length != 2 )
-				continue;
-			params.put(paramParts[0], paramParts[1]);
+			sendError(ctx, HttpResponseStatus.BAD_REQUEST);
+			return;
 		}
-		return params;
+
+		cause.printStackTrace();
+		if (ch.isConnected())
+		{
+			sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	private String sanitizeUri(String uri)
+	{
+		// Decode the path.
+		try
+		{
+			uri = URLDecoder.decode(uri, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			try
+			{
+				uri = URLDecoder.decode(uri, "ISO-8859-1");
+			}
+			catch (UnsupportedEncodingException e1)
+			{
+				throw new Error();
+			}
+		}
+
+		// Convert file separators.
+		uri = uri.replace('/', File.separatorChar);
+
+		// Simplistic dumb security check.
+		// You will have to do something serious in the production environment.
+		if (uri.contains(File.separator + ".") || uri.contains("." + File.separator) || uri.startsWith(".") || uri.endsWith("."))
+		{
+			return null;
+		}
+
+		// Convert to absolute path.
+		return root + uri;
+	}
+
+	private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status)
+	{
+		HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
+		response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
+		response.setContent(ChannelBuffers.copiedBuffer("Failure: " + status.toString() + "\r\n", "UTF-8"));
+
+		// Close the connection as soon as the error message is sent.
+		ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
 	}
 	
-	private void writeResponse(MessageEvent e)
-	{
-		writeResponse(e, "text/html");
-	}
-
-	private void writeResponse(MessageEvent e, String content_type)
+	private void writeJSON(MessageEvent e)
 	{
 		// Convert the response content to a ChannelBuffer.
 		ChannelBuffer buf = ChannelBuffers.copiedBuffer(responseContent.toString(), "UTF-8");
@@ -225,7 +249,7 @@ public class MonitorizationHandler extends SimpleChannelUpstreamHandler
 		// Build the response object.
 		HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 		response.setContent(buf);
-		response.setHeader(HttpHeaders.Names.CONTENT_TYPE, content_type + "; charset=UTF-8");
+		response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json; charset=UTF-8");
 
 		if (!close)
 		{
@@ -259,12 +283,5 @@ public class MonitorizationHandler extends SimpleChannelUpstreamHandler
 		{
 			future.addListener(ChannelFutureListener.CLOSE);
 		}
-	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception
-	{
-		e.getCause().printStackTrace();
-		e.getChannel().close();
 	}
 }
