@@ -121,7 +121,11 @@ h1.title {
 	/*float:left;*/
 }
 
-
+pre.mainText{
+	font-size:1.2em;
+	color:#182737;
+	height:40%;
+}
 .labelBody {
 	font-size:1.0em;
 	color:#182737;
