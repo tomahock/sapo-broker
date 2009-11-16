@@ -245,7 +245,7 @@ function confirmDelete()
 	var res = confirm('Are you sure you want to delete queue: ' + queueName);
 	if(res)
 	{
-		open('deletequeue.html?queuename='+queueName);
+		window.location = 'deletequeue.html?queuename='+queueName;
 	}		
 	
 	
