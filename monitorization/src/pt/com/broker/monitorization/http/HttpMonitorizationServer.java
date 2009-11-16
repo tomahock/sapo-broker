@@ -62,10 +62,14 @@ public class HttpMonitorizationServer {
 		H2ConsolidatorManager.init();
 
 
-        // Set up the event pipeline factory.
+		// Set up the event pipeline factory.
         bootstrap.setPipelineFactory(new HttpMonitorizationPipelineFactory());
 
+        int port = ConfigurationInfo.getConsoleHttpPort();
+        
+        log.info("Monitorization Console is accessible at 'http://localhost:{}/main.html'", port+"");
+        
         // Bind and start to accept incoming connections.
-        bootstrap.bind(new InetSocketAddress(ConfigurationInfo.getConsoleHttpPort()));
+        bootstrap.bind(new InetSocketAddress(port));
     }
 }
