@@ -19,4 +19,4 @@ for n in xrange(N):
     payload='Message number %d' % n
     broker.publish(destination=destination, destination_type=destination_type, payload=payload)
 
-broker.join()
+#broker.join()

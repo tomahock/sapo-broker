@@ -13,7 +13,7 @@ destination_type = 'QUEUE'
 broker = Client(TCP(host=server))
 
 def callback(msg):
-    print msg.message.payload
+    print "%r\t%r" % (msg.destination, msg.message.payload)
 
 broker.subscribe(destination, callback, destination_type)
 
