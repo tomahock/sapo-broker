@@ -113,6 +113,15 @@ class Fault:
         self.fault_detail = fault_detail
         self.action_id = action_id
 
+    def __repr__(self):
+        return u'<%s(fault_code=%r, fault_message=%r, fault_detail=%r, action_id=%r)>' % (
+            self.__class__,
+            self.fault_code,
+            self.fault_message,
+            self.fault_detail,
+            self.action_id
+        )
+
 class Ping:
     def __init__(self, action_id):
         self.action_id = action_id
