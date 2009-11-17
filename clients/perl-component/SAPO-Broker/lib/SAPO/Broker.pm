@@ -3,6 +3,7 @@ package SAPO::Broker;
 use strict;
 use warnings;
 use 5.008004;
+use bytes;
 use IO::Socket::INET;
 use XML::LibXML;
 use XML::LibXML::XPathContext;
@@ -22,7 +23,9 @@ sub new {
     $args{timeout}        ||= 60;             # timeout de ligacao
     $args{host}           ||= '127.0.0.1';    # host da manta
     $args{hosts}          ||= undef;          # list of hosts to connect, try to connect in order
-    $args{port}           ||= 3322;           # porta da manta
+    $args{proto}          ||= 'tcp';          # Default tcp protocol. UDP can be used to publish events.
+    $args{port}           ||= { tcp=>3322, udp=>3366 }->{$args{proto}}; # porta da manta
+
     $args{recon_attempts} ||= 5;              # quantas tentativas de reconnect
     $args{DEBUG}          ||= 0;              # msgs de debug e tal...
     
@@ -121,6 +124,10 @@ sub subscribe {
     my $self = shift;
     my %args = @_;
 
+    if( $self->{'socket_proto'} ne 'tcp' ) {
+        carp("Subscribe is only available with the TCP protocol");
+    }
+
     $self->_reconnect unless $self->_connected;
     return undef      unless $self->_connected;
 
@@ -150,6 +157,11 @@ sub subscribe {
 sub poll {
     my ($self, %args) = @_;
 
+    if( $self->{'socket_proto'} ne 'tcp' ) {
+        carp("Poll is only available with the TCP protocol");
+    }
+
+
     $self->_reconnect unless $self->_connected;
     return undef      unless $self->_connected;
 
@@ -169,8 +181,8 @@ sub poll {
 
     $self->_debug("MSG SENT: $msg");
 
-    _bus_encode( \$msg );
-    return undef unless print { $self->{_CORE_}->{sock} } $msg;
+    $self->_bus_encode( \$msg );
+    return undef unless $self->{_CORE_}->{sock}->send($msg);
 
     return 1;
 }
@@ -178,6 +190,10 @@ sub poll {
 # recebe eventos
 sub receive {
 	my $self = shift;
+
+    if($self->{'socket_proto'} ne 'tcp') {
+        carp("Receive is only available with the TCP protocol");
+    }
 
 	$self->_debug("Receiving...");
 
@@ -235,8 +251,8 @@ sub ack {
 	
 	$self->_debug("ack: $msg");
 
-	_bus_encode(\$msg);
-	return undef unless print { $self->{_CORE_}->{sock} } $msg;
+	$self->_bus_encode(\$msg);
+    return undef unless $self->{_CORE_}->{sock}->send($msg);
 
 	return 1;
 }
@@ -280,8 +296,10 @@ sub _debug {
 
 # adiciona o tamanho da mensagem antes de a enviar, protocol stuff
 sub _bus_encode {
-    my $buf = shift;
+    my ($self, $buf) = @_;
+	if ($self->{'proto'} ne "udp") {
     substr( $$buf, 0, 0 ) = pack( 'N', length($$buf) );
+  	}
 }
 
 sub _destname {
@@ -316,8 +334,8 @@ sub _send_s {
     
 	$self->_debug("MSG RECV: $msg");
 		
-	_bus_encode( \$msg );
-    return undef unless print { $self->{_CORE_}->{sock} } $msg;
+	$self->_bus_encode( \$msg );
+    return undef unless $self->{_CORE_}->{sock}->send($msg);
 
     return 1;
 }
@@ -349,8 +367,10 @@ sub _send_p {
     my $msg = $self->_build_send_p(@_);
     $self->_debug("MSG SENT: $msg");
     
-    _bus_encode( \$msg );
-    return undef unless print { $self->{_CORE_}->{sock} } $msg;
+    $self->_bus_encode( \$msg );
+
+    #return undef unless print { $self->{_CORE_}->{sock} } $msg;
+    return undef unless $self->{_CORE_}->{sock}->send($msg);
 
     return 1;
 }
@@ -368,20 +388,28 @@ sub _connected {
 }
 
 sub _open_sock {
-    my ($self, $host, $port, $timeout) = @_;
+    my ($self, $host, $port, $timeout, $proto) = @_;
     
     $self->_debug("Connecting to: " . $host);
 
-    my $sock = IO::Socket::INET->new(
+    $self->{'socket_proto'} = $proto;
+
+    my %params = (
         PeerAddr   => $host,
         PeerPort   => $port,
         Timeout    => $timeout,
-        Proto      => 'tcp',
-        Reuse      => 1,
-        MultiHomed => 1,
-        Blocking   => 1,
-        Type       => SOCK_STREAM,
+        Proto      => $proto,
+        Blocking   => 0,
     );
+
+    if( $proto eq 'tcp' ) {
+        $params{Reuse} = 1,
+        $params{MultiHomed} = 1,
+        $params{Blocking}   = 1,
+        $params{Type}       = SOCK_STREAM,
+    }
+
+    my $sock = IO::Socket::INET->new( %params);
 }
 
 # liga
@@ -392,11 +420,13 @@ sub _connect {
     
     if ($self->{hosts}) {
         for my $peer (@{$self->{hosts}}) {
+            my $proto = $peer->{proto} || 'tcp';
             $self->_debug("Trying to connect to: $peer->{host} ...");
             $sock = $self->_open_sock(
                 $peer->{host},
                 $peer->{port} || $self->{port},
-                $peer->{timeout} || $self->{timeout}
+                $peer->{timeout} || $self->{timeout},
+                $proto
             );
             #print $peer->{host};
             if (!$sock) {
@@ -411,7 +441,8 @@ sub _connect {
         $sock = $self->_open_sock(
             $self->{host},
             $self->{port},
-            $self->{timeout}
+            $self->{timeout},
+            $self->{proto}
         );
         $self->_debug("Cant connect to: $self->{host} : $@") unless $sock;
         
@@ -420,7 +451,8 @@ sub _connect {
     unless ($sock) {
         return undef;
     }
-    $sock->autoflush(1);
+    $sock->autoflush(0);
+    
     $self->{_CORE_}->{sock} = $sock;
 
     $self->_debug("CONNECTED!");
@@ -610,6 +642,7 @@ Nothing exported.
     $args{host}           ||= '127.0.0.1';    # host da manta
     $args{hosts}          ||= undef;          # list of hosts to connect, try to connect in order
     $args{port}           ||= 3322;           # porta da manta
+    $args{proto}          ||= 'tcp';           # tcp or udp, in udp mode, only the publish() method is available.
     $args{recon_attempts} ||= 5;              # quantas tentativas de reconnect
     $args{DEBUG}          ||= 0;              # msgs de debug e tal...
 
