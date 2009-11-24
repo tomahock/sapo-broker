@@ -115,7 +115,7 @@ public class QueueProcessorList
 
 			if (!qpCache.containsKey(queueName))
 			{
-				throw new IllegalArgumentException(String.format("Queue named '%s' doesn't exist", queueName));
+				throw new IllegalArgumentException(String.format("Queue named '%s' doesn't exist.", queueName));
 			}
 
 
