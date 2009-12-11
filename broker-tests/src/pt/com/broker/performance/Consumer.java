@@ -1,6 +1,7 @@
 package pt.com.broker.performance;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import pt.com.broker.client.BrokerClient;
@@ -9,32 +10,28 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
 
-public class Consumer implements Callable<Integer>, BrokerListener
+public class Consumer extends TestActor
 {
-	private final BrokerClient brokerClient;
 	private final DestinationType destinationType;
 	private final int numberOfMsgToReceive;
 
-	private AtomicInteger msgReceived;
-
-	private Object obj;
+	private CountDownLatch countDown;
 
 	public Consumer(BrokerClient bkCLient, DestinationType destinationType, int numberOfMsgToReceive)
 	{
-		this.brokerClient = bkCLient;
+		super(bkCLient);
 		this.destinationType = destinationType;
 		this.numberOfMsgToReceive = numberOfMsgToReceive;
 	}
 
 	public void init() throws Exception
 	{
-		msgReceived = new AtomicInteger(0);
-		obj = new Object();
+		countDown = new CountDownLatch(numberOfMsgToReceive);
 
 		NetSubscribe subscribe = new NetSubscribe("/test/foo", destinationType);
 		try
 		{
-			brokerClient.addAsyncConsumer(subscribe, this);
+			getBrokerClient().addAsyncConsumer(subscribe, this);
 		}
 		catch (Throwable e)
 		{
@@ -45,10 +42,8 @@ public class Consumer implements Callable<Integer>, BrokerListener
 	@Override
 	public Integer call() throws Exception
 	{
-		synchronized (obj)
-		{
-			obj.wait();
-		}
+		countDown.await();
+		
 		return new Integer(0);
 	}
 
@@ -62,14 +57,7 @@ public class Consumer implements Callable<Integer>, BrokerListener
 	public void onMessage(NetNotification message)
 	{
 		// System.out.print(".");
-		int val = msgReceived.incrementAndGet();
-		if (val == numberOfMsgToReceive)
-		{
-			synchronized (obj)
-			{
-				obj.notify();
-			}
-		}
+		countDown.countDown();
 	}
 
 }

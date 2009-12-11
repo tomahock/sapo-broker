@@ -1,22 +1,19 @@
 package pt.com.broker.performance;
 
-import java.util.concurrent.Callable;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetAction.DestinationType;
 
-public class Producer implements Callable<Integer>
+public class Producer extends TestActor
 {
-
-	private final BrokerClient brokerClient;
 	private final DestinationType destinationType;
 	private final int numberOfMsgToSend;
 	private final String message;
 
 	public Producer(BrokerClient bkCLient, DestinationType destinationType, int numberOfMsgToSend, String message)
 	{
-		this.brokerClient = bkCLient;
+		super(bkCLient);
 		this.destinationType = destinationType;
 		this.numberOfMsgToSend = numberOfMsgToSend;
 		this.message = message;
@@ -31,18 +28,29 @@ public class Producer implements Callable<Integer>
 		{
 			for (int i = numberOfMsgToSend; i != 0; --i)
 			{
-				brokerClient.enqueueMessage(message, destination);
+				getBrokerClient().enqueueMessage(message, destination);
 			}
 		}
 		else
 		{
 			for (int i = numberOfMsgToSend; i != 0; --i)
 			{
-				brokerClient.publishMessage(message, destination);
+				getBrokerClient().publishMessage(message, destination);
 			}
 		}
 
 		return new Integer(0);
+	}
+
+	@Override
+	public boolean isAutoAck()
+	{
+		return false;
+	}
+
+	@Override
+	public void onMessage(NetNotification message)
+	{
 	}
 
 }

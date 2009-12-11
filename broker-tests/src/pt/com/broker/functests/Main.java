@@ -2,11 +2,59 @@ package pt.com.broker.functests;
 
 import org.caudexorigo.cli.CliFactory;
 
-import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.functests.helpers.*;
-import pt.com.broker.functests.negative.*;
-import pt.com.broker.functests.positive.*;
+import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.functests.helpers.MultipleGenericVirtualQueuePubSubTest;
+import pt.com.broker.functests.negative.AcceptedTest;
+import pt.com.broker.functests.negative.AccessDeniedTest;
+import pt.com.broker.functests.negative.AuthenticationFailedTest;
+import pt.com.broker.functests.negative.BadEncodingTypeTest;
+import pt.com.broker.functests.negative.BadEncodingVersionTest;
+import pt.com.broker.functests.negative.FaultTest;
+import pt.com.broker.functests.negative.FaultWithActionIdTest;
+import pt.com.broker.functests.negative.InvalidAuthChannelTypeTest;
+import pt.com.broker.functests.negative.InvalidDestinationName;
+import pt.com.broker.functests.negative.InvalidDestinationNameInPublishTest;
+import pt.com.broker.functests.negative.InvalidDestinationType;
+import pt.com.broker.functests.negative.InvalidMessageTest;
+import pt.com.broker.functests.negative.InvalidRandomMessageTest;
+import pt.com.broker.functests.negative.MessageSizeBiggerThanMessageTest;
+import pt.com.broker.functests.negative.MessegeOversizedTest;
+import pt.com.broker.functests.negative.NotificationTest;
+import pt.com.broker.functests.negative.PongTest;
+import pt.com.broker.functests.negative.TimeoutPollTest;
+import pt.com.broker.functests.negative.TotallyInvalidRandomMessageTest;
+import pt.com.broker.functests.negative.UnknownAuthTypeFailedTest;
+import pt.com.broker.functests.positive.DBRolesAuthenticationTest;
+import pt.com.broker.functests.positive.Multiple1NTopic;
+import pt.com.broker.functests.positive.Multiple1NTopicRemote;
+import pt.com.broker.functests.positive.MultipleN1Queue;
+import pt.com.broker.functests.positive.MultipleN1QueueRemote;
+import pt.com.broker.functests.positive.MultipleN1Topic;
+import pt.com.broker.functests.positive.MultipleN1TopicRemote;
+import pt.com.broker.functests.positive.MultipleNNQueue;
+import pt.com.broker.functests.positive.MultipleNNQueueRemote;
+import pt.com.broker.functests.positive.MultipleNNTopic;
+import pt.com.broker.functests.positive.MultipleNNTopicRemote;
+import pt.com.broker.functests.positive.PingTest;
+import pt.com.broker.functests.positive.PollNoWaitTest;
+import pt.com.broker.functests.positive.PollTest;
+import pt.com.broker.functests.positive.PollVirtualQueueTest;
+import pt.com.broker.functests.positive.QueueTest;
+import pt.com.broker.functests.positive.QueueTestDist;
+import pt.com.broker.functests.positive.SslTopicNameSpeficied;
+import pt.com.broker.functests.positive.TopicNameSpecified;
+import pt.com.broker.functests.positive.TopicNameSpecifiedDist;
+import pt.com.broker.functests.positive.TopicNameWildcard;
+import pt.com.broker.functests.positive.TopicNameWildcardDist;
+import pt.com.broker.functests.positive.TopicPubSubWithActionId;
+import pt.com.broker.functests.positive.UdpQueuePublishTest;
+import pt.com.broker.functests.positive.UdpTopicPublishTest;
+import pt.com.broker.functests.positive.VirtualQueueNameSpecified;
+import pt.com.broker.functests.positive.VirtualQueueNameSpecifiedRemote;
+import pt.com.broker.functests.positive.VirtualQueueTopicNameWildcard;
+import pt.com.broker.functests.positive.VirtualQueueTopicNameWildcardRemote;
+import pt.com.broker.types.NetProtocolType;
 
 public class Main
 {
@@ -61,7 +109,7 @@ public class Main
 			{
 				new DBRolesAuthenticationTest().run(numberOfTests, testResults);
 				new SslTopicNameSpeficied().run(numberOfTests, testResults);
-				new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests, testResults);
+				//new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests, testResults);
 			}
 
 			if (runAll || runPositive || runTopic)

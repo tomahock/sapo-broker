@@ -1,7 +1,6 @@
 package pt.com.broker.performance;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +14,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 public class Test
 {
-	private static int defaultNrOfMessages = 500;
+	private static int defaultNrOfMessages = 10000;
 	private static final ExecutorService executer = Executors.newFixedThreadPool(16);
 
 	private int nrOfMessages = getDefaultNrOfMessages();
@@ -27,10 +26,20 @@ public class Test
 	private final int nrLocalConsumers;
 	private final int nrRemoteConsumers;
 
-	private static final String localAgentAddress = ConfigurationInfo.getParameter("agent1-host");
-	private static final int localAgentPort = Integer.parseInt(ConfigurationInfo.getParameter("agent1-port"));
-	private static final String remotAgentAddress = ConfigurationInfo.getParameter("agent2-host");
-	private static final int remoteAgentPort = Integer.parseInt(ConfigurationInfo.getParameter("agent2-port"));
+	private static final String localAgentAddress;
+	private static final int localAgentPort;
+	private static final String remotAgentAddress;
+	private static final int remoteAgentPort;
+
+	static
+	{
+		ConfigurationInfo.init();
+		localAgentAddress = ConfigurationInfo.getParameter("agent1-host");
+		localAgentPort = Integer.parseInt(ConfigurationInfo.getParameter("agent1-port"));
+		remotAgentAddress = ConfigurationInfo.getParameter("agent2-host");
+		remoteAgentPort = Integer.parseInt(ConfigurationInfo.getParameter("agent2-port"));
+	}
+	
 
 	public Test(DestinationType destinationType, NetProtocolType protocolType, int messageSize, int nrProducers, int nrLocalConsumers, int nrRemoteConsumers)
 	{
@@ -52,13 +61,19 @@ public class Test
 
 		if (destinationType == DestinationType.QUEUE)
 		{
-			if ((getNrOfMessages() % totalConsumers) != 0)
-				throw new RuntimeException("The number of messages consumers must be multiple of the total number of consumers!");
-
-			msgPerClient = getNrOfMessages() / totalConsumers;
+			if(totalConsumers == 0)
+			{
+				msgPerClient = 0;
+			}
+			else
+			{
+				if ((getNrOfMessages() % totalConsumers) != 0)
+					throw new RuntimeException("The number of messages consumers must be multiple of the total number of consumers!");
+				msgPerClient = getNrOfMessages() / totalConsumers;
+			}
 		}
 
-		ArrayList<Callable<Integer>> clients = new ArrayList<Callable<Integer>>(totalConsumers + nrProducers);
+		ArrayList<TestActor> clients = new ArrayList<TestActor>(totalConsumers + nrProducers);
 
 		// System.out.println(" - Initializing local consumers...");
 		for (int i = 0; i != nrLocalConsumers; ++i)
@@ -109,17 +124,24 @@ public class Test
 			}
 		}
 
-		long start = System.currentTimeMillis();
+		long start = System.nanoTime();
 		try
 		{
-			executer.invokeAll(clients, 3, TimeUnit.MINUTES);
+			executer.invokeAll(clients, 5, TimeUnit.MINUTES);
 		}
 		catch (InterruptedException e)
 		{
 			throw new RuntimeException(e);
 		}
 
-		return System.currentTimeMillis() - start;
+		long execTime = System.nanoTime() - start;
+		
+		for (TestActor testActor : clients)
+		{
+			testActor.close();
+		}		
+		
+		return execTime;
 	}
 
 	public void setNrOfMessages(int nrOdMessages)
