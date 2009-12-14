@@ -42,11 +42,11 @@ public class DistConsumerApp implements BrokerListener
 
 		consumer.actorName = cargs.getActorName();
 
-		consumer.dname = TestManager.TEST_MANAGEMENT_TOPIC_ACTION + consumer.actorName;
+		consumer.dname = TestManager.TEST_MANAGEMENT_ACTION + consumer.actorName;
 
 		consumer.brokerClient = new BrokerClient(consumer.host, consumer.port);
 
-		NetSubscribe subscribe = new NetSubscribe(consumer.dname, DestinationType.TOPIC);
+		NetSubscribe subscribe = new NetSubscribe(consumer.dname, DestinationType.QUEUE);
 
 		consumer.brokerClient.addAsyncConsumer(subscribe, consumer);
 
@@ -73,42 +73,51 @@ public class DistConsumerApp implements BrokerListener
 			final AtomicInteger counter = new AtomicInteger(0);
 			final AtomicLong startTime = new AtomicLong(0);
 			final AtomicLong stopTime = new AtomicLong(0);
-						
 
+			final DestinationType destinationType = testParams.getDestinationType();
+			final int numberOfMessages = testParams.getNumberOfMessagesToReceive();
+
+			System.out.println(actorName + " starting new test: " + testParams.getTestName());
+			System.out.println("Number of messages: " + numberOfMessages);
+			
 			bk.addAsyncConsumer(subscribe, new BrokerListener()
 			{
 
+				final AtomicInteger counter2 = new AtomicInteger(0);
+				
 				@Override
 				public void onMessage(NetNotification notification)
 				{
-					if (!startTime.compareAndSet(0, System.nanoTime()))
+					if((counter2.incrementAndGet() % 50) == 0)
 					{
-						if (notification.getMessage().getPayload()[0] == ProducerApp.STOP_MESSAGE)
+						System.out.println( String.format("%s on message: %s", actorName,counter2.get()));
+					}
+					
+					if (destinationType == DestinationType.TOPIC)
+					{
+						if (notification.getMessage().getPayload()[0] == ProducerApp.REGULAR_MESSAGE)
 						{
-							stopTime.set(System.nanoTime());
-
-							byte[] payload = notification.getMessage().getPayload();
-							byte[] serializedCount = new byte[payload.length - 1];
-
-							System.arraycopy(payload, 1, serializedCount, 0, serializedCount.length);
-
-							countDown.countDown();
+							counter.incrementAndGet();
 						}
 						else
 						{
-							int localCounter = counter.incrementAndGet();
-							if ((localCounter % 1000) == 0)
-							{
-								// System.out.println("Messages received: " + localCounter);
-							}
+							stopTime.set(System.nanoTime());
+
+							countDown.countDown();
 						}
 					}
 					else
 					{
-						counter.incrementAndGet();
-						System.out.println("Starting new test!");
+						if (counter.incrementAndGet() == numberOfMessages)
+						{
+							stopTime.set(System.nanoTime());
+							countDown.countDown();
+						}
+						if(counter.get() > numberOfMessages)
+						{
+							log.error(String.format("%s - counter.get() > numberOfMessages (%s)", actorName,counter.get()));
+						}
 					}
-
 				}
 
 				@Override
@@ -120,16 +129,18 @@ public class DistConsumerApp implements BrokerListener
 
 			countDown.await();
 
+			bk.unsubscribe(subscribe.getDestinationType(), subscribe.getDestination());
+
 			TestResult testResult = new TestResult(ActorType.Consumer, actorName, testParams.getTestName(), counter.get(), stopTime.get() - startTime.get());
 			byte[] data = testResult.serialize();
 
 			NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
-			
-			String destination = TestManager.TEST_MANAGEMENT_TOPIC_RESULT+actorName;
-			
-			brokerClient.publishMessage(netBrokerMessage, destination);
-			
-			System.out.println("Test ended with sucess");
+
+			String destination = TestManager.TEST_MANAGEMENT_RESULT;
+
+			brokerClient.enqueueMessage(netBrokerMessage, destination);
+
+			System.out.println(actorName + " Test ended with sucess");
 
 		}
 		catch (Throwable t)
@@ -150,6 +161,14 @@ public class DistConsumerApp implements BrokerListener
 		byte[] testParams = notification.getMessage().getPayload();
 
 		DistTestParams distTestParams = DistTestParams.deserialize(testParams);
+		try
+		{
+			brokerClient.acknowledge(notification);
+		}
+		catch (Throwable t)
+		{
+			log.error("Failed to ack test message", t);
+		}
 
 		performTest(distTestParams);
 	}

@@ -2,29 +2,56 @@
 
 cd `dirname $0`
 
-# check version
-java -version 2>&1 | grep 1.5 > /dev/null
-if [ $? = 0 ] ; then # Yup, 1.5 still
-  echo Found Java version 1.5
-  classpath="./conf"
+producers_start()
+{
+classpath="./conf:../sapo-broker/lib/*:./dist/*"
 
-  for i in ./jvm15/lib/*.jar; do
-    classpath=$classpath:$i
-  done
 
-  for i in ./lib/*.jar; do
-    classpath=$classpath:$i
-  done
-else # we assume 1.6 here
-  echo Found Java version 1.6
-  classpath="./conf:../sapo-broker/lib/*:./dist/*"
-fi
+for producerNum in $(seq $1 $2)
+do
+
+echo ""
+producer='producer'$producerNum
+echo -n "$producer"
 
 java -server \
 -Xverify:none -Xms16M -Xmx16M \
+-Dapp=$producer \
 -Djava.awt.headless=true \
 -Djava.net.preferIPv4Stack=true \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
 -cp $classpath \
-pt.com.broker.performance.distributed.DistProducerApp -n /queue/foo -d QUEUE -p 3323 -a producer1
+pt.com.broker.performance.distributed.DistProducerApp -h 127.0.0.1 -p 3323 -a $producer &
+#pt.com.broker.performance.distributed.DistProducerApp -h 172.17.1.100 -p 3323 -a $producer &
+
+done
+
+}
+
+producers_stop()
+{
+ps aux | grep DistProducerApp | grep -v "grep" | awk '{print $2}' | xargs kill
+}
+
+
+producers_default()
+{
+echo "Performance test producers"
+echo ""
+echo "choose start or stop"
+}
+#
+# Performance test producers
+#
+case $1 in
+'start')
+producers_start $2 $3
+ ;;
+'stop')
+producers_stop
+ ;;
+*)
+producers_default
+ ;;
+esac

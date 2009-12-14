@@ -23,7 +23,8 @@ public class DistTestParams
 	private String destination;
 	private DestinationType destinationType;
 	private int messageSize;
-	private int numberOfMessages;
+	private int numberOfMessagesToReceive;
+	private int numberOfMessagesToSend;
 	
 	private final List<String> producers = new ArrayList<String>(); // name of each producer
 	private final List<String> consumers = new ArrayList<String>(); // name of each consumer
@@ -33,13 +34,15 @@ public class DistTestParams
 		
 	}
 	
-	public DistTestParams(String testName, String destination, DestinationType destinationType, int messageSize, int numberOfMessages)
+	public DistTestParams(String testName, String destination, DestinationType destinationType, int messageSize, int numberOfMessagesToReceive, int numberOfMessagesToSend)
 	{
 		this.testName = testName;
 		this.destination = destination;
 		this.destinationType = destinationType;
 		this.messageSize = messageSize;
-		this.numberOfMessages = numberOfMessages;
+		this.numberOfMessagesToReceive = numberOfMessagesToReceive;
+		this.numberOfMessagesToSend = numberOfMessagesToSend;
+		
 	}
 
 
@@ -63,9 +66,14 @@ public class DistTestParams
 		return messageSize;
 	}
 
-	public int getNumberOfMessages()
+	public int getNumberOfMessagesToReceive()
 	{
-		return numberOfMessages;
+		return numberOfMessagesToReceive;
+	}
+	
+	public int getNumberOfMessagesToSend()
+	{
+		return numberOfMessagesToSend;
 	}
 
 	public List<String> getProducers()
@@ -90,7 +98,8 @@ public class DistTestParams
 			outputObj.writeUTF(destination);
 			outputObj.writeUTF(destinationType.toString());
 			outputObj.writeInt(messageSize);
-			outputObj.writeInt(numberOfMessages);
+			outputObj.writeInt(numberOfMessagesToReceive);
+			outputObj.writeInt(numberOfMessagesToSend);			
 			outputObj.flush();
 
 			data = bout.toByteArray();			
@@ -115,7 +124,8 @@ public class DistTestParams
 			distTestParams.destination = inputObj.readUTF();
 			distTestParams.destinationType = DestinationType.valueOf( inputObj.readUTF() );
 			distTestParams.messageSize = inputObj.readInt();
-			distTestParams.numberOfMessages = inputObj.readInt();
+			distTestParams.numberOfMessagesToReceive = inputObj.readInt();
+			distTestParams.numberOfMessagesToSend = inputObj.readInt();
 			
 		}
 		catch (Throwable e)

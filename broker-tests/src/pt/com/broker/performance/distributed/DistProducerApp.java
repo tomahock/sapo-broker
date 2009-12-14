@@ -29,11 +29,11 @@ public class DistProducerApp implements BrokerListener
 
 	private String host;
 	private int port;
-	
+
 	private String actorName;
 
 	private BrokerClient brokerClient;
-	
+
 	public static void main(String[] args) throws Throwable
 	{
 		final DistTestCliArgs cargs = CliFactory.parseArguments(DistTestCliArgs.class, args);
@@ -43,13 +43,13 @@ public class DistProducerApp implements BrokerListener
 		producer.port = cargs.getPort();
 		producer.actorName = cargs.getActorName();
 
-		String destination = TestManager.TEST_MANAGEMENT_TOPIC_ACTION + producer.actorName;
+		String destination = TestManager.TEST_MANAGEMENT_ACTION + producer.actorName;
 
 		producer.brokerClient = new BrokerClient(producer.host, producer.port);
 
-		NetSubscribe subscribe = new NetSubscribe(destination, DestinationType.TOPIC);
+		NetSubscribe subscribe = new NetSubscribe(destination, DestinationType.QUEUE);
 
-		producer.brokerClient .addAsyncConsumer(subscribe, producer);
+		producer.brokerClient.addAsyncConsumer(subscribe, producer);
 
 		System.out.println(String.format("Producer '%s' running...", producer.actorName));
 
@@ -83,26 +83,19 @@ public class DistProducerApp implements BrokerListener
 				bk.publishMessage(brokerMessage, destination);
 			}
 
-			Sleep.time(5);
 		}
 
-		System.out.println("Sending stop messages");
-
-		for (int i = 0; i != 10; ++i)
+		if (destinationType == DestinationType.TOPIC)
 		{
+			System.out.println(actorName + " sending stop messages");
+			for (int i = 0; i != 15; ++i)
+			{
 
-			if (destinationType == DestinationType.QUEUE)
-			{
-				bk.enqueueMessage(stopBrokerMessage, destination);
-			}
-			else
-			{
 				bk.publishMessage(stopBrokerMessage, destination);
+				Sleep.time(50);
 			}
-
-			// Sleep.time(3);
 		}
-
+		
 		bk.close();
 
 	}
@@ -128,23 +121,25 @@ public class DistProducerApp implements BrokerListener
 
 	private void performTest(DistTestParams testParams)
 	{
-		System.out.println("Starting new test!");
+		System.out.println(actorName + " starting new test: " + testParams.getTestName());
 
 		try
 		{
 			BrokerClient bk = new BrokerClient(host, port);
 
-			sendLoop(bk, testParams.getMessageSize(), testParams.getNumberOfMessages(), testParams.getDestinationType(), testParams.getDestination());
+			sendLoop(bk, testParams.getMessageSize(), testParams.getNumberOfMessagesToSend(), testParams.getDestinationType(), testParams.getDestination());
+			
+			bk.close();
 
 			TestResult testResult = new TestResult(ActorType.Procucer, actorName, testParams.getTestName());
 			byte[] data = testResult.serialize();
 
 			NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
 
-			String destination = TestManager.TEST_MANAGEMENT_TOPIC_RESULT + actorName;
+			String destination = TestManager.TEST_MANAGEMENT_RESULT;
 
-			brokerClient.publishMessage(netBrokerMessage, destination);
-			
+			brokerClient.enqueueMessage(netBrokerMessage, destination);
+			System.out.println(actorName + " ended test " + testParams.getTestName());
 		}
 		catch (Throwable t)
 		{
@@ -155,7 +150,7 @@ public class DistProducerApp implements BrokerListener
 	@Override
 	public boolean isAutoAck()
 	{
-		return false;
+		return true;
 	}
 
 	@Override
