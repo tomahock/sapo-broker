@@ -79,7 +79,7 @@
   </section>
   <section>
     <title>Client library</title>
-    <para>In order to web applications take advantege of Javascrit Bridge a simple javascript library, sbJsBridge.js, was developed. The library, for now, dependes of DojoX Comet implementation Bayeux .</para>
+    <para>In order to web applications take advantege of Javascrit Bridge a simple javascript library, sbJsBridge.js, was developed. The library, for now, depends on <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/clients/bayeux-bridge/example/wwwroot/cometd_uncompressed_changed.js">modified version</ulink> of DojoX Comet implementation Bayeux .</para>
     <para>The javascrit library is composed by the folowing methods:</para>
     <itemizedlist>
       <listitem>connect(hostname, port) - Initialize a communication with a Bayeux Bridge.</listitem>
@@ -171,10 +171,9 @@
     &lt;/body&gt;
 &lt;/html&gt;</screen>
       </example>
-      <para>more text</para>
       <example>
         <title>Javascript client of the Bayeux Bridge library</title>
-        <screen>unction jsTestInit() 
+        <screen>function jsTestInit() 
 {
 	// This are the available channels
 	var availableChannels = new Array(&quot;/topic/messages&quot;, &quot;/topic/foo&quot;,&quot;/bad&quot;);
