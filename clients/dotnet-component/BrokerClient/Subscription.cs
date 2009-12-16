@@ -10,6 +10,8 @@ namespace SapoBrokerClient
 	
 	public class Subscription
 	{
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+                
 		/// <summary>
         /// OnMessageHandler
 		/// </summary>
@@ -25,7 +27,10 @@ namespace SapoBrokerClient
 		
 		private string destinationPattern;
 		private NetAction.DestinationType destinationType;
-		
+
+        private bool autoAcknowledge = false;
+        private BrokerClient brokerClient;
+
 		#endregion
 		
 		public Subscription(string destinationPattern, NetAction.DestinationType destinationType)
@@ -41,16 +46,47 @@ namespace SapoBrokerClient
 				return destinationPattern;
 			}
 		}
-		
+
         /// <summary>
         /// Message used to notify clients of a new message received. This is meant to be used by the messaging framework.
         /// </summary>
         /// <param name="notification"></param>
-		public void FireOnMessage(NetNotification notification)
+		internal void FireOnMessage(NetNotification notification)
 		{
-			if( OnMessage != null)
-				OnMessage(notification);
+            if (OnMessage != null)
+            {
+                try
+                {
+                    OnMessage(notification);
+                    if (autoAcknowledge && notification.DestinationType != NetAction.DestinationType.TOPIC)
+                    {
+                        brokerClient.Acknowledge(notification);
+                    }
+                }
+                catch (Exception e)
+                {
+                    log.Error("Notification failure", e);
+                }
+            }
 		}
+
+        /// <summary>
+        /// Enables Auto Acknowledge on received messages received from queues, that is, a message is automatically acknowledged when successfully processed.
+        /// </summary>
+        public bool AutoAcknowledge
+        {
+            get { return autoAcknowledge; }
+            set { autoAcknowledge = value; }
+        }
+
+        /// <summary>
+        /// BrokerClient instance
+        /// </summary>
+        internal BrokerClient BrokerClient
+        {
+            get { return brokerClient; }
+            set { brokerClient = value; }
+        }
 
         /// <summary>
         /// The destination type (TOPIC, QUEUE or VIRTUA_QUEUE)

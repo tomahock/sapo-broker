@@ -415,11 +415,6 @@ namespace SapoBrokerClient.Networking
             Dispose(true);
         }
 
-        ~NetworkHandler()
-        {
-            Dispose(false);
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -434,6 +429,12 @@ namespace SapoBrokerClient.Networking
                 }
             }
         }
+
+        ~NetworkHandler()
+        {
+            Dispose(false);
+        }
+
         protected void CloseCommunication()
         {
             CloseStreams();

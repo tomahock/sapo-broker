@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Security.Cryptography.X509Certificates;
 
 using SapoBrokerClient;
 using Samples.Utils;
@@ -10,44 +9,47 @@ using RJH.CommandLineHelper;
 
 namespace Samples.Consumers
 {
-    class SslConsumer
+    class ConsumerWithAutoAck
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("SSL Consumer test");
+            Console.WriteLine("ConsumerWithAutoAck test");
 
             if (args.Length == 0)
             {
                 System.Console.WriteLine(CommandLineArguments.Usage());
                 return;
             }
-
+            
             CommandLineArguments cliArgs = new CommandLineArguments();
             Parser parser = new Parser(System.Environment.CommandLine, cliArgs);
             parser.Parse();
 
-            X509CertificateCollection certCollection = null;
-            if (cliArgs.CertificatePath != null)
-            {
-                X509Certificate cert = X509Certificate.CreateFromCertFile(cliArgs.CertificatePath);
-
-                certCollection = new X509CertificateCollection();
-                certCollection.Add(cert);
-            }
-
-            SslBrokerClient brokerClient = new SslBrokerClient(new HostInfo(cliArgs.Hostname, cliArgs.PortNumber), certCollection);
+            BrokerClient brokerClient = new BrokerClient(new HostInfo(cliArgs.Hostname, cliArgs.PortNumber));
 
             Subscription subscription = new Subscription(cliArgs.DestinationName, cliArgs.DestinationType);
+
+            if (cliArgs.DestinationType != NetAction.DestinationType.TOPIC)
+            {
+                // Set AutoAcknowledge
+                subscription.AutoAcknowledge = true;
+            }
+
+            int i = 0;
             subscription.OnMessage += delegate(NetNotification notification)
             {
-                System.Console.WriteLine("Message received: {0}",
-                                         System.Text.Encoding.UTF8.GetString(notification.Message.Payload));
                 if (notification.DestinationType != NetAction.DestinationType.TOPIC)
                     brokerClient.Acknowledge(notification.Subscription, notification.Message.MessageId);
+                System.Console.WriteLine("Message received: {0}, Total: {1}",
+                                         System.Text.Encoding.UTF8.GetString(notification.Message.Payload), (++i).ToString());
+                /*
+                 *  AutoAcknowledge is enable, so, there is no need to excplicit acknowledge message
+                 *  
                 if (notification.DestinationType != NetAction.DestinationType.TOPIC)
                 {
                     brokerClient.Acknowledge(notification);
                 }
+                 */
             };
 
             brokerClient.Subscribe(subscription);
@@ -57,8 +59,7 @@ namespace Samples.Consumers
                 ;
             Console.WriteLine();
             Console.WriteLine("Unsubscribe...");
-
-
+            
             // Note Subscription instance could other than the one used for subscription as long as it was equivelent (same destination type and subscription pattern). Since the application is ending and therefor the socket will be closed agent's will discard the previous subscription. 
             brokerClient.Unsubscribe(subscription);
 

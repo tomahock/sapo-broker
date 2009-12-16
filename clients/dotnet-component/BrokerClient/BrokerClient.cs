@@ -10,7 +10,7 @@ using SapoBrokerClient.Networking;
 
 namespace SapoBrokerClient
 {
-	public class BrokerClient
+	public class BrokerClient : IDisposable
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
@@ -207,6 +207,8 @@ namespace SapoBrokerClient
             if (IsClosed())
                 return;
 
+            subscription.BrokerClient = this;
+
 			NetSubscribe netSubscribe = new NetSubscribe(subscription.DestinationPattern, subscription.DestinationType);
 			NetAction action = new NetAction(NetAction.ActionType.SUBSCRIBE);
 			action.SubscribeMessage = netSubscribe;
@@ -273,22 +275,7 @@ namespace SapoBrokerClient
             protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);
             NetNotification notification = protocolHandler.GetSyncMessage(queueName, netMessage);
             
-            //object sync = new object();
-            //NotifiableKeyedQueues<NetNotification>.SynchronizationEntry syncEntry = new NotifiableKeyedQueues<NetNotification>.SynchronizationEntry(sync, false);
 
-            //NotifiableKeyedQueues<NetNotification>.Register(queueName, syncEntry);
-
-            //protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);
-            //protocolHandler.AddSyncSubscription(queueName, netMessage);
-
-            //lock (sync)
-            //{
-            //    Monitor.Wait(sync);
-            //}
-            //protocolHandler.RemoveSyncSubscription(queueName);
-            //syncEntry.StillInterested = false;
-
-            //NetNotification notification = syncEntry.Values[0];
             if (notification == BrokerProtocolHandler.UnblockNotification)
                 throw new TimeoutException();
             
@@ -298,6 +285,18 @@ namespace SapoBrokerClient
             return notification;
         }
 
+		/// <summary>
+        /// Acknowledge a queue message.
+        /// </summary>
+        /// <param name="notification">The received notification object</param>
+		public void Acknowledge(NetNotification notification)
+        {
+			if(notification.DestinationType != NetAction.DestinationType.TOPIC)
+			{
+            	Acknowledge(notification.Destination, notification.Message.MessageId, null);
+			}
+        }
+		
         /// <summary>
         /// Acknowledge a queue message.
         /// </summary>
@@ -428,5 +427,33 @@ namespace SapoBrokerClient
             BrokerProtocolHandler.SendMessageOverUdp(netMessage, hostInfo, messageSerializer);	
         }
 
-	}
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                lock (this)
+                {
+                    if (closed)
+                        return;
+                    Close();
+                    GC.SuppressFinalize(this);
+                }
+            }
+        }
+
+        ~BrokerClient()
+        {
+            Dispose(false);
+        }
+
+        #endregion
+    }
 }

@@ -37,6 +37,10 @@ namespace Samples.Consumers
                                          System.Text.Encoding.UTF8.GetString(notification.Message.Payload));
                 if (notification.DestinationType != NetAction.DestinationType.TOPIC)
                     brokerClient.Acknowledge(notification.Destination, notification.Message.MessageId);
+                if (notification.DestinationType != NetAction.DestinationType.TOPIC)
+                {
+                    brokerClient.Acknowledge(notification);
+                }
             };
 
             brokerClient.Subscribe(subscription);
