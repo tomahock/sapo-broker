@@ -1,6 +1,14 @@
 package pt.com.broker.performance.distributed;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
@@ -8,12 +16,17 @@ import java.util.concurrent.CountDownLatch;
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
-import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.performance.distributed.DistTestParams.ClientInfo;
+import pt.com.broker.performance.distributed.conf.ConfigurationInfo;
+import pt.com.broker.performance.distributed.conf.ConfigurationInfo.AgentInfo;
+import pt.com.broker.performance.distributed.conf.Consumers.Consumer;
+import pt.com.broker.performance.distributed.conf.Producers.Producer;
+import pt.com.broker.performance.distributed.conf.Tests.Test;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
@@ -29,59 +42,89 @@ public class TestManager implements BrokerListener
 
 	private BrokerClient brokerClient;
 
+	private String hostname;
+	private int port;
+
 	private TreeMap<String, DistTestParams> tests = new TreeMap<String, DistTestParams>();
 
 	private TreeMap<String, List<TestResult>> results = new TreeMap<String, List<TestResult>>();
 
+	private HashMap<String, AgentInfo> agents;
+
+	private StringBuilder testResults = new StringBuilder();
+
+	private int numberOfMessages;
+	private int messageSize;
+
 	public static void main(String[] args) throws Throwable
 	{
-		TestManager testManager = new TestManager();
-		testManager.addTests();
-		
-
 		final DistTestCliArgs cargs = CliFactory.parseArguments(DistTestCliArgs.class, args);
+
+		TestManager testManager = new TestManager();
+
+		testManager.numberOfMessages = cargs.getNumberOfMessages();
+		testManager.messageSize = cargs.getMessageLength();
+
+		testManager.hostname = cargs.getHost();
+		testManager.port = cargs.getPort();
+
+		testManager.init();
 
 		System.out.println(String.format("Test manger running..."));
 
-		testManager.start(cargs.getHost(), cargs.getPort());
+		testManager.start();
 
 		System.out.println(String.format("Tests ended!"));
 
 		for (String testname : testManager.results.keySet())
 		{
-			ShowTestResult(testname, testManager.results.get(testname));
+			testManager.showTestResult(testname, testManager.tests.get(testname), testManager.results.get(testname));
 		}
+
+		testManager.stop();
 	}
 
-	private static void ShowTestResult(String testname, List<TestResult> testResults)
+	private void showTestResult(String testname, DistTestParams testParams, List<TestResult> testResults)
 	{
 		final double nano2second = (1000 * 1000 * 1000);
 
-		System.out.println("\n--------------------------------------------------\n");
-		System.out.println("TEST: " + testname);
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("\n--------------------------------------------------\n");
+		sb.append("TEST: " + testname);
+		sb.append(String.format("Consumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
 
 		double timePerMsgAcc = 0;
 		double messagesPerSecondAcc = 0;
 
 		for (TestResult tRes : testResults)
 		{
-			double timePerMsg = ((((double) tRes.getTime())) / tRes.getMessages()) / nano2second;
+			double timePerMsg = (((tRes.getTime())) / tRes.getMessages()) / nano2second;
 			double messagesPerSecond = 1 / timePerMsg;
-			System.out.println(String.format("Consumer: %s, Messages: %s, Time: %s, Time/message: %s, Message/second: %s", tRes.getActorName(), tRes.getMessages(), tRes.getTime(), timePerMsg, messagesPerSecond));
+			sb.append(String.format("Consumer: %s, Messages: %s, Time: %,.2f, Messages/second: %,.2f", tRes.getActorName(), tRes.getMessages(), tRes.getTime() / nano2second, messagesPerSecond));
 
 			timePerMsgAcc += timePerMsg;
 			messagesPerSecondAcc += messagesPerSecond;
 		}
 
-		System.out.println(String.format("AVERAGE - Time/message: %s, Message/second: %s", timePerMsgAcc / testResults.size(), messagesPerSecondAcc / testResults.size()));
+		sb.append(String.format("\nAVERAGE: Messages/second: %,.3f", messagesPerSecondAcc / testResults.size()));
 
+		System.out.println(sb.toString());
+
+		this.testResults.append(sb);
 	}
 
-	private void start(String host, int port)
+	private void stop()
+	{
+		brokerClient.close();
+		writeResult();
+	}
+
+	private void start()
 	{
 		try
 		{
-			brokerClient = new BrokerClient(host, port);
+			brokerClient = new BrokerClient(hostname, port);
 
 			NetSubscribe netSubscribe = new NetSubscribe(TEST_MANAGEMENT_RESULT, DestinationType.QUEUE);
 
@@ -120,53 +163,98 @@ public class TestManager implements BrokerListener
 		testsCountDown.countDown();
 	}
 
+	private void init()
+	{
+		ConfigurationInfo.init();
+		agents = ConfigurationInfo.getAgents();
+
+		addTests();
+	}
+
 	private void addTests()
 	{
-		final int NUMBER_OF_MESSAGES = 1000;
-		final int ERROR_DELTA = 100;
-		
-		int[] consumersCount = new int[] { /*1, */2, 4 };
+		AgentInfo defaultAgent = ConfigurationInfo.getDefaultAgent();
 
-		int testCount = 1;
-
-		for (DestinationType dt : new DestinationType[]{DestinationType.TOPIC, DestinationType.QUEUE} )
+		for (Test t : ConfigurationInfo.getConfiguration().getTests().getTest())
 		{
-			for (int consumers : consumersCount)
+
+			String testName = t.getTestName();
+
+			// destination info
+			DestinationType destinationType = DestinationType.valueOf(t.getDestination().getDestinationType());
+			boolean isSyncConsumer = t.getDestination().isSyncConsumer().booleanValue();
+
+			// messages info
+			int messageSize = t.getMessages().getMessageSize().intValue();
+			if (this.messageSize != -1)
 			{
-				if(dt == DestinationType.QUEUE)
-				{
-					if( (NUMBER_OF_MESSAGES%consumers) != 0)
-					{
-						continue;
-					}
-				}
-				
-				DistTestParams distTestParams = null;
-
-				for (int size = 256; size < (8 * 1000); size *= 2)
-				{
-					System.out.println("TestManager.addTests() - size -> " + size);
-					
-					int messagesToReceive = (dt == DestinationType.TOPIC)? NUMBER_OF_MESSAGES: (NUMBER_OF_MESSAGES/consumers);
-					int messagesToSend= (dt == DestinationType.TOPIC)? NUMBER_OF_MESSAGES: (NUMBER_OF_MESSAGES + ERROR_DELTA);
-					
-					String randName = RandomStringUtils.randomAlphanumeric(15);
-										
-					distTestParams = new DistTestParams(String.format("test_%s_%s_%s_%s", dt, (testCount++) + "", size + "", consumers + ""),
-							String.format("/%s/perf/%s", dt.toString().toLowerCase(), randName), dt, size, messagesToReceive, messagesToSend);
-					distTestParams.getProducers().add("producer1");
-
-					for (int i = 0; i != consumers; ++i)
-					{
-						distTestParams.getConsumers().add("consumer" + (i + 1));
-					}
-					tests.put(distTestParams.getTestName(), distTestParams);
-
-					System.out.println( String.format("Test added: %s",  distTestParams.getTestName()));
-				}
+				messageSize = this.messageSize;
+			}
+			int nrMessages = t.getMessages().getNumberOfMessages().intValue();
+			if (this.numberOfMessages != -1)
+			{
+				nrMessages = this.numberOfMessages;
 			}
 
+			String randName = RandomStringUtils.randomAlphanumeric(15);
+			DistTestParams distTestParams = new DistTestParams(testName, String.format("/perf/%s/%s", destinationType.toString().toLowerCase(), randName), destinationType, messageSize, nrMessages, isSyncConsumer);
+
+			/*
+			 * consumers info
+			 */
+			int consumerCount = t.getConsumers().getCount().intValue();
+			// get specified consumer info
+
+			for (Consumer consumer : t.getConsumers().getConsumer())
+			{
+				AgentInfo agentInfo = ConfigurationInfo.getAgents().get(consumer.getAgentId());
+
+				DistTestParams.ClientInfo clientInfo = new DistTestParams.ClientInfo(consumer.getName(), agentInfo.hostname, agentInfo.tcpPort);
+
+				distTestParams.getConsumers().put(consumer.getName(), clientInfo);
+			}
+			// generate remaining
+			for (int i = 1; i <= consumerCount; ++i)
+			{
+				String consumerName = String.format("consumer%s", i + "");
+				if (distTestParams.getConsumers().get(consumerName) != null)
+				{
+					continue;
+				}
+				DistTestParams.ClientInfo clientInfo = new DistTestParams.ClientInfo(consumerName, defaultAgent.hostname, defaultAgent.tcpPort);
+				distTestParams.getConsumers().put(clientInfo.getName(), clientInfo);
+			}
+
+			/*
+			 * producers info
+			 */
+			int producersCount = t.getProducers().getCount().intValue();
+			// get specified consumer info
+
+			for (Producer producer : t.getProducers().getProducer())
+			{
+				AgentInfo agentInfo = ConfigurationInfo.getAgents().get(producer.getAgentId());
+
+				DistTestParams.ClientInfo clientInfo = new DistTestParams.ClientInfo(producer.getName(), agentInfo.hostname, agentInfo.tcpPort);
+				distTestParams.getConsumers().put(producer.getName(), clientInfo);
+			}
+			// generate remaining
+			for (int i = 1; i <= producersCount; ++i)
+			{
+				String producerName = String.format("producer%s", i + "");
+				if (distTestParams.getConsumers().get(producerName) != null)
+				{
+					continue;
+				}
+				DistTestParams.ClientInfo clientInfo = new DistTestParams.ClientInfo(producerName, defaultAgent.hostname, defaultAgent.tcpPort);
+				distTestParams.getConsumers().put(clientInfo.getName(), clientInfo);
+			}
+
+			tests.put(distTestParams.getTestName(), distTestParams);
+
+			System.out.println(String.format("Test added: %s", distTestParams.getTestName()));
 		}
+
 	}
 
 	@Override
@@ -203,18 +291,24 @@ public class TestManager implements BrokerListener
 			results.put(distTestParams.getTestName(), new ArrayList<TestResult>(distTestParams.getConsumers().size()));
 		}
 
-		byte[] serializedData = distTestParams.serialize();
-
-		NetBrokerMessage netBrokerMsg = new NetBrokerMessage(serializedData);
-
-		for (String consumer : distTestParams.getConsumers())
+		for (String consumer : distTestParams.getConsumers().keySet())
 		{
+			ClientInfo clientInfo = distTestParams.getConsumers().get(consumer);
+
+			byte[] serializedData = distTestParams.serialize(clientInfo);
+			NetBrokerMessage netBrokerMsg = new NetBrokerMessage(serializedData);
+
 			brokerClient.enqueueMessage(netBrokerMsg, TEST_MANAGEMENT_ACTION + consumer);
 		}
 		// wait for 1s
 		Sleep.time(1000);
-		for (String producer : distTestParams.getProducers())
+		for (String producer : distTestParams.getProducers().keySet())
 		{
+			ClientInfo clientInfo = distTestParams.getProducers().get(producer);
+
+			byte[] serializedData = distTestParams.serialize(clientInfo);
+			NetBrokerMessage netBrokerMsg = new NetBrokerMessage(serializedData);
+
 			brokerClient.enqueueMessage(netBrokerMsg, TEST_MANAGEMENT_ACTION + producer);
 		}
 
@@ -222,6 +316,14 @@ public class TestManager implements BrokerListener
 		{
 			testsCountDown.await(); // Eventually use a timeout to prevent deadlocks in case a actor fails
 			System.out.println(String.format("Test '%s' ended", distTestParams.getTestName()));
+			if (distTestParams.getDestinationType() == DestinationType.QUEUE)
+			{
+				for (String agentId : agents.keySet())
+				{
+					AgentInfo agentInfo = agents.get(agentId);
+					deleteQueue(agentInfo.hostname, agentInfo.httpPort, distTestParams.getDestination());
+				}
+			}
 		}
 		catch (InterruptedException e)
 		{
@@ -229,4 +331,62 @@ public class TestManager implements BrokerListener
 		}
 
 	}
+
+	private void writeResult()
+	{
+		FileWriter fstream;
+		try
+		{
+			fstream = new FileWriter("results.txt");
+			BufferedWriter out = new BufferedWriter(fstream);
+			out.write(this.testResults.toString());
+			out.close();
+		}
+		catch (IOException e)
+		{
+			log.error("Failed to write file", e);
+		}
+
+	}
+
+	private static void deleteQueue(String hostname, int port, String queueName)
+	{
+		log.info("Deleting queue '{}', from host '{}'", queueName, hostname + ":" + port);
+
+		try
+		{
+			String agentUrl = String.format("http://%s:%s/broker/admin", hostname, port + "");
+
+			URL url = new URL(agentUrl);
+			URLConnection connection = url.openConnection();
+
+			HttpURLConnection httpUrlconn = (HttpURLConnection) connection;
+
+			httpUrlconn.setDoOutput(true);
+			httpUrlconn.setConnectTimeout(500);
+			httpUrlconn.setReadTimeout(60000);
+
+			OutputStreamWriter wr = new OutputStreamWriter(httpUrlconn.getOutputStream());
+			wr.write("QUEUE:" + queueName);
+
+			wr.flush();
+
+			int respCode = httpUrlconn.getResponseCode();
+			if (respCode == HttpURLConnection.HTTP_OK)
+			{
+				log.debug("Queue '{}' deleted", queueName);
+			}
+			else
+			{
+				log.debug("Failed to delete queue '{}'", queueName);
+			}
+
+			wr.close();
+		}
+		catch (Throwable t)
+		{
+			log.error(String.format("Failed to connect to agent '%s:%s' to delete queue '%s':.", hostname, port, queueName), t);
+		}
+	}
+
 }

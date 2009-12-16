@@ -63,73 +63,74 @@ public class DistConsumerApp implements BrokerListener
 	{
 		try
 		{
-			BrokerClient bk = new BrokerClient(host, port);
+			//BrokerClient bk = new BrokerClient(host, port);
+			
+			BrokerClient bk = new BrokerClient(testParams.getClientInfo().getAgentHost(), testParams.getClientInfo().getPort());
 
 			final DestinationType destType = testParams.getDestinationType();
 
 			NetSubscribe subscribe = new NetSubscribe(testParams.getDestination(), destType);
 
-			final CountDownLatch countDown = new CountDownLatch(1);
 			final AtomicInteger counter = new AtomicInteger(0);
 			final AtomicLong startTime = new AtomicLong(0);
 			final AtomicLong stopTime = new AtomicLong(0);
 
-			final DestinationType destinationType = testParams.getDestinationType();
-			final int numberOfMessages = testParams.getNumberOfMessagesToReceive();
-
 			System.out.println(actorName + " starting new test: " + testParams.getTestName());
-			System.out.println("Number of messages: " + numberOfMessages);
-			
-			bk.addAsyncConsumer(subscribe, new BrokerListener()
-			{
 
-				final AtomicInteger counter2 = new AtomicInteger(0);
-				
-				@Override
-				public void onMessage(NetNotification notification)
+			if (!testParams.isSyncConsumer())
+			{
+				final CountDownLatch countDown = new CountDownLatch(1);
+				bk.addAsyncConsumer(subscribe, new BrokerListener()
 				{
-					if((counter2.incrementAndGet() % 50) == 0)
+					@Override
+					public void onMessage(NetNotification notification)
 					{
-						System.out.println( String.format("%s on message: %s", actorName,counter2.get()));
-					}
-					
-					if (destinationType == DestinationType.TOPIC)
-					{
+						startTime.compareAndSet(0, System.nanoTime());
+						
 						if (notification.getMessage().getPayload()[0] == ProducerApp.REGULAR_MESSAGE)
 						{
 							counter.incrementAndGet();
 						}
 						else
 						{
-							stopTime.set(System.nanoTime());
-
+							stopTime.compareAndSet(0, System.nanoTime());
 							countDown.countDown();
 						}
+					}
+
+					@Override
+					public boolean isAutoAck()
+					{
+						return destType != DestinationType.TOPIC;
+					}
+				});
+				countDown.await();
+				bk.unsubscribe(subscribe.getDestinationType(), subscribe.getDestination());
+			}
+			else
+			{
+				boolean stop = false;
+
+				System.out.println(actorName + " Sync consumer");
+
+				startTime.set(System.nanoTime());
+				
+				do
+				{
+					NetNotification notification = bk.poll(testParams.getDestination());
+					if (notification.getMessage().getPayload()[0] == ProducerApp.REGULAR_MESSAGE)
+					{
+						counter.incrementAndGet();
 					}
 					else
 					{
-						if (counter.incrementAndGet() == numberOfMessages)
-						{
-							stopTime.set(System.nanoTime());
-							countDown.countDown();
-						}
-						if(counter.get() > numberOfMessages)
-						{
-							log.error(String.format("%s - counter.get() > numberOfMessages (%s)", actorName,counter.get()));
-						}
+						stopTime.compareAndSet(0, System.nanoTime());
+						stop = true;
 					}
+					bk.acknowledge(notification);
 				}
-
-				@Override
-				public boolean isAutoAck()
-				{
-					return destType != DestinationType.TOPIC;
-				}
-			});
-
-			countDown.await();
-
-			bk.unsubscribe(subscribe.getDestinationType(), subscribe.getDestination());
+				while (!stop);
+			}
 
 			TestResult testResult = new TestResult(ActorType.Consumer, actorName, testParams.getTestName(), counter.get(), stopTime.get() - startTime.get());
 			byte[] data = testResult.serialize();
@@ -137,6 +138,8 @@ public class DistConsumerApp implements BrokerListener
 			NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
 
 			String destination = TestManager.TEST_MANAGEMENT_RESULT;
+
+			System.out.println(actorName + " Sending results");
 
 			brokerClient.enqueueMessage(netBrokerMessage, destination);
 
@@ -172,5 +175,4 @@ public class DistConsumerApp implements BrokerListener
 
 		performTest(distTestParams);
 	}
-
 }

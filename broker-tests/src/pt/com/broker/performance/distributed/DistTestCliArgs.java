@@ -83,15 +83,22 @@ public interface DistTestCliArgs
 	 * 
 	 * @return Message length. Useful for generate random messages with known size.
 	 */
-	@Option(shortName = "l", defaultValue = "2000")
+	@Option(shortName = "l", defaultValue = "-1")
 	int getMessageLength();
 	
 	/**
 	 * 
 	 * @return Number of Messages.
 	 */
-	@Option(shortName = "c", defaultValue = "10000")
+	@Option(shortName = "m", defaultValue = "-1")
 	int getNumberOfMessages();
+	
+	/**
+	 * 
+	 * @return Number of consumers.
+	 */
+	@Option(shortName = "c", defaultValue = "-1")
+	int getNumberOfConsumers();
 	
 	/**
 	 * 

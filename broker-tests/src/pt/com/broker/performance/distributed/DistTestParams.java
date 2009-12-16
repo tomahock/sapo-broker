@@ -3,7 +3,7 @@ package pt.com.broker.performance.distributed;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
@@ -18,34 +18,94 @@ public class DistTestParams
 	private static final Logger log = LoggerFactory.getLogger(DistTestParams.class);
 	
 	
+	public static class ClientInfo
+	{
+		private String name;
+		private String agentHost;
+		private int port;
+	
+		private ClientInfo()
+		{
+		}
+		
+		public ClientInfo(String name, String agentHost, int port)
+		{
+			this.name = name;
+			this.agentHost = agentHost;
+			this.port = port;			
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public String getAgentHost()
+		{
+			return agentHost;
+		}
+
+		public int getPort()
+		{
+			return port;
+		}
+		public void write(ObjectOutputStream outputObj)
+		{
+			try
+			{
+				outputObj.writeUTF(name);
+				outputObj.writeUTF(agentHost);
+				outputObj.writeInt(port);
+			}
+			catch (IOException e)
+			{
+				log.error("Failed to serialize object", e);
+			}
+		}
+		public void read(ObjectInputStream inputObj)
+		{
+			try
+			{
+				this.name = inputObj.readUTF();
+				this.agentHost = inputObj.readUTF();
+				this.port = inputObj.readInt();		
+			}
+			catch (Throwable e)
+			{
+				log.error("Failed to deserialize object", e);
+			}
+		}
+	}
+	
 	private String testName;
 	
 	private String destination;
 	private DestinationType destinationType;
 	private int messageSize;
-	private int numberOfMessagesToReceive;
 	private int numberOfMessagesToSend;
+	private boolean syncConsumer;
 	
-	private final List<String> producers = new ArrayList<String>(); // name of each producer
-	private final List<String> consumers = new ArrayList<String>(); // name of each consumer
+	private ClientInfo clientInfo;
+	
+	private final HashMap<String, ClientInfo> producers = new HashMap<String, ClientInfo>(); // name of each producer
+	private final HashMap<String, ClientInfo> consumers = new HashMap<String, ClientInfo>(); // name of each consumer
 	
 	private DistTestParams()
 	{
 		
 	}
 	
-	public DistTestParams(String testName, String destination, DestinationType destinationType, int messageSize, int numberOfMessagesToReceive, int numberOfMessagesToSend)
+	public DistTestParams(String testName, String destination, DestinationType destinationType, int messageSize, int numberOfMessagesToSend, boolean syncConsumer)
 	{
 		this.testName = testName;
 		this.destination = destination;
 		this.destinationType = destinationType;
 		this.messageSize = messageSize;
-		this.numberOfMessagesToReceive = numberOfMessagesToReceive;
 		this.numberOfMessagesToSend = numberOfMessagesToSend;
-		
-	}
+		this.syncConsumer = syncConsumer;
+	}	
 
-
+	
 	public String getTestName()
 	{
 		return testName;
@@ -65,29 +125,28 @@ public class DistTestParams
 	{
 		return messageSize;
 	}
-
-	public int getNumberOfMessagesToReceive()
-	{
-		return numberOfMessagesToReceive;
-	}
 	
 	public int getNumberOfMessagesToSend()
 	{
 		return numberOfMessagesToSend;
 	}
 
-	public List<String> getProducers()
+	public HashMap<String, ClientInfo> getProducers()
 	{
 		return producers;
 	}
 
-
-	public List<String> getConsumers()
+	public HashMap<String, ClientInfo> getConsumers()
 	{
 		return consumers;
 	}
+
+	public boolean isSyncConsumer()
+	{
+		return syncConsumer;
+	}
 	
-	public byte[] serialize()
+	public byte[] serialize(ClientInfo clientInfo)
 	{
 		byte[] data = null;
 		try
@@ -98,8 +157,11 @@ public class DistTestParams
 			outputObj.writeUTF(destination);
 			outputObj.writeUTF(destinationType.toString());
 			outputObj.writeInt(messageSize);
-			outputObj.writeInt(numberOfMessagesToReceive);
-			outputObj.writeInt(numberOfMessagesToSend);			
+			outputObj.writeInt(numberOfMessagesToSend);		
+			outputObj.writeBoolean(syncConsumer);
+			
+			clientInfo.write(outputObj);
+			
 			outputObj.flush();
 
 			data = bout.toByteArray();			
@@ -124,8 +186,11 @@ public class DistTestParams
 			distTestParams.destination = inputObj.readUTF();
 			distTestParams.destinationType = DestinationType.valueOf( inputObj.readUTF() );
 			distTestParams.messageSize = inputObj.readInt();
-			distTestParams.numberOfMessagesToReceive = inputObj.readInt();
 			distTestParams.numberOfMessagesToSend = inputObj.readInt();
+			distTestParams.syncConsumer = inputObj.readBoolean();
+			
+			distTestParams.clientInfo = new ClientInfo();
+			distTestParams.clientInfo.read(inputObj);
 			
 		}
 		catch (Throwable e)
@@ -135,6 +200,12 @@ public class DistTestParams
 		}
 		
 		return distTestParams;
+	}
+
+
+	public ClientInfo getClientInfo()
+	{
+		return clientInfo;
 	}
 	
 }

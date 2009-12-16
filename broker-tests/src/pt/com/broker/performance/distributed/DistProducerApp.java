@@ -82,22 +82,27 @@ public class DistProducerApp implements BrokerListener
 			{
 				bk.publishMessage(brokerMessage, destination);
 			}
-
 		}
 
-		if (destinationType == DestinationType.TOPIC)
+		System.out.println(actorName + " sending stop messages");
+		for (int i = 0; i != 150; ++i)
 		{
-			System.out.println(actorName + " sending stop messages");
-			for (int i = 0; i != 15; ++i)
+			if (destinationType == DestinationType.QUEUE)
 			{
-
+				bk.enqueueMessage(stopBrokerMessage, destination);
+			}
+			else
+			{
 				bk.publishMessage(stopBrokerMessage, destination);
+			}
+
+			if(destinationType == DestinationType.TOPIC)
+			{
 				Sleep.time(50);
 			}
 		}
 		
 		bk.close();
-
 	}
 
 	private byte[] getMessage(byte headerByte, String messageContent)
@@ -125,7 +130,7 @@ public class DistProducerApp implements BrokerListener
 
 		try
 		{
-			BrokerClient bk = new BrokerClient(host, port);
+			BrokerClient bk = new BrokerClient(testParams.getClientInfo().getAgentHost(), testParams.getClientInfo().getPort());
 
 			sendLoop(bk, testParams.getMessageSize(), testParams.getNumberOfMessagesToSend(), testParams.getDestinationType(), testParams.getDestination());
 			

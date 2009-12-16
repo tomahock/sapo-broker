@@ -25,6 +25,7 @@ java -server \
 pt.com.broker.performance.distributed.DistConsumerApp -h 127.0.0.1 -p 3323 -a $consumer &
 #pt.com.broker.performance.distributed.DistConsumerApp -h 172.17.1.100 -p 3323 -a $consumer &
 
+
 done
 
 }
