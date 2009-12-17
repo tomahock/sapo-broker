@@ -372,7 +372,7 @@ public class TestManager implements BrokerListener
 		{
 			double timePerMsg = (((tRes.getTime())) / tRes.getMessages()) / nano2second;
 			double messagesPerSecond = 1 / timePerMsg;
-			sb.append(String.format("Consumer: %s, Messages: %s, Time: %,.2f, Messages/second: %,.2f", tRes.getActorName(), tRes.getMessages(), tRes.getTime() / nano2second, messagesPerSecond));
+			sb.append(String.format("Consumer: %s, Messages: %s, Time: %,.2f, Messages/second: %,.2f\n", tRes.getActorName(), tRes.getMessages(), tRes.getTime() / nano2second, messagesPerSecond));
 
 			timePerMsgAcc += timePerMsg;
 			messagesPerSecondAcc += messagesPerSecond;
