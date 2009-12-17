@@ -237,18 +237,18 @@ public class TestManager implements BrokerListener
 				AgentInfo agentInfo = ConfigurationInfo.getAgents().get(producer.getAgentId());
 
 				DistTestParams.ClientInfo clientInfo = new DistTestParams.ClientInfo(producer.getName(), agentInfo.hostname, agentInfo.tcpPort);
-				distTestParams.getConsumers().put(producer.getName(), clientInfo);
+				distTestParams.getProducers().put(producer.getName(), clientInfo);
 			}
 			// generate remaining
 			for (int i = 1; i <= producersCount; ++i)
 			{
 				String producerName = String.format("producer%s", i + "");
-				if (distTestParams.getConsumers().get(producerName) != null)
+				if (distTestParams.getProducers().get(producerName) != null)
 				{
 					continue;
 				}
 				DistTestParams.ClientInfo clientInfo = new DistTestParams.ClientInfo(producerName, defaultAgent.hostname, defaultAgent.tcpPort);
-				distTestParams.getConsumers().put(clientInfo.getName(), clientInfo);
+				distTestParams.getProducers().put(clientInfo.getName(), clientInfo);
 			}
 
 			tests.put(distTestParams.getTestName(), distTestParams);
@@ -363,7 +363,7 @@ public class TestManager implements BrokerListener
 
 		sb.append("\n--------------------------------------------------\n");
 		sb.append("TEST: " + testname);
-		sb.append(String.format("Consumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
+		sb.append(String.format("\nConsumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
 
 		double timePerMsgAcc = 0;
 		double messagesPerSecondAcc = 0;
