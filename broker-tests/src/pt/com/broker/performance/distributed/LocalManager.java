@@ -103,7 +103,18 @@ public class LocalManager implements BrokerListener
 	{
 		System.out.println(String.format("Starting test, using %s consumers and %s producers.", machineConfiguration.getConsumers().size(), machineConfiguration.getProducers().size()));
 		
-		executer = Executors.newFixedThreadPool(machineConfiguration.getConsumers().size());
+		int actors = 0;
+		if(machineConfiguration.getConsumers() != null)
+		{
+			actors += machineConfiguration.getConsumers().size();
+		}
+		
+		if(machineConfiguration.getProducers() != null)
+		{
+			actors += machineConfiguration.getProducers().size();
+		}
+		
+		executer = Executors.newFixedThreadPool(actors);
 		
 		for(String consumerName :  machineConfiguration.getConsumers() )
 		{
