@@ -62,6 +62,7 @@ public class LocalManager implements BrokerListener
 			{
 				try
 				{
+					System.out.println("Consumer started: " +  consumerName);
 					new DistConsumerApp(hostname, port, consumerName);
 				}
 				catch (Throwable e)
@@ -85,6 +86,7 @@ public class LocalManager implements BrokerListener
 			{
 				try
 				{
+					System.out.println("Producer started: " +  producerName);
 					new DistProducerApp(hostname, port, producerName);
 				}
 				catch (Throwable e)

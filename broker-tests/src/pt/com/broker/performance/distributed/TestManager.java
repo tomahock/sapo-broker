@@ -113,12 +113,27 @@ public class TestManager implements BrokerListener
 			for(String machine : machineConfigurations.keySet())
 			{
 				MachineConfiguration machineConfiguration = machineConfigurations.get(machine);
+				
+				System.out.println(String.format("Test: %s", machineConfiguration.getMachineName()));
+				
+				System.out.println("Consumers: ");
+				for(String consumerName :  machineConfiguration.getConsumers())
+				{
+					System.out.println(" - " + consumerName);
+				}
+				
+				System.out.println("Producers: ");
+				for(String producerName :  machineConfiguration.getProducers())
+				{
+					System.out.println(" - " + producerName);
+				}
+				
 				byte[] data = machineConfiguration.serialize();
 				
 				NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
 				String destination = String.format("%s%s", TEST_MANAGEMENT_LOCAL_MANAGERS, machineConfiguration.getMachineName());
 				
-				System.out.println("Sendind machine info to destination " + destination);
+				//System.out.println("Sendind machine info to destination " + destination);
 				
 				brokerClient.enqueueMessage(netBrokerMessage, destination);
 			}
