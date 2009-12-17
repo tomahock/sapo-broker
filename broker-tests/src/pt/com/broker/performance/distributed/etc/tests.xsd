@@ -14,7 +14,25 @@
 		</xs:sequence>
 		<xs:attribute name="default-agent" type="xs:string" use="required" />
 	</xs:complexType>
-
+	<xs:complexType name="Machines">
+		<xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="unbounded" name="machine">
+				<xs:complexType>
+					<xs:attribute name="machine-name" type="xs:string" use="required" />
+					<xs:attribute name="consumers"  use="optional">
+								<xs:simpleType>
+								  <xs:list itemType="xs:string" />
+								</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="producers"  use="optional">
+								<xs:simpleType>
+								  <xs:list itemType="xs:string" />
+								</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="Consumers">
 		<xs:sequence>
 			<xs:element minOccurs="0" maxOccurs="unbounded" name="consumer">
@@ -76,6 +94,8 @@
 			<xs:sequence>
 				<xs:element minOccurs="1" maxOccurs="1" name="agents"
 					type="Agents" />
+				<xs:element minOccurs="1" maxOccurs="1" name="machines"
+					type="Machines" />					
 				<xs:element minOccurs="1" maxOccurs="1" name="tests"
 					type="Tests" />
 			</xs:sequence>

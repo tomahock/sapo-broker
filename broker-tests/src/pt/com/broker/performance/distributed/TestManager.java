@@ -25,6 +25,7 @@ import pt.com.broker.performance.distributed.DistTestParams.ClientInfo;
 import pt.com.broker.performance.distributed.conf.ConfigurationInfo;
 import pt.com.broker.performance.distributed.conf.ConfigurationInfo.AgentInfo;
 import pt.com.broker.performance.distributed.conf.Consumers.Consumer;
+import pt.com.broker.performance.distributed.conf.Machines.Machine;
 import pt.com.broker.performance.distributed.conf.Producers.Producer;
 import pt.com.broker.performance.distributed.conf.Tests.Test;
 import pt.com.broker.types.NetBrokerMessage;
@@ -39,6 +40,8 @@ public class TestManager implements BrokerListener
 	private static String TEST_MANAGEMENT_BASE = "/perf-test/management";
 	public static String TEST_MANAGEMENT_ACTION = TEST_MANAGEMENT_BASE + "/action/";
 	public static String TEST_MANAGEMENT_RESULT = TEST_MANAGEMENT_BASE + "/result";
+	public static String TEST_MANAGEMENT_LOCAL_MANAGERS = TEST_MANAGEMENT_BASE + "/localmanager/";
+	
 
 	private BrokerClient brokerClient;
 
@@ -50,6 +53,7 @@ public class TestManager implements BrokerListener
 	private TreeMap<String, List<TestResult>> results = new TreeMap<String, List<TestResult>>();
 
 	private HashMap<String, AgentInfo> agents;
+	private HashMap<String, MachineConfiguration> machineConfigurations = new HashMap<String, MachineConfiguration>();
 
 	private StringBuilder testResults = new StringBuilder();
 
@@ -83,35 +87,72 @@ public class TestManager implements BrokerListener
 
 		testManager.stop();
 	}
-
-	private void showTestResult(String testname, DistTestParams testParams, List<TestResult> testResults)
+	
+	private void init()
 	{
-		final double nano2second = (1000 * 1000 * 1000);
+		ConfigurationInfo.init();
+		agents = ConfigurationInfo.getAgents();
 
-		StringBuilder sb = new StringBuilder();
+		loadMachineConfiguration();
+		addTests();
+	}
 
-		sb.append("\n--------------------------------------------------\n");
-		sb.append("TEST: " + testname);
-		sb.append(String.format("Consumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
-
-		double timePerMsgAcc = 0;
-		double messagesPerSecondAcc = 0;
-
-		for (TestResult tRes : testResults)
+	private void start()
+	{
+		try
 		{
-			double timePerMsg = (((tRes.getTime())) / tRes.getMessages()) / nano2second;
-			double messagesPerSecond = 1 / timePerMsg;
-			sb.append(String.format("Consumer: %s, Messages: %s, Time: %,.2f, Messages/second: %,.2f", tRes.getActorName(), tRes.getMessages(), tRes.getTime() / nano2second, messagesPerSecond));
-
-			timePerMsgAcc += timePerMsg;
-			messagesPerSecondAcc += messagesPerSecond;
+			brokerClient = new BrokerClient(hostname, port);
+			
+			NetSubscribe netSubscribe = new NetSubscribe(TEST_MANAGEMENT_RESULT, DestinationType.QUEUE);
+			
+			brokerClient.addAsyncConsumer(netSubscribe, this);
+			
+			System.out.println("Starting to configure participant machines");
+			
+			// Init remote consumers and producers
+			for(String machine : machineConfigurations.keySet())
+			{
+				MachineConfiguration machineConfiguration = machineConfigurations.get(machine);
+				byte[] data = machineConfiguration.serialize();
+				
+				NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
+				String destination = String.format("%s%s", TEST_MANAGEMENT_LOCAL_MANAGERS, machineConfiguration.getMachineName());
+				
+				System.out.println("Sendind machine info to destination " + destination);
+				
+				brokerClient.enqueueMessage(netBrokerMessage, destination);
+			}
+			
+			// Give some time to init
+			Sleep.time(2000);
+			
+			
+			// Run tests			
+			for (String testName : tests.keySet())
+			{
+				DistTestParams distTestParams = tests.get(testName);
+				executeTest(distTestParams);
+			}
+			
+			System.out.println("Stoping remote machines");
+			for(String machine : machineConfigurations.keySet())
+			{
+				MachineConfiguration machineConfiguration = machineConfigurations.get(machine);
+				
+				machineConfiguration.setStop(true);
+				byte[] data = machineConfiguration.serialize();
+				machineConfiguration.setStop(false);
+				
+				NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
+				
+				brokerClient.enqueueMessage(netBrokerMessage, String.format("%s%s", TEST_MANAGEMENT_LOCAL_MANAGERS, machineConfiguration.getMachineName()));
+			}
+			
 		}
-
-		sb.append(String.format("\nAVERAGE: Messages/second: %,.3f", messagesPerSecondAcc / testResults.size()));
-
-		System.out.println(sb.toString());
-
-		this.testResults.append(sb);
+		catch (Throwable e)
+		{
+			log.error("Tests failed!", e);
+		}
 	}
 
 	private void stop()
@@ -120,55 +161,16 @@ public class TestManager implements BrokerListener
 		writeResult();
 	}
 
-	private void start()
+	private void loadMachineConfiguration()
 	{
-		try
+		for(Machine machine : ConfigurationInfo.getConfiguration().getMachines().getMachine())
 		{
-			brokerClient = new BrokerClient(hostname, port);
-
-			NetSubscribe netSubscribe = new NetSubscribe(TEST_MANAGEMENT_RESULT, DestinationType.QUEUE);
-
-			brokerClient.addAsyncConsumer(netSubscribe, this);
-
-			for (String testName : tests.keySet())
-			{
-				DistTestParams distTestParams = tests.get(testName);
-				executeTest(distTestParams);
-				Sleep.time(2000);
-			}
+			MachineConfiguration machineConfiguration = new MachineConfiguration(machine.getMachineName(), machine.getProducers(), machine.getConsumers());
+			
+			this.machineConfigurations.put(machineConfiguration.getMachineName(), machineConfiguration);
+			
+			System.out.println(String.format("Added machine info for machine : '%s'", machineConfiguration.getMachineName()));
 		}
-		catch (Throwable e)
-		{
-			log.error("Tests failed!", e);
-		}
-	}
-
-	private volatile CountDownLatch testsCountDown;
-
-	private void consumerEnded(TestResult result)
-	{
-		System.out.println("Consumer ended: " + result.getActorName());
-		synchronized (results)
-		{
-			List<TestResult> resultsList = results.get(result.getTestName());
-			resultsList.add(result);
-		}
-
-		testsCountDown.countDown();
-	}
-
-	private void producerEnded(TestResult result)
-	{
-		System.out.println("Producer ended: " + result.getActorName());
-		testsCountDown.countDown();
-	}
-
-	private void init()
-	{
-		ConfigurationInfo.init();
-		agents = ConfigurationInfo.getAgents();
-
-		addTests();
 	}
 
 	private void addTests()
@@ -177,7 +179,6 @@ public class TestManager implements BrokerListener
 
 		for (Test t : ConfigurationInfo.getConfiguration().getTests().getTest())
 		{
-
 			String testName = t.getTestName();
 
 			// destination info
@@ -257,6 +258,26 @@ public class TestManager implements BrokerListener
 
 	}
 
+	private volatile CountDownLatch testsCountDown;
+
+	private void consumerEnded(TestResult result)
+	{
+		System.out.println("Consumer ended: " + result.getActorName());
+		synchronized (results)
+		{
+			List<TestResult> resultsList = results.get(result.getTestName());
+			resultsList.add(result);
+		}
+
+		testsCountDown.countDown();
+	}
+
+	private void producerEnded(TestResult result)
+	{
+		System.out.println("Producer ended: " + result.getActorName());
+		testsCountDown.countDown();
+	}
+
 	@Override
 	public boolean isAutoAck()
 	{
@@ -331,7 +352,40 @@ public class TestManager implements BrokerListener
 		}
 
 	}
+	
+	
 
+	private void showTestResult(String testname, DistTestParams testParams, List<TestResult> testResults)
+	{
+		final double nano2second = (1000 * 1000 * 1000);
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("\n--------------------------------------------------\n");
+		sb.append("TEST: " + testname);
+		sb.append(String.format("Consumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
+
+		double timePerMsgAcc = 0;
+		double messagesPerSecondAcc = 0;
+
+		for (TestResult tRes : testResults)
+		{
+			double timePerMsg = (((tRes.getTime())) / tRes.getMessages()) / nano2second;
+			double messagesPerSecond = 1 / timePerMsg;
+			sb.append(String.format("Consumer: %s, Messages: %s, Time: %,.2f, Messages/second: %,.2f", tRes.getActorName(), tRes.getMessages(), tRes.getTime() / nano2second, messagesPerSecond));
+
+			timePerMsgAcc += timePerMsg;
+			messagesPerSecondAcc += messagesPerSecond;
+		}
+
+		sb.append(String.format("\nAVERAGE: Messages/second: %,.3f", messagesPerSecondAcc / testResults.size()));
+
+		System.out.println(sb.toString());
+
+		this.testResults.append(sb);
+	}
+
+	
 	private void writeResult()
 	{
 		FileWriter fstream;

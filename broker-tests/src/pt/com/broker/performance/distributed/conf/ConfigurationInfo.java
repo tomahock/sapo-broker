@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.performance.distributed.conf.Agents.Agent;
+import pt.com.broker.performance.distributed.conf.Machines.Machine;
 
 public class ConfigurationInfo
 {
@@ -34,7 +35,6 @@ public class ConfigurationInfo
 			this.httpPort = httpPort; 
 		}
 	}
-	
 	
 	private static HashMap<String, AgentInfo> agents = new HashMap<String, AgentInfo>();
 	
@@ -82,13 +82,12 @@ public class ConfigurationInfo
 		defaultAgent = ConfigurationInfo.getAgents().get( agents.getDefaultAgent() );
 		
 	}
-	
+
 	public static void init()
 	{
 		loadAgents();
 	}
 
-	
 
 	public static HashMap<String, AgentInfo> getAgents()
 	{

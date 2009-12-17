@@ -33,25 +33,31 @@ public class DistProducerApp implements BrokerListener
 	private String actorName;
 
 	private BrokerClient brokerClient;
+	
+	public DistProducerApp(String host, int port, String actorName) throws Throwable
+	{
+		this.host = host;
+		this.port = port;
+		this.actorName = actorName;		
+	
+		String destination = TestManager.TEST_MANAGEMENT_ACTION + actorName;
+		brokerClient = new BrokerClient(host, port);
+	
+		NetSubscribe subscribe = new NetSubscribe(destination, DestinationType.QUEUE);
+
+		brokerClient.addAsyncConsumer(subscribe, this);
+
+		System.out.println(String.format("Producer '%s' running...", actorName));
+
+	}
 
 	public static void main(String[] args) throws Throwable
 	{
 		final DistTestCliArgs cargs = CliFactory.parseArguments(DistTestCliArgs.class, args);
-		final DistProducerApp producer = new DistProducerApp();
+	
+		DistProducerApp producer = new DistProducerApp(cargs.getHost(), cargs.getPort(), cargs.getActorName());
 
-		producer.host = cargs.getHost();
-		producer.port = cargs.getPort();
-		producer.actorName = cargs.getActorName();
-
-		String destination = TestManager.TEST_MANAGEMENT_ACTION + producer.actorName;
-
-		producer.brokerClient = new BrokerClient(producer.host, producer.port);
-
-		NetSubscribe subscribe = new NetSubscribe(destination, DestinationType.QUEUE);
-
-		producer.brokerClient.addAsyncConsumer(subscribe, producer);
-
-		System.out.println(String.format("Producer '%s' running...", producer.actorName));
+	
 
 		while (true)
 		{
@@ -62,6 +68,9 @@ public class DistProducerApp implements BrokerListener
 
 	private void sendLoop(BrokerClient bk, int messageLength, int nrOfMessages, DestinationType destinationType, String destination) throws Throwable
 	{
+		
+		System.out.println(String.format("Producing %s messages with %s chars.", nrOfMessages, messageLength));
+		
 		final String regularMsgContent = RandomStringUtils.randomAlphanumeric(messageLength - 1);
 		final String stopMsgContent = nrOfMessages + "";
 
@@ -161,6 +170,8 @@ public class DistProducerApp implements BrokerListener
 	@Override
 	public void onMessage(NetNotification notification)
 	{
+		System.out.println("DistProducerApp.onMessage()");
+		
 		byte[] testParams = notification.getMessage().getPayload();
 
 		DistTestParams distTestParams = DistTestParams.deserialize(testParams);

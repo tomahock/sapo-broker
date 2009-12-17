@@ -31,32 +31,34 @@ public class DistConsumerApp implements BrokerListener
 
 	private BrokerClient brokerClient;
 
+	public DistConsumerApp(String host, int port, String actorName) throws Throwable
+	{
+		this.host = host;
+		this.port = port;
+		this.actorName = actorName;		
+		
+		dname = TestManager.TEST_MANAGEMENT_ACTION + actorName;
+		brokerClient = new BrokerClient(host, port);
+	
+		NetSubscribe subscribe = new NetSubscribe(dname, DestinationType.QUEUE);
+
+		brokerClient.addAsyncConsumer(subscribe, this);
+		
+		System.out.println(String.format("Consumer '%s' running...", actorName));
+		
+	}
+	
+	
 	public static void main(String[] args) throws Throwable
 	{
 		final DistTestCliArgs cargs = CliFactory.parseArguments(DistTestCliArgs.class, args);
 
-		DistConsumerApp consumer = new DistConsumerApp();
-
-		consumer.host = cargs.getHost();
-		consumer.port = cargs.getPort();
-
-		consumer.actorName = cargs.getActorName();
-
-		consumer.dname = TestManager.TEST_MANAGEMENT_ACTION + consumer.actorName;
-
-		consumer.brokerClient = new BrokerClient(consumer.host, consumer.port);
-
-		NetSubscribe subscribe = new NetSubscribe(consumer.dname, DestinationType.QUEUE);
-
-		consumer.brokerClient.addAsyncConsumer(subscribe, consumer);
-
-		System.out.println(String.format("Consumer '%s' running...", consumer.actorName));
-
+		DistConsumerApp consumer = new DistConsumerApp(cargs.getHost(), cargs.getPort(), cargs.getActorName());
+		
 		while (true)
 		{
 			Sleep.time(5000);
 		}
-
 	}
 
 	private void performTest(DistTestParams testParams)
@@ -161,6 +163,8 @@ public class DistConsumerApp implements BrokerListener
 	@Override
 	public void onMessage(NetNotification notification)
 	{
+		
+		System.out.println("DistConsumerApp.onMessage()");
 		byte[] testParams = notification.getMessage().getPayload();
 
 		DistTestParams distTestParams = DistTestParams.deserialize(testParams);

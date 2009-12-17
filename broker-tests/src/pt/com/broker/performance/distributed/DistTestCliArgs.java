@@ -44,40 +44,6 @@ public interface DistTestCliArgs
 	@Option(shortName = "d", defaultValue = "TOPIC")
 	String getDestinationType();
 
-	/**
-	 * 
-	 * @return Keystore location.
-	 */
-	@Option(shortName = "L", defaultValue = ".")
-	String getKeystoreLocation();
-
-	/**
-	 * 
-	 * @return Keystore password.
-	 */
-	@Option(shortName = "W", defaultValue = "")
-	String getKeystorePassword();
-
-	/**
-	 * 
-	 * @return STS location (e.g. https://services.sapo.pt/STS/).
-	 */
-	@Option(shortName = "S", defaultValue = ".")
-	String getSTSLocation();
-
-	/**
-	 * 
-	 * @return User name.
-	 */
-	@Option(shortName = "U", defaultValue = "")
-	String getUsername();
-
-	/**
-	 * 
-	 * @return User password.
-	 */
-	@Option(shortName = "P", defaultValue = "")
-	String getUserPassword();
 
 	/**
 	 * 
@@ -107,5 +73,10 @@ public interface DistTestCliArgs
 	@Option(shortName = "a", defaultValue = "")
 	String getActorName();
 
-	
+	/**
+	 * 
+	 * @return Machine name (machine1)
+	 */
+	@Option(shortName = "M", defaultValue = "")
+	String getMachineName();
 }
