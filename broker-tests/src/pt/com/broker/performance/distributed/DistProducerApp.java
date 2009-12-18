@@ -164,12 +164,22 @@ public class DistProducerApp implements BrokerListener
 	@Override
 	public boolean isAutoAck()
 	{
-		return true;
+		return false;
 	}
 
 	@Override
 	public void onMessage(NetNotification notification)
 	{
+	
+		try
+		{
+			brokerClient.acknowledge(notification);
+		}
+		catch (Throwable t)
+		{
+			log.error("Acknowledge failed", t);
+		}
+		
 		System.out.println("DistProducerApp.onMessage()");
 		
 		byte[] testParams = notification.getMessage().getPayload();
