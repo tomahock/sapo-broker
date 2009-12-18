@@ -78,7 +78,7 @@ public class BDBMessage implements Externalizable
 		_preferLocalConsumer = oin.readBoolean();
 		_reserve = oin.readLong();
 		InternalMessage m = new InternalMessage();
-
+		
 		m.readExternal(oin);
 		_message = m;
 	}

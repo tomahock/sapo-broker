@@ -19,11 +19,36 @@ import pt.com.gcs.net.IoSessionHelper;
  */
 public class QueueSessionListener extends BrokerListener
 {
-	private int currentQEP = 0;
+
+	private final static double MAX_SUSPENSION_TIME = 1000;
+	
+	private final static double LOW_WATER_MARK = (double) MAX_SESSION_BUFFER_SIZE; 
+	private final static double HIGH_WATER_MARK = LOW_WATER_MARK * 2;
+	
+	private final static double DELTA =  HIGH_WATER_MARK - LOW_WATER_MARK;
+	
+	private static class SessionInfo
+	{
+		IoSession session;
+		long time;
+
+		SessionInfo(IoSession session)
+		{
+			this.session = session;
+			time = 0;
+		}
+
+		boolean isReady()
+		{
+			return time < System.currentTimeMillis();
+		}
+	}
+
+	private volatile int currentQEP = 0;
 
 	private static final Logger log = LoggerFactory.getLogger(QueueSessionListener.class);
 
-	private final List<IoSession> _sessions = new ArrayList<IoSession>();
+	private final List<SessionInfo> _sessions = new ArrayList<SessionInfo>();
 
 	private final String _dname;
 
@@ -51,22 +76,34 @@ public class QueueSessionListener extends BrokerListener
 		if (msg == null)
 			return -1;
 
-		final IoSession ioSession = pick();
-
+		final SessionInfo sessionInfo = pick();
+		
 		try
 		{
-			if (ioSession != null)
+			if ( (sessionInfo != null) && (sessionInfo.session != null) )
 			{
+				IoSession ioSession = sessionInfo.session;
 				if (ioSession.isConnected() && !ioSession.isClosing())
 				{
-					if (ioSession.getScheduledWriteBytes() > MAX_SESSION_BUFFER_SIZE)
+					long scheduledWriteBytes = ioSession.getScheduledWriteBytes();
+					
+					if( (scheduledWriteBytes> LOW_WATER_MARK) && (scheduledWriteBytes < HIGH_WATER_MARK) )
 					{
+						long time = (long) ((scheduledWriteBytes - LOW_WATER_MARK ) * (MAX_SUSPENSION_TIME / DELTA));
+						sessionInfo.time = System.currentTimeMillis() + time;
+						System.out.println("\n\n######## Session is above low water mark: " + time);
+					}
+					else if(scheduledWriteBytes >= HIGH_WATER_MARK)
+					{
+						sessionInfo.time = (long) (System.currentTimeMillis() + MAX_SUSPENSION_TIME);
 						if (log.isDebugEnabled())
 						{
 							log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'", ioSession.toString());
 						}
+						System.out.println("\n\n######## Session has reached buffer limit: 1s");
 						return -1;
 					}
+					
 					final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
 					ioSession.write(response);
 
@@ -84,7 +121,10 @@ public class QueueSessionListener extends BrokerListener
 
 			try
 			{
-				(ioSession.getHandler()).exceptionCaught(ioSession, e);
+				if((sessionInfo != null) && (sessionInfo.session != null) )
+				{
+					(sessionInfo.session.getHandler()).exceptionCaught(sessionInfo.session , e);
+				}
 			}
 			catch (Throwable t)
 			{
@@ -95,7 +135,7 @@ public class QueueSessionListener extends BrokerListener
 		return -1;
 	}
 
-	private IoSession pick()
+	private SessionInfo pick()
 	{
 		synchronized (mutex)
 		{
@@ -111,26 +151,40 @@ public class QueueSessionListener extends BrokerListener
 			{
 				++currentQEP;
 			}
-
 			try
 			{
-				IoSession session = _sessions.get(currentQEP);
-
-				return session;
+				for (int i = 0; i != n; ++i)
+				{
+					SessionInfo sessionInfo = _sessions.get(currentQEP);
+					if(sessionInfo.isReady())
+					{
+						return sessionInfo;
+					}
+				}
 			}
 			catch (Exception e)
 			{
 				try
 				{
 					currentQEP = 0;
-					return _sessions.get(currentQEP);
+					do
+					{
+						SessionInfo sessionInfo = _sessions.get(currentQEP);
+						if (sessionInfo.isReady())
+						{
+							return sessionInfo;
+						}
+					}
+					while ((++currentQEP) != (n - 1));
 				}
 				catch (Exception e2)
 				{
 					return null;
 				}
 			}
+
 		}
+		return null;
 	}
 
 	public int addConsumer(IoSession iosession)
@@ -139,7 +193,7 @@ public class QueueSessionListener extends BrokerListener
 		{
 			if (!_sessions.contains(iosession))
 			{
-				_sessions.add(iosession);
+				_sessions.add(new SessionInfo(iosession));
 
 				log.info(String.format("Create message consumer for queue: '%s', address: '%s', Total sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), _sessions.size()));
 			}
@@ -182,6 +236,14 @@ public class QueueSessionListener extends BrokerListener
 	@Override
 	public boolean ready()
 	{
-		return true;
+		synchronized (_sessions)
+		{
+			for(SessionInfo sessionInfo : _sessions)
+			{
+				if(sessionInfo.isReady())
+					return true;
+			}
+		}
+		return false;
 	}
 }

@@ -30,7 +30,7 @@
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
-
+	
 	<target name="init" depends="clean">
 		<mkdir dir="${bin}" />
 		<mkdir dir="${dist}" />

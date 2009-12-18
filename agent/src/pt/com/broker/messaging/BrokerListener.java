@@ -40,16 +40,11 @@ public abstract class BrokerListener implements MessageListener
 		params.put("ACTION", "http://services.sapo.pt/broker/notification/" + msg.getMessageId());
 		params.put("PUBLISHING_AGENT", msg.getPublishingAgent());
 		
-
 		NetMessage message = new NetMessage(action, params);
 
 		return message;
 	}
-	
-	public boolean ready()
-	{
-		return true;
-	}
+
 
 	public abstract int addConsumer(IoSession iosession);
 

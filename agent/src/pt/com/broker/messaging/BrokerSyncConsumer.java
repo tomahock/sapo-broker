@@ -76,7 +76,6 @@ public class BrokerSyncConsumer
 	
 	public static void poll(NetPoll poll, IoSession ios)
 	{
-
 		try
 		{
 			QueueProcessorList.get(poll.getDestination());

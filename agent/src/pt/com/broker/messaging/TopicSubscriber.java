@@ -132,4 +132,10 @@ public class TopicSubscriber extends BrokerListener
 	{
 		return _sessions.size();
 	}
+
+	@Override
+	public boolean ready()
+	{
+		return true;
+	}
 }

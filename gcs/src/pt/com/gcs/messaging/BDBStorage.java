@@ -337,11 +337,11 @@ public class BDBStorage
 
 		long now = System.currentTimeMillis();
 
-		if (nextCycleTime > now)
-		{
-			log.debug("Skip delivery cycle");
-			return;
-		}
+//		if (nextCycleTime > now)
+//		{
+//			log.debug("Skip delivery cycle");
+//			return;
+//		}
 
 		int i0 = 0; // delivered
 		int j0 = 0; // failed deliver
@@ -427,13 +427,14 @@ public class BDBStorage
 
 								++j0;
 
-								nextCycleTime = System.currentTimeMillis() + 1000;
+								//nextCycleTime = System.currentTimeMillis() + 1000;
 								break;
 							}
 						}
 						catch (Throwable t)
 						{
-							log.error(t.getMessage());
+							log.error("Error recovering messages", t);
+							t.printStackTrace();
 							break;
 						}
 					}
