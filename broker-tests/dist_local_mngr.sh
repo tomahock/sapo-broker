@@ -27,6 +27,6 @@ java -server \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
 -cp $classpath \
-pt.com.broker.performance.distributed.LocalManager -h 172.17.1.100 -p 3323
+pt.com.broker.performance.distributed.LocalManager -h 170.17.1.100 -p 3323 -M $1
 #pt.com.broker.performance.distributed.LocalManager -h 127.0.0.1 -p 3323 -M $1 -l 256
 

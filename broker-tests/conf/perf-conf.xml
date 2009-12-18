@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <test-configuration>
 	<agents default-agent="cordination-agent">
-		<agent hostname="172.17.1.100" tcp-port="3323" http-port="3380"
+		<agent hostname="170.17.1.100" tcp-port="3323" http-port="3380"
 			agent-id="cordination-agent" />
 	</agents>
 	<machines>
