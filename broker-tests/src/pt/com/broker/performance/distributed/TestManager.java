@@ -380,20 +380,32 @@ public class TestManager implements BrokerListener
 		sb.append("TEST: " + testname);
 		sb.append(String.format("\nConsumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
 
-		double timePerMsgAcc = 0;
-		double messagesPerSecondAcc = 0;
+		long earliestStart = Long.MAX_VALUE; 
+		long latestStop = 0;
 
 		for (TestResult tRes : testResults)
 		{
-			double timePerMsg = (((tRes.getTime())) / tRes.getMessages()) / nano2second;
+			if(tRes.getStartTime() < earliestStart)
+			{
+				earliestStart =(long) tRes.getStartTime(); 
+			}
+			if(tRes.getStopTime() > latestStop)
+			{
+				latestStop =(long) tRes.getStopTime(); 
+			}
+			
+			double consumerTestTime = tRes.getStopTime() - tRes.getStartTime();
+			
+			double timePerMsg = ((consumerTestTime) / tRes.getMessages()) / nano2second;
 			double messagesPerSecond = 1 / timePerMsg;
-			sb.append(String.format("Consumer: %s, Messages: %s, Time: %,.2f, Messages/second: %,.2f\n", tRes.getActorName(), tRes.getMessages(), tRes.getTime() / nano2second, messagesPerSecond));
+			sb.append(String.format("Consumer: %s, Messages: %s, Time: %.2f, Messages/second: %.2f\n", tRes.getActorName(), tRes.getMessages(), consumerTestTime / nano2second, messagesPerSecond));
 
-			timePerMsgAcc += timePerMsg;
-			messagesPerSecondAcc += messagesPerSecond;
 		}
-
-		sb.append(String.format("\nAVERAGE: Messages/second: %,.3f", messagesPerSecondAcc / testResults.size()));
+		
+		double timePerMsg = ((latestStop - earliestStart) / testParams.getNumberOfMessagesToSend()) / nano2second;
+		double messagesPerSecond = 1 / timePerMsg;
+		
+		sb.append(String.format("\nTOTAL: Messages/second: %.3f", messagesPerSecond));
 
 		System.out.println(sb.toString());
 

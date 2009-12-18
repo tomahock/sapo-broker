@@ -134,7 +134,7 @@ public class DistConsumerApp implements BrokerListener
 				while (!stop);
 			}
 
-			TestResult testResult = new TestResult(ActorType.Consumer, actorName, testParams.getTestName(), counter.get(), stopTime.get() - startTime.get());
+			TestResult testResult = new TestResult(ActorType.Consumer, actorName, testParams.getTestName(), counter.get(),  startTime.get(), stopTime.get());
 			byte[] data = testResult.serialize();
 
 			NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);

@@ -17,7 +17,8 @@ public class TestResult
 	private String actorName;
 	private String testName;
 	private int messages;
-	private long time;
+	private long startTime;
+	private long stopTime;
 
 
 	public enum ActorType{ Procucer, Consumer};
@@ -28,13 +29,14 @@ public class TestResult
 		
 	}
 	
-	public TestResult(ActorType actorType, String actorName, String testName, int messages, long time)
+	public TestResult(ActorType actorType, String actorName, String testName, int messages, long startTime, long stopTime)
 	{
 		this.actorType = actorType;
 		this.actorName = actorName;
 		this.testName = testName;
 		this.messages = messages;
-		this.time = time;
+		this.startTime = startTime;
+		this.stopTime = stopTime;
 	}
 	
 	public TestResult(ActorType actorType, String actorName, String testName)
@@ -43,7 +45,8 @@ public class TestResult
 		this.actorName = actorName;
 		this.testName = testName;
 		this.messages = -1;
-		this.time = 0;
+		this.startTime = 0;
+		this.stopTime = 0;
 	}
 
 	public ActorType getActorType()
@@ -66,9 +69,14 @@ public class TestResult
 		return messages;
 	}
 
-	public double getTime()
+	public double getStartTime()
 	{
-		return time;
+		return startTime;
+	}
+	
+	public double getStopTime()
+	{
+		return stopTime;
 	}
 	
 	public byte[] serialize()
@@ -82,7 +90,8 @@ public class TestResult
 			outputObj.writeUTF(actorName);
 			outputObj.writeUTF(actorType.toString());
 			outputObj.writeInt(messages);
-			outputObj.writeLong(time);
+			outputObj.writeLong(startTime);
+			outputObj.writeLong(stopTime);
 			
 			outputObj.flush();
 
@@ -108,7 +117,8 @@ public class TestResult
 			testResult.actorName = inputObj.readUTF();
 			testResult.actorType = ActorType.valueOf( inputObj.readUTF() );
 			testResult.messages = inputObj.readInt();
-			testResult.time = inputObj.readLong();	
+			testResult.startTime = inputObj.readLong();
+			testResult.stopTime = inputObj.readLong();
 		}
 		catch (Throwable e)
 		{
@@ -119,3 +129,4 @@ public class TestResult
 		return testResult;
 	}
 }
+
