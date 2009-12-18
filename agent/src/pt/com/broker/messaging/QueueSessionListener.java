@@ -91,7 +91,6 @@ public class QueueSessionListener extends BrokerListener
 					{
 						long time = (long) ((scheduledWriteBytes - LOW_WATER_MARK ) * (MAX_SUSPENSION_TIME / DELTA));
 						sessionInfo.time = System.currentTimeMillis() + time;
-						System.out.println("\n\n######## Session is above low water mark: " + time);
 					}
 					else if(scheduledWriteBytes >= HIGH_WATER_MARK)
 					{
@@ -100,7 +99,6 @@ public class QueueSessionListener extends BrokerListener
 						{
 							log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'", ioSession.toString());
 						}
-						System.out.println("\n\n######## Session has reached buffer limit: 1s");
 						return -1;
 					}
 					
