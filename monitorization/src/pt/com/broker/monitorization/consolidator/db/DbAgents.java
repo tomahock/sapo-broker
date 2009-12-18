@@ -23,6 +23,8 @@ public class DbAgents implements JsonEncodable
 	private final AgentStatus status;
 	private final long date;
 	
+	private String hostname;
+	
 	public DbAgents(String agentName, AgentStatus status, long date)
 	{
 		this.agentName = agentName;
@@ -48,7 +50,11 @@ public class DbAgents implements JsonEncodable
 	@Override
 	public String toJson()
 	{
-		return String.format("{\"agentName\":\"%s\",\"status\":\"%s\",\"date\":\"%s\"}", this.agentName, this.status, Utils.formatDate(date));
+		if( hostname == null)
+		{
+			return String.format("{\"agentName\":\"%s\",\"status\":\"%s\",\"date\":\"%s\"}", this.agentName, this.status, Utils.formatDate(date));
+		}
+		return String.format("{\"agentName\":\"%s\",\"status\":\"%s\",\"date\":\"%s\",\"hostname\":\"%s\"}", this.agentName, this.status, Utils.formatDate(date), this.hostname);
 	}
 	
 	public static void add(String agentName, AgentStatus status)
@@ -198,5 +204,15 @@ public class DbAgents implements JsonEncodable
 			}
 		}
 		return agents;
+	}
+
+	public void setHostname(String hostname)
+	{
+		this.hostname = hostname;
+	}
+
+	public String getHostname()
+	{
+		return hostname;
 	}
 }

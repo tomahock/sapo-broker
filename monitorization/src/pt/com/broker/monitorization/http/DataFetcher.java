@@ -220,6 +220,7 @@ public class DataFetcher
 			final String OK_STATUS_PREFIX = "ok";
 			final String DOWN_STATUS_PREFIX = "down";
 			final String AGENT_PREFIX = "agent";
+			final String HOST_PREFIX = "host";
 			
 			final String AGENT_NAME = "agentname";
 
@@ -236,7 +237,7 @@ public class DataFetcher
 				{
 					agents = GlobalSystemInfo.getAgentsByStatus(AgentStatus.Down);
 				}
-				else if (resource.startsWith(AGENT_PREFIX))
+				else if(resource.startsWith(AGENT_PREFIX))
 				{
 					List<String> agentNameList = arguments.get(AGENT_NAME);
 					if (agentNameList == null)
@@ -245,6 +246,16 @@ public class DataFetcher
 					String agentName = agentNameList.get(0);
 					agents = GlobalSystemInfo.getAgentsStatus(agentName);
 				}
+				else if(resource.startsWith(HOST_PREFIX))
+				{
+					List<String> agentNameList = arguments.get(AGENT_NAME);
+					if (agentNameList == null)
+						return jsonAgents;
+					
+					String agentName = agentNameList.get(0);
+					agents = GlobalSystemInfo.getHostname(agentName);
+				}
+				
 				else
 				{
 					agents = GlobalSystemInfo.getAllAgents();

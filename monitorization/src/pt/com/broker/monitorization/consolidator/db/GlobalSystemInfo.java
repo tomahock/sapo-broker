@@ -155,4 +155,17 @@ public class GlobalSystemInfo
 	{
 		return DbAgents.getAgentStatus(agentName);
 	}
+
+	public static Collection<DbAgents> getHostname(String agentName)
+	{
+		Collection<DbAgents> agentStatus = DbAgents.getAgentStatus(agentName);
+		if(agentStatus.size() == 1)
+		{
+			for(DbAgents agent : agentStatus)
+			{
+				agent.setHostname(AgentName.getHostname(agentName));
+			}
+		}
+		return agentStatus;
+	}
 }

@@ -373,6 +373,26 @@ function agentMonitorizationInit()
    });
   }
 
+  // hostname
+  var f_hostname = function() {
+   new Ajax.Request('/data/agents/host?agentname='+agentname,
+   {
+    method:'get',
+    onSuccess: function(transport){
+      var response = transport.responseText;
+      var panel = s$('host_name');
+      var data = response.evalJSON();
+      var content = "";
+      if(data.length != 0)
+	content = data.hostname;
+      panel.innerHTML = content;     
+    },
+    onFailure: function(){ alert('Something went wrong...') }
+   });  
+  }
+
+  f_hostname();
+
   f_queues();
   setInterval(f_queues, 3000);
   f_subscriptions();

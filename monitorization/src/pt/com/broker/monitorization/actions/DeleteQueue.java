@@ -190,6 +190,8 @@ public class DeleteQueue
 
 	private static String deleteQueue(String hostname, String port, String queueName)
 	{
+		log.info("Deleting queue '{}', from host '{}'", queueName, hostname);
+		
 		String result = FAIL_TO_CONNECT_MESSAGE;
 		try
 		{
