@@ -69,14 +69,24 @@ public class TestResult
 		return messages;
 	}
 
-	public double getStartTime()
+	public long getStartTime()
 	{
 		return startTime;
+	}
+	
+	public void setStartTime(long startTime)
+	{
+		this.startTime = startTime;
 	}
 	
 	public double getStopTime()
 	{
 		return stopTime;
+	}
+	
+	public void setStopTime(long stopTime)
+	{
+		this.stopTime = stopTime;
 	}
 	
 	public byte[] serialize()

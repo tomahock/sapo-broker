@@ -66,7 +66,7 @@ public class DistProducerApp implements BrokerListener
 
 	}
 
-	private void sendLoop(BrokerClient bk, int messageLength, int nrOfMessages, DestinationType destinationType, String destination) throws Throwable
+	private void sendLoop(BrokerClient bk, int messageLength, int nrOfMessages, DestinationType destinationType, String destination, TestResult testResult) throws Throwable
 	{
 		
 		System.out.println(String.format("Producing %s messages with %s chars.", nrOfMessages, messageLength));
@@ -80,6 +80,8 @@ public class DistProducerApp implements BrokerListener
 		NetBrokerMessage brokerMessage = new NetBrokerMessage(regularMessage);
 		NetBrokerMessage stopBrokerMessage = new NetBrokerMessage(stopMessage);
 
+		long startTime = System.nanoTime();
+		
 		for (int i = 0; i != nrOfMessages; ++i)
 		{
 
@@ -93,6 +95,8 @@ public class DistProducerApp implements BrokerListener
 			}
 		}
 
+		long stopTime = System.nanoTime();
+		
 		System.out.println(actorName + " sending stop messages");
 		for (int i = 0; i != 150; ++i)
 		{
@@ -112,6 +116,9 @@ public class DistProducerApp implements BrokerListener
 		}
 		
 		bk.close();
+		
+		testResult.setStartTime(startTime);
+		testResult.setStopTime(stopTime);
 	}
 
 	private byte[] getMessage(byte headerByte, String messageContent)
@@ -139,13 +146,13 @@ public class DistProducerApp implements BrokerListener
 
 		try
 		{
+			TestResult testResult = new TestResult(ActorType.Procucer, actorName, testParams.getTestName());
 			BrokerClient bk = new BrokerClient(testParams.getClientInfo().getAgentHost(), testParams.getClientInfo().getPort());
 
-			sendLoop(bk, testParams.getMessageSize(), testParams.getNumberOfMessagesToSend(), testParams.getDestinationType(), testParams.getDestination());
+			sendLoop(bk, testParams.getMessageSize(), testParams.getNumberOfMessagesToSend(), testParams.getDestinationType(), testParams.getDestination(), testResult);
 			
 			bk.close();
 
-			TestResult testResult = new TestResult(ActorType.Procucer, actorName, testParams.getTestName());
 			byte[] data = testResult.serialize();
 
 			NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);

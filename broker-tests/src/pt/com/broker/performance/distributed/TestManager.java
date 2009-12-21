@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.performance.distributed.DistTestParams.ClientInfo;
+import pt.com.broker.performance.distributed.TestResult.ActorType;
 import pt.com.broker.performance.distributed.conf.ConfigurationInfo;
 import pt.com.broker.performance.distributed.conf.ConfigurationInfo.AgentInfo;
 import pt.com.broker.performance.distributed.conf.Consumers.Consumer;
@@ -41,7 +42,6 @@ public class TestManager implements BrokerListener
 	public static String TEST_MANAGEMENT_ACTION = TEST_MANAGEMENT_BASE + "/action/";
 	public static String TEST_MANAGEMENT_RESULT = TEST_MANAGEMENT_BASE + "/result";
 	public static String TEST_MANAGEMENT_LOCAL_MANAGERS = TEST_MANAGEMENT_BASE + "/localmanager/";
-	
 
 	private BrokerClient brokerClient;
 
@@ -87,7 +87,7 @@ public class TestManager implements BrokerListener
 
 		testManager.stop();
 	}
-	
+
 	private void init()
 	{
 		ConfigurationInfo.init();
@@ -102,67 +102,66 @@ public class TestManager implements BrokerListener
 		try
 		{
 			brokerClient = new BrokerClient(hostname, port);
-			
+
 			NetSubscribe netSubscribe = new NetSubscribe(TEST_MANAGEMENT_RESULT, DestinationType.QUEUE);
-			
+
 			brokerClient.addAsyncConsumer(netSubscribe, this);
-			
+
 			System.out.println("Starting to configure participant machines");
-			
+
 			// Init remote consumers and producers
-			for(String machine : machineConfigurations.keySet())
+			for (String machine : machineConfigurations.keySet())
 			{
 				MachineConfiguration machineConfiguration = machineConfigurations.get(machine);
-				
+
 				System.out.println(String.format("Test: %s", machineConfiguration.getMachineName()));
-				
+
 				System.out.println("Consumers: ");
-				for(String consumerName :  machineConfiguration.getConsumers())
+				for (String consumerName : machineConfiguration.getConsumers())
 				{
 					System.out.println(" - " + consumerName);
 				}
-				
+
 				System.out.println("Producers: ");
-				for(String producerName :  machineConfiguration.getProducers())
+				for (String producerName : machineConfiguration.getProducers())
 				{
 					System.out.println(" - " + producerName);
 				}
-				
+
 				byte[] data = machineConfiguration.serialize();
-				
+
 				NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
 				String destination = String.format("%s%s", TEST_MANAGEMENT_LOCAL_MANAGERS, machineConfiguration.getMachineName());
-				
-				//System.out.println("Sendind machine info to destination " + destination);
-				
+
+				// System.out.println("Sendind machine info to destination " + destination);
+
 				brokerClient.enqueueMessage(netBrokerMessage, destination);
 			}
-			
+
 			// Give some time to init
 			Sleep.time(2000);
-			
-			
-			// Run tests			
+
+			// Run tests
 			for (String testName : tests.keySet())
 			{
 				DistTestParams distTestParams = tests.get(testName);
 				executeTest(distTestParams);
 			}
-			
+
 			System.out.println("Stoping remote machines");
-			for(String machine : machineConfigurations.keySet())
+			for (String machine : machineConfigurations.keySet())
 			{
 				MachineConfiguration machineConfiguration = machineConfigurations.get(machine);
-				
+
 				machineConfiguration.setStop(true);
 				byte[] data = machineConfiguration.serialize();
 				machineConfiguration.setStop(false);
-				
+
 				NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
-				
+
 				brokerClient.enqueueMessage(netBrokerMessage, String.format("%s%s", TEST_MANAGEMENT_LOCAL_MANAGERS, machineConfiguration.getMachineName()));
 			}
-			
+
 		}
 		catch (Throwable e)
 		{
@@ -178,12 +177,12 @@ public class TestManager implements BrokerListener
 
 	private void loadMachineConfiguration()
 	{
-		for(Machine machine : ConfigurationInfo.getConfiguration().getMachines().getMachine())
+		for (Machine machine : ConfigurationInfo.getConfiguration().getMachines().getMachine())
 		{
 			MachineConfiguration machineConfiguration = new MachineConfiguration(machine.getMachineName(), machine.getProducers(), machine.getConsumers());
-			
+
 			this.machineConfigurations.put(machineConfiguration.getMachineName(), machineConfiguration);
-			
+
 			System.out.println(String.format("Added machine info for machine : '%s'", machineConfiguration.getMachineName()));
 		}
 	}
@@ -290,6 +289,11 @@ public class TestManager implements BrokerListener
 	private void producerEnded(TestResult result)
 	{
 		System.out.println("Producer ended: " + result.getActorName());
+		synchronized (results)
+		{
+			List<TestResult> resultsList = results.get(result.getTestName());
+			resultsList.add(result);
+		}
 		testsCountDown.countDown();
 	}
 
@@ -367,8 +371,6 @@ public class TestManager implements BrokerListener
 		}
 
 	}
-	
-	
 
 	private void showTestResult(String testname, DistTestParams testParams, List<TestResult> testResults)
 	{
@@ -380,39 +382,63 @@ public class TestManager implements BrokerListener
 		sb.append("TEST: " + testname);
 		sb.append(String.format("\nConsumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
 
-		long earliestStart = Long.MAX_VALUE; 
-		long latestStop = 0;
+		long consumerEarliestStart = Long.MAX_VALUE;
+		long consumerLatestStop = 0;
+
+		long producerEarliestStart = Long.MAX_VALUE;
+		long producerLatestStop = 0;
 
 		for (TestResult tRes : testResults)
 		{
-			if(tRes.getStartTime() < earliestStart)
+
+			if (tRes.getActorType() == ActorType.Consumer)
 			{
-				earliestStart =(long) tRes.getStartTime(); 
+
+				if (tRes.getStartTime() < consumerEarliestStart)
+				{
+					consumerEarliestStart = (long) tRes.getStartTime();
+				}
+				if (tRes.getStopTime() > consumerLatestStop)
+				{
+					consumerLatestStop = (long) tRes.getStopTime();
+				}
 			}
-			if(tRes.getStopTime() > latestStop)
+			else
 			{
-				latestStop =(long) tRes.getStopTime(); 
+				if (tRes.getStartTime() < producerEarliestStart)
+				{
+					producerEarliestStart = (long) tRes.getStartTime();
+				}
+				if (tRes.getStopTime() > producerLatestStop)
+				{
+					producerLatestStop = (long) tRes.getStopTime();
+				}
 			}
-			
+
 			double consumerTestTime = tRes.getStopTime() - tRes.getStartTime();
-			
+
 			double timePerMsg = ((consumerTestTime) / tRes.getMessages()) / nano2second;
 			double messagesPerSecond = 1 / timePerMsg;
-			sb.append(String.format("Consumer: %s, Messages: %s, Time: %.2f, Messages/second: %.2f\n", tRes.getActorName(), tRes.getMessages(), consumerTestTime / nano2second, messagesPerSecond));
+			sb.append(String.format("%s: %s, Messages: %s, Time: %.2f, Messages/second: %.2f\n", tRes.getActorType(), tRes.getActorName(), tRes.getMessages(), consumerTestTime / nano2second, messagesPerSecond));
 
 		}
-		
-		double timePerMsg = ((latestStop - earliestStart) / testParams.getNumberOfMessagesToSend()) / nano2second;
+
+		double timePerMsg = ((consumerLatestStop - consumerEarliestStart) / testParams.getNumberOfMessagesToSend()) / nano2second;
 		double messagesPerSecond = 1 / timePerMsg;
+
+		sb.append(String.format("\nTOTAL CONSUMER: Messages/second: %.3f", messagesPerSecond));
 		
-		sb.append(String.format("\nTOTAL: Messages/second: %.3f", messagesPerSecond));
+		timePerMsg = ((producerLatestStop - producerEarliestStart) / testParams.getNumberOfMessagesToSend()) / nano2second;
+		messagesPerSecond = 1 / timePerMsg;
+		
+
+		sb.append(String.format("\nTOTAL PRODUCER: Messages/second: %.3f", messagesPerSecond));
 
 		System.out.println(sb.toString());
 
 		this.testResults.append(sb);
 	}
 
-	
 	private void writeResult()
 	{
 		FileWriter fstream;
