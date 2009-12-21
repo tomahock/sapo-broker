@@ -21,13 +21,12 @@ class RemoteQueueConsumers
 	private static final int WRITE_BUFFER_SIZE = 128 * 1024;
 
 	private final static double MAX_SUSPENSION_TIME = 1000;
-	
 
-	private final static double LOW_WATER_MARK = (double) WRITE_BUFFER_SIZE; 
+	private final static double LOW_WATER_MARK = (double) WRITE_BUFFER_SIZE;
 	private final static double HIGH_WATER_MARK = LOW_WATER_MARK * 2;
-	
-	private final static double DELTA =  HIGH_WATER_MARK - LOW_WATER_MARK;
-	
+
+	private final static double DELTA = HIGH_WATER_MARK - LOW_WATER_MARK;
+
 	private static class SessionInfo
 	{
 		IoSession session;
@@ -44,7 +43,7 @@ class RemoteQueueConsumers
 			return time < System.currentTimeMillis();
 		}
 	}
-	
+
 	private static final RemoteQueueConsumers instance = new RemoteQueueConsumers();
 
 	private static Logger log = LoggerFactory.getLogger(RemoteQueueConsumers.class);
@@ -59,7 +58,7 @@ class RemoteQueueConsumers
 
 		if (!sessions.contains(iosession))
 		{
-			sessions.add(new SessionInfo( iosession) );
+			sessions.add(new SessionInfo(iosession));
 			log.info("Add remote queue consumer for '{}'", queueName);
 		}
 		else
@@ -88,17 +87,10 @@ class RemoteQueueConsumers
 			CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(queueName);
 			if (sessions != null)
 			{
-				for(SessionInfo si : sessions)
+				if( sessions.remove(new SessionInfo(iosession)) )
 				{
-					if(si.session.equals(iosession))
-					{
-						if (sessions.remove(si))
-						{
-							log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, IoSessionHelper.getRemoteAddress(iosession));
-						}
-					}
-				}				
-				
+					log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, IoSessionHelper.getRemoteAddress(iosession));
+				}
 			}
 			instance.remoteQueueConsumers.put(queueName, sessions);
 		}
@@ -109,17 +101,10 @@ class RemoteQueueConsumers
 		CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(queueName);
 		if (sessions != null)
 		{
-			for(SessionInfo si : sessions)
+			if(sessions.remove(new SessionInfo(iosession)))
 			{
-				if(si.session.equals(iosession))
-				{
-					if (sessions.remove(si))
-					{
-						log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, IoSessionHelper.getRemoteAddress(iosession));
-					}
-				}
-			}	
-
+				log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, IoSessionHelper.getRemoteAddress(iosession));
+			}
 		}
 		instance.remoteQueueConsumers.put(queueName, sessions);
 	}
@@ -158,40 +143,37 @@ class RemoteQueueConsumers
 				{
 					try
 					{
-						
-						
-						
-						
-						if ( (sessionInfo != null) && (sessionInfo.session != null) )
+
+						if ((sessionInfo != null) && (sessionInfo.session != null))
 						{
 							IoSession ioSession = sessionInfo.session;
 							if (ioSession.isConnected() && !ioSession.isClosing())
 							{
 								long scheduledWriteBytes = ioSession.getScheduledWriteBytes();
-								
-								if( (scheduledWriteBytes> LOW_WATER_MARK) && (scheduledWriteBytes < HIGH_WATER_MARK) )
+
+								if ((scheduledWriteBytes > LOW_WATER_MARK) && (scheduledWriteBytes < HIGH_WATER_MARK))
 								{
-									long time = (long) ((scheduledWriteBytes - LOW_WATER_MARK ) * (MAX_SUSPENSION_TIME / DELTA));
+									long time = (long) ((scheduledWriteBytes - LOW_WATER_MARK) * (MAX_SUSPENSION_TIME / DELTA));
 									sessionInfo.time = System.currentTimeMillis() + time;
 								}
-								else if(scheduledWriteBytes >= HIGH_WATER_MARK)
+								else if (scheduledWriteBytes >= HIGH_WATER_MARK)
 								{
 									sessionInfo.time = (long) (System.currentTimeMillis() + MAX_SUSPENSION_TIME);
 									if (log.isDebugEnabled())
 									{
 										log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'", ioSession.toString());
 									}
-									
+
 									String log_msg = String.format("Write Queue is full, delay message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), sessionInfo.session.getRemoteAddress().toString());
 									log.warn(log_msg);
 
 									String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
 									String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), sessionInfo.session.getRemoteAddress().toString());
 									InternalPublisher.send(dname, info_msg);
-
+									
 									return -1;
 								}
-								
+
 								ioSession.write(message);
 
 								return 2 * 60 * 1000; // reserve for 2mn
@@ -244,7 +226,7 @@ class RemoteQueueConsumers
 				for (int i = 0; i != n; ++i)
 				{
 					SessionInfo sessionInfo = sessions.get(currentQEP);
-					if(sessionInfo.isReady())
+					if (sessionInfo.isReady())
 					{
 						return sessionInfo;
 					}

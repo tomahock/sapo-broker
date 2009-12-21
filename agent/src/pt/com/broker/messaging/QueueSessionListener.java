@@ -42,13 +42,43 @@ public class QueueSessionListener extends BrokerListener
 		{
 			return time < System.currentTimeMillis();
 		}
+		
+		@Override
+		public boolean equals(Object obj)
+		{
+			if ( this == obj )
+			{
+				return true;
+			}
+			if(obj.getClass().equals(this.getClass()))
+			{
+				SessionInfo other = (SessionInfo) obj;
+				if(other.session.equals(this.session))
+				{
+					// ignore time
+					return true;
+				}
+				
+			}
+			else if(obj.getClass().equals(this.session.getClass()))
+			{
+				return true;
+			}
+			return false;
+		}
+		
+		@Override
+		public int hashCode()
+		{
+			return session.hashCode();
+		}
 	}
 
 	private volatile int currentQEP = 0;
 
 	private static final Logger log = LoggerFactory.getLogger(QueueSessionListener.class);
 
-	private final List<SessionInfo> _sessions = new ArrayList<SessionInfo>();
+	private final List<SessionInfo> sessions = new ArrayList<SessionInfo>();
 
 	private final String _dname;
 
@@ -137,7 +167,7 @@ public class QueueSessionListener extends BrokerListener
 	{
 		synchronized (mutex)
 		{
-			int n = _sessions.size();
+			int n = sessions.size();
 			if (n == 0)
 				return null;
 
@@ -153,7 +183,7 @@ public class QueueSessionListener extends BrokerListener
 			{
 				for (int i = 0; i != n; ++i)
 				{
-					SessionInfo sessionInfo = _sessions.get(currentQEP);
+					SessionInfo sessionInfo = sessions.get(currentQEP);
 					if(sessionInfo.isReady())
 					{
 						return sessionInfo;
@@ -167,7 +197,7 @@ public class QueueSessionListener extends BrokerListener
 					currentQEP = 0;
 					do
 					{
-						SessionInfo sessionInfo = _sessions.get(currentQEP);
+						SessionInfo sessionInfo = sessions.get(currentQEP);
 						if (sessionInfo.isReady())
 						{
 							return sessionInfo;
@@ -189,32 +219,35 @@ public class QueueSessionListener extends BrokerListener
 	{
 		synchronized (mutex)
 		{
-			if (!_sessions.contains(iosession))
+			SessionInfo sessionInfo = new SessionInfo(iosession);
+			if (!sessions.contains(sessionInfo))
 			{
-				_sessions.add(new SessionInfo(iosession));
+				sessions.add(sessionInfo);
 
-				log.info(String.format("Create message consumer for queue: '%s', address: '%s', Total sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), _sessions.size()));
+				log.info(String.format("Create message consumer for queue: '%s', address: '%s', Total sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), sessions.size()));
 			}
-			return _sessions.size();
+			return sessions.size();
 		}
 	}
 
 	public int removeSessionConsumer(IoSession iosession)
 	{
+		
 		synchronized (mutex)
 		{
-			if (_sessions.remove(iosession))
+			
+			if (sessions.remove( new SessionInfo(iosession )))
 			{
-				log.info(String.format("Remove message consumer for queue: '%s', address: '%s', Remaining sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), _sessions.size()));
+				log.info(String.format("Remove message consumer for queue: '%s', address: '%s', Remaining sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), sessions.size()));
 			}
 
-			if (_sessions.isEmpty())
+			if (sessions.isEmpty())
 			{
 				QueueSessionListenerList.remove(_dname);
 				Gcs.removeAsyncConsumer(this);
 			}
 
-			return _sessions.size();
+			return sessions.size();
 		}
 	}
 
@@ -227,16 +260,16 @@ public class QueueSessionListener extends BrokerListener
 	{
 		synchronized (mutex)
 		{
-			return _sessions.size();
+			return sessions.size();
 		}
 	}
 
 	@Override
 	public boolean ready()
 	{
-		synchronized (_sessions)
+		synchronized (mutex)
 		{
-			for(SessionInfo sessionInfo : _sessions)
+			for(SessionInfo sessionInfo : sessions)
 			{
 				if(sessionInfo.isReady())
 					return true;
