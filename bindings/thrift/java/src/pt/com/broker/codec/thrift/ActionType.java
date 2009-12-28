@@ -6,50 +6,46 @@
 package pt.com.broker.codec.thrift;
 
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-import org.apache.thrift.IntRangeSet;
 import java.util.Map;
 import java.util.HashMap;
+import org.apache.thrift.TEnum;
+public enum ActionType implements TEnum{
+    PUBLISH(0),
+    POLL(1),
+    ACCEPTED(2),
+    ACKNOWLEDGE(3),
+    SUBSCRIBE(4),
+    UNSUBSCRIBE(5),
+    NOTIFICATION(6),
+    FAULT(7),
+    PING(8),
+    PONG(9),
+    AUTH(10);
 
-class ActionType {
-  public static final int PUBLISH = 0;
-  public static final int POLL = 1;
-  public static final int ACCEPTED = 2;
-  public static final int ACKNOWLEDGE = 3;
-  public static final int SUBSCRIBE = 4;
-  public static final int UNSUBSCRIBE = 5;
-  public static final int NOTIFICATION = 6;
-  public static final int FAULT = 7;
-  public static final int PING = 8;
-  public static final int PONG = 9;
-  public static final int AUTH = 10;
-
-  public static final IntRangeSet VALID_VALUES = new IntRangeSet(
-    PUBLISH, 
-    POLL, 
-    ACCEPTED, 
-    ACKNOWLEDGE, 
-    SUBSCRIBE, 
-    UNSUBSCRIBE, 
-    NOTIFICATION, 
-    FAULT, 
-    PING, 
-    PONG, 
-    AUTH );
-
-  public static final Map<Integer, String> VALUES_TO_NAMES = new HashMap<Integer, String>() {{
-    put(PUBLISH, "PUBLISH");
-    put(POLL, "POLL");
-    put(ACCEPTED, "ACCEPTED");
-    put(ACKNOWLEDGE, "ACKNOWLEDGE");
-    put(SUBSCRIBE, "SUBSCRIBE");
-    put(UNSUBSCRIBE, "UNSUBSCRIBE");
-    put(NOTIFICATION, "NOTIFICATION");
-    put(FAULT, "FAULT");
-    put(PING, "PING");
-    put(PONG, "PONG");
-    put(AUTH, "AUTH");
+  private static final Map<Integer, ActionType> BY_VALUE = new HashMap<Integer,ActionType>() {{
+    for(ActionType val : ActionType.values()) {
+      put(val.getValue(), val);
+    }
   }};
+
+  private final int value;
+
+  private ActionType(int value) {
+    this.value = value;
+  }
+
+  /**
+   * Get the integer value of this enum value, as defined in the Thrift IDL.
+   */
+  public int getValue() {
+    return value;
+  }
+
+  /**
+   * Find a the enum type by its integer value, as defined in the Thrift IDL.
+   * @return null if the value is not found.
+   */
+  public static ActionType findByValue(int value) { 
+    return BY_VALUE.get(value);
+  }
 }

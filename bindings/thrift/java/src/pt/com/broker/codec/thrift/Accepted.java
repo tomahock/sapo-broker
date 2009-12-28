@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,17 +23,72 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-class Accepted implements TBase, java.io.Serializable, Cloneable, Comparable<Accepted> {
+class Accepted implements TBase<Accepted._Fields>, java.io.Serializable, Cloneable, Comparable<Accepted> {
   private static final TStruct STRUCT_DESC = new TStruct("Accepted");
+
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
 
   public String action_id;
-  public static final int ACTION_ID = 1;
+
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements TFieldIdEnum {
+    ACTION_ID((short)1, "action_id");
+
+    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+    static {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byId.put((int)field._thriftId, field);
+        byName.put(field.getFieldName(), field);
+      }
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, or null if its not found.
+     */
+    public static _Fields findByThriftId(int fieldId) {
+      return byId.get(fieldId);
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
+     */
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
+    }
+
+    /**
+     * Find the _Fields constant that matches name, or null if its not found.
+     */
+    public static _Fields findByName(String name) {
+      return byName.get(name);
+    }
+
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
+    }
+
+    public short getThriftFieldId() {
+      return _thriftId;
+    }
+
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
 
   // isset id assignments
 
-  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.DEFAULT, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
+    put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
   }});
 
@@ -57,7 +115,11 @@ class Accepted implements TBase, java.io.Serializable, Cloneable, Comparable<Acc
     }
   }
 
-  @Override
+  public Accepted deepCopy() {
+    return new Accepted(this);
+  }
+
+  @Deprecated
   public Accepted clone() {
     return new Accepted(this);
   }
@@ -75,7 +137,7 @@ class Accepted implements TBase, java.io.Serializable, Cloneable, Comparable<Acc
     this.action_id = null;
   }
 
-  // Returns true if field action_id is set (has been asigned a value) and false otherwise
+  /** Returns true if field action_id is set (has been asigned a value) and false otherwise */
   public boolean isSetAction_id() {
     return this.action_id != null;
   }
@@ -86,8 +148,8 @@ class Accepted implements TBase, java.io.Serializable, Cloneable, Comparable<Acc
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    switch (fieldID) {
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
     case ACTION_ID:
       if (value == null) {
         unsetAction_id();
@@ -96,29 +158,37 @@ class Accepted implements TBase, java.io.Serializable, Cloneable, Comparable<Acc
       }
       break;
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
   }
 
-  public Object getFieldValue(int fieldID) {
-    switch (fieldID) {
+  public void setFieldValue(int fieldID, Object value) {
+    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
     case ACTION_ID:
       return getAction_id();
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
   }
 
-  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
-  public boolean isSet(int fieldID) {
-    switch (fieldID) {
+  public Object getFieldValue(int fieldId) {
+    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    switch (field) {
     case ACTION_ID:
       return isSetAction_id();
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
+  }
+
+  public boolean isSet(int fieldID) {
+    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -179,23 +249,23 @@ class Accepted implements TBase, java.io.Serializable, Cloneable, Comparable<Acc
       if (field.type == TType.STOP) { 
         break;
       }
-      switch (field.id)
-      {
-        case ACTION_ID:
-          if (field.type == TType.STRING) {
-            this.action_id = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
+      _Fields fieldId = _Fields.findByThriftId(field.id);
+      if (fieldId == null) {
+        TProtocolUtil.skip(iprot, field.type);
+      } else {
+        switch (fieldId) {
+          case ACTION_ID:
+            if (field.type == TType.STRING) {
+              this.action_id = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+        }
+        iprot.readFieldEnd();
       }
-      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
-
 
     // check for required fields of primitive type, which can't be checked in the validate method
     validate();
@@ -232,10 +302,6 @@ class Accepted implements TBase, java.io.Serializable, Cloneable, Comparable<Acc
 
   public void validate() throws TException {
     // check for required fields
-    if (action_id == null) {
-      throw new TProtocolException("Required field 'action_id' was not present! Struct: " + toString());
-    }
-    // check that fields of type enum have valid values
   }
 
 }

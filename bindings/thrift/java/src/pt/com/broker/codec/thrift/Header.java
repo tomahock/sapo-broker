@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,17 +23,72 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-class Header implements TBase, java.io.Serializable, Cloneable {
+class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Header");
+
   private static final TField PARAMETERS_FIELD_DESC = new TField("parameters", TType.MAP, (short)1);
 
   public Map<String,String> parameters;
-  public static final int PARAMETERS = 1;
+
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements TFieldIdEnum {
+    PARAMETERS((short)1, "parameters");
+
+    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+    static {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byId.put((int)field._thriftId, field);
+        byName.put(field.getFieldName(), field);
+      }
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, or null if its not found.
+     */
+    public static _Fields findByThriftId(int fieldId) {
+      return byId.get(fieldId);
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
+     */
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
+    }
+
+    /**
+     * Find the _Fields constant that matches name, or null if its not found.
+     */
+    public static _Fields findByName(String name) {
+      return byName.get(name);
+    }
+
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
+    }
+
+    public short getThriftFieldId() {
+      return _thriftId;
+    }
+
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
 
   // isset id assignments
 
-  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(PARAMETERS, new FieldMetaData("parameters", TFieldRequirementType.DEFAULT, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
+    put(_Fields.PARAMETERS, new FieldMetaData("parameters", TFieldRequirementType.DEFAULT, 
         new MapMetaData(TType.MAP, 
             new FieldValueMetaData(TType.STRING), 
             new FieldValueMetaData(TType.STRING))));
@@ -71,9 +129,24 @@ class Header implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
-  @Override
+  public Header deepCopy() {
+    return new Header(this);
+  }
+
+  @Deprecated
   public Header clone() {
     return new Header(this);
+  }
+
+  public int getParametersSize() {
+    return (this.parameters == null) ? 0 : this.parameters.size();
+  }
+
+  public void putToParameters(String key, String val) {
+    if (this.parameters == null) {
+      this.parameters = new HashMap<String,String>();
+    }
+    this.parameters.put(key, val);
   }
 
   public Map<String,String> getParameters() {
@@ -89,7 +162,7 @@ class Header implements TBase, java.io.Serializable, Cloneable {
     this.parameters = null;
   }
 
-  // Returns true if field parameters is set (has been asigned a value) and false otherwise
+  /** Returns true if field parameters is set (has been asigned a value) and false otherwise */
   public boolean isSetParameters() {
     return this.parameters != null;
   }
@@ -100,8 +173,8 @@ class Header implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    switch (fieldID) {
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
     case PARAMETERS:
       if (value == null) {
         unsetParameters();
@@ -110,29 +183,37 @@ class Header implements TBase, java.io.Serializable, Cloneable {
       }
       break;
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
   }
 
-  public Object getFieldValue(int fieldID) {
-    switch (fieldID) {
+  public void setFieldValue(int fieldID, Object value) {
+    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
     case PARAMETERS:
       return getParameters();
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
   }
 
-  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
-  public boolean isSet(int fieldID) {
-    switch (fieldID) {
+  public Object getFieldValue(int fieldId) {
+    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    switch (field) {
     case PARAMETERS:
       return isSetParameters();
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
+  }
+
+  public boolean isSet(int fieldID) {
+    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -174,35 +255,35 @@ class Header implements TBase, java.io.Serializable, Cloneable {
       if (field.type == TType.STOP) { 
         break;
       }
-      switch (field.id)
-      {
-        case PARAMETERS:
-          if (field.type == TType.MAP) {
-            {
-              TMap _map0 = iprot.readMapBegin();
-              this.parameters = new HashMap<String,String>(2*_map0.size);
-              for (int _i1 = 0; _i1 < _map0.size; ++_i1)
+      _Fields fieldId = _Fields.findByThriftId(field.id);
+      if (fieldId == null) {
+        TProtocolUtil.skip(iprot, field.type);
+      } else {
+        switch (fieldId) {
+          case PARAMETERS:
+            if (field.type == TType.MAP) {
               {
-                String _key2;
-                String _val3;
-                _key2 = iprot.readString();
-                _val3 = iprot.readString();
-                this.parameters.put(_key2, _val3);
+                TMap _map0 = iprot.readMapBegin();
+                this.parameters = new HashMap<String,String>(2*_map0.size);
+                for (int _i1 = 0; _i1 < _map0.size; ++_i1)
+                {
+                  String _key2;
+                  String _val3;
+                  _key2 = iprot.readString();
+                  _val3 = iprot.readString();
+                  this.parameters.put(_key2, _val3);
+                }
+                iprot.readMapEnd();
               }
-              iprot.readMapEnd();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
             }
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
+            break;
+        }
+        iprot.readFieldEnd();
       }
-      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
-
 
     // check for required fields of primitive type, which can't be checked in the validate method
     validate();
@@ -216,7 +297,8 @@ class Header implements TBase, java.io.Serializable, Cloneable {
       oprot.writeFieldBegin(PARAMETERS_FIELD_DESC);
       {
         oprot.writeMapBegin(new TMap(TType.STRING, TType.STRING, this.parameters.size()));
-        for (Map.Entry<String, String> _iter4 : this.parameters.entrySet())        {
+        for (Map.Entry<String, String> _iter4 : this.parameters.entrySet())
+        {
           oprot.writeString(_iter4.getKey());
           oprot.writeString(_iter4.getValue());
         }
@@ -246,10 +328,6 @@ class Header implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
-    if (parameters == null) {
-      throw new TProtocolException("Required field 'parameters' was not present! Struct: " + toString());
-    }
-    // check that fields of type enum have valid values
   }
 
 }

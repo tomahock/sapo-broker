@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +23,9 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-class Authentication implements TBase, java.io.Serializable, Cloneable, Comparable<Authentication> {
+class Authentication implements TBase<Authentication._Fields>, java.io.Serializable, Cloneable, Comparable<Authentication> {
   private static final TStruct STRUCT_DESC = new TStruct("Authentication");
+
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField AUTHENTICATION_TYPE_FIELD_DESC = new TField("authentication_type", TType.STRING, (short)2);
   private static final TField TOKEN_FIELD_DESC = new TField("token", TType.STRING, (short)3);
@@ -29,28 +33,82 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
   private static final TField ROLES_FIELD_DESC = new TField("roles", TType.LIST, (short)5);
 
   public String action_id;
-  public static final int ACTION_ID = 1;
   public String authentication_type;
-  public static final int AUTHENTICATION_TYPE = 2;
   public byte[] token;
-  public static final int TOKEN = 3;
   public String user_id;
-  public static final int USER_ID = 4;
   public List<String> roles;
-  public static final int ROLES = 5;
+
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements TFieldIdEnum {
+    ACTION_ID((short)1, "action_id"),
+    AUTHENTICATION_TYPE((short)2, "authentication_type"),
+    TOKEN((short)3, "token"),
+    USER_ID((short)4, "user_id"),
+    ROLES((short)5, "roles");
+
+    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+    static {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byId.put((int)field._thriftId, field);
+        byName.put(field.getFieldName(), field);
+      }
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, or null if its not found.
+     */
+    public static _Fields findByThriftId(int fieldId) {
+      return byId.get(fieldId);
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
+     */
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
+    }
+
+    /**
+     * Find the _Fields constant that matches name, or null if its not found.
+     */
+    public static _Fields findByName(String name) {
+      return byName.get(name);
+    }
+
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
+    }
+
+    public short getThriftFieldId() {
+      return _thriftId;
+    }
+
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
 
   // isset id assignments
 
-  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
+    put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(AUTHENTICATION_TYPE, new FieldMetaData("authentication_type", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.AUTHENTICATION_TYPE, new FieldMetaData("authentication_type", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(TOKEN, new FieldMetaData("token", TFieldRequirementType.DEFAULT, 
+    put(_Fields.TOKEN, new FieldMetaData("token", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
-    put(USER_ID, new FieldMetaData("user_id", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.USER_ID, new FieldMetaData("user_id", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(ROLES, new FieldMetaData("roles", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.ROLES, new FieldMetaData("roles", TFieldRequirementType.OPTIONAL, 
         new ListMetaData(TType.LIST, 
             new FieldValueMetaData(TType.STRING))));
   }});
@@ -63,18 +121,10 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
   }
 
   public Authentication(
-    String action_id,
-    String authentication_type,
-    byte[] token,
-    String user_id,
-    List<String> roles)
+    byte[] token)
   {
     this();
-    this.action_id = action_id;
-    this.authentication_type = authentication_type;
     this.token = token;
-    this.user_id = user_id;
-    this.roles = roles;
   }
 
   /**
@@ -103,7 +153,11 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     }
   }
 
-  @Override
+  public Authentication deepCopy() {
+    return new Authentication(this);
+  }
+
+  @Deprecated
   public Authentication clone() {
     return new Authentication(this);
   }
@@ -121,7 +175,7 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     this.action_id = null;
   }
 
-  // Returns true if field action_id is set (has been asigned a value) and false otherwise
+  /** Returns true if field action_id is set (has been asigned a value) and false otherwise */
   public boolean isSetAction_id() {
     return this.action_id != null;
   }
@@ -145,7 +199,7 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     this.authentication_type = null;
   }
 
-  // Returns true if field authentication_type is set (has been asigned a value) and false otherwise
+  /** Returns true if field authentication_type is set (has been asigned a value) and false otherwise */
   public boolean isSetAuthentication_type() {
     return this.authentication_type != null;
   }
@@ -169,7 +223,7 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     this.token = null;
   }
 
-  // Returns true if field token is set (has been asigned a value) and false otherwise
+  /** Returns true if field token is set (has been asigned a value) and false otherwise */
   public boolean isSetToken() {
     return this.token != null;
   }
@@ -193,7 +247,7 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     this.user_id = null;
   }
 
-  // Returns true if field user_id is set (has been asigned a value) and false otherwise
+  /** Returns true if field user_id is set (has been asigned a value) and false otherwise */
   public boolean isSetUser_id() {
     return this.user_id != null;
   }
@@ -202,6 +256,21 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     if (!value) {
       this.user_id = null;
     }
+  }
+
+  public int getRolesSize() {
+    return (this.roles == null) ? 0 : this.roles.size();
+  }
+
+  public java.util.Iterator<String> getRolesIterator() {
+    return (this.roles == null) ? null : this.roles.iterator();
+  }
+
+  public void addToRoles(String elem) {
+    if (this.roles == null) {
+      this.roles = new ArrayList<String>();
+    }
+    this.roles.add(elem);
   }
 
   public List<String> getRoles() {
@@ -217,7 +286,7 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     this.roles = null;
   }
 
-  // Returns true if field roles is set (has been asigned a value) and false otherwise
+  /** Returns true if field roles is set (has been asigned a value) and false otherwise */
   public boolean isSetRoles() {
     return this.roles != null;
   }
@@ -228,8 +297,8 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    switch (fieldID) {
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
     case ACTION_ID:
       if (value == null) {
         unsetAction_id();
@@ -270,13 +339,15 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
       }
       break;
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
   }
 
-  public Object getFieldValue(int fieldID) {
-    switch (fieldID) {
+  public void setFieldValue(int fieldID, Object value) {
+    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
     case ACTION_ID:
       return getAction_id();
 
@@ -292,14 +363,17 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
     case ROLES:
       return getRoles();
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
   }
 
-  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
-  public boolean isSet(int fieldID) {
-    switch (fieldID) {
+  public Object getFieldValue(int fieldId) {
+    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    switch (field) {
     case ACTION_ID:
       return isSetAction_id();
     case AUTHENTICATION_TYPE:
@@ -310,9 +384,12 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
       return isSetUser_id();
     case ROLES:
       return isSetRoles();
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
+  }
+
+  public boolean isSet(int fieldID) {
+    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -441,61 +518,61 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
       if (field.type == TType.STOP) { 
         break;
       }
-      switch (field.id)
-      {
-        case ACTION_ID:
-          if (field.type == TType.STRING) {
-            this.action_id = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case AUTHENTICATION_TYPE:
-          if (field.type == TType.STRING) {
-            this.authentication_type = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case TOKEN:
-          if (field.type == TType.STRING) {
-            this.token = iprot.readBinary();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case USER_ID:
-          if (field.type == TType.STRING) {
-            this.user_id = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case ROLES:
-          if (field.type == TType.LIST) {
-            {
-              TList _list5 = iprot.readListBegin();
-              this.roles = new ArrayList<String>(_list5.size);
-              for (int _i6 = 0; _i6 < _list5.size; ++_i6)
-              {
-                String _elem7;
-                _elem7 = iprot.readString();
-                this.roles.add(_elem7);
-              }
-              iprot.readListEnd();
+      _Fields fieldId = _Fields.findByThriftId(field.id);
+      if (fieldId == null) {
+        TProtocolUtil.skip(iprot, field.type);
+      } else {
+        switch (fieldId) {
+          case ACTION_ID:
+            if (field.type == TType.STRING) {
+              this.action_id = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
             }
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
+            break;
+          case AUTHENTICATION_TYPE:
+            if (field.type == TType.STRING) {
+              this.authentication_type = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case TOKEN:
+            if (field.type == TType.STRING) {
+              this.token = iprot.readBinary();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case USER_ID:
+            if (field.type == TType.STRING) {
+              this.user_id = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case ROLES:
+            if (field.type == TType.LIST) {
+              {
+                TList _list5 = iprot.readListBegin();
+                this.roles = new ArrayList<String>(_list5.size);
+                for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+                {
+                  String _elem7;
+                  _elem7 = iprot.readString();
+                  this.roles.add(_elem7);
+                }
+                iprot.readListEnd();
+              }
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+        }
+        iprot.readFieldEnd();
       }
-      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
-
 
     // check for required fields of primitive type, which can't be checked in the validate method
     validate();
@@ -536,7 +613,8 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
         oprot.writeFieldBegin(ROLES_FIELD_DESC);
         {
           oprot.writeListBegin(new TList(TType.STRING, this.roles.size()));
-          for (String _iter8 : this.roles)          {
+          for (String _iter8 : this.roles)
+          {
             oprot.writeString(_iter8);
           }
           oprot.writeListEnd();
@@ -611,10 +689,6 @@ class Authentication implements TBase, java.io.Serializable, Cloneable, Comparab
 
   public void validate() throws TException {
     // check for required fields
-    if (token == null) {
-      throw new TProtocolException("Required field 'token' was not present! Struct: " + toString());
-    }
-    // check that fields of type enum have valid values
   }
 
 }

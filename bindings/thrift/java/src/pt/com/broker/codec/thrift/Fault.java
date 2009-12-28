@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,32 +23,87 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault> {
+class Fault implements TBase<Fault._Fields>, java.io.Serializable, Cloneable, Comparable<Fault> {
   private static final TStruct STRUCT_DESC = new TStruct("Fault");
+
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField FAULT_CODE_FIELD_DESC = new TField("fault_code", TType.STRING, (short)2);
   private static final TField FAULT_MESSAGE_FIELD_DESC = new TField("fault_message", TType.STRING, (short)3);
   private static final TField FAULT_DETAIL_FIELD_DESC = new TField("fault_detail", TType.STRING, (short)4);
 
   public String action_id;
-  public static final int ACTION_ID = 1;
   public String fault_code;
-  public static final int FAULT_CODE = 2;
   public String fault_message;
-  public static final int FAULT_MESSAGE = 3;
   public String fault_detail;
-  public static final int FAULT_DETAIL = 4;
+
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements TFieldIdEnum {
+    ACTION_ID((short)1, "action_id"),
+    FAULT_CODE((short)2, "fault_code"),
+    FAULT_MESSAGE((short)3, "fault_message"),
+    FAULT_DETAIL((short)4, "fault_detail");
+
+    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+    static {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byId.put((int)field._thriftId, field);
+        byName.put(field.getFieldName(), field);
+      }
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, or null if its not found.
+     */
+    public static _Fields findByThriftId(int fieldId) {
+      return byId.get(fieldId);
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
+     */
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
+    }
+
+    /**
+     * Find the _Fields constant that matches name, or null if its not found.
+     */
+    public static _Fields findByName(String name) {
+      return byName.get(name);
+    }
+
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
+    }
+
+    public short getThriftFieldId() {
+      return _thriftId;
+    }
+
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
 
   // isset id assignments
 
-  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
+    put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(FAULT_CODE, new FieldMetaData("fault_code", TFieldRequirementType.DEFAULT, 
+    put(_Fields.FAULT_CODE, new FieldMetaData("fault_code", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
-    put(FAULT_MESSAGE, new FieldMetaData("fault_message", TFieldRequirementType.DEFAULT, 
+    put(_Fields.FAULT_MESSAGE, new FieldMetaData("fault_message", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
-    put(FAULT_DETAIL, new FieldMetaData("fault_detail", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.FAULT_DETAIL, new FieldMetaData("fault_detail", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
   }});
 
@@ -57,16 +115,12 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
   }
 
   public Fault(
-    String action_id,
     String fault_code,
-    String fault_message,
-    String fault_detail)
+    String fault_message)
   {
     this();
-    this.action_id = action_id;
     this.fault_code = fault_code;
     this.fault_message = fault_message;
-    this.fault_detail = fault_detail;
   }
 
   /**
@@ -87,7 +141,11 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
     }
   }
 
-  @Override
+  public Fault deepCopy() {
+    return new Fault(this);
+  }
+
+  @Deprecated
   public Fault clone() {
     return new Fault(this);
   }
@@ -105,7 +163,7 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
     this.action_id = null;
   }
 
-  // Returns true if field action_id is set (has been asigned a value) and false otherwise
+  /** Returns true if field action_id is set (has been asigned a value) and false otherwise */
   public boolean isSetAction_id() {
     return this.action_id != null;
   }
@@ -129,7 +187,7 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
     this.fault_code = null;
   }
 
-  // Returns true if field fault_code is set (has been asigned a value) and false otherwise
+  /** Returns true if field fault_code is set (has been asigned a value) and false otherwise */
   public boolean isSetFault_code() {
     return this.fault_code != null;
   }
@@ -153,7 +211,7 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
     this.fault_message = null;
   }
 
-  // Returns true if field fault_message is set (has been asigned a value) and false otherwise
+  /** Returns true if field fault_message is set (has been asigned a value) and false otherwise */
   public boolean isSetFault_message() {
     return this.fault_message != null;
   }
@@ -177,7 +235,7 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
     this.fault_detail = null;
   }
 
-  // Returns true if field fault_detail is set (has been asigned a value) and false otherwise
+  /** Returns true if field fault_detail is set (has been asigned a value) and false otherwise */
   public boolean isSetFault_detail() {
     return this.fault_detail != null;
   }
@@ -188,8 +246,8 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    switch (fieldID) {
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
     case ACTION_ID:
       if (value == null) {
         unsetAction_id();
@@ -222,13 +280,15 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
       }
       break;
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
   }
 
-  public Object getFieldValue(int fieldID) {
-    switch (fieldID) {
+  public void setFieldValue(int fieldID, Object value) {
+    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
     case ACTION_ID:
       return getAction_id();
 
@@ -241,14 +301,17 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
     case FAULT_DETAIL:
       return getFault_detail();
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
   }
 
-  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
-  public boolean isSet(int fieldID) {
-    switch (fieldID) {
+  public Object getFieldValue(int fieldId) {
+    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    switch (field) {
     case ACTION_ID:
       return isSetAction_id();
     case FAULT_CODE:
@@ -257,9 +320,12 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
       return isSetFault_message();
     case FAULT_DETAIL:
       return isSetFault_detail();
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
+  }
+
+  public boolean isSet(int fieldID) {
+    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -371,44 +437,44 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
       if (field.type == TType.STOP) { 
         break;
       }
-      switch (field.id)
-      {
-        case ACTION_ID:
-          if (field.type == TType.STRING) {
-            this.action_id = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case FAULT_CODE:
-          if (field.type == TType.STRING) {
-            this.fault_code = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case FAULT_MESSAGE:
-          if (field.type == TType.STRING) {
-            this.fault_message = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case FAULT_DETAIL:
-          if (field.type == TType.STRING) {
-            this.fault_detail = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
+      _Fields fieldId = _Fields.findByThriftId(field.id);
+      if (fieldId == null) {
+        TProtocolUtil.skip(iprot, field.type);
+      } else {
+        switch (fieldId) {
+          case ACTION_ID:
+            if (field.type == TType.STRING) {
+              this.action_id = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case FAULT_CODE:
+            if (field.type == TType.STRING) {
+              this.fault_code = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case FAULT_MESSAGE:
+            if (field.type == TType.STRING) {
+              this.fault_message = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case FAULT_DETAIL:
+            if (field.type == TType.STRING) {
+              this.fault_detail = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+        }
+        iprot.readFieldEnd();
       }
-      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
-
 
     // check for required fields of primitive type, which can't be checked in the validate method
     validate();
@@ -492,13 +558,6 @@ class Fault implements TBase, java.io.Serializable, Cloneable, Comparable<Fault>
 
   public void validate() throws TException {
     // check for required fields
-    if (fault_code == null) {
-      throw new TProtocolException("Required field 'fault_code' was not present! Struct: " + toString());
-    }
-    if (fault_message == null) {
-      throw new TProtocolException("Required field 'fault_message' was not present! Struct: " + toString());
-    }
-    // check that fields of type enum have valid values
   }
 
 }

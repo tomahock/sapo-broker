@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,35 +23,90 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparable<BrokerMessage> {
+class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializable, Cloneable, Comparable<BrokerMessage> {
   private static final TStruct STRUCT_DESC = new TStruct("BrokerMessage");
+
   private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)1);
   private static final TField PAYLOAD_FIELD_DESC = new TField("payload", TType.STRING, (short)2);
   private static final TField EXPIRATION_FIELD_DESC = new TField("expiration", TType.I64, (short)3);
   private static final TField TIMESTAMP_FIELD_DESC = new TField("timestamp", TType.I64, (short)4);
 
   public String message_id;
-  public static final int MESSAGE_ID = 1;
   public byte[] payload;
-  public static final int PAYLOAD = 2;
   public long expiration;
-  public static final int EXPIRATION = 3;
   public long timestamp;
-  public static final int TIMESTAMP = 4;
+
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements TFieldIdEnum {
+    MESSAGE_ID((short)1, "message_id"),
+    PAYLOAD((short)2, "payload"),
+    EXPIRATION((short)3, "expiration"),
+    TIMESTAMP((short)4, "timestamp");
+
+    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+    static {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byId.put((int)field._thriftId, field);
+        byName.put(field.getFieldName(), field);
+      }
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, or null if its not found.
+     */
+    public static _Fields findByThriftId(int fieldId) {
+      return byId.get(fieldId);
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
+     */
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
+    }
+
+    /**
+     * Find the _Fields constant that matches name, or null if its not found.
+     */
+    public static _Fields findByName(String name) {
+      return byName.get(name);
+    }
+
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
+    }
+
+    public short getThriftFieldId() {
+      return _thriftId;
+    }
+
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
 
   // isset id assignments
   private static final int __EXPIRATION_ISSET_ID = 0;
   private static final int __TIMESTAMP_ISSET_ID = 1;
   private BitSet __isset_bit_vector = new BitSet(2);
 
-  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.OPTIONAL, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
+    put(_Fields.MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(PAYLOAD, new FieldMetaData("payload", TFieldRequirementType.DEFAULT, 
+    put(_Fields.PAYLOAD, new FieldMetaData("payload", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
-    put(EXPIRATION, new FieldMetaData("expiration", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.EXPIRATION, new FieldMetaData("expiration", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.I64)));
-    put(TIMESTAMP, new FieldMetaData("timestamp", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.TIMESTAMP, new FieldMetaData("timestamp", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.I64)));
   }});
 
@@ -60,18 +118,10 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
   }
 
   public BrokerMessage(
-    String message_id,
-    byte[] payload,
-    long expiration,
-    long timestamp)
+    byte[] payload)
   {
     this();
-    this.message_id = message_id;
     this.payload = payload;
-    this.expiration = expiration;
-    setExpirationIsSet(true);
-    this.timestamp = timestamp;
-    setTimestampIsSet(true);
   }
 
   /**
@@ -91,7 +141,11 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
     this.timestamp = other.timestamp;
   }
 
-  @Override
+  public BrokerMessage deepCopy() {
+    return new BrokerMessage(this);
+  }
+
+  @Deprecated
   public BrokerMessage clone() {
     return new BrokerMessage(this);
   }
@@ -109,7 +163,7 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
     this.message_id = null;
   }
 
-  // Returns true if field message_id is set (has been asigned a value) and false otherwise
+  /** Returns true if field message_id is set (has been asigned a value) and false otherwise */
   public boolean isSetMessage_id() {
     return this.message_id != null;
   }
@@ -133,7 +187,7 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
     this.payload = null;
   }
 
-  // Returns true if field payload is set (has been asigned a value) and false otherwise
+  /** Returns true if field payload is set (has been asigned a value) and false otherwise */
   public boolean isSetPayload() {
     return this.payload != null;
   }
@@ -158,7 +212,7 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
     __isset_bit_vector.clear(__EXPIRATION_ISSET_ID);
   }
 
-  // Returns true if field expiration is set (has been asigned a value) and false otherwise
+  /** Returns true if field expiration is set (has been asigned a value) and false otherwise */
   public boolean isSetExpiration() {
     return __isset_bit_vector.get(__EXPIRATION_ISSET_ID);
   }
@@ -181,7 +235,7 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
     __isset_bit_vector.clear(__TIMESTAMP_ISSET_ID);
   }
 
-  // Returns true if field timestamp is set (has been asigned a value) and false otherwise
+  /** Returns true if field timestamp is set (has been asigned a value) and false otherwise */
   public boolean isSetTimestamp() {
     return __isset_bit_vector.get(__TIMESTAMP_ISSET_ID);
   }
@@ -190,8 +244,8 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
     __isset_bit_vector.set(__TIMESTAMP_ISSET_ID, value);
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    switch (fieldID) {
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
     case MESSAGE_ID:
       if (value == null) {
         unsetMessage_id();
@@ -224,13 +278,15 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
       }
       break;
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
   }
 
-  public Object getFieldValue(int fieldID) {
-    switch (fieldID) {
+  public void setFieldValue(int fieldID, Object value) {
+    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
     case MESSAGE_ID:
       return getMessage_id();
 
@@ -243,14 +299,17 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
     case TIMESTAMP:
       return new Long(getTimestamp());
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
   }
 
-  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
-  public boolean isSet(int fieldID) {
-    switch (fieldID) {
+  public Object getFieldValue(int fieldId) {
+    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    switch (field) {
     case MESSAGE_ID:
       return isSetMessage_id();
     case PAYLOAD:
@@ -259,9 +318,12 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
       return isSetExpiration();
     case TIMESTAMP:
       return isSetTimestamp();
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
+  }
+
+  public boolean isSet(int fieldID) {
+    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -373,46 +435,46 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
       if (field.type == TType.STOP) { 
         break;
       }
-      switch (field.id)
-      {
-        case MESSAGE_ID:
-          if (field.type == TType.STRING) {
-            this.message_id = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case PAYLOAD:
-          if (field.type == TType.STRING) {
-            this.payload = iprot.readBinary();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case EXPIRATION:
-          if (field.type == TType.I64) {
-            this.expiration = iprot.readI64();
-            setExpirationIsSet(true);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case TIMESTAMP:
-          if (field.type == TType.I64) {
-            this.timestamp = iprot.readI64();
-            setTimestampIsSet(true);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
+      _Fields fieldId = _Fields.findByThriftId(field.id);
+      if (fieldId == null) {
+        TProtocolUtil.skip(iprot, field.type);
+      } else {
+        switch (fieldId) {
+          case MESSAGE_ID:
+            if (field.type == TType.STRING) {
+              this.message_id = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case PAYLOAD:
+            if (field.type == TType.STRING) {
+              this.payload = iprot.readBinary();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case EXPIRATION:
+            if (field.type == TType.I64) {
+              this.expiration = iprot.readI64();
+              setExpirationIsSet(true);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case TIMESTAMP:
+            if (field.type == TType.I64) {
+              this.timestamp = iprot.readI64();
+              setTimestampIsSet(true);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+        }
+        iprot.readFieldEnd();
       }
-      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
-
 
     // check for required fields of primitive type, which can't be checked in the validate method
     validate();
@@ -493,10 +555,6 @@ class BrokerMessage implements TBase, java.io.Serializable, Cloneable, Comparabl
 
   public void validate() throws TException {
     // check for required fields
-    if (payload == null) {
-      throw new TProtocolException("Required field 'payload' was not present! Struct: " + toString());
-    }
-    // check that fields of type enum have valid values
   }
 
 }

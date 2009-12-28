@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,22 +23,77 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-class Atom implements TBase, java.io.Serializable, Cloneable {
+class Atom implements TBase<Atom._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Atom");
+
   private static final TField HEADER_FIELD_DESC = new TField("header", TType.STRUCT, (short)1);
   private static final TField ACTION_FIELD_DESC = new TField("action", TType.STRUCT, (short)2);
 
   public Header header;
-  public static final int HEADER = 1;
   public Action action;
-  public static final int ACTION = 2;
+
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements TFieldIdEnum {
+    HEADER((short)1, "header"),
+    ACTION((short)2, "action");
+
+    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+    static {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byId.put((int)field._thriftId, field);
+        byName.put(field.getFieldName(), field);
+      }
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, or null if its not found.
+     */
+    public static _Fields findByThriftId(int fieldId) {
+      return byId.get(fieldId);
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
+     */
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
+    }
+
+    /**
+     * Find the _Fields constant that matches name, or null if its not found.
+     */
+    public static _Fields findByName(String name) {
+      return byName.get(name);
+    }
+
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
+    }
+
+    public short getThriftFieldId() {
+      return _thriftId;
+    }
+
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
 
   // isset id assignments
 
-  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(HEADER, new FieldMetaData("header", TFieldRequirementType.OPTIONAL, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
+    put(_Fields.HEADER, new FieldMetaData("header", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Header.class)));
-    put(ACTION, new FieldMetaData("action", TFieldRequirementType.DEFAULT, 
+    put(_Fields.ACTION, new FieldMetaData("action", TFieldRequirementType.DEFAULT, 
         new StructMetaData(TType.STRUCT, Action.class)));
   }});
 
@@ -47,11 +105,9 @@ class Atom implements TBase, java.io.Serializable, Cloneable {
   }
 
   public Atom(
-    Header header,
     Action action)
   {
     this();
-    this.header = header;
     this.action = action;
   }
 
@@ -67,7 +123,11 @@ class Atom implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
-  @Override
+  public Atom deepCopy() {
+    return new Atom(this);
+  }
+
+  @Deprecated
   public Atom clone() {
     return new Atom(this);
   }
@@ -85,7 +145,7 @@ class Atom implements TBase, java.io.Serializable, Cloneable {
     this.header = null;
   }
 
-  // Returns true if field header is set (has been asigned a value) and false otherwise
+  /** Returns true if field header is set (has been asigned a value) and false otherwise */
   public boolean isSetHeader() {
     return this.header != null;
   }
@@ -109,7 +169,7 @@ class Atom implements TBase, java.io.Serializable, Cloneable {
     this.action = null;
   }
 
-  // Returns true if field action is set (has been asigned a value) and false otherwise
+  /** Returns true if field action is set (has been asigned a value) and false otherwise */
   public boolean isSetAction() {
     return this.action != null;
   }
@@ -120,8 +180,8 @@ class Atom implements TBase, java.io.Serializable, Cloneable {
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    switch (fieldID) {
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
     case HEADER:
       if (value == null) {
         unsetHeader();
@@ -138,34 +198,42 @@ class Atom implements TBase, java.io.Serializable, Cloneable {
       }
       break;
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
   }
 
-  public Object getFieldValue(int fieldID) {
-    switch (fieldID) {
+  public void setFieldValue(int fieldID, Object value) {
+    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
     case HEADER:
       return getHeader();
 
     case ACTION:
       return getAction();
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
   }
 
-  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
-  public boolean isSet(int fieldID) {
-    switch (fieldID) {
+  public Object getFieldValue(int fieldId) {
+    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    switch (field) {
     case HEADER:
       return isSetHeader();
     case ACTION:
       return isSetAction();
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
+  }
+
+  public boolean isSet(int fieldID) {
+    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -216,32 +284,32 @@ class Atom implements TBase, java.io.Serializable, Cloneable {
       if (field.type == TType.STOP) { 
         break;
       }
-      switch (field.id)
-      {
-        case HEADER:
-          if (field.type == TType.STRUCT) {
-            this.header = new Header();
-            this.header.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case ACTION:
-          if (field.type == TType.STRUCT) {
-            this.action = new Action();
-            this.action.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
+      _Fields fieldId = _Fields.findByThriftId(field.id);
+      if (fieldId == null) {
+        TProtocolUtil.skip(iprot, field.type);
+      } else {
+        switch (fieldId) {
+          case HEADER:
+            if (field.type == TType.STRUCT) {
+              this.header = new Header();
+              this.header.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case ACTION:
+            if (field.type == TType.STRUCT) {
+              this.action = new Action();
+              this.action.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+        }
+        iprot.readFieldEnd();
       }
-      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
-
 
     // check for required fields of primitive type, which can't be checked in the validate method
     validate();
@@ -295,10 +363,6 @@ class Atom implements TBase, java.io.Serializable, Cloneable {
 
   public void validate() throws TException {
     // check for required fields
-    if (action == null) {
-      throw new TProtocolException("Required field 'action' was not present! Struct: " + toString());
-    }
-    // check that fields of type enum have valid values
   }
 
 }

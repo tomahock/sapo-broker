@@ -1,5 +1,6 @@
 package pt.com.broker.codec.protobuf;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,67 +54,289 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private static final Logger log = LoggerFactory.getLogger(ProtoBufBindingSerializer.class);
 
-	@Override
-	public NetMessage unmarshal(byte[] packet)
+	static private NetAction.ActionType translate(PBMessage.Atom.Action.ActionType actionType)
 	{
-		NetMessage message = null;
-		try
+		switch (actionType)
 		{
-			PBMessage.Atom atom = PBMessage.Atom.parseFrom(packet);
-			message = constructMessage(atom);
+		case ACCEPTED:
+			return NetAction.ActionType.ACCEPTED;
+		case ACKNOWLEDGE_MESSAGE:
+			return NetAction.ActionType.ACKNOWLEDGE;
+		case FAULT:
+			return NetAction.ActionType.FAULT;
+		case NOTIFICATION:
+			return NetAction.ActionType.NOTIFICATION;
+		case POLL:
+			return NetAction.ActionType.POLL;
+		case PUBLISH:
+			return NetAction.ActionType.PUBLISH;
+		case SUBSCRIBE:
+			return NetAction.ActionType.SUBSCRIBE;
+		case UNSUBSCRIBE:
+			return NetAction.ActionType.UNSUBSCRIBE;
+		case PING:
+			return NetAction.ActionType.PING;
+		case PONG:
+			return NetAction.ActionType.PONG;
+		case AUTH:
+			return NetAction.ActionType.AUTH;
+
 		}
-		catch (Throwable e)
+		throw new IllegalArgumentException("Unexpected action type (PBMessage.Atom.Action.ActionType): " + actionType);
+	}
+
+	static private NetAction.DestinationType translate(PBMessage.Atom.DestinationType destinationType)
+	{
+		switch (destinationType)
 		{
-			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+		case QUEUE:
+			return NetAction.DestinationType.QUEUE;
+		case TOPIC:
+			return NetAction.DestinationType.TOPIC;
+		case VIRTUAL_QUEUE:
+			return NetAction.DestinationType.VIRTUAL_QUEUE;
 		}
+		throw new IllegalArgumentException("Unexpected destination type (PBMessage.Atom.DestinationType): " + destinationType);
+	}
+
+	private NetMessage constructMessage(PBMessage.Atom atom)
+	{
+		Map<String, String> parameters = null;
+		if (atom.hasHeader())
+		{
+			parameters = extractParameters(atom.getHeader());
+		}
+
+		NetMessage message = new NetMessage(extractAction(atom.getAction()), parameters);
 		return message;
 	}
 
-	@Override
-	public byte[] marshal(NetMessage message)
+	private NetAccepted extractAcceptedMessage(Action action)
 	{
-		byte[] result = null;
+		NetAccepted netAccepted = new NetAccepted(action.getAccepted().getActionId());
 
-		try
-		{
-			Header header = getHeaders(message);
-
-			PBMessage.Atom.Builder atomBuilder = PBMessage.Atom.newBuilder().setAction(getAction(message));
-			if (header != null)
-				atomBuilder.setHeader(header);
-
-			Atom build = atomBuilder.build();
-			result = build.toByteArray();
-		}
-		catch (Throwable e)
-		{
-			log.error("Error parsing Protocol Buffer message.", e.getMessage());
-		}
-		return result;
+		return netAccepted;
 	}
 
-	@Override
-	public void marshal(NetMessage message, OutputStream out)
+	private NetAcknowledge extractAcknowledgeMessage(Action action)
 	{
-		Atom build = null;
-		try
-		{
-			Header header = getHeaders(message);
+		AcknowledgeMessage protoBufAckMsg = action.getAckMessage();
+		String destination = protoBufAckMsg.getDestination();
+		String messageId = protoBufAckMsg.getMessageId();
+		NetAcknowledge ackMessage = new NetAcknowledge(destination, messageId);
+		if (action.getAckMessage().hasActionId())
+			ackMessage.setActionId(action.getAckMessage().getActionId());
 
-			PBMessage.Atom.Builder atomBuilder = PBMessage.Atom.newBuilder().setAction(getAction(message));
-			if (header != null)
-				atomBuilder.setHeader(header);
+		return ackMessage;
+	}
 
-			//Atom build = atomBuilder.build();
-			build = atomBuilder.build();
-			build.writeTo(out);
-		}
-		catch (Throwable e)
+	private NetAction extractAction(Action action)
+	{
+		NetAction.ActionType actionType = translate(action.getActionType());
+		NetAction netAction = new NetAction(actionType);
+
+		switch (actionType)
 		{
-			if( build != null)
-				System.out.println(build.toString());
-			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+		case ACCEPTED:
+			netAction.setAcceptedMessage(extractAcceptedMessage(action));
+			break;
+		case ACKNOWLEDGE:
+			netAction.setAcknowledgeMessage(extractAcknowledgeMessage(action));
+			break;
+		case FAULT:
+			netAction.setFaultMessage(extractFaultMessage(action));
+			break;
+		case NOTIFICATION:
+			netAction.setNotificationMessage(extractNotificationMessage(action));
+			break;
+		case POLL:
+			netAction.setPollMessage(extractPollMessage(action));
+			break;
+		case PUBLISH:
+			netAction.setPublishMessage(extractPublishMessage(action));
+			break;
+		case SUBSCRIBE:
+			netAction.setSubscribeMessage(extractSubscribeMessage(action));
+			break;
+		case UNSUBSCRIBE:
+			netAction.setUnsbuscribeMessage(extractUnsubscribeMessage(action));
+			break;
+		case PING:
+			netAction.setPingMessage(extractPingMessage(action));
+			break;
+		case PONG:
+			netAction.setPongMessage(extractPongMessage(action));
+			break;
+		case AUTH:
+			netAction.setAuthenticationMessage(extractAuthenticationMessage(action));
+			break;
 		}
+		return netAction;
+	}
+
+	private NetAuthentication extractAuthenticationMessage(Action action)
+	{
+		Atom.Authentication clientAuth = action.getAuth();
+
+		NetAuthentication netClientAuth = new NetAuthentication(clientAuth.getToken().toByteArray());
+
+		if (clientAuth.hasActionId())
+			netClientAuth.setActionId(clientAuth.getActionId());
+		if (clientAuth.hasAuthenticationType())
+			netClientAuth.setAuthenticationType(clientAuth.getAuthenticationType());
+		if (clientAuth.hasUserId())
+			netClientAuth.setUserId(clientAuth.getUserId());
+		if (clientAuth.getRoleCount() != 0)
+			netClientAuth.setRoles(clientAuth.getRoleList());
+
+		return netClientAuth;
+	}
+
+	private NetFault extractFaultMessage(Action action)
+	{
+		Fault fault = action.getFault();
+		String code = fault.getFaultCode();
+		String message = fault.getFaultMessage();
+
+		NetFault netFault = new NetFault(code, message);
+
+		if (fault.hasActionId())
+			netFault.setActionId(fault.getActionId());
+
+		if (fault.hasFaultDetail())
+			netFault.setDetail(fault.getFaultDetail());
+
+		return netFault;
+	}
+
+	private NetNotification extractNotificationMessage(Action action)
+	{
+		Notification notification = action.getNotification();
+
+		String dest = notification.getDestination();
+		NetAction.DestinationType destType = translate(notification.getDestinationType());
+		NetBrokerMessage brkMsg = obtainBrokerMessage(notification.getMessage());
+		String subs = notification.getSubscription();
+
+		NetNotification netNotification = new NetNotification(dest, destType, brkMsg, subs);
+
+		return netNotification;
+	}
+
+	private Map<String, String> extractParameters(Header header)
+	{
+
+		int paramsCount = header.getParameterCount();
+
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		for (int i = 0; i != paramsCount; ++i)
+		{
+			Parameter param = header.getParameter(i);
+			parameters.put(param.getName(), param.getValue());
+		}
+
+		return parameters;
+	}
+
+	private NetPing extractPingMessage(Action action)
+	{
+		Atom.Ping ping = action.getPing();
+
+		NetPing netPing = new NetPing(ping.getActionId());
+
+		return netPing;
+	}
+
+	private NetPoll extractPollMessage(Action action)
+	{
+		Poll poll = action.getPoll();
+		String destination = poll.getDestination();
+
+		NetPoll pollMsg = new NetPoll(destination, poll.getTimeout());
+
+		if (poll.hasActionId())
+			pollMsg.setActionId(poll.getActionId());
+
+		return pollMsg;
+	}
+
+	private NetPong extractPongMessage(Action action)
+	{
+		Atom.Pong pong = action.getPong();
+
+		NetPong netPong = new NetPong(pong.getActionId());
+
+		return netPong;
+	}
+
+	private NetPublish extractPublishMessage(Action action)
+	{
+		Publish pub = action.getPublish();
+
+		String dest = pub.getDestination();
+		NetAction.DestinationType destType = translate(pub.getDestinationType());
+		NetBrokerMessage brkMsg = obtainBrokerMessage(pub.getMessage());
+
+		NetPublish netPub = new NetPublish(dest, destType, brkMsg);
+
+		if (pub.hasActionId())
+			netPub.setActionId(pub.getActionId());
+
+		return netPub;
+	}
+
+	private NetSubscribe extractSubscribeMessage(Action action)
+	{
+		Subscribe subs = action.getSubscribe();
+
+		String dest = subs.getDestination();
+		NetAction.DestinationType destType = translate(subs.getDestinationType());
+
+		NetSubscribe netSubs = new NetSubscribe(dest, destType);
+
+		if (subs.hasActionId())
+			netSubs.setActionId(subs.getActionId());
+
+		return netSubs;
+	}
+
+	private NetUnsubscribe extractUnsubscribeMessage(Action action)
+	{
+		Unsubscribe unsubs = action.getUnsubscribe();
+
+		String dest = unsubs.getDestination();
+		NetAction.DestinationType destType = translate(unsubs.getDestinationType());
+
+		NetUnsubscribe cgsUnsubs = new NetUnsubscribe(dest, destType);
+
+		if (unsubs.hasActionId())
+			cgsUnsubs.setActionId(unsubs.getActionId());
+
+		return cgsUnsubs;
+	}
+
+	private Accepted getAccepted(NetMessage netMessage)
+	{
+		NetAccepted gcsAccepted = netMessage.getAction().getAcceptedMessage();
+
+		PBMessage.Atom.Accepted.Builder builder = PBMessage.Atom.Accepted.newBuilder();
+		builder.setActionId(gcsAccepted.getActionId());
+
+		return builder.build();
+	}
+
+	private AcknowledgeMessage getAcknowledge(NetMessage netMessage)
+	{
+		NetAcknowledge net = netMessage.getAction().getAcknowledgeMessage();
+
+		PBMessage.Atom.AcknowledgeMessage.Builder builder = PBMessage.Atom.AcknowledgeMessage.newBuilder();
+
+		builder.setDestination(net.getDestination()).setMessageId(net.getMessageId());
+		if (net.getActionId() != null)
+			builder.setActionId(net.getActionId());
+
+		return builder.build();
 	}
 
 	private Action getAction(NetMessage netMessage)
@@ -169,131 +392,6 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		return builder.build();
 	}
 
-	private Ping getPing(NetMessage netMessage)
-	{
-		NetPing gcsPing = netMessage.getAction().getPingMessage();
-
-		PBMessage.Atom.Ping.Builder builder = PBMessage.Atom.Ping.newBuilder();
-		builder.setActionId(gcsPing.getActionId());
-
-		return builder.build();
-	}
-
-	private Pong getPong(NetMessage netMessage)
-	{
-		NetPong gcsPong = netMessage.getAction().getPongMessage();
-
-		PBMessage.Atom.Pong.Builder builder = PBMessage.Atom.Pong.newBuilder();
-		builder.setActionId(gcsPong.getActionId());
-
-		return builder.build();
-	}
-
-	private Accepted getAccepted(NetMessage netMessage)
-	{
-		NetAccepted gcsAccepted = netMessage.getAction().getAcceptedMessage();
-
-		PBMessage.Atom.Accepted.Builder builder = PBMessage.Atom.Accepted.newBuilder();
-		builder.setActionId(gcsAccepted.getActionId());
-
-		return builder.build();
-	}
-
-	private AcknowledgeMessage getAcknowledge(NetMessage netMessage)
-	{
-		NetAcknowledge net = netMessage.getAction().getAcknowledgeMessage();
-
-		PBMessage.Atom.AcknowledgeMessage.Builder builder = PBMessage.Atom.AcknowledgeMessage.newBuilder();
-
-		builder.setDestination(net.getDestination()).setMessageId(net.getMessageId());
-		if (net.getActionId() != null)
-			builder.setActionId(net.getActionId());
-
-		return builder.build();
-	}
-
-	private Fault getFault(NetMessage netMessage)
-	{
-		NetFault net = netMessage.getAction().getFaultMessage();
-
-		PBMessage.Atom.Fault.Builder builder = PBMessage.Atom.Fault.newBuilder();
-
-		builder.setFaultCode(net.getCode()).setFaultMessage(net.getMessage());
-
-		if (net.getActionId() != null)
-			builder.setActionId(net.getActionId());
-		if (net.getDetail() != null)
-			builder.setFaultDetail(net.getDetail());
-
-		return builder.build();
-	}
-
-	private PBMessage.Atom.Notification getNotification(NetMessage netMessage)
-	{
-		NetNotification net = netMessage.getAction().getNotificationMessage();
-
-		String subs = net.getSubscription();
-		if (subs == null)
-			subs = "";
-
-		PBMessage.Atom.Notification.Builder builder = PBMessage.Atom.Notification.newBuilder();
-		builder.setDestination(net.getDestination()).setMessage(getMessageBroker(net.getMessage())).setDestinationType(translate(net.getDestinationType())).setSubscription(subs);
-
-		return builder.build();
-	}
-
-	private Poll getPoll(NetMessage netMessage)
-	{
-		NetPoll net = netMessage.getAction().getPollMessage();
-
-		PBMessage.Atom.Poll.Builder builder = PBMessage.Atom.Poll.newBuilder();
-		builder.setDestination(net.getDestination()).setTimeout(net.getTimeout());
-
-		if (net.getActionId() != null)
-			builder.setActionId(net.getActionId());
-
-		return builder.build();
-	}
-
-	private Publish getPublish(NetMessage netMessage)
-	{
-		NetPublish net = netMessage.getAction().getPublishMessage();
-
-		PBMessage.Atom.Publish.Builder builder = PBMessage.Atom.Publish.newBuilder();
-		builder.setDestination(net.getDestination()).setMessage(getMessageBroker(net.getMessage())).setDestinationType(translate(net.getDestinationType()));
-
-		if (net.getActionId() != null)
-			builder.setActionId(net.getActionId());
-
-		return builder.build();
-	}
-
-	private Subscribe getSubscribe(NetMessage netMessage)
-	{
-		NetSubscribe net = netMessage.getAction().getSubscribeMessage();
-
-		PBMessage.Atom.Subscribe.Builder builder = PBMessage.Atom.Subscribe.newBuilder();
-		builder.setDestination(net.getDestination()).setDestinationType(translate(net.getDestinationType()));
-
-		if (net.getActionId() != null)
-			builder.setActionId(net.getActionId());
-
-		return builder.build();
-	}
-
-	private Unsubscribe getUnsubscribe(NetMessage netMessage)
-	{
-		NetUnsubscribe net = netMessage.getAction().getUnsbuscribeMessage();
-
-		PBMessage.Atom.Unsubscribe.Builder builder = PBMessage.Atom.Unsubscribe.newBuilder();
-		builder.setDestination(net.getDestination()).setDestinationType(translate(net.getDestinationType()));
-
-		if (net.getActionId() != null)
-			builder.setActionId(net.getActionId());
-
-		return builder.build();
-	}
-
 	private Authentication getAuth(NetMessage netMessage)
 	{
 		NetAuthentication authClientAuthrentication = netMessage.getAction().getAuthenticationMessage();
@@ -317,6 +415,22 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			for (String role : authClientAuthrentication.getRoles())
 				builder.setRole(i++, role);
 		}
+		return builder.build();
+	}
+
+	private Fault getFault(NetMessage netMessage)
+	{
+		NetFault net = netMessage.getAction().getFaultMessage();
+
+		PBMessage.Atom.Fault.Builder builder = PBMessage.Atom.Fault.newBuilder();
+
+		builder.setFaultCode(net.getCode()).setFaultMessage(net.getMessage());
+
+		if (net.getActionId() != null)
+			builder.setActionId(net.getActionId());
+		if (net.getDetail() != null)
+			builder.setFaultDetail(net.getDetail());
+
 		return builder.build();
 	}
 
@@ -362,76 +476,137 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		return builder.build();
 	}
 
-	private NetMessage constructMessage(PBMessage.Atom atom)
+	private PBMessage.Atom.Notification getNotification(NetMessage netMessage)
 	{
-		Map<String, String> parameters = null;
-		if (atom.hasHeader())
-		{
-			parameters = extractParameters(atom.getHeader());
-		}
+		NetNotification net = netMessage.getAction().getNotificationMessage();
 
-		NetMessage message = new NetMessage(extractAction(atom.getAction()), parameters);
-		return message;
+		String subs = net.getSubscription();
+		if (subs == null)
+			subs = "";
+
+		PBMessage.Atom.Notification.Builder builder = PBMessage.Atom.Notification.newBuilder();
+		builder.setDestination(net.getDestination()).setMessage(getMessageBroker(net.getMessage())).setDestinationType(translate(net.getDestinationType())).setSubscription(subs);
+
+		return builder.build();
 	}
 
-	private Map<String, String> extractParameters(Header header)
+	private Ping getPing(NetMessage netMessage)
 	{
+		NetPing gcsPing = netMessage.getAction().getPingMessage();
 
-		int paramsCount = header.getParameterCount();
+		PBMessage.Atom.Ping.Builder builder = PBMessage.Atom.Ping.newBuilder();
+		builder.setActionId(gcsPing.getActionId());
 
-		Map<String, String> parameters = new HashMap<String, String>();
-
-		for (int i = 0; i != paramsCount; ++i)
-		{
-			Parameter param = header.getParameter(i);
-			parameters.put(param.getName(), param.getValue());
-		}
-
-		return parameters;
+		return builder.build();
 	}
 
-	private NetAction extractAction(Action action)
+	private Poll getPoll(NetMessage netMessage)
 	{
-		NetAction.ActionType actionType = translate(action.getActionType());
-		NetAction netAction = new NetAction(actionType);
+		NetPoll net = netMessage.getAction().getPollMessage();
 
-		switch (actionType)
+		PBMessage.Atom.Poll.Builder builder = PBMessage.Atom.Poll.newBuilder();
+		builder.setDestination(net.getDestination()).setTimeout(net.getTimeout());
+
+		if (net.getActionId() != null)
+			builder.setActionId(net.getActionId());
+
+		return builder.build();
+	}
+
+	private Pong getPong(NetMessage netMessage)
+	{
+		NetPong gcsPong = netMessage.getAction().getPongMessage();
+
+		PBMessage.Atom.Pong.Builder builder = PBMessage.Atom.Pong.newBuilder();
+		builder.setActionId(gcsPong.getActionId());
+
+		return builder.build();
+	}
+
+	private Publish getPublish(NetMessage netMessage)
+	{
+		NetPublish net = netMessage.getAction().getPublishMessage();
+
+		PBMessage.Atom.Publish.Builder builder = PBMessage.Atom.Publish.newBuilder();
+		builder.setDestination(net.getDestination()).setMessage(getMessageBroker(net.getMessage())).setDestinationType(translate(net.getDestinationType()));
+
+		if (net.getActionId() != null)
+			builder.setActionId(net.getActionId());
+
+		return builder.build();
+	}
+
+	private Subscribe getSubscribe(NetMessage netMessage)
+	{
+		NetSubscribe net = netMessage.getAction().getSubscribeMessage();
+
+		PBMessage.Atom.Subscribe.Builder builder = PBMessage.Atom.Subscribe.newBuilder();
+		builder.setDestination(net.getDestination()).setDestinationType(translate(net.getDestinationType()));
+
+		if (net.getActionId() != null)
+			builder.setActionId(net.getActionId());
+
+		return builder.build();
+	}
+
+	private Unsubscribe getUnsubscribe(NetMessage netMessage)
+	{
+		NetUnsubscribe net = netMessage.getAction().getUnsbuscribeMessage();
+
+		PBMessage.Atom.Unsubscribe.Builder builder = PBMessage.Atom.Unsubscribe.newBuilder();
+		builder.setDestination(net.getDestination()).setDestinationType(translate(net.getDestinationType()));
+
+		if (net.getActionId() != null)
+			builder.setActionId(net.getActionId());
+
+		return builder.build();
+	}
+
+	@Override
+	public byte[] marshal(NetMessage message)
+	{
+		byte[] result = null;
+
+		try
 		{
-		case ACCEPTED:
-			netAction.setAcceptedMessage(extractAcceptedMessage(action));
-			break;
-		case ACKNOWLEDGE:
-			netAction.setAcknowledgeMessage(extractAcknowledgeMessage(action));
-			break;
-		case FAULT:
-			netAction.setFaultMessage(extractFaultMessage(action));
-			break;
-		case NOTIFICATION:
-			netAction.setNotificationMessage(extractNotificationMessage(action));
-			break;
-		case POLL:
-			netAction.setPollMessage(extractPollMessage(action));
-			break;
-		case PUBLISH:
-			netAction.setPublishMessage(extractPublishMessage(action));
-			break;
-		case SUBSCRIBE:
-			netAction.setSubscribeMessage(extractSubscribeMessage(action));
-			break;
-		case UNSUBSCRIBE:
-			netAction.setUnsbuscribeMessage(extractUnsubscribeMessage(action));
-			break;
-		case PING:
-			netAction.setPingMessage(extractPingMessage(action));
-			break;
-		case PONG:
-			netAction.setPongMessage(extractPongMessage(action));
-			break;
-		case AUTH:
-			netAction.setAuthenticationMessage(extractAuthenticationMessage(action));
-			break;
+			Header header = getHeaders(message);
+
+			PBMessage.Atom.Builder atomBuilder = PBMessage.Atom.newBuilder().setAction(getAction(message));
+			if (header != null)
+				atomBuilder.setHeader(header);
+
+			Atom build = atomBuilder.build();
+			result = build.toByteArray();
 		}
-		return netAction;
+		catch (Throwable e)
+		{
+			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public void marshal(NetMessage message, OutputStream out)
+	{
+		Atom build = null;
+		try
+		{
+			Header header = getHeaders(message);
+
+			PBMessage.Atom.Builder atomBuilder = PBMessage.Atom.newBuilder().setAction(getAction(message));
+			if (header != null)
+				atomBuilder.setHeader(header);
+
+			//Atom build = atomBuilder.build();
+			build = atomBuilder.build();
+			build.writeTo(out);
+		}
+		catch (Throwable e)
+		{
+			if( build != null)
+				System.out.println(build.toString());
+			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+		}
 	}
 
 	private NetBrokerMessage obtainBrokerMessage(BrokerMessage message)
@@ -463,194 +638,35 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		throw new IllegalArgumentException("Unexpected destination type (pt.com.broker.types.NetAction.DestinationType): " + destinationType);
 	}
 
-	static private NetAction.DestinationType translate(PBMessage.Atom.DestinationType destinationType)
+	@Override
+	public NetMessage unmarshal(byte[] packet)
 	{
-		switch (destinationType)
+		NetMessage message = null;
+		try
 		{
-		case QUEUE:
-			return NetAction.DestinationType.QUEUE;
-		case TOPIC:
-			return NetAction.DestinationType.TOPIC;
-		case VIRTUAL_QUEUE:
-			return NetAction.DestinationType.VIRTUAL_QUEUE;
+			PBMessage.Atom atom = PBMessage.Atom.parseFrom(packet);
+			message = constructMessage(atom);
 		}
-		throw new IllegalArgumentException("Unexpected destination type (PBMessage.Atom.DestinationType): " + destinationType);
-	}
-
-	static private NetAction.ActionType translate(PBMessage.Atom.Action.ActionType actionType)
-	{
-		switch (actionType)
+		catch (Throwable e)
 		{
-		case ACCEPTED:
-			return NetAction.ActionType.ACCEPTED;
-		case ACKNOWLEDGE_MESSAGE:
-			return NetAction.ActionType.ACKNOWLEDGE;
-		case FAULT:
-			return NetAction.ActionType.FAULT;
-		case NOTIFICATION:
-			return NetAction.ActionType.NOTIFICATION;
-		case POLL:
-			return NetAction.ActionType.POLL;
-		case PUBLISH:
-			return NetAction.ActionType.PUBLISH;
-		case SUBSCRIBE:
-			return NetAction.ActionType.SUBSCRIBE;
-		case UNSUBSCRIBE:
-			return NetAction.ActionType.UNSUBSCRIBE;
-		case PING:
-			return NetAction.ActionType.PING;
-		case PONG:
-			return NetAction.ActionType.PONG;
-		case AUTH:
-			return NetAction.ActionType.AUTH;
-
+			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
-		throw new IllegalArgumentException("Unexpected action type (PBMessage.Atom.Action.ActionType): " + actionType);
+		return message;
 	}
 
-	private NetAccepted extractAcceptedMessage(Action action)
+	@Override
+	public NetMessage unmarshal(InputStream in)
 	{
-		NetAccepted netAccepted = new NetAccepted(action.getAccepted().getActionId());
-
-		return netAccepted;
+		NetMessage message = null;
+		try
+		{
+			PBMessage.Atom atom = PBMessage.Atom.parseFrom(in);
+			message = constructMessage(atom);
+		}
+		catch (Throwable e)
+		{
+			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+		}
+		return message;
 	}
-
-	private NetAcknowledge extractAcknowledgeMessage(Action action)
-	{
-		AcknowledgeMessage protoBufAckMsg = action.getAckMessage();
-		String destination = protoBufAckMsg.getDestination();
-		String messageId = protoBufAckMsg.getMessageId();
-		NetAcknowledge ackMessage = new NetAcknowledge(destination, messageId);
-		if (action.getAckMessage().hasActionId())
-			ackMessage.setActionId(action.getAckMessage().getActionId());
-
-		return ackMessage;
-	}
-
-	private NetFault extractFaultMessage(Action action)
-	{
-		Fault fault = action.getFault();
-		String code = fault.getFaultCode();
-		String message = fault.getFaultMessage();
-
-		NetFault netFault = new NetFault(code, message);
-
-		if (fault.hasActionId())
-			netFault.setActionId(fault.getActionId());
-
-		if (fault.hasFaultDetail())
-			netFault.setDetail(fault.getFaultDetail());
-
-		return netFault;
-	}
-
-	private NetNotification extractNotificationMessage(Action action)
-	{
-		Notification notification = action.getNotification();
-
-		String dest = notification.getDestination();
-		NetAction.DestinationType destType = translate(notification.getDestinationType());
-		NetBrokerMessage brkMsg = obtainBrokerMessage(notification.getMessage());
-		String subs = notification.getSubscription();
-
-		NetNotification netNotification = new NetNotification(dest, destType, brkMsg, subs);
-
-		return netNotification;
-	}
-
-	private NetPoll extractPollMessage(Action action)
-	{
-		Poll poll = action.getPoll();
-		String destination = poll.getDestination();
-
-		NetPoll pollMsg = new NetPoll(destination, poll.getTimeout());
-
-		if (poll.hasActionId())
-			pollMsg.setActionId(poll.getActionId());
-
-		return pollMsg;
-	}
-
-	private NetPublish extractPublishMessage(Action action)
-	{
-		Publish pub = action.getPublish();
-
-		String dest = pub.getDestination();
-		NetAction.DestinationType destType = translate(pub.getDestinationType());
-		NetBrokerMessage brkMsg = obtainBrokerMessage(pub.getMessage());
-
-		NetPublish netPub = new NetPublish(dest, destType, brkMsg);
-
-		if (pub.hasActionId())
-			netPub.setActionId(pub.getActionId());
-
-		return netPub;
-	}
-
-	private NetSubscribe extractSubscribeMessage(Action action)
-	{
-		Subscribe subs = action.getSubscribe();
-
-		String dest = subs.getDestination();
-		NetAction.DestinationType destType = translate(subs.getDestinationType());
-
-		NetSubscribe netSubs = new NetSubscribe(dest, destType);
-
-		if (subs.hasActionId())
-			netSubs.setActionId(subs.getActionId());
-
-		return netSubs;
-	}
-
-	private NetUnsubscribe extractUnsubscribeMessage(Action action)
-	{
-		Unsubscribe unsubs = action.getUnsubscribe();
-
-		String dest = unsubs.getDestination();
-		NetAction.DestinationType destType = translate(unsubs.getDestinationType());
-
-		NetUnsubscribe cgsUnsubs = new NetUnsubscribe(dest, destType);
-
-		if (unsubs.hasActionId())
-			cgsUnsubs.setActionId(unsubs.getActionId());
-
-		return cgsUnsubs;
-	}
-
-	private NetPing extractPingMessage(Action action)
-	{
-		Atom.Ping ping = action.getPing();
-
-		NetPing netPing = new NetPing(ping.getActionId());
-
-		return netPing;
-	}
-
-	private NetPong extractPongMessage(Action action)
-	{
-		Atom.Pong pong = action.getPong();
-
-		NetPong netPong = new NetPong(pong.getActionId());
-
-		return netPong;
-	}
-
-	private NetAuthentication extractAuthenticationMessage(Action action)
-	{
-		Atom.Authentication clientAuth = action.getAuth();
-
-		NetAuthentication netClientAuth = new NetAuthentication(clientAuth.getToken().toByteArray());
-
-		if (clientAuth.hasActionId())
-			netClientAuth.setActionId(clientAuth.getActionId());
-		if (clientAuth.hasAuthenticationType())
-			netClientAuth.setAuthenticationType(clientAuth.getAuthenticationType());
-		if (clientAuth.hasUserId())
-			netClientAuth.setUserId(clientAuth.getUserId());
-		if (clientAuth.getRoleCount() != 0)
-			netClientAuth.setRoles(clientAuth.getRoleList());
-
-		return netClientAuth;
-	}
-
 }

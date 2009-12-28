@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +23,9 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Action> {
+class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, Comparable<Action> {
   private static final TStruct STRUCT_DESC = new TStruct("Action");
+
   private static final TField PUBLISH_FIELD_DESC = new TField("publish", TType.STRUCT, (short)1);
   private static final TField POLL_FIELD_DESC = new TField("poll", TType.STRUCT, (short)2);
   private static final TField ACCEPTED_FIELD_DESC = new TField("accepted", TType.STRUCT, (short)3);
@@ -36,63 +40,119 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
   private static final TField ACTION_TYPE_FIELD_DESC = new TField("action_type", TType.I32, (short)12);
 
   public Publish publish;
-  public static final int PUBLISH = 1;
   public Poll poll;
-  public static final int POLL = 2;
   public Accepted accepted;
-  public static final int ACCEPTED = 3;
   public Acknowledge ack_message;
-  public static final int ACK_MESSAGE = 4;
   public Subscribe subscribe;
-  public static final int SUBSCRIBE = 5;
   public Unsubscribe unsubscribe;
-  public static final int UNSUBSCRIBE = 6;
   public Notification notification;
-  public static final int NOTIFICATION = 7;
   public Fault fault;
-  public static final int FAULT = 8;
   public Ping ping;
-  public static final int PING = 9;
   public Pong pong;
-  public static final int PONG = 10;
   public Authentication auth;
-  public static final int AUTH = 11;
   /**
    * 
    * @see ActionType
    */
-  public int action_type;
-  public static final int ACTION_TYPE = 12;
+  public ActionType action_type;
+
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements TFieldIdEnum {
+    PUBLISH((short)1, "publish"),
+    POLL((short)2, "poll"),
+    ACCEPTED((short)3, "accepted"),
+    ACK_MESSAGE((short)4, "ack_message"),
+    SUBSCRIBE((short)5, "subscribe"),
+    UNSUBSCRIBE((short)6, "unsubscribe"),
+    NOTIFICATION((short)7, "notification"),
+    FAULT((short)8, "fault"),
+    PING((short)9, "ping"),
+    PONG((short)10, "pong"),
+    AUTH((short)11, "auth"),
+    /**
+     * 
+     * @see ActionType
+     */
+    ACTION_TYPE((short)12, "action_type");
+
+    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+    static {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byId.put((int)field._thriftId, field);
+        byName.put(field.getFieldName(), field);
+      }
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, or null if its not found.
+     */
+    public static _Fields findByThriftId(int fieldId) {
+      return byId.get(fieldId);
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
+     */
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
+    }
+
+    /**
+     * Find the _Fields constant that matches name, or null if its not found.
+     */
+    public static _Fields findByName(String name) {
+      return byName.get(name);
+    }
+
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
+    }
+
+    public short getThriftFieldId() {
+      return _thriftId;
+    }
+
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
 
   // isset id assignments
-  private static final int __ACTION_TYPE_ISSET_ID = 0;
-  private BitSet __isset_bit_vector = new BitSet(1);
 
-  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(PUBLISH, new FieldMetaData("publish", TFieldRequirementType.OPTIONAL, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
+    put(_Fields.PUBLISH, new FieldMetaData("publish", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Publish.class)));
-    put(POLL, new FieldMetaData("poll", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.POLL, new FieldMetaData("poll", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Poll.class)));
-    put(ACCEPTED, new FieldMetaData("accepted", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.ACCEPTED, new FieldMetaData("accepted", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Accepted.class)));
-    put(ACK_MESSAGE, new FieldMetaData("ack_message", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.ACK_MESSAGE, new FieldMetaData("ack_message", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Acknowledge.class)));
-    put(SUBSCRIBE, new FieldMetaData("subscribe", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.SUBSCRIBE, new FieldMetaData("subscribe", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Subscribe.class)));
-    put(UNSUBSCRIBE, new FieldMetaData("unsubscribe", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.UNSUBSCRIBE, new FieldMetaData("unsubscribe", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Unsubscribe.class)));
-    put(NOTIFICATION, new FieldMetaData("notification", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.NOTIFICATION, new FieldMetaData("notification", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Notification.class)));
-    put(FAULT, new FieldMetaData("fault", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.FAULT, new FieldMetaData("fault", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Fault.class)));
-    put(PING, new FieldMetaData("ping", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.PING, new FieldMetaData("ping", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Ping.class)));
-    put(PONG, new FieldMetaData("pong", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.PONG, new FieldMetaData("pong", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Pong.class)));
-    put(AUTH, new FieldMetaData("auth", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.AUTH, new FieldMetaData("auth", TFieldRequirementType.OPTIONAL, 
         new StructMetaData(TType.STRUCT, Authentication.class)));
-    put(ACTION_TYPE, new FieldMetaData("action_type", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.I32)));
+    put(_Fields.ACTION_TYPE, new FieldMetaData("action_type", TFieldRequirementType.DEFAULT, 
+        new EnumMetaData(TType.ENUM, ActionType.class)));
   }});
 
   static {
@@ -103,41 +163,16 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
   }
 
   public Action(
-    Publish publish,
-    Poll poll,
-    Accepted accepted,
-    Acknowledge ack_message,
-    Subscribe subscribe,
-    Unsubscribe unsubscribe,
-    Notification notification,
-    Fault fault,
-    Ping ping,
-    Pong pong,
-    Authentication auth,
-    int action_type)
+    ActionType action_type)
   {
     this();
-    this.publish = publish;
-    this.poll = poll;
-    this.accepted = accepted;
-    this.ack_message = ack_message;
-    this.subscribe = subscribe;
-    this.unsubscribe = unsubscribe;
-    this.notification = notification;
-    this.fault = fault;
-    this.ping = ping;
-    this.pong = pong;
-    this.auth = auth;
     this.action_type = action_type;
-    setAction_typeIsSet(true);
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public Action(Action other) {
-    __isset_bit_vector.clear();
-    __isset_bit_vector.or(other.__isset_bit_vector);
     if (other.isSetPublish()) {
       this.publish = new Publish(other.publish);
     }
@@ -171,10 +206,16 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     if (other.isSetAuth()) {
       this.auth = new Authentication(other.auth);
     }
-    this.action_type = other.action_type;
+    if (other.isSetAction_type()) {
+      this.action_type = other.action_type;
+    }
   }
 
-  @Override
+  public Action deepCopy() {
+    return new Action(this);
+  }
+
+  @Deprecated
   public Action clone() {
     return new Action(this);
   }
@@ -192,7 +233,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.publish = null;
   }
 
-  // Returns true if field publish is set (has been asigned a value) and false otherwise
+  /** Returns true if field publish is set (has been asigned a value) and false otherwise */
   public boolean isSetPublish() {
     return this.publish != null;
   }
@@ -216,7 +257,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.poll = null;
   }
 
-  // Returns true if field poll is set (has been asigned a value) and false otherwise
+  /** Returns true if field poll is set (has been asigned a value) and false otherwise */
   public boolean isSetPoll() {
     return this.poll != null;
   }
@@ -240,7 +281,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.accepted = null;
   }
 
-  // Returns true if field accepted is set (has been asigned a value) and false otherwise
+  /** Returns true if field accepted is set (has been asigned a value) and false otherwise */
   public boolean isSetAccepted() {
     return this.accepted != null;
   }
@@ -264,7 +305,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.ack_message = null;
   }
 
-  // Returns true if field ack_message is set (has been asigned a value) and false otherwise
+  /** Returns true if field ack_message is set (has been asigned a value) and false otherwise */
   public boolean isSetAck_message() {
     return this.ack_message != null;
   }
@@ -288,7 +329,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.subscribe = null;
   }
 
-  // Returns true if field subscribe is set (has been asigned a value) and false otherwise
+  /** Returns true if field subscribe is set (has been asigned a value) and false otherwise */
   public boolean isSetSubscribe() {
     return this.subscribe != null;
   }
@@ -312,7 +353,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.unsubscribe = null;
   }
 
-  // Returns true if field unsubscribe is set (has been asigned a value) and false otherwise
+  /** Returns true if field unsubscribe is set (has been asigned a value) and false otherwise */
   public boolean isSetUnsubscribe() {
     return this.unsubscribe != null;
   }
@@ -336,7 +377,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.notification = null;
   }
 
-  // Returns true if field notification is set (has been asigned a value) and false otherwise
+  /** Returns true if field notification is set (has been asigned a value) and false otherwise */
   public boolean isSetNotification() {
     return this.notification != null;
   }
@@ -360,7 +401,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.fault = null;
   }
 
-  // Returns true if field fault is set (has been asigned a value) and false otherwise
+  /** Returns true if field fault is set (has been asigned a value) and false otherwise */
   public boolean isSetFault() {
     return this.fault != null;
   }
@@ -384,7 +425,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.ping = null;
   }
 
-  // Returns true if field ping is set (has been asigned a value) and false otherwise
+  /** Returns true if field ping is set (has been asigned a value) and false otherwise */
   public boolean isSetPing() {
     return this.ping != null;
   }
@@ -408,7 +449,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.pong = null;
   }
 
-  // Returns true if field pong is set (has been asigned a value) and false otherwise
+  /** Returns true if field pong is set (has been asigned a value) and false otherwise */
   public boolean isSetPong() {
     return this.pong != null;
   }
@@ -432,7 +473,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     this.auth = null;
   }
 
-  // Returns true if field auth is set (has been asigned a value) and false otherwise
+  /** Returns true if field auth is set (has been asigned a value) and false otherwise */
   public boolean isSetAuth() {
     return this.auth != null;
   }
@@ -447,7 +488,7 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
    * 
    * @see ActionType
    */
-  public int getAction_type() {
+  public ActionType getAction_type() {
     return this.action_type;
   }
 
@@ -455,27 +496,28 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
    * 
    * @see ActionType
    */
-  public Action setAction_type(int action_type) {
+  public Action setAction_type(ActionType action_type) {
     this.action_type = action_type;
-    setAction_typeIsSet(true);
     return this;
   }
 
   public void unsetAction_type() {
-    __isset_bit_vector.clear(__ACTION_TYPE_ISSET_ID);
+    this.action_type = null;
   }
 
-  // Returns true if field action_type is set (has been asigned a value) and false otherwise
+  /** Returns true if field action_type is set (has been asigned a value) and false otherwise */
   public boolean isSetAction_type() {
-    return __isset_bit_vector.get(__ACTION_TYPE_ISSET_ID);
+    return this.action_type != null;
   }
 
   public void setAction_typeIsSet(boolean value) {
-    __isset_bit_vector.set(__ACTION_TYPE_ISSET_ID, value);
+    if (!value) {
+      this.action_type = null;
+    }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    switch (fieldID) {
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
     case PUBLISH:
       if (value == null) {
         unsetPublish();
@@ -568,17 +610,19 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
       if (value == null) {
         unsetAction_type();
       } else {
-        setAction_type((Integer)value);
+        setAction_type((ActionType)value);
       }
       break;
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
   }
 
-  public Object getFieldValue(int fieldID) {
-    switch (fieldID) {
+  public void setFieldValue(int fieldID, Object value) {
+    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
     case PUBLISH:
       return getPublish();
 
@@ -615,14 +659,17 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     case ACTION_TYPE:
       return getAction_type();
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
   }
 
-  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
-  public boolean isSet(int fieldID) {
-    switch (fieldID) {
+  public Object getFieldValue(int fieldId) {
+    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    switch (field) {
     case PUBLISH:
       return isSetPublish();
     case POLL:
@@ -647,9 +694,12 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
       return isSetAuth();
     case ACTION_TYPE:
       return isSetAction_type();
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
+  }
+
+  public boolean isSet(int fieldID) {
+    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -764,12 +814,12 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
         return false;
     }
 
-    boolean this_present_action_type = true;
-    boolean that_present_action_type = true;
+    boolean this_present_action_type = true && this.isSetAction_type();
+    boolean that_present_action_type = true && that.isSetAction_type();
     if (this_present_action_type || that_present_action_type) {
       if (!(this_present_action_type && that_present_action_type))
         return false;
-      if (this.action_type != that.action_type)
+      if (!this.action_type.equals(that.action_type))
         return false;
     }
 
@@ -897,117 +947,113 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
       if (field.type == TType.STOP) { 
         break;
       }
-      switch (field.id)
-      {
-        case PUBLISH:
-          if (field.type == TType.STRUCT) {
-            this.publish = new Publish();
-            this.publish.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case POLL:
-          if (field.type == TType.STRUCT) {
-            this.poll = new Poll();
-            this.poll.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case ACCEPTED:
-          if (field.type == TType.STRUCT) {
-            this.accepted = new Accepted();
-            this.accepted.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case ACK_MESSAGE:
-          if (field.type == TType.STRUCT) {
-            this.ack_message = new Acknowledge();
-            this.ack_message.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case SUBSCRIBE:
-          if (field.type == TType.STRUCT) {
-            this.subscribe = new Subscribe();
-            this.subscribe.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case UNSUBSCRIBE:
-          if (field.type == TType.STRUCT) {
-            this.unsubscribe = new Unsubscribe();
-            this.unsubscribe.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case NOTIFICATION:
-          if (field.type == TType.STRUCT) {
-            this.notification = new Notification();
-            this.notification.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case FAULT:
-          if (field.type == TType.STRUCT) {
-            this.fault = new Fault();
-            this.fault.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case PING:
-          if (field.type == TType.STRUCT) {
-            this.ping = new Ping();
-            this.ping.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case PONG:
-          if (field.type == TType.STRUCT) {
-            this.pong = new Pong();
-            this.pong.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case AUTH:
-          if (field.type == TType.STRUCT) {
-            this.auth = new Authentication();
-            this.auth.read(iprot);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case ACTION_TYPE:
-          if (field.type == TType.I32) {
-            this.action_type = iprot.readI32();
-            setAction_typeIsSet(true);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
+      _Fields fieldId = _Fields.findByThriftId(field.id);
+      if (fieldId == null) {
+        TProtocolUtil.skip(iprot, field.type);
+      } else {
+        switch (fieldId) {
+          case PUBLISH:
+            if (field.type == TType.STRUCT) {
+              this.publish = new Publish();
+              this.publish.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case POLL:
+            if (field.type == TType.STRUCT) {
+              this.poll = new Poll();
+              this.poll.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case ACCEPTED:
+            if (field.type == TType.STRUCT) {
+              this.accepted = new Accepted();
+              this.accepted.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case ACK_MESSAGE:
+            if (field.type == TType.STRUCT) {
+              this.ack_message = new Acknowledge();
+              this.ack_message.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case SUBSCRIBE:
+            if (field.type == TType.STRUCT) {
+              this.subscribe = new Subscribe();
+              this.subscribe.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case UNSUBSCRIBE:
+            if (field.type == TType.STRUCT) {
+              this.unsubscribe = new Unsubscribe();
+              this.unsubscribe.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case NOTIFICATION:
+            if (field.type == TType.STRUCT) {
+              this.notification = new Notification();
+              this.notification.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case FAULT:
+            if (field.type == TType.STRUCT) {
+              this.fault = new Fault();
+              this.fault.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case PING:
+            if (field.type == TType.STRUCT) {
+              this.ping = new Ping();
+              this.ping.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case PONG:
+            if (field.type == TType.STRUCT) {
+              this.pong = new Pong();
+              this.pong.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case AUTH:
+            if (field.type == TType.STRUCT) {
+              this.auth = new Authentication();
+              this.auth.read(iprot);
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case ACTION_TYPE:
+            if (field.type == TType.I32) {
+              this.action_type = ActionType.findByValue(iprot.readI32());
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+        }
+        iprot.readFieldEnd();
       }
-      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 
-
     // check for required fields of primitive type, which can't be checked in the validate method
-    if (!isSetAction_type()) {
-      throw new TProtocolException("Required field 'action_type' was not found in serialized data! Struct: " + toString());
-    }
     validate();
   }
 
@@ -1092,9 +1138,11 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
         oprot.writeFieldEnd();
       }
     }
-    oprot.writeFieldBegin(ACTION_TYPE_FIELD_DESC);
-    oprot.writeI32(this.action_type);
-    oprot.writeFieldEnd();
+    if (this.action_type != null) {
+      oprot.writeFieldBegin(ACTION_TYPE_FIELD_DESC);
+      oprot.writeI32(this.action_type.getValue());
+      oprot.writeFieldEnd();
+    }
     oprot.writeFieldStop();
     oprot.writeStructEnd();
   }
@@ -1215,14 +1263,18 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
     }
     if (!first) sb.append(", ");
     sb.append("action_type:");
-    String action_type_name = ActionType.VALUES_TO_NAMES.get(this.action_type);
-    if (action_type_name != null) {
-      sb.append(action_type_name);
-      sb.append(" (");
-    }
-    sb.append(this.action_type);
-    if (action_type_name != null) {
-      sb.append(")");
+    if (this.action_type == null) {
+      sb.append("null");
+    } else {
+      String action_type_name = action_type.name();
+      if (action_type_name != null) {
+        sb.append(action_type_name);
+        sb.append(" (");
+      }
+      sb.append(this.action_type);
+      if (action_type_name != null) {
+        sb.append(")");
+      }
     }
     first = false;
     sb.append(")");
@@ -1231,11 +1283,6 @@ class Action implements TBase, java.io.Serializable, Cloneable, Comparable<Actio
 
   public void validate() throws TException {
     // check for required fields
-    // 'action_type' is only checked in read() because it's a primitive and you chose the non-beans generator.
-    // check that fields of type enum have valid values
-    if (isSetAction_type() && !ActionType.VALID_VALUES.contains(action_type)){
-      throw new TProtocolException("The field 'action_type' has been assigned the invalid value " + action_type);
-    }
   }
 
 }

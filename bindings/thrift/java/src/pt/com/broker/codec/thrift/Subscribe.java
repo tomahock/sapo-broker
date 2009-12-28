@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,34 +23,91 @@ import org.apache.thrift.*;
 import org.apache.thrift.meta_data.*;
 import org.apache.thrift.protocol.*;
 
-class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Subscribe> {
+class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Cloneable, Comparable<Subscribe> {
   private static final TStruct STRUCT_DESC = new TStruct("Subscribe");
+
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
   private static final TField DESTINATION_FIELD_DESC = new TField("destination", TType.STRING, (short)2);
   private static final TField DESTINATION_TYPE_FIELD_DESC = new TField("destination_type", TType.I32, (short)3);
 
   public String action_id;
-  public static final int ACTION_ID = 1;
   public String destination;
-  public static final int DESTINATION = 2;
   /**
    * 
    * @see DestinationType
    */
-  public int destination_type;
-  public static final int DESTINATION_TYPE = 3;
+  public DestinationType destination_type;
+
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements TFieldIdEnum {
+    ACTION_ID((short)1, "action_id"),
+    DESTINATION((short)2, "destination"),
+    /**
+     * 
+     * @see DestinationType
+     */
+    DESTINATION_TYPE((short)3, "destination_type");
+
+    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+    static {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byId.put((int)field._thriftId, field);
+        byName.put(field.getFieldName(), field);
+      }
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, or null if its not found.
+     */
+    public static _Fields findByThriftId(int fieldId) {
+      return byId.get(fieldId);
+    }
+
+    /**
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
+     */
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
+    }
+
+    /**
+     * Find the _Fields constant that matches name, or null if its not found.
+     */
+    public static _Fields findByName(String name) {
+      return byName.get(name);
+    }
+
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
+    }
+
+    public short getThriftFieldId() {
+      return _thriftId;
+    }
+
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
 
   // isset id assignments
-  private static final int __DESTINATION_TYPE_ISSET_ID = 0;
-  private BitSet __isset_bit_vector = new BitSet(1);
 
-  public static final Map<Integer, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new HashMap<Integer, FieldMetaData>() {{
-    put(ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
+    put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
+    put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
-    put(DESTINATION_TYPE, new FieldMetaData("destination_type", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.I32)));
+    put(_Fields.DESTINATION_TYPE, new FieldMetaData("destination_type", TFieldRequirementType.DEFAULT, 
+        new EnumMetaData(TType.ENUM, DestinationType.class)));
   }});
 
   static {
@@ -58,33 +118,34 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
   }
 
   public Subscribe(
-    String action_id,
     String destination,
-    int destination_type)
+    DestinationType destination_type)
   {
     this();
-    this.action_id = action_id;
     this.destination = destination;
     this.destination_type = destination_type;
-    setDestination_typeIsSet(true);
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public Subscribe(Subscribe other) {
-    __isset_bit_vector.clear();
-    __isset_bit_vector.or(other.__isset_bit_vector);
     if (other.isSetAction_id()) {
       this.action_id = other.action_id;
     }
     if (other.isSetDestination()) {
       this.destination = other.destination;
     }
-    this.destination_type = other.destination_type;
+    if (other.isSetDestination_type()) {
+      this.destination_type = other.destination_type;
+    }
   }
 
-  @Override
+  public Subscribe deepCopy() {
+    return new Subscribe(this);
+  }
+
+  @Deprecated
   public Subscribe clone() {
     return new Subscribe(this);
   }
@@ -102,7 +163,7 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
     this.action_id = null;
   }
 
-  // Returns true if field action_id is set (has been asigned a value) and false otherwise
+  /** Returns true if field action_id is set (has been asigned a value) and false otherwise */
   public boolean isSetAction_id() {
     return this.action_id != null;
   }
@@ -126,7 +187,7 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
     this.destination = null;
   }
 
-  // Returns true if field destination is set (has been asigned a value) and false otherwise
+  /** Returns true if field destination is set (has been asigned a value) and false otherwise */
   public boolean isSetDestination() {
     return this.destination != null;
   }
@@ -141,7 +202,7 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
    * 
    * @see DestinationType
    */
-  public int getDestination_type() {
+  public DestinationType getDestination_type() {
     return this.destination_type;
   }
 
@@ -149,27 +210,28 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
    * 
    * @see DestinationType
    */
-  public Subscribe setDestination_type(int destination_type) {
+  public Subscribe setDestination_type(DestinationType destination_type) {
     this.destination_type = destination_type;
-    setDestination_typeIsSet(true);
     return this;
   }
 
   public void unsetDestination_type() {
-    __isset_bit_vector.clear(__DESTINATION_TYPE_ISSET_ID);
+    this.destination_type = null;
   }
 
-  // Returns true if field destination_type is set (has been asigned a value) and false otherwise
+  /** Returns true if field destination_type is set (has been asigned a value) and false otherwise */
   public boolean isSetDestination_type() {
-    return __isset_bit_vector.get(__DESTINATION_TYPE_ISSET_ID);
+    return this.destination_type != null;
   }
 
   public void setDestination_typeIsSet(boolean value) {
-    __isset_bit_vector.set(__DESTINATION_TYPE_ISSET_ID, value);
+    if (!value) {
+      this.destination_type = null;
+    }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    switch (fieldID) {
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
     case ACTION_ID:
       if (value == null) {
         unsetAction_id();
@@ -190,17 +252,19 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
       if (value == null) {
         unsetDestination_type();
       } else {
-        setDestination_type((Integer)value);
+        setDestination_type((DestinationType)value);
       }
       break;
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
   }
 
-  public Object getFieldValue(int fieldID) {
-    switch (fieldID) {
+  public void setFieldValue(int fieldID, Object value) {
+    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
     case ACTION_ID:
       return getAction_id();
 
@@ -210,23 +274,29 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
     case DESTINATION_TYPE:
       return getDestination_type();
 
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
   }
 
-  // Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise
-  public boolean isSet(int fieldID) {
-    switch (fieldID) {
+  public Object getFieldValue(int fieldId) {
+    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    switch (field) {
     case ACTION_ID:
       return isSetAction_id();
     case DESTINATION:
       return isSetDestination();
     case DESTINATION_TYPE:
       return isSetDestination_type();
-    default:
-      throw new IllegalArgumentException("Field " + fieldID + " doesn't exist!");
     }
+    throw new IllegalStateException();
+  }
+
+  public boolean isSet(int fieldID) {
+    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -260,12 +330,12 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
         return false;
     }
 
-    boolean this_present_destination_type = true;
-    boolean that_present_destination_type = true;
+    boolean this_present_destination_type = true && this.isSetDestination_type();
+    boolean that_present_destination_type = true && that.isSetDestination_type();
     if (this_present_destination_type || that_present_destination_type) {
       if (!(this_present_destination_type && that_present_destination_type))
         return false;
-      if (this.destination_type != that.destination_type)
+      if (!this.destination_type.equals(that.destination_type))
         return false;
     }
 
@@ -321,43 +391,39 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
       if (field.type == TType.STOP) { 
         break;
       }
-      switch (field.id)
-      {
-        case ACTION_ID:
-          if (field.type == TType.STRING) {
-            this.action_id = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case DESTINATION:
-          if (field.type == TType.STRING) {
-            this.destination = iprot.readString();
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        case DESTINATION_TYPE:
-          if (field.type == TType.I32) {
-            this.destination_type = iprot.readI32();
-            setDestination_typeIsSet(true);
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
+      _Fields fieldId = _Fields.findByThriftId(field.id);
+      if (fieldId == null) {
+        TProtocolUtil.skip(iprot, field.type);
+      } else {
+        switch (fieldId) {
+          case ACTION_ID:
+            if (field.type == TType.STRING) {
+              this.action_id = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case DESTINATION:
+            if (field.type == TType.STRING) {
+              this.destination = iprot.readString();
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+          case DESTINATION_TYPE:
+            if (field.type == TType.I32) {
+              this.destination_type = DestinationType.findByValue(iprot.readI32());
+            } else { 
+              TProtocolUtil.skip(iprot, field.type);
+            }
+            break;
+        }
+        iprot.readFieldEnd();
       }
-      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 
-
     // check for required fields of primitive type, which can't be checked in the validate method
-    if (!isSetDestination_type()) {
-      throw new TProtocolException("Required field 'destination_type' was not found in serialized data! Struct: " + toString());
-    }
     validate();
   }
 
@@ -377,9 +443,11 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
       oprot.writeString(this.destination);
       oprot.writeFieldEnd();
     }
-    oprot.writeFieldBegin(DESTINATION_TYPE_FIELD_DESC);
-    oprot.writeI32(this.destination_type);
-    oprot.writeFieldEnd();
+    if (this.destination_type != null) {
+      oprot.writeFieldBegin(DESTINATION_TYPE_FIELD_DESC);
+      oprot.writeI32(this.destination_type.getValue());
+      oprot.writeFieldEnd();
+    }
     oprot.writeFieldStop();
     oprot.writeStructEnd();
   }
@@ -408,14 +476,18 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
     first = false;
     if (!first) sb.append(", ");
     sb.append("destination_type:");
-    String destination_type_name = DestinationType.VALUES_TO_NAMES.get(this.destination_type);
-    if (destination_type_name != null) {
-      sb.append(destination_type_name);
-      sb.append(" (");
-    }
-    sb.append(this.destination_type);
-    if (destination_type_name != null) {
-      sb.append(")");
+    if (this.destination_type == null) {
+      sb.append("null");
+    } else {
+      String destination_type_name = destination_type.name();
+      if (destination_type_name != null) {
+        sb.append(destination_type_name);
+        sb.append(" (");
+      }
+      sb.append(this.destination_type);
+      if (destination_type_name != null) {
+        sb.append(")");
+      }
     }
     first = false;
     sb.append(")");
@@ -424,14 +496,6 @@ class Subscribe implements TBase, java.io.Serializable, Cloneable, Comparable<Su
 
   public void validate() throws TException {
     // check for required fields
-    if (destination == null) {
-      throw new TProtocolException("Required field 'destination' was not present! Struct: " + toString());
-    }
-    // 'destination_type' is only checked in read() because it's a primitive and you chose the non-beans generator.
-    // check that fields of type enum have valid values
-    if (isSetDestination_type() && !DestinationType.VALID_VALUES.contains(destination_type)){
-      throw new TProtocolException("The field 'destination_type' has been assigned the invalid value " + destination_type);
-    }
   }
 
 }

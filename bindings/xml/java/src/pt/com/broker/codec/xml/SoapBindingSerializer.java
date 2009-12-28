@@ -1,5 +1,6 @@
 package pt.com.broker.codec.xml;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
@@ -39,5 +40,11 @@ public class SoapBindingSerializer implements BindingSerializer
 
 		return Builder.soapToNetMessage(msg);
 	}
-
+	
+	@Override
+	public NetMessage unmarshal(InputStream in)
+	{
+		SoapEnvelope msg = SoapSerializer.FromXml(in);
+		return Builder.soapToNetMessage(msg);
+	}
 }

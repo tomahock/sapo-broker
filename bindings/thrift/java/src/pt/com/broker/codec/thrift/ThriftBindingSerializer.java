@@ -1,10 +1,12 @@
 package pt.com.broker.codec.thrift;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,71 +36,73 @@ public class ThriftBindingSerializer implements BindingSerializer
 {
 	private static final Logger log = LoggerFactory.getLogger(ThriftBindingSerializer.class);
 
-	@Override
-	public byte[] marshal(NetMessage netMessage)
+	static private NetAction.ActionType translateActionType(pt.com.broker.codec.thrift.ActionType actionType)
 	{
-		byte[] result = null;
-
-		try
+		switch (actionType)
 		{
-			Atom tm = new Atom();
-			Header header = getHeaders(netMessage);
-			Action ac = getAction(netMessage);
-
-			if (header != null)
-				tm.setHeader(header);
-
-			if (ac != null)
-				tm.setAction(ac);
-
-			TSerializer serializer = new TSerializer(new TBinaryProtocol.Factory());
-			result = serializer.serialize(tm);
+		case ACCEPTED:
+			return NetAction.ActionType.ACCEPTED;
+		case ACKNOWLEDGE:
+			return NetAction.ActionType.ACKNOWLEDGE;
+		case FAULT:
+			return NetAction.ActionType.FAULT;
+		case PING:
+			return NetAction.ActionType.PING;
+		case PONG:
+			return NetAction.ActionType.PONG;
+		case NOTIFICATION:
+			return NetAction.ActionType.NOTIFICATION;
+		case POLL:
+			return NetAction.ActionType.POLL;
+		case PUBLISH:
+			return NetAction.ActionType.PUBLISH;
+		case SUBSCRIBE:
+			return NetAction.ActionType.SUBSCRIBE;
+		case UNSUBSCRIBE:
+			return NetAction.ActionType.UNSUBSCRIBE;
+		case AUTH:
+			return NetAction.ActionType.AUTH;
 		}
-		catch (Throwable e)
-		{
-			// TODO: decide what to do with exception
-			log.error("Error parsing Protocol Buffer message.", e.getMessage());
-		}
-		return result;
+		throw new RuntimeException("Unexpected ActionType: " + actionType);
 	}
 
-	@Override
-	public void marshal(NetMessage message, OutputStream out)
+	static private NetAction.DestinationType translateDestinationType(pt.com.broker.codec.thrift.DestinationType destinationType)
 	{
-		try
+		switch (destinationType)
 		{
-			out.write(marshal(message));
+		case QUEUE:
+			return NetAction.DestinationType.QUEUE;
+		case TOPIC:
+			return NetAction.DestinationType.TOPIC;
+		case VIRTUAL_QUEUE:
+			return NetAction.DestinationType.VIRTUAL_QUEUE;
 		}
-		catch (Throwable e)
-		{
-			// TODO: decide what to do with exception
-			log.error("Error parsing Protocol Buffer message.", e.getMessage());
-		}
-	}
-
-	@Override
-	public NetMessage unmarshal(byte[] packet)
-	{
-		NetMessage message = null;
-		try
-		{
-			Atom tm = new Atom();
-			TDeserializer deserializer = new TDeserializer(new TBinaryProtocol.Factory());
-			deserializer.deserialize(tm, packet);
-			message = constructMessage(tm);
-		}
-		catch (Throwable e)
-		{
-			// TODO: decide what to do with exception
-			log.error("Error parsing Thrift message.", e);
-		}
-		return message;
+		throw new RuntimeException("Unexpected detination type: " + destinationType);
 	}
 
 	private NetMessage constructMessage(Atom tm)
 	{
 		NetMessage message = new NetMessage(extractAction(tm.getAction()), tm.header == null ? null : tm.header.parameters);
 		return message;
+	}
+
+	private NetAccepted extractAcceptedMessage(Action action)
+	{
+		NetAccepted netAccepted = new NetAccepted(action.getAccepted().getAction_id());
+
+		return netAccepted;
+	}
+
+	private NetAcknowledge extractAcknowledgeMessage(Action action)
+	{
+		Acknowledge ThriftAckMsg = action.getAck_message();
+		String destination = ThriftAckMsg.getDestination();
+		String messageId = ThriftAckMsg.getMessage_id();
+		NetAcknowledge ackMessage = new NetAcknowledge(destination, messageId);
+		if (action.getAck_message().isSetAction_id())
+			ackMessage.setActionId(action.getAck_message().getAction_id());
+
+		return ackMessage;
 	}
 
 	private NetAction extractAction(Action action)
@@ -145,84 +149,16 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return netAction;
 	}
 
-	private NetBrokerMessage obtainBrokerMessage(BrokerMessage message)
+	private NetAuthentication extractAuthenticationMessage(Action action)
 	{
+		Authentication auth = action.getAuth();
+		NetAuthentication netAuthentication = new NetAuthentication(auth.getToken());
+		netAuthentication.setActionId(auth.getAction_id());
+		netAuthentication.setAuthenticationType(auth.getAuthentication_type());
+		netAuthentication.setRoles(auth.getRoles());
+		netAuthentication.setUserId(auth.getUser_id());
 
-		NetBrokerMessage brkMsg = new NetBrokerMessage(message.getPayload());
-
-		if (message.getTimestamp() != -1)
-			brkMsg.setTimestamp(message.getTimestamp());
-
-		if (message.getExpiration() != -1)
-			brkMsg.setExpiration(message.getExpiration());
-
-		if (StringUtils.isNotBlank(message.getMessage_id()))
-			brkMsg.setMessageId(message.getMessage_id());
-
-		return brkMsg;
-	}
-
-	static private NetAction.ActionType translateActionType(int actionType)
-	{
-		switch (actionType)
-		{
-		case ActionType.ACCEPTED:
-			return NetAction.ActionType.ACCEPTED;
-		case ActionType.ACKNOWLEDGE:
-			return NetAction.ActionType.ACKNOWLEDGE;
-		case ActionType.FAULT:
-			return NetAction.ActionType.FAULT;
-		case ActionType.PING:
-			return NetAction.ActionType.PING;
-		case ActionType.PONG:
-			return NetAction.ActionType.PONG;
-		case ActionType.NOTIFICATION:
-			return NetAction.ActionType.NOTIFICATION;
-		case ActionType.POLL:
-			return NetAction.ActionType.POLL;
-		case ActionType.PUBLISH:
-			return NetAction.ActionType.PUBLISH;
-		case ActionType.SUBSCRIBE:
-			return NetAction.ActionType.SUBSCRIBE;
-		case ActionType.UNSUBSCRIBE:
-			return NetAction.ActionType.UNSUBSCRIBE;
-		case ActionType.AUTH:
-			return NetAction.ActionType.AUTH;
-		}
-		throw new RuntimeException("Unexpected ActionType: " + actionType);
-	}
-
-	static private NetAction.DestinationType translateDestinationType(int destinationType)
-	{
-		switch (destinationType)
-		{
-		case DestinationType.QUEUE:
-			return NetAction.DestinationType.QUEUE;
-		case DestinationType.TOPIC:
-			return NetAction.DestinationType.TOPIC;
-		case DestinationType.VIRTUAL_QUEUE:
-			return NetAction.DestinationType.VIRTUAL_QUEUE;
-		}
-		throw new RuntimeException("Unexpected detination type: " + destinationType);
-	}
-
-	private NetAccepted extractAcceptedMessage(Action action)
-	{
-		NetAccepted netAccepted = new NetAccepted(action.getAccepted().getAction_id());
-
-		return netAccepted;
-	}
-
-	private NetAcknowledge extractAcknowledgeMessage(Action action)
-	{
-		Acknowledge ThriftAckMsg = action.getAck_message();
-		String destination = ThriftAckMsg.getDestination();
-		String messageId = ThriftAckMsg.getMessage_id();
-		NetAcknowledge ackMessage = new NetAcknowledge(destination, messageId);
-		if (action.getAck_message().isSetAction_id())
-			ackMessage.setActionId(action.getAck_message().getAction_id());
-
-		return ackMessage;
+		return netAuthentication;
 	}
 
 	private NetFault extractFaultMessage(Action action)
@@ -256,6 +192,15 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return netNotification;
 	}
 
+	private NetPing extractPingMessage(Action action)
+	{
+		Ping ping = action.getPing();
+
+		NetPing netPing = new NetPing(ping.getAction_id());
+
+		return netPing;
+	}
+
 	private NetPoll extractPollMessage(Action action)
 	{
 		Poll poll = action.getPoll();
@@ -267,6 +212,15 @@ public class ThriftBindingSerializer implements BindingSerializer
 			pollMsg.setActionId(poll.getAction_id());
 
 		return pollMsg;
+	}
+
+	private NetPong extractPongMessage(Action action)
+	{
+		Pong pong = action.getPong();
+
+		NetPong netPong = new NetPong(pong.getAction_id());
+
+		return netPong;
 	}
 
 	private NetPublish extractPublishMessage(Action action)
@@ -315,34 +269,26 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return cgsUnsubs;
 	}
 
-	private NetPing extractPingMessage(Action action)
+	private Accepted getAccepted(NetMessage netMessage)
 	{
-		Ping ping = action.getPing();
-
-		NetPing netPing = new NetPing(ping.getAction_id());
-
-		return netPing;
+		NetAccepted netAccepted = netMessage.getAction().getAcceptedMessage();
+		Accepted struct = new Accepted();
+		struct.setAction_id((netAccepted.getActionId()));
+		return struct;
 	}
 
-	private NetPong extractPongMessage(Action action)
+	private Acknowledge getAcknowledge(NetMessage netMessage)
 	{
-		Pong pong = action.getPong();
+		NetAcknowledge net = netMessage.getAction().getAcknowledgeMessage();
 
-		NetPong netPong = new NetPong(pong.getAction_id());
+		Acknowledge struct = new Acknowledge();
 
-		return netPong;
-	}
+		struct.setDestination(net.getDestination());
+		struct.setMessage_id(net.getMessageId());
+		if (net.getActionId() != null)
+			struct.setAction_id(net.getActionId());
 
-	private NetAuthentication extractAuthenticationMessage(Action action)
-	{
-		Authentication auth = action.getAuth();
-		NetAuthentication netAuthentication = new NetAuthentication(auth.getToken());
-		netAuthentication.setActionId(auth.getAction_id());
-		netAuthentication.setAuthenticationType(auth.getAuthentication_type());
-		netAuthentication.setRoles(auth.getRoles());
-		netAuthentication.setUserId(auth.getUser_id());
-
-		return netAuthentication;
+		return struct;
 	}
 
 	private Action getAction(NetMessage netMessage)
@@ -401,50 +347,14 @@ public class ThriftBindingSerializer implements BindingSerializer
 	private Authentication getAuth(NetMessage netMessage)
 	{
 		NetAuthentication netAuthentication = netMessage.getAction().getAuthenticationMessage();
-		Authentication auth = new Authentication(netAuthentication.getActionId(), netAuthentication.getAuthenticationType(), netAuthentication.getToken(), netAuthentication.getUserId(), netAuthentication.getRoles());
+		// Authentication auth = new Authentication(netAuthentication.getActionId(), netAuthentication.getAuthenticationType(), netAuthentication.getToken(), netAuthentication.getUserId(), netAuthentication.getRoles());
+		Authentication auth = new Authentication();
+		auth.setAction_id(netAuthentication.getActionId());
+		auth.setAuthentication_type(netAuthentication.getAuthenticationType());
+		auth.setToken(netAuthentication.getToken());
+		auth.setUser_id(netAuthentication.getUserId());
+		auth.setRoles(netAuthentication.getRoles());
 		return auth;
-	}
-
-	private Ping getPing(NetMessage netMessage)
-	{
-		NetPing netPing = netMessage.getAction().getPingMessage();
-
-		Ping struct = new Ping();
-		struct.setAction_id(netPing.getActionId());
-
-		return struct;
-	}
-
-	private Pong getPong(NetMessage netMessage)
-	{
-		NetPong netPong = netMessage.getAction().getPongMessage();
-
-		Pong struct = new Pong();
-		struct.setAction_id(netPong.getActionId());
-
-		return struct;
-	}
-
-	private Accepted getAccepted(NetMessage netMessage)
-	{
-		NetAccepted netAccepted = netMessage.getAction().getAcceptedMessage();
-		Accepted struct = new Accepted();
-		struct.setAction_id((netAccepted.getActionId()));
-		return struct;
-	}
-
-	private Acknowledge getAcknowledge(NetMessage netMessage)
-	{
-		NetAcknowledge net = netMessage.getAction().getAcknowledgeMessage();
-
-		Acknowledge struct = new Acknowledge();
-
-		struct.setDestination(net.getDestination());
-		struct.setMessage_id(net.getMessageId());
-		if (net.getActionId() != null)
-			struct.setAction_id(net.getActionId());
-
-		return struct;
 	}
 
 	private Fault getFault(NetMessage netMessage)
@@ -460,6 +370,27 @@ public class ThriftBindingSerializer implements BindingSerializer
 			struct.setAction_id(net.getActionId());
 		if (net.getDetail() != null)
 			struct.setFault_detail(net.getDetail());
+
+		return struct;
+	}
+
+	private Header getHeaders(NetMessage netMessage)
+	{
+		Header header = new Header();
+		header.setParameters(netMessage.getHeaders());
+
+		return header;
+	}
+
+	private BrokerMessage getMessageBroker(NetBrokerMessage message)
+	{
+		BrokerMessage struct = new BrokerMessage();
+
+		struct.setPayload(message.getPayload());
+
+		struct.setMessage_id(message.getMessageId());
+		struct.setExpiration(message.getExpiration());
+		struct.setTimestamp(message.getTimestamp());
 
 		return struct;
 	}
@@ -481,6 +412,16 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
+	private Ping getPing(NetMessage netMessage)
+	{
+		NetPing netPing = netMessage.getAction().getPingMessage();
+
+		Ping struct = new Ping();
+		struct.setAction_id(netPing.getActionId());
+
+		return struct;
+	}
+
 	private Poll getPoll(NetMessage netMessage)
 	{
 		NetPoll net = netMessage.getAction().getPollMessage();
@@ -492,6 +433,16 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 		if (net.getActionId() != null)
 			struct.setAction_id(net.getActionId());
+
+		return struct;
+	}
+
+	private Pong getPong(NetMessage netMessage)
+	{
+		NetPong netPong = netMessage.getAction().getPongMessage();
+
+		Pong struct = new Pong();
+		struct.setAction_id(netPong.getActionId());
 
 		return struct;
 	}
@@ -539,28 +490,66 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return struct;
 	}
 
-	private Header getHeaders(NetMessage netMessage)
+	@Override
+	public byte[] marshal(NetMessage netMessage)
 	{
-		Header header = new Header();
-		header.setParameters(netMessage.getHeaders());
+		byte[] result = null;
 
-		return header;
+		try
+		{
+			Atom tm = new Atom();
+			Header header = getHeaders(netMessage);
+			Action ac = getAction(netMessage);
+
+			if (header != null)
+				tm.setHeader(header);
+
+			if (ac != null)
+				tm.setAction(ac);
+
+			TSerializer serializer = new TSerializer(new TBinaryProtocol.Factory());
+			result = serializer.serialize(tm);
+		}
+		catch (Throwable e)
+		{
+			// TODO: decide what to do with exception
+			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+		}
+		return result;
 	}
 
-	private BrokerMessage getMessageBroker(NetBrokerMessage message)
+	@Override
+	public void marshal(NetMessage message, OutputStream out)
 	{
-		BrokerMessage struct = new BrokerMessage();
-
-		struct.setPayload(message.getPayload());
-
-		struct.setMessage_id(message.getMessageId());
-		struct.setExpiration(message.getExpiration());
-		struct.setTimestamp(message.getTimestamp());
-
-		return struct;
+		try
+		{
+			out.write(marshal(message));
+		}
+		catch (Throwable e)
+		{
+			// TODO: decide what to do with exception
+			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+		}
 	}
 
-	private int translate(pt.com.broker.types.NetAction.DestinationType destinationType)
+	private NetBrokerMessage obtainBrokerMessage(BrokerMessage message)
+	{
+
+		NetBrokerMessage brkMsg = new NetBrokerMessage(message.getPayload());
+
+		if (message.getTimestamp() != -1)
+			brkMsg.setTimestamp(message.getTimestamp());
+
+		if (message.getExpiration() != -1)
+			brkMsg.setExpiration(message.getExpiration());
+
+		if (StringUtils.isNotBlank(message.getMessage_id()))
+			brkMsg.setMessageId(message.getMessage_id());
+
+		return brkMsg;
+	}
+
+	private pt.com.broker.codec.thrift.DestinationType translate(pt.com.broker.types.NetAction.DestinationType destinationType)
 	{
 		switch (destinationType)
 		{
@@ -572,6 +561,51 @@ public class ThriftBindingSerializer implements BindingSerializer
 			return pt.com.broker.codec.thrift.DestinationType.VIRTUAL_QUEUE;
 		}
 		throw new RuntimeException("Unexpected detination type: " + destinationType);
+	}
+
+	@Override
+	public NetMessage unmarshal(byte[] packet)
+	{
+		NetMessage message = null;
+		try
+		{
+			Atom tm = new Atom();
+			TDeserializer deserializer = new TDeserializer(new TBinaryProtocol.Factory());
+			deserializer.deserialize(tm, packet);
+			message = constructMessage(tm);
+		}
+		catch (Throwable e)
+		{
+			// TODO: decide what to do with exception
+			log.error("Error parsing Thrift message.", e);
+		}
+		return message;
+	}
+
+	@Override
+	public NetMessage unmarshal(InputStream in)
+	{
+		NetMessage message = null;
+		try
+		{
+			UnsynchronizedByteArrayOutputStream out = new UnsynchronizedByteArrayOutputStream();
+
+			int b = 0;
+			while ((b = in.read()) < -1)
+			{
+				out.write(b);
+			}
+			Atom tm = new Atom();
+			TDeserializer deserializer = new TDeserializer(new TBinaryProtocol.Factory());
+			deserializer.deserialize(tm, out.toByteArray());
+			message = constructMessage(tm);
+		}
+		catch (Throwable e)
+		{
+			// TODO: decide what to do with exception
+			log.error("Error parsing Thrift message.", e);
+		}
+		return message;
 	}
 
 }
