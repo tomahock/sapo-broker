@@ -47,8 +47,8 @@ public class BrokerServer
 	{
 		try
 		{
-			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle());
-			final SocketAcceptor acceptor0 = new NioSocketAcceptor(NCPU);
+			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(512 * 1024));
+			final SocketAcceptor acceptor0 = new NioSocketAcceptor(NCPU + 1);
 
 			acceptor0.setReuseAddress(true);
 			((SocketSessionConfig) acceptor0.getSessionConfig()).setReuseAddress(true);

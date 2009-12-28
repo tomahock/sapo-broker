@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.mina.core.session.IoSession;
-import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,21 +37,21 @@ public class TopicSubscriber extends BrokerListener
 	{
 		return DestinationType.TOPIC;
 	}
-	
+
 	@Override
 	public DestinationType getTargetDestinationType()
 	{
 		return DestinationType.TOPIC;
 	}
 
-	public long onMessage(InternalMessage amsg)
+	public long onMessage(final InternalMessage amsg)
 	{
 		if (amsg == null)
 			return -1;
 
 		try
 		{
-			for (IoSession ios : _sessions)
+			for (final IoSession ios : _sessions)
 			{
 				try
 				{
