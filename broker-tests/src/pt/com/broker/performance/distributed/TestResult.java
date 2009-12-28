@@ -68,6 +68,11 @@ public class TestResult
 	{
 		return messages;
 	}
+	
+	public void setMessages(int messages)
+	{
+		this.messages = messages;
+	}
 
 	public long getStartTime()
 	{

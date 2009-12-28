@@ -133,7 +133,7 @@ public class TestManager implements BrokerListener
 				NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);
 				String destination = String.format("%s%s", TEST_MANAGEMENT_LOCAL_MANAGERS, machineConfiguration.getMachineName());
 
-				// System.out.println("Sendind machine info to destination " + destination);
+				// System.out.println("Sending machine info to destination " + destination);
 
 				brokerClient.enqueueMessage(netBrokerMessage, destination);
 			}

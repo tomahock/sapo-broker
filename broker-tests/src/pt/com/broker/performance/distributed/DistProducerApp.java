@@ -117,6 +117,8 @@ public class DistProducerApp implements BrokerListener
 		
 		bk.close();
 		
+		testResult.setMessages(nrOfMessages);
+		
 		testResult.setStartTime(startTime);
 		testResult.setStopTime(stopTime);
 	}
