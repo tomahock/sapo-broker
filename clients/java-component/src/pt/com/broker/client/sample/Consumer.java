@@ -63,6 +63,7 @@ public class Consumer implements BrokerListener
 		System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
 		System.out.printf("Destination: '%s'%n", notification.getDestination());
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
+		System.out.printf("DestinationType: '%s'%n", notification.getDestinationType());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
 	}
 
