@@ -56,7 +56,6 @@ public class DistProducerApp implements BrokerListener
 		final DistTestCliArgs cargs = CliFactory.parseArguments(DistTestCliArgs.class, args);
 	
 		DistProducerApp producer = new DistProducerApp(cargs.getHost(), cargs.getPort(), cargs.getActorName());
-
 	
 
 		while (true)

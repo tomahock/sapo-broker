@@ -384,9 +384,11 @@ public class TestManager implements BrokerListener
 
 		long consumerEarliestStart = Long.MAX_VALUE;
 		long consumerLatestStop = 0;
+		int consumerMessages = 0;
 
 		long producerEarliestStart = Long.MAX_VALUE;
 		long producerLatestStop = 0;
+		int producerMessages = 0;
 
 		for (TestResult tRes : testResults)
 		{
@@ -402,6 +404,7 @@ public class TestManager implements BrokerListener
 				{
 					consumerLatestStop = (long) tRes.getStopTime();
 				}
+				consumerMessages += tRes.getMessages();
 			}
 			else
 			{
@@ -413,22 +416,23 @@ public class TestManager implements BrokerListener
 				{
 					producerLatestStop = (long) tRes.getStopTime();
 				}
+				producerMessages += tRes.getMessages();
 			}
 
-			double consumerTestTime = tRes.getStopTime() - tRes.getStartTime();
+			double actorTestTime = tRes.getStopTime() - tRes.getStartTime();
 
-			double timePerMsg = ((consumerTestTime) / tRes.getMessages()) / nano2second;
+			double timePerMsg = ((actorTestTime) / tRes.getMessages()) / nano2second;
 			double messagesPerSecond = 1 / timePerMsg;
-			sb.append(String.format("%s: %s, Messages: %s, Time: %.2f, Messages/second: %.2f\n", tRes.getActorType(), tRes.getActorName(), tRes.getMessages(), consumerTestTime / nano2second, messagesPerSecond));
+			sb.append(String.format("%s: %s, Messages: %s, Time: %.2f, Messages/second: %.2f\n", tRes.getActorType(), tRes.getActorName(), tRes.getMessages(), actorTestTime / nano2second, messagesPerSecond));
 
 		}
 
-		double timePerMsg = ((consumerLatestStop - consumerEarliestStart) / testParams.getNumberOfMessagesToSend()) / nano2second;
+		double timePerMsg = ((consumerLatestStop - consumerEarliestStart) / consumerMessages) / nano2second;
 		double messagesPerSecond = 1 / timePerMsg;
 
 		sb.append(String.format("\nTOTAL CONSUMER: Messages/second: %.3f", messagesPerSecond));
 		
-		timePerMsg = ((producerLatestStop - producerEarliestStart) / testParams.getNumberOfMessagesToSend()) / nano2second;
+		timePerMsg = ((producerLatestStop - producerEarliestStart) / producerMessages) / nano2second;
 		messagesPerSecond = 1 / timePerMsg;
 		
 
