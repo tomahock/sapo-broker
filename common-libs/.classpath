@@ -3,7 +3,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="jibx-run.jar"/>
 	<classpathentry exported="true" kind="lib" path="mina_http_filter.jar"/>
-	<classpathentry exported="true" kind="lib" path="mina2-snapshot.jar"/>
+	<classpathentry exported="true" kind="lib" path="mina2-snapshot.jar" sourcepath="/home/lcosta/Work/Projects/mina_repo3"/>
 	<classpathentry exported="true" kind="lib" path="org.caudexorigo.jar"/>
 	<classpathentry exported="true" kind="lib" path="protobuf-java-2.0.3.jar"/>
 	<classpathentry kind="lib" path="aalto-gpl-0.9.5.jar"/>

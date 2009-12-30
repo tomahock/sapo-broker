@@ -215,9 +215,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	protected void handleReceivedMessage(NetMessage message)
 	{
 		NetAction action = message.getAction();
-		// NetAction action = null;
-		// try
-		// {
+
 		message.getAction();
 
 		switch (action.getActionType())
@@ -281,41 +279,25 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			throw new RuntimeException("Unexepected ActionType in received message. ActionType: " + action.getActionType());
 
 		}
-		// }
-		// catch (NullPointerException npe)
-		// {
-		// System.err.println("Null Pointer ex");
-		// }
 	}
 
 	@Override
 	public NetMessage decode(DataInputStream in) throws IOException
 	{
-//		try
-//		{
-			short protocolType = in.readShort();
-			short protocolVersion = in.readShort();
-			int len = in.readInt();
+		short protocolType = in.readShort();
+		short protocolVersion = in.readShort();
+		int len = in.readInt();
 
-			if (serializer == null)
-			{
-				throw new RuntimeException("Received message uses an unknown encoding");
-			}
+		if (serializer == null)
+		{
+			throw new RuntimeException("Received message uses an unknown encoding");
+		}
 
-			byte[] data = new byte[len];
-			in.readFully(data);
+		byte[] data = new byte[len];
+		in.readFully(data);
 
-			NetMessage message = (NetMessage) serializer.unmarshal(data);
-			return message;
-//		}
-//		catch (SocketException se)
-//		{
-//			if (!closed.get())
-//			{
-//				log.error("Failed to read socket...", se);
-//			}
-//		}
-//		return null;
+		NetMessage message = (NetMessage) serializer.unmarshal(data);
+		return message;
 	}
 
 	@Override

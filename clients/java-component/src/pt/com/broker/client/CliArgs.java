@@ -27,7 +27,7 @@ public interface CliArgs
 	 * 
 	 * @return Host UDP port.
 	 */
-	@Option(shortName = "u", defaultValue = "5445")
+	@Option(shortName = "u", defaultValue = "3323")
 	int getUdpPort();
 
 	/**

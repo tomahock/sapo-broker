@@ -2,8 +2,10 @@ package pt.com.broker.client.sample;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.caudexorigo.cli.CliFactory;
+import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +58,16 @@ public class Consumer implements BrokerListener
 		return dtype != DestinationType.TOPIC;
 	}
 
+	
+	volatile long latestReport = System.nanoTime();
+	AtomicLong count = new AtomicLong(0);
+	
+	AtomicLong total = new AtomicLong(0);
+	
 
+	volatile long refTime = System.currentTimeMillis();
+	volatile long sleepTime = 5;
+	
 	@Override
 	public void onMessage(NetNotification notification)
 	{
@@ -65,6 +76,37 @@ public class Consumer implements BrokerListener
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("DestinationType: '%s'%n", notification.getDestinationType());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+		
+//		count.incrementAndGet();
+//		long incrementAndGet = total.incrementAndGet();
+//		
+//		long now = System.nanoTime();
+//		long diff = (now - latestReport); 
+//		if( diff >  (500 * 1000 * 1000 * 1000) )
+//		{
+//		
+//			System.out.printf("%s - %s - %s%n", new Date(), count.get() , incrementAndGet);
+//			
+//			count.set(0);
+//			latestReport = now;
+//		}
+//		
+//		if(System.currentTimeMillis() > (refTime + 45 * 1000 ))
+//		{
+//			if( sleepTime != 5)
+//			{
+//				sleepTime = 5;
+//				System.out.println("Fast");
+//			}
+//			else
+//			{
+//				sleepTime = 2500;
+//				System.out.println("Slow");
+//			}
+//			refTime = System.currentTimeMillis();
+//		}
+//		
+//		Sleep.time(sleepTime);
 	}
 
 }

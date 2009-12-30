@@ -3,9 +3,9 @@ package pt.com.broker.bayeuxbridge.transformers;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.caudexorigo.text.StringEscapeUtils;
-import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +15,8 @@ import pt.com.broker.types.NetBrokerMessage;
 public class Xml2JsonTransformer implements MessageTransformer
 {
 	private static final Logger log = LoggerFactory.getLogger(Xml2JsonTransformer.class);
+
+	private static Pattern newLinePattern = Pattern.compile("\r\\u000a\\u000c\\u000d\\u0085\\u2028\\u2029");
 
 	javax.xml.transform.Source xsltSource = null;
 
@@ -38,7 +40,11 @@ public class Xml2JsonTransformer implements MessageTransformer
 			return message;
 
 		String xmlMessage = new String(message.getPayload());
-
+		
+		
+		Matcher matcher = newLinePattern.matcher(xmlMessage);
+		xmlMessage = matcher.replaceAll("");
+		
 		String jsonMessage = null;
 
 		javax.xml.transform.Source xmlSource = new javax.xml.transform.stream.StreamSource(new StringReader(xmlMessage));

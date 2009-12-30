@@ -15,7 +15,6 @@ import pt.com.broker.types.SimpleFramingEncoderV2;
 
 public class ProtoBufEncoder extends SimpleFramingEncoderV2
 {
-
 	private static final Logger log = LoggerFactory.getLogger(ProtoBufEncoder.class);
 
 	private static final BindingSerializer serializer = new ProtoBufBindingSerializer();

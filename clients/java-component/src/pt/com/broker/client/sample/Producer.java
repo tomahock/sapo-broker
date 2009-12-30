@@ -44,18 +44,23 @@ public class Producer
 		Thread.sleep(2000);
 
 		producer.sendLoop(bk, cargs.getMessageLength());
+		
+		System.exit(0);
 	}
 
 	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
 	{
-		for (int i = 0; i < 10000; i++)
+		
+		for (int i = 0; i < 500000; i++)
 		{
-//			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
+			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
 
 //			final String msg = i + "";
 			
-			final String msg = i + " - " +  RandomStringUtils.randomAlphanumeric(1000);
+//			String payload = RandomStringUtils.randomAlphanumeric(1500);
+//			final String msg = i + " - " +  payload;
 			
+
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
 
 			if (dtype == DestinationType.QUEUE)
@@ -69,7 +74,7 @@ public class Producer
 
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-			Sleep.time(2);
+			Sleep.time(1);
 		}
 		bk.close();
 	}
