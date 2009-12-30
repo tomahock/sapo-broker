@@ -365,7 +365,6 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		_brokerConsumer.unsubscribe(unsubMsg, session);
 		String actionId = unsubMsg.getActionId();
 		sendAccepted(session, actionId);
-
 	}
 
 	private void handleSubscribeMessage(IoSession session, NetMessage request)

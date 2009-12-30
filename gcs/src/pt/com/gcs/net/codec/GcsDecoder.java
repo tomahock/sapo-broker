@@ -22,6 +22,7 @@ public class GcsDecoder extends SimpleFramingDecoder
 	{
 		UnsynchronizedByteArrayInputStream bin = new UnsynchronizedByteArrayInputStream(packet);
 		Object msg = SerializerHelper.fromStream(bin);
+		
 		return msg;
 	}
 }

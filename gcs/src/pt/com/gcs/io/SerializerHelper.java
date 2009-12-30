@@ -1,12 +1,12 @@
 package pt.com.gcs.io;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import pt.com.gcs.messaging.InternalMessage;
+import pt.com.gcs.messaging.serialization.MessageMarshaller;
 
 /**
  * InternalMessage serialization helper that reads from and writes to Input and Output Streams.
@@ -20,8 +20,8 @@ public class SerializerHelper
 		try
 		{
 			ObjectInputStream oIn = new ObjectInputStream(in);
-			InternalMessage msg = new InternalMessage();
-			msg.readExternal(oIn);
+			
+			InternalMessage msg = MessageMarshaller.unmarshallInternalMessage(oIn);
 
 			return msg;
 		}
@@ -36,13 +36,13 @@ public class SerializerHelper
 		try
 		{
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(out);
-			msg.writeExternal(objectOutputStream);
+			MessageMarshaller.marshallInternalMessage(msg, objectOutputStream);
 			objectOutputStream.flush();
 			objectOutputStream.close();
 		}
-		catch (IOException e)
+		catch (Throwable t)
 		{
-			throw new RuntimeException(e);
+			throw new RuntimeException(t);
 		}
 	}
 }

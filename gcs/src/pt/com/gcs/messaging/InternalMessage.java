@@ -1,9 +1,5 @@
 package pt.com.gcs.messaging;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,9 +15,11 @@ import pt.com.gcs.conf.GcsInfo;
  * 
  */
 
-public class InternalMessage implements Externalizable
+public class InternalMessage
 {
 
+	public static final short CURRENT_VERSION  = 1;
+	
 	private static final AtomicLong SEQ = new AtomicLong(0L);
 	private static final long serialVersionUID = -3656321513130930115L;
 	public static final int DEFAULT_PRIORITY = 4;
@@ -41,6 +39,8 @@ public class InternalMessage implements Externalizable
 	private pt.com.gcs.messaging.MessageType type = pt.com.gcs.messaging.MessageType.UNDEF;
 	private boolean isFromRemotePeer = false;
 	private String publishingAgent = GcsInfo.getAgentName(); // Agent through which the message entered the messaging system
+	
+	private short version = CURRENT_VERSION;
 
 	static
 	{
@@ -71,7 +71,7 @@ public class InternalMessage implements Externalizable
 
 	public InternalMessage()
 	{
-		id = BASE_MESSAGE_ID + "#" + SEQ.incrementAndGet();
+		setId(BASE_MESSAGE_ID + "#" + SEQ.incrementAndGet());
 	}
 
 	public InternalMessage(String destination, NetBrokerMessage content)
@@ -80,7 +80,7 @@ public class InternalMessage implements Externalizable
 		checkArg(content);
 		this.content = content;
 		this.destination = destination;
-		id = BASE_MESSAGE_ID + "#" + SEQ.incrementAndGet();
+		setId(BASE_MESSAGE_ID + "#" + SEQ.incrementAndGet());
 	}
 
 	public InternalMessage(String id, String destination, NetBrokerMessage content)
@@ -90,7 +90,7 @@ public class InternalMessage implements Externalizable
 		checkArg(id);
 		this.content = content;
 		this.destination = destination;
-		this.id = id;
+		this.setId(id);
 	}
 
 	public String getDestination()
@@ -105,12 +105,12 @@ public class InternalMessage implements Externalizable
 
 	public String getMessageId()
 	{
-		return id;
+		return getId();
 	}
 
 	public void setMessageId(String id)
 	{
-		this.id = id;
+		this.setId(id);
 	}
 
 	public NetBrokerMessage getContent()
@@ -206,59 +206,13 @@ public class InternalMessage implements Externalizable
 		return publishingAgent;
 	}
 
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
-	{
-
-		correlationId = in.readUTF();
-		if (correlationId.equals(""))
-			correlationId = null;
-
-		destination = in.readUTF();
-		if (destination.equals(""))
-			destination = null;
-
-		id = in.readUTF();
-		if (id.equals(""))
-			id = null;
-		
-		setPublishingAgent(in.readUTF());
-		if (getPublishingAgent().equals(""))
-			setPublishingAgent(null);
-		
-		priority = in.readInt();
-		sourceApp = in.readUTF();
-		if (sourceApp.equals(""))
-			sourceApp = null;
-		timestamp = in.readLong();
-		expiration = in.readLong();
-		type = MessageType.lookup(in.readInt());
-
-		content = NetBrokerMessage.read(in);
-	}
-
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException
-	{
-		out.writeUTF((correlationId != null) ? correlationId : "");
-		out.writeUTF((destination != null) ? destination : "");
-		out.writeUTF((id != null) ? id : "");
-		out.writeUTF((getPublishingAgent() != null) ? getPublishingAgent() : "");
-		out.writeInt(priority);
-		out.writeUTF((sourceApp != null) ? sourceApp : "");
-		out.writeLong(timestamp);
-		out.writeLong(expiration);
-		out.writeInt(getType().getValue());
-
-		content.write(out);
-
-		out.flush();
-	}
 
 	@Override
 	public String toString()
 	{
 		StringBuilder buf = new StringBuilder(100);
+		buf.append(version);
+		buf.append(SEPARATOR);
 		buf.append(getContent());
 		buf.append(SEPARATOR);
 		buf.append(getCorrelationId());
@@ -278,8 +232,28 @@ public class InternalMessage implements Externalizable
 		buf.append(getExpiration());
 		buf.append(SEPARATOR);
 		buf.append(getType().getValue());
-
+		
 		return buf.toString();
+	}
+
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	public String getId()
+	{
+		return id;
+	}
+
+	public void setVersion(short version)
+	{
+		this.version = version;
+	}
+
+	public short getVersion()
+	{
+		return version;
 	}
 
 }

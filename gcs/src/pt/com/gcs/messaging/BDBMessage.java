@@ -1,28 +1,24 @@
 package pt.com.gcs.messaging;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-
-import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 
 /**
  * BDBMessage represents a message to be stored or retrieved from the database.
  * 
  */
 
-public class BDBMessage implements Externalizable
+public class BDBMessage
 {
-
+	public static final short CURRENT_VERSION = 1;
+	
 	private long _sequence;
 	private boolean _preferLocalConsumer;
 	private long _reserve;
 	private InternalMessage _message;
 	private static final String SEPARATOR = "<#>";
 
-	private BDBMessage()
+	private short version = CURRENT_VERSION;
+
+	public BDBMessage()
 	{
 	}
 
@@ -56,41 +52,42 @@ public class BDBMessage implements Externalizable
 	{
 		return _sequence;
 	}
+	
+	public void setSequence(long sequence)
+	{
+		_sequence = sequence;
+	}
 
 	public long getReserveTimeout()
 	{
 		return _reserve;
+	}
+	
+	public void setReserveTimeout(long reserve)
+	{
+		_reserve = reserve;
 	}
 
 	public InternalMessage getMessage()
 	{
 		return _message;
 	}
-
-	public void setReserveTimeout(long reserve)
+	
+	public void setMessage(InternalMessage internalMessage)
 	{
-		_reserve = reserve;
+		_message = internalMessage;
+	}
+	
+	public void setVersion(short version)
+	{
+		this.version = version;
 	}
 
-	public void readExternal(ObjectInput oin) throws IOException, ClassNotFoundException
+	public short getVersion()
 	{
-		_sequence = oin.readLong();
-		_preferLocalConsumer = oin.readBoolean();
-		_reserve = oin.readLong();
-		InternalMessage m = new InternalMessage();
-		
-		m.readExternal(oin);
-		_message = m;
+		return version;
 	}
-
-	public void writeExternal(ObjectOutput oout) throws IOException
-	{
-		oout.writeLong(_sequence);
-		oout.writeBoolean(_preferLocalConsumer);
-		oout.writeLong(_reserve);
-		_message.writeExternal(oout);
-	}
-
+	
 	@Override
 	public String toString()
 	{
@@ -106,13 +103,4 @@ public class BDBMessage implements Externalizable
 		return buf.toString();
 	}
 
-	protected static BDBMessage fromByteArray(byte[] buf) throws IOException, ClassNotFoundException
-	{
-		BDBMessage bm = new BDBMessage();
-		ObjectInputStream oIn;
-
-		oIn = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(buf));
-		bm.readExternal(oIn);
-		return bm;
-	}
 }

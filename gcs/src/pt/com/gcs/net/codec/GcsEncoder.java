@@ -48,6 +48,7 @@ public class GcsEncoder extends SimpleFramingEncoder
 		IoBuffer wbuf = IoBuffer.allocate(2048, false);
 		wbuf.setAutoExpand(true);
 		wbuf.putInt(0);
+		
 		SerializerHelper.toStream((InternalMessage) message, wbuf.asOutputStream());
 		int msize = wbuf.position() - 4;
 		wbuf.putInt(0, msize);

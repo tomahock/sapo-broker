@@ -1,5 +1,7 @@
 package pt.com.gcs.messaging;
 
+import pt.com.gcs.messaging.serialization.MessageMarshaller;
+
 import com.sleepycat.bind.tuple.StringBinding;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
@@ -20,7 +22,7 @@ public class BDBMessageKeyCreator implements SecondaryKeyCreator
 		BDBMessage bdbm;
 		try
 		{
-			bdbm = BDBMessage.fromByteArray(bdata);
+			bdbm = MessageMarshaller.unmarshallBDBMessage(bdata);
 		}
 		catch (Throwable t)
 		{

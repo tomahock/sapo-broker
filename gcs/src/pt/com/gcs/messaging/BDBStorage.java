@@ -1,16 +1,16 @@
 package pt.com.gcs.messaging;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.Sleep;
-import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pt.com.gcs.messaging.serialization.MessageMarshaller;
 
 import com.sleepycat.bind.ByteArrayBinding;
 import com.sleepycat.bind.tuple.LongBinding;
@@ -44,8 +44,6 @@ public class BDBStorage
 
 	private static final int MAX_REDELIVERY_PER_MESSAGE = 3;
 
-	private volatile long nextCycleTime = System.currentTimeMillis();
-
 	public BDBStorage(QueueProcessor qp)
 	{
 		try
@@ -77,15 +75,27 @@ public class BDBStorage
 	{
 		DatabaseEntry data = new DatabaseEntry();
 
-		UnsynchronizedByteArrayOutputStream bout = new UnsynchronizedByteArrayOutputStream();
-		ObjectOutputStream oout = new ObjectOutputStream(bout);
-		bdbm.writeExternal(oout);
-		oout.flush();
-
 		ByteArrayBinding bab = new ByteArrayBinding();
-		byte[] bdata = bout.toByteArray();
 
-		bab.objectToEntry(bdata, data);
+		byte[] marshallBDBMessage;
+		try
+		{
+			marshallBDBMessage = MessageMarshaller.marshallBDBMessage(bdbm);
+			if (marshallBDBMessage != null)
+			{
+				bab.objectToEntry(marshallBDBMessage, data);
+			}
+			else
+			{
+				
+				throw new Exception("MessageMarshaller.marshallBDBMessage returned null");
+			}
+		}
+		catch (Throwable e)
+		{
+			log.error("Serialization failed", e);
+			return null;
+		}
 
 		return data;
 	}
@@ -337,7 +347,6 @@ public class BDBStorage
 
 		long now = System.currentTimeMillis();
 
-
 		int i0 = 0; // delivered
 		int j0 = 0; // failed deliver
 		int k0 = 0; // redelivered messages
@@ -363,7 +372,12 @@ public class BDBStorage
 
 				try
 				{
-					bdbm = BDBMessage.fromByteArray(bdata);
+					bdbm = MessageMarshaller.unmarshallBDBMessage(bdata);
+					if(bdbm == null)
+					{
+						log.info("MessageMarshaller.unmarshallBDBMessage returned null");
+						continue;
+					}
 					msg = bdbm.getMessage();
 				}
 				catch (Throwable e)
