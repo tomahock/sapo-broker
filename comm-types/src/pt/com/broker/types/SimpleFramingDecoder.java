@@ -36,7 +36,7 @@ public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
 		catch (Throwable e)
 		{
 			in.clear();
-			(session.getHandler()).exceptionCaught(session, e);
+			//(session.getHandler()).exceptionCaught(session, e);
 		}
 	}
 

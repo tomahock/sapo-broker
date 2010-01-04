@@ -7,7 +7,6 @@ import pt.com.broker.types.NetProtocolType;
 
 public abstract class BrokerTest extends Test
 {
-
 	private static NetProtocolType defaultEncodingProtocolType = NetProtocolType.PROTOCOL_BUFFER;
 
 	private NetProtocolType encodingProtocolType;

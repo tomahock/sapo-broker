@@ -48,6 +48,7 @@ import pt.com.broker.functests.positive.TopicNameSpecifiedDist;
 import pt.com.broker.functests.positive.TopicNameWildcard;
 import pt.com.broker.functests.positive.TopicNameWildcardDist;
 import pt.com.broker.functests.positive.TopicPubSubWithActionId;
+import pt.com.broker.functests.positive.UdpNoFrammingTest;
 import pt.com.broker.functests.positive.UdpQueuePublishTest;
 import pt.com.broker.functests.positive.UdpTopicPublishTest;
 import pt.com.broker.functests.positive.VirtualQueueNameSpecified;
@@ -157,6 +158,7 @@ public class Main
 			
 			if(runAll || runPositive || runUdp)
 			{
+				new UdpNoFrammingTest().run(numberOfTests, testResults);
 				new UdpTopicPublishTest().run(numberOfTests, testResults);
 				new UdpQueuePublishTest().run(numberOfTests, testResults);
 			}

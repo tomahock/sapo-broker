@@ -12,7 +12,6 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class UdpPublishTest extends GenericPubSubTest
 {
