@@ -23,6 +23,8 @@ public class InvalidMessageTest extends GenericNegativeTest
 
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
+	
+		setOkToTimeOut(true);
 	}
 
 	private byte[] buildMessage()

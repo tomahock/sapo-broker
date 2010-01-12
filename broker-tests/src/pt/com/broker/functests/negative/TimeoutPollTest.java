@@ -24,6 +24,8 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 
 		setFaultCode("2005");
 		setFaultMessage("Message poll timeout");
+		
+		//setOkToTimeOut(true);
 	}
 
 	@Override
@@ -54,15 +56,19 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 
 					bk.poll(queueName, 500, null);
 
+					System.out.println("TimeoutPollTest.build().new Consequence() {...}.run() - poll returned");
 					bk.close();
 
 				}
 				catch (TimeoutException t)
 				{
+					System.out.println("TimeoutPollTest.build().new Consequence() {...}.run() - TimeoutException");
 					success = true;
 				}
 				catch (Throwable t)
 				{
+					System.out.println("TimeoutPollTest.build().new Consequence() {...}.run() - Throwable");
+					t.printStackTrace();
 				}
 				setDone(true);
 				setSucess(success);

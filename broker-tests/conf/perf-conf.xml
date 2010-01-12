@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <test-configuration>
 	<agents default-agent="cordination-agent">
-		<agent hostname="172.17.1.100" tcp-port="3323" http-port="3380"
+		<agent hostname="127.0.0.1" tcp-port="3323" http-port="3380"
 			agent-id="cordination-agent" />
 	</agents>
 	<machines>
-		<machine machine-name="machine1" consumers="consumer1 consumer2 consumer3 consumer4"/>
+		<machine machine-name="machine1" consumers="consumer1 consumer2 consumer3 consumer4" producers="producer2"/>
 		<machine machine-name="machine2" producers="producer1"/>
 	</machines>
 	<tests>
 		<!-- TOPIC -->
-		<test test-name="test1">
-			<messages number-of-messages="100000" message-size="256" />
+<!--		<test test-name="test1">
+			<messages number-of-messages="1000" message-size="256" />
 			<destination destination-type="TOPIC" sync-consumer="false" />
-			<consumers count="1" />
-			<producers count="1" />
+			<consumers count="2" />
+			<producers count="2" />
 		</test>
 		<test test-name="test2">
 			<messages number-of-messages="100000" message-size="512" />
@@ -40,8 +40,8 @@
 			<consumers count="1" />
 			<producers count="1" />
 		</test>
-		<!-- with 2 consumers -->
-		<test test-name="test6">
+-->		<!-- with 2 consumers -->
+<!--		<test test-name="test6">
 			<messages number-of-messages="100000" message-size="4096" />
 			<destination destination-type="TOPIC" sync-consumer="false" />
 			<consumers count="2" />
@@ -53,9 +53,9 @@
 			<consumers count="2" />
 			<producers count="1" />
 		</test>
-
+-->
 		<!-- QUEUE -->
-		<test test-name="test8">
+<!--		<test test-name="test8">
 			<messages number-of-messages="100000" message-size="256" />
 			<destination destination-type="QUEUE" sync-consumer="false" />
 			<consumers count="1" />
@@ -85,8 +85,8 @@
 			<consumers count="1" />
 			<producers count="1" />
 		</test>
-		<!-- with 2 consumers -->
-		<test test-name="test13">
+-->		<!-- with 2 consumers -->
+<!--		<test test-name="test13">
 			<messages number-of-messages="100000" message-size="4096" />
 			<destination destination-type="QUEUE" sync-consumer="false" />
 			<consumers count="2" />
@@ -98,8 +98,8 @@
 			<consumers count="2" />
 			<producers count="1" />
 		</test>
-		<!-- QUEUE WITH SYNC CONSUMER -->
-		<test test-name="test15">
+-->		<!-- QUEUE WITH SYNC CONSUMER -->
+<!--		<test test-name="test15">
 			<messages number-of-messages="100000" message-size="256" />
 			<destination destination-type="QUEUE" sync-consumer="false" />
 			<consumers count="1" />
@@ -129,14 +129,14 @@
 			<consumers count="1" />
 			<producers count="1" />
 		</test>
-		<!-- with 2 consumers -->
-		<test test-name="test20">
+-->		<!-- with 2 consumers -->
+<!--		<test test-name="test20">
 			<messages number-of-messages="100000" message-size="4096" />
 			<destination destination-type="QUEUE" sync-consumer="false" />
 			<consumers count="2" />
 			<producers count="1" />
 		</test>
-		<test test-name="test21">
+-->		<test test-name="test21">
 			<messages number-of-messages="100000" message-size="8192" />
 			<destination destination-type="QUEUE" sync-consumer="false" />
 			<consumers count="2" />

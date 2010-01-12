@@ -27,5 +27,7 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
+		
+		setOkToTimeOut(true);
 	}
 }

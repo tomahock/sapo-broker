@@ -108,7 +108,7 @@ public class Main
 
 			if (runAll || runSSLandAuth)
 			{
-				new DBRolesAuthenticationTest().run(numberOfTests, testResults);
+				//new DBRolesAuthenticationTest().run(numberOfTests, testResults);
 				new SslTopicNameSpeficied().run(numberOfTests, testResults);
 				//new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests, testResults);
 			}
