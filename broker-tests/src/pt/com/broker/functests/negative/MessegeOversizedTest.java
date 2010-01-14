@@ -14,6 +14,6 @@ public class MessegeOversizedTest extends GenericNegativeTest
 		setFaultCode("1101");
 		setFaultMessage("Invalid message size");
 		
-		//setOkToTimeOut(true);
+		setOkToTimeOut(true);
 	}
 }
