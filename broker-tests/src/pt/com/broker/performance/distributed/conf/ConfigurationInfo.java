@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.performance.distributed.conf.Agents.Agent;
-import pt.com.broker.performance.distributed.conf.Machines.Machine;
 
 public class ConfigurationInfo
 {

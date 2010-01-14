@@ -457,34 +457,40 @@ public class Gcs
 		RemoteTopicConsumers.notify(message);
 	}
 
+	
 	private void startAcceptor(int portNumber) throws IOException
 	{
-		acceptor = new NioSocketAcceptor(IO_THREADS);
-
-		acceptor.setReuseAddress(true);
-		((SocketSessionConfig) acceptor.getSessionConfig()).setReuseAddress(true);
-		((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(false);
-		((SocketSessionConfig) acceptor.getSessionConfig()).setKeepAlive(true);
-		((SocketSessionConfig) acceptor.getSessionConfig()).setWriteTimeout(120);
-		acceptor.setCloseOnDeactivation(true);
-
-		acceptor.setBacklog(100);
-
-		DefaultIoFilterChainBuilder filterChainBuilder = acceptor.getFilterChain();
-
-		// Add CPU-bound job first,
-		filterChainBuilder.addLast("GCS_CODEC", new ProtocolCodecFilter(new GcsCodec()));
-		// and then a thread pool.
-		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle())));
-
-		acceptor.setHandler(new GcsAcceptorProtocolHandler());
-
-		// Bind
-		acceptor.bind(new InetSocketAddress(portNumber));
-
-		String localAddr = acceptor.getLocalAddress().toString();
-		log.info("{} listening on: '{}'.", SERVICE_NAME, localAddr);
+		
 	}
+	
+//	private void startAcceptor(int portNumber) throws IOException
+//	{
+//		acceptor = new NioSocketAcceptor(IO_THREADS);
+//
+//		acceptor.setReuseAddress(true);
+//		((SocketSessionConfig) acceptor.getSessionConfig()).setReuseAddress(true);
+//		((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(false);
+//		((SocketSessionConfig) acceptor.getSessionConfig()).setKeepAlive(true);
+//		((SocketSessionConfig) acceptor.getSessionConfig()).setWriteTimeout(120);
+//		acceptor.setCloseOnDeactivation(true);
+//
+//		acceptor.setBacklog(100);
+//
+//		DefaultIoFilterChainBuilder filterChainBuilder = acceptor.getFilterChain();
+//
+//		// Add CPU-bound job first,
+//		filterChainBuilder.addLast("GCS_CODEC", new ProtocolCodecFilter(new GcsCodec()));
+//		// and then a thread pool.
+//		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle())));
+//
+//		acceptor.setHandler(new GcsAcceptorProtocolHandler());
+//
+//		// Bind
+//		acceptor.bind(new InetSocketAddress(portNumber));
+//
+//		String localAddr = acceptor.getLocalAddress().toString();
+//		log.info("{} listening on: '{}'.", SERVICE_NAME, localAddr);
+//	}
 
 	private void startConnector()
 	{

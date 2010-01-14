@@ -74,5 +74,4 @@ public class BrokerCodecRouter implements ProtocolCodecFactory
 	{
 		return codecs.get(protocolVersion);
 	}
-
 }

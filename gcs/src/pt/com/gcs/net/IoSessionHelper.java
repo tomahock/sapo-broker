@@ -47,5 +47,5 @@ public class IoSessionHelper
 		iosession.setAttribute(REMOTE_ADDRESS_AS_STRING_ATTR, iosession.getRemoteAddress().toString());
 		iosession.setAttribute(REMOTE_ADDRESS_ATTR, iosession.getRemoteAddress());
 	}
-
+	
 }
