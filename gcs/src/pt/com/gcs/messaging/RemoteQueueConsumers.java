@@ -42,6 +42,35 @@ class RemoteQueueConsumers
 		{
 			return time < System.currentTimeMillis();
 		}
+
+		@Override
+		public int hashCode()
+		{
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((session == null) ? 0 : session.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SessionInfo other = (SessionInfo) obj;
+			if (session == null)
+			{
+				if (other.session != null)
+					return false;
+			}
+			else if (!session.equals(other.session))
+				return false;
+			return true;
+		}
 	}
 
 	private static final RemoteQueueConsumers instance = new RemoteQueueConsumers();
