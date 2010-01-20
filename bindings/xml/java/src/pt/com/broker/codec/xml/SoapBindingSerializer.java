@@ -8,6 +8,7 @@ import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetProtocolType;
 
 /**
  * SOAP utility class for encoding and decoding.
@@ -46,5 +47,11 @@ public class SoapBindingSerializer implements BindingSerializer
 	{
 		SoapEnvelope msg = SoapSerializer.FromXml(in);
 		return Builder.soapToNetMessage(msg);
+	}
+	
+	@Override
+	public NetProtocolType getProtocolType()
+	{
+		return NetProtocolType.SOAP;
 	}
 }

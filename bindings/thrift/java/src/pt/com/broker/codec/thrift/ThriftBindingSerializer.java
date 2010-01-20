@@ -23,6 +23,7 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPing;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
@@ -608,4 +609,10 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return message;
 	}
 
+	
+	@Override
+	public NetProtocolType getProtocolType()
+	{
+		return NetProtocolType.THRIFT;
+	}
 }

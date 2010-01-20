@@ -37,6 +37,7 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPing;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
@@ -668,5 +669,11 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
 		return message;
+	}
+
+	@Override
+	public NetProtocolType getProtocolType()
+	{
+		return NetProtocolType.PROTOCOL_BUFFER;
 	}
 }
