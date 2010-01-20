@@ -76,7 +76,7 @@ public class BrokerClient extends BaseBrokerClient
 		BrokerProtocolHandler brokerProtocolHandler;
 
 		NetworkConnector networkConnector = new NetworkConnector(getHostInfo());
-		brokerProtocolHandler = new BrokerProtocolHandler(this, getPortocolType(), networkConnector);
+		brokerProtocolHandler = new BrokerProtocolHandler(this, getProtocolType(), networkConnector, this.isOldFramming());
 		networkConnector.setProtocolHandler(brokerProtocolHandler);
 
 		return brokerProtocolHandler;

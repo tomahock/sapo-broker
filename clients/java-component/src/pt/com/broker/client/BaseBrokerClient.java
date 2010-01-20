@@ -61,7 +61,7 @@ public abstract class BaseBrokerClient
 	protected final Map<String, SynchronousQueue<NetMessage>> pendingPolls = new HashMap<String, SynchronousQueue<NetMessage>>();
 
 	private NetProtocolType protocolType;
-	private boolean oldFramming = false;
+	private final boolean oldFramming;
 	
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
 
@@ -153,6 +153,8 @@ public abstract class BaseBrokerClient
 		this.hosts.add(new HostInfo(host, portNumber));
 		_appName = appName;
 		protocolType = ptype;
+		
+		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
 	}
 
 	/**
@@ -194,6 +196,7 @@ public abstract class BaseBrokerClient
 		this.hosts = new CircularContainer<HostInfo>(hosts);
 		_appName = appName;
 		protocolType = ptype;
+		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
 	}
 
 	protected abstract BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable;
@@ -784,7 +787,7 @@ public abstract class BaseBrokerClient
 	 * 
 	 * @return
 	 */
-	public NetProtocolType getPortocolType()
+	public NetProtocolType getProtocolType()
 	{
 		return protocolType;
 	}

@@ -3,7 +3,6 @@ package pt.com.broker.client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -45,10 +44,14 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 	private HostInfo hostInfo = null;
 
-	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector) throws UnknownHostException, IOException, Throwable
+	private final boolean usingNewFramming;
+
+	public BrokerProtocolHandler(BaseBrokerClient brokerClient, NetProtocolType ptype, BaseNetworkConnector connector, boolean usingOldFramming) throws UnknownHostException, IOException, Throwable
 	{
 		this.brokerClient = brokerClient;
 		this.connector = connector;
+
+		this.usingNewFramming = !usingOldFramming;
 
 		setHostInfo(brokerClient.getHostInfo());
 
@@ -87,6 +90,10 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			case THRIFT:
 				proto_type = 2;
 				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.thrift.ThriftBindingSerializer").newInstance();
+				break;
+			case SOAP_v0:
+				proto_type = 0;
+				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.xml.SoapBindingSerializer").newInstance();
 				break;
 			default:
 				throw new Exception("Invalid Protocol Type: " + ptype);
@@ -284,32 +291,39 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public NetMessage decode(DataInputStream in) throws IOException
 	{
-		short protocolType = in.readShort();
-		short protocolVersion = in.readShort();
-		int len = in.readInt();
 
 		if (serializer == null)
 		{
 			throw new RuntimeException("Received message uses an unknown encoding");
 		}
 
+		if (usingNewFramming)
+		{
+			short protocolType = in.readShort();
+			short protocolVersion = in.readShort();
+		}
+		int len = in.readInt();
+
 		byte[] data = new byte[len];
 		in.readFully(data);
 
-		NetMessage message = (NetMessage) serializer.unmarshal(data);
+		NetMessage message = serializer.unmarshal(data);
 		return message;
 	}
 
 	@Override
 	public void encode(NetMessage message, DataOutputStream out) throws IOException
 	{
-		short protocolType = proto_type;
-		short protocolVersion = (short) 0;
-
 		byte[] encodedMsg = serializer.marshal(message);
+		if (usingNewFramming)
+		{
+			short protocolType = proto_type;
+			short protocolVersion = (short) 0;
 
-		out.writeShort(protocolType);
-		out.writeShort(protocolVersion);
+			out.writeShort(protocolType);
+			out.writeShort(protocolVersion);
+		}
+
 		out.writeInt(encodedMsg.length);
 
 		out.write(encodedMsg);
