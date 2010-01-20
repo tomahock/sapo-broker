@@ -61,6 +61,8 @@ public abstract class BaseBrokerClient
 	protected final Map<String, SynchronousQueue<NetMessage>> pendingPolls = new HashMap<String, SynchronousQueue<NetMessage>>();
 
 	private NetProtocolType protocolType;
+	private boolean oldFramming = false;
+	
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
 
 	protected BrokerProtocolHandler _netHandler;
@@ -471,7 +473,7 @@ public abstract class BaseBrokerClient
 			boolean isDelivered = aconsumer.deliver(notification);
 			BrokerListener listener = aconsumer.getListener();
 
-			if (listener.isAutoAck() && isDelivered)
+			if ((notification.getDestinationType() != DestinationType.TOPIC) && listener.isAutoAck() && isDelivered)
 			{
 				try
 				{
@@ -805,6 +807,15 @@ public abstract class BaseBrokerClient
 	public int getNumberOfTries()
 	{
 		return this.numberOfTries;
+	}
+
+	/**
+	 * When using SOAP encoding it can be used old or the new framing.
+	 * @return
+	 */
+	public boolean isOldFramming()
+	{
+		return oldFramming;
 	}
 
 }
