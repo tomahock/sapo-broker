@@ -229,6 +229,9 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		{
 		case NOTIFICATION:
 			NetNotification notification = action.getNotificationMessage();
+			
+			notification.setNetMessage(message);
+			
 			if (!notification.getDestinationType().equals(NetAction.DestinationType.TOPIC))
 			{
 				boolean received = brokerClient.offerPollResponse(notification.getSubscription(), message);
@@ -254,6 +257,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			break;
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
+			
+			fault.setNetMessage(message);
 
 			if (fault.getCode().equals(PollTimeoutErrorMessageCode) || fault.getCode().equals(NoMessageInQueueErrorMessageCode))
 			{
@@ -299,8 +304,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 		if (usingNewFramming)
 		{
-			short protocolType = in.readShort();
-			short protocolVersion = in.readShort();
+			in.readShort();
+			in.readShort();
 		}
 		int len = in.readInt();
 

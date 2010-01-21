@@ -1,6 +1,7 @@
 package pt.com.broker.client.sample;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -31,6 +33,8 @@ public class Consumer implements BrokerListener
 	private int port;
 	private DestinationType dtype;
 	private String dname;
+	
+	private BrokerClient bk;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -43,11 +47,11 @@ public class Consumer implements BrokerListener
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
 
-		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer");
+		consumer.bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer");
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 
-		bk.addAsyncConsumer(subscribe, consumer);
+		consumer.bk.addAsyncConsumer(subscribe, consumer);
 
 		System.out.println("listening...");
 	}
@@ -68,6 +72,7 @@ public class Consumer implements BrokerListener
 	volatile long refTime = System.currentTimeMillis();
 	volatile long sleepTime = 5;
 	
+	
 	@Override
 	public void onMessage(NetNotification notification)
 	{
@@ -76,6 +81,21 @@ public class Consumer implements BrokerListener
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("DestinationType: '%s'%n", notification.getDestinationType());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+		if(notification.getNetMessage() != null)
+		{
+			System.out.printf("-------- Headers ------------\n");
+			NetMessage netMessage = notification.getNetMessage();
+			Map<String, String> headers = netMessage.getHeaders();
+			if(headers != null)
+			{
+				for(String key : headers.keySet() )
+				{
+					System.out.printf("%s\t%s\n", key, headers.get(key));
+				}
+			}
+		}
+		
+		
 		
 //		count.incrementAndGet();
 //		long incrementAndGet = total.incrementAndGet();

@@ -9,11 +9,6 @@ import pt.com.broker.types.NetAction.ActionType;
 
 public final class NetFault
 {
-	private String actionId;
-	private String code;
-	private String message;
-	private String detail;
-
 	public static final NetMessage InvalidMessageSizeErrorMessage;
 	public static final NetMessage UnknownEncodingProtocolMessage; // Not sent
 	public static final NetMessage UnknownEncodingVersionMessage; // Not sent
@@ -48,7 +43,14 @@ public final class NetFault
 		InvalidAuthenticationChannelType = buildNetFaultMessage("3103", "Invalid authentication channel type");
 		AccessDeniedErrorMessage = buildNetFaultMessage("3201", "Access denied");
 	}
-
+	
+	private String actionId;
+	private String code;
+	private String message;
+	private String detail;
+	
+	private NetMessage netMessage;
+	
 	public NetFault(String code, String message)
 	{
 		this.code = code;
@@ -118,5 +120,15 @@ public final class NetFault
 		action.setFaultMessage(newFault);
 
 		return new NetMessage(action, message.getHeaders());
+	}
+
+	public void setNetMessage(NetMessage netMessage)
+	{
+		this.netMessage = netMessage;
+	}
+
+	public NetMessage getNetMessage()
+	{
+		return netMessage;
 	}
 }
