@@ -119,7 +119,7 @@ class LocalTopicConsumers
 		if (listener != null)
 		{
 			String topicName;
-			
+
 			if (listener.getTargetDestinationType() == DestinationType.QUEUE)
 			{
 				topicName = StringUtils.substringAfter(listener.getDestinationName(), "@");
@@ -128,21 +128,34 @@ class LocalTopicConsumers
 			{
 				topicName = listener.getDestinationName();
 			}
-			
+
 			CopyOnWriteArrayList<MessageListener> listeners = instance.localTopicConsumers.get(topicName);
 			if (listeners != null)
 			{
 				listeners.remove(listener);
-				if (listeners.size() == 0)
+
+				int non_topic_dispatcher_listener_counter = 0;
+
+				for (MessageListener messageListener : listeners)
 				{
-					instance.localTopicConsumers.remove(topicName);
+					if (messageListener.getTargetDestinationType() == DestinationType.TOPIC)
+					{
+						++non_topic_dispatcher_listener_counter;
+					}
+				}
+
+				if (non_topic_dispatcher_listener_counter == 0)
+				{
 					instance.broadCastableTopics.remove(topicName);
-					
+
 					if (listener.getTargetDestinationType() == DestinationType.TOPIC)
 					{
 						instance.broadCastRemovedTopicConsumer(topicName);
 					}
-					
+				}
+				if (listeners.size() == 0)
+				{
+					instance.localTopicConsumers.remove(topicName);
 				}
 			}
 		}

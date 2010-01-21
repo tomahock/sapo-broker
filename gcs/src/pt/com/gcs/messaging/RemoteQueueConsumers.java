@@ -85,9 +85,11 @@ class RemoteQueueConsumers
 			sessions = new CopyOnWriteArrayList<SessionInfo>();
 		}
 
-		if (!sessions.contains(iosession))
+		SessionInfo sessionInfo = new SessionInfo(iosession);
+		
+		if (!sessions.contains(sessionInfo))
 		{
-			sessions.add(new SessionInfo(iosession));
+			sessions.add(sessionInfo);
 			log.info("Add remote queue consumer for '{}'", queueName);
 		}
 		else
