@@ -1,5 +1,7 @@
 package pt.com.broker.types;
 
+import java.util.Map;
+
 /**
  * Represents a Notification message.
  * 
@@ -12,7 +14,7 @@ public final class NetNotification
 	private NetAction.DestinationType destinationType;
 	private NetBrokerMessage message;
 	
-	private NetMessage netMessage;
+	private Map<String, String> headers;
 
 	public NetNotification(String destination, NetAction.DestinationType destinationType, NetBrokerMessage message, String subscription)
 	{
@@ -45,14 +47,14 @@ public final class NetNotification
 		return message;
 	}
 
-	public void setNetMessage(NetMessage netMessage)
+	public void setHeaders(Map<String, String> headers)
 	{
-		this.netMessage = netMessage;
+		this.headers = headers;
 	}
 
-	public NetMessage getNetMessage()
+	public Map<String, String> getHeaders()
 	{
-		return netMessage;
+		return headers;
 	}
 
 }

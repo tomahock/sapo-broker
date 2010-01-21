@@ -1,5 +1,7 @@
 package pt.com.broker.types;
 
+import java.util.Map;
+
 import pt.com.broker.types.NetAction.ActionType;
 
 /**
@@ -49,7 +51,7 @@ public final class NetFault
 	private String message;
 	private String detail;
 	
-	private NetMessage netMessage;
+	private Map<String, String> headers;
 	
 	public NetFault(String code, String message)
 	{
@@ -122,13 +124,14 @@ public final class NetFault
 		return new NetMessage(action, message.getHeaders());
 	}
 
-	public void setNetMessage(NetMessage netMessage)
+	public void setHeaders(Map<String, String> headers)
 	{
-		this.netMessage = netMessage;
+		this.headers = headers;
 	}
 
-	public NetMessage getNetMessage()
+	public Map<String, String> getHeaders()
 	{
-		return netMessage;
+		return headers;
 	}
+
 }

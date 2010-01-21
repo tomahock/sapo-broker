@@ -230,7 +230,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		case NOTIFICATION:
 			NetNotification notification = action.getNotificationMessage();
 			
-			notification.setNetMessage(message);
+			notification.setHeaders(message.getHeaders());
 			
 			if (!notification.getDestinationType().equals(NetAction.DestinationType.TOPIC))
 			{
@@ -258,7 +258,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
 			
-			fault.setNetMessage(message);
+			fault.setHeaders(message.getHeaders());
 
 			if (fault.getCode().equals(PollTimeoutErrorMessageCode) || fault.getCode().equals(NoMessageInQueueErrorMessageCode))
 			{

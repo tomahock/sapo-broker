@@ -81,11 +81,10 @@ public class Consumer implements BrokerListener
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("DestinationType: '%s'%n", notification.getDestinationType());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
-		if(notification.getNetMessage() != null)
+		if(notification.getHeaders() != null)
 		{
 			System.out.printf("-------- Headers ------------\n");
-			NetMessage netMessage = notification.getNetMessage();
-			Map<String, String> headers = netMessage.getHeaders();
+			Map<String, String> headers = notification.getHeaders();
 			if(headers != null)
 			{
 				for(String key : headers.keySet() )
