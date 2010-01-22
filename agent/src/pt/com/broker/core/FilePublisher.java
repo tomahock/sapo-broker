@@ -21,6 +21,7 @@ import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
+import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
@@ -108,6 +109,10 @@ public class FilePublisher
 			{
 				fileCount = 0;
 				File[] files = dropBoxDir.listFiles(fileFilter);
+				if(files == null)
+				{
+					return;
+				}
 				int goodFileCount = files.length;
 
 				// Message cnt_message = new Message();
@@ -161,7 +166,7 @@ public class FilePublisher
 						catch (Throwable e)
 						{
 							Throwable tr = ErrorAnalyser.findRootCause(e);
-							ErrorAnalyser.exitIfOOM(tr);
+							CriticalErrors.exitIfCritical(tr);
 							log.error("Error processing file \"" + msgf.getAbsolutePath() + "\". Error message: " + tr.getMessage());
 						}
 
@@ -197,7 +202,7 @@ public class FilePublisher
 							catch (Throwable e)
 							{
 								Throwable tr = ErrorAnalyser.findRootCause(e);
-								ErrorAnalyser.exitIfOOM(tr);
+								CriticalErrors.exitIfCritical(tr);
 								log.error("Error publishing file \"" + msgf.getAbsolutePath() + "\". Error message: " + tr.getMessage());
 							}
 							finally

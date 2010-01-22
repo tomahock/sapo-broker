@@ -11,9 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.monitorization.actions.DeleteQueue;
 import pt.com.broker.monitorization.collectors.JsonEncodable;
-import pt.com.broker.monitorization.consolidator.db.DbQueue;
-import pt.com.broker.monitorization.consolidator.db.DbSubscription;
-import pt.com.broker.monitorization.consolidator.db.GlobalSystemInfo;
 
 public class ActionExecutor
 {

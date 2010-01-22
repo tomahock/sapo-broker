@@ -14,6 +14,7 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
@@ -67,7 +68,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	public void exceptionCaught(IoSession iosession, Throwable cause) throws Exception
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
-		ErrorAnalyser.exitIfOOM(rootCause);
+		CriticalErrors.exitIfCritical(rootCause);
 		log.error("Exception Caught:'{}', '{}'", IoSessionHelper.getRemoteAddress(iosession), rootCause.getMessage());
 		if (iosession.isConnected() && !iosession.isClosing())
 		{

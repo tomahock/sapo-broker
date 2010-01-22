@@ -32,7 +32,6 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
-import pt.com.gcs.messaging.adapt.QueueProcessor;
 import pt.com.gcs.messaging.adapt.BDBEnviroment.DBQueue;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;

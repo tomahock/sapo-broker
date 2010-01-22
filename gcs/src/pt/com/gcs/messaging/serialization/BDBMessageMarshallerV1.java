@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.messaging.BDBMessage;
-import pt.com.gcs.messaging.InternalMessage;
 
 public class BDBMessageMarshallerV1 implements Codec<BDBMessage>
 {

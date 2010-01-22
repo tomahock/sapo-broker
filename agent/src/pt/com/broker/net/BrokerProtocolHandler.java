@@ -29,6 +29,7 @@ import pt.com.broker.messaging.MQ;
 import pt.com.broker.messaging.QueueSessionListenerList;
 import pt.com.broker.messaging.SynchronousMessageListener;
 import pt.com.broker.messaging.TopicSubscriberList;
+import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAuthentication;
@@ -100,7 +101,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
 		
-		ErrorAnalyser.exitIfOOM(rootCause);
+		CriticalErrors.exitIfCritical(rootCause);
 
 		NetFault fault = new NetFault("CODE:99999", rootCause.getMessage());
 		fault.setActionId(actionId);

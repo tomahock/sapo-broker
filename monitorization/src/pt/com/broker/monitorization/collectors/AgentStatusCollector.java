@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.HostInfo;
 import pt.com.broker.monitorization.Utils;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo.AgentInfo;

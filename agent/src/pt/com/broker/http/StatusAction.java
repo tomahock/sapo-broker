@@ -12,7 +12,6 @@ import org.caudexorigo.text.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.codec.xml.Status;
 import pt.com.broker.core.BrokerInfo;
 import pt.com.http.HttpAction;
 

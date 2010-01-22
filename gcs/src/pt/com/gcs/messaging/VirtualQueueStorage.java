@@ -8,6 +8,7 @@ import org.caudexorigo.cryto.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.CriticalErrors;
 
 import com.sleepycat.bind.tuple.StringBinding;
 import com.sleepycat.je.Cursor;
@@ -78,7 +79,7 @@ public class VirtualQueueStorage
 		catch (Throwable t)
 		{
 			Throwable rt = ErrorAnalyser.findRootCause(t);
-			ErrorAnalyser.exitIfOOM(rt);
+			CriticalErrors.exitIfCritical(rt);
 			log.error(rt.getMessage(), rt);
 		}
 
@@ -99,7 +100,7 @@ public class VirtualQueueStorage
 		catch (Throwable t)
 		{
 			Throwable rt = ErrorAnalyser.findRootCause(t);
-			ErrorAnalyser.exitIfOOM(rt);
+			CriticalErrors.exitIfCritical(rt);
 			log.error(rt.getMessage(), rt);
 		}
 
@@ -139,7 +140,7 @@ public class VirtualQueueStorage
 		catch (Throwable t)
 		{
 			Throwable rt = ErrorAnalyser.findRootCause(t);
-			ErrorAnalyser.exitIfOOM(rt);
+			CriticalErrors.exitIfCritical(rt);
 			log.error(rt.getMessage(), rt);
 			return new String[0];
 		}
@@ -154,7 +155,7 @@ public class VirtualQueueStorage
 				catch (Throwable t)
 				{
 					Throwable rt = ErrorAnalyser.findRootCause(t);
-					ErrorAnalyser.exitIfOOM(rt);
+					CriticalErrors.exitIfCritical(rt);
 					log.error(rt.getMessage(), rt);
 				}
 			}

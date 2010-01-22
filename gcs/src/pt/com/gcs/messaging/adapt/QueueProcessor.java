@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.messaging.adapt.BDBEnviroment.DBQueue;
 
-import com.sleepycat.je.Environment;
-
 public class QueueProcessor
 {
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);

@@ -4,17 +4,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import pt.com.broker.client.BaseBrokerClient;
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.HostInfo;
 import pt.com.broker.monitorization.collectors.CollectorManager;
 import pt.com.broker.monitorization.collectors.FaultListener;
-import pt.com.broker.monitorization.collectors.FaultsCollector;
-import pt.com.broker.monitorization.collectors.QueueSizeCollector;
 import pt.com.broker.monitorization.collectors.QueueSizeListener;
-import pt.com.broker.monitorization.collectors.SubscriptionCountCollector;
 import pt.com.broker.monitorization.collectors.SubscriptionCountListener;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class ConsolidatorManager
 {

@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.monitorization.Utils;
 import pt.com.broker.monitorization.collectors.JsonEncodable;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class DbSubscription implements JsonEncodable
 {

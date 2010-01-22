@@ -1,13 +1,12 @@
 package pt.com.broker.functests.positive;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAction;
@@ -62,10 +61,7 @@ public class UdpNoFrammingTest extends GenericPubSubTest
 			InetAddress inet = InetAddress.getByName(  getInfoConsumer().getNetHandler().getHostInfo().getHostname());
 			DatagramSocket socket = new DatagramSocket();
 			socket.setSoTimeout(5000);
-
-			System.out.println("UdpNoFrammingTest.publishMessage() - Sending message");
-			
-			DatagramPacket packet = new DatagramPacket(serializedData, serializedData.length, inet, 3366);
+			DatagramPacket packet = new DatagramPacket(serializedData, serializedData.length, inet, Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-udp-port")));
 			socket.send(packet);
 			socket.close();
 		}
@@ -107,7 +103,7 @@ public class UdpNoFrammingTest extends GenericPubSubTest
 	@Override
 	public boolean skipTest()
 	{
-		return getEncodingProtocolType() != NetProtocolType.SOAP;
+		return (getEncodingProtocolType() != NetProtocolType.SOAP) && (getEncodingProtocolType() != NetProtocolType.SOAP_v0);
 	}
 
 }

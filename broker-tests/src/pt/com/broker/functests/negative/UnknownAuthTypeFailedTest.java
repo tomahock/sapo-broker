@@ -30,6 +30,6 @@ public class UnknownAuthTypeFailedTest extends GenericNetMessageNegativeTest
 	@Override
 	public boolean skipTest()
 	{
-		return getEncodingProtocolType() == NetProtocolType.SOAP;
+		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0);
 	}
 }

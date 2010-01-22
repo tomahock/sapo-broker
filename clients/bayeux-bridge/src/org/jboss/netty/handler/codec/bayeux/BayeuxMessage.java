@@ -15,9 +15,10 @@
  */
 package org.jboss.netty.handler.codec.bayeux;
 
+import static org.jboss.netty.handler.codec.bayeux.BayeuxUtil.isEqual;
+
 import java.util.ArrayList;
 import java.util.List;
-import static org.jboss.netty.handler.codec.bayeux.BayeuxUtil.*;
 
 /**
  * A common parent class for all types of Bayeux messages.

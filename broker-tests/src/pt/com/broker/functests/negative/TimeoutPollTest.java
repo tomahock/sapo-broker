@@ -9,8 +9,8 @@ import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
+import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
-import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 
 public class TimeoutPollTest extends GenericNetMessageNegativeTest
@@ -52,7 +52,7 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 				try
 				{
 					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
+							BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 					bk.poll(queueName, 500, null);
 
@@ -82,6 +82,6 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 	@Override
 	public boolean skipTest()
 	{
-		return getEncodingProtocolType() == NetProtocolType.SOAP;
+		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0);
 	}
 }

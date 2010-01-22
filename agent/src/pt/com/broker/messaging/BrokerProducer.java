@@ -1,7 +1,5 @@
 package pt.com.broker.messaging;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;

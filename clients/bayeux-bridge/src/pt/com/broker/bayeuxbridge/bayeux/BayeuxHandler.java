@@ -30,9 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.HashMap;
 
-import org.caudexorigo.ErrorAnalyser;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFuture;
@@ -43,7 +41,6 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.bayeux.BayeuxConnection;
-import org.jboss.netty.handler.codec.bayeux.BayeuxExt;
 import org.jboss.netty.handler.codec.bayeux.BayeuxMessage;
 import org.jboss.netty.handler.codec.bayeux.DisconnectRequest;
 import org.jboss.netty.handler.codec.bayeux.HandshakeRequest;
@@ -66,6 +63,7 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
 import pt.com.broker.bayeuxbridge.CommunicationManager;
+import pt.com.broker.types.CriticalErrors;
 
 /**
  * 
@@ -185,7 +183,7 @@ public class BayeuxHandler extends SimpleChannelUpstreamHandler
 		}
 		catch (Throwable t)
 		{
-			ErrorAnalyser.exitIfOOM(t);
+			CriticalErrors.exitIfCritical(t);
 		}
 	}
 

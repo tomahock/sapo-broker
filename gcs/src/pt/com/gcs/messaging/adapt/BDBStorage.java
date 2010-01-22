@@ -13,6 +13,7 @@ import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.messaging.InternalMessage;
 
 import com.sleepycat.bind.ByteArrayBinding;
@@ -134,7 +135,7 @@ public class BDBStorage
 	{
 		Throwable rt = ErrorAnalyser.findRootCause(t);
 		log.error(rt.getMessage(), rt);
-		ErrorAnalyser.exitIfOOM(rt);
+		CriticalErrors.exitIfCritical(rt);
 		if (rethrow)
 		{
 			throw new RuntimeException(rt);

@@ -10,6 +10,7 @@ import org.caudexorigo.cryto.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.conf.GcsInfo;
 
 import com.sleepycat.je.DatabaseException;
@@ -105,7 +106,7 @@ public class BDBEnviroment
 		catch (Throwable t)
 		{
 			Throwable rt = ErrorAnalyser.findRootCause(t);
-			ErrorAnalyser.exitIfOOM(rt);
+			CriticalErrors.exitIfCritical(rt);
 			log.error(rt.getMessage(), rt);
 			return new String[0];
 		}

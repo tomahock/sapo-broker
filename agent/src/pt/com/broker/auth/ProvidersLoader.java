@@ -6,9 +6,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.auth.AuthInfoValidator;
-import pt.com.broker.auth.CredentialsProvider;
-import pt.com.broker.auth.CredentialsProviderFactory;
 import pt.com.gcs.conf.GlobalConfig;
 
 /**

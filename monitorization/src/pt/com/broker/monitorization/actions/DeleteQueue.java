@@ -13,16 +13,12 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.text.StyledEditorKit.BoldAction;
-
 import org.caudexorigo.concurrent.CustomExecutors;
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.util.internal.ReusableIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.HostInfo;
-import pt.com.broker.monitorization.Utils;
 import pt.com.broker.monitorization.collectors.JsonEncodable;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo.AgentInfo;

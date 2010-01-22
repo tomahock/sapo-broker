@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerExecutor;
+import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.http.HttpAction;
 
@@ -121,7 +122,7 @@ public class AdminAction extends HttpAction
 			bbf.setAutoExpand(true);
 			OutputStream out = bbf.asOutputStream();
 			Throwable rootCause = ErrorAnalyser.findRootCause(cause);
-			ErrorAnalyser.exitIfOOM(rootCause);
+			CriticalErrors.exitIfCritical(rootCause);
 			out.write(("Error: " + rootCause.getMessage() + "\n").getBytes("UTF-8"));
 			bbf.flip();
 			response.setContentType(content_type);

@@ -1,6 +1,7 @@
 package pt.com.broker.functests.negative;
 
 import pt.com.broker.functests.helpers.GenericNegativeTest;
+import pt.com.broker.types.NetProtocolType;
 
 public class MessegeOversizedTest extends GenericNegativeTest
 {
@@ -11,6 +12,11 @@ public class MessegeOversizedTest extends GenericNegativeTest
 
 		setDataToSend(new byte[] { 0, (byte) getEncodingProtocolType().ordinal(), 0, 0, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0, 0 });
 
+		if(this.getEncodingProtocolType() == NetProtocolType.SOAP_v0)
+		{
+			setDataToSend(new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0, 0 });
+		}
+		
 		setFaultCode("1101");
 		setFaultMessage("Invalid message size");
 		

@@ -2,9 +2,6 @@ package pt.com.gcs.messaging;
 
 import java.util.Collection;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
-import org.apache.thrift.server.TThreadPoolServer;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
@@ -12,6 +9,7 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
@@ -99,7 +97,7 @@ public class QueueProcessorList
 		catch (RuntimeException re)
 		{
 			Throwable rootCause = ErrorAnalyser.findRootCause(re);
-			ErrorAnalyser.exitIfOOM(rootCause);
+			CriticalErrors.exitIfCritical(rootCause);
 			if (rootCause instanceof MaximumQueuesAllowedReachedException)
 			{
 				throw (MaximumQueuesAllowedReachedException) rootCause;

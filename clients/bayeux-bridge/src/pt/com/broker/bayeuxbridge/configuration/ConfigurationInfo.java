@@ -12,7 +12,6 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import pt.com.broker.bayeuxbridge.configuration.Mappings.MappingSet;
 
 public class ConfigurationInfo

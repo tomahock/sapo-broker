@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 
 import org.apache.mina.util.ExceptionMonitor;
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.Shutdown;
 import org.caudexorigo.text.StringBuilderWriter;
 import org.caudexorigo.text.StringUtils;
 import org.jibx.runtime.JiBXException;
@@ -15,6 +14,7 @@ import pt.com.broker.codec.xml.EndPointReference;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapFault;
 import pt.com.broker.codec.xml.SoapHeader;
+import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
@@ -24,10 +24,11 @@ import pt.com.gcs.conf.GcsInfo;
 
 public class ErrorHandler extends ExceptionMonitor
 {
-	
 	static
 	{
-		ErrorAnalyser.findRootCause(new RuntimeException());
+		Throwable t = new RuntimeException();
+		ErrorAnalyser.findRootCause(t);
+		CriticalErrors.exitIfCritical(t);
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);
@@ -37,21 +38,21 @@ public class ErrorHandler extends ExceptionMonitor
 		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
 		if (log.isWarnEnabled())
 		{
-			log.error("Unexpected exception.", rootCause);
+			log.error("Unexpected exception!! Root cause: ", rootCause);
 		}
-		exitIfCritical(rootCause);
+		CriticalErrors.exitIfCritical(rootCause);
 	}
 
 	public static void checkAbort(Throwable t)
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(t);
-		exitIfCritical(rootCause);
+		CriticalErrors.exitIfCritical(rootCause);
 	}
 
 	public static WTF buildSoapFault(Throwable ex)
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(ex);
-		exitIfCritical(rootCause);
+		CriticalErrors.exitIfCritical(rootCause);
 
 		String ereason = "soap:Receiver";
 		if (rootCause instanceof JiBXException)
@@ -74,7 +75,7 @@ public class ErrorHandler extends ExceptionMonitor
 		}
 
 		Throwable rootCause = ErrorAnalyser.findRootCause(ex);
-		exitIfCritical(rootCause);
+		CriticalErrors.exitIfCritical(rootCause);
 		return _buildSoapFault(faultCode, rootCause);
 	}
 
@@ -117,24 +118,4 @@ public class ErrorHandler extends ExceptionMonitor
 
 		public Throwable Cause;
 	}
-
-	private static void exitIfUlimit(Throwable t)
-	{
-		String ul_error = "Too many open files".toLowerCase();
-		if (t.getMessage() != null)
-		{
-			String emsg = t.getMessage().toLowerCase();
-			if (emsg.contains(ul_error))
-			{
-				Shutdown.now();
-			}
-		}
-	}
-
-	private static void exitIfCritical(Throwable cause)
-	{
-		ErrorAnalyser.exitIfOOM(cause);
-		exitIfUlimit(cause);
-	}
-
 }

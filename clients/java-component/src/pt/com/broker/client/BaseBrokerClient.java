@@ -62,7 +62,7 @@ public abstract class BaseBrokerClient
 
 	private NetProtocolType protocolType;
 	private final boolean oldFramming;
-	
+
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
 
 	protected BrokerProtocolHandler _netHandler;
@@ -153,7 +153,7 @@ public abstract class BaseBrokerClient
 		this.hosts.add(new HostInfo(host, portNumber));
 		_appName = appName;
 		protocolType = ptype;
-		
+
 		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
 	}
 
@@ -814,6 +814,7 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * When using SOAP encoding it can be used old or the new framing.
+	 * 
 	 * @return
 	 */
 	public boolean isOldFramming()

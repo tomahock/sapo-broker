@@ -3,8 +3,6 @@ package pt.com.broker.auth;
 import java.util.Map;
 import java.util.TreeMap;
 
-import pt.com.broker.auth.AuthInfoValidator;
-
 /**
  * AuthInfoVerifierFactory stores available AuthInfoValidator objects and retrives them by name.
  * 

@@ -4,10 +4,10 @@ import java.util.Collection;
 
 import pt.com.broker.monitorization.collectors.CollectorManager;
 import pt.com.broker.monitorization.consolidator.ConsolidatorManager;
+import pt.com.broker.monitorization.consolidator.db.DbDropbox;
 import pt.com.broker.monitorization.consolidator.db.DbFault;
 import pt.com.broker.monitorization.consolidator.db.DbQueue;
 import pt.com.broker.monitorization.consolidator.db.DbSubscription;
-import pt.com.broker.monitorization.consolidator.db.DbDropbox;
 import pt.com.broker.monitorization.consolidator.db.H2ConsolidatorManager;
 
 public class Test

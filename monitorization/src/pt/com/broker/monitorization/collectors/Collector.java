@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.com.broker.client.BaseBrokerClient;
-import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;

@@ -3,10 +3,7 @@ package pt.com.broker.monitorization.collectors;
 import java.util.regex.Pattern;
 
 import pt.com.broker.client.BaseBrokerClient;
-import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * QueueSizeCollector collects information about the size of each queue (number of stored messages).

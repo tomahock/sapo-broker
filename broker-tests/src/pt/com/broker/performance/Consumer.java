@@ -1,11 +1,8 @@
 package pt.com.broker.performance;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
