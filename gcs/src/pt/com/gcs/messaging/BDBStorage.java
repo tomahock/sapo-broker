@@ -88,7 +88,7 @@ public class BDBStorage
 			}
 			else
 			{
-				
+
 				throw new Exception("MessageMarshaller.marshallBDBMessage returned null");
 			}
 		}
@@ -351,6 +351,7 @@ public class BDBStorage
 		int i0 = 0; // delivered
 		int j0 = 0; // failed deliver
 		int k0 = 0; // redelivered messages
+		int e0 = 0; // expired messages
 
 		Cursor msg_cursor = null;
 
@@ -374,7 +375,7 @@ public class BDBStorage
 				try
 				{
 					bdbm = MessageMarshaller.unmarshallBDBMessage(bdata);
-					if(bdbm == null)
+					if (bdbm == null)
 					{
 						log.info("MessageMarshaller.unmarshallBDBMessage returned null");
 						continue;
@@ -399,7 +400,7 @@ public class BDBStorage
 					if (now > msg.getExpiration())
 					{
 						cursorDelete(msg_cursor);
-						log.warn("Expired message: '{}' id: '{}'", msg.getDestination(), msg.getMessageId());
+						e0++;
 						dumpMessage(msg);
 					}
 					else
@@ -432,7 +433,7 @@ public class BDBStorage
 							}
 							else
 							{
-								
+
 								log.info("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());
 								dumpMessage(msg);
 
@@ -456,6 +457,10 @@ public class BDBStorage
 				log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivered: %s", queueProcessor.getDestinationName(), i0, j0));
 			}
 
+			if (e0 > 0)
+			{
+				log.info("Number of expired messages for queue '{}': {}", queueProcessor.getDestinationName(), e0);
+			}
 			if (k0 > 0)
 			{
 				log.info("Number of redelivered messages for queue '{}': {}", queueProcessor.getDestinationName(), k0);
