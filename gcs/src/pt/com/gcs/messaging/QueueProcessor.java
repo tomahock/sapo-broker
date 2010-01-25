@@ -7,7 +7,6 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * QueueProcessor provides several queue related features, representing each instance a distinct queue.
  * 
@@ -145,9 +144,17 @@ public class QueueProcessor
 
 	protected boolean hasRecipient()
 	{
-		if (RemoteQueueConsumers.size(_destinationName) != 0)
+		if (LocalQueueConsumers.hasReadyRecipients(_destinationName))
+		{
 			return true;
-		return LocalQueueConsumers.hasReadyRecipients(_destinationName);
+		}
+		if (LocalQueueConsumers.hasActiveRecipients(_destinationName))
+		{
+			// it has sync consumers that are active but not ready. So, ignore remote consumers
+			return false;
+		}
+
+		return RemoteQueueConsumers.size(_destinationName) != 0;
 	}
 
 	public int size()
@@ -190,7 +197,7 @@ public class QueueProcessor
 			{
 				try
 				{
-					if(log.isDebugEnabled())
+					if (log.isDebugEnabled())
 					{
 						log.debug("Wakeup queue '{}'", _destinationName);
 					}

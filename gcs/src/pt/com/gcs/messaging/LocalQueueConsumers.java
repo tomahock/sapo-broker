@@ -193,6 +193,18 @@ public class LocalQueueConsumers
 		}
 		return false;
 	}
+	
+	public static boolean hasActiveRecipients(String destinationName)
+	{
+		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
+		if (listeners != null)
+		{
+			for (MessageListener ml : listeners)
+				if (ml.isActive())
+					return true;
+		}
+		return false;
+	}
 
 	private Map<String, CopyOnWriteArrayList<MessageListener>> localQueueConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<MessageListener>>();
 

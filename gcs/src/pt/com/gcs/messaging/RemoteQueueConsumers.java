@@ -192,7 +192,9 @@ class RemoteQueueConsumers
 									sessionInfo.time = (long) (System.currentTimeMillis() + MAX_SUSPENSION_TIME);
 									if (log.isDebugEnabled())
 									{
-										log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'", ioSession.toString());
+										// LC
+										log.info("MAX_SESSION_BUFFER_SIZE reached in session '{}'. Queue: '{}'", ioSession.toString(), message.getDestination());
+										//log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'. Queue: '{}'", ioSession.toString(), message.getDestination());
 									}
 
 									String log_msg = String.format("Write Queue is full, delay message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), sessionInfo.session.getRemoteAddress().toString());

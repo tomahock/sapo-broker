@@ -51,5 +51,11 @@ class TopicToQueueDispatcher implements MessageListener
 		return true;
 	}
 
+	@Override
+	public boolean isActive()
+	{
+		return true;
+	}
+
 
 }

@@ -138,13 +138,18 @@ public class QueueSessionListener extends BrokerListener
 					return 2 * 60 * 1000; // reserve for 2mn
 				}
 			}
+			//
+			else
+			{
+				log.info(String.format("Session is null Returning -1. Queue name: %s", this._dname));
+			}
 		}
 		catch (Throwable e)
 		{
 			if (e instanceof org.jibx.runtime.JiBXException)
 			{
 				Gcs.ackMessage(_dname, msg.getMessageId());
-				log.warn("Undeliverable message was deleted. Id: '{}'", msg.getMessageId());
+				log.warn("Undeliverable message was deleted. Queue: '{}',  Id: '{}'", this._dname,  msg.getMessageId());
 			}
 
 			try
@@ -276,5 +281,11 @@ public class QueueSessionListener extends BrokerListener
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean isActive()
+	{
+		return true;
 	}
 }

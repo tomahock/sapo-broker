@@ -137,4 +137,10 @@ public class TopicSubscriber extends BrokerListener
 	{
 		return true;
 	}
+
+	@Override
+	public boolean isActive()
+	{
+		return true;
+	}
 }

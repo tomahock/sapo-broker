@@ -23,4 +23,6 @@ public interface MessageListener
 	public DestinationType getTargetDestinationType();
 	
 	public boolean ready();
+	
+	public boolean isActive();
 }

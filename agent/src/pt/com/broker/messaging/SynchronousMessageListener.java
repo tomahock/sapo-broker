@@ -3,6 +3,7 @@ package pt.com.broker.messaging;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -27,6 +28,8 @@ public class SynchronousMessageListener implements MessageListener
 	private static final Logger log = LoggerFactory.getLogger(SynchronousMessageListener.class);
 
 	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
+	
+	private static final long LIVE_INTERVAL = 5 * 60 * 1000; // 5mn
 
 	private AtomicBoolean ready;
 	private final String queueName;
@@ -35,6 +38,8 @@ public class SynchronousMessageListener implements MessageListener
 	private volatile long expires;
 	private volatile boolean inNoWaitMode;
 	private volatile String actionId;
+	
+	private AtomicLong lastDeliveredMessage = new AtomicLong(0);
 
 	public SynchronousMessageListener(String queueName, IoSession session)
 	{
@@ -77,6 +82,7 @@ public class SynchronousMessageListener implements MessageListener
 		{
 			final NetMessage response = BrokerListener.buildNotification(message, getDestinationName(), getSourceDestinationType());
 			ioSession.write(response);
+			lastDeliveredMessage.set(System.currentTimeMillis());
 		}
 		else
 		{
@@ -247,6 +253,12 @@ public class SynchronousMessageListener implements MessageListener
 		{
 			return expires;
 		}
+	}
+
+	@Override
+	public boolean isActive()
+	{
+		return lastDeliveredMessage.get() >= (System.currentTimeMillis() - LIVE_INTERVAL);
 	}
 
 }
