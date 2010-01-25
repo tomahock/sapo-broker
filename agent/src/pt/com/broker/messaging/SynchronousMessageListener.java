@@ -28,7 +28,7 @@ public class SynchronousMessageListener implements MessageListener
 	private static final Logger log = LoggerFactory.getLogger(SynchronousMessageListener.class);
 
 	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
-	
+
 	private static final long LIVE_INTERVAL = 5 * 60 * 1000; // 5mn
 
 	private AtomicBoolean ready;
@@ -38,7 +38,7 @@ public class SynchronousMessageListener implements MessageListener
 	private volatile long expires;
 	private volatile boolean inNoWaitMode;
 	private volatile String actionId;
-	
+
 	private AtomicLong lastDeliveredMessage = new AtomicLong(0);
 
 	public SynchronousMessageListener(String queueName, IoSession session)
@@ -60,7 +60,7 @@ public class SynchronousMessageListener implements MessageListener
 	{
 		return DestinationType.QUEUE;
 	}
-	
+
 	@Override
 	public DestinationType getTargetDestinationType()
 	{
@@ -77,7 +77,7 @@ public class SynchronousMessageListener implements MessageListener
 		}
 
 		ready.set(false);
-		
+
 		if ((ioSession != null) && ioSession.isConnected() && !ioSession.isClosing())
 		{
 			final NetMessage response = BrokerListener.buildNotification(message, getDestinationName(), getSourceDestinationType());
@@ -258,7 +258,8 @@ public class SynchronousMessageListener implements MessageListener
 	@Override
 	public boolean isActive()
 	{
-		return lastDeliveredMessage.get() >= (System.currentTimeMillis() - LIVE_INTERVAL);
+		return (lastDeliveredMessage.get() + LIVE_INTERVAL) >= System.currentTimeMillis();
+
 	}
 
 }
