@@ -124,5 +124,4 @@ public class BrokerSyncConsumer
 			synConsumersCount.remove(destination, zeroValue); // remove if zero
 		}
 	}
-
 }

@@ -40,7 +40,7 @@ public class LocalQueueConsumers
 
 			InternalMessage m = new InternalMessage(msg.getMessageId(), msg.getDestination(), brkMsg);
 			m.setType(MessageType.ACK);
-			
+
 			ioSession.write(m);
 		}
 		catch (Throwable ct)
@@ -80,11 +80,9 @@ public class LocalQueueConsumers
 			if (listeners != null)
 			{
 				listeners.remove(listener);
-				
 
 				log.info("Removed. Listeners: {}", listeners.size());
-				
-				
+
 				if (listeners.size() == 0)
 				{
 					instance.localQueueConsumers.remove(queueName);
@@ -193,7 +191,7 @@ public class LocalQueueConsumers
 		}
 		return false;
 	}
-	
+
 	public static boolean hasActiveRecipients(String destinationName)
 	{
 		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
@@ -295,28 +293,33 @@ public class LocalQueueConsumers
 
 			try
 			{
-				MessageListener messageListener = listeners.get(currentQEP);
-				if (messageListener.ready())
-					return messageListener;
-
-				return pick(listeners);
+				for (int i = 0; i != n; ++i)
+				{
+					MessageListener messageListener = listeners.get(currentQEP);
+					if (messageListener.ready())
+						return messageListener;
+				}
 			}
-			catch (Exception e)
+			catch (Throwable t)
 			{
 				try
 				{
 					currentQEP = 0;
-					MessageListener messageListener = listeners.get(currentQEP);
-					if (messageListener.ready())
-						return messageListener;
-
-					return pick(listeners);
+					do
+					{
+						MessageListener messageListener = listeners.get(currentQEP);
+						if (messageListener.ready())
+							return messageListener;
+					}
+					while ((++currentQEP) != (n - 1));
 				}
-				catch (Throwable t)
+				catch (Throwable t2)
 				{
 					return null;
 				}
+
 			}
 		}
+		return null;
 	}
 }
