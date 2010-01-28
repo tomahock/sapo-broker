@@ -29,7 +29,7 @@ public class SynchronousMessageListener implements MessageListener
 
 	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
 
-	private static final long LIVE_INTERVAL = 5 * 60 * 1000; // 5mn
+	private static final long ACTIVE_INTERVAL = 5 * 60 * 1000; // 5mn
 
 	private AtomicBoolean ready;
 	private final String queueName;
@@ -258,8 +258,7 @@ public class SynchronousMessageListener implements MessageListener
 	@Override
 	public boolean isActive()
 	{
-		return (lastDeliveredMessage.get() + LIVE_INTERVAL) >= System.currentTimeMillis();
-
+		return (lastDeliveredMessage.get() + ACTIVE_INTERVAL) >= System.currentTimeMillis();
 	}
 
 }
