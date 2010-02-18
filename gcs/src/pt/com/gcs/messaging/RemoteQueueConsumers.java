@@ -40,7 +40,7 @@ class RemoteQueueConsumers
 
 		boolean isReady()
 		{
-			return time < System.currentTimeMillis();
+			return time <= System.currentTimeMillis();
 		}
 
 		@Override
@@ -86,7 +86,7 @@ class RemoteQueueConsumers
 		}
 
 		SessionInfo sessionInfo = new SessionInfo(iosession);
-		
+
 		if (!sessions.contains(sessionInfo))
 		{
 			sessions.add(sessionInfo);
@@ -118,12 +118,12 @@ class RemoteQueueConsumers
 			CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(queueName);
 			if (sessions != null)
 			{
-				if( sessions.remove(new SessionInfo(iosession)) )
+				if (sessions.remove(new SessionInfo(iosession)))
 				{
 					log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, IoSessionHelper.getRemoteAddress(iosession));
+					instance.remoteQueueConsumers.put(queueName, sessions);
 				}
 			}
-			instance.remoteQueueConsumers.put(queueName, sessions);
 		}
 	}
 
@@ -132,12 +132,12 @@ class RemoteQueueConsumers
 		CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(queueName);
 		if (sessions != null)
 		{
-			if(sessions.remove(new SessionInfo(iosession)))
+			if (sessions.remove(new SessionInfo(iosession)))
 			{
 				log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, IoSessionHelper.getRemoteAddress(iosession));
+				instance.remoteQueueConsumers.put(queueName, sessions);
 			}
 		}
-		instance.remoteQueueConsumers.put(queueName, sessions);
 	}
 
 	protected synchronized static int size(String destinationName)
@@ -192,9 +192,7 @@ class RemoteQueueConsumers
 									sessionInfo.time = (long) (System.currentTimeMillis() + MAX_SUSPENSION_TIME);
 									if (log.isDebugEnabled())
 									{
-										// LC
-										log.info("MAX_SESSION_BUFFER_SIZE reached in session '{}'. Queue: '{}'", ioSession.toString(), message.getDestination());
-										//log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'. Queue: '{}'", ioSession.toString(), message.getDestination());
+										log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'. Queue: '{}'", ioSession.toString(), message.getDestination());
 									}
 
 									String log_msg = String.format("Write Queue is full, delay message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), sessionInfo.session.getRemoteAddress().toString());
@@ -203,7 +201,7 @@ class RemoteQueueConsumers
 									String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
 									String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), sessionInfo.session.getRemoteAddress().toString());
 									InternalPublisher.send(dname, info_msg);
-									
+
 									return -1;
 								}
 
@@ -233,7 +231,6 @@ class RemoteQueueConsumers
 		{
 			log.debug("There are no remote consumers for queue: {}", message.getDestination());
 		}
-
 		return -1;
 	}
 
@@ -284,9 +281,20 @@ class RemoteQueueConsumers
 				{
 					return null;
 				}
-
 			}
 		}
 		return null;
+	}
+
+	public static boolean hasReadyRecipients(String destinationName)
+	{
+		CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(destinationName);
+		if (sessions != null)
+		{
+			for (SessionInfo si : sessions)
+				if (si.isReady())
+					return true;
+		}
+		return false;
 	}
 }

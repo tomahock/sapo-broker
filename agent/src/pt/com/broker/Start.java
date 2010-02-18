@@ -2,6 +2,7 @@ package pt.com.broker;
 
 import org.apache.mina.util.ExceptionMonitor;
 import org.caudexorigo.Shutdown;
+import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class Start
 		}
 
 		ErrorHandler errorHandler = new ErrorHandler();
-		
+
 		ExceptionMonitor.setInstance(errorHandler);
 
 		try
@@ -91,9 +92,8 @@ public class Start
 				{
 					try
 					{
-						log.info("Disconnect broker socket acceptor");
 						Gcs.destroy();
-						log.info("Shutdown hook thread ended!");
+						System.out.println("Shutdown hook thread ended!");
 					}
 					catch (Throwable te)
 					{
@@ -112,6 +112,5 @@ public class Start
 			log.error(e.getMessage(), e);
 			Shutdown.now();
 		}
-
 	}
 }

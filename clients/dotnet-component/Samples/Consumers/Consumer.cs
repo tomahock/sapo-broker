@@ -35,6 +35,7 @@ namespace Samples.Consumers
                     brokerClient.Acknowledge(notification.Subscription, notification.Message.MessageId);
                 System.Console.WriteLine("Message received: {0}, Total: {1}",
                                          System.Text.Encoding.UTF8.GetString(notification.Message.Payload), (++i).ToString());
+                System.Console.WriteLine("Message Destination: {0}, Message Subscription: {1}",notification.Destination, notification.Subscription);
                 if (notification.DestinationType != NetAction.DestinationType.TOPIC)
                 {
                     brokerClient.Acknowledge(notification);

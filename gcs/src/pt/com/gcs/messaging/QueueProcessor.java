@@ -91,6 +91,9 @@ public class QueueProcessor
 		}
 	}
 
+	
+	AtomicLong localStraightDelivers = new AtomicLong(0);
+	AtomicLong remoteStraightDelivers = new AtomicLong(0);
 	protected long forward(InternalMessage message, boolean preferLocalConsumer) throws IllegalStateException
 	{
 
@@ -123,9 +126,13 @@ public class QueueProcessor
 			{
 				long n = _deliverSequence.incrementAndGet() % 2;
 				if (n == 0)
+				{
 					result = LocalQueueConsumers.notify(message);
+				}
 				else
+				{
 					result = RemoteQueueConsumers.notify(message);
+				}
 			}
 		}
 
@@ -154,7 +161,7 @@ public class QueueProcessor
 			return false;
 		}
 
-		return RemoteQueueConsumers.size(_destinationName) != 0;
+		return RemoteQueueConsumers.hasReadyRecipients(_destinationName);
 	}
 
 	public int size()

@@ -23,6 +23,7 @@
 	
 	<path id="project.classpath">
 		<pathelement location="../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
+		<pathelement location="../gcs/dist/sapo-gcs-${version}.jar" />
 		<pathelement location="../acl/sapo-sts/client/dist/sapo-broker-clientauth-saposts-${version}.jar" />
 		<pathelement location="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" />
 		<pathelement location="../bindings/thrift/java/dist/sapo-broker-thriftbinding-${version}.jar" />
@@ -36,6 +37,9 @@
 	
 	<path id="project.classpath">
 			<fileset dir="../common-libs/">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="../gcs/dist/">
 				<include name="**/*.jar" />
 			</fileset>
 			<fileset dir="../comm-types/dist/">

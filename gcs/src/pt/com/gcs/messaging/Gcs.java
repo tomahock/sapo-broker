@@ -438,9 +438,7 @@ public class Gcs
 	{
 		try
 		{
-			//LocalQueueConsumers.removeAllListeners();
-			//LocalTopicConsumers.removeAllListeners();
-			log.info("Flush buffers");
+			System.out.println("Flush buffers");
 			BDBEnviroment.sync();
 		}
 		catch (Throwable te)
