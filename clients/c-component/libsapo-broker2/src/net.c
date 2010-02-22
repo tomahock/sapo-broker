@@ -46,6 +46,51 @@ _broker_server_get_active( sapo_broker_t *sb)
     return NULL;
 }
 
+int
+_broker_server_connect_all(sapo_broker_t *sb)
+{
+    uint_t i;
+    _broker_server_t *srv = NULL;
+
+    if( NULL == sb ||
+        NULL == sb->servers.server )
+        return SB_NOT_CONNECTED;
+
+    srv = sb->servers.server;
+    for(i = 0; i < sb->servers.server_count; i++) {
+        if( ! srv[i].connected ) {
+            _server_connect(sb, &srv[i]);
+        }
+    }
+
+    return SB_OK;
+}
+
+int
+_broker_server_disconnect_all(sapo_broker_t *sb)
+{
+    uint_t i;
+    _broker_server_t *srv = NULL;
+
+    if( NULL == sb ||
+        NULL == sb->servers.server )
+        return SB_NOT_CONNECTED;
+
+    srv = sb->servers.server;
+    for(i = 0; i < sb->servers.server_count; i++) {
+        if( srv[i].connected ) {
+            close(srv[i].fd); // best effort only.
+            srv[i].fail_count = 0;
+            srv[i].connected = 0;
+        }
+    }
+
+    return SB_OK;
+}
+
+
+
+
 
 static int
 _server_connect( sapo_broker_t *sb, _broker_server_t *server )

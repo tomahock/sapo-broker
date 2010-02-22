@@ -25,6 +25,12 @@ _broker_server_t *
 _broker_server_get_active( sapo_broker_t *sb );
 
 int
+_broker_server_disconnect_all(sapo_broker_t *sb);
+
+int
+_broker_server_connect_all(sapo_broker_t *sb);
+
+int
 _broker_server_set_faulty( sapo_broker_t *sb, broker_server_t *server);
 
 int

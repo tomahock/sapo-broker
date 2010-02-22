@@ -43,22 +43,52 @@ broker_init( broker_server_t server_1)
         return NULL;
     }
 
-    sb->servers.server = calloc(2, sizeof(broker_server_t));
-    sb->servers.array_count = 2;
-    sb->servers.server_count = 1;
-    memcpy(sb->servers.server, &server_1, sizeof(broker_server_t));
+    broker_add_server(sb, server_1);
 
     sb->destinations.dest = calloc(2, sizeof(broker_destination_t) );
     sb->destinations.array_count = 2;
     sb->destinations.dest_count = 0;
-
-    if( server_1.protocol > THRIFT ) {
-        server_1.protocol = PROTOBUF;
-        log_info( sb, "broker_init(): bad protocol, defaulting to PROTOCOL BUFFERS");
-    }
-
     return sb;
 }
+
+
+int
+broker_add_server( sapo_broker_t *sb, broker_server_t server)
+{
+    _broker_server_t *srv = NULL;
+
+    if(!sb)
+        return SB_NOT_INITIALIZED;
+
+    if(sb->servers.array_count == sb->servers.server_count ){
+        uint_t new_count = 1 + (sb->servers.array_count * 2);
+        srv = realloc(sb->servers.server, sizeof(_broker_server_t) * new_count);
+        if( ! srv ) {
+            log_err(sb, "broker_add_server(): realloc() failed, server not added.");
+            return SB_ERROR;
+        }
+        sb->servers.server = srv;
+        sb->servers.array_count = new_count;
+    }
+
+
+    if( server.protocol > THRIFT ) {
+        server.protocol = PROTOBUF;
+        log_info( sb, "broker_add_server(): bad protocol, defaulting to PROTOCOL BUFFERS");
+    }
+    if( server.transport > UDP ) {
+        server.transport = TCP;
+        log_info( sb, "broker_add_server(): bad transport, defaulting to TCP");
+    }
+
+    memset( &(sb->servers.server[ sb->servers.server_count ]), 0, sizeof(_broker_server_t));
+    sb->servers.server[ sb->servers.server_count ].srv = server;
+    log_debug(sb, "server: { %s, %d, %d, %d }", server.hostname, server.port, (int) server.transport, (int) server.protocol);
+
+    sb->servers.server_count++;
+    return SB_OK;
+}
+
 
 int
 broker_send( sapo_broker_t *sb,
@@ -68,6 +98,9 @@ broker_send( sapo_broker_t *sb,
 {
     int rc = 0;
     _broker_server_t *srv = NULL;
+
+    if(!sb)
+        return SB_NOT_INITIALIZED;
 
     for(int i=0; i < 3; i++) {
         srv = _broker_server_get_active( sb );
@@ -135,6 +168,9 @@ broker_subscribe( sapo_broker_t *sb, broker_destination_t dest)
 {
     int rc = 0;
     _broker_server_t *srv = NULL;
+
+    if(!sb)
+        return SB_NOT_INITIALIZED;
 
     for(int i=0; i < 3; i++) {
         srv = _broker_server_get_active( sb );
@@ -217,6 +253,9 @@ int
 broker_msg_ack( sapo_broker_t *sb, broker_msg_t *msg)
 {
     int rc;
+    if(!sb)
+        return SB_NOT_INITIALIZED;
+
     if( !msg || !msg->message_id) {
         log_err(sb, "broker_msg_ack(): bad message, cannot acknowledge");
         return SB_ERROR;
@@ -250,34 +289,43 @@ broker_receive( sapo_broker_t *sb, struct timeval *timeout)
     _broker_server_t *srv = NULL;
     int rc = 0;
 
-    srv = net_poll( sb, timeout);
-    if( srv == NULL ) {
-        log_debug(sb, "receive(): net_poll() -> NULL");
+    if(!sb)
         return NULL;
-    }
 
-    log_debug(sb, "receive(): data from: %s:%d",
+    for(int i = 0; i < 3; i++) {
+        /* assure that we are connected to at least one server */
+        srv = _broker_server_get_active(sb);
+
+        srv = net_poll( sb, timeout);
+        if( srv == NULL ) {
+            log_debug(sb, "receive(): net_poll() -> NULL");
+            return NULL;
+        }
+
+        log_debug(sb, "receive(): data from: %s:%d",
                 srv->srv.hostname, srv->srv.port);
-    switch ( srv->srv.protocol ) {
-        case SOAP:
-            msg = proto_soap_read_msg( sb, srv );
-            break;
+        switch ( srv->srv.protocol ) {
+            case SOAP:
+                msg = proto_soap_read_msg( sb, srv );
+                break;
 
-        case PROTOBUF:
-            msg = proto_protobuf_read_msg( sb, srv );
-            break;
+            case PROTOBUF:
+                msg = proto_protobuf_read_msg( sb, srv );
+                break;
 
-        case THRIFT:
-            msg = proto_thrift_read_msg( sb, srv );
-            break;
+            case THRIFT:
+                msg = proto_thrift_read_msg( sb, srv );
+                break;
 
-        default:
-            rc = SB_ERROR;
-            log_err(sb, "broker_receive: invalid server protocol in received packet.");
-    }
-    if( rc != SB_OK ) {
-        log_err(sb, "broker_receive: failed reading message.");
-        return NULL;
+            default:
+                rc = SB_ERROR;
+                log_err(sb, "broker_receive: invalid server protocol in received packet.");
+        }
+        if( NULL == msg ) {
+            log_err(sb, "broker_receive: failed, trying again.");
+            continue;
+        }
+        break;
     }
 
     return msg;
@@ -287,11 +335,26 @@ broker_receive( sapo_broker_t *sb, struct timeval *timeout)
 int
 broker_destroy(sapo_broker_t *sb)
 {
-    /* close all open connections to servers */
-    /* deallocate all memory */
-   log_err( sb, "broker_destroy(): NOT IMPLEMENTED.");
+    if( !sb )
+        return SB_NOT_INITIALIZED;
 
-   return 1;
+    /* close all open connections to servers */
+    _broker_server_disconnect_all(sb);
+
+    /* deallocate all memory */
+    if( NULL != sb->servers.server ) {
+        free(sb->servers.server);
+        sb->servers.server = NULL;
+    }
+
+    if( NULL != sb->destinations.dest ) {
+        free(sb->destinations.dest );
+        sb->destinations.dest = NULL;
+    }
+
+    free( sb );
+
+   return SB_OK;
 }
 
 
@@ -306,17 +369,21 @@ broker_error( sapo_broker_t *sb)
 static int
 broker_add_destination(sapo_broker_t *sb, broker_destination_t dest)
 {
+    if(!sb)
+        return SB_NOT_INITIALIZED;
+
     int rc = 0;
     /* any space left on destinations array ? */
-    if( sb->destinations.dest_count + 1 == sb->destinations.array_count ) {
-        uint_t new_size = sizeof(broker_destination_t) * sb->destinations.array_count * 2;
-        broker_destination_t *dst = realloc( sb->destinations.dest, new_size );
+    if( sb->destinations.dest_count == sb->destinations.array_count ) {
+        broker_destination_t *dst = NULL;
+        uint_t new_count = 1 + (sb->destinations.array_count * 2);
+        dst = realloc( sb->destinations.dest, sizeof(broker_destination_t) * new_count );
         if( dst == NULL ) {
-            log_err(sb, "broker_subscribe(): failed to alocate memory, can't remember destination");
+            log_err(sb, "broker_subscribe(): realloc() failed, can't save destination");
             return rc; // maybe everything will work just fine...
         }
         sb->destinations.dest = dst;
-        sb->destinations.array_count *= 2;
+        sb->destinations.array_count = new_count;
     }
 
     sb->destinations.dest[ sb->destinations.dest_count++ ] = dest;
