@@ -1,7 +1,25 @@
 #ifndef _CONN_H
 #define _CONN_H
 
-#include <sapo_broker.h>
+#include <sys/time.h>   // struct timeval
+#include <sys/types.h>  // NOSIGPIPE
+#include <sys/socket.h> // NOSIGPIPE
+
+#include "sapo_broker.h"
+
+
+/* NO SIGPIPE on net write error please */
+#ifdef MSG_NOSIGNAL
+    #define SB_MSG_NOSIGPIPE MSG_NOSIGNAL
+#elif MSG_NOSIGPIPE
+    #define SB_MSG_NOSIGPIPE MSG_NOSIGPIPE
+#else
+    #define SB_MSG_NOSIGPIPE 0
+#endif
+
+
+
+#define SB_NET_HEADER_SIZ   4 /* 2 shorts + 1 int */
 
 _broker_server_t *
 _broker_server_get_active( sapo_broker_t *sb );

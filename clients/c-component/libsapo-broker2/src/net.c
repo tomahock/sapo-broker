@@ -1,8 +1,6 @@
 #include <assert.h>
 #include <errno.h>
 #include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -12,7 +10,6 @@
 #include "broker_internals.h"
 #include "net.h"
 
-#define SB_NET_HEADER_SIZ   4 /* 2 shorts + 1 int */
 
 
 /* private function declarations */
@@ -111,8 +108,6 @@ _net_send(sapo_broker_t *sb, int socket, const char *buf, size_t len, int flags)
     size_t remain = len;
     int rc = 0;
     do {
-        // MSG_NOSIGNAL -> rcurns EPIPE ?
-        // ENOTCONN
         rc = send(socket, buf, remain, flags);
         if (rc < 0 && errno == EINTR) {
             continue;
@@ -140,8 +135,6 @@ _net_recv(sapo_broker_t *sb, int socket, char *buf, size_t len, int flags)
     size_t remain = len;
     int rc = 0;
     do {
-        // MSG_NOSIGNAL -> rcurns EPIPE ?
-        // ENOTCONN
         rc = recv(socket, buf, remain, flags);
         if (rc < 0 && errno == EINTR) {
             continue;
@@ -178,12 +171,12 @@ net_send(sapo_broker_t *sb, _broker_server_t *srv, const char *bytes, size_t len
     log_info(sb, "");
 
     log_debug(sb, "net_send(): sending data (size: %d)", len);
-    rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), MSG_NOSIGNAL);
+    rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), SB_MSG_NOSIGPIPE);
     if( rc != SB_OK) {
         log_err(sb, "net_send(): failed to send header");
         return rc;
     }
-    rc = _net_send(sb, srv->fd, bytes, len, MSG_NOSIGNAL);
+    rc = _net_send(sb, srv->fd, bytes, len, SB_MSG_NOSIGPIPE);
     if( rc != SB_OK){
         log_err(sb, "net_send(): failed to send message");
         return rc;
@@ -216,11 +209,10 @@ net_poll( sapo_broker_t *sb, struct timeval *tv)
             num_srvs = rc;
         }
     }
-    num_srvs++;
 
 
     /* wait on select for any packet */
-    rc = select( num_srvs, &read_set, NULL, NULL, tv);
+    rc = select( num_srvs + 1, &read_set, NULL, NULL, tv);
     if( rc == 0) { // timed out
         log_debug(sb, "net_poll(): timed out");
     } else if( rc > 0) { // return server.
@@ -247,7 +239,7 @@ net_recv( sapo_broker_t *sb, _broker_server_t *srv, int *buf_len)
     char *buf;
 
     log_debug(sb, "net_recv(): waiting %d bytes", sizeof(header));
-    rc = _net_recv(sb, srv->fd, header, sizeof(header), 0);
+    rc = _net_recv(sb, srv->fd, (char *) header, sizeof(header), 0);
 
     if( srv->srv.protocol != ntohs( header[0] ) ) {
             log_err(sb, "net_recv: protocol in received header doesn't match connection setup.");
