@@ -3,11 +3,12 @@
 #
 # Compiler settings (gcc, icc, win32)
 
-COMPILER := gcc
+REL_NAME := libsapo-broker
+REL_VER	 := 2.0.1
 
 # Targets
-RELEASE_TARGET := libsapo-broker.so.2.0.1
-DEBUG_TARGET   := libsapo-brokerd.so.2.0.1
+RELEASE_TARGET = $(REL_NAME).$(SO_LIB).$(REL_VER)
+DEBUG_TARGET = $(REL_NAME)d.$(SO_LIB).$(REL_VER)
 
 TEST_TARGETS := test_consume test_publish test_enqueue
 TEST_CXX := test_protobuf
@@ -17,9 +18,9 @@ TEST_CXX := test_protobuf
 CC      := gcc
 CXX     := g++
 CFLAGS  := -pipe -fPIC
-LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared -Wl,-soname,libsapo-broker.so.2
+LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared 
 TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -fPIC -lc -Wl,-Bdynamic
-OPTS    := -O3 -fomit-frame-pointer -ffast-math  -march=native
+OPTS    := -O3 -fomit-frame-pointer -ffast-math
 #OPTS	+= -msse -msse2 -ftree-vectorize # use only with gcc-4 or above.
 OPTS	+= -g -ggdb -std=c99
 OPTS	+= -D_FORTIFY_SOURCE=2
@@ -28,6 +29,25 @@ DEBUG	+= -DTEST -D_FORTIFY_SOURCE=2
 #DEBUG	+= -m32
 #DEBUG  += -pg
 DEBUG	+= -Wextra
+
+
+
+# sucky sucky OSes 
+OS=$(shell uname -s)
+ifeq ($(OS), Linux)
+	SO_LIB = so
+	LDFLAGS += -Wl,-soname,$(RELEASE_TARGET)
+	OPTS += -march=native 
+endif
+ifeq ($(OS), Darwin)
+	SO_LIB = dylib
+	LDFLAGS += -Wl,-dylib_install_name,$(RELEASE_TARGET)
+	OPTS += -march=core2
+	CFLAGS += -I/opt/local/include
+	LDFLAGS += -L/opt/local/lib
+endif
+
+
 
 
 # Include files
