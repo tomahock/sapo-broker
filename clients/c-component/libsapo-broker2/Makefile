@@ -19,7 +19,7 @@ CC      := gcc
 CXX     := g++
 CFLAGS  := -pipe -fPIC
 LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared 
-TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -fPIC -lc -Wl,-Bdynamic
+TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -fPIC -lc
 OPTS    := -O3 -fomit-frame-pointer -ffast-math
 #OPTS	+= -msse -msse2 -ftree-vectorize # use only with gcc-4 or above.
 OPTS	+= -g -ggdb -std=c99
@@ -38,6 +38,7 @@ ifeq ($(OS), Linux)
 	SO_LIB = so
 	LDFLAGS += -Wl,-soname,$(RELEASE_TARGET)
 	OPTS += -march=native 
+	TEST_LDFLAGS +=  -Wl,-Bdynamic
 endif
 ifeq ($(OS), Darwin)
 	SO_LIB = dylib
@@ -45,6 +46,7 @@ ifeq ($(OS), Darwin)
 	OPTS += -march=core2
 	CFLAGS += -I/opt/local/include
 	LDFLAGS += -L/opt/local/lib
+	TEST_LDFLAGS += -L/opt/local/lib
 endif
 
 
@@ -93,17 +95,16 @@ $(CXX_OBJS): $(RELEASE_DIR)/%.o: $(SOURCE_DIR)/%.cc $(INCLUDE_FILES) Makefile
 debug: base_deps $(DEBUG_TARGET)
 
 $(DEBUG_TARGET): $(SRC_OBJS_DEBUG) $(CXX_OBJS_DEBUG)
-	$(CC) $(DEBUG) $(SRC_OBJS_DEBUG) $(CXX_OBJS_DEBUG) $(LDFLAGS) -o $@
+	$(CXX) $(DEBUG) $(SRC_OBJS_DEBUG) $(CXX_OBJS_DEBUG) $(LDFLAGS) -o $@
 
 # TEST RULES
 tests: base_deps debug $(TEST_TARGETS) test_protobuf
 
-test_protobuf: base_deps debug
-	$(CXX) -O0 -Itest/  test/test_protobuf.cc test/broker.pb.cc -pthread -lprotobuf -lz -ggdb  $(DEBUG_TARGET) -o $@
+test_protobuf: base_deps debug test/test_protobuf.cc test/broker.pb.cc 
+	$(CXX) $(CFLAGS) $(OPTS)  $(TEST_LDFLAGS) -Itest/  test/test_protobuf.cc test/broker.pb.cc -pthread -lprotobuf -lz -ggdb  $(DEBUG_TARGET) -o $@
 
 
 $(TEST_TARGETS): %: $(TEST_DIR)/%.c $(SRC_OBJS_DEBUG) $(INCLUDE_FILES) debug Makefile
-#	$(CC) $(CFLAGS) $(OPTS) $(SRC_OBJS_DEBUG) $(CXX_OBJS_DEBUG) -I$(INCLUDE_DIR) $(TEST_LDFLAGS) $< -o $@
 	$(CC) $(CFLAGS) $(OPTS) -I$(INCLUDE_DIR) $(TEST_LDFLAGS) $(DEBUG_TARGET) $< -o $@
 
 $(SRC_OBJS_DEBUG): $(DEBUG_DIR)/%.o: $(SOURCE_DIR)/%.c $(INCLUDE_FILES) Makefile
