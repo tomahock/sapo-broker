@@ -118,6 +118,7 @@ proto_protobuf_read_msg( sapo_broker_t *sb, _broker_server_t *srv)
     msg = (broker_msg_t *) calloc( 1, sizeof(broker_msg_t));
     msg->server = srv->srv;
 
+    /* FIXME: assuming notification messages */
     notification = atom.action().notification();
     if( notification.destination_type() == sapo_broker::Atom_DestinationType_TOPIC )
         msg->origin = broker_get_destination( sb, notification.destination().c_str(), SB_TOPIC );

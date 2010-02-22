@@ -68,7 +68,7 @@ int _log_err(sapo_broker_t *sb, const char *msg, const char *file, int lineno, .
             log_msg);
     log_it( sb, log_msg2);
     /* allways log errors to stderr */
-    fprintf(stderr, "%s", log_msg2);
+    fprintf(stderr, "%s\n", log_msg2);
     return 0;
 }
 
