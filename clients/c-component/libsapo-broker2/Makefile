@@ -17,8 +17,8 @@ TEST_CXX := test_protobuf
 # Default settings for gcc
 CC      := gcc
 CXX     := g++
-CFLAGS  := -pipe -fPIC
-LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared 
+CFLAGS  := -pipe -fPIC -DTEST
+LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared
 TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -fPIC -lc
 OPTS    := -O3 -fomit-frame-pointer -ffast-math
 #OPTS	+= -msse -msse2 -ftree-vectorize # use only with gcc-4 or above.
@@ -32,12 +32,12 @@ DEBUG	+= -Wextra
 
 
 
-# sucky sucky OSes 
+# sucky sucky OSes
 OS=$(shell uname -s)
 ifeq ($(OS), Linux)
 	SO_LIB = so
 	LDFLAGS += -Wl,-soname,$(RELEASE_TARGET)
-	OPTS += -march=native 
+	OPTS += -march=native
 	TEST_LDFLAGS +=  -Wl,-Bdynamic
 endif
 ifeq ($(OS), Darwin)

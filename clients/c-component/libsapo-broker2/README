@@ -31,11 +31,18 @@ WHAT WORKS NOW:
             after that, it tries diferent server.
 
 TODO:
+    - Handle PONG/FAULT/* messages from Broker.
+    - Debian package
+    - performance tests.
+    - valgrind runs.
     - Better support for multiple servers:
         - balance enqueues or publishes through ALL servers
         - subscribe to topics/queues in ALL servers.
     - POLL support
-    - support priorities?
+    - support adicional features:
+        - priorities?
+        - expiration times
+        - action_id
     - support assyncronous API with callbacks.
     -comunication protocols:
         - THRIFT (patches are welcome)
@@ -52,4 +59,6 @@ building the library with debug on:
 $ make -jN debug
 building the tests:
 $ make -jN tests
+instaling the library (PREFIX is optional):
+$ PREFIX=/usr/local/libsapo-broker2 make install
 
