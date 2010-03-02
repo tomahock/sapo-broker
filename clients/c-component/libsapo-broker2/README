@@ -32,6 +32,7 @@ WHAT WORKS NOW:
 
 TODO:
     - Handle PONG/FAULT/* messages from Broker.
+    - broker_send must support: timestamp, message_id, expiration
     - Debian package
     - performance tests.
     - valgrind runs.
