@@ -113,12 +113,19 @@ proto_protobuf_read_msg( sapo_broker_t *sb, _broker_server_t *srv)
 
     /* FIXME: too many data copies */
     atom.ParseFromString( std::string( buf, buf_len ) );
+    /* free buf alloced by net_recv */
+    free(buf);
 
+
+    /* FIXME: assuming notification messages */
+    if( atom.action().action_type() != sapo_broker::Atom_Action_ActionType_NOTIFICATION) {
+        log_info(sb, "protobuf_read_msg(): msg is not NOTIFICATION, NOT IMPLEMENTED YET.");
+        return NULL;
+    }
 
     msg = (broker_msg_t *) calloc( 1, sizeof(broker_msg_t));
     msg->server = srv->srv;
 
-    /* FIXME: assuming notification messages */
     notification = atom.action().notification();
     if( notification.destination_type() == sapo_broker::Atom_DestinationType_TOPIC )
         msg->origin = broker_get_destination( sb, notification.destination().c_str(), SB_TOPIC );
