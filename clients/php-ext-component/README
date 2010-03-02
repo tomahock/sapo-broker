@@ -1,0 +1,6 @@
+PHP Extension for libsapobroker2
+
+BUILD
+cd to php source/ext, create sapobroker dir
+phpize, configure, make, make install
+requires libsapobroker2.so/dylib in lib path
