@@ -18,8 +18,8 @@ TEST_CXX := test_protobuf
 CC      := gcc
 CXX     := g++
 CFLAGS  := -pipe -fPIC -DTEST
-LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared
-TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -fPIC -lc
+LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared -ggdb
+TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -fPIC -lc -ggdb
 OPTS    := -O3 -fomit-frame-pointer -ffast-math
 #OPTS	+= -msse -msse2 -ftree-vectorize # use only with gcc-4 or above.
 OPTS	+= -g -ggdb -std=c99
