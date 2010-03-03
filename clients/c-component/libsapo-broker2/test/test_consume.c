@@ -19,6 +19,8 @@
 
 int main(int argc, char *argv[])
 {
+    int i = 0;
+    int count = 0;
     sapo_broker_t *sb;
     broker_msg_t *m;
     broker_server_t server;
@@ -42,10 +44,13 @@ int main(int argc, char *argv[])
             dest.type = SB_QUEUE;
         }
 
-        if( argc == 3) {
+        if( argc >= 3) {
             dest.name = argv[2];
         } else {
             dest.name = QUEUE_NAME;
+        }
+        if( argc >= 4) {
+            count = atoi(argv[3]);
         }
 
     } else {
@@ -76,11 +81,10 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    while ((m = broker_receive(sb, NULL)) != NULL) {
+    /* by default: process 2^31-1 msgs, depends on int overflow */
+    for(; i <= count; i++) {
+        m = broker_receive(sb, NULL);
         printf("%s\n", m->payload);
-
-        if( !strncmp(m->payload, "EXIT", 4 ) )
-            break;
 
         if( dest.type == SB_QUEUE && dest.queue_autoack == FALSE ) {
             broker_msg_ack( sb, m);

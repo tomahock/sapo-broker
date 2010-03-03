@@ -20,6 +20,7 @@
 int main(int argc, char *argv[])
 {
     int rc = 0;
+    int count = 1;
     char *payload = PAYLOAD;
     sapo_broker_t *sb;
     broker_server_t server;
@@ -46,6 +47,9 @@ int main(int argc, char *argv[])
         if( argc >= 3 ) {
             payload = argv[2];
         }
+        if( argc >= 4 ) {
+            count = atoi(argv[3]);
+        }
     }
 
 
@@ -55,11 +59,13 @@ int main(int argc, char *argv[])
        dest.type = TOPIC;
        broker_send ( sb, destination, buf, len )
        */
-    printf("enqueue to queue: %s, payload: %s\n", QUEUE, payload);
-    rc = broker_enqueue( sb, QUEUE, payload, strlen(payload) );
-    if ( rc != SB_OK) {
-        printf("%s", broker_error(sb));
-        exit(-1);
+    printf("enqueue %d times to queue: %s, payload: %s\n", count, QUEUE, payload);
+    for(; count > 0; count--) {
+        rc = broker_enqueue( sb, QUEUE, payload, strlen(payload) );
+        if ( rc != SB_OK) {
+            printf("%s", broker_error(sb));
+            exit(-1);
+        }
     }
 
     exit(0);
