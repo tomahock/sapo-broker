@@ -54,9 +54,18 @@ typedef struct {
     char *  message_id;
     bool    acked;
 	broker_destination_t origin;
-	broker_server_t	server;
+	broker_destination_t destination;
+	broker_server_t	     server;
 } broker_msg_t;
 
+
+typedef struct {
+    size_t      payload_size;
+    char *      payload;
+    char *      message_id; /* optional; if NOT NULL: must be NULL terminated */
+    uint64_t    expiration; /* optional */
+    uint64_t    timestamp;  /* optional */
+} broker_sendmsg_t;
 
 
 typedef struct {
@@ -126,11 +135,10 @@ broker_msg_free( broker_msg_t * );
 int
 broker_msg_ack( sapo_broker_t *sb, broker_msg_t *);
 
-
-
 /* all the producer calls send only to the first active server */
 int
-broker_send( sapo_broker_t *sb, broker_destination_t destination, char *msg, size_t size);
+broker_send( sapo_broker_t *sb, broker_destination_t destination, broker_sendmsg_t msg);
+
 int
 broker_publish(sapo_broker_t *sb, char *destination, char *msg, size_t size);
 int

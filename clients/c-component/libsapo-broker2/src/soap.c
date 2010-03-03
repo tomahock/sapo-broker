@@ -6,9 +6,8 @@ int
 proto_soap_send(
         sapo_broker_t *sb,
         _broker_server_t *srv,
-        char *topic,
-        char *payload,
-        size_t len)
+        broker_destination_t *dest,
+        broker_sendmsg_t *sendmsg)
 {
     log_err( sb, "soap_send(): NOT IMPLEMENTED.");
     return SB_ERROR;

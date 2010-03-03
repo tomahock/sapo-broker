@@ -93,8 +93,7 @@ broker_add_server( sapo_broker_t *sb, broker_server_t server)
 int
 broker_send( sapo_broker_t *sb,
              broker_destination_t dest,
-             char *msg,
-             size_t size)
+             broker_sendmsg_t sendmsg)
 {
     int rc = 0;
     _broker_server_t *srv = NULL;
@@ -105,23 +104,19 @@ broker_send( sapo_broker_t *sb,
     for(int i=0; i < 3; i++) {
         srv = _broker_server_get_active( sb );
         switch ( srv->srv.protocol ) {
-            case SOAP: {
-                           rc = proto_soap_send( sb, srv, &dest, msg, size );
-                           break;
-                       };
-            case PROTOBUF: {
-                               rc = proto_protobuf_send( sb, srv, &dest, msg, size);
-                               break;
-                           };
-            case THRIFT: {
-                             rc = proto_thrift_send ( sb, srv, &dest, msg, size);
-                             break;
-                         };
-            default: {
-                         rc = SB_ERROR;
-                         log_err(sb, "invalid server protocol.");
-                         break;
-                     };
+            case SOAP:
+                rc = proto_soap_send( sb, srv, &dest, &sendmsg );
+                break;
+            case PROTOBUF:
+                rc = proto_protobuf_send( sb, srv, &dest, &sendmsg );
+                break;
+            case THRIFT:
+                rc = proto_thrift_send( sb, srv, &dest, &sendmsg );
+                break;
+            default:
+                rc = SB_ERROR;
+                log_err(sb, "invalid server protocol.");
+                break;
         }
         if( rc != SB_OK ) {
             log_err(sb, "broker_send: failed, trying again.");
@@ -143,10 +138,15 @@ broker_publish( sapo_broker_t *sb,
                 size_t size)
 {
     broker_destination_t dest;
+    broker_sendmsg_t sendmsg = { NULL, 0, 0, 0, NULL };
+
+    sendmsg.payload = msg;
+    sendmsg.payload_size = size;
 
     dest.name = topic;
     dest.type = SB_TOPIC;
-    return broker_send(sb, dest, msg, size);
+
+    return broker_send(sb, dest, sendmsg);
 }
 
 int
@@ -156,10 +156,14 @@ broker_enqueue( sapo_broker_t *sb,
                 size_t size)
 {
     broker_destination_t dest;
+    broker_sendmsg_t sendmsg = { NULL, 0, 0, 0, NULL };
+
+    sendmsg.payload = msg;
+    sendmsg.payload_size = size;
 
     dest.name = queue;
     dest.type = SB_QUEUE;
-    return broker_send(sb, dest, msg, size);
+    return broker_send(sb, dest, sendmsg);
 }
 
 
