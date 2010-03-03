@@ -22,8 +22,7 @@ proto_protobuf_send(
         sapo_broker_t *sb,
         _broker_server_t *srv,
         broker_destination_t *dest,
-        char *payload,
-        size_t len);
+        broker_sendmsg_t *sendmsg);
 
 int
 proto_protobuf_subscribe(

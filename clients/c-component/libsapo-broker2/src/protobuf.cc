@@ -22,8 +22,7 @@ proto_protobuf_send(
         sapo_broker_t *sb,
         _broker_server_t *srv,
         broker_destination_t *dest,
-        char *payload,
-        size_t len)
+        broker_sendmsg_t *sendmsg)
 {
     int rc = 0;
     std::string msg;
@@ -44,8 +43,21 @@ proto_protobuf_send(
         publish->set_destination_type( sapo_broker::Atom_DestinationType_QUEUE );
 
     message = publish->mutable_message();
-    message->set_payload( payload, len );
-    message->set_timestamp( time(NULL) );
+
+    /* setting fields */
+    message->set_payload( sendmsg->payload, sendmsg->payload_size );
+
+    if( sendmsg->timestamp != 0)
+        message->set_timestamp( sendmsg->timestamp );
+    else
+        message->set_timestamp( time(NULL) );
+
+    if( sendmsg->message_id != NULL)
+        message->set_message_id( sendmsg->message_id );
+
+    if( sendmsg->expiration != 0 )
+        message->set_expiration( sendmsg->expiration );
+
 
     atom->SerializeToString( &msg );
 
