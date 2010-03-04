@@ -17,7 +17,7 @@ TEST_CXX := test_protobuf
 # Default settings for gcc
 CC      := gcc
 CXX     := g++
-CFLAGS  := -pipe -fPIC -DTEST
+CFLAGS  := -pipe -fPIC
 LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared -ggdb
 TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -fPIC -lc -ggdb
 OPTS    := -O3 -fomit-frame-pointer -ffast-math
