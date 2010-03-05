@@ -1,0 +1,10 @@
+To compile:
+$ make all
+
+To install:
+$ make install
+or
+$ PREFIX=/opt/xxx make install
+
+To create debian pkg:
+$ ./make_deb.sh

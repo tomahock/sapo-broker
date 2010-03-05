@@ -1,0 +1,10 @@
+Package: libsapo-broker2
+Priority: optional
+Architecture: amd64
+Depends: libprotobuf3
+Version: 2.0.1
+Maintainer: Miguel Filipe <miguel.filipe@caixamagica.pt>
+Description: c library for conecting to SAPO Broker server.
+    This package contains the binary c library and also headers for compiling and linking with it.
+
+
