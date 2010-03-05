@@ -30,12 +30,6 @@ int main(int argc, char *argv[])
     server.transport = TCP;
     server.protocol = PROTOBUF;
 
-    sb = broker_init( server );
-    if (!sb) {
-        printf("%s", broker_error(sb));
-        exit(-1);
-    }
-
     if( argc >= 2 ) {
         if( !strncmp("-udp", argv[1], 4 ) ) {
             printf("UDP ");
@@ -53,12 +47,12 @@ int main(int argc, char *argv[])
     }
 
 
-    /* or:
-       broker_destination_t dest;
-       dest.name = TOPIC_NAME;
-       dest.type = TOPIC;
-       broker_send ( sb, destination, buf, len )
-       */
+    sb = broker_init( server );
+    if (!sb) {
+        printf("%s", broker_error(sb));
+        exit(-1);
+    }
+
     printf("enqueue %d times to queue: %s, payload: %s\n", count, QUEUE, payload);
     for(; count > 0; count--) {
         rc = broker_enqueue( sb, QUEUE, payload, strlen(payload) );

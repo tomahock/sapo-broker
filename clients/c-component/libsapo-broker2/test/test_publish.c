@@ -29,12 +29,6 @@ int main(int argc, char *argv[])
     server.transport =   TCP;
     server.protocol = PROTOBUF;
 
-    sb = broker_init( server );
-    if (!sb) {
-        printf("%s", broker_error(sb));
-        exit(-1);
-    }
-
     if( argc >= 2 ) {
         if( !strncmp("-udp", argv[1], 4 ) ) {
             printf("UDP ");
@@ -48,6 +42,11 @@ int main(int argc, char *argv[])
             payload = argv[2];
     }
 
+    sb = broker_init( server );
+    if (!sb) {
+        printf("%s", broker_error(sb));
+        exit(-1);
+    }
 
     /* or:
        broker_destination_t dest;

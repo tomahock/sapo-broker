@@ -1,14 +1,5 @@
 #define _XOPEN_SOURCE 600
 #include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <strings.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <errno.h>
 
 #include "sapo_broker.h"
 
@@ -64,18 +55,7 @@ int main(int argc, char *argv[])
     else
         printf("TOPIC ");
     printf("%s\n", dest.name);
-    /* broker_destination_t dest;
-       dest.name = QUEUE;
-       dest.type = SB_QUEUE;
-       dest.queue_autoack = true;
-       broker_subscribe ( sb, destination)
-       or
-       bool auto_ack = TRUE; // or FALSE
-       broker_subscribe_queue( sb, "destination", auto_ack);
-       or
-       broker_subscribe_topic( sb, "destination" );
 
-       */
     if (broker_subscribe(sb, dest) != SB_OK) {
         printf("%s", broker_error(sb));
         exit(-1);
