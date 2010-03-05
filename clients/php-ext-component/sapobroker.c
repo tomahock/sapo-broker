@@ -7,7 +7,7 @@
 #include "ext/standard/info.h"
 #include "php_sapobroker.h"
 
-#include "/Volumes/SVN Repo/broker/trunk/clients/c-component/libsapo-broker2/src/sapo_broker.h"
+#include "../c-component/libsapo-broker2/src/sapo_broker.h"
 
 #define PHP_BROKER_SERVER_T_RES_NAME "Broker Server"
 #define PHP_SAPO_BROKER_T_RES_NAME "Sapo Broker"
@@ -88,8 +88,7 @@ PHP_FUNCTION(sapo_broker_server_create) {
 	ZEND_REGISTER_RESOURCE(return_value, output, le_broker_server_t);
 }
 
-/* {{{ proto resource broker_init(resource broker_server)
-   Returns a broker handle */
+/* INITIALIZE A BROKER HANDLE FROM BROKER SERVER_T */
 PHP_FUNCTION(sapo_broker_init) {
 	int argc = ZEND_NUM_ARGS();
 	zval *zbroker_server = NULL;
@@ -112,10 +111,8 @@ PHP_FUNCTION(sapo_broker_init) {
 		ZEND_REGISTER_RESOURCE(return_value, anewbroker, le_sapo_broker_t);
 	}
 }
-/* }}} */
 
-/* {{{ proto int broker_enqueue(resource sapo_broker, string queue, string message, int message_size)
-   Push message to queue */
+/* ENQUEUE A MESSAGE */
 PHP_FUNCTION(sapo_broker_enqueue) {
 	char *queue = NULL;
 	char *message = NULL;
@@ -138,10 +135,8 @@ PHP_FUNCTION(sapo_broker_enqueue) {
 		//php_printf("Result was: %d\n", ret);
 	}
 }
-/* }}} */
 
-/* {{{ proto int broker_destroy(resource broker_handle)
-   Destroys a broker handle */
+/* DEALLOC A BROKER HANDLE */
 PHP_FUNCTION(sapo_broker_destroy) {
 	int argc = ZEND_NUM_ARGS();
 	int broker_handle_id = -1;
@@ -155,10 +150,8 @@ PHP_FUNCTION(sapo_broker_destroy) {
 	}
 
 }
-/* }}} */
 
-/* {{{ proto int broker_add_server(resource broker_handle, resource broker_server)
-   Adds a broker server to a broker handle */
+/* ADD BROKER SERVER_T TO BROKER HANDLE_T */
 PHP_FUNCTION(sapo_broker_add_server) {
 	int argc = ZEND_NUM_ARGS();
 	int broker_handle_id = -1;
@@ -177,10 +170,8 @@ PHP_FUNCTION(sapo_broker_add_server) {
 	}
 
 }
-/* }}} */
 
-/* {{{ proto int broker_subscribe(resource broker_handle, resource broker_destination)
-   Subscribe a destination on a broker handle */
+/* SUBSCRIBE A DESTINATION_T (QUEUE|TOPIC) */
 PHP_FUNCTION(sapo_broker_subscribe) {
 	int argc = ZEND_NUM_ARGS();
 	int broker_handle_id = -1;
@@ -199,10 +190,8 @@ PHP_FUNCTION(sapo_broker_subscribe) {
 	}
 
 }
-/* }}} */
 
-/* {{{ proto int broker_subscribe_topic(resource sapo_broker, string topic)
-   Subscribe a topic on a broker handle */
+/* BAREBONES (NO FANCY DESTINATION_T) SUBSCRIBE TOPIC */
 PHP_FUNCTION(sapo_broker_subscribe_topic) {
 	char *topic = NULL;
 	int argc = ZEND_NUM_ARGS();
@@ -218,10 +207,8 @@ PHP_FUNCTION(sapo_broker_subscribe_topic) {
 	}
 
 }
-/* }}} */
 
-/* {{{ proto int broker_subscribe_queue(resource sapo_broker, string queue, boolean autoack)
-   Subscribe a queue on a broker handle */
+/* BAREBONES (NO FANCY DESTINATION_T) SUBSCRIBE QUEUE */
 PHP_FUNCTION(sapo_broker_subscribe_queue) {
 	char *queue = NULL;
 	int argc = ZEND_NUM_ARGS();
@@ -238,28 +225,45 @@ PHP_FUNCTION(sapo_broker_subscribe_queue) {
 	}
 
 }
-/* }}} */
 
-/* {{{ proto resource broker_receive(resource sapo_broker, int msecs)
-   Receive from broker with timeout in milisecs */
+/* RECEIVE A MESSAGE_T WITH A TIMEOUT */
 PHP_FUNCTION(sapo_broker_receive) {
 	int argc = ZEND_NUM_ARGS();
 	int sapo_broker_id = -1;
 	long msecs;
-	zval *sapo_broker = NULL;
+	zval *zsapo_broker = NULL;
+	sapo_broker_t *sapo_broker;
+	broker_msg_t *message;
+	struct timeval timeout;
+	char *payload, *message_id;
 
-	if (zend_parse_parameters(argc TSRMLS_CC, "rl", &sapo_broker, &msecs) == FAILURE) 
+	if (zend_parse_parameters(argc TSRMLS_CC, "rl", &zsapo_broker, &msecs) == FAILURE) 
 		return;
 
 	if (sapo_broker) {
-		//ZEND_FETCH_RESOURCE(???, ???, sapo_broker, sapo_broker_id, "???", ???_rsrc_id);
+		ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
+		// convert miliseconds to timeval
+		timeout.tv_sec = msecs/1000;
+		timeout.tv_usec = 1000 * (msecs%1000);
+		message = broker_receive(sapo_broker, &timeout);
+		if (message == NULL)
+			RETURN_FALSE;
+			
+		array_init(return_value);
+		add_assoc_long(return_value, "payload_length", message->payload_len);
+		
+		payload = estrndup(message->payload, message->payload_len);
+		add_assoc_stringl(return_value, "payload", payload, message->payload_len, 1);
+		
+		message_id = estrndup(message->message_id, strlen(message->message_id));
+		add_assoc_stringl(return_value, "message_id", message_id, strlen(message_id), 1);
+		
+		// note: the lib needs to be called in order to dealloc a message_t.
+		// we either explicitly request a dealloc here or we store a ref and postpone the request
 	}
-
 }
-/* }}} */
 
-/* {{{ proto int broker_msg_free(resource message)
-   Free a message resource */
+/* FREE A MESSAGE_T */
 PHP_FUNCTION(sapo_broker_msg_free) {
 	int argc = ZEND_NUM_ARGS();
 	int message_id = -1;
@@ -273,10 +277,8 @@ PHP_FUNCTION(sapo_broker_msg_free) {
 	}
 
 }
-/* }}} */
 
-/* {{{ proto int broker_msg_ack(resource sapo_broker)
-   message) */
+/* ACK A MESSAGE */
 PHP_FUNCTION(sapo_broker_msg_ack) {
 	int argc = ZEND_NUM_ARGS();
 	int sapo_broker_id = -1;
@@ -290,10 +292,8 @@ PHP_FUNCTION(sapo_broker_msg_ack) {
 	}
 
 }
-/* }}} */
 
-/* {{{ proto int broker_send(resource sapo_broker, resource broker_destination, string message, int message_size)
-   Send a message to a destination */
+/* SEND A MESSAGE TO A DESTINATION_T */
 PHP_FUNCTION(sapo_broker_send) {
 	char *message = NULL;
 	int argc = ZEND_NUM_ARGS();
@@ -315,10 +315,8 @@ PHP_FUNCTION(sapo_broker_send) {
 	}
 
 }
-/* }}} */
 
-/* {{{ proto string broker_error(resource sapo_broker)
-   Retrieve last error from broker handle */
+/* GET LAST ERROR */
 PHP_FUNCTION(sapo_broker_error) {
 	int argc = ZEND_NUM_ARGS();
 	int sapo_broker_id = -1;
@@ -332,4 +330,3 @@ PHP_FUNCTION(sapo_broker_error) {
 	}
 
 }
-/* }}} */
