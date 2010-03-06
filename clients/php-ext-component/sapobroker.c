@@ -128,7 +128,7 @@ PHP_FUNCTION(sapo_broker_enqueue) {
 	if (zend_parse_parameters(argc TSRMLS_CC, "rssl", &zsapo_broker, &queue, &queue_len, &message, &message_len, &message_size) == FAILURE) 
 		RETURN_FALSE;
 
-	if (sapo_broker) {
+	if (zsapo_broker) {
 		ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
 		//php_printf("Will publish %s to queue %s with %d hosts\n", message, queue, sapo_broker->servers.server_count);
 		ret = broker_enqueue(sapo_broker, queue, message, message_len);
@@ -148,7 +148,6 @@ PHP_FUNCTION(sapo_broker_destroy) {
 	if (broker_handle) {
 		//ZEND_FETCH_RESOURCE(???, ???, broker_handle, broker_handle_id, "???", ???_rsrc_id);
 	}
-
 }
 
 /* ADD BROKER SERVER_T TO BROKER HANDLE_T */
@@ -168,7 +167,6 @@ PHP_FUNCTION(sapo_broker_add_server) {
 	if (broker_server) {
 		//ZEND_FETCH_RESOURCE(???, ???, broker_server, broker_server_id, "???", ???_rsrc_id);
 	}
-
 }
 
 /* SUBSCRIBE A DESTINATION_T (QUEUE|TOPIC) */
@@ -188,7 +186,6 @@ PHP_FUNCTION(sapo_broker_subscribe) {
 	if (broker_destination) {
 		//ZEND_FETCH_RESOURCE(???, ???, broker_destination, broker_destination_id, "???", ???_rsrc_id);
 	}
-
 }
 
 /* BAREBONES (NO FANCY DESTINATION_T) SUBSCRIBE TOPIC */
@@ -205,7 +202,6 @@ PHP_FUNCTION(sapo_broker_subscribe_topic) {
 	if (sapo_broker) {
 		//ZEND_FETCH_RESOURCE(???, ???, sapo_broker, sapo_broker_id, "???", ???_rsrc_id);
 	}
-
 }
 
 /* BAREBONES (NO FANCY DESTINATION_T) SUBSCRIBE QUEUE */
@@ -215,15 +211,18 @@ PHP_FUNCTION(sapo_broker_subscribe_queue) {
 	int sapo_broker_id = -1;
 	int queue_len;
 	zend_bool autoack;
-	zval *sapo_broker = NULL;
+	zval *zsapo_broker = NULL;
+	sapo_broker_t *sapo_broker;
+	char *internal_queue_name;
 
-	if (zend_parse_parameters(argc TSRMLS_CC, "rsb", &sapo_broker, &queue, &queue_len, &autoack) == FAILURE) 
-		return;
+	if (zend_parse_parameters(argc TSRMLS_CC, "rsb", &zsapo_broker, &queue, &queue_len, &autoack) == FAILURE) 
+		RETURN_FALSE;
 
-	if (sapo_broker) {
-		//ZEND_FETCH_RESOURCE(???, ???, sapo_broker, sapo_broker_id, "???", ???_rsrc_id);
+	if (zsapo_broker) {
+		ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
+		internal_queue_name = estrndup(queue, queue_len);
+		return_value = broker_subscribe_queue(sapo_broker, internal_queue_name, autoack);
 	}
-
 }
 
 /* RECEIVE A MESSAGE_T WITH A TIMEOUT */
@@ -237,10 +236,10 @@ PHP_FUNCTION(sapo_broker_receive) {
 	struct timeval timeout;
 	char *payload, *message_id;
 
-	if (zend_parse_parameters(argc TSRMLS_CC, "rl", &zsapo_broker, &msecs) == FAILURE) 
-		return;
+	if (zend_parse_parameters(argc TSRMLS_CC, "rl", &zsapo_broker, &msecs) == FAILURE)
+		RETURN_FALSE;
 
-	if (sapo_broker) {
+	if (zsapo_broker) {
 		ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
 		// convert miliseconds to timeval
 		timeout.tv_sec = msecs/1000;
@@ -248,7 +247,7 @@ PHP_FUNCTION(sapo_broker_receive) {
 		message = broker_receive(sapo_broker, &timeout);
 		if (message == NULL)
 			RETURN_FALSE;
-			
+		
 		array_init(return_value);
 		add_assoc_long(return_value, "payload_length", message->payload_len);
 		
