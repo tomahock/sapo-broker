@@ -214,6 +214,7 @@ PHP_FUNCTION(sapo_broker_subscribe_queue) {
 	zval *zsapo_broker = NULL;
 	sapo_broker_t *sapo_broker;
 	char *internal_queue_name;
+	int retval;
 
 	if (zend_parse_parameters(argc TSRMLS_CC, "rsb", &zsapo_broker, &queue, &queue_len, &autoack) == FAILURE) 
 		RETURN_FALSE;
@@ -221,7 +222,8 @@ PHP_FUNCTION(sapo_broker_subscribe_queue) {
 	if (zsapo_broker) {
 		ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
 		internal_queue_name = estrndup(queue, queue_len);
-		return_value = broker_subscribe_queue(sapo_broker, internal_queue_name, autoack);
+		retval = broker_subscribe_queue(sapo_broker, internal_queue_name, autoack);
+		RETURN_LONG(retval);
 	}
 }
 
