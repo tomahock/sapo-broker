@@ -292,13 +292,22 @@ public class Gcs
 
 		for (String queueName : queues)
 		{
+			QueueProcessor queueProcessor = null;
 			try
 			{
-				QueueProcessorList.get(queueName);
+				queueProcessor = QueueProcessorList.get(queueName);
 			}
 			catch (MaximumQueuesAllowedReachedException e)
 			{
 				// This never happens
+			}
+			if(queueProcessor != null)
+			{
+				if( (queueProcessor.getCounter() == 0 ) && (!queueName.contains("@")) )
+				{
+					log.info(String.format("Removing queue '%s' because it has no messages and it's not a VirtualQueue.", queueName));
+					QueueProcessorList.remove(queueName);					
+				}
 			}
 		}
 
