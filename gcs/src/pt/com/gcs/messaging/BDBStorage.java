@@ -33,6 +33,8 @@ public class BDBStorage
 {
 	private static Logger log = LoggerFactory.getLogger(BDBStorage.class);
 
+	private static final int MAX_REDELIVERY_PER_MESSAGE = 3;
+
 	private Environment env;
 
 	private Database messageDb;
@@ -42,8 +44,6 @@ public class BDBStorage
 	private QueueProcessor queueProcessor;
 
 	private final AtomicBoolean isMarkedForDeletion = new AtomicBoolean(false);
-
-	private static final int MAX_REDELIVERY_PER_MESSAGE = 3;
 
 	public BDBStorage(QueueProcessor qp)
 	{
@@ -340,6 +340,9 @@ public class BDBStorage
 
 	// Added for compatibility reasons --- END
 
+	
+	
+	
 	protected void recoverMessages()
 	{
 
@@ -467,6 +470,87 @@ public class BDBStorage
 			{
 				log.info("Number of redelivered messages for queue '{}': {}", queueProcessor.getDestinationName(), k0);
 			}
+		}
+		catch (Throwable t)
+		{
+			dealWithError(t, false);
+		}
+		finally
+		{
+			closeDbCursor(msg_cursor);
+		}
+	}
+
+	public void deleteExpiredMessages()
+	{
+		
+		if (isMarkedForDeletion.get())
+			return;
+
+		log.info("Runing BDBStorage.deleteExpiredMessages()");
+		
+		long now = System.currentTimeMillis();
+
+		int e0 = 0; //expired messages
+
+		Cursor msg_cursor = null;
+
+		try
+		{
+			msg_cursor = messageDb.openCursor(null, null);
+
+			DatabaseEntry key = new DatabaseEntry();
+			DatabaseEntry data = new DatabaseEntry();
+
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
+			{
+				if (isMarkedForDeletion.get())
+					break;
+
+				byte[] bdata = data.getData();
+
+				BDBMessage bdbm = null;
+				InternalMessage msg = null;
+
+				try
+				{
+					bdbm = MessageMarshaller.unmarshallBDBMessage(bdata);
+					if(bdbm == null)
+					{
+						log.info("MessageMarshaller.unmarshallBDBMessage returned null");
+						continue;
+					}
+					msg = bdbm.getMessage();
+				}
+				catch (Throwable e)
+				{
+					cursorDelete(msg_cursor);
+					continue;
+				}
+
+				long k = LongBinding.entryToLong(key);
+				msg.setMessageId(InternalMessage.getBaseMessageId() + k);
+
+				long reserveTimeout = bdbm.getReserveTimeout();
+				final boolean isReserved = reserveTimeout > now;
+				 
+				if (!isReserved)
+				{
+					if (now > msg.getExpiration())
+					{
+						cursorDelete(msg_cursor);
+						e0++;
+						dumpMessage(msg);
+
+					}
+				}
+			}
+			
+			if (e0 > 0)
+			{
+				log.warn("Number of expired messages for queue '{}': {}", queueProcessor.getDestinationName(), e0);
+			}
+
 		}
 		catch (Throwable t)
 		{

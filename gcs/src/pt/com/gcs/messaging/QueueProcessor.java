@@ -226,6 +226,15 @@ public class QueueProcessor
 		isWorking.set(false);
 	}
 
+	public void deleteExpiredMessages()
+	{
+		if (!hasRecipient())
+		{
+			storage.deleteExpiredMessages();
+		}
+
+	}
+
 	public void setSequenceNumber(long seqNumber)
 	{
 		_sequence.set(seqNumber);

@@ -1,5 +1,6 @@
 package pt.com.gcs.messaging;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -115,8 +116,6 @@ public class QueueProcessorList
 			{
 				throw new IllegalArgumentException(String.format("Queue named '%s' doesn't exist.", queueName));
 			}
-
-
 
 			QueueProcessor qp;
 			try

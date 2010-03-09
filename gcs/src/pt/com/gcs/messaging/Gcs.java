@@ -206,6 +206,9 @@ public class Gcs
 			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), RECOVER_INTERVAL, RECOVER_INTERVAL, TimeUnit.MILLISECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
+			
+			//GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);			
+			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 30, 30, TimeUnit.SECONDS);
 		}
 		catch (Throwable t)
 		{
