@@ -1,8 +1,10 @@
 package pt.com.broker.types;
 
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
 /**
  * Base class for encoding types. Implements MINA ProtocolEncoderAdapter, an abstract ProtocolEncoder implementation for those who don't have any resources to dispose.<br/>
@@ -10,16 +12,23 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
  * 
  */
 
-public abstract class SimpleFramingEncoder extends ProtocolEncoderAdapter
+public class SimpleFramingEncoder extends OneToOneEncoder
 {
 
-	public void encode(IoSession session, Object message, ProtocolEncoderOutput pout) throws Exception
+	@Override
+	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		processBody(message, pout);
+		if (!(msg instanceof byte[]))
+		{
+			return null;
+		}
+
+		byte[] bmsg = (byte[]) msg;
+
+		ChannelBuffer out = ChannelBuffers.buffer(bmsg.length + 4);
+		out.writeInt(bmsg.length);
+		out.writeBytes(bmsg);
+
+		return out;
 	}
-
-	public abstract byte[] processBody(Object message);
-
-	public abstract void processBody(Object message, ProtocolEncoderOutput pout);
-
 }

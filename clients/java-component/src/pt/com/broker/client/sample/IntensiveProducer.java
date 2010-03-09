@@ -2,8 +2,8 @@ package pt.com.broker.client.sample;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.caudexorigo.Shutdown;
 import org.caudexorigo.cli.CliFactory;
-import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,37 +35,43 @@ public class IntensiveProducer
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
-		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds to " + producer.dname +  "...");
-
-		Thread.sleep(2000);
+		Thread.sleep(1000);
 
 		producer.sendLoop(bk, cargs.getMessageLength());
+		
+		Shutdown.now();
 	}
 
 	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
 	{
-		for(int i = 0; i < 100; ++i)
+		final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
+
+		NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
+
+		long start, stop;
+		start = System.currentTimeMillis();
+
+		for (int j = 0; j < 1000000; j++)
 		{
-			for (int j = 0; j < 500; j++)
+
+			if (dtype == DestinationType.QUEUE)
 			{
-				final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
-		
-				NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
-		
-				if (dtype == DestinationType.QUEUE)
-				{
-					bk.enqueueMessage(brokerMessage, dname);
-				}
-				else
-				{
-					bk.publishMessage(brokerMessage, dname);
-				}
-		
-				log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
-		
-				Sleep.time(100);
+				bk.enqueueMessage(brokerMessage, dname);
 			}
-			Sleep.time(30000);
+			else
+			{
+				bk.publishMessage(brokerMessage, dname);
+			}
+
+			if (counter.incrementAndGet() % 5000 == 0)
+			{
+				log.info(String.format("%s -> Send Message: %s", counter.get(), msg));
+			}
 		}
+		stop = System.currentTimeMillis();
+
+		double duration = ((double) (stop - start)) / ((double) 1000);
+
+		log.info(String.format("Total time: %.2f sec.", duration));
 	}
 }

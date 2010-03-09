@@ -3,22 +3,26 @@ package pt.com.broker.http;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.http.HttpMethod;
-import org.apache.mina.filter.codec.http.HttpRequest;
-import org.apache.mina.filter.codec.http.HttpResponseStatus;
-import org.apache.mina.filter.codec.http.MutableHttpResponse;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
+import org.caudexorigo.http.netty.HttpAction;
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferOutputStream;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.http.HttpAction;
 
 /**
  * AdminAction is an HttpAction. It supports some administrative options such agent's shutdown or queue deletion.
@@ -30,7 +34,7 @@ public class AdminAction extends HttpAction
 	private static final String content_type = "text/plain";
 
 	private static final Logger log = LoggerFactory.getLogger(AdminAction.class);
-	private IoBuffer BAD_REQUEST_RESPONSE;
+	private ChannelBuffer BAD_REQUEST_RESPONSE;
 
 	public AdminAction()
 	{
@@ -38,9 +42,8 @@ public class AdminAction extends HttpAction
 		try
 		{
 			byte[] bad_arr = "<p>Only the POST verb is supported</p>".getBytes("UTF-8");
-			BAD_REQUEST_RESPONSE = IoBuffer.allocate(bad_arr.length);
-			BAD_REQUEST_RESPONSE.put(bad_arr);
-			BAD_REQUEST_RESPONSE.flip();
+			BAD_REQUEST_RESPONSE = ChannelBuffers.buffer(bad_arr.length);
+			BAD_REQUEST_RESPONSE.setBytes(0, bad_arr);
 		}
 		catch (Throwable error)
 		{
@@ -50,18 +53,16 @@ public class AdminAction extends HttpAction
 	}
 
 	@Override
-	public void writeResponse(IoSession session, HttpRequest request, MutableHttpResponse response)
+	public void writeResponse(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response)
 	{
+		Channel channel = ctx.getChannel();
 		try
 		{
 			if (request.getMethod().equals(HttpMethod.POST))
 			{
-				IoBuffer bb = (IoBuffer) request.getContent();
-				byte[] buf = new byte[bb.limit()];
-				bb.position(0);
-				bb.get(buf);
-
-				String action = new String(buf);
+				String action = new String(request.getContent().array());
+				
+				System.out.println("AdminAction.writeResponse.action: " + action);
 
 				if (StringUtils.isBlank(action))
 				{
@@ -82,20 +83,16 @@ public class AdminAction extends HttpAction
 				}
 				else if (action.startsWith("QUEUE:"))
 				{
-					String from = session.getRemoteAddress().toString();
+					String from = channel.getRemoteAddress().toString();
 					String queueName = StringUtils.substringAfter(action, "QUEUE:");
 					Gcs.deleteQueue(queueName);
 					String message = String.format("Queue '%s' was deleted. Request from: '%s'%n", queueName, from);
 					log.info(message);
-					IoBuffer bbo = IoBuffer.allocate(1024);
-					bbo.setAutoExpand(true);
-					OutputStream out = bbo.asOutputStream();
-					out.write(message.getBytes("UTF-8"));
-					bbo.flip();
+					ChannelBuffer bbo = ChannelBuffers.wrappedBuffer(message.getBytes("UTF-8"));
 					response.setContent(bbo);
 				}
 
-				response.setStatus(HttpResponseStatus.OK);
+				response.setStatus (HttpResponseStatus.OK);
 			}
 			else
 			{
@@ -109,23 +106,23 @@ public class AdminAction extends HttpAction
 			fault(e, response);
 			if (log.isErrorEnabled())
 			{
-				log.error("HTTP Service error, cause:" + e.getMessage() + ". Client address:" + session.getRemoteAddress());
+				log.error("HTTP Service error, cause:" + e.getMessage() + ". Client address:" + channel.getRemoteAddress());
 			}
 		}
 	}
 
-	public void fault(Throwable cause, MutableHttpResponse response)
+	public void fault(Throwable cause, HttpResponse response)
 	{
 		try
 		{
-			IoBuffer bbf = IoBuffer.allocate(1024);
-			bbf.setAutoExpand(true);
-			OutputStream out = bbf.asOutputStream();
+			ChannelBuffer bbf = ChannelBuffers.buffer(1024);
+			OutputStream out = new ChannelBufferOutputStream(bbf);
 			Throwable rootCause = ErrorAnalyser.findRootCause(cause);
 			CriticalErrors.exitIfCritical(rootCause);
 			out.write(("Error: " + rootCause.getMessage() + "\n").getBytes("UTF-8"));
-			bbf.flip();
-			response.setContentType(content_type);
+			out.flush();
+			
+			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, content_type);
 			response.setContent(bbf);
 		}
 		catch (Throwable e)

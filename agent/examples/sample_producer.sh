@@ -28,5 +28,5 @@ java -server \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
 -cp $classpath \
-pt.com.broker.client.sample.Producer $*
+pt.com.broker.client.sample.IntensiveProducer $*
 #pt.com.broker.client.sample.Producer -n /test/foo -d TOPIC

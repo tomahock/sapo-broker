@@ -36,8 +36,6 @@ class PatternCache
 
 	private Pattern i_get(String regex)
 	{
-		log.debug("Get Pattern for: {}", regex);
-
 		try
 		{
 			return pCache.get(regex, p_cf);

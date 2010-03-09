@@ -112,7 +112,8 @@ public class AccessControl
 			@Override
 			public void globalConfigModified()
 			{
-				synchronized(agentAcl) {
+				synchronized (agentAcl)
+				{
 					loadSecurityPolicies();
 				}
 			}
@@ -284,7 +285,8 @@ public class AccessControl
 	{
 		SessionAcl sessionAcl = new SessionAcl();
 
-		synchronized(agentAcl) {
+		synchronized (agentAcl)
+		{
 			for (AclEntry entry : agentAcl)
 			{
 				for (AclPredicate pred : entry.getConditions())
@@ -379,8 +381,7 @@ public class AccessControl
 
 							ValidationResult res = new ValidationResult();
 							res.accessGranted = false;
-							res.reasonForRejection = String.format("Access denied! Destination type: %s, Destination name: %s, Privilege: %s",
-									destinationType, destinationName, privilege);
+							res.reasonForRejection = String.format("Access denied! Destination type: %s, Destination name: %s, Privilege: %s", destinationType, destinationName, privilege);
 							return res;
 						}
 

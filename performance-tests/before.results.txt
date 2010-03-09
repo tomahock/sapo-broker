@@ -1,0 +1,217 @@
+
+--------------------------------------------------
+TEST: test1
+Consumers: 1, Producers: 1, Destination Type: TOPIC, Sync Consumer: false
+Message size: 256, Number of messages: 100000
+
+Consumer: consumer1, Messages: 100000, Time: 2.81, Messages/second: 35648.10
+Procucer: producer1, Messages: 100000, Time: 2.77, Messages/second: 36087.37
+
+TOTAL CONSUMER: Messages/second: 35649.353
+TOTAL PRODUCER: Messages/second: 36088.055
+--------------------------------------------------
+TEST: test2
+Consumers: 1, Producers: 1, Destination Type: TOPIC, Sync Consumer: false
+Message size: 512, Number of messages: 100000
+
+Consumer: consumer1, Messages: 100000, Time: 2.88, Messages/second: 34772.39
+Procucer: producer1, Messages: 100000, Time: 2.86, Messages/second: 35015.25
+
+TOTAL CONSUMER: Messages/second: 34772.933
+TOTAL PRODUCER: Messages/second: 35016.458
+--------------------------------------------------
+TEST: test3
+Consumers: 1, Producers: 1, Destination Type: TOPIC, Sync Consumer: false
+Message size: 1024, Number of messages: 100000
+
+Consumer: consumer1, Messages: 100000, Time: 3.40, Messages/second: 29368.97
+Procucer: producer1, Messages: 100000, Time: 3.39, Messages/second: 29505.36
+
+TOTAL CONSUMER: Messages/second: 29369.438
+TOTAL PRODUCER: Messages/second: 29505.488
+--------------------------------------------------
+TEST: test4
+Consumers: 1, Producers: 1, Destination Type: TOPIC, Sync Consumer: false
+Message size: 4096, Number of messages: 100000
+
+Consumer: consumer1, Messages: 100000, Time: 7.06, Messages/second: 14166.19
+Procucer: producer1, Messages: 100000, Time: 7.06, Messages/second: 14172.28
+
+TOTAL CONSUMER: Messages/second: 14166.313
+TOTAL PRODUCER: Messages/second: 14172.336
+--------------------------------------------------
+TEST: test5
+Consumers: 1, Producers: 1, Destination Type: TOPIC, Sync Consumer: false
+Message size: 8192, Number of messages: 100000
+
+Consumer: consumer1, Messages: 100000, Time: 13.12, Messages/second: 7621.07
+Procucer: producer1, Messages: 100000, Time: 13.12, Messages/second: 7622.22
+
+TOTAL CONSUMER: Messages/second: 7621.080
+TOTAL PRODUCER: Messages/second: 7622.242
+--------------------------------------------------
+TEST: test6
+Consumers: 2, Producers: 1, Destination Type: TOPIC, Sync Consumer: false
+Message size: 4096, Number of messages: 100000
+
+Consumer: consumer2, Messages: 100000, Time: 10.25, Messages/second: 9752.20
+Consumer: consumer1, Messages: 100000, Time: 10.25, Messages/second: 9752.87
+Procucer: producer1, Messages: 100000, Time: 10.25, Messages/second: 9758.47
+
+TOTAL CONSUMER: Messages/second: 19504.203
+TOTAL PRODUCER: Messages/second: 9758.478
+--------------------------------------------------
+TEST: test7
+Consumers: 2, Producers: 1, Destination Type: TOPIC, Sync Consumer: false
+Message size: 8192, Number of messages: 100000
+
+Consumer: consumer1, Messages: 100000, Time: 18.08, Messages/second: 5531.45
+Consumer: consumer2, Messages: 100000, Time: 18.08, Messages/second: 5531.34
+Procucer: producer1, Messages: 100000, Time: 18.07, Messages/second: 5532.70
+
+TOTAL CONSUMER: Messages/second: 11062.681
+TOTAL PRODUCER: Messages/second: 5532.718
+--------------------------------------------------
+TEST: test8
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 256, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 5.04, Messages/second: 19831.69
+Consumer: consumer1, Messages: 100000, Time: 12.02, Messages/second: 8317.77
+
+TOTAL CONSUMER: Messages/second: 8317.807
+TOTAL PRODUCER: Messages/second: 19831.826
+--------------------------------------------------
+TEST: test9
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 512, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 5.94, Messages/second: 16834.87
+Consumer: consumer1, Messages: 100000, Time: 11.98, Messages/second: 8347.68
+
+TOTAL CONSUMER: Messages/second: 8347.733
+TOTAL PRODUCER: Messages/second: 16835.017
+--------------------------------------------------
+TEST: test10
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 1024, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 8.68, Messages/second: 11526.84
+Consumer: consumer1, Messages: 100000, Time: 15.33, Messages/second: 6521.59
+
+TOTAL CONSUMER: Messages/second: 6521.626
+TOTAL PRODUCER: Messages/second: 11526.846
+--------------------------------------------------
+TEST: test11
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 4096, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 25.84, Messages/second: 3870.67
+Consumer: consumer1, Messages: 100000, Time: 38.00, Messages/second: 2631.54
+
+TOTAL CONSUMER: Messages/second: 2631.544
+TOTAL PRODUCER: Messages/second: 3870.673
+--------------------------------------------------
+TEST: test12
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 8192, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 51.20, Messages/second: 1952.96
+Consumer: consumer1, Messages: 100000, Time: 65.34, Messages/second: 1530.45
+
+TOTAL CONSUMER: Messages/second: 1530.454
+TOTAL PRODUCER: Messages/second: 1952.969
+--------------------------------------------------
+TEST: test13
+Consumers: 2, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 4096, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 28.37, Messages/second: 3524.30
+Consumer: consumer2, Messages: 51230, Time: 35.35, Messages/second: 1449.18
+Consumer: consumer1, Messages: 48770, Time: 35.47, Messages/second: 1375.01
+
+TOTAL CONSUMER: Messages/second: 2819.387
+TOTAL PRODUCER: Messages/second: 3524.316
+--------------------------------------------------
+TEST: test14
+Consumers: 2, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 8192, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 59.45, Messages/second: 1682.16
+Consumer: consumer2, Messages: 48895, Time: 62.81, Messages/second: 778.47
+Consumer: consumer1, Messages: 51105, Time: 62.71, Messages/second: 814.92
+
+TOTAL CONSUMER: Messages/second: 1592.088
+TOTAL PRODUCER: Messages/second: 1682.162
+--------------------------------------------------
+TEST: test15
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 256, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 4.84, Messages/second: 20649.33
+Consumer: consumer1, Messages: 100000, Time: 10.86, Messages/second: 9208.89
+
+TOTAL CONSUMER: Messages/second: 9208.951
+TOTAL PRODUCER: Messages/second: 20649.638
+--------------------------------------------------
+TEST: test16
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 512, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 7.60, Messages/second: 13166.12
+Consumer: consumer1, Messages: 100000, Time: 11.64, Messages/second: 8594.08
+
+TOTAL CONSUMER: Messages/second: 8594.092
+TOTAL PRODUCER: Messages/second: 13166.210
+--------------------------------------------------
+TEST: test17
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 1024, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 9.10, Messages/second: 10994.28
+Consumer: consumer1, Messages: 100000, Time: 15.89, Messages/second: 6292.29
+
+TOTAL CONSUMER: Messages/second: 6292.316
+TOTAL PRODUCER: Messages/second: 10994.327
+--------------------------------------------------
+TEST: test18
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 4096, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 26.17, Messages/second: 3821.31
+Consumer: consumer1, Messages: 100000, Time: 37.79, Messages/second: 2646.25
+
+TOTAL CONSUMER: Messages/second: 2646.252
+TOTAL PRODUCER: Messages/second: 3821.315
+--------------------------------------------------
+TEST: test19
+Consumers: 1, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 8192, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 51.15, Messages/second: 1954.86
+Consumer: consumer1, Messages: 100000, Time: 69.44, Messages/second: 1440.03
+
+TOTAL CONSUMER: Messages/second: 1440.028
+TOTAL PRODUCER: Messages/second: 1954.858
+--------------------------------------------------
+TEST: test20
+Consumers: 2, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 4096, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 27.17, Messages/second: 3680.43
+Consumer: consumer2, Messages: 50661, Time: 35.47, Messages/second: 1428.17
+Consumer: consumer1, Messages: 49339, Time: 35.47, Messages/second: 1390.95
+
+TOTAL CONSUMER: Messages/second: 2819.045
+TOTAL PRODUCER: Messages/second: 3680.435
+--------------------------------------------------
+TEST: test21
+Consumers: 2, Producers: 1, Destination Type: QUEUE, Sync Consumer: false
+Message size: 8192, Number of messages: 100000
+
+Procucer: producer1, Messages: 100000, Time: 51.71, Messages/second: 1933.81
+Consumer: consumer2, Messages: 49559, Time: 62.75, Messages/second: 789.81
+Consumer: consumer1, Messages: 50441, Time: 62.75, Messages/second: 803.80
+
+TOTAL CONSUMER: Messages/second: 1593.549
+TOTAL PRODUCER: Messages/second: 1933.817

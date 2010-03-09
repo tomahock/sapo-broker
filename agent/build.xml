@@ -106,6 +106,9 @@
 			<property name="project.location" value="../bindings/xml/java" />
 			<property name="version" value="${version}" />
 		</ant>
+		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" />
+		</ant>
 		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" />
 		</ant>
@@ -113,9 +116,6 @@
 			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../clients/java-component/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" />
-		</ant>
-		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" />
 		</ant>
 	</target>

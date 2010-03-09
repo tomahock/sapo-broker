@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.xml.bind.JAXBContext;
@@ -21,7 +22,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.mina.util.ConcurrentHashSet;
 import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class GlobalConfig
 
 	private final List<Peer> peerList = new ArrayList<Peer>();
 
-	private final Set<InetSocketAddress> peerSet = new ConcurrentHashSet<InetSocketAddress>();
+	private final Set<InetSocketAddress> peerSet = Collections.newSetFromMap(new ConcurrentHashMap<InetSocketAddress, Boolean>());
 
 	private static final GlobalConfig instance = new GlobalConfig();
 

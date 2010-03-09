@@ -71,7 +71,11 @@ public class InternalMessage
 
 	public InternalMessage()
 	{
-		setId(BASE_MESSAGE_ID + "#" + SEQ.incrementAndGet());
+		StringBuilder sb = new StringBuilder();
+		sb.append(BASE_MESSAGE_ID);
+		sb.append("#");
+		sb.append(SEQ.incrementAndGet());
+		setId(sb.toString());
 	}
 
 	public InternalMessage(String destination, NetBrokerMessage content)

@@ -609,7 +609,6 @@ public class ThriftBindingSerializer implements BindingSerializer
 		return message;
 	}
 
-	
 	@Override
 	public NetProtocolType getProtocolType()
 	{

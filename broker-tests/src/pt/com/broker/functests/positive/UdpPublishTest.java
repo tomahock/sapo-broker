@@ -9,11 +9,10 @@ import pt.com.broker.client.HostInfo;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetAction.DestinationType;
 
 public class UdpPublishTest extends GenericPubSubTest
 {
@@ -22,24 +21,9 @@ public class UdpPublishTest extends GenericPubSubTest
 	public UdpPublishTest(String testName)
 	{
 		super(testName);
-		
-		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
-		int port = 0;
-		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
-		{
-			port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-udp-port"));
-		}
-		else
-		{
-			port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-udp-port"));
-		}
-		
 		HostInfo hostInfo = new HostInfo(ConfigurationInfo.getParameter("agent1-host"),
-				BrokerTest.getAgent1Port(),
-				port);
-		
-		System.out.println("UdpPublishTest. Using port: " + port);
-		
+				Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")),
+				Integer.parseInt(ConfigurationInfo.getParameter("agent1-udp-port")));
 		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
 		hosts.add(hostInfo);
 		try
@@ -65,21 +49,11 @@ public class UdpPublishTest extends GenericPubSubTest
 				try
 				{
 
-					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());					
+					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 					NetPublish netPublish = new NetPublish(getDestinationName(),getDestinationType(), brokerMessage);
 					
-					BrokerClient bc = ((BrokerClient) getInfoProducer());
-					
-					if( getEncodingProtocolType() != NetProtocolType.SOAP_v0)
-					{
-						bc.publishMessageOverUdp(netPublish);
-					}
-					else
-					{
-						System.out.println("UdpPublishTest.getAction().new Action() {...}.run() - publishMessageOverUdpLegacy" );
-						bc.publishMessageOverUdpLegacy(netPublish);
-					}
+					((BrokerClient)getInfoProducer()).publishMessageOverUdp(netPublish);
 					
 					getInfoProducer().close();
 

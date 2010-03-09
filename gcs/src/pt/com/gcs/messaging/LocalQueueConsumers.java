@@ -1,21 +1,23 @@
 package pt.com.gcs.messaging;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * LocalQueueConsumers maintains current local queue consumers.
@@ -30,7 +32,9 @@ public class LocalQueueConsumers
 
 	public static final AtomicLong ackedMessages = new AtomicLong(0L);
 
-	protected static void acknowledgeMessage(InternalMessage msg, IoSession ioSession)
+	private static final Set<String> queuesWithInactiveConsumers = new HashSet<String>();
+
+	protected static void acknowledgeMessage(InternalMessage msg, Channel channel)
 	{
 		log.debug("Acknowledge message with Id: '{}'.", msg.getMessageId());
 
@@ -41,7 +45,7 @@ public class LocalQueueConsumers
 			InternalMessage m = new InternalMessage(msg.getMessageId(), msg.getDestination(), brkMsg);
 			m.setType(MessageType.ACK);
 
-			ioSession.write(m);
+			channel.write(m);
 		}
 		catch (Throwable ct)
 		{
@@ -49,7 +53,7 @@ public class LocalQueueConsumers
 
 			try
 			{
-				ioSession.close();
+				channel.close();
 			}
 			catch (Throwable ict)
 			{
@@ -68,7 +72,18 @@ public class LocalQueueConsumers
 		listeners.add(listener);
 		instance.localQueueConsumers.put(queueName, listeners);
 		if (listeners.size() == 1)
-			instance.broadCastNewQueueConsumer(queueName);
+		{
+			broadCastNewQueueConsumer(queueName);
+			queuesWithInactiveConsumers.remove(queueName);
+		}
+		else
+		{
+			if (queuesWithInactiveConsumers.contains(queueName))
+			{
+				queuesWithInactiveConsumers.remove(queueName);
+				broadCastNewQueueConsumer(queueName);
+			}
+		}
 	}
 
 	public synchronized static void remove(MessageListener listener)
@@ -86,13 +101,14 @@ public class LocalQueueConsumers
 				if (listeners.size() == 0)
 				{
 					instance.localQueueConsumers.remove(queueName);
-					instance.broadCastRemovedQueueConsumer(queueName);
+					queuesWithInactiveConsumers.remove(queueName);
+					broadCastRemovedQueueConsumer(queueName);
 				}
 			}
 		}
 	}
 
-	protected static void broadCastQueueInfo(String destinationName, String action, IoSession ioSession)
+	protected static void broadCastQueueInfo(String destinationName, String action, Channel channel)
 	{
 		if (StringUtils.isBlank(destinationName))
 		{
@@ -101,15 +117,15 @@ public class LocalQueueConsumers
 
 		if (action.equals("CREATE"))
 		{
-			log.info("Tell {} about new queue consumer for: {}.", IoSessionHelper.getRemoteAddress(ioSession), destinationName);
+			log.info("Tell {} about new queue consumer for: {}.", channel.getRemoteAddress().toString(), destinationName);
 		}
 		else if (action.equals("DELETE"))
 		{
-			log.info("Tell {} about deleted queue consumer of: {}.", IoSessionHelper.getRemoteAddress(ioSession), destinationName);
+			log.info("Tell {} about deleted queue consumer of: {}.", channel.getRemoteAddress().toString(), destinationName);
 		}
 
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><destination>%s</destination></sysmessage>";
-		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), ioSession.getLocalAddress().toString(), destinationName);
+		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), channel.getLocalAddress().toString(), destinationName);
 
 		InternalMessage m = new InternalMessage();
 		NetBrokerMessage brkMsg;
@@ -126,12 +142,13 @@ public class LocalQueueConsumers
 			// This exception is never thrown because UTF-8 encoding is built-in
 			// in every JVM
 		}
-		SystemMessagesPublisher.sendMessage(m, ioSession);
+		SystemMessagesPublisher.sendMessage(m, channel);
 	}
 
 	protected synchronized static void delete(String queueName)
 	{
 		instance.localQueueConsumers.remove(queueName);
+		queuesWithInactiveConsumers.remove(queueName);
 	}
 
 	protected static Set<String> getBroadcastableQueues()
@@ -153,8 +170,9 @@ public class LocalQueueConsumers
 			CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 			listeners.clear();
 			instance.localQueueConsumers.remove(queueName);
-			instance.broadCastRemovedQueueConsumer(queueName);
+			broadCastRemovedQueueConsumer(queueName);
 		}
+		queuesWithInactiveConsumers.clear();
 	}
 
 	public static int size(String destinationName)
@@ -180,9 +198,9 @@ public class LocalQueueConsumers
 		return size;
 	}
 
-	public static boolean hasReadyRecipients(String destinationName)
+	public static boolean hasReadyRecipients(String queueName)
 	{
-		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
+		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 		if (listeners != null)
 		{
 			for (MessageListener ml : listeners)
@@ -192,14 +210,19 @@ public class LocalQueueConsumers
 		return false;
 	}
 
-	public static boolean hasActiveRecipients(String destinationName)
+	public static synchronized boolean hasActiveRecipients(String queueName)
 	{
-		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(destinationName);
+		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 		if (listeners != null)
 		{
 			for (MessageListener ml : listeners)
 				if (ml.isActive())
 					return true;
+		}
+		if (!queuesWithInactiveConsumers.contains(queueName))
+		{
+			queuesWithInactiveConsumers.add(queueName);
+			broadCastRemovedQueueConsumer(queueName);
 		}
 		return false;
 	}
@@ -212,17 +235,80 @@ public class LocalQueueConsumers
 
 	private LocalQueueConsumers()
 	{
+		Runnable inactivityChecker = new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				synchronized (LocalQueueConsumers.class)
+				{
+					for (String queueName : instance.localQueueConsumers.keySet())
+					{
+						if (queuesWithInactiveConsumers.contains(queueName))
+						{
+							continue;
+						}
+						boolean hasActive = false;
+						for (MessageListener messageListener : instance.localQueueConsumers.get(queueName))
+						{
+							if (messageListener.isActive())
+							{
+								hasActive = true;
+								break;
+							}
+						}
+						// there are no active consumers - broadcast queue delete
+						if (!hasActive)
+						{
+							queuesWithInactiveConsumers.add(queueName);
+							broadCastRemovedQueueConsumer(queueName);
+						}
+					}
+				}
+			}
+		};
+
+		Runnable endOfInactivityChecker = new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				synchronized (LocalQueueConsumers.class)
+				{
+					ArrayList<String> queuesWithActiveConsumers = new ArrayList<String>();
+					for (String queueName : queuesWithInactiveConsumers)
+					{
+						for (MessageListener messageListener : instance.localQueueConsumers.get(queueName))
+						{
+							if (messageListener.isActive())
+							{
+								queuesWithActiveConsumers.add(queueName);
+								break;
+							}
+						}
+					}
+					for (String queueName : queuesWithActiveConsumers)
+					{
+						queuesWithInactiveConsumers.remove(queueName);
+						broadCastNewQueueConsumer(queueName);
+					}
+				}
+			}
+		};
+
+		GcsExecutor.scheduleAtFixedRate(inactivityChecker, 5 * 60, 10, TimeUnit.SECONDS);
+		GcsExecutor.scheduleAtFixedRate(endOfInactivityChecker, (6 * 60) + 5, 10, TimeUnit.SECONDS);
 	}
 
-	private void broadCastActionQueueConsumer(String destinationName, String action)
+	private static void broadCastActionQueueConsumer(String destinationName, String action)
 	{
-		Set<IoSession> sessions = Gcs.getManagedConnectorSessions();
+		Set<Channel> sessions = Gcs.getManagedConnectorSessions();
 
-		for (IoSession ioSession : sessions)
+		for (Channel channel : sessions)
 		{
 			try
 			{
-				broadCastQueueInfo(destinationName, action, ioSession);
+				broadCastQueueInfo(destinationName, action, channel);
 			}
 			catch (Throwable t)
 			{
@@ -230,7 +316,7 @@ public class LocalQueueConsumers
 
 				try
 				{
-					ioSession.close();
+					channel.close();
 				}
 				catch (Throwable ct)
 				{
@@ -240,12 +326,12 @@ public class LocalQueueConsumers
 		}
 	}
 
-	private void broadCastNewQueueConsumer(String destinationName)
+	private static void broadCastNewQueueConsumer(String destinationName)
 	{
 		broadCastActionQueueConsumer(destinationName, "CREATE");
 	}
 
-	private void broadCastRemovedQueueConsumer(String destinationName)
+	private static void broadCastRemovedQueueConsumer(String destinationName)
 	{
 		broadCastActionQueueConsumer(destinationName, "DELETE");
 	}

@@ -1,7 +1,7 @@
 package pt.com.broker.messaging;
 
-import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +43,8 @@ public class BrokerProducer
 			if (StringUtils.isNotBlank(brkMessage.getMessageId()))
 				message.setMessageId(brkMessage.getMessageId());
 
-			if (StringUtils.isNotBlank(publish.getDestination()))
-			{
-				message.setDestination(publish.getDestination());
-			}
+			message.setDestination(publish.getDestination());
+			
 			if (brkMessage.getTimestamp() != -1)
 				message.setTimestamp(brkMessage.getTimestamp());
 
@@ -74,16 +72,13 @@ public class BrokerProducer
 	{
 		InternalMessage msg = prepareForSending(enqReq);
 		
-		StringBuffer sb_source = new StringBuffer();
+		StringBuilder sb_source = new StringBuilder();
 		sb_source.append("queue@");
 		sb_source.append(GcsInfo.getAgentName());
 		sb_source.append("://");
 		sb_source.append(enqReq.getDestination());
-		if (StringUtils.isNotBlank(messageSource))
-		{
-			sb_source.append("?app=");
-			sb_source.append(messageSource);
-		}
+		sb_source.append("?app=");
+		sb_source.append(messageSource);
 		msg.setSourceApp(sb_source.toString());
 		msg.setType(MessageType.COM_QUEUE);
 
@@ -95,23 +90,20 @@ public class BrokerProducer
 	{
 		InternalMessage msg = prepareForSending(pubReq);
 
-		StringBuffer sb_source = new StringBuffer();
+		StringBuilder sb_source = new StringBuilder();
 		sb_source.append("topic@");
 		sb_source.append(GcsInfo.getAgentName());
 		sb_source.append("://");
 		sb_source.append(pubReq.getDestination());
-		if (StringUtils.isNotBlank(messageSource))
-		{
-			sb_source.append("?app=");
-			sb_source.append(messageSource);
-		}
+		sb_source.append("?app=");
+		sb_source.append(messageSource);
 		msg.setSourceApp(sb_source.toString());
 		msg.setType(MessageType.COM_TOPIC);
 		Gcs.publish(msg);
 	}
 
 	
-	public void acknowledge(NetAcknowledge ackReq, IoSession session)
+	public void acknowledge(NetAcknowledge ackReq, Channel channel)
 	{
 		String destination = ackReq.getDestination();
 		Gcs.ackMessage(destination, ackReq.getMessageId());

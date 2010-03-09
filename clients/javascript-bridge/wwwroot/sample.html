@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <title>Sapo-Broker Javascript Bridge sample</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script type="text/javascript" src="swfobject.js"></script>
+		<script type="text/javascript" src="FABridge.js"></script>
+		<script type="text/javascript" src="web_socket.js"></script>
+		<script type="text/javascript">
+			WebSocket.__swfLocation = "WebSocketMain.swf";
+		</script>
+   		<script type="text/javascript" src="json2.js"></script>
+  
+	      	<script type="text/javascript" src="jsBridge.js"></script>
+        	<script type="text/javascript" src="sample.js"></script>
+
+		<script type="text/javascript">
+			window.onload = jsTestInit;
+		</script>
+    </head>
+    <body>
+	<h1>Sapo-Broker Javascript Bridge sample (this is a dev test!)</h1>
+	<div id="publicationSection">
+		<h2>Message publication</h2>
+		<table>
+			<tr>
+				<td>
+					Channel:
+				</td>
+				<td>
+					<select id="publicationChannels" style="width:150px">
+					</select>	
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Message:
+				</td>
+				<td>
+					<input id="publishText" type="text" style="width:150px"/>	
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+				<td>
+					<input id="publishBtn" type="submit" class="button" value="Publish"/>
+				</td>			
+			</tr>
+		</table>
+	</div>
+	<div id="SubscriptionSection">
+		<h2>Subscriptions</h2>
+		<p>Subscribe and unsubscribe</p>
+		<table><tr>
+			<td>
+				<select size="8" multiple="true" id="channelsToSubscribe" style="width:250px" >
+				</select>
+				<p style="text-align:center">Channels to subscribe</p>
+			</td>
+			<td>
+				<input id="subscribeChannels" type="submit" class="button" value=">>" /><br/>
+				<input id="unsubscribeChannels" type="submit" class="button" value="<<" />
+			</td>
+			<td>
+				<select size="8" multiple="true" id="subscribedChannels" style="width:250px" >
+
+				</select>
+				<p style="text-align:center">Subscribed channels</p>
+			</td>			
+		</tr></table>
+
+		<p>Received messages</p>
+		<textarea rows="10" cols="40" readonly="true" id="receivedMessages" style="width:90%" >
+		
+		</textarea>
+		<div id="htmlContent">
+			
+		</div>
+	</div>
+    </body>
+</html>

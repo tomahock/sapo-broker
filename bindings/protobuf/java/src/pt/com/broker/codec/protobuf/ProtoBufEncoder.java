@@ -1,38 +1,30 @@
 package pt.com.broker.codec.protobuf;
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.SimpleFramingEncoderV2;
 
 /**
  * Google Protocol Buffer encoder.
  * 
  */
-
-public class ProtoBufEncoder extends SimpleFramingEncoderV2
+@Sharable
+public class ProtoBufEncoder extends OneToOneEncoder
 {
-	private static final Logger log = LoggerFactory.getLogger(ProtoBufEncoder.class);
-
 	private static final BindingSerializer serializer = new ProtoBufBindingSerializer();
 
-	public ProtoBufEncoder()
-	{
-	}
-
 	@Override
-	public void processBody(Object message, IoBuffer wbuf, Short protocolType, Short protocolVersion)
+	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		if (!(message instanceof NetMessage))
+		if (!(msg instanceof NetMessage))
 		{
-			log.error("Error encoding message. Unexpected type: " + message.getClass().getName());
-			return;
+			return msg;
 		}
 
-		NetMessage gcsMessage = (NetMessage) message;
-		serializer.marshal(gcsMessage, wbuf.asOutputStream());
+		return serializer.marshal((NetMessage) msg);
 	}
 }

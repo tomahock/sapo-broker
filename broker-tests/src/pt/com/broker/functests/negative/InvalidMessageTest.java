@@ -12,7 +12,6 @@ import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPing;
-import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.ActionType;
 
 public class InvalidMessageTest extends GenericNegativeTest
@@ -24,8 +23,6 @@ public class InvalidMessageTest extends GenericNegativeTest
 
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
-	
-		setOkToTimeOut(true);
 	}
 
 	private byte[] buildMessage()
@@ -48,9 +45,6 @@ public class InvalidMessageTest extends GenericNegativeTest
 		case THRIFT:
 			encoder = new ThriftBindingSerializer();
 			break;
-		case SOAP_v0:
-			encoder = new SoapBindingSerializer();
-			break;
 		}
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -64,10 +58,7 @@ public class InvalidMessageTest extends GenericNegativeTest
 
 			bitInvert(rawData, 0, rawData.length);
 
-			if (getEncodingProtocolType() != NetProtocolType.SOAP_v0)
-			{
-				dataOutputStream.write(headerWithoutSize);
-			}
+			dataOutputStream.write(headerWithoutSize);
 			dataOutputStream.writeInt(rawData.length);
 			dataOutputStream.write(rawData);
 		}

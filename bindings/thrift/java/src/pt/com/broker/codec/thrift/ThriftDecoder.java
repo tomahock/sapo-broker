@@ -1,31 +1,31 @@
 package pt.com.broker.codec.thrift;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 
 import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.SimpleFramingDecoderV2;
 
 /**
  * Thriftdecoder.
  * 
  */
-public class ThriftDecoder extends SimpleFramingDecoderV2
+@Sharable
+public class ThriftDecoder extends OneToOneDecoder
 {
-
-	private static final Logger log = LoggerFactory.getLogger(ThriftDecoder.class);
 
 	private static final BindingSerializer serializer = new ThriftBindingSerializer();
 
-	public ThriftDecoder(int maxMessageSize)
-	{
-		super(maxMessageSize);
-	}
-
 	@Override
-	public Object processBody(byte[] packet, short protocolType, short protocolVersion)
+	protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		return serializer.unmarshal(packet);
-	}
+		if (!(msg instanceof ChannelBuffer))
+		{
+			return msg;
+		}
 
+		return serializer.unmarshal(((ChannelBuffer) msg).array());
+	}
 }

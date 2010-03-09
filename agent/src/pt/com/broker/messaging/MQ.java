@@ -43,12 +43,15 @@ public class MQ
 
 	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
+	private static final String DEFAULT_REQUEST_SOURCE;
+
 	static
 	{
 		MAX_PENDING_MESSAGES = DEFAULT_MAX_PENDING_MESSAGES;
 		MAX_MESSAGE_SIZE = DEFAULT_MAX_MESSAGE_SIZE;
 		MAX_CONSUMERS = DEFAULT_MAX_CONSUMERS;
 		MAX_PRODUCERS = DEFAULT_MAX_PRODUCERS;
+		DEFAULT_REQUEST_SOURCE = "broker://agent/" + pt.com.gcs.conf.GcsInfo.getAgentName() + "/";
 	}
 
 	public static String requestSource(SoapEnvelope soap)
@@ -72,6 +75,6 @@ public class MQ
 			return from;
 		}
 
-		return "broker://agent/" + pt.com.gcs.conf.GcsInfo.getAgentName() + "/";
+		return DEFAULT_REQUEST_SOURCE;
 	}
 }

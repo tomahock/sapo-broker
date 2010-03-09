@@ -25,6 +25,7 @@ import pt.com.broker.functests.negative.PongTest;
 import pt.com.broker.functests.negative.TimeoutPollTest;
 import pt.com.broker.functests.negative.TotallyInvalidRandomMessageTest;
 import pt.com.broker.functests.negative.UnknownAuthTypeFailedTest;
+import pt.com.broker.functests.positive.DBRolesAuthenticationTest;
 import pt.com.broker.functests.positive.Multiple1NTopic;
 import pt.com.broker.functests.positive.Multiple1NTopicRemote;
 import pt.com.broker.functests.positive.MultipleN1Queue;
@@ -47,7 +48,6 @@ import pt.com.broker.functests.positive.TopicNameSpecifiedDist;
 import pt.com.broker.functests.positive.TopicNameWildcard;
 import pt.com.broker.functests.positive.TopicNameWildcardDist;
 import pt.com.broker.functests.positive.TopicPubSubWithActionId;
-import pt.com.broker.functests.positive.UdpNoFrammingTest;
 import pt.com.broker.functests.positive.UdpQueuePublishTest;
 import pt.com.broker.functests.positive.UdpTopicPublishTest;
 import pt.com.broker.functests.positive.VirtualQueueNameSpecified;
@@ -62,7 +62,7 @@ public class Main
 	{
 		// Positive Tests
 
-		NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER , NetProtocolType.THRIFT, NetProtocolType.SOAP_v0};
+		NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT};
 
 		TestsResults testResults = new TestsResults();
 
@@ -85,21 +85,21 @@ public class Main
 		boolean runVirtualQueue = cargs.getVirtualQueue() == 1;
 		boolean runSSLandAuth = cargs.getSslAndAuthentication() == 1;
 		boolean runUdp = cargs.getUdp() == 1;
-
+		
 		ConfigurationInfo.init();
 
 		int numberOfTests = cargs.getNumberOfRuns();
-
+		
 		for (NetProtocolType protoType : protoTypes)
 		{
 			System.out.println(String.format(" ---> Using %s encoding protocol", protoType));
-
+			
 			testResults.addProperty("Encoding", protoType.toString());
 
 			BrokerTest.setDefaultimeout(12 * 1000);
 			BrokerTest.setDefaultEncodingProtocolType(protoType);
 			BrokerTest.setDefaultDataLenght(512);
-
+			
 			if (runAll || runPositive)
 			{
 				new PingTest().run(numberOfTests, testResults);
@@ -107,8 +107,8 @@ public class Main
 
 			if (runAll || runSSLandAuth)
 			{
-				// new DBRolesAuthenticationTest().run(numberOfTests, testResults);
-				//new SslTopicNameSpeficied().run(numberOfTests, testResults);
+				new DBRolesAuthenticationTest().run(numberOfTests, testResults);
+				new SslTopicNameSpeficied().run(numberOfTests, testResults);
 				//new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests, testResults);
 			}
 
@@ -120,7 +120,7 @@ public class Main
 
 				new TopicNameWildcardDist().run(numberOfTests, testResults);
 				new TopicNameSpecifiedDist().run(numberOfTests, testResults);
-				
+
 				new MultipleN1Topic().run(numberOfTests, testResults);
 				new Multiple1NTopic().run(numberOfTests, testResults);
 				new MultipleNNTopic().run(numberOfTests, testResults);
@@ -154,10 +154,9 @@ public class Main
 				new VirtualQueueNameSpecifiedRemote().run(numberOfTests, testResults);
 				new VirtualQueueTopicNameWildcardRemote().run(numberOfTests, testResults);
 			}
-
-			if (runAll || runPositive || runUdp)
+			
+			if(runAll || runPositive || runUdp)
 			{
-				new UdpNoFrammingTest().run(numberOfTests, testResults);
 				new UdpTopicPublishTest().run(numberOfTests, testResults);
 				new UdpQueuePublishTest().run(numberOfTests, testResults);
 			}
@@ -170,11 +169,11 @@ public class Main
 				new BadEncodingTypeTest().run(numberOfTests, testResults);
 				new BadEncodingVersionTest().run(numberOfTests, testResults);
 
-				new InvalidMessageTest().run(numberOfTests, testResults);//
-				new InvalidRandomMessageTest().run(numberOfTests, testResults);//
+				new InvalidMessageTest().run(numberOfTests, testResults);
+				new InvalidRandomMessageTest().run(numberOfTests, testResults);
 				new TotallyInvalidRandomMessageTest().run(numberOfTests, testResults);
 				new MessageSizeBiggerThanMessageTest().run(numberOfTests, testResults);
-				new NotificationTest().run(numberOfTests, testResults);//
+				new NotificationTest().run(numberOfTests, testResults);
 				new PongTest().run(numberOfTests, testResults);
 				new FaultTest().run(numberOfTests, testResults);
 				new FaultWithActionIdTest().run(numberOfTests, testResults);
@@ -192,14 +191,14 @@ public class Main
 
 		System.out.println();
 		System.out.println("Functional tests ended!");
-		System.out.println("	Total tests: " + testResults.getTotalTests());
-		System.out.println("	Successful tests: " + testResults.getPositiveTestsCount());
-		System.out.println("	Failed tests: " + testResults.getFailedTestsCount());
-		for (String testName : testResults.getFailedTests())
-			System.out.println("		- " + testName);
-		System.out.println("	Skipped tests: " + testResults.getSkippedTestsCount());
-		for (String testName : testResults.getSkippedTests())
-			System.out.println("		- " + testName);
+		System.out.println( "	Total tests: " + testResults.getTotalTests() );
+		System.out.println( "	Successful tests: " + testResults.getPositiveTestsCount()); 
+		System.out.println( "	Failed tests: " + testResults.getFailedTestsCount());
+		for(String testName : testResults.getFailedTests())
+			System.out.println( "		- " + testName);
+		System.out.println( "	Skipped tests: " + testResults.getSkippedTestsCount());
+		for(String testName : testResults.getSkippedTests())
+			System.out.println( "		- " + testName);
 		System.exit(0);
 	}
 

@@ -22,12 +22,7 @@
  */
 package pt.com.broker.monitorization.http;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.caudexorigo.http.netty.NettyHttpServer;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
@@ -41,35 +36,26 @@ public class HttpMonitorizationServer {
 	
 	private static final Logger log = LoggerFactory.getLogger(HttpMonitorizationServer.class);
 	
-    public static void main(String[] args) {
-
+    public static void main(String[] args)
+    {
+    	InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+		
     	log.info("Starting Sapo-Broker HTTP Monitorization Server...");
-           
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
 
-		ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
-
-        
-		ServerBootstrap bootstrap = new ServerBootstrap(factory);
-		bootstrap.setPipelineFactory(new HttpMonitorizationPipelineFactory());
-		bootstrap.setOption("child.tcpNoDelay", true);
-		bootstrap.setOption("child.keepAlive", true);
-
-		ConfigurationInfo.init();
-
-		CollectorManager.init();
-
+    	ConfigurationInfo.init();
+    	CollectorManager.init();
 		H2ConsolidatorManager.init();
+		
+		int port = ConfigurationInfo.getConsoleHttpPort();
+		String host = "0.0.0.0";
 
-
-		// Set up the event pipeline factory.
-        bootstrap.setPipelineFactory(new HttpMonitorizationPipelineFactory());
-
-        int port = ConfigurationInfo.getConsoleHttpPort();
-        
-        log.info("Monitorization Console is accessible at 'http://localhost:{}/main.html'", port+"");
-        
-        // Bind and start to accept incoming connections.
-        bootstrap.bind(new InetSocketAddress(port));
+		NettyHttpServer server = new NettyHttpServer("./wwwroot/");
+		server.setPort(port);
+		server.setHost(host);
+		
+		server.setRouter(new ActionRouter());
+		
+		server.start();
+		log.info("Monitorization Console is accessible at 'http://localhost:{}/main.html'", port+"");
     }
 }

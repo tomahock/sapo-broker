@@ -598,13 +598,13 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			if (header != null)
 				atomBuilder.setHeader(header);
 
-			//Atom build = atomBuilder.build();
+			// Atom build = atomBuilder.build();
 			build = atomBuilder.build();
 			build.writeTo(out);
 		}
 		catch (Throwable e)
 		{
-			if( build != null)
+			if (build != null)
 				System.out.println(build.toString());
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
@@ -670,7 +670,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		}
 		return message;
 	}
-
+	
 	@Override
 	public NetProtocolType getProtocolType()
 	{

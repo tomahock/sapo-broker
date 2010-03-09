@@ -5,26 +5,26 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
-import org.apache.mina.core.future.ConnectFuture;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.executor.ExecutorFilter;
-import org.apache.mina.filter.executor.IoEventQueueThrottle;
-import org.apache.mina.filter.executor.OrderedThreadPoolExecutor;
-import org.apache.mina.transport.socket.SocketAcceptor;
-import org.apache.mina.transport.socket.SocketConnector;
-import org.apache.mina.transport.socket.SocketSessionConfig;
-import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
+import org.caudexorigo.concurrent.CustomExecutors;
 import org.caudexorigo.concurrent.Sleep;
+import org.jboss.netty.bootstrap.ClientBootstrap;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +32,9 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
-import pt.com.gcs.messaging.adapt.BDBEnviroment.DBQueue;
 import pt.com.gcs.net.Peer;
-import pt.com.gcs.net.codec.GcsCodec;
+import pt.com.gcs.net.codec.GcsDecoder;
+import pt.com.gcs.net.codec.GcsEncoder;
 
 /**
  * Gcs is a facade for handling several message related functionality such as publish, acknowledge, etc.
@@ -57,6 +57,10 @@ public class Gcs
 
 	public static final int RECONNECT_INTERVAL = 5000;
 
+	private Set<Channel> agentsConnection = new HashSet<Channel>();
+	
+	private ClientBootstrap connector;
+	
 	public static void ackMessage(String queueName, final String msgId)
 	{
 		instance.iackMessage(queueName, msgId);
@@ -80,18 +84,25 @@ public class Gcs
 		{
 			log.info("Connecting to '{}'.", address.toString());
 
-			ConnectFuture cf = instance.connector.connect(address).awaitUninterruptibly();
+			ChannelFuture cf = instance.connector.connect(address).awaitUninterruptibly();
 
-			if (!cf.isConnected())
+			if (!cf.isSuccess())
 			{
 				GcsExecutor.schedule(new Connect(address), RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
 			}
+			else
+			{
+				synchronized (instance.agentsConnection)
+				{
+					instance.agentsConnection.add(cf.getChannel());
+				}
+			}
+			
 		}
 		else
 		{
 			log.info("Peer '{}' does not appear in the world map, it will be ignored.", address.toString());
 		}
-
 	}
 
 	public static boolean enqueue(final InternalMessage message)
@@ -107,54 +118,47 @@ public class Gcs
 	protected static void reloadWorldMap()
 	{
 		log.info("Reloading the world map");
-		Set<IoSession> connectedSessions = getManagedConnectorSessions();
-		for (IoSession ioSession : connectedSessions)
+		Set<Channel> connectedSessions = getManagedConnectorSessions();
+		
+		ArrayList<Channel> sessionsToClose = new ArrayList<Channel>(connectedSessions.size());
+		
+		for (Channel channel : connectedSessions)
 		{
-			InetSocketAddress inet = (InetSocketAddress) ioSession.getRemoteAddress();
+			InetSocketAddress inet = (InetSocketAddress) channel.getRemoteAddress();
 
 			// remove connections to agents that were removed from world map
 			if (!GlobalConfig.contains(inet))
 			{
 				log.info("Remove peer '{}'", inet.toString());
-				ioSession.close();
+				sessionsToClose.add(channel);
 			}
 		}
-		List<Peer> peerList = GlobalConfig.getPeerList();
-		
-		
-		
-		List<InetSocketAddress> remoteSessions = new ArrayList<InetSocketAddress>(connectedSessions.size());
-		for(IoSession session : connectedSessions)
+		for(Channel channel : sessionsToClose)
 		{
-			remoteSessions.add( (InetSocketAddress)session.getRemoteAddress());
+			channel.close();
 		}
 		
+		List<InetSocketAddress> remoteSessions = new ArrayList<InetSocketAddress>(connectedSessions.size());
+		for (Channel channel : connectedSessions)
+		{
+			remoteSessions.add((InetSocketAddress) channel.getRemoteAddress());
+		}
+
+		List<Peer> peerList = GlobalConfig.getPeerList();
 		for (Peer peer : peerList)
 		{
 			SocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
 			// Connect only if not already connected
-			if(!remoteSessions.contains(addr))
+			if (!remoteSessions.contains(addr))
 			{
 				connect(addr);
 			}
-		}
-
+		}		
 	}
 
-	protected static Set<IoSession> getManagedConnectorSessions()
+	protected static Set<Channel> getManagedConnectorSessions()
 	{
-		// return
-		// Collections.unmodifiableSet(instance.connector.getManagedSessions());
-		Set<IoSession> connectSessions = new HashSet<IoSession>();
-		Map<Long, IoSession> mngSessions = instance.connector.getManagedSessions();
-
-		Set<Long> keys = mngSessions.keySet();
-
-		for (Long key : keys)
-		{
-			connectSessions.add(mngSessions.get(key));
-		}
-		return connectSessions;
+		return new LinkedHashSet<Channel>(instance.agentsConnection);
 	}
 
 	protected static List<Peer> getPeerList()
@@ -187,12 +191,9 @@ public class Gcs
 		{
 			LocalQueueConsumers.remove(listener);
 		}
-			
+
 	}
 
-	private SocketAcceptor acceptor;
-
-	private SocketConnector connector;
 
 	private Gcs()
 	{
@@ -301,134 +302,8 @@ public class Gcs
 			}
 		}
 
-		// / Compatibility mode
-
-		String[] old_virtual_queues = pt.com.gcs.messaging.adapt.VirtualQueueStorage.getVirtualQueueNames();
-
-		List<String> virtualQueues = new ArrayList<String>();
-		for (int i = 0; i != virtual_queues.length; ++i)
-		{
-			virtualQueues.add(virtual_queues[i]);
-		}
-
-		List<String> removedVirtualQueues = new ArrayList<String>();
-		for (String vqueue : old_virtual_queues)
-		{
-			log.debug("Add VirtualQueue '{}' from OLD storage", vqueue);
-			if (!virtualQueues.contains(vqueue))
-			{
-				iaddQueueConsumer(vqueue, null);
-				VirtualQueueStorage.saveVirtualQueue(vqueue);
-				virtualQueues.add(vqueue);
-			}
-			if(!removedVirtualQueues.contains(vqueue))
-			{
-				pt.com.gcs.messaging.adapt.VirtualQueueStorage.deleteVirtualQueue(vqueue);
-				removedVirtualQueues.add(vqueue);
-			}
-		}
-		
-		//----------------------------------------
-		
-		String[] queueNames = pt.com.gcs.messaging.adapt.BDBEnviroment.getQueueNames();
-		
-		for (String queueName : queueNames)
-		{
-			pt.com.gcs.messaging.adapt.QueueProcessor queueProcessor = new pt.com.gcs.messaging.adapt.QueueProcessor(
-					new DBQueue(pt.com.gcs.messaging.adapt.BDBEnviroment.getLastChangedDatabaseEnv(),queueName ));
-			
-		
-			if (queueProcessor.getQueuedMessagesCount() != 0)
-			{
-				long lastSeqValue = queueProcessor.getStorage().getLastSequenceValue();
-				
-				try
-				{
-					pt.com.gcs.messaging.QueueProcessor qp = QueueProcessorList.get(queueName);
-					
-					qp.setSequenceNumber(lastSeqValue);
-										
-					qp.setCounter( queueProcessor.getQueuedMessagesCount() );
-					
-					queueProcessor.wakeup();
-				}
-				catch (MaximumQueuesAllowedReachedException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			queueProcessor.getStorage().deleteQueue();
-		}
-		
-		
-		DBQueue[] old_queues = pt.com.gcs.messaging.adapt.BDBEnviroment.getQueues();
-
-		for (DBQueue dbQueue : old_queues)
-		{
-			if(dbQueue.env ==  pt.com.gcs.messaging.adapt.BDBEnviroment.getLastChangedDatabaseEnv())
-				continue;
-			
-			pt.com.gcs.messaging.adapt.QueueProcessor queueProcessor = new pt.com.gcs.messaging.adapt.QueueProcessor(dbQueue);
-			
-			if (queueProcessor.getQueuedMessagesCount() != 0)
-			{
-				queueProcessor.wakeup();
-			}
-			queueProcessor.getStorage().deleteQueue();
-		}
-
-		
-//		// This was the "one dir version"
-		
-//		String[] old_virtual_queues = pt.com.gcs.messaging.adapt.VirtualQueueStorage.getVirtualQueueNames();
-//		
-//				List<String> virtualQueues = new ArrayList<String>();
-//				for (int i = 0; i != old_virtual_queues.length; ++i)
-//				{
-//					virtualQueues.add(virtual_queues[i]);
-//				}
-//
-//				for (String vqueue : virtual_queues)
-//				{
-//					log.debug("Add VirtualQueue '{}' from OLD storage", vqueue);
-//					if (!virtualQueues.contains(vqueue))
-//					{
-//						iaddQueueConsumer(vqueue, null);
-//						VirtualQueueStorage.saveVirtualQueue(vqueue);
-//						pt.com.gcs.messaging.adapt.VirtualQueueStorage.deleteVirtualQueue(vqueue);
-//					}
-//				}
-		
-//		String[] old_queues = pt.com.gcs.messaging.adapt.BDBEnviroment.getQueueNames();
-//
-//		for (String queueName : old_queues)
-//		{
-//			pt.com.gcs.messaging.adapt.QueueProcessor queueProcessor = new pt.com.gcs.messaging.adapt.QueueProcessor(queueName);
-//			if (queueProcessor.getQueuedMessagesCount() != 0)
-//			{
-//				long lastSeqValue = queueProcessor.getStorage().getLastSequenceValue();
-//				try
-//				{
-//					pt.com.gcs.messaging.QueueProcessor qp = QueueProcessorList.get(queueName);
-//					qp.setSequenceNumber(lastSeqValue);
-//					qp.setCounter(queueProcessor.getQueuedMessagesCount());
-//					queueProcessor.wakeup();
-//				}
-//				catch (MaximumQueuesAllowedReachedException e)
-//				{
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//			queueProcessor.getStorage().deleteQueue();
-//		}
-
-		
-		// / End compatibility mode
-
 		connectToAllPeers();
-		
+
 		Shutdown.isShutingDown();
 
 		log.info("{} initialized.", SERVICE_NAME);
@@ -454,56 +329,93 @@ public class Gcs
 		RemoteTopicConsumers.notify(message);
 	}
 
-	
 	private void startAcceptor(int portNumber) throws IOException
 	{
-		acceptor = new NioSocketAcceptor(IO_THREADS);
+		ThreadPoolExecutor tpe_io = CustomExecutors.newThreadPool(IO_THREADS, "gcs-io");
+		ThreadPoolExecutor tpe_workers = CustomExecutors.newThreadPool(IO_THREADS * 5, "broker-worker");
 
-		acceptor.setReuseAddress(true);
-		((SocketSessionConfig) acceptor.getSessionConfig()).setReuseAddress(true);
-		((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(false);
-		((SocketSessionConfig) acceptor.getSessionConfig()).setKeepAlive(true);
-		((SocketSessionConfig) acceptor.getSessionConfig()).setWriteTimeout(120);
-		acceptor.setCloseOnDeactivation(true);
+		ChannelFactory factory = new NioServerSocketChannelFactory(tpe_io, tpe_workers);
+		ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-		acceptor.setBacklog(100);
+		bootstrap.setOption("child.tcpNoDelay", true);
+		bootstrap.setOption("child.keepAlive", true);
+		bootstrap.setOption("child.receiveBufferSize", 128 * 1024);
+		bootstrap.setOption("child.sendBufferSize", 128 * 1024);
+		bootstrap.setOption("reuseAddress", true);
+		bootstrap.setOption("backlog", 1024);
+		
+		ChannelPipelineFactory serverPipelineFactory = new ChannelPipelineFactory()
+		{
+			@Override
+			public ChannelPipeline getPipeline() throws Exception
+			{
+				ChannelPipeline pipeline = Channels.pipeline();
 
-		DefaultIoFilterChainBuilder filterChainBuilder = acceptor.getFilterChain();
+				pipeline.addLast("broker-encoder", new GcsEncoder());
 
-		// Add CPU-bound job first,
-		filterChainBuilder.addLast("GCS_CODEC", new ProtocolCodecFilter(new GcsCodec()));
-		// and then a thread pool.
-		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle())));
+				pipeline.addLast("broker-decoder", new GcsDecoder());
 
-		acceptor.setHandler(new GcsAcceptorProtocolHandler());
+				pipeline.addLast("broker-handler", new GcsAcceptorProtocolHandler());
 
-		// Bind
-		acceptor.bind(new InetSocketAddress(portNumber));
+				return pipeline;
+			}
+		};
 
-		String localAddr = acceptor.getLocalAddress().toString();
-		log.info("{} listening on: '{}'.", SERVICE_NAME, localAddr);
+		bootstrap.setPipelineFactory(serverPipelineFactory);
+		
+		InetSocketAddress inet = new InetSocketAddress("0.0.0.0", portNumber);
+		bootstrap.bind(inet);
+		log.info("SAPO-BROKER Listening on: '{}'.", inet.toString());
+		log.info("{} listening on: '{}'.", SERVICE_NAME, inet.toString());
 	}
-
-	private void startConnector()
+	
+    private void startConnector()
 	{
-		connector = new NioSocketConnector(IO_THREADS);
-		((SocketSessionConfig) connector.getSessionConfig()).setKeepAlive(true);
+    	ThreadPoolExecutor tpe_io = CustomExecutors.newThreadPool(IO_THREADS, "gcs-io");
+		ThreadPoolExecutor tpe_workers = CustomExecutors.newThreadPool(IO_THREADS * 5, "gcs-worker");
+    	
+		ClientBootstrap bootstrap = new ClientBootstrap( new NioClientSocketChannelFactory( tpe_io, tpe_workers) );
 
-		DefaultIoFilterChainBuilder filterChainBuilder = connector.getFilterChain();
+		
+		ChannelPipelineFactory connectorPipelineFactory = new ChannelPipelineFactory()
+		{
+			@Override
+			public ChannelPipeline getPipeline() throws Exception
+			{
+				ChannelPipeline pipeline = Channels.pipeline();
 
-		// Add CPU-bound job first,
-		filterChainBuilder.addLast("GCS_CODEC", new ProtocolCodecFilter(new GcsCodec()));
+				pipeline.addLast("broker-encoder", new GcsEncoder());
 
-		// and then a thread pool.
-		filterChainBuilder.addLast("executor", new ExecutorFilter(new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle())));
+				pipeline.addLast("broker-decoder", new GcsDecoder());
 
-		connector.setHandler(new GcsRemoteProtocolHandler());
-		connector.setConnectTimeoutMillis(5000); // 5 seconds timeout
+				pipeline.addLast("broker-handler", new GcsRemoteProtocolHandler());
+
+				return pipeline;
+			}
+		};
+		
+        bootstrap.setPipelineFactory(connectorPipelineFactory);
+        
+        bootstrap.setOption("child.keepAlive", true);
+		bootstrap.setOption("child.receiveBufferSize", 128 * 1024);
+		bootstrap.setOption("child.sendBufferSize", 128 * 1024);
+        bootstrap.setOption("connectTimeoutMillis", 5000);
+
+        this.connector = bootstrap;
 	}
+
 
 	public synchronized static void deleteQueue(String queueName)
 	{
 		QueueProcessorList.remove(queueName);
+	}
+
+	public static void remoteSessionClosed(Channel channel)
+	{
+		synchronized (instance.agentsConnection)
+		{
+			instance.agentsConnection.remove(channel);
+		}		
 	}
 
 }

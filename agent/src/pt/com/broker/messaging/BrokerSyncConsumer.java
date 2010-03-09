@@ -6,11 +6,14 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerExecutor;
+import pt.com.broker.net.BrokerProtocolHandler;
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPoll;
 import pt.com.gcs.conf.GcsInfo;
@@ -74,15 +77,17 @@ public class BrokerSyncConsumer
 	}
 	
 	
-	public static void poll(NetPoll poll, IoSession ios)
+	public static void poll(NetPoll poll, ChannelHandlerContext ctx)
 	{
+		Channel channel = ctx.getChannel();
 		try
 		{
 			QueueProcessorList.get(poll.getDestination());
 			
 			String destination = poll.getDestination();
 			String composedQueueName = SynchronousMessageListener.getComposedQueueName(destination);
-			Object attribute = ios.getAttribute(composedQueueName);
+			Object attribute = ChannelAttributes.get(ctx, composedQueueName);
+			
 			SynchronousMessageListener msgListener = null;
 			if (attribute != null)
 			{
@@ -90,8 +95,8 @@ public class BrokerSyncConsumer
 			}
 			else
 			{
-				msgListener = new SynchronousMessageListener(destination, ios);
-				ios.setAttribute(composedQueueName, msgListener);
+				msgListener = new SynchronousMessageListener(destination, channel);
+				ChannelAttributes.set(ctx, composedQueueName, msgListener);
 				LocalQueueConsumers.add(destination, msgListener);
 				AtomicInteger previous = synConsumersCount.putIfAbsent(poll.getDestination(), new AtomicInteger(1));
 				if(previous != null)
@@ -105,7 +110,7 @@ public class BrokerSyncConsumer
 		{
 			try
 			{
-				(ios.getHandler()).exceptionCaught(ios, t);
+				((BrokerProtocolHandler) ctx.getHandler()).exceptionCaught(channel, t, null);
 			}
 			catch (Throwable t2)
 			{
@@ -124,4 +129,5 @@ public class BrokerSyncConsumer
 			synConsumersCount.remove(destination, zeroValue); // remove if zero
 		}
 	}
+
 }

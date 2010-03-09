@@ -1,5 +1,6 @@
 package pt.com.broker.functests.positive;
 
+import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 
 public class TopicNameSpecified extends GenericPubSubTest

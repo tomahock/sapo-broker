@@ -4,19 +4,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * RemoteQueueConsumers maintains current remote queue consumers (other agents).
  * 
  */
-class RemoteQueueConsumers
+public class RemoteQueueConsumers
 {
 	private static final int WRITE_BUFFER_SIZE = 128 * 1024;
 
@@ -27,20 +27,19 @@ class RemoteQueueConsumers
 
 	private final static double DELTA = HIGH_WATER_MARK - LOW_WATER_MARK;
 
-	private static class SessionInfo
+	private static final long MAX_WRITE_TIME = 250;
+	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
+
+	public static class ChannelInfo
 	{
-		IoSession session;
-		long time;
+		public Channel channel;
+		public AtomicLong deliveryTime;
+		public volatile boolean wasDeliverySuspeded;
 
-		SessionInfo(IoSession session)
+		public ChannelInfo(Channel channel)
 		{
-			this.session = session;
-			time = 0;
-		}
-
-		boolean isReady()
-		{
-			return time <= System.currentTimeMillis();
+			this.channel = channel;
+			deliveryTime = new AtomicLong(0);
 		}
 
 		@Override
@@ -48,7 +47,7 @@ class RemoteQueueConsumers
 		{
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + ((session == null) ? 0 : session.hashCode());
+			result = prime * result + ((channel == null) ? 0 : channel.hashCode());
 			return result;
 		}
 
@@ -61,15 +60,25 @@ class RemoteQueueConsumers
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			SessionInfo other = (SessionInfo) obj;
-			if (session == null)
+			ChannelInfo other = (ChannelInfo) obj;
+			if (channel == null)
 			{
-				if (other.session != null)
+				if (other.channel != null)
 					return false;
 			}
-			else if (!session.equals(other.session))
+			else if (!channel.equals(other.channel))
 				return false;
 			return true;
+		}
+
+		public boolean isReady()
+		{
+			return isReady(System.currentTimeMillis());
+		}
+
+		public boolean isReady(long currentTime)
+		{
+			return currentTime >= deliveryTime.get();
 		}
 	}
 
@@ -77,24 +86,30 @@ class RemoteQueueConsumers
 
 	private static Logger log = LoggerFactory.getLogger(RemoteQueueConsumers.class);
 
-	protected synchronized static void add(String queueName, IoSession iosession)
+	private Map<String, CopyOnWriteArrayList<ChannelInfo>> remoteQueueConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<ChannelInfo>>();
+
+	private int currentQEP = 0;
+
+	private Object rr_mutex = new Object();
+
+	protected synchronized static void add(String queueName, Channel channel)
 	{
-		CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(queueName);
+		CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteQueueConsumers.get(queueName);
 		if (sessions == null)
 		{
-			sessions = new CopyOnWriteArrayList<SessionInfo>();
+			sessions = new CopyOnWriteArrayList<ChannelInfo>();
 		}
 
-		SessionInfo sessionInfo = new SessionInfo(iosession);
+		ChannelInfo channelInfo = new ChannelInfo(channel);
 
-		if (!sessions.contains(sessionInfo))
+		if (!sessions.contains(channelInfo))
 		{
-			sessions.add(sessionInfo);
+			sessions.add(channelInfo);
 			log.info("Add remote queue consumer for '{}'", queueName);
 		}
 		else
 		{
-			log.info("Remote topic consumer '{}' and session '{}' already exists", queueName, IoSessionHelper.getRemoteAddress(iosession));
+			log.info("Remote topic consumer '{}' and session '{}' already exists", queueName, channel.getRemoteAddress().toString());
 		}
 
 		instance.remoteQueueConsumers.put(queueName, sessions);
@@ -110,39 +125,39 @@ class RemoteQueueConsumers
 		return instance.doNotify(message);
 	}
 
-	protected synchronized static void remove(IoSession iosession)
+	protected synchronized static void remove(Channel channel)
 	{
 		Set<String> keys = instance.remoteQueueConsumers.keySet();
 		for (String queueName : keys)
 		{
-			CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(queueName);
+			CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteQueueConsumers.get(queueName);
 			if (sessions != null)
 			{
-				if (sessions.remove(new SessionInfo(iosession)))
+				if (sessions.remove(new ChannelInfo(channel)))
 				{
-					log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, IoSessionHelper.getRemoteAddress(iosession));
+					log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, channel.getRemoteAddress().toString());
 					instance.remoteQueueConsumers.put(queueName, sessions);
 				}
 			}
 		}
 	}
 
-	protected synchronized static void remove(String queueName, IoSession iosession)
+	protected synchronized static void remove(String queueName, Channel channel)
 	{
-		CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(queueName);
+		CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteQueueConsumers.get(queueName);
 		if (sessions != null)
 		{
-			if (sessions.remove(new SessionInfo(iosession)))
+			if (sessions.remove(new ChannelInfo(channel)))
 			{
-				log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, IoSessionHelper.getRemoteAddress(iosession));
-				instance.remoteQueueConsumers.put(queueName, sessions);
+				log.info("Remove remote queue consumer for '{}' and session '{}'", queueName, channel.getRemoteAddress().toString());
 			}
+			instance.remoteQueueConsumers.put(queueName, sessions);
 		}
 	}
 
 	protected synchronized static int size(String destinationName)
 	{
-		CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(destinationName);
+		CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteQueueConsumers.get(destinationName);
 		if (sessions != null)
 		{
 			return sessions.size();
@@ -150,95 +165,144 @@ class RemoteQueueConsumers
 		return 0;
 	}
 
-	private Map<String, CopyOnWriteArrayList<SessionInfo>> remoteQueueConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<SessionInfo>>();
-
-	private int currentQEP = 0;
-
-	private Object rr_mutex = new Object();
-
 	private RemoteQueueConsumers()
 	{
 	}
 
-	protected long doNotify(InternalMessage message)
+//	protected long doNotify2(InternalMessage message)
+//	{
+//		CopyOnWriteArrayList<ChannelInfo> sessions = remoteQueueConsumers.get(message.getDestination());
+//		if (sessions != null)
+//		{
+//			int n = sessions.size();
+//
+//			if (n > 0)
+//			{
+//				ChannelInfo sessionInfo = pick(sessions);
+//				if (sessionInfo != null)
+//				{
+//					try
+//					{
+//
+//						if (sessionInfo.channel != null)
+//						{
+//							Channel ioSession = sessionInfo.channel;
+//							if (ioSession.isConnected() && ioSession.isWritable())
+//							{
+//								ioSession.write(message);
+//
+//								return 2 * 60 * 1000; // reserve for 2mn
+//							}
+//							else
+//							{
+//								System.out.print("NW");
+//							}
+//						}
+//					}
+//					catch (Throwable ct)
+//					{
+//						log.error(ct.getMessage(), ct);
+//						try
+//						{
+//							sessionInfo.channel.close();
+//						}
+//						catch (Throwable ict)
+//						{
+//							log.error(ict.getMessage(), ict);
+//						}
+//					}
+//				}
+//			}
+//		}
+//
+//		if (log.isDebugEnabled())
+//		{
+//			log.debug("There are no remote consumers for queue: {}", message.getDestination());
+//		}
+//
+//		System.out.println("Returning -1");
+//
+//		return -1;
+//	}
+
+	protected long doNotify(final InternalMessage message)
 	{
-		CopyOnWriteArrayList<SessionInfo> sessions = remoteQueueConsumers.get(message.getDestination());
-		if (sessions != null)
+		final String dname = message.getDestination();
+
+		CopyOnWriteArrayList<ChannelInfo> channels = remoteQueueConsumers.get(dname);
+		final ChannelInfo channelInfo = pick(channels);
+
+		if (channelInfo == null)
 		{
-			int n = sessions.size();
+			return -1;
+		}
+		final Channel channel = channelInfo.channel;
 
-			if (n > 0)
+		if (channel == null)
+		{
+			return -1;
+		}
+
+		try
+		{
+			if (channel.isWritable())
 			{
-				SessionInfo sessionInfo = pick(sessions);
-				if (sessionInfo != null)
+				channel.write(message);
+				channelInfo.wasDeliverySuspeded = false;
+
+				return RESERVE_TIME;
+			}
+			else
+			{
+				ChannelFuture writeFuture = channel.write(message);
+				final long writeStartTime = System.nanoTime();
+
+				writeFuture.addListener(new ChannelFutureListener()
 				{
-					try
+					@Override
+					public void operationComplete(ChannelFuture future) throws Exception
 					{
+						final long writeTime = ((System.nanoTime() - writeStartTime) / (1000 * 1000));
 
-						if ((sessionInfo != null) && (sessionInfo.session != null))
+						long delayTime = 0;
+
+						if (writeTime >= MAX_WRITE_TIME)
 						{
-							IoSession ioSession = sessionInfo.session;
-							if (ioSession.isConnected() && !ioSession.isClosing())
+							delayTime = System.currentTimeMillis() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.
+
+							channelInfo.deliveryTime.set(delayTime);
+							if (!channelInfo.wasDeliverySuspeded)
 							{
-								long scheduledWriteBytes = ioSession.getScheduledWriteBytes();
-
-								if ((scheduledWriteBytes > LOW_WATER_MARK) && (scheduledWriteBytes < HIGH_WATER_MARK))
-								{
-									long time = (long) ((scheduledWriteBytes - LOW_WATER_MARK) * (MAX_SUSPENSION_TIME / DELTA));
-									sessionInfo.time = System.currentTimeMillis() + time;
-								}
-								else if (scheduledWriteBytes >= HIGH_WATER_MARK)
-								{
-									sessionInfo.time = (long) (System.currentTimeMillis() + MAX_SUSPENSION_TIME);
-									if (log.isDebugEnabled())
-									{
-										log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'. Queue: '{}'", ioSession.toString(), message.getDestination());
-									}
-
-									String log_msg = String.format("Write Queue is full, delay message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), sessionInfo.session.getRemoteAddress().toString());
-									log.warn(log_msg);
-
-									String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
-									String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), sessionInfo.session.getRemoteAddress().toString());
-									InternalPublisher.send(dname, info_msg);
-
-									return -1;
-								}
-
-								ioSession.write(message);
-
-								return 2 * 60 * 1000; // reserve for 2mn
+								log.info("Suspending remote message deliverty from queue '{}' to session '{}'.", dname, channelInfo.channel.toString());
 							}
 						}
 					}
-					catch (Throwable ct)
-					{
-						log.error(ct.getMessage(), ct);
-						try
-						{
-							sessionInfo.session.close();
-						}
-						catch (Throwable ict)
-						{
-							log.error(ict.getMessage(), ict);
-						}
-					}
-				}
+				});
+				return RESERVE_TIME;
+
+			}
+		}
+		catch (Throwable ct)
+		{
+			log.error(ct.getMessage(), ct);
+			try
+			{
+				channelInfo.channel.close();
+			}
+			catch (Throwable ict)
+			{
+				log.error(ict.getMessage(), ict);
 			}
 		}
 
-		if (log.isDebugEnabled())
-		{
-			log.debug("There are no remote consumers for queue: {}", message.getDestination());
-		}
 		return -1;
 	}
 
-	private SessionInfo pick(CopyOnWriteArrayList<SessionInfo> sessions)
+	private ChannelInfo pick(CopyOnWriteArrayList<ChannelInfo> channels)
 	{
 		synchronized (rr_mutex)
 		{
-			int n = sessions.size();
+			int n = channels.size();
 			if (n == 0)
 				return null;
 
@@ -255,7 +319,7 @@ class RemoteQueueConsumers
 			{
 				for (int i = 0; i != n; ++i)
 				{
-					SessionInfo sessionInfo = sessions.get(currentQEP);
+					ChannelInfo sessionInfo = channels.get(currentQEP);
 					if (sessionInfo.isReady())
 					{
 						return sessionInfo;
@@ -269,7 +333,7 @@ class RemoteQueueConsumers
 					currentQEP = 0;
 					do
 					{
-						SessionInfo sessionInfo = sessions.get(currentQEP);
+						ChannelInfo sessionInfo = channels.get(currentQEP);
 						if (sessionInfo.isReady())
 						{
 							return sessionInfo;
@@ -281,18 +345,29 @@ class RemoteQueueConsumers
 				{
 					return null;
 				}
+
 			}
 		}
 		return null;
 	}
 
+	public synchronized static Set<String> getQueueNames()
+	{
+		return instance.remoteQueueConsumers.keySet();
+	}
+
+	public synchronized static CopyOnWriteArrayList<ChannelInfo> getSessions(String queueName)
+	{
+		return instance.remoteQueueConsumers.get(queueName);
+	}
+
 	public static boolean hasReadyRecipients(String destinationName)
 	{
-		CopyOnWriteArrayList<SessionInfo> sessions = instance.remoteQueueConsumers.get(destinationName);
+		CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteQueueConsumers.get(destinationName);
 		if (sessions != null)
 		{
-			for (SessionInfo si : sessions)
-				if (si.isReady())
+			for (ChannelInfo ci : sessions)
+				if (ci.isReady())
 					return true;
 		}
 		return false;

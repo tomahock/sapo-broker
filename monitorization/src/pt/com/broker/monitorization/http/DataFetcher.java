@@ -3,7 +3,6 @@ package pt.com.broker.monitorization.http;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ public class DataFetcher
 
 	public interface ItemFetcher
 	{
-		Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments);
+		Collection<JsonEncodable> getData(String resource, Map<String,String> arguments);
 	}
 
 	private static Map<String, ItemFetcher> fetchers = new HashMap<String, ItemFetcher>();
@@ -40,32 +39,31 @@ public class DataFetcher
 			final String AGENT_NAME = "agentname";
 
 			@Override
-			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
+			public Collection<JsonEncodable> getData(String resource, Map<String, String> arguments)
 			{
 				Collection<JsonEncodable> faults = new ArrayList<JsonEncodable>();
 				try
 				{
 					if (resource.startsWith(FAULTID_PREFIX))
 					{
-						List<String> idArg = arguments.get(FAULT_ID);
+						String idArg = arguments.get(FAULT_ID);
 						if (idArg == null)
 						{
 							return faults;
 						}
-						String idStr = idArg.get(0);
-						int id = Integer.parseInt(idStr);
+						int id = Integer.parseInt(idArg);
 
 						DbFault fault = GlobalSystemInfo.getFault(id);
 						faults.add(fault);
 					}
 					else if (resource.startsWith(AGENTS_PREFIX))
 					{
-						List<String> agentArg = arguments.get(AGENT_NAME);
+						String agentArg = arguments.get(AGENT_NAME);
 						if (agentArg == null)
 						{
 							return faults;
 						}
-						String agentName = agentArg.get(0);
+						String agentName = agentArg;
 
 						Collection<DbFault> dbFaults = GlobalSystemInfo.getFaultsFromAgent(agentName);
 						for (DbFault fault : dbFaults)
@@ -98,17 +96,16 @@ public class DataFetcher
 			final String QUEUE_NAME = "queuename";
 
 			@Override
-			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
+			public Collection<JsonEncodable> getData(String resource, Map<String, String> arguments)
 			{
 				Collection<JsonEncodable> queuesInfo = new ArrayList<JsonEncodable>();
 
 				if (resource.startsWith(AGENTS_PREFIX))
 				{
-					List<String> queueNameList = arguments.get(QUEUE_NAME);
-					if (queueNameList == null)
+					String queueName = arguments.get(QUEUE_NAME);
+					if (queueName == null)
 						return queuesInfo;
 
-					String queueName = queueNameList.get(0);
 					Collection<DbQueue> queueCollection = GlobalSystemInfo.getQueue(queueName);
 					for (DbQueue queue : queueCollection)
 					{
@@ -117,11 +114,10 @@ public class DataFetcher
 				}
 				else if (resource.startsWith(SUBSCRIPTIONS_PREFIX))
 				{
-					List<String> queueNameList = arguments.get(QUEUE_NAME);
-					if (queueNameList == null)
+					String queueName = arguments.get(QUEUE_NAME);
+					if (queueName == null)
 						return queuesInfo;
 
-					String queueName = queueNameList.get(0);
 					Collection<DbSubscription> subscriptionCollection = GlobalSystemInfo.getSubscription(queueName);
 					for (DbSubscription subscription : subscriptionCollection)
 					{
@@ -155,20 +151,20 @@ public class DataFetcher
 			
 			final String AGENT_NAME = "agentname";
 			@Override
-			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
+			public Collection<JsonEncodable> getData(String resource, Map<String, String> arguments)
 			{
 				Collection<JsonEncodable> dropboxes = new ArrayList<JsonEncodable>();
 				Collection<DbDropbox> biggestDropboxes = null;
 				if(resource.startsWith(AGENTS_PREFIX))
 				{
-					List<String> agentNameList = arguments.get(AGENT_NAME);
-					if (agentNameList == null)
+					String agentName = arguments.get(AGENT_NAME);
+					if (agentName == null)
 						return dropboxes;
 					
-					String agentName = agentNameList.get(0);
 					biggestDropboxes = GlobalSystemInfo.getAgentDropbox(agentName);
 				}
-				else{
+				else
+				{
 					biggestDropboxes = GlobalSystemInfo.getBiggestDropbox();
 				}
 
@@ -187,17 +183,16 @@ public class DataFetcher
 			final String AGENT_NAME = "agentname";
 
 			@Override
-			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
+			public Collection<JsonEncodable> getData(String resource, Map<String, String> arguments)
 			{
 				Collection<JsonEncodable> subscriptions = new ArrayList<JsonEncodable>();
 				Collection<DbSubscription> allSubscriptions = null;
 				if (resource.startsWith(AGENTS_PREFIX))
 				{
-					List<String> agentNameList = arguments.get(AGENT_NAME);
-					if (agentNameList == null)
+					String agentName = arguments.get(AGENT_NAME);
+					if (agentName == null)
 						return subscriptions;
 					
-					String agentName = agentNameList.get(0);
 					allSubscriptions = GlobalSystemInfo.getAgentSubscriptions(agentName);
 				}else if(resource.startsWith(AGENTS_PREFIX))
 				{
@@ -225,7 +220,7 @@ public class DataFetcher
 			final String AGENT_NAME = "agentname";
 
 			@Override
-			public Collection<JsonEncodable> getData(String resource, Map<String, List<String>> arguments)
+			public Collection<JsonEncodable> getData(String resource, Map<String, String> arguments)
 			{
 				Collection<JsonEncodable> jsonAgents = new ArrayList<JsonEncodable>();
 				Collection<DbAgents> agents = null;
@@ -239,20 +234,18 @@ public class DataFetcher
 				}
 				else if(resource.startsWith(AGENT_PREFIX))
 				{
-					List<String> agentNameList = arguments.get(AGENT_NAME);
-					if (agentNameList == null)
+					String agentName = arguments.get(AGENT_NAME);
+					if (agentName== null)
 						return jsonAgents;
 					
-					String agentName = agentNameList.get(0);
 					agents = GlobalSystemInfo.getAgentsStatus(agentName);
 				}
 				else if(resource.startsWith(HOST_PREFIX))
 				{
-					List<String> agentNameList = arguments.get(AGENT_NAME);
-					if (agentNameList == null)
+					String agentName = arguments.get(AGENT_NAME);
+					if (agentName == null)
 						return jsonAgents;
 					
-					String agentName = agentNameList.get(0);
 					agents = GlobalSystemInfo.getHostname(agentName);
 				}
 				
@@ -270,7 +263,7 @@ public class DataFetcher
 
 	}
 
-	public static String getData(String resource, Map<String, List<String>> arguments)
+	public static String getData(String resource, Map<String, String> arguments)
 	{
 		String[] parts = resource.split("/");
 		ItemFetcher itemFetcher = fetchers.get(parts[0]);

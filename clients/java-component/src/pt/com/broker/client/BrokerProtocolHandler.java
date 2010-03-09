@@ -50,7 +50,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	{
 		this.brokerClient = brokerClient;
 		this.connector = connector;
-
+		
 		this.usingNewFramming = !usingOldFramming;
 
 		setHostInfo(brokerClient.getHostInfo());
@@ -222,7 +222,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	protected void handleReceivedMessage(NetMessage message)
 	{
 		NetAction action = message.getAction();
-
 		message.getAction();
 
 		switch (action.getActionType())
@@ -239,7 +238,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 				{
 					return;
 				}
-
 			}
 
 			brokerClient.notifyListener(notification);
@@ -309,27 +307,33 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		}
 		int len = in.readInt();
 
+		if (serializer == null)
+		{
+			throw new RuntimeException("Received message uses an unknown encoding");
+		}
+
 		byte[] data = new byte[len];
 		in.readFully(data);
 
-		NetMessage message = serializer.unmarshal(data);
+		NetMessage message = (NetMessage) serializer.unmarshal(data);
 		return message;
+
 	}
 
 	@Override
 	public void encode(NetMessage message, DataOutputStream out) throws IOException
 	{
+		short protocolType = proto_type;
+		short protocolVersion = (short) 0;
+
 		byte[] encodedMsg = serializer.marshal(message);
+
 		if (usingNewFramming)
 		{
-			short protocolType = proto_type;
-			short protocolVersion = (short) 0;
-
 			out.writeShort(protocolType);
 			out.writeShort(protocolVersion);
+			out.writeInt(encodedMsg.length);
 		}
-
-		out.writeInt(encodedMsg.length);
 
 		out.write(encodedMsg);
 	}

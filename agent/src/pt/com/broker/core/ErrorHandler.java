@@ -2,8 +2,8 @@ package pt.com.broker.core;
 
 import java.io.PrintWriter;
 
-import org.apache.mina.util.ExceptionMonitor;
 import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.Shutdown;
 import org.caudexorigo.text.StringBuilderWriter;
 import org.caudexorigo.text.StringUtils;
 import org.jibx.runtime.JiBXException;
@@ -18,12 +18,13 @@ import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
- * ErrorHandler extends MINA ExceptionMonitor. It is used to deal with uncaught exceptions.
+ * It is used to deal with uncaught exceptions.
  * 
  */
 
-public class ErrorHandler extends ExceptionMonitor
+public class ErrorHandler
 {
+	
 	static
 	{
 		Throwable t = new RuntimeException();
@@ -38,21 +39,21 @@ public class ErrorHandler extends ExceptionMonitor
 		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
 		if (log.isWarnEnabled())
 		{
-			log.error("Unexpected exception!! Root cause: ", rootCause);
+			log.error("Unexpected exception.", rootCause);
 		}
-		CriticalErrors.exitIfCritical(rootCause);
+		exitIfCritical(rootCause);
 	}
 
 	public static void checkAbort(Throwable t)
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(t);
-		CriticalErrors.exitIfCritical(rootCause);
+		exitIfCritical(rootCause);
 	}
 
 	public static WTF buildSoapFault(Throwable ex)
 	{
 		Throwable rootCause = ErrorAnalyser.findRootCause(ex);
-		CriticalErrors.exitIfCritical(rootCause);
+		exitIfCritical(rootCause);
 
 		String ereason = "soap:Receiver";
 		if (rootCause instanceof JiBXException)
@@ -75,7 +76,7 @@ public class ErrorHandler extends ExceptionMonitor
 		}
 
 		Throwable rootCause = ErrorAnalyser.findRootCause(ex);
-		CriticalErrors.exitIfCritical(rootCause);
+		exitIfCritical(rootCause);
 		return _buildSoapFault(faultCode, rootCause);
 	}
 
@@ -117,5 +118,24 @@ public class ErrorHandler extends ExceptionMonitor
 		public SoapEnvelope Message;
 
 		public Throwable Cause;
+	}
+
+	private static void exitIfUlimit(Throwable t)
+	{
+		String ul_error = "Too many open files".toLowerCase();
+		if (t.getMessage() != null)
+		{
+			String emsg = t.getMessage().toLowerCase();
+			if (emsg.contains(ul_error))
+			{
+				Shutdown.now();
+			}
+		}
+	}
+
+	private static void exitIfCritical(Throwable cause)
+	{
+		CriticalErrors.exitIfCritical(cause);
+		exitIfUlimit(cause);
 	}
 }

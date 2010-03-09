@@ -14,6 +14,7 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -32,6 +33,7 @@ public class UDPProducer
 	private int udpPort;
 	private DestinationType dtype;
 	private String dname;
+	private NetProtocolType protocolType;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -43,11 +45,14 @@ public class UDPProducer
 		producer.udpPort = cargs.getUdpPort();
 		producer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		producer.dname = cargs.getDestination();
+		producer.protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
+		
+		System.out.println("Protocol type: " + producer.protocolType); 
 
 		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
 		hosts.add(new HostInfo(producer.host, producer.port, producer.udpPort));
 
-		BrokerClient bk = new BrokerClient(hosts);
+		BrokerClient bk = new BrokerClient(hosts, "UdpProducer", producer.protocolType);
 
 		log.info("Start sending a string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds...");
 

@@ -40,9 +40,9 @@ public class GenericPubSubTest extends BrokerTest
 		try
 		{
 			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 		}
 		catch (Throwable t)
 		{
@@ -207,10 +207,6 @@ public class GenericPubSubTest extends BrokerTest
 
 	public void setInfoConsumer(BaseBrokerClient infoConsumer)
 	{
-		if(this.infoConsumer != null)
-		{
-			this.infoConsumer.close();
-		}
 		this.infoConsumer = infoConsumer;
 	}
 
@@ -221,10 +217,6 @@ public class GenericPubSubTest extends BrokerTest
 
 	public void setInfoProducer(BaseBrokerClient infoProducer)
 	{
-		if(this.infoProducer != null)
-		{
-			this.infoProducer.close();
-		}
 		this.infoProducer = infoProducer;
 	}
 

@@ -11,7 +11,6 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
@@ -28,24 +27,12 @@ public class BrokerClient extends BaseBrokerClient
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);
 
-	static
-	{
-		try
-		{
-			soapSerializer = (BindingSerializer) Class.forName("pt.com.broker.codec.xml.SoapBindingSerializer").newInstance();
-		}
-		catch (Throwable t)
-		{
-			log.error("Failed to load SoapBindingSerializer");
-		}
-	}
-
 	public BrokerClient(String host, int portNumber) throws Throwable
 	{
 		super(host, portNumber);
 		init();
 	}
-
+	
 	public BrokerClient(String host, int portNumber, int retries) throws Throwable
 	{
 		super(host, portNumber);
@@ -89,7 +76,7 @@ public class BrokerClient extends BaseBrokerClient
 		BrokerProtocolHandler brokerProtocolHandler;
 
 		NetworkConnector networkConnector = new NetworkConnector(getHostInfo());
-		brokerProtocolHandler = new BrokerProtocolHandler(this, getProtocolType(), networkConnector, this.isOldFramming());
+		brokerProtocolHandler = new BrokerProtocolHandler(this, getPortocolType(), networkConnector, this.isOldFramming());
 		networkConnector.setProtocolHandler(brokerProtocolHandler);
 
 		return brokerProtocolHandler;
@@ -136,69 +123,6 @@ public class BrokerClient extends BaseBrokerClient
 			socket.setSoTimeout(5000);
 
 			byte[] msgData = stream.toByteArray();
-
-			DatagramPacket packet = new DatagramPacket(msgData, msgData.length, inet, hostInfo.getUdpPort());
-			socket.send(packet);
-			socket.close();
-		}
-		catch (Throwable t)
-		{
-			log.error("Error processing UDP message", t);
-			throw new RuntimeException(t);
-		}
-	}
-
-	/**
-	 * Publish a message over UDP using legacy message encoding. <br/>
-	 * Messages published must not carry a message identifier.
-	 * 
-	 * @param message
-	 *            A NetPublish message
-	 */
-
-	private static BindingSerializer soapSerializer;
-	public void publishMessageOverUdpLegacy(NetPublish message) throws InvalidParameterException
-	{
-		if (message.getActionId() != null)
-		{
-			throw new InvalidParameterException("Messages published over UDP are not allowed to carry a message identifier.");
-		}
-
-		HostInfo hostInfo = hosts.peek();
-		if (hostInfo.getUdpPort() == -1)
-		{
-			throw new InvalidParameterException("Active agent information (HostInfo) dosen't have a specified UDP port.");
-		}
-
-		if (soapSerializer == null)
-		{
-			throw new RuntimeException("SoapBindingSerializer failed to load");
-		}
-
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(stream);
-
-		NetAction action = new NetAction(ActionType.PUBLISH);
-		action.setPublishMessage(message);
-
-		NetMessage netMessage = new NetMessage(action);
-
-		try
-		{
-			byte[] rawMessage = soapSerializer.marshal(netMessage);
-
-			out.write(rawMessage);
-
-			out.flush();
-			out.close();
-
-			InetAddress inet = InetAddress.getByName(hostInfo.getHostname());
-			DatagramSocket socket = new DatagramSocket();
-			socket.setSoTimeout(5000);
-
-			byte[] msgData = stream.toByteArray();
-
-			System.out.println("BrokerClient.publishMessageOverUdpLegacy(). Sendig message to port:  " + hostInfo.getUdpPort());
 
 			DatagramPacket packet = new DatagramPacket(msgData, msgData.length, inet, hostInfo.getUdpPort());
 			socket.send(packet);

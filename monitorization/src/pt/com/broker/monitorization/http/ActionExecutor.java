@@ -3,7 +3,6 @@ package pt.com.broker.monitorization.http;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ public class ActionExecutor
 
 	public interface Action
 	{
-		Collection<JsonEncodable> execute(String resource, Map<String, List<String>> arguments);
+		Collection<JsonEncodable> execute(String resource, Map<String, String> arguments);
 	}
 
 	private static Map<String, Action> executors = new HashMap<String, Action>();
@@ -30,14 +29,13 @@ public class ActionExecutor
 			final String QUEUE_NAME = "queuename";
 
 			@Override
-			public Collection<JsonEncodable> execute(String resource, Map<String, List<String>> arguments)
+			public Collection<JsonEncodable> execute(String resource, Map<String, String> arguments)
 			{
 				Collection<JsonEncodable> queuesInfo = new ArrayList<JsonEncodable>();
-				List<String> queueNameList = arguments.get(QUEUE_NAME);
-				if (queueNameList == null)
+				String queueName = arguments.get(QUEUE_NAME);
+				if (queueName == null)
 					return queuesInfo;
 
-				String queueName = queueNameList.get(0);
 				Collection<JsonEncodable> results = new ArrayList<JsonEncodable>(DeleteQueue.execute(queueName));
 
 				return results;
@@ -45,7 +43,7 @@ public class ActionExecutor
 		});
 	}
 
-	public static String execute(String resource, Map<String, List<String>> arguments)
+	public static String execute(String resource, Map<String,String> arguments)
 	{
 		String[] parts = resource.split("/");
 		Action executor = executors.get(parts[0]);

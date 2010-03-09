@@ -2,6 +2,7 @@ package pt.com.broker.client.sample;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.caudexorigo.Shutdown;
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
@@ -39,29 +40,20 @@ public class Producer
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
-		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds to " + producer.dname + "...");
-
-		Thread.sleep(2000);
+		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 1 seconds to " + producer.dname + "...");
 
 		producer.sendLoop(bk, cargs.getMessageLength());
-		
-		System.exit(0);
+		bk.close();
+		Shutdown.now();
 	}
 
 	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
 	{
-		
+
 		for (int i = 0; i < 500000; i++)
 		{
-			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
-
-//			final String msg = i + "";
-			
-//			String payload = RandomStringUtils.randomAlphanumeric(1500);
-//			final String msg = i + " - " +  payload;
-			
-
-			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
+			final String msg = i + " - " + RandomStringUtils.randomAlphanumeric(messageLength);
+			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg);
 
 			if (dtype == DestinationType.QUEUE)
 			{
@@ -74,8 +66,7 @@ public class Producer
 
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-			Sleep.time(200);
+			Sleep.time(1000);
 		}
-		bk.close();
 	}
 }

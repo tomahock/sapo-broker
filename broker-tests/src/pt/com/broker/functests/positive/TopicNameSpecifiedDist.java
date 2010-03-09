@@ -2,7 +2,6 @@ package pt.com.broker.functests.positive;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.functests.helpers.BrokerTest;
 
 public class TopicNameSpecifiedDist extends TopicNameSpecified
 {
@@ -17,7 +16,7 @@ public class TopicNameSpecifiedDist extends TopicNameSpecified
 		try
 		{
 			setInfoConsumer(new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType()));
+					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test"));
 		}
 		catch (Throwable t)
 		{

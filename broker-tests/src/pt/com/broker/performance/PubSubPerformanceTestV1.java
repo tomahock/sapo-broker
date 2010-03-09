@@ -2,6 +2,7 @@ package pt.com.broker.performance;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.Sleep;

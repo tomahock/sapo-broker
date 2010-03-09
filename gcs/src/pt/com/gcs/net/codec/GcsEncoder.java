@@ -1,61 +1,58 @@
 package pt.com.gcs.net.codec;
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferOutputStream;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.SimpleFramingEncoder;
 import pt.com.gcs.io.SerializerHelper;
 import pt.com.gcs.messaging.InternalMessage;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between agents.
  * 
+ * The wire message format is as simple as could be:
+ * 
+ * <pre>
+ * ----------- 
+ *  | Length  | -&gt; integer in network order: message:length
+ *  -----------
+ *  | Payload | -&gt; message payload
+ *  -----------
+ * </pre>
+ * 
+ * This applies to both input and ouput messages.
  */
-
-public class GcsEncoder extends SimpleFramingEncoder
+@Sharable
+public class GcsEncoder extends OneToOneEncoder
 {
 	private static final Logger log = LoggerFactory.getLogger(GcsEncoder.class);
 
 	@Override
-	public byte[] processBody(Object message)
+	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		if (!(message instanceof InternalMessage))
+		if (!(msg instanceof InternalMessage))
 		{
-			String errorMessage = "Message to be encoded is from an unexpected type - " + message.getClass().getName();
-			log.error(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}
-		UnsynchronizedByteArrayOutputStream holder = new UnsynchronizedByteArrayOutputStream();
-		SerializerHelper.toStream((InternalMessage) message, holder);
-
-		return holder.toByteArray();
-	}
-
-	@Override
-	public void processBody(Object message, ProtocolEncoderOutput pout)
-	{
-
-		if (!(message instanceof InternalMessage))
-		{
-			String errorMessage = "Message to be encoded is from an unexpected type - " + message.getClass().getName();
+			String errorMessage = "Message to be encoded is from an unexpected type - " + msg.getClass().getName();
 			log.error(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		IoBuffer wbuf = IoBuffer.allocate(2048, false);
-		wbuf.setAutoExpand(true);
-		wbuf.putInt(0);
-		
-		SerializerHelper.toStream((InternalMessage) message, wbuf.asOutputStream());
-		int msize = wbuf.position() - 4;
-		wbuf.putInt(0, msize);
+		ChannelBuffer out = ChannelBuffers.dynamicBuffer();
+		ChannelBufferOutputStream sout = new ChannelBufferOutputStream(out);
+		sout.writeInt(0);
 
-		wbuf.flip();
+		SerializerHelper.toStream((InternalMessage) msg, sout);
 
-		pout.write(wbuf);
+		int len = out.writerIndex() - 4;
+
+		out.setInt(0, len);
+
+		return out;
 	}
-
 }

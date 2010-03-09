@@ -3,12 +3,21 @@ package pt.com.broker.net;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import org.apache.mina.core.service.IoHandlerAdapter;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.core.write.WriteTimeoutException;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.handler.ssl.SslHandler;
+import org.jboss.netty.handler.timeout.WriteTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +38,7 @@ import pt.com.broker.messaging.MQ;
 import pt.com.broker.messaging.QueueSessionListenerList;
 import pt.com.broker.messaging.SynchronousMessageListener;
 import pt.com.broker.messaging.TopicSubscriberList;
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
@@ -43,14 +53,14 @@ import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.net.IoSessionHelper;
 
 /**
- * * BrokerProtocolHandler is an MINA IoHandlerAdapter. It handles messages from clients.
+ * * BrokerProtocolHandler is an Netty ChannelHandler. It handles messages from clients.
  * 
  */
 
-public class BrokerProtocolHandler extends IoHandlerAdapter
+@Sharable
+public class BrokerProtocolHandler extends SimpleChannelHandler
 {
 
 	private static final Logger log = LoggerFactory.getLogger(BrokerProtocolHandler.class);
@@ -59,116 +69,134 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 	private static final BrokerConsumer _brokerConsumer = BrokerConsumer.getInstance();
 
-	public BrokerProtocolHandler()
+	private static final BrokerProtocolHandler instance;
+
+	static
+	{
+		instance = new BrokerProtocolHandler();
+	}
+
+	public static BrokerProtocolHandler getInstance()
+	{
+		return instance;
+	}
+
+	private BrokerProtocolHandler()
 	{
 	}
 
 	@Override
-	public void sessionCreated(IoSession iosession) throws Exception
+	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
-		IoSessionHelper.tagWithRemoteAddress(iosession);
+		// Get the SslHandler in the current pipeline.
+		// We added it in SecureChatPipelineFactory.
+		final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
+
+		// Get notified when SSL handshake is done.
+		if (sslHandler != null)
+		{
+			ChannelFuture handshakeFuture = sslHandler.handshake();
+			handshakeFuture.addListener(new ChannelFutureListener()
+			{
+				@Override
+				public void operationComplete(ChannelFuture cf) throws Exception
+				{
+					log.info("BrokerProtocolHandler.channelConnected() - handshake complete. Success: " + cf.isSuccess());
+				}
+			});
+		}
+	}
+
+	@Override
+	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
+	{
+		super.channelClosed(ctx, e);
+		Channel channel = ctx.getChannel();
+
 		if (log.isDebugEnabled())
 		{
-			log.debug("Session created: " + IoSessionHelper.getRemoteAddress(iosession));
+			log.debug("channel created: '%s'", channel.getRemoteAddress().toString());
 		}
 	}
 
 	@Override
-	public void sessionClosed(IoSession iosession)
+	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
+	{
+		super.channelClosed(ctx, e);
+		Channel channel = ctx.getChannel();
+		try
+		{
+			String remoteClient = channel.getRemoteAddress().toString();
+			QueueSessionListenerList.removeSession(channel);
+			TopicSubscriberList.removeSession(channel);
+			SynchronousMessageListener.removeSession(ctx);
+
+			log.info("channel closed: " + remoteClient);
+		}
+		catch (Throwable t)
+		{
+			exceptionCaught(channel, t, null);
+		}
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
+	{
+		exceptionCaught(ctx.getChannel(), e.getCause(), null);
+	}
+
+	public void exceptionCaught(Channel channel, Throwable cause, String actionId)
 	{
 		try
 		{
-			String remoteClient = IoSessionHelper.getRemoteAddress(iosession);
-			QueueSessionListenerList.removeSession(iosession);
-			TopicSubscriberList.removeSession(iosession);
-			SynchronousMessageListener.removeSession(iosession);
+			Throwable rootCause = ErrorAnalyser.findRootCause(cause);
 
+			String client = channel.getRemoteAddress() != null ? channel.getRemoteAddress().toString() : "Client unknown";
+
+			log.error("Exception caught. Client: {} ", client, rootCause);
+
+			CriticalErrors.exitIfCritical(rootCause);
+
+			NetFault fault = new NetFault("CODE:99999", rootCause.getMessage());
+			fault.setActionId(actionId);
+			fault.setDetail(ErrorHandler.buildStackTrace(rootCause));
+
+			NetAction action = new NetAction(ActionType.FAULT);
+			action.setFaultMessage(fault);
+
+			NetMessage ex_msg = new NetMessage(action, null);
+
+			if (!(cause instanceof IOException))
+			{
+				try
+				{
+					if (channel.isConnected())
+					{
+						channel.write(ex_msg).addListener(ChannelFutureListener.CLOSE);
+					}
+				}
+				catch (Throwable t)
+				{
+					log.error("Failed to write error message to client '{}'", client, t);
+				}
+			}
+			else
+			{
+				log.info("Closing channel.");
+				channel.close();
+			}
 			
-			log.info("Session closed: " + remoteClient);
-		}
-		catch (Throwable e)
-		{
-			exceptionCaught(iosession, e);
-		}
-	}
+			ErrorHandler.WTF wtf = ErrorHandler.buildSoapFault(cause);
+			SoapEnvelope soap_ex_msg = wtf.Message;
 
-	public void exceptionCaught(IoSession iosession, Throwable cause)
-	{
-		exceptionCaught(iosession, cause, null);
-	}
-
-	public void exceptionCaught(IoSession iosession, Throwable cause, String actionId)
-	{
-		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
-		
-		CriticalErrors.exitIfCritical(rootCause);
-
-		NetFault fault = new NetFault("CODE:99999", rootCause.getMessage());
-		fault.setActionId(actionId);
-		fault.setDetail(ErrorHandler.buildStackTrace(rootCause));
-
-		NetAction action = new NetAction(ActionType.FAULT);
-		action.setFaultMessage(fault);
-
-		NetMessage ex_msg = new NetMessage(action, null);
-
-		if (!(cause instanceof IOException))
-		{
-			try
+			if (actionId != null)
 			{
-				iosession.write(ex_msg);
+				soap_ex_msg.body.fault.faultCode.subcode = new FaultCode();
+				soap_ex_msg.body.fault.faultCode.subcode.value = "action-id:" + actionId;
 			}
-			catch (Throwable t)
-			{
-				log.error("The error information could not be delivered to the client", t);
-			}
-		}
-		try
-		{
-			iosession.close(true);
-		}
-		catch (Throwable t)
-		{
-			log.error("Error closing client connection", t);
-		}
 
-		ErrorHandler.WTF wtf = ErrorHandler.buildSoapFault(cause);
-		SoapEnvelope soap_ex_msg = wtf.Message;
+			publishFault(soap_ex_msg);
 
-		if (actionId != null)
-		{
-			soap_ex_msg.body.fault.faultCode.subcode = new FaultCode();
-			soap_ex_msg.body.fault.faultCode.subcode.value = "action-id:" + actionId;
-
-		}
-
-		publishFault(soap_ex_msg);
-
-		String client = IoSessionHelper.getRemoteAddress(iosession);
-
-		if (!(wtf.Cause instanceof IOException))
-		{
-			try
-			{
-				iosession.write(ex_msg);
-			}
-			catch (Throwable t)
-			{
-				log.error("The error information could not be delivered to the client", t);
-			}
-		}
-
-		try
-		{
-			iosession.close(true);
-		}
-		catch (Throwable t)
-		{
-			log.error("Error closing client connection", t);
-		}
-
-		try
-		{
 			String msg = "";
 
 			if (wtf.Cause instanceof WriteTimeoutException)
@@ -190,11 +218,10 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			{
 				log.error(msg, wtf.Cause);
 			}
-
 		}
 		catch (Throwable t)
 		{
-			log.error("Unspecified error", t);
+			log.error("Error processing caught exception", t);
 		}
 	}
 
@@ -217,60 +244,75 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 	}
 
-	public void messageReceived(final IoSession session, Object message) throws Exception
+	@Override
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 	{
-		if (!(message instanceof NetMessage))
-		{
-			return;
-		}
-
-		final NetMessage request = (NetMessage) message;
-		handleMessage(session, request);
-	}
-
-	private void handleMessage(IoSession session, final NetMessage request)
-	{
-		String actionId = null;
-
 		try
 		{
-			final String requestSource = MQ.requestSource(request);
-
-			switch (request.getAction().getActionType())
+			if (e.getMessage() == null)
 			{
-			case PUBLISH:
-				handlePublishMessage(session, request, requestSource);
-				break;
-			case POLL:
-				handlePollMessage(session, request);
-				break;
-			case ACKNOWLEDGE:
-				handleAcknowledeMessage(session, request);
-				break;
-			case UNSUBSCRIBE:
-				handleUnsubscribeMessage(session, request);
-				break;
-			case SUBSCRIBE:
-				handleSubscribeMessage(session, request);
-				break;
-			case PING:
-				handlePingMessage(session, request);
-				break;
-			case AUTH:
-				handleAuthMessage(session, request);
-				break;
-			default:
-				handleUnexpectedMessageType(session, request);
+				return;
 			}
 		}
 		catch (Throwable t)
 		{
-			exceptionCaught(session, t, actionId);
+			return;
+		}
+
+		if (!(e.getMessage() instanceof NetMessage))
+		{
+			log.error("Uknown message type");
+			return;
+		}
+
+		final NetMessage request = (NetMessage) e.getMessage();
+		handleMessage(ctx, request);
+	}
+
+	private void handleMessage(ChannelHandlerContext ctx, final NetMessage request)
+	{
+		String actionId = null;
+		Channel channel = ctx.getChannel();
+
+		try
+		{
+			switch (request.getAction().getActionType())
+			{
+			case PUBLISH:
+				handlePublishMessage(ctx, request);
+				break;
+			case POLL:
+				handlePollMessage(ctx, request);
+				break;
+			case ACKNOWLEDGE:
+				handleAcknowledeMessage(ctx, request);
+				break;
+			case UNSUBSCRIBE:
+				handleUnsubscribeMessage(ctx, request);
+				break;
+			case SUBSCRIBE:
+				handleSubscribeMessage(ctx, request);
+				break;
+			case PING:
+				handlePingMessage(ctx, request);
+				break;
+			case AUTH:
+				handleAuthMessage(ctx, request);
+				break;
+			default:
+				handleUnexpectedMessageType(ctx, request);
+			}
+		}
+		catch (Throwable t)
+		{
+			exceptionCaught(channel, t, actionId);
 		}
 	}
 
-	private void handleUnexpectedMessageType(IoSession session, NetMessage request)
+	private void handleUnexpectedMessageType(ChannelHandlerContext ctx, NetMessage request)
 	{
+
+		Channel channel = ctx.getChannel();
 		String actionId = null;
 		switch (request.getAction().getActionType())
 		{
@@ -283,16 +325,18 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 		if (actionId == null)
 		{
-			session.write(NetFault.UnexpectedMessageTypeErrorMessage);
+			channel.write(NetFault.UnexpectedMessageTypeErrorMessage);
 		}
 		else
 		{
-			session.write(NetFault.getMessageFaultWithActionId(NetFault.UnexpectedMessageTypeErrorMessage, actionId));
+			channel.write(NetFault.getMessageFaultWithActionId(NetFault.UnexpectedMessageTypeErrorMessage, actionId));
 		}
 	}
 
-	private void handlePublishMessage(IoSession session, NetMessage request, String messageSource)
+	private void handlePublishMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
+		final String messageSource = MQ.requestSource(request);
+		Channel channel = ctx.getChannel();
 		NetPublish publish = request.getAction().getPublishMessage();
 
 		String actionId = publish.getActionId();
@@ -301,11 +345,11 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		{
 			if (publish.getActionId() == null)
 			{
-				session.write(NetFault.InvalidDestinationNameErrorMessage);
+				channel.write(NetFault.InvalidDestinationNameErrorMessage);
 			}
 			else
 			{
-				session.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, publish.getActionId()));
+				channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, publish.getActionId()));
 			}
 			return;
 		}
@@ -320,11 +364,11 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 			{
 				if (actionId == null)
 				{
-					session.write(NetFault.MaximumNrQueuesReachedErrorMessage);
+					channel.write(NetFault.MaximumNrQueuesReachedErrorMessage);
 				}
 				else
 				{
-					session.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumNrQueuesReachedErrorMessage, actionId));
+					channel.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumNrQueuesReachedErrorMessage, actionId));
 				}
 				return;
 			}
@@ -332,55 +376,58 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		default:
 			if (actionId == null)
 			{
-				session.write(NetFault.InvalidMessageDestinationTypeErrorMessage);
+				channel.write(NetFault.InvalidMessageDestinationTypeErrorMessage);
 			}
 			else
 			{
-				session.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidMessageDestinationTypeErrorMessage, actionId));
+				channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidMessageDestinationTypeErrorMessage, actionId));
 			}
 			return;
 		}
 
-		sendAccepted(session, actionId);
+		sendAccepted(ctx, actionId);
 
 	}
 
-	private void handlePollMessage(IoSession session, NetMessage request)
+	private void handlePollMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
-		sendAccepted(session, request.getAction().getPollMessage().getActionId());
-
-		BrokerSyncConsumer.poll(request.getAction().getPollMessage(), session);
+		sendAccepted(ctx, request.getAction().getPollMessage().getActionId());
+		BrokerSyncConsumer.poll(request.getAction().getPollMessage(), ctx);
 	}
 
-	private void handleAcknowledeMessage(IoSession session, NetMessage request)
+	private void handleAcknowledeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
-		_brokerProducer.acknowledge(request.getAction().getAcknowledgeMessage(), session);
+		Channel channel = ctx.getChannel();
+		_brokerProducer.acknowledge(request.getAction().getAcknowledgeMessage(), channel);
 	}
 
-	private void handleUnsubscribeMessage(IoSession session, NetMessage request)
+	private void handleUnsubscribeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
+		Channel channel = ctx.getChannel();
 		NetUnsubscribe unsubMsg = request.getAction().getUnsbuscribeMessage();
 		if (unsubMsg == null)
 			throw new RuntimeException("Not a valid request - inexistent Unsubscribe message");
 
-		_brokerConsumer.unsubscribe(unsubMsg, session);
+		_brokerConsumer.unsubscribe(unsubMsg, channel);
 		String actionId = unsubMsg.getActionId();
-		sendAccepted(session, actionId);
+		sendAccepted(ctx, actionId);
 	}
 
-	private void handleSubscribeMessage(IoSession session, NetMessage request)
+	private void handleSubscribeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
+
+		Channel channel = ctx.getChannel();
 		NetSubscribe subscritption = request.getAction().getSubscribeMessage();
 
 		if (StringUtils.isBlank(subscritption.getDestination()))
 		{
 			if (subscritption.getActionId() == null)
 			{
-				session.write(NetFault.InvalidDestinationNameErrorMessage);
+				channel.write(NetFault.InvalidDestinationNameErrorMessage);
 			}
 			else
 			{
-				session.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, subscritption.getActionId()));
+				channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, subscritption.getActionId()));
 			}
 			return;
 		}
@@ -388,18 +435,18 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		switch (subscritption.getDestinationType())
 		{
 		case QUEUE:
-			_brokerConsumer.listen(subscritption, session);
+			_brokerConsumer.listen(subscritption, channel);
 			break;
 		case TOPIC:
-			if (!_brokerConsumer.subscribe(subscritption, session))
+			if (!_brokerConsumer.subscribe(subscritption, channel))
 			{
 				if (subscritption.getActionId() == null)
 				{
-					session.write(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage);
+					channel.write(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage);
 				}
 				else
 				{
-					session.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage, subscritption.getActionId()));
+					channel.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage, subscritption.getActionId()));
 				}
 				return;
 			}
@@ -407,17 +454,17 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		case VIRTUAL_QUEUE:
 			if (StringUtils.contains(subscritption.getDestination(), "@"))
 			{
-				_brokerConsumer.listen(subscritption, session);
+				_brokerConsumer.listen(subscritption, channel);
 			}
 			else
 			{
 				if (subscritption.getActionId() == null)
 				{
-					session.write(NetFault.InvalidDestinationNameErrorMessage);
+					channel.write(NetFault.InvalidDestinationNameErrorMessage);
 				}
 				else
 				{
-					session.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, subscritption.getActionId()));
+					channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, subscritption.getActionId()));
 				}
 				return;
 			}
@@ -425,28 +472,29 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		default:
 			throw new IllegalArgumentException("Invalid subscription destination type");
 		}
-		sendAccepted(session, subscritption.getActionId());
+		sendAccepted(ctx, subscritption.getActionId());
 	}
 
-	private void handlePingMessage(final IoSession ios, NetMessage request)
+	private void handlePingMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
+		Channel channel = ctx.getChannel();
 		NetPing netPing = request.getAction().getPingMessage();
 
 		NetPong pong = new NetPong(netPing.getActionId());
 		NetAction action = new NetAction(ActionType.PONG);
 		action.setPongMessage(pong);
 		NetMessage message = new NetMessage(action, null);
-		ios.write(message);
+		channel.write(message);
 	}
 
-	private void handleAuthMessage(IoSession session, NetMessage request)
+	private void handleAuthMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
-
-		InetSocketAddress localAddress = (InetSocketAddress) session.getLocalAddress();
+		Channel channel = ctx.getChannel();
+		InetSocketAddress localAddress = (InetSocketAddress) channel.getLocalAddress();
 
 		if (localAddress.getPort() != GcsInfo.getBrokerSSLPort())
 		{
-			session.write(NetFault.InvalidAuthenticationChannelType);
+			channel.write(NetFault.InvalidAuthenticationChannelType);
 			return;
 		}
 
@@ -457,7 +505,7 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		AuthInfoValidator validator = AuthInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
 		if (validator == null)
 		{
-			session.write(NetFault.UnknownAuthenticationTypeMessage);
+			channel.write(NetFault.UnknownAuthenticationTypeMessage);
 			return;
 		}
 		AuthValidationResult validateResult = null;
@@ -467,17 +515,17 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 		}
 		catch (Exception e)
 		{
-			session.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error"));
+			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error"));
 			return;
 		}
 
 		if (!validateResult.areCredentialsValid())
 		{
-			session.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure()));
+			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure()));
 			return;
 		}
 
-		Session plainSession = (Session) session.getAttribute("BROKER_SESSION_PROPERTIES");
+		Session plainSession = (Session) ChannelAttributes.get(ctx, "BROKER_SESSION_PROPERTIES");
 
 		SessionProperties plainSessionProps = plainSession.getSessionProperties();
 		plainSessionProps.setRoles(validateResult.getRoles());
@@ -485,20 +533,20 @@ public class BrokerProtocolHandler extends IoHandlerAdapter
 
 		if (netAuthentication.getActionId() != null)
 		{
-			sendAccepted(session, netAuthentication.getActionId());
+			sendAccepted(ctx, netAuthentication.getActionId());
 		}
 	}
 
-	private synchronized void sendAccepted(final IoSession ios, final String actionId)
+	private synchronized void sendAccepted(ChannelHandlerContext ctx, final String actionId)
 	{
+		Channel channel = ctx.getChannel();
 		if (actionId != null)
 		{
 			NetAccepted accept = new NetAccepted(actionId);
 			NetAction action = new NetAction(NetAction.ActionType.ACCEPTED);
 			action.setAcceptedMessage(accept);
 			NetMessage message = new NetMessage(action, null);
-			ios.write(message);
+			channel.write(message);
 		}
 	}
-
 }

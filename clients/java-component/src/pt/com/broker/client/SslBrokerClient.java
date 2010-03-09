@@ -193,7 +193,7 @@ public final class SslBrokerClient extends BaseBrokerClient
 		BrokerProtocolHandler brokerProtocolHandler;
 
 		SslNetworkConnector networkConnector = new SslNetworkConnector(getHostInfo(), keystoreLocation, keystorePass);
-		brokerProtocolHandler = new BrokerProtocolHandler(this, getProtocolType(), networkConnector, this.isOldFramming());
+		brokerProtocolHandler = new BrokerProtocolHandler(this, getPortocolType(), networkConnector, this.isOldFramming());
 		networkConnector.setProtocolHandler(brokerProtocolHandler);
 
 		return brokerProtocolHandler;

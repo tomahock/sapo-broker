@@ -1,11 +1,12 @@
 package pt.com.broker.messaging;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class QueueSessionListenerList
 						InternalMessage intMsg = new InternalMessage();
 						intMsg.setContent(brkMessage);
 						intMsg.setDestination(ctName);
-//						intMsg.setPublishDestination(ctName);
+						// intMsg.setPublishDestination(ctName);
 						intMsg.setType(MessageType.COM_TOPIC);
 
 						Gcs.publish(intMsg);
@@ -119,14 +120,14 @@ public class QueueSessionListenerList
 		}
 	}
 
-	public static void removeSession(IoSession iosession)
+	public static void removeSession(Channel channel)
 	{
 		try
 		{
 			Collection<QueueSessionListener> list = queueSessionListener.values();
 			for (QueueSessionListener queueSessionListener : list)
 			{
-				queueSessionListener.removeSessionConsumer(iosession);
+				queueSessionListener.removeSessionConsumer(channel);
 			}
 
 		}
@@ -134,5 +135,9 @@ public class QueueSessionListenerList
 		{
 			Thread.currentThread().interrupt();
 		}
+	}
+	public static Set<String> getQueueNames()
+	{
+		return queueSessionListener.keys();
 	}
 }

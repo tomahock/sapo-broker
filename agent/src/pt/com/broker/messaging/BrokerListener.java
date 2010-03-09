@@ -3,7 +3,7 @@ package pt.com.broker.messaging;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
 
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
@@ -46,7 +46,7 @@ public abstract class BrokerListener implements MessageListener
 	}
 
 
-	public abstract int addConsumer(IoSession iosession);
+	public abstract int addConsumer(Channel channel);
 
-	public abstract int removeSessionConsumer(IoSession iosession);
+	public abstract int removeSessionConsumer(Channel channel);
 }

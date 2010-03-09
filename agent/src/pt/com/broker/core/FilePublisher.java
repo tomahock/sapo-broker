@@ -43,7 +43,11 @@ public class FilePublisher
 	private static final long INITIAL_DELAY = 10L; // 10 segundos
 
 	private static final long DEFAULT_CHECK_DELAY = 60L; // 60 segundos
+	
+	private static final long PUBLISH_PERIOD = 60 * 1000; // 1 minute 
 
+	private static final long PUBLISH_EVERY_CHECKS = 30;
+	
 	private final String dir;
 
 	private final boolean isEnabled;
@@ -53,6 +57,8 @@ public class FilePublisher
 	private File dropBoxDir;
 
 	private int fileCount = 0;
+	
+	volatile private long checks;
 
 	private FilePublisher()
 	{
@@ -94,13 +100,13 @@ public class FilePublisher
 	};
 
 	private final Session filePublisherSession = new Session();
+	volatile private long previousPublish = 0;
+	private SoapBindingSerializer soapBindingSerializer = new SoapBindingSerializer();
 
+	
 	final Runnable publisher = new Runnable()
 	{
-		private SoapBindingSerializer soapBindingSerializer = new SoapBindingSerializer();
 		byte[] buffer = new byte[1024];
-
-		// volatile boolean running = false;m
 
 		public void run()
 		{
@@ -114,16 +120,8 @@ public class FilePublisher
 					return;
 				}
 				int goodFileCount = files.length;
-
-				// Message cnt_message = new Message();
-				InternalMessage statsMessage = new InternalMessage();
-
-				String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
-				String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
-				statsMessage.setDestination(dName);
-				statsMessage.setContent(new NetBrokerMessage(content));
-
-				Gcs.publish(statsMessage);
+				
+				publishInfo(goodFileCount);
 
 				if ((files != null) && (files.length > 0))
 				{
@@ -272,4 +270,37 @@ public class FilePublisher
 					return soap.header.wsaFrom.address;
 		return null;
 	}
+	
+	private void publishInfo(int goodFileCount)
+	{
+		long now  = System.currentTimeMillis();
+		boolean publish = false;
+		
+		if( (now >  (previousPublish + PUBLISH_PERIOD))  )
+		{
+			publish = true;
+
+			++checks;
+		}
+		else if( ((++checks)%PUBLISH_EVERY_CHECKS) == 0 )
+		{
+			publish = true;
+		}
+		
+		if(publish)
+		{
+			InternalMessage statsMessage = new InternalMessage();
+
+			String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
+			String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
+			statsMessage.setDestination(dName);
+			statsMessage.setContent(new NetBrokerMessage(content));
+			
+			
+			Gcs.publish(statsMessage);
+			previousPublish = now;
+		}
+	}	
 }
+
+

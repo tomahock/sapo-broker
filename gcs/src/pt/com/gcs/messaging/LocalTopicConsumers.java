@@ -11,15 +11,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
-import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * LocalTopicConsumers maintains current local topic consumers.
@@ -185,13 +184,13 @@ class LocalTopicConsumers
 
 	private void broadCastActionTopicConsumer(String destinationName, String action)
 	{
-		Set<IoSession> sessions = Gcs.getManagedConnectorSessions();
+		Set<Channel> sessions = Gcs.getManagedConnectorSessions();
 
-		for (IoSession ioSession : sessions)
+		for (Channel channel : sessions)
 		{
 			try
 			{
-				broadCastTopicInfo(destinationName, action, ioSession);
+				broadCastTopicInfo(destinationName, action, channel);
 			}
 			catch (Throwable t)
 			{
@@ -199,7 +198,7 @@ class LocalTopicConsumers
 
 				try
 				{
-					ioSession.close();
+					channel.close();
 				}
 				catch (Throwable ct)
 				{
@@ -209,7 +208,7 @@ class LocalTopicConsumers
 		}
 	}
 
-	protected static void broadCastTopicInfo(String destinationName, String action, IoSession ioSession)
+	protected static void broadCastTopicInfo(String destinationName, String action, Channel channel)
 	{
 		if (StringUtils.isBlank(destinationName))
 		{
@@ -218,18 +217,18 @@ class LocalTopicConsumers
 
 		if (action.equals("CREATE"))
 		{
-			log.info("Tell '{}' about new topic consumer for: '{}'", IoSessionHelper.getRemoteAddress(ioSession), destinationName);
+			log.info("Tell '{}' about new topic consumer for: '{}'", channel.getRemoteAddress().toString(), destinationName);
 		}
 		else if (action.equals("DELETE"))
 		{
-			log.info("Tell '{}' about deleted topic consumer of: '{}'", IoSessionHelper.getRemoteAddress(ioSession), destinationName);
+			log.info("Tell '{}' about deleted topic consumer of: '{}'", channel.getRemoteAddress().toString(), destinationName);
 		}
 
 		InternalMessage msg = new InternalMessage();
 		msg.setType(MessageType.SYSTEM_TOPIC);
 
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><destination>%s</destination></sysmessage>";
-		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), ((InetSocketAddress) IoSessionHelper.getRemoteInetAddress(ioSession)).getHostName(), destinationName);
+		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), ((InetSocketAddress) channel.getRemoteAddress()).getHostName(), destinationName);
 
 		NetBrokerMessage brokerMsg;
 		try
@@ -247,7 +246,7 @@ class LocalTopicConsumers
 			// This exception dosen't happen: "UTF-8" is built-in in every JVM
 		}
 
-		SystemMessagesPublisher.sendMessage(msg, ioSession);
+		SystemMessagesPublisher.sendMessage(msg, channel);
 	}
 
 	private void broadCastNewTopicConsumer(String topicName)

@@ -83,7 +83,30 @@ public interface CliArgs
 	 * 
 	 * @return Message length. Useful for generate random messages with known size.
 	 */
-	@Option(shortName = "l", defaultValue = "100")
+	@Option(shortName = "l", defaultValue = "1000")
 	int getMessageLength();
+	
+	/**
+	 * 
+	 * @return Delay time. Time to wait between messages in milliseconds. 
+	 */
+	@Option(shortName = "D", defaultValue = "0")
+	long getDelay();
+	
+	/**
+	 * 
+	 * @return Number of messages 
+	 */
+	@Option(shortName = "z", defaultValue = "1000000")
+	long getMessageNumber();	
+
+	
+	/**
+	 * 
+	 * @return Protocol Type. Encoding Protocol Type 
+	 */
+	@Option(shortName = "T", defaultValue = "PROTOCOL_BUFFER")
+	String getProtocolType();
+
 
 }

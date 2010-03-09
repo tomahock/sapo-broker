@@ -5,10 +5,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -28,24 +30,24 @@ public class SynchronousMessageListener implements MessageListener
 	private static final Logger log = LoggerFactory.getLogger(SynchronousMessageListener.class);
 
 	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
-
+	
 	private static final long ACTIVE_INTERVAL = 5 * 60 * 1000; // 5mn
 
 	private AtomicBoolean ready;
 	private final String queueName;
-	private final IoSession ioSession;
+	private final Channel channel;
 
 	private volatile long expires;
 	private volatile boolean inNoWaitMode;
 	private volatile String actionId;
-
+	
 	private AtomicLong lastDeliveredMessage = new AtomicLong(0);
 
-	public SynchronousMessageListener(String queueName, IoSession session)
+	public SynchronousMessageListener(String queueName, Channel channel)
 	{
 		this.ready = new AtomicBoolean(false);
 		this.queueName = queueName;
-		this.ioSession = session;
+		this.channel = channel;
 		this.setInNoWaitMode(false);
 	}
 
@@ -78,10 +80,11 @@ public class SynchronousMessageListener implements MessageListener
 
 		ready.set(false);
 
-		if ((ioSession != null) && ioSession.isConnected() && !ioSession.isClosing())
+		if ((channel != null) && channel.isConnected() && channel.isWritable())
 		{
 			final NetMessage response = BrokerListener.buildNotification(message, getDestinationName(), getSourceDestinationType());
-			ioSession.write(response);
+			channel.write(response);
+
 			lastDeliveredMessage.set(System.currentTimeMillis());
 		}
 		else
@@ -143,9 +146,9 @@ public class SynchronousMessageListener implements MessageListener
 				{
 					faultMsg.getAction().getFaultMessage().setActionId(actionId);
 				}
-				if ((ioSession != null) && ioSession.isConnected() && !ioSession.isClosing())
+				if ((channel != null) && channel.isConnected() && channel.isWritable())
 				{
-					ioSession.write(faultMsg);
+					channel.write(faultMsg);
 				}
 
 				ready.set(false);
@@ -193,9 +196,9 @@ public class SynchronousMessageListener implements MessageListener
 			{
 				faultMsg.getAction().getFaultMessage().setActionId(actionId);
 			}
-			if ((ioSession != null) && ioSession.isConnected() && !ioSession.isClosing())
+			if ((channel != null) && channel.isConnected() && channel.isWritable())
 			{
-				ioSession.write(faultMsg);
+				channel.write(faultMsg);
 			}
 		}
 	}
@@ -205,14 +208,16 @@ public class SynchronousMessageListener implements MessageListener
 		return SESSION_ATT_PREFIX + queueName;
 	}
 
-	public static void removeSession(IoSession session)
+	public static void removeSession(ChannelHandlerContext ctx)
 	{
-		Set<Object> attributeKeys = session.getAttributeKeys();
-		for (Object attributeKey : attributeKeys)
+		//Set<String> attributeKeys = channel.getAttributeKeys();
+		//Channel channel = ctx.getChannel();
+		Set<String> attributeKeys = ChannelAttributes.getAttributeKeys(ctx);
+		for (String attributeKey : attributeKeys)
 		{
 			if (attributeKey.toString().startsWith(SESSION_ATT_PREFIX))
 			{
-				Object attributeValue = session.getAttribute(attributeKey);
+				Object attributeValue = ChannelAttributes.get(ctx, attributeKey);
 				if (attributeValue instanceof SynchronousMessageListener)
 				{
 					SynchronousMessageListener listener = (SynchronousMessageListener) attributeValue;
@@ -260,5 +265,4 @@ public class SynchronousMessageListener implements MessageListener
 	{
 		return (lastDeliveredMessage.get() + ACTIVE_INTERVAL) >= System.currentTimeMillis();
 	}
-
 }

@@ -41,7 +41,7 @@ public class SoapBindingSerializer implements BindingSerializer
 
 		return Builder.soapToNetMessage(msg);
 	}
-	
+
 	@Override
 	public NetMessage unmarshal(InputStream in)
 	{

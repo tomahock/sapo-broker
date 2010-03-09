@@ -14,8 +14,9 @@ public final class NetNotification
 	private NetAction.DestinationType destinationType;
 	private NetBrokerMessage message;
 	
-	private Map<String, String> headers;
+	private Map<String, String> headers;	
 	
+
 	public NetNotification(String destination, NetAction.DestinationType destinationType, NetBrokerMessage message, String subscription)
 	{
 		this.destination = destination;
@@ -56,5 +57,4 @@ public final class NetNotification
 	{
 		return headers;
 	}
-
 }

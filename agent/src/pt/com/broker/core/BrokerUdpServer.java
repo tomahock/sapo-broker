@@ -1,23 +1,25 @@
 package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.executor.ExecutorFilter;
-import org.apache.mina.filter.executor.IoEventQueueThrottle;
-import org.apache.mina.filter.executor.OrderedThreadPoolExecutor;
-import org.apache.mina.transport.socket.DatagramSessionConfig;
-import org.apache.mina.transport.socket.nio.NioDatagramAcceptor;
 import org.caudexorigo.Shutdown;
+import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.FixedReceiveBufferSizePredictorFactory;
+import org.jboss.netty.channel.socket.DatagramChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.codec.BrokerCodecRouter;
-import pt.com.broker.codec.xml.NoFrammingSoapCodec;
-import pt.com.broker.messaging.AuthorizationFilter;
+import pt.com.broker.codec.BrokerDecoderRouter;
+import pt.com.broker.codec.BrokerEncoderRouter;
+import pt.com.broker.codec.NoFramingDecoder;
+import pt.com.broker.codec.NoFramingEncoder;
+import pt.com.broker.net.AuthorizationFilter;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.gcs.conf.GcsInfo;
 
@@ -27,12 +29,12 @@ public class BrokerUdpServer
 
 	private int _legacyPort;
 	private int _binProtoPort;
+	private final ThreadPoolExecutor tpeIo;
 
-	private static final int MAX_BUFFER_SIZE = 16 * 1024 * 1024;
-
-	public BrokerUdpServer(int legacyPort, int binProtoPort)
+	public BrokerUdpServer(ThreadPoolExecutor tpe_io, int legacyPort, int binProtoPort)
 	{
 		super();
+		tpeIo = tpe_io;
 		_legacyPort = legacyPort;
 		_binProtoPort = binProtoPort;
 	}
@@ -41,55 +43,85 @@ public class BrokerUdpServer
 	{
 		try
 		{
-			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE));
+			// Legacy message format
 
-			final NioDatagramAcceptor acceptor_bin_proto = new NioDatagramAcceptor();
+			DatagramChannelFactory datagramChannelFactory0 = new NioDatagramChannelFactory(tpeIo);
 
-			DefaultIoFilterChainBuilder filterChainBuilder1 = acceptor_bin_proto.getFilterChain();
-			filterChainBuilder1.addLast("BROKER_BINARY_CODEC", new ProtocolCodecFilter(BrokerCodecRouter.getInstance()));
-			if (GcsInfo.useAccessControl())
+			ConnectionlessBootstrap bootstrap0 = new ConnectionlessBootstrap(datagramChannelFactory0);
+
+			ChannelPipelineFactory serverPipelineFactory0 = new ChannelPipelineFactory()
 			{
-				filterChainBuilder1.addLast("AUTHORIZATION_FILTER", AuthorizationFilter.getInstance());
-			}
-			filterChainBuilder1.addLast("executor", new ExecutorFilter(tpe));
+				@Override
+				public ChannelPipeline getPipeline() throws Exception
+				{
+					ChannelPipeline pipeline = Channels.pipeline();
 
-			DatagramSessionConfig dcfg = acceptor_bin_proto.getSessionConfig();
-			dcfg.setReuseAddress(true);
+					pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
 
-			acceptor_bin_proto.setHandler(new BrokerProtocolHandler());
+					pipeline.addLast("broker-decoder", new BrokerDecoderRouter());
 
-			// Bind
-			acceptor_bin_proto.bind(new InetSocketAddress(_binProtoPort));
-			log.info("SAPO-UDP-BROKER BINARY PROTOCOL Listening on: '{}'.", acceptor_bin_proto.getLocalAddress());
+					if (GcsInfo.useAccessControl())
+					{
+						pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
+					}
+
+					pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
+
+					return pipeline;
+				}
+			};
+
+			bootstrap0.setPipelineFactory(serverPipelineFactory0);
+			//bootstrap0.setOption("broadcast", "false");
+			bootstrap0.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(BrokerDecoderRouter.MAX_MESSAGE_SIZE));
+
+			InetSocketAddress inet0 = new InetSocketAddress("0.0.0.0", _binProtoPort);
+			bootstrap0.bind(inet0);
+			log.info("SAPO-UDP-BROKER BINARY Listening on: '{}'.", inet0.toString());
 		}
 		catch (Throwable e)
 		{
 			log.error(e.getMessage(), e);
 			Shutdown.now();
 		}
-		
+
 		try
 		{
-			ThreadPoolExecutor tpe = new OrderedThreadPoolExecutor(0, 16, 30, TimeUnit.SECONDS, new IoEventQueueThrottle(MAX_BUFFER_SIZE));
+			// Legacy message format
 
-			final NioDatagramAcceptor acceptor_legacy_proto = new NioDatagramAcceptor();
+			DatagramChannelFactory datagramChannelFactory1 = new NioDatagramChannelFactory(tpeIo/*Executors.newCachedThreadPool()*/);
 
-			DefaultIoFilterChainBuilder filterChainBuilder1 = acceptor_legacy_proto.getFilterChain();
-			filterChainBuilder1.addLast("BROKER_UDP_LEGACY_CODEC", new ProtocolCodecFilter(new NoFrammingSoapCodec()));
-			if (GcsInfo.useAccessControl())
+			ConnectionlessBootstrap bootstrap1 = new ConnectionlessBootstrap(datagramChannelFactory1);
+
+			ChannelPipelineFactory serverPipelineFactory1 = new ChannelPipelineFactory()
 			{
-				filterChainBuilder1.addLast("AUTHORIZATION_FILTER", AuthorizationFilter.getInstance());
-			}
-			filterChainBuilder1.addLast("executor", new ExecutorFilter(tpe));
+				@Override
+				public ChannelPipeline getPipeline() throws Exception
+				{
+					ChannelPipeline pipeline = Channels.pipeline();
 
-			DatagramSessionConfig dcfg = acceptor_legacy_proto.getSessionConfig();
-			dcfg.setReuseAddress(true);
+					pipeline.addLast("broker-encoder", new NoFramingEncoder());
 
-			acceptor_legacy_proto.setHandler(new BrokerProtocolHandler());
+					pipeline.addLast("broker-decoder", new NoFramingDecoder());
 
-			// Bind
-			acceptor_legacy_proto.bind(new InetSocketAddress(_legacyPort));
-			log.info("SAPO-UDP-BROKER Listening on: '{}'.", acceptor_legacy_proto.getLocalAddress());
+					if (GcsInfo.useAccessControl())
+					{
+						pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
+					}
+
+					pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
+
+					return pipeline;
+				}
+			};
+
+			bootstrap1.setPipelineFactory(serverPipelineFactory1);
+			//bootstrap1.setOption("broadcast", "false");
+			bootstrap1.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(NoFramingDecoder.MAX_MESSAGE_SIZE));
+
+			InetSocketAddress inet1 = new InetSocketAddress("0.0.0.0", _legacyPort);
+			bootstrap1.bind(inet1);
+			log.info("SAPO-UDP-BROKER LEGACY Listening on: '{}'.", inet1.toString());
 		}
 		catch (Throwable e)
 		{
@@ -97,6 +129,5 @@ public class BrokerUdpServer
 			Shutdown.now();
 		}
 
-		
 	}
 }

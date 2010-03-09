@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * SystemMessagesPublisher is responsible for holding and delivering system messages such as SYSTEM_TOPIC and SYSTEM_QUEUE. If these messages are not acknowledged them are resent.
@@ -23,9 +21,9 @@ public class SystemMessagesPublisher
 	{
 		final InternalMessage message;
 		long timeout;
-		final IoSession session;
+		final Channel session;
 
-		TimeoutMessage(InternalMessage message, IoSession session, long timeout)
+		TimeoutMessage(InternalMessage message, Channel session, long timeout)
 		{
 			this.message = message;
 			this.session = session;
@@ -63,7 +61,7 @@ public class SystemMessagesPublisher
 
 					for (TimeoutMessage tm : retryMessages)
 					{
-						log.info("System message with message id '{}' timed out. Remote address: '{}'", tm.message.getMessageId(), IoSessionHelper.getRemoteAddress(tm.session));
+						log.info("System message with message id '{}' timed out. Remote address: '{}'", tm.message.getMessageId(), tm.session.getRemoteAddress().toString());
 						tm.session.write(tm.message);
 						tm.timeout = System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL;
 					}
@@ -82,7 +80,7 @@ public class SystemMessagesPublisher
 
 	private static Map<String, TimeoutMessage> pending_messages = new HashMap<String, TimeoutMessage>();
 
-	public static void sendMessage(InternalMessage message, IoSession session)
+	public static void sendMessage(InternalMessage message, Channel session)
 	{
 		TimeoutMessage tm = new TimeoutMessage(message, session, System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL);
 
@@ -93,7 +91,7 @@ public class SystemMessagesPublisher
 		session.write(message);
 	}
 
-	public static void sessionClosed(IoSession session)
+	public static void sessionClosed(Channel session)
 	{
 		List<String> message_identifiers = new ArrayList<String>();
 

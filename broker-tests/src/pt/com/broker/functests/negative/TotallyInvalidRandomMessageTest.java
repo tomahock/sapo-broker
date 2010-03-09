@@ -2,6 +2,8 @@ package pt.com.broker.functests.negative;
 
 import java.util.Random;
 
+import javax.print.attribute.SetOfIntegerSyntax;
+
 import pt.com.broker.functests.helpers.GenericNegativeTest;
 
 public class TotallyInvalidRandomMessageTest extends GenericNegativeTest

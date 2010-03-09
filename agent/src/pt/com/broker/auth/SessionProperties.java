@@ -2,12 +2,13 @@ package pt.com.broker.auth;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
 
 import pt.com.gcs.conf.global.ChannelType;
 
@@ -25,10 +26,16 @@ public class SessionProperties extends HashMap<String, Object>
 	private List<ChannelType> channelTypes = null;
 	private SecretKey key = null;
 
-	public SessionProperties(IoSession session)
+	public SessionProperties(Channel session)
 	{
-		if( session != null)
-			address = ((InetSocketAddress) session.getRemoteAddress()).getAddress();
+		if( session != null )
+		{
+			SocketAddress remoteAddress = session.getRemoteAddress();
+			if(remoteAddress != null)
+			{
+				address = ((InetSocketAddress) remoteAddress).getAddress();
+			}
+		}
 	}
 
 	// InetSocketAddress

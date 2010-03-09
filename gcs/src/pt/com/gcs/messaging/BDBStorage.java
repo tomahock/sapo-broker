@@ -88,7 +88,7 @@ public class BDBStorage
 			}
 			else
 			{
-
+				
 				throw new Exception("MessageMarshaller.marshallBDBMessage returned null");
 			}
 		}
@@ -351,7 +351,7 @@ public class BDBStorage
 		int i0 = 0; // delivered
 		int j0 = 0; // failed deliver
 		int k0 = 0; // redelivered messages
-		int e0 = 0; // expired messages
+		int e0 = 0; //expired messages
 
 		Cursor msg_cursor = null;
 
@@ -375,7 +375,7 @@ public class BDBStorage
 				try
 				{
 					bdbm = MessageMarshaller.unmarshallBDBMessage(bdata);
-					if (bdbm == null)
+					if(bdbm == null)
 					{
 						log.info("MessageMarshaller.unmarshallBDBMessage returned null");
 						continue;
@@ -394,7 +394,8 @@ public class BDBStorage
 				boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
 				long reserveTimeout = bdbm.getReserveTimeout();
 				final boolean isReserved = reserveTimeout > now;
-
+				 
+				
 				if (!isReserved)
 				{
 					if (now > msg.getExpiration())
@@ -433,8 +434,7 @@ public class BDBStorage
 							}
 							else
 							{
-
-								log.info("Could not deliver message. Queue: '{}',  Id: '{}'", msg.getDestination(), msg.getMessageId());
+								log.info("Could not deliver message. Queue: '{}',  Id: '{}'.", msg.getDestination(), msg.getMessageId());
 								dumpMessage(msg);
 
 								++j0;
@@ -454,13 +454,15 @@ public class BDBStorage
 
 			if (log.isDebugEnabled())
 			{
-				log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivered: %s", queueProcessor.getDestinationName(), i0, j0));
+				log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivered: %s; Expired: %s", queueProcessor.getDestinationName(), i0, j0, e0));
 			}
-
+			
+			
 			if (e0 > 0)
 			{
-				log.info("Number of expired messages for queue '{}': {}", queueProcessor.getDestinationName(), e0);
+				log.warn("Number of expired messages for queue '{}': {}", queueProcessor.getDestinationName(), e0);
 			}
+
 			if (k0 > 0)
 			{
 				log.info("Number of redelivered messages for queue '{}': {}", queueProcessor.getDestinationName(), k0);

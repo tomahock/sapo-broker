@@ -1,110 +1,87 @@
 package pt.com.broker.types;
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
-import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.codec.frame.FrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for decoding types. Implements MINA CumulativeProtocolDecoder that cumulates the content of received buffers to a cumulative buffer to help users implement decoders. <br/>
+ * Base class for decoding types. Extends Netty FrameDecoder that acumulates the content of received buffers to a cumulative buffer to help users implement decoders. <br/>
  * Used by previous encoding schemes.
  * 
  */
 
-public abstract class SimpleFramingDecoder extends CumulativeProtocolDecoder
+public class SimpleFramingDecoder extends FrameDecoder
 {
 	private static final Logger log = LoggerFactory.getLogger(SimpleFramingDecoder.class);
 
 	private final int _max_message_size;
 
-	private static final int MIN_HEADER_LENGTH = 4;
+	public static final int HEADER_LENGTH = 4;
+
+	public static final int MAX_MESSAGE_SIZE = 256 * 1024;
+
+	public SimpleFramingDecoder()
+	{
+		this(MAX_MESSAGE_SIZE);
+	}
 
 	public SimpleFramingDecoder(int max_message_size)
 	{
+		super();
 		_max_message_size = max_message_size;
 	}
 
 	@Override
-	public void decode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception
+	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception
 	{
-		try
+		if (buffer.readableBytes() < HEADER_LENGTH)
 		{
-			super.decode(session, in, out);
+			return null;
 		}
-		catch (Throwable e)
+
+		int mark = buffer.readerIndex();
+
+		int len = buffer.getInt(mark);
+		
+		// Mark the current buffer position before reading the length field
+		// because the whole frame might not be in the buffer yet.
+		// We will reset the buffer position to the marked position if
+		// there's not enough bytes in the buffer.
+		
+		//buffer.markReaderIndex();
+
+		// The length field is in the buffer.
+		//int len = buffer.readInt();
+
+		if (buffer.readableBytes() < (len + HEADER_LENGTH))
 		{
-			in.clear();
-			//(session.getHandler()).exceptionCaught(session, e);
+			// The whole bytes were not received yet - return null.
+			// This method will be invoked again when more packets are
+			// received and appended to the buffer.
+			// Reset to the marked position to read the length field again
+			// next time.
+			return null;
 		}
+
+		if (len > _max_message_size)
+		{
+			throw new IllegalArgumentException(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+		}
+		else if (len <= 0)
+		{
+			throw new IllegalArgumentException(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+		}
+		
+		buffer.skipBytes(HEADER_LENGTH);
+
+		// There's enough bytes in the buffer. Read it.
+		ChannelBuffer frame = buffer.readBytes(len);
+		
+		// Successfully decoded a frame. Return the decoded frame.
+		return frame;
 	}
-
-	@Override
-	protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception
-	{
-		try
-		{
-			// Remember the initial position.
-			int start = in.position();
-
-			if (in.remaining() < MIN_HEADER_LENGTH)
-			{
-				// We didn't receive enough bytes to decode the
-				// message length. Cumulate remainder to decode later.
-				in.position(start);
-				return false;
-			}
-
-			int len = in.getInt();
-
-			// We can decode the message length
-			if (len > _max_message_size)
-			{
-				dealWithOversizedMessage(len, _max_message_size, session);
-				log.error("Illegal message size!! Received message claimed to have " + len + " bytes.");
-				return false;
-			}
-			else if (len <= 0)
-			{
-				dealWithOversizedMessage(len, _max_message_size, session);
-				log.error("Illegal message size!! Received message claimed to have " + len + " bytes.");
-				return false;
-			}
-
-			if (in.remaining() < len)
-			{
-				// We didn't receive enough bytes to decode the message body.
-				// Accumulate remainder to decode later.
-				in.position(start);
-				return false;
-			}
-
-			byte[] packet = new byte[len];
-			in.get(packet);
-			out.write(processBody(packet));
-
-			return true;
-
-		}
-		catch (Throwable t)
-		{
-			session.close(true);
-			log.error(t.getMessage(), t);
-			return false;
-		}
-	}
-
-	private void dealWithOversizedMessage(int len, int _max_message_size2, IoSession session)
-	{
-		session.suspendRead();
-
-		session.write(NetFault.InvalidMessageSizeErrorMessage);
-
-		session.close(false);
-
-	}
-
-	public abstract Object processBody(byte[] packet);
 
 }

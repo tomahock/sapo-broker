@@ -1,6 +1,6 @@
 package pt.com.broker.messaging;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
 
 import pt.com.broker.messaging.TopicSubscriberList.MaximumDistinctSubscriptionsReachedException;
 import pt.com.broker.types.NetSubscribe;
@@ -25,12 +25,12 @@ public class BrokerConsumer
 	{
 	}
 
-	public void listen(NetSubscribe subscription, IoSession ios)
+	public void listen(NetSubscribe subscription, Channel channel)
 	{
 		try
 		{
 			QueueSessionListener qsl = QueueSessionListenerList.get(subscription.getDestination());
-			qsl.addConsumer(ios);
+			qsl.addConsumer(channel);
 		}
 		catch (Throwable e)
 		{
@@ -38,12 +38,12 @@ public class BrokerConsumer
 		}
 	}
 
-	public synchronized boolean subscribe(NetSubscribe sb, IoSession ios)
+	public synchronized boolean subscribe(NetSubscribe sb, Channel channel)
 	{
 		try
 		{
 			TopicSubscriber subscriber = TopicSubscriberList.get(sb.getDestination());
-			subscriber.addConsumer(ios);
+			subscriber.addConsumer(channel);
 		}
 
 		catch (Throwable e)
@@ -62,7 +62,7 @@ public class BrokerConsumer
 		return true;
 	}
 
-	public synchronized void unsubscribe(NetUnsubscribe unsubs, IoSession session)
+	public synchronized void unsubscribe(NetUnsubscribe unsubs, Channel channel)
 	{
 		String dname = unsubs.getDestination();
 		DestinationType dtype = unsubs.getDestinationType();
@@ -71,17 +71,17 @@ public class BrokerConsumer
 			try
 			{
 				TopicSubscriber subscriber = TopicSubscriberList.get(dname);
-				subscriber.removeSessionConsumer(session);
+				subscriber.removeSessionConsumer(channel);
 			}
 			catch (MaximumDistinctSubscriptionsReachedException e)
 			{
-				// Dosen't happen
+				// Doesn't happen
 			}
 		}
 		else if (dtype == DestinationType.QUEUE || dtype == DestinationType.VIRTUAL_QUEUE)
 		{
 			QueueSessionListener qsl = QueueSessionListenerList.get(dname);
-			qsl.removeSessionConsumer(session);
+			qsl.removeSessionConsumer(channel);
 		}
 	}
 }

@@ -61,8 +61,8 @@ public abstract class BaseBrokerClient
 	protected final Map<String, SynchronousQueue<NetMessage>> pendingPolls = new HashMap<String, SynchronousQueue<NetMessage>>();
 
 	private NetProtocolType protocolType;
-	private final boolean oldFramming;
-
+	private boolean oldFramming;
+	
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
 
 	protected BrokerProtocolHandler _netHandler;
@@ -153,8 +153,7 @@ public abstract class BaseBrokerClient
 		this.hosts.add(new HostInfo(host, portNumber));
 		_appName = appName;
 		protocolType = ptype;
-
-		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
+		oldFramming = (protocolType == NetProtocolType.SOAP_v0); 
 	}
 
 	/**
@@ -196,7 +195,7 @@ public abstract class BaseBrokerClient
 		this.hosts = new CircularContainer<HostInfo>(hosts);
 		_appName = appName;
 		protocolType = ptype;
-		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
+		oldFramming = (protocolType == NetProtocolType.SOAP_v0); 
 	}
 
 	protected abstract BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable;
@@ -787,7 +786,7 @@ public abstract class BaseBrokerClient
 	 * 
 	 * @return
 	 */
-	public NetProtocolType getProtocolType()
+	public NetProtocolType getPortocolType()
 	{
 		return protocolType;
 	}
@@ -814,12 +813,10 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * When using SOAP encoding it can be used old or the new framing.
-	 * 
 	 * @return
 	 */
 	public boolean isOldFramming()
 	{
 		return oldFramming;
 	}
-
 }

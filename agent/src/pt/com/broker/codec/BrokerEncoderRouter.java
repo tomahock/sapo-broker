@@ -1,41 +1,92 @@
 package pt.com.broker.codec;
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.filter.codec.ProtocolCodecFactory;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.SimpleFramingEncoderV2;
+import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
+import pt.com.broker.codec.thrift.ThriftBindingSerializer;
+import pt.com.broker.codec.xml.SoapBindingSerializer;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.ChannelAttributes;
+import pt.com.broker.types.NetMessage;
 
-public class BrokerEncoderRouter extends SimpleFramingEncoderV2
+/**
+ * The network protocol has the following layout:
+ * 
+ * <pre>
+ *  -----------
+ *  |  Type   | -&gt; 16-bit signed integer in network order for protocol type
+ *  -----------
+ *  | Version | -&gt; 16-bit signed integer in network order for protocol version
+ *  ----------- 
+ *  | Length  | -&gt; 32-bit signed integer in network order for the payload length
+ *  -----------
+ *  | Payload | -&gt; binary message
+ *  -----------
+ * </pre>
+ * 
+ * This applies to both input and output messages.
+ */
+
+@Sharable
+public class BrokerEncoderRouter extends OneToOneEncoder
 {
-
 	private static final Logger log = LoggerFactory.getLogger(BrokerEncoderRouter.class);
+	private static final Map<Short, BindingSerializer> encoders = new ConcurrentHashMap<Short, BindingSerializer>();
 
-	public BrokerEncoderRouter()
+	static
 	{
-
+		encoders.put(new Short((short) 0), new SoapBindingSerializer());
+		encoders.put(new Short((short) 1), new ProtoBufBindingSerializer());
+		encoders.put(new Short((short) 2), new ThriftBindingSerializer());
 	}
 
 	@Override
-	public void processBody(Object message, IoBuffer wbuf, Short protocolType, Short protocolVersion)
+	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		ProtocolCodecFactory codec = BrokerCodecRouter.getProcolCodec(new Short(protocolType));
-		if (codec == null)
-		{
-			throw new RuntimeException("Invalid protocol type: " + protocolType);
-		}
-
-		SimpleFramingEncoderV2 encoder;
 		try
 		{
-			encoder = (SimpleFramingEncoderV2) codec.getEncoder(null);
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException("Invalid protocol type decoder implementation: " + protocolType, e);
-		}
+			Short protocol_type = (Short) ChannelAttributes.get(ctx, "PROTOCOL_TYPE");
+			Short protocol_version = (Short) ChannelAttributes.get(ctx, "PROTOCOL_VERSION");
 
-		encoder.processBody(message, wbuf, protocolType, protocolVersion);
+			if (protocol_type == null)
+			{
+				log.error("No PROTOCOL_TYPE defined for this channel: '{}'", channel.toString());
+
+				return null;
+			}
+
+			BindingSerializer handler = encoders.get(protocol_type);
+
+			if (handler == null)
+			{
+				throw new RuntimeException("Invalid protocol type: " + protocol_type);
+			}
+
+			byte[] bmsg = handler.marshal((NetMessage) msg);
+
+			ChannelBuffer out = ChannelBuffers.buffer(bmsg.length + 8);
+			out.writeShort(protocol_type);
+			out.writeShort(protocol_version);
+			out.writeInt(bmsg.length);
+			out.writeBytes(bmsg);
+
+			return out;
+		}
+		catch (Throwable t)
+		{
+			throw new IOException( "Failed to encode message. Reason: " + t.getMessage());
+		}
 	}
+
 }

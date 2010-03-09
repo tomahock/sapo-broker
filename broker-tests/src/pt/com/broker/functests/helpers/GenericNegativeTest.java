@@ -72,7 +72,7 @@ public class GenericNegativeTest extends BrokerTest
 				try
 				{
 					brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-							BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 					brokerClient.setErrorListener(getErrorListener());
 

@@ -1,0 +1,234 @@
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.messaging.Gcs# [main] - Address already in use
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind(Native Method) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:119) [na:1.6.0_14]
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:59) [na:1.6.0_14]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:252) [mina2-snapshot.jar:na]
+	at org.apache.mina.transport.socket.nio.NioSocketAcceptor.open(NioSocketAcceptor.java:49) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.registerHandles(AbstractPollingIoAcceptor.java:525) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor.access$200(AbstractPollingIoAcceptor.java:67) [mina2-snapshot.jar:na]
+	at org.apache.mina.core.polling.AbstractPollingIoAcceptor$Acceptor.run(AbstractPollingIoAcceptor.java:409) [mina2-snapshot.jar:na]
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:65) [mina2-snapshot.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886) [na:1.6.0_14]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908) [na:1.6.0_14]
+	at java.lang.Thread.run(Thread.java:619) [na:1.6.0_14]
+
+Exiting... 
+Found Java version 1.6
+ INFO #BROKER#pt.com.broker.Start# [main] - SAPO-BROKER starting - Version: 3.0.7
+ INFO #GCS#pt.com.gcs.messaging.Gcs# [main] - SAPO GCS starting.
+ERROR #GCS#pt.com.gcs.conf.GcsInfo# [main] - Fatal error: No agent configuration file defined. Please set the enviroment variable 'agent-config-path' to valid path for the configuration file
+
+Exiting... 

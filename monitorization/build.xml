@@ -3,7 +3,7 @@
 	<property name="dist" value="./dist" />
 	<property name="src" value="./src" />
 	<property name="bin" value="./bin" />
-	<property name="broker-public-repo" value="../../BrokerPublicRepo" />
+	<property name="broker-public-repo" value="../" />
 
 	<loadfile srcfile="${broker-public-repo}/agent/${src}/VERSION.txt" property="version">
 		<filterchain>

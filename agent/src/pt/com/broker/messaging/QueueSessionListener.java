@@ -2,16 +2,19 @@ package pt.com.broker.messaging;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * QueueSessionListener represents a local (agent connected) clients who subscribed to a specific topic.
@@ -19,66 +22,67 @@ import pt.com.gcs.net.IoSessionHelper;
  */
 public class QueueSessionListener extends BrokerListener
 {
+	private static final long MAX_WRITE_TIME = 250;
+	
+	private static final Logger log = LoggerFactory.getLogger(QueueSessionListener.class);
 
-	private final static double MAX_SUSPENSION_TIME = 1000;
-	
-	private final static double LOW_WATER_MARK = (double) MAX_SESSION_BUFFER_SIZE; 
-	private final static double HIGH_WATER_MARK = LOW_WATER_MARK * 2;
-	
-	private final static double DELTA =  HIGH_WATER_MARK - LOW_WATER_MARK;
-	
-	private static class SessionInfo
+	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
+
+	public static class ChannelInfo
 	{
-		IoSession session;
-		long time;
+		public Channel channel;
+		public AtomicLong deliveryTime;
+		public volatile boolean wasDeliverySuspeded;
 
-		SessionInfo(IoSession session)
+		public ChannelInfo(Channel channel)
 		{
-			this.session = session;
-			time = 0;
+			this.channel = channel;
+			deliveryTime = new AtomicLong(0);
 		}
 
-		boolean isReady()
-		{
-			return time < System.currentTimeMillis();
-		}
-		
-		@Override
-		public boolean equals(Object obj)
-		{
-			if ( this == obj )
-			{
-				return true;
-			}
-			if(obj.getClass().equals(this.getClass()))
-			{
-				SessionInfo other = (SessionInfo) obj;
-				if(other.session.equals(this.session))
-				{
-					// ignore time
-					return true;
-				}
-				
-			}
-			else if(obj.getClass().equals(this.session.getClass()))
-			{
-				return true;
-			}
-			return false;
-		}
-		
 		@Override
 		public int hashCode()
 		{
-			return session.hashCode();
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((channel == null) ? 0 : channel.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ChannelInfo other = (ChannelInfo) obj;
+			if (channel == null)
+			{
+				if (other.channel != null)
+					return false;
+			}
+			else if (!channel.equals(other.channel))
+				return false;
+			return true;
+		}
+
+		public boolean isReady()
+		{
+			return isReady(System.currentTimeMillis());
+		}
+
+		public boolean isReady(long currentTime)
+		{
+			return currentTime >= deliveryTime.get();
 		}
 	}
 
 	private volatile int currentQEP = 0;
 
-	private static final Logger log = LoggerFactory.getLogger(QueueSessionListener.class);
-
-	private final List<SessionInfo> sessions = new ArrayList<SessionInfo>();
+	private final List<ChannelInfo> sessions = new ArrayList<ChannelInfo>();
 
 	private final String _dname;
 
@@ -106,42 +110,52 @@ public class QueueSessionListener extends BrokerListener
 		if (msg == null)
 			return -1;
 
-		final SessionInfo sessionInfo = pick();
-		
+		final ChannelInfo channelInfo = pick();
+		if (channelInfo == null)
+		{
+			return -1;
+		}
+		final Channel channel = channelInfo.channel;
+
 		try
 		{
-			if ( (sessionInfo != null) && (sessionInfo.session != null) )
+			final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
+			if (channel.isWritable())
 			{
-				IoSession ioSession = sessionInfo.session;
-				if (ioSession.isConnected() && !ioSession.isClosing())
-				{
-					long scheduledWriteBytes = ioSession.getScheduledWriteBytes();
-					
-					if( (scheduledWriteBytes> LOW_WATER_MARK) && (scheduledWriteBytes < HIGH_WATER_MARK) )
-					{
-						long time = (long) ((scheduledWriteBytes - LOW_WATER_MARK ) * (MAX_SUSPENSION_TIME / DELTA));
-						sessionInfo.time = System.currentTimeMillis() + time;
-					}
-					else if(scheduledWriteBytes >= HIGH_WATER_MARK)
-					{
-						sessionInfo.time = (long) (System.currentTimeMillis() + MAX_SUSPENSION_TIME);
-						if (log.isDebugEnabled())
-						{
-							log.debug("MAX_SESSION_BUFFER_SIZE reached in session '{}'", ioSession.toString());
-						}
-						return -1;
-					}
-					
-					final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
-					ioSession.write(response);
+				channel.write(response);
 
-					return 2 * 60 * 1000; // reserve for 2mn
-				}
+				channelInfo.wasDeliverySuspeded = false;
+
+				return RESERVE_TIME;
 			}
-			//
 			else
 			{
-				log.info(String.format("Session is null Returning -1. Queue name: %s", this._dname));
+				ChannelFuture writeFuture = channel.write(response);
+				final long writeStartTime = System.nanoTime();
+
+				writeFuture.addListener(new ChannelFutureListener()
+				{
+					@Override
+					public void operationComplete(ChannelFuture future) throws Exception
+					{
+						final long writeTime = ((System.nanoTime() - writeStartTime) / (1000 * 1000));
+
+						long delayTime = 0;
+						if (writeTime >= MAX_WRITE_TIME)
+						{
+							delayTime = System.currentTimeMillis() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.
+
+							channelInfo.deliveryTime.set(delayTime);
+							if (!channelInfo.wasDeliverySuspeded)
+							{
+								log.info("Suspending message delivery from queue '{}' to session '{}'.", _dname, channelInfo.channel.toString());
+							}
+							channelInfo.wasDeliverySuspeded = true;
+						}
+					}
+				});
+				return RESERVE_TIME;
+
 			}
 		}
 		catch (Throwable e)
@@ -149,15 +163,11 @@ public class QueueSessionListener extends BrokerListener
 			if (e instanceof org.jibx.runtime.JiBXException)
 			{
 				Gcs.ackMessage(_dname, msg.getMessageId());
-				log.warn("Undeliverable message was deleted. Queue: '{}',  Id: '{}'", this._dname,  msg.getMessageId());
+				log.warn("Undeliverable message was deleted. Id: '{}'", msg.getMessageId());
 			}
-
 			try
 			{
-				if((sessionInfo != null) && (sessionInfo.session != null) )
-				{
-					(sessionInfo.session.getHandler()).exceptionCaught(sessionInfo.session , e);
-				}
+				((BrokerProtocolHandler) channel.getPipeline().get("broker-handler")).exceptionCaught(channel, e, null);
 			}
 			catch (Throwable t)
 			{
@@ -168,11 +178,12 @@ public class QueueSessionListener extends BrokerListener
 		return -1;
 	}
 
-	private SessionInfo pick()
+	private ChannelInfo pick()
 	{
+		long currentTime = System.currentTimeMillis();
 		synchronized (mutex)
 		{
-			int n = sessions.size();
+			int n = getSessions().size();
 			if (n == 0)
 				return null;
 
@@ -188,71 +199,56 @@ public class QueueSessionListener extends BrokerListener
 			{
 				for (int i = 0; i != n; ++i)
 				{
-					SessionInfo sessionInfo = sessions.get(currentQEP);
-					if(sessionInfo.isReady())
+					int idx = (currentQEP + i) % n;
+					ChannelInfo channelInfo = getSessions().get(idx);
+					if (channelInfo.isReady(currentTime))
 					{
-						return sessionInfo;
+						return channelInfo;
 					}
 				}
 			}
 			catch (Exception e)
 			{
-				try
-				{
-					currentQEP = 0;
-					do
-					{
-						SessionInfo sessionInfo = sessions.get(currentQEP);
-						if (sessionInfo.isReady())
-						{
-							return sessionInfo;
-						}
-					}
-					while ((++currentQEP) != (n - 1));
-				}
-				catch (Exception e2)
-				{
-					return null;
-				}
+				currentQEP = 0;
+				return null;
 			}
-
 		}
 		return null;
 	}
 
-	public int addConsumer(IoSession iosession)
+	public int addConsumer(Channel channel)
 	{
 		synchronized (mutex)
 		{
-			SessionInfo sessionInfo = new SessionInfo(iosession);
-			if (!sessions.contains(sessionInfo))
+			ChannelInfo ci = new ChannelInfo(channel);
+			if (!getSessions().contains(ci))
 			{
-				sessions.add(sessionInfo);
+				getSessions().add(ci);
 
-				log.info(String.format("Create message consumer for queue: '%s', address: '%s', Total sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), sessions.size()));
+				log.info(String.format("Create message consumer for queue: '%s', address: '%s', Total sessions: '%s'", _dname, channel.getRemoteAddress().toString(), getSessions().size()));
 			}
-			return sessions.size();
+			return getSessions().size();
 		}
 	}
 
-	public int removeSessionConsumer(IoSession iosession)
+	public int removeSessionConsumer(Channel channel)
 	{
-		
+
 		synchronized (mutex)
 		{
-			
-			if (sessions.remove( new SessionInfo(iosession )))
+
+			if (getSessions().remove(new ChannelInfo(channel)))
 			{
-				log.info(String.format("Remove message consumer for queue: '%s', address: '%s', Remaining sessions: '%s'", _dname, IoSessionHelper.getRemoteAddress(iosession), sessions.size()));
+				log.info(String.format("Remove message consumer for queue: '%s', address: '%s', Remaining sessions: '%s'", _dname, channel.getRemoteAddress().toString(), getSessions().size()));
 			}
 
-			if (sessions.isEmpty())
+			if (getSessions().isEmpty())
 			{
 				QueueSessionListenerList.remove(_dname);
 				Gcs.removeAsyncConsumer(this);
 			}
 
-			return sessions.size();
+			return getSessions().size();
 		}
 	}
 
@@ -265,7 +261,7 @@ public class QueueSessionListener extends BrokerListener
 	{
 		synchronized (mutex)
 		{
-			return sessions.size();
+			return getSessions().size();
 		}
 	}
 
@@ -274,9 +270,11 @@ public class QueueSessionListener extends BrokerListener
 	{
 		synchronized (mutex)
 		{
-			for(SessionInfo sessionInfo : sessions)
+			long currentTimeMillis = System.currentTimeMillis();
+
+			for (ChannelInfo channelInfo : getSessions())
 			{
-				if(sessionInfo.isReady())
+				if (channelInfo.isReady(currentTimeMillis))
 					return true;
 			}
 		}
@@ -287,5 +285,10 @@ public class QueueSessionListener extends BrokerListener
 	public boolean isActive()
 	{
 		return true;
+	}
+
+	public List<ChannelInfo> getSessions()
+	{
+		return sessions;
 	}
 }

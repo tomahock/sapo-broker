@@ -24,11 +24,26 @@ import pt.com.gcs.conf.global.BrokerSecurityPolicy;
  */
 public class GcsInfo
 {
-	private static Logger log = LoggerFactory.getLogger(GcsInfo.class);
+	private static final GcsInfo instance = new GcsInfo();
 
 	//public static final String VERSION = "3.0";
 
-	private static final GcsInfo instance = new GcsInfo();
+	private static Logger log = LoggerFactory.getLogger(GcsInfo.class);
+
+	public static String constructAgentName(String ip, int port)
+	{
+		return ip + ":" + port;
+	}
+
+	/**
+	 * Should the SSL port be open? Determined by the existence of the respective configuration element.
+	 * 
+	 * @return <code>true</code> if SSL is to be used <code>false</code> otherwise
+	 */
+	public static boolean createSSLInterface()
+	{
+		return instance.conf.getSsl() != null;
+	}
 
 	/**
 	 * Agent's IP
@@ -53,13 +68,7 @@ public class GcsInfo
 	 */
 	public static String getAgentName()
 	{
-		String prop = constructAgentName(instance.conf.getNet().getIp(), instance.conf.getNet().getPort());
-		if (StringUtils.isBlank(prop))
-		{
-			log.error("Fatal error: Must define an Agent name.");
-			Shutdown.now();
-		}
-		return prop;
+		return instance.agentName;
 	}
 
 	/**
@@ -94,87 +103,6 @@ public class GcsInfo
 	}
 
 	/**
-	 * A delay time (in milliseconds) that allows broker peers to detect new producers and make sure that they are ready to receive messages. Valid values: Positive integer Default value: 100
-	 * 
-	 * @return A delay time in milliseconds
-	 */
-	public static int getInitialDelay()
-	{
-		int iprop = instance.conf.getNet().getDiscoveryDelay();
-		return iprop;
-	}
-
-	/**
-	 * Configuration version.
-	 * 
-	 * @return Configuration version
-	 */
-	public static String getConfigVersion()
-	{
-		String prop = instance.conf.getConfigVersion();
-		return prop;
-	}
-
-	/**
-	 * Global configuration file location.
-	 * 
-	 * @return Global configuration file location
-	 */
-	public static String getGlobalConfigFilePath()
-	{
-		String prop = System.getProperty("broker-global-config-path");
-		if (StringUtils.isBlank(prop))
-		{
-			log.error("Fatal error: No global configuration file defined. Please set the enviroment variable 'broker-global-config-path' to valid path for the global configuration file");
-			Shutdown.now();
-		}
-		return prop;
-	}
-
-	private AgentConfig conf;
-
-	private GcsInfo()
-	{
-		String filePath = System.getProperty("agent-config-path");
-		if (StringUtils.isBlank(filePath))
-		{
-			log.error("Fatal error: No agent configuration file defined. Please set the enviroment variable 'agent-config-path' to valid path for the configuration file");
-			Shutdown.now();
-		}
-		try
-		{
-			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf.agent");
-			Unmarshaller u = jc.createUnmarshaller();
-
-			File f = new File(filePath);
-			boolean b = f.exists();
-			if (!b)
-			{
-				log.error("Agent configuration file missing - " + filePath);
-				Shutdown.now();
-			}
-			conf = (AgentConfig) u.unmarshal(f);
-		}
-		catch (JAXBException e)
-		{
-			// Throwable t = ErrorAnalyser.findRootCause(e);
-			log.error("Fatal error: {}", e.getMessage());
-			Shutdown.now(e);
-		}
-	}
-
-	/**
-	 * UDP port.
-	 * 
-	 * @return UDP port
-	 */
-	public static int getBrokerUdpPort()
-	{
-		int iprop = instance.conf.getNet().getBrokerUdpPort();
-		return iprop;
-	}
-
-	/**
 	 * HTTP port.
 	 * 
 	 * @return HTTP port
@@ -182,17 +110,6 @@ public class GcsInfo
 	public static int getBrokerHttpPort()
 	{
 		int iprop = instance.conf.getNet().getBrokerHttpPort();
-		return iprop;
-	}
-
-	/**
-	 * Broker TCP port (used by clients).
-	 * 
-	 * @return A TCP port
-	 */
-	public static int getBrokerPort()
-	{
-		int iprop = instance.conf.getNet().getBrokerPort();
 		return iprop;
 	}
 
@@ -208,67 +125,14 @@ public class GcsInfo
 	}
 
 	/**
-	 * Is Dropbox enabled.
+	 * Broker TCP port (used by clients).
 	 * 
-	 * @return <code>true</code> if it is enabled <code>false</code> otherwise
+	 * @return A TCP port
 	 */
-	public static boolean isDropboxEnabled()
+	public static int getBrokerPort()
 	{
-		return instance.conf.getMessaging().getDropbox().isEnabled();
-	}
-
-	/**
-	 * Dropbox directory.
-	 * 
-	 * @return Dropbox directory
-	 */
-	public static String getDropBoxDir()
-	{
-		return instance.conf.getMessaging().getDropbox().getDir();
-	}
-
-	/**
-	 * Interval to check for new messages.
-	 * 
-	 * @return An interval in seconds
-	 */
-	public static int getDropBoxCheckInterval()
-	{
-		return instance.conf.getMessaging().getDropbox().getCheckInterval();
-	}
-
-	// Access Control related methods
-
-	/**
-	 * Should access control be used? Determined by the existence of security policies.
-	 * 
-	 * @return <code>true</code> if access control is to be used <code>false</code> otherwise
-	 */
-	public static boolean useAccessControl()
-	{
-		return getSecurityPolicies() != null;
-	}
-
-	/**
-	 * Security policies.
-	 * 
-	 * @return Security policies
-	 */
-	public static BrokerSecurityPolicy getSecurityPolicies()
-	{
-		return GlobalConfig.getSecurityPolicies();
-	}
-
-	// SSL related methods
-
-	/**
-	 * Should the SSL port be open? Determined by the existence of the respective configuration element.
-	 * 
-	 * @return <code>true</code> if SSL is to be used <code>false</code> otherwise
-	 */
-	public static boolean createSSLInterface()
-	{
-		return instance.conf.getSsl() != null;
+		int iprop = instance.conf.getNet().getBrokerPort();
+		return iprop;
 	}
 
 	/**
@@ -287,6 +151,101 @@ public class GcsInfo
 		int sslPort = ssl.getBrokerSslPort();
 		return sslPort;
 	}
+
+	/**
+	 * UDP port.
+	 * 
+	 * @return UDP port
+	 */
+	public static int getBrokerUdpPort()
+	{
+		int iprop = instance.conf.getNet().getBrokerUdpPort();
+		return iprop;
+	}
+
+	/**
+	 * Configuration version.
+	 * 
+	 * @return Configuration version
+	 */
+	public static String getConfigVersion()
+	{
+		String prop = instance.conf.getConfigVersion();
+		return prop;
+	}
+
+	/**
+	 * Credential validator providers.
+	 * 
+	 * @return A map with credential validator providers
+	 */
+	public static Map<String, ProviderInfo> getCredentialValidatorProviders()
+	{
+		return GlobalConfig.getCredentialValidatorProviders();
+	}
+
+	/**
+	 * Interval to check for new messages.
+	 * 
+	 * @return An interval in seconds
+	 */
+	public static int getDropBoxCheckInterval()
+	{
+		return instance.conf.getMessaging().getDropbox().getCheckInterval();
+	}
+
+	/**
+	 * Dropbox directory.
+	 * 
+	 * @return Dropbox directory
+	 */
+	public static String getDropBoxDir()
+	{
+		return instance.conf.getMessaging().getDropbox().getDir();
+	}
+
+	/**
+	 * Global configuration file location.
+	 * 
+	 * @return Global configuration file location
+	 */
+	public static String getGlobalConfigFilePath()
+	{
+		String prop = System.getProperty("broker-global-config-path");
+		if (StringUtils.isBlank(prop))
+		{
+			log.error("Fatal error: No global configuration file defined. Please set the enviroment variable 'broker-global-config-path' to valid path for the global configuration file");
+			Shutdown.now();
+		}
+		return prop;
+	}
+
+	// Access Control related methods
+
+	/**
+	 * A delay time (in milliseconds) that allows broker peers to detect new producers and make sure that they are ready to receive messages. Valid values: Positive integer Default value: 100
+	 * 
+	 * @return A delay time in milliseconds
+	 */
+	public static int getInitialDelay()
+	{
+		int iprop = instance.conf.getNet().getDiscoveryDelay();
+		return iprop;
+	}
+
+	/**
+	 * Private key password.
+	 * 
+	 * @return Private key password
+	 */
+	public static String getKeyPassword()
+	{
+		if (instance.conf.getSsl() != null)
+			return instance.conf.getSsl().getKeyPassword();
+		return null;
+	}
+
+	// SSL related methods
 
 	/**
 	 * Keystore containing agent's key pair.
@@ -313,27 +272,23 @@ public class GcsInfo
 	}
 
 	/**
-	 * Private key password.
+	 * Maximum distinct subscriptions.
 	 * 
-	 * @return Private key password
+	 * @return Maximum distinct subscriptions
 	 */
-	public static String getKeyPassword()
+	public static int getMaxDistinctSubscriptions()
 	{
-		if (instance.conf.getSsl() != null)
-			return instance.conf.getSsl().getKeyPassword();
-		return null;
+		return GlobalConfig.getMaxDistinctSubscriptions();
 	}
 
-	// Authentication validators
-
 	/**
-	 * Credential validator providers.
+	 * Maximum number of queues.
 	 * 
-	 * @return A map with credential validator providers
+	 * @return Maximum number of queues
 	 */
-	public static Map<String, ProviderInfo> getCredentialValidatorProviders()
+	public static int getMaxQueues()
 	{
-		return GlobalConfig.getCredentialValidatorProviders();
+		return GlobalConfig.getMaxQueues();
 	}
 
 	// Message related properties
@@ -347,15 +302,7 @@ public class GcsInfo
 		return GlobalConfig.getMsgMaxSize();
 	}
 
-	/**
-	 * Maximum number of queues.
-	 * 
-	 * @return Maximum number of queues
-	 */
-	public static int getMaxQueues()
-	{
-		return GlobalConfig.getMaxQueues();
-	}
+	// Authentication validators
 
 	/**
 	 * Time during witch a message is stored.
@@ -368,17 +315,74 @@ public class GcsInfo
 	}
 
 	/**
-	 * Maximum distinct subscriptions.
+	 * Security policies.
 	 * 
-	 * @return Maximum distinct subscriptions
+	 * @return Security policies
 	 */
-	public static int getMaxDistinctSubscriptions()
+	public static BrokerSecurityPolicy getSecurityPolicies()
 	{
-		return GlobalConfig.getMaxDistinctSubscriptions();
+		return GlobalConfig.getSecurityPolicies();
 	}
-	
-	public static String constructAgentName(String ip, int port)
+
+	/**
+	 * Is Dropbox enabled.
+	 * 
+	 * @return <code>true</code> if it is enabled <code>false</code> otherwise
+	 */
+	public static boolean isDropboxEnabled()
 	{
-		return ip + ":" + port;
+		return instance.conf.getMessaging().getDropbox().isEnabled();
+	}
+
+	/**
+	 * Should access control be used? Determined by the existence of security policies.
+	 * 
+	 * @return <code>true</code> if access control is to be used <code>false</code> otherwise
+	 */
+	public static boolean useAccessControl()
+	{
+		return getSecurityPolicies() != null;
+	}
+
+	private AgentConfig conf;
+
+	private String agentName;
+	
+	private GcsInfo()
+	{
+		String filePath = System.getProperty("agent-config-path");
+		if (StringUtils.isBlank(filePath))
+		{
+			log.error("Fatal error: No agent configuration file defined. Please set the enviroment variable 'agent-config-path' to valid path for the configuration file");
+			Shutdown.now();
+		}
+		try
+		{
+			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf.agent");
+			Unmarshaller u = jc.createUnmarshaller();
+
+			File f = new File(filePath);
+			boolean b = f.exists();
+			if (!b)
+			{
+				log.error("Agent configuration file missing - " + filePath);
+				Shutdown.now();
+			}
+			conf = (AgentConfig) u.unmarshal(f);
+			
+			String prop = constructAgentName(conf.getNet().getIp(), conf.getNet().getPort());
+			if (StringUtils.isBlank(prop))
+			{
+				log.error("Fatal error: Must define an Agent name.");
+				Shutdown.now();
+			}
+			agentName= prop;			
+		}
+		catch (JAXBException e)
+		{
+			// Throwable t = ErrorAnalyser.findRootCause(e);
+			log.error("Fatal error: {}", e.getMessage());
+			Shutdown.now(e);
+		}
 	}
 }

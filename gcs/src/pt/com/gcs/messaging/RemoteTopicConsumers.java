@@ -6,24 +6,23 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.net.IoSessionHelper;
 
 /**
  * RemoteTopicConsumers maintains current remote topic consumers (other agents).
  * 
  */
-class RemoteTopicConsumers
+public class RemoteTopicConsumers
 {
 	private static Logger log = LoggerFactory.getLogger(RemoteTopicConsumers.class);
 
 	private static final RemoteTopicConsumers instance = new RemoteTopicConsumers();
 
-	private Map<String, CopyOnWriteArrayList<IoSession>> remoteTopicConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<IoSession>>();
+	private Map<String, CopyOnWriteArrayList<Channel>> remoteTopicConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<Channel>>();
 
 	private static final int WRITE_BUFFER_SIZE = 128 * 1024;
 
@@ -31,25 +30,25 @@ class RemoteTopicConsumers
 	{
 	}
 
-	protected synchronized static void add(String topicName, IoSession iosession)
+	protected synchronized static void add(String topicName, Channel channel)
 	{
 		log.info("Adding new remote topic consumer for topic:  '{}'", topicName);
 		try
 		{
-			CopyOnWriteArrayList<IoSession> sessions = instance.remoteTopicConsumers.get(topicName);
+			CopyOnWriteArrayList<Channel> sessions = instance.remoteTopicConsumers.get(topicName);
 			if (sessions == null)
 			{
-				sessions = new CopyOnWriteArrayList<IoSession>();
+				sessions = new CopyOnWriteArrayList<Channel>();
 			}
 
-			if (!sessions.contains(iosession))
+			if (!sessions.contains(channel))
 			{
-				sessions.add(iosession);
+				sessions.add(channel);
 				log.info("Add remote topic consumer for '{}'", topicName);
 			}
 			else
 			{
-				log.info("Remote topic consumer for '{}' and session '{}' already exists", topicName, IoSessionHelper.getRemoteAddress(iosession));
+				log.info("Remote topic consumer for '{}' and session '{}' already exists", topicName, channel.getRemoteAddress().toString());
 			}
 
 			instance.remoteTopicConsumers.put(topicName, sessions);
@@ -88,18 +87,18 @@ class RemoteTopicConsumers
 		}
 	}
 
-	protected synchronized static void remove(IoSession iosession)
+	protected synchronized static void remove(Channel channel)
 	{
 		try
 		{
 			Set<String> keys = instance.remoteTopicConsumers.keySet();
 			for (String topicName : keys)
 			{
-				CopyOnWriteArrayList<IoSession> sessions = instance.remoteTopicConsumers.get(topicName);
+				CopyOnWriteArrayList<Channel> sessions = instance.remoteTopicConsumers.get(topicName);
 				if (sessions != null)
 				{
-					sessions.remove(iosession);
-					log.info("Remove remote topic consumer for '{}' and session '{}'", topicName, IoSessionHelper.getRemoteAddress(iosession));
+					sessions.remove(channel);
+					log.info("Remove remote topic consumer for '{}' and session '{}'", topicName, channel.getRemoteAddress().toString());
 				}
 				instance.remoteTopicConsumers.put(topicName, sessions);
 			}
@@ -110,14 +109,14 @@ class RemoteTopicConsumers
 		}
 	}
 
-	protected synchronized static void remove(String topicName, IoSession iosession)
+	protected synchronized static void remove(String topicName, Channel channel)
 	{
 		try
 		{
-			CopyOnWriteArrayList<IoSession> sessions = instance.remoteTopicConsumers.get(topicName);
+			CopyOnWriteArrayList<Channel> sessions = instance.remoteTopicConsumers.get(topicName);
 			if (sessions != null)
 			{
-				sessions.remove(iosession);
+				sessions.remove(channel);
 			}
 			instance.remoteTopicConsumers.put(topicName, sessions);
 		}
@@ -134,7 +133,7 @@ class RemoteTopicConsumers
 
 	protected synchronized static int size(String destinationName)
 	{
-		CopyOnWriteArrayList<IoSession> sessions = instance.remoteTopicConsumers.get(destinationName);
+		CopyOnWriteArrayList<Channel> sessions = instance.remoteTopicConsumers.get(destinationName);
 		if (sessions != null)
 		{
 			return sessions.size();
@@ -146,7 +145,7 @@ class RemoteTopicConsumers
 	{
 		try
 		{
-			CopyOnWriteArrayList<IoSession> sessions = remoteTopicConsumers.get(subscriptionName);
+			CopyOnWriteArrayList<Channel> sessions = remoteTopicConsumers.get(subscriptionName);
 			if (sessions != null)
 			{
 				if (sessions.size() == 0)
@@ -157,26 +156,24 @@ class RemoteTopicConsumers
 
 				log.debug("There are {} remote peer(s) to deliver the message.", sessions.size());
 
-				for (IoSession ioSession : sessions)
+				for (Channel channel : sessions)
 				{
-					if (ioSession != null)
+					if (channel != null)
 					{
-						if (ioSession.getScheduledWriteBytes() < WRITE_BUFFER_SIZE)
+						if (channel.isOpen() && channel.isWritable())
 						{
-							ioSession.write(message);
+							channel.write(message);
 						}
 						else
 						{
 							// Discard message
-							String log_msg = String.format("Write Queue is full, discard message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
+							String log_msg = String.format("Write Queue is full, discard message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), channel.getRemoteAddress().toString());
 							log.warn(log_msg);
-							
+
 							String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
-							String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), ioSession.getRemoteAddress().toString());
+							String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), channel.getRemoteAddress().toString());
 							InternalPublisher.send(dname, info_msg);
-
 						}
-
 					}
 				}
 			}
@@ -189,5 +186,16 @@ class RemoteTopicConsumers
 		{
 			log.error(t.getMessage());
 		}
+	}
+	
+	public synchronized static CopyOnWriteArrayList<Channel> getSubscription(String subscriptionName)
+	{
+		 return instance.remoteTopicConsumers.get(subscriptionName);
+	}
+	
+	
+	public synchronized static Set<String> getSubscriptionNames()
+	{
+		 return instance.remoteTopicConsumers.keySet();
 	}
 }

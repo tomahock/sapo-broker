@@ -68,8 +68,7 @@ public class NetBrokerMessage
 		out.writeUTF(messageId);
 		out.writeLong(expiration);
 		out.writeLong(timestamp);
-		int length = payload.length;
-		out.writeInt(length);
+		out.writeInt(payload.length);
 		out.write(payload);
 	}
 
@@ -79,9 +78,8 @@ public class NetBrokerMessage
 		long exp = in.readLong();
 		long ts = in.readLong();
 		int size = in.readInt();
-		
 		byte[] content = new byte[size];
-		in.readFully(content);
+		in.readFully(content, 0, size);
 
 		NetBrokerMessage message = new NetBrokerMessage(content);
 		message.setMessageId(mid);

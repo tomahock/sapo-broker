@@ -1,8 +1,11 @@
 package pt.com.broker;
 
-import org.apache.mina.util.ExceptionMonitor;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import org.caudexorigo.Shutdown;
-import org.caudexorigo.concurrent.Sleep;
+import org.caudexorigo.concurrent.CustomExecutors;
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +14,6 @@ import pt.com.broker.core.BrokerInfo;
 import pt.com.broker.core.BrokerSSLServer;
 import pt.com.broker.core.BrokerServer;
 import pt.com.broker.core.BrokerUdpServer;
-import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.core.FilePublisher;
 import pt.com.broker.http.BrokerHttpService;
 import pt.com.gcs.conf.GcsInfo;
@@ -25,6 +27,8 @@ import pt.com.gcs.messaging.Gcs;
 public class Start
 {
 	private static final Logger log = LoggerFactory.getLogger(Start.class);
+
+	private static final int NCPU = Runtime.getRuntime().availableProcessors();
 
 	public static void main(String[] args) throws Exception
 	{
@@ -52,36 +56,37 @@ public class Start
 			log.warn("Aalto was not found in the classpath, will fallback to use the native parser");
 		}
 
-		ErrorHandler errorHandler = new ErrorHandler();
-
-		ExceptionMonitor.setInstance(errorHandler);
-
 		try
 		{
 			log.info("SAPO-BROKER starting - Version: {}", BrokerInfo.getVersion());
 
+			InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+
 			Gcs.init();
 			ProvidersLoader.init();
 
+			ThreadPoolExecutor tpe_io = CustomExecutors.newThreadPool((NCPU * 5) + 1, "broker-io");
+			ThreadPoolExecutor tpe_workers = CustomExecutors.newThreadPool(NCPU * 5, "broker-worker");
+
 			int broker_port = GcsInfo.getBrokerPort();
 			int broker_legacy_port = GcsInfo.getBrokerLegacyPort();
-			BrokerServer broker_srv = new BrokerServer(broker_port, broker_legacy_port);
+			BrokerServer broker_srv = new BrokerServer(tpe_io, tpe_workers, broker_port, broker_legacy_port);
 			broker_srv.start();
 
 			int http_port = GcsInfo.getBrokerHttpPort();
-			BrokerHttpService http_srv = new BrokerHttpService(http_port);
+			BrokerHttpService http_srv = new BrokerHttpService(tpe_io, tpe_workers, http_port);
 			http_srv.start();
 
 			if (GcsInfo.createSSLInterface())
 			{
 				int ssl_port = GcsInfo.getBrokerSSLPort();
-				BrokerSSLServer ssl_svr = new BrokerSSLServer(ssl_port);
+				BrokerSSLServer ssl_svr = new BrokerSSLServer(tpe_io, tpe_workers, ssl_port);
 				ssl_svr.start();
 			}
 
 			int udp_legacy_port = GcsInfo.getBrokerUdpPort();
 			int udp_bin_port = broker_port;
-			BrokerUdpServer udp_srv = new BrokerUdpServer(udp_legacy_port, udp_bin_port);
+			BrokerUdpServer udp_srv = new BrokerUdpServer(tpe_io, udp_legacy_port, udp_bin_port);
 			udp_srv.start();
 
 			FilePublisher.init();
@@ -104,13 +109,12 @@ public class Start
 
 			Runtime.getRuntime().addShutdownHook(sync_hook);
 
-			// BrokerExecutor.execute(udp_srv_runner);
-
 		}
 		catch (Throwable e)
 		{
 			log.error(e.getMessage(), e);
 			Shutdown.now();
 		}
+
 	}
 }

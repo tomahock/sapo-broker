@@ -1,60 +1,31 @@
 package pt.com.broker.codec.xml;
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
+import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.SimpleFramingEncoder;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between client and agents.
  * 
  */
 
-public class SoapEncoder extends SimpleFramingEncoder
+@Sharable
+public class SoapEncoder extends OneToOneEncoder
 {
-	private static final Logger log = LoggerFactory.getLogger(SoapEncoder.class);
+	private static final BindingSerializer serializer = new SoapBindingSerializer();
 
 	@Override
-	public byte[] processBody(Object message)
+	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		if (!(message instanceof NetMessage))
+		if (!(msg instanceof NetMessage))
 		{
-			String errorMessage = "Message to be encoded is from an unexpected type - " + message.getClass().getName();
-			log.error(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}
-		NetMessage gcsMessage = (NetMessage) message;
-		SoapEnvelope soap = Builder.netMessageToSoap(gcsMessage);
-		UnsynchronizedByteArrayOutputStream holder = new UnsynchronizedByteArrayOutputStream();
-		SoapSerializer.ToXml(soap, holder);
-		return holder.toByteArray();
-	}
-
-	@Override
-	public void processBody(Object message, ProtocolEncoderOutput pout)
-	{
-		if (!(message instanceof NetMessage))
-		{
-			String errorMessage = "Message to be encoded is from an unexpected type - " + message.getClass().getName();
-			log.error(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
+			return msg;
 		}
 
-		NetMessage gcsMessage = (NetMessage) message;
-		SoapEnvelope soap = Builder.netMessageToSoap(gcsMessage);
-
-		IoBuffer wbuf = IoBuffer.allocate(2048, false);
-		wbuf.setAutoExpand(true);
-		wbuf.putInt(0);
-		SoapSerializer.ToXml((SoapEnvelope) soap, wbuf.asOutputStream());
-		wbuf.putInt(0, wbuf.position() - 4);
-		wbuf.flip();
-
-		pout.write(wbuf);
+		return serializer.marshal((NetMessage) msg);
 	}
-
 }

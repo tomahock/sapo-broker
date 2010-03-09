@@ -42,7 +42,7 @@ public class PollNoWaitTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 					NetNotification msg = bk.poll(queueName, -1, null);
 
@@ -71,10 +71,10 @@ public class PollNoWaitTest extends BrokerTest
 
 		});
 	}
-
+	
 	@Override
 	public boolean skipTest()
 	{
-		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0);
+		return getEncodingProtocolType() == NetProtocolType.SOAP;
 	}
 }

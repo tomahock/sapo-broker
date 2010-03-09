@@ -6,28 +6,33 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.mina.core.service.IoHandlerAdapter;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
-import pt.com.gcs.net.IoSessionHelper;
 import pt.com.gcs.net.Peer;
 
 /**
- * GcsAcceptorProtocolHandler is an MINA IoHandlerAdapter. It handles remote subscription messages and acknowledges from other agents.
+ * GcsAcceptorProtocolHandler is an NETTY SimpleChannelHandler. It handles remote subscription messages and acknowledges from other agents.
  * 
  */
 
-class GcsAcceptorProtocolHandler extends IoHandlerAdapter
+@Sharable
+class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 {
 	private static Logger log = LoggerFactory.getLogger(GcsAcceptorProtocolHandler.class);
 
@@ -65,21 +70,21 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	}
 
 	@Override
-	public void exceptionCaught(IoSession iosession, Throwable cause) throws Exception
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 	{
-		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+		Throwable rootCause = ErrorAnalyser.findRootCause(e.getCause());
 		CriticalErrors.exitIfCritical(rootCause);
-		log.error("Exception Caught:'{}', '{}'", IoSessionHelper.getRemoteAddress(iosession), rootCause.getMessage());
-		if (iosession.isConnected() && !iosession.isClosing())
+		log.error("Exception Caught:'{}', '{}'", ctx.getChannel().getRemoteAddress().toString(), rootCause.getMessage());
+		if (ctx.getChannel().isWritable())
 		{
 			log.error("STACKTRACE", rootCause);
 		}
 	}
 
 	@Override
-	public void messageReceived(IoSession iosession, Object message) throws Exception
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
 	{
-		final InternalMessage m = (InternalMessage) message;
+		final InternalMessage m = (InternalMessage) e.getMessage();
 
 		NetBrokerMessage brkMsg = m.getContent();
 
@@ -87,7 +92,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("Message Received from: '{}', Type: '{}'", IoSessionHelper.getRemoteAddress(iosession), m.getType());
+			log.debug("Message Received from: '{}', Type: '{}'", ctx.getChannel().getRemoteAddress(), m.getType());
 		}
 
 		if (m.getType() == MessageType.ACK)
@@ -99,13 +104,13 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 		}
 		else if (m.getType() == (MessageType.HELLO))
 		{
-			validatePeer(iosession, msgContent);
-			boolean isValid = ((Boolean) iosession.getAttribute("GcsAcceptorProtocolHandler.ISVALID")).booleanValue();
+			validatePeer(ctx, msgContent);
+			boolean isValid = ((Boolean) ChannelAttributes.get(ctx, "GcsAcceptorProtocolHandler.ISVALID")).booleanValue();
 			if (!isValid)
 			{
-				String paddr = String.valueOf(iosession.getAttribute("GcsAcceptorProtocolHandler.PEER_ADDRESS"));
+				String paddr = String.valueOf(ChannelAttributes.get(ctx, "GcsAcceptorProtocolHandler.PEER_ADDRESS"));
 				log.warn("A peer from \"{}\" tried to connect but it does not appear in the world map.", paddr);
-				iosession.close();
+				ctx.getChannel().close();
 			}
 			else
 			{
@@ -119,8 +124,7 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 
 			final String action = extract(msgContent, "<action>", "</action>");
 			final String src_name = extract(msgContent, "<source-name>", "</source-name>");
-			// final String src_ip = extract(payload, "<source-ip>",
-			// "</source-ip>");
+
 			final String destinationName = extract(msgContent, "<destination>", "</destination>");
 
 			if (log.isInfoEnabled())
@@ -133,37 +137,39 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 			{
 				if (action.equals("CREATE"))
 				{
-					RemoteTopicConsumers.add(m.getDestination(), iosession);
+					RemoteTopicConsumers.add(m.getDestination(), ctx.getChannel());
 				}
 				else if (action.equals("DELETE"))
 				{
-					RemoteTopicConsumers.remove(m.getDestination(), iosession);
+					RemoteTopicConsumers.remove(m.getDestination(), ctx.getChannel());
 				}
 			}
 			else if (m.getType() == MessageType.SYSTEM_QUEUE)
 			{
 				if (action.equals("CREATE"))
 				{
-					RemoteQueueConsumers.add(m.getDestination(), iosession);
+					RemoteQueueConsumers.add(m.getDestination(), ctx.getChannel());
 					QueueProcessorList.get(destinationName);
 				}
 				else if (action.equals("DELETE"))
 				{
-					RemoteQueueConsumers.remove(m.getDestination(), iosession);
+					RemoteQueueConsumers.remove(m.getDestination(), ctx.getChannel());
 				}
 			}
-			acknowledgeSystemMessage(m, iosession);
+			acknowledgeSystemMessage(m, ctx);
 		}
 		else
 		{
 			log.warn("Unkwown message type. Don't know how to handle message");
 		}
 	}
-
-	private void acknowledgeSystemMessage(InternalMessage message, IoSession ioSession)
+	
+	private void acknowledgeSystemMessage(InternalMessage message, ChannelHandlerContext ctx)
 	{
+		Channel channel = ctx.getChannel();
+
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><message-id>%s</message-id></sysmessage>";
-		String payload = String.format(ptemplate, "SYSTEM_ACKNOWLEDGE", GcsInfo.getAgentName(), ioSession.getLocalAddress().toString(), message.getMessageId());
+		String payload = String.format(ptemplate, "SYSTEM_ACKNOWLEDGE", GcsInfo.getAgentName(), channel.getLocalAddress().toString(), message.getMessageId());
 		InternalMessage ackMsg = new InternalMessage();
 		NetBrokerMessage brkMsg;
 		try
@@ -175,50 +181,24 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			// This exception is never thrown because UTF-8 encoding is built-in
-			// in every JVM
+			// This exception is never thrown because UTF-8 encoding is built-in in every JVM
 		}
 
-		ioSession.write(ackMsg);
+		channel.write(ackMsg);
 	}
 
 	@Override
-	public void messageSent(IoSession iosession, Object message) throws Exception
+	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("Message Sent: '{}', '{}'", IoSessionHelper.getRemoteAddress(iosession), message.toString());
-		}
+		super.channelClosed(ctx, e);
+		log.info("Session Closed: '{}'", ctx.getChannel().getRemoteAddress());
+		RemoteTopicConsumers.remove(ctx.getChannel());
+		RemoteQueueConsumers.remove(ctx.getChannel());
 	}
 
-	@Override
-	public void sessionClosed(IoSession iosession) throws Exception
+	private boolean validPeerAddress(ChannelHandlerContext ctx)
 	{
-		log.info("Session Closed: '{}'", IoSessionHelper.getRemoteAddress(iosession));
-		RemoteTopicConsumers.remove(iosession);
-		RemoteQueueConsumers.remove(iosession);
-	}
-
-	@Override
-	public void sessionCreated(IoSession iosession) throws Exception
-	{
-		if (!validPeerAddress(iosession))
-		{
-			iosession.close(true);
-			log.warn("GCS: connection refused");
-			return;
-		}
-
-		IoSessionHelper.tagWithRemoteAddress(iosession);
-		if (log.isDebugEnabled())
-		{
-			log.debug("Session Created: '{}'", IoSessionHelper.getRemoteAddress(iosession));
-		}
-	}
-
-	private boolean validPeerAddress(IoSession iosession)
-	{
-		InetSocketAddress remotePeer = (InetSocketAddress) iosession.getRemoteAddress();
+		InetSocketAddress remotePeer = (InetSocketAddress) ctx.getChannel().getRemoteAddress();
 		InetAddress address = remotePeer.getAddress();
 
 		for (InetSocketAddress addr : peersAddressList)
@@ -232,21 +212,24 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 	}
 
 	@Override
-	public void sessionIdle(IoSession iosession, IdleStatus status) throws Exception
+	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
+		super.channelConnected(ctx, e);
+		log.info("Session Opened: '{}'", ctx.getChannel().getRemoteAddress());
+
+		if (!validPeerAddress(ctx))
+		{
+			ctx.getChannel().close();
+			log.warn("GCS: connection refused");
+			return;
+		}
 		if (log.isDebugEnabled())
 		{
-			log.debug("Session Idle:'{}'", IoSessionHelper.getRemoteAddress(iosession));
+			log.debug("Session Created: '{}'", ctx.getChannel().getRemoteAddress());
 		}
 	}
 
-	@Override
-	public void sessionOpened(IoSession iosession) throws Exception
-	{
-		log.info("Session Opened: '{}'", IoSessionHelper.getRemoteAddress(iosession));
-	}
-
-	private void validatePeer(IoSession iosession, String helloMessage)
+	private void validatePeer(ChannelHandlerContext ctx, String helloMessage)
 	{
 		log.debug("\"Hello\" message received: '{}'", helloMessage);
 		try
@@ -255,22 +238,24 @@ class GcsAcceptorProtocolHandler extends IoHandlerAdapter
 			String peerAddr = StringUtils.substringAfter(helloMessage, "@");
 			String peerHost = StringUtils.substringBefore(peerAddr, ":");
 			int peerPort = Integer.parseInt(StringUtils.substringAfter(peerAddr, ":"));
-			iosession.setAttribute("GcsAcceptorProtocolHandler.PEER_ADDRESS", peerAddr);
+
+			ChannelAttributes.set(ctx, "GcsAcceptorProtocolHandler.PEER_ADDRESS", peerAddr);
+
 			Peer peer = new Peer(peerName, peerHost, peerPort);
 			if (Gcs.getPeerList().contains(peer))
 			{
 				log.debug("Peer '{}' exists in the world map'", peer.toString());
-				iosession.setAttribute("GcsAcceptorProtocolHandler.ISVALID", true);
+				ChannelAttributes.set(ctx, "GcsAcceptorProtocolHandler.ISVALID", true);
 				return;
 			}
 		}
 		catch (Throwable t)
 		{
-			iosession.setAttribute("GcsAcceptorProtocolHandler.PEER_ADDRESS", "Unknown address");
+			ChannelAttributes.set(ctx, "GcsAcceptorProtocolHandler.PEER_ADDRESS", "Unknown address");
+
 			log.error(t.getMessage(), t);
 		}
-
-		iosession.setAttribute("GcsAcceptorProtocolHandler.ISVALID", false);
+		ChannelAttributes.set(ctx, "GcsAcceptorProtocolHandler.ISVALID", false);
 	}
 
 	private String extract(String ins, String prefix, String sufix)

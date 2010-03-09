@@ -3,17 +3,21 @@ package pt.com.broker.http;
 import java.io.OutputStream;
 import java.util.Date;
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.http.HttpRequest;
-import org.apache.mina.filter.codec.http.HttpResponseStatus;
-import org.apache.mina.filter.codec.http.MutableHttpResponse;
+import org.caudexorigo.http.netty.HttpAction;
 import org.caudexorigo.text.DateUtil;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferOutputStream;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerInfo;
-import pt.com.http.HttpAction;
 
 /**
  * StatusAction outputs agent status in XML.
@@ -31,12 +35,11 @@ public class StatusAction extends HttpAction
 	}
 
 	@Override
-	public void writeResponse(IoSession iosession, HttpRequest request, MutableHttpResponse response)
+	public void writeResponse(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response)
 	{
-		IoBuffer bbo = IoBuffer.allocate(1024);
-		bbo.setAutoExpand(true);
-
-		OutputStream out = bbo.asOutputStream();
+		ChannelBuffer bbo = ChannelBuffers.dynamicBuffer();
+		OutputStream out = new ChannelBufferOutputStream(bbo);
+		Channel channel = ctx.getChannel();
 
 		try
 		{
@@ -44,7 +47,7 @@ public class StatusAction extends HttpAction
 			byte[] bmessage = smessage.getBytes("UTF-8");
 			response.setHeader("Pragma", "no-cache");
 			response.setHeader("Cache-Control", "no-cache");
-			response.setContentType("text/xml");
+			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
 
 			response.setStatus(HttpResponseStatus.OK);
 
@@ -53,11 +56,10 @@ public class StatusAction extends HttpAction
 		catch (Throwable e)
 		{
 			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-			log.error("HTTP Service error, cause:" + e.getMessage() + " client:" + iosession.getRemoteAddress());
+			log.error("HTTP Service error, cause:" + e.getMessage() + " client:" + channel.getRemoteAddress());
 		}
 		finally
 		{
-			bbo.flip();
 			response.setContent(bbo);
 		}
 	}

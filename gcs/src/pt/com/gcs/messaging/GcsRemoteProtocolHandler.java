@@ -1,61 +1,68 @@
 package pt.com.gcs.messaging;
 
-import java.net.SocketAddress;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.mina.core.service.IoHandlerAdapter;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.core.session.IoSession;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.net.IoSessionHelper;
 
 /**
- * GcsAcceptorProtocolHandler is an MINA IoHandlerAdapter. It handles incoming messages, such as publications, from other agents.
+ * GcsAcceptorProtocolHandler is an NETTY SimpleChannelHandler. It handles incoming messages, such as publications, from other agents.
  * 
  */
 
-class GcsRemoteProtocolHandler extends IoHandlerAdapter
+@Sharable
+class GcsRemoteProtocolHandler extends SimpleChannelHandler
 {
 	private static Logger log = LoggerFactory.getLogger(GcsRemoteProtocolHandler.class);
 
 	@Override
-	public void exceptionCaught(IoSession iosession, Throwable cause) throws Exception
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 	{
-		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+		Channel channel = ctx.getChannel();
+
+		Throwable rootCause = ErrorAnalyser.findRootCause(e.getCause());
 		CriticalErrors.exitIfCritical(rootCause);
-		log.error("Exception Caught:{}, {}", IoSessionHelper.getRemoteAddress(iosession), rootCause.getMessage());
-		if (iosession.isConnected() && !iosession.isClosing())
+		log.error("Exception Caught:{}, {}", channel.getRemoteAddress(), rootCause.getMessage());
+		if (channel.isConnected())
 		{
 			log.error("STACKTRACE", rootCause);
 		}
 
 		try
 		{
-			iosession.close();
+			channel.close();
 		}
 		catch (Throwable t)
 		{
 			log.error("STACKTRACE", t);
 		}
-		
+
 	}
 
 	@Override
-	public void messageReceived(final IoSession iosession, Object omessage) throws Exception
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
 	{
-		final InternalMessage msg = (InternalMessage) omessage;
+		final InternalMessage msg = (InternalMessage) e.getMessage();
+
+		Channel channel = ctx.getChannel();
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("Message Received from: '{}', Type: '{}'", IoSessionHelper.getRemoteAddress(iosession), msg.getType());
+			log.debug("Message Received from: '{}', Type: '{}'", channel.getRemoteAddress(), msg.getType());
 		}
 
 		msg.setFromRemotePeer(true);
@@ -67,7 +74,7 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 			break;
 		case COM_QUEUE:
 			QueueProcessorList.get(msg.getDestination()).store(msg, true);
-			LocalQueueConsumers.acknowledgeMessage(msg, iosession);
+			LocalQueueConsumers.acknowledgeMessage(msg, channel);
 			break;
 		case SYSTEM_ACK:
 		{
@@ -82,54 +89,36 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 	}
 
 	@Override
-	public void messageSent(IoSession iosession, Object message) throws Exception
+	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("Message Sent: '{}', '{}'", IoSessionHelper.getRemoteAddress(iosession), message.toString());
-		}
-	}
-
-	@Override
-	public void sessionClosed(final IoSession iosession) throws Exception
-	{
-		log.info("Session Closed: '{}'", IoSessionHelper.getRemoteAddress(iosession));
+		super.channelClosed(ctx, e);
 		
-		SystemMessagesPublisher.sessionClosed(iosession);
-		GcsExecutor.schedule(new Connect((SocketAddress) IoSessionHelper.getRemoteInetAddress(iosession)), 5000, TimeUnit.MILLISECONDS);
+		Channel channel = ctx.getChannel();
+		
+		log.info("Session Closed: '{}'", channel.getRemoteAddress());
+
+		SystemMessagesPublisher.sessionClosed(channel);
+		Gcs.remoteSessionClosed(channel);
+		GcsExecutor.schedule(new Connect(channel.getRemoteAddress()), 5000, TimeUnit.MILLISECONDS);
+		
 	}
 
 	@Override
-	public void sessionCreated(IoSession iosession) throws Exception
+	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
-		IoSessionHelper.tagWithRemoteAddress(iosession);
-		if (log.isDebugEnabled())
-		{
-			log.debug("Session Created: '{}'", IoSessionHelper.getRemoteAddress(iosession));
-		}
+		super.channelConnected(ctx, e);
+
+		log.info("Session Opened: '{}'", ctx.getChannel().getRemoteAddress());
+		sayHello(ctx);
 	}
 
-	@Override
-	public void sessionIdle(IoSession iosession, IdleStatus status) throws Exception
+	public void sayHello(ChannelHandlerContext ctx)
 	{
+		Channel channel = ctx.getChannel();
+
 		if (log.isDebugEnabled())
 		{
-			log.debug("Session Idle:'{}'", IoSessionHelper.getRemoteAddress(iosession));
-		}
-	}
-
-	@Override
-	public void sessionOpened(IoSession iosession) throws Exception
-	{
-		log.info("Session Opened: '{}'", IoSessionHelper.getRemoteAddress(iosession));
-		sayHello(iosession);
-	}
-
-	public void sayHello(IoSession iosession)
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("Say Hello: '{}'", IoSessionHelper.getRemoteAddress(iosession));
+			log.debug("Say Hello: '{}'", channel.getRemoteAddress());
 		}
 
 		try
@@ -144,13 +133,13 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 
 			log.info("Send agentId: '{}'", agentId);
 
-			iosession.write(m);
+			channel.write(m);
 		}
 		catch (Throwable t)
 		{
 			try
 			{
-				iosession.close();
+				channel.close();
 			}
 			catch (Throwable ict)
 			{
@@ -162,7 +151,7 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 		Set<String> topicNameSet = LocalTopicConsumers.getBroadcastableTopics();
 		for (String topicName : topicNameSet)
 		{
-			LocalTopicConsumers.broadCastTopicInfo(topicName, "CREATE", iosession);
+			LocalTopicConsumers.broadCastTopicInfo(topicName, "CREATE", channel);
 		}
 
 		Set<String> queueNameSet = LocalQueueConsumers.getBroadcastableQueues();
@@ -170,13 +159,13 @@ class GcsRemoteProtocolHandler extends IoHandlerAdapter
 		{
 			try
 			{
-				LocalQueueConsumers.broadCastQueueInfo(queueName, "CREATE", iosession);
+				LocalQueueConsumers.broadCastQueueInfo(queueName, "CREATE", channel);
 			}
 			catch (Throwable t)
 			{
 				try
 				{
-					iosession.close();
+					channel.close();
 				}
 				catch (Throwable ict)
 				{

@@ -28,7 +28,6 @@ fi
 echo "Giving time (5s) for the agents to start..."
 sleep 5s
 
-echo $classpath
 
 #init tests
 java -server \

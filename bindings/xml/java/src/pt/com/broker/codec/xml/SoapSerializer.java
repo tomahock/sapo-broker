@@ -1,10 +1,8 @@
 package pt.com.broker.codec.xml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.caudexorigo.io.IOUtils;
 import org.jibx.runtime.IMarshallingContext;
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
@@ -57,19 +55,7 @@ public class SoapSerializer
 		}
 		catch (JiBXException e)
 		{
-
 			JibxActors.reload();
-
-			try
-			{
-				String invalidMessage = IOUtils.toString(in);
-				log.error("\n" + invalidMessage + "\n");
-			}
-			catch (IOException ioe)
-			{
-				// ignore this exception
-			}
-
 			throw new RuntimeException(e);
 		}
 	}

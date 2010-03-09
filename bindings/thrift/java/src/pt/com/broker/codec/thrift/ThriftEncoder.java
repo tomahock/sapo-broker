@@ -1,41 +1,31 @@
 package pt.com.broker.codec.thrift;
 
-import org.apache.mina.core.buffer.IoBuffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.SimpleFramingEncoderV2;
 
 /**
  * Thrift utility class for encoder.
  * 
  */
-public class ThriftEncoder extends SimpleFramingEncoderV2
+
+@Sharable
+public class ThriftEncoder extends OneToOneEncoder
 {
-
-	private static final Logger log = LoggerFactory.getLogger(ThriftEncoder.class);
-
 	private static final BindingSerializer serializer = new ThriftBindingSerializer();
 
-	public ThriftEncoder()
-	{
-
-	}
-
 	@Override
-	public void processBody(Object message, IoBuffer wbuf, Short protocolType, Short protocolVersion)
+	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		if (!(message instanceof NetMessage))
+		if (!(msg instanceof NetMessage))
 		{
-			// TODO: decide what to do with error
-			log.error("Error encoding message.");
-			return;
+			return msg;
 		}
 
-		NetMessage gcsMessage = (NetMessage) message;
-		wbuf.put(serializer.marshal(gcsMessage));
+		return serializer.marshal((NetMessage) msg);
 	}
-
 }

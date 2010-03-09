@@ -1,6 +1,6 @@
 package pt.com.broker.auth;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
 
 import pt.com.broker.auth.AccessControl.Privilege;
 
@@ -11,7 +11,7 @@ import pt.com.broker.auth.AccessControl.Privilege;
 
 public class Session
 {
-	private IoSession session;
+	private Channel session;
 	private SessionProperties sessionProperties;
 	private SessionAcl readSessionAcl;
 	private SessionAcl writeSessionAcl;
@@ -21,19 +21,19 @@ public class Session
 		this(null);
 	}
 	
-	public Session(IoSession session)
+	public Session(Channel session)
 	{
 		this(session, new SessionProperties(session));
 	}
 
-	public Session(IoSession session, SessionProperties sessionProperties)
+	public Session(Channel session, SessionProperties sessionProperties)
 	{
 		this.session = session;
 		this.sessionProperties = sessionProperties;
 		updateAcl();
 	}
 
-	public IoSession getSession()
+	public Channel getSession()
 	{
 		return session;
 	}

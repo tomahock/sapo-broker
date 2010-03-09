@@ -1,9 +1,8 @@
 package pt.com.broker.http;
 
-import org.apache.mina.filter.codec.http.HttpRequest;
-
-import pt.com.http.HttpAction;
-import pt.com.http.RequestRouter;
+import org.caudexorigo.http.netty.HttpAction;
+import org.caudexorigo.http.netty.RequestRouter;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 
 /**
  * BrokerRequestRouter routes incoming HTTP request to the respective handlers.
@@ -17,10 +16,13 @@ public class BrokerRequestRouter implements RequestRouter
 	private final StatusAction status_action = new StatusAction();
 
 	private final AdminAction admin_action = new AdminAction();
+	
+	private final SubscriptionsAction subscription_action = new SubscriptionsAction();
 
 	public HttpAction map(HttpRequest req)
 	{
-		String path = req.getRequestUri().getPath();
+		String path = req.getUri();
+		
 		if (path.equals("/broker/producer"))
 		{
 			return broker_action;
@@ -33,6 +35,11 @@ public class BrokerRequestRouter implements RequestRouter
 		{
 			return admin_action;
 		}
+		else if (path.equals("/broker/subscriptions"))
+		{
+			return subscription_action;
+		}
+		
 		return null;
 	}
 }

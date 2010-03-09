@@ -12,7 +12,7 @@ public class FaultTest extends GenericNetMessageNegativeTest
 	{
 		super("Unexpected Message - Fault");
 
-		NetFault fault = new NetFault("1234", "This should fail");
+		NetFault fault = new NetFault("1234", "This sould fail");
 		NetAction action = new NetAction(ActionType.FAULT);
 		action.setFaultMessage(fault);
 		NetMessage message = new NetMessage(action);

@@ -5,9 +5,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.mina.core.session.IoSession;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,7 +136,7 @@ public class TopicSubscriberList
 		}
 	}
 
-	public static void removeSession(IoSession iosession)
+	public static void removeSession(Channel channel)
 	{
 		synchronized (topicSubscribersCache)
 		{
@@ -146,7 +147,7 @@ public class TopicSubscriberList
 
 				for (TopicSubscriber subscriber : list)
 				{
-					int scount = subscriber.removeSessionConsumer(iosession);
+					int scount = subscriber.removeSessionConsumer(channel);
 					if (scount == 0)
 					{
 						toDelete.add(subscriber);
@@ -177,5 +178,13 @@ public class TopicSubscriberList
 	public static TopicSubscriber get(String destinationName) throws MaximumDistinctSubscriptionsReachedException
 	{
 		return instance.getSubscriber(destinationName);
+	}
+	
+	public static Set<String> getTopicSubscriptionNames()
+	{
+		synchronized (topicSubscribersCache)
+		{
+			return topicSubscribersCache.keySet();
+		}
 	}
 }

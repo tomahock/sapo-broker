@@ -72,13 +72,19 @@ public class ConfigurationInfo
 	
 	private static volatile int httpPort = 0;
 
+	private static String filesystemPath;
+	private static String wwwrootPath;
+
 	public static void init()
 	{
 		getGlobalConfig();
 		extractConnectionExceptions();
 		extractCloudAgents();
 		extractConsoleHttpPort();
+		extractPaths();
 	}
+
+
 
 	public static int getConsoleHttpPort()
 	{
@@ -115,6 +121,15 @@ public class ConfigurationInfo
 		httpPort = Integer.parseInt( configuration.getConsole().getHttpPort() );
 	}
 	
+	private static void extractPaths()
+	{
+		if (configuration == null)
+			return;
+		
+		filesystemPath = configuration.getRootPaths().getFilesystemPath();
+		wwwrootPath = configuration.getRootPaths().getWwwrootPath();		
+	}
+	
 	private static void extractCloudAgents()
 	{
 		if (configuration == null)
@@ -146,6 +161,7 @@ public class ConfigurationInfo
 	{
 		if (configuration == null)
 			return defaultVaule;
+		
 		for (pt.com.broker.monitorization.configuration.ExceptionAgents.Agent agent : exceptionAgetns.getAgent())
 		{
 			if (agent.getAgentName().equals(agentHostname))
@@ -233,4 +249,20 @@ public class ConfigurationInfo
 
 		return agents;
 	}
+
+	public static String getFilesystemPath()
+	{
+		return filesystemPath;
+	}
+
+	public static String getWwwrootPath()
+	{
+		return wwwrootPath;
+	}
+	
+	public static String getResourceFullPath(String resource)
+	{
+		return String.format("%s%s%s%s%s", getFilesystemPath(), File.separator, getWwwrootPath(), File.separator, resource);
+	}
+	
 }

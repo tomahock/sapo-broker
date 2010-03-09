@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import pt.com.broker.functests.helpers.GenericNegativeTest;
-import pt.com.broker.types.NetProtocolType;
 
 public class InvalidRandomMessageTest extends GenericNegativeTest
 {
@@ -16,15 +15,7 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 		byte[] randomData = new byte[msgSize];
 		new Random().nextBytes(randomData);
 
-		byte[] header;
-		if(getEncodingProtocolType() != NetProtocolType.SOAP_v0)
-		{
-			header = new byte[] { 0, (byte) getEncodingProtocolType().ordinal(), 0, 0, (byte) 0, (byte) 0, (byte) 0, (byte) msgSize };
-		}
-		else
-		{
-			header = new byte[] { (byte) 0, (byte) 0, (byte) 0, (byte) msgSize };
-		}
+		byte[] header = new byte[] { 0, (byte) getEncodingProtocolType().ordinal(), 0, 0, (byte) 0, (byte) 0, (byte) 0, (byte) msgSize };
 
 		byte[] binMsg = Arrays.copyOf(header, header.length + msgSize);
 		int idx = header.length;
@@ -36,7 +27,5 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
-		
-		setOkToTimeOut(true);
 	}
 }

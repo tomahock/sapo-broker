@@ -1,27 +1,36 @@
 package pt.com.broker.codec.protobuf;
 
+import java.io.InputStream;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferInputStream;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
+
 import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.SimpleFramingDecoderV2;
 
 /**
  * Google Protocol Buffer decoder.
  * 
  */
-
-public class ProtoBufDecoder extends SimpleFramingDecoderV2
+@Sharable
+public class ProtoBufDecoder extends OneToOneDecoder
 {
 
 	private static final BindingSerializer serializer = new ProtoBufBindingSerializer();
 
-	public ProtoBufDecoder(int maxMessageSize)
-	{
-		super(maxMessageSize);
-	}
-
 	@Override
-	public Object processBody(byte[] packet, short protocolType, short protocolVersion)
+	protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		return serializer.unmarshal(packet);
-	}
+		if (!(msg instanceof ChannelBuffer))
+		{
+			return msg;
+		}
 
+		InputStream in = new ChannelBufferInputStream((ChannelBuffer) msg);
+
+		return serializer.unmarshal(in);
+	}
 }

@@ -45,14 +45,14 @@ public final class NetFault
 		InvalidAuthenticationChannelType = buildNetFaultMessage("3103", "Invalid authentication channel type");
 		AccessDeniedErrorMessage = buildNetFaultMessage("3201", "Access denied");
 	}
-	
+
 	private String actionId;
 	private String code;
 	private String message;
 	private String detail;
 	
 	private Map<String, String> headers;
-	
+
 	public NetFault(String code, String message)
 	{
 		this.code = code;
@@ -133,5 +133,4 @@ public final class NetFault
 	{
 		return headers;
 	}
-
 }
