@@ -342,6 +342,8 @@ public class BDBStorage
 
 	// Added for compatibility reasons --- END
 
+	private volatile boolean recoveryRunning = false;
+
 	protected void recoverMessages()
 	{
 
@@ -355,7 +357,9 @@ public class BDBStorage
 		int k0 = 0; // redelivered messages
 		int e0 = 0; // expired messages
 		int a0 = 0; // delivered messages that don't require ACK
-		
+
+		recoveryRunning = true;
+
 		Cursor msg_cursor = null;
 
 		try
@@ -447,7 +451,8 @@ public class BDBStorage
 									msg_cursor.put(key, buildDatabaseEntry(bdbm));
 									++i0;
 								}
-								else // result is Result.NOT_ACKNOWLEDGE
+								else
+								// result is Result.NOT_ACKNOWLEDGE
 								{
 									cursorDelete(msg_cursor);
 									++a0;
@@ -486,6 +491,7 @@ public class BDBStorage
 		finally
 		{
 			closeDbCursor(msg_cursor);
+			recoveryRunning = false;
 		}
 	}
 
@@ -510,7 +516,7 @@ public class BDBStorage
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
 
-			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
+			while (!recoveryRunning && (msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
 			{
 				if (isMarkedForDeletion.get())
 					break;
@@ -552,7 +558,6 @@ public class BDBStorage
 					}
 				}
 			}
-
 			if (e0 > 0)
 			{
 				log.warn("Number of expired messages for queue '{}': {}", queueProcessor.getDestinationName(), e0);
