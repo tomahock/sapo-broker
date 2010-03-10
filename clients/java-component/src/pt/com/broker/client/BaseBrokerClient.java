@@ -291,7 +291,19 @@ public abstract class BaseBrokerClient
 			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
 			netAction.setSubscribeMessage(subscribe);
 
-			NetMessage msg = buildMessage(netAction);
+			//------------------------
+			System.out.println("BaseBrokerClient.addAsyncConsumer()");
+			
+			Map<String, String> headers = subscribe.getHeaders();
+			for(String header : headers.keySet())
+			{
+				System.out.println(String.format("%s - %s", header, headers.get(header)  ));
+			}
+						
+			//------------------------
+			
+			
+			NetMessage msg = buildMessage(netAction, subscribe.getHeaders());
 
 			getNetHandler().sendMessage(msg);
 
@@ -341,10 +353,15 @@ public abstract class BaseBrokerClient
 
 		}
 	}
-
+	
 	private NetMessage buildMessage(NetAction action)
 	{
-		NetMessage message = new NetMessage(action, null);
+		return buildMessage(action, null); 
+	}
+
+	private NetMessage buildMessage(NetAction action, Map<String, String> headers)
+	{
+		NetMessage message = new NetMessage(action, headers);
 
 		return message;
 	}
@@ -416,7 +433,7 @@ public abstract class BaseBrokerClient
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
 
-			NetMessage msg = buildMessage(action);
+			NetMessage msg = buildMessage(action, brokerMessage.getHeaders());
 
 			try
 			{
@@ -614,7 +631,7 @@ public abstract class BaseBrokerClient
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
 
-			NetMessage msg = buildMessage(action);
+			NetMessage msg = buildMessage(action, brokerMessage.getHeaders());			
 
 			try
 			{

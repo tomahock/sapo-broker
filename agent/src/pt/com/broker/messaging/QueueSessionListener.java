@@ -241,6 +241,10 @@ public class QueueSessionListener extends BrokerListener
 
 				log.info(String.format("Create message consumer for queue: '%s', address: '%s', Total sessions: '%s'", _dname, channel.getRemoteAddress().toString(), getSessions().size()));
 			}
+			if(!ackRequired)
+			{
+				log.info(String.format("Adding queue consumer to '%s' that dosen't require ACK.", this._dname));
+			}
 			return getSessions().size();
 		}
 	}

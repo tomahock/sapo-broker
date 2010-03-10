@@ -6,7 +6,6 @@ import java.net.InetSocketAddress;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;

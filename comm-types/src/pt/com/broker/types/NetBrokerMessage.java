@@ -3,6 +3,8 @@ package pt.com.broker.types;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a client message payload.
@@ -15,6 +17,8 @@ public class NetBrokerMessage
 	private byte[] payload;
 	private long expiration = -1;
 	private long timestamp = -1;
+	
+	private Map<String, String> headers;
 
 	public NetBrokerMessage(String payload)
 	{
@@ -60,6 +64,8 @@ public class NetBrokerMessage
 	{
 		return timestamp;
 	}
+	
+	
 
 	// read and write are used by InternalMessage serialization
 
@@ -86,5 +92,24 @@ public class NetBrokerMessage
 		message.setExpiration(exp);
 		message.setTimestamp(ts);
 		return message;
+	}
+
+	public void setHeaders(Map<String, String> headers)
+	{
+		this.headers = headers;
+	}
+
+	public Map<String, String> getHeaders()
+	{
+		return headers;
+	}
+	
+	public void addHeader(String header, String value)
+	{
+		if(headers == null)
+		{
+			headers = new HashMap<String, String>();
+		}
+		headers.put(header, value);
 	}
 }
