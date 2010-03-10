@@ -75,7 +75,9 @@
 								<xs:attribute name="destination-type" type="xs:string"
 									use="required" />
 								<xs:attribute name="sync-consumer" type="xs:boolean"
-									use="optional" />
+									use="optional" default="false" />
+								<xs:attribute name="no-ack-consumer" type="xs:boolean"
+									use="optional" default="false" />
 							</xs:complexType>
 						</xs:element>
 						<xs:element minOccurs="1" maxOccurs="1" name="consumers"

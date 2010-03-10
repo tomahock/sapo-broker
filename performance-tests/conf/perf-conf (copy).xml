@@ -101,13 +101,13 @@
 		<!-- QUEUE WITH SYNC CONSUMER -->
 		<test test-name="test15">
 			<messages number-of-messages="100000" message-size="256" />
-			<destination destination-type="QUEUE" sync-consumer="false" />
+			<destination destination-type="QUEUE" sync-consumer="true" />
 			<consumers count="1" />
 			<producers count="1" />
 		</test>
 		<test test-name="test16">
 			<messages number-of-messages="100000" message-size="512" />
-			<destination destination-type="QUEUE" sync-consumer="false" />
+			<destination destination-type="QUEUE" sync-consumer="true" />
 			<consumers count="1" />
 			<producers count="1" />
 		</test>
@@ -140,6 +140,19 @@
 			<messages number-of-messages="100000" message-size="8192" />
 			<destination destination-type="QUEUE" sync-consumer="false" />
 			<consumers count="2" />
+			<producers count="1" />
+		</test>
+		<!-- QUEUE WITH NO ACK CONSUMER -->
+		<test test-name="test22">
+			<messages number-of-messages="100000" message-size="1024" />
+			<destination destination-type="QUEUE" no-ack-consumer="true" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test23">
+			<messages number-of-messages="100000" message-size="4096" />
+			<destination destination-type="QUEUE" no-ack-consumer="true" />
+			<consumers count="1" />
 			<producers count="1" />
 		</test>
 	</tests>

@@ -61,7 +61,7 @@ public class DistConsumerApp implements BrokerListener
 		}
 	}
 
-	private void performTest(DistTestParams testParams)
+	private void performTest(final DistTestParams testParams)
 	{
 		try
 		{
@@ -75,6 +75,11 @@ public class DistConsumerApp implements BrokerListener
 			final DestinationType destType = testParams.getDestinationType();
 
 			NetSubscribe subscribe = new NetSubscribe(testParams.getDestination(), destType);
+			
+			if(testParams.isNoAckConsumer())
+			{
+				subscribe.addHeader("ACK_REQUIRED", "false"); 
+			}
 
 			final AtomicInteger counter = new AtomicInteger(0);
 			final AtomicLong startTime = new AtomicLong(0);
@@ -106,6 +111,10 @@ public class DistConsumerApp implements BrokerListener
 					@Override
 					public boolean isAutoAck()
 					{
+						if(testParams.isNoAckConsumer())
+						{
+							return false; 
+						}
 						return destType != DestinationType.TOPIC;
 					}
 				});

@@ -84,6 +84,7 @@ public class DistTestParams
 	private int messageSize;
 	private int numberOfMessagesToSend;
 	private boolean syncConsumer;
+	private boolean isNoAckConsumer;
 	private NetProtocolType encoding;
 	
 	private ClientInfo clientInfo;
@@ -97,7 +98,7 @@ public class DistTestParams
 		
 	}
 	
-	public DistTestParams(String testName, String destination, DestinationType destinationType, int messageSize, int numberOfMessagesToSend, boolean syncConsumer, NetProtocolType encoding)
+	public DistTestParams(String testName, String destination, DestinationType destinationType, int messageSize, int numberOfMessagesToSend, boolean syncConsumer, boolean isNoAckConsumer, NetProtocolType encoding)
 	{
 		this.testName = testName;
 		this.destination = destination;
@@ -105,6 +106,7 @@ public class DistTestParams
 		this.messageSize = messageSize;
 		this.numberOfMessagesToSend = numberOfMessagesToSend;
 		this.syncConsumer = syncConsumer;
+		this.isNoAckConsumer = isNoAckConsumer;
 		this.encoding = encoding;
 	}	
 
@@ -149,6 +151,11 @@ public class DistTestParams
 		return syncConsumer;
 	}
 	
+	public boolean isNoAckConsumer()
+	{
+		return isNoAckConsumer;
+	}
+	
 	public NetProtocolType getEncoding()
 	{
 		return encoding;
@@ -168,6 +175,7 @@ public class DistTestParams
 			outputObj.writeInt(messageSize);
 			outputObj.writeInt(numberOfMessagesToSend);		
 			outputObj.writeBoolean(syncConsumer);
+			outputObj.writeBoolean(isNoAckConsumer);
 			outputObj.writeUTF(encoding.toString());
 			
 			clientInfo.write(outputObj);
@@ -198,6 +206,7 @@ public class DistTestParams
 			distTestParams.messageSize = inputObj.readInt();
 			distTestParams.numberOfMessagesToSend = inputObj.readInt();
 			distTestParams.syncConsumer = inputObj.readBoolean();
+			distTestParams.isNoAckConsumer = inputObj.readBoolean();
 			distTestParams.encoding = NetProtocolType.valueOf(inputObj.readUTF());
 			
 			distTestParams.clientInfo = new ClientInfo();

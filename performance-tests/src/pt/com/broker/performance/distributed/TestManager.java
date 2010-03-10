@@ -198,7 +198,8 @@ public class TestManager implements BrokerListener
 
 			// destination info
 			DestinationType destinationType = DestinationType.valueOf(t.getDestination().getDestinationType());
-			boolean isSyncConsumer = t.getDestination().isSyncConsumer().booleanValue();
+			boolean isSyncConsumer = t.getDestination().isSyncConsumer();
+			boolean isNoAckConsumer = t.getDestination().isNoAckConsumer();
 
 			// messages info
 			int messageSize = t.getMessages().getMessageSize().intValue();
@@ -213,7 +214,7 @@ public class TestManager implements BrokerListener
 			}
 
 			String randName = RandomStringUtils.randomAlphanumeric(15);
-			DistTestParams distTestParams = new DistTestParams(testName, String.format("/perf/%s/%s", destinationType.toString().toLowerCase(), randName), destinationType, messageSize, nrMessages, isSyncConsumer, encoding);
+			DistTestParams distTestParams = new DistTestParams(testName, String.format("/perf/%s/%s", destinationType.toString().toLowerCase(), randName), destinationType, messageSize, nrMessages, isSyncConsumer, isNoAckConsumer, encoding);
 
 			/*
 			 * consumers info

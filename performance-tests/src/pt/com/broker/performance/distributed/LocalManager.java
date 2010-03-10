@@ -42,8 +42,7 @@ public class LocalManager implements BrokerListener
 	
 		NetSubscribe subscribe = new NetSubscribe(String.format("%s%s", TestManager.TEST_MANAGEMENT_LOCAL_MANAGERS, testManager.machineName), DestinationType.QUEUE);
 		testManager.brokerClient.addAsyncConsumer(subscribe, testManager);
-		
-		
+				
 		while(true)
 		{
 			Sleep.time(5000);
