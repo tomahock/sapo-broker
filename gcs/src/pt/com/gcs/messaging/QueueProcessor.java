@@ -14,6 +14,27 @@ import org.slf4j.LoggerFactory;
 
 public class QueueProcessor
 {
+	public static class ForwardResult
+	{
+		public final Result result;
+		public final long time;
+
+		public enum Result{ SUCCESS, FAILED, NOT_ACKNOWLEDGE};
+		
+		public ForwardResult(Result result)
+		{
+			this(result, -1);
+		}
+		
+		public ForwardResult(Result result, long time)
+		{
+			this.result = result;
+			this.time = time;
+		}
+	}
+	
+	private static final ForwardResult failed = new ForwardResult(ForwardResult.Result.FAILED, -1);
+	
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);
 
 	private final String _destinationName;
@@ -91,7 +112,7 @@ public class QueueProcessor
 		}
 	}
 
-	protected long forward(InternalMessage message, boolean preferLocalConsumer) throws IllegalStateException
+	protected ForwardResult forward(InternalMessage message, boolean preferLocalConsumer) throws IllegalStateException
 	{
 
 		message.setType((MessageType.COM_QUEUE));
@@ -99,11 +120,11 @@ public class QueueProcessor
 		int rqsize = RemoteQueueConsumers.size(_destinationName);
 		int size = lqsize + rqsize;
 
-		long result = -1;
+		ForwardResult result = failed;
 
 		if (size == 0)
 		{
-			return -1;
+			return failed;
 		}
 		else
 		{
@@ -127,11 +148,6 @@ public class QueueProcessor
 				else
 					result = RemoteQueueConsumers.notify(message);
 			}
-		}
-
-		if (result == 0)
-		{
-			System.out.println("Result == 0");
 		}
 
 		if (log.isDebugEnabled())

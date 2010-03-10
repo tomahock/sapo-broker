@@ -15,6 +15,8 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
 
 /**
  * QueueSessionListener represents a local (agent connected) clients who subscribed to a specific topic.
@@ -33,11 +35,18 @@ public class QueueSessionListener extends BrokerListener
 		public Channel channel;
 		public AtomicLong deliveryTime;
 		public volatile boolean wasDeliverySuspeded;
+		public final boolean ackRequired;
 
 		public ChannelInfo(Channel channel)
 		{
+			this(channel, false);
+		}
+		
+		public ChannelInfo(Channel channel, boolean ackRequired)
+		{
 			this.channel = channel;
 			deliveryTime = new AtomicLong(0);
+			this.ackRequired = ackRequired; 
 		}
 
 		@Override
@@ -105,15 +114,19 @@ public class QueueSessionListener extends BrokerListener
 		return DestinationType.QUEUE;
 	}
 
-	public long onMessage(final InternalMessage msg)
+	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
+	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
+	private static final ForwardResult ackNotRequired = new ForwardResult(Result.NOT_ACKNOWLEDGE);
+	
+	public ForwardResult onMessage(final InternalMessage msg)
 	{
 		if (msg == null)
-			return -1;
+			return failed;
 
 		final ChannelInfo channelInfo = pick();
 		if (channelInfo == null)
 		{
-			return -1;
+			return failed;
 		}
 		final Channel channel = channelInfo.channel;
 
@@ -125,8 +138,6 @@ public class QueueSessionListener extends BrokerListener
 				channel.write(response);
 
 				channelInfo.wasDeliverySuspeded = false;
-
-				return RESERVE_TIME;
 			}
 			else
 			{
@@ -154,9 +165,12 @@ public class QueueSessionListener extends BrokerListener
 						}
 					}
 				});
-				return RESERVE_TIME;
-
 			}
+			
+			if(channelInfo.ackRequired)
+				return success;
+			
+			return ackNotRequired;
 		}
 		catch (Throwable e)
 		{
@@ -175,7 +189,7 @@ public class QueueSessionListener extends BrokerListener
 			}
 		}
 
-		return -1;
+		return failed;
 	}
 
 	private ChannelInfo pick()
@@ -216,7 +230,7 @@ public class QueueSessionListener extends BrokerListener
 		return null;
 	}
 
-	public int addConsumer(Channel channel)
+	public int addConsumer(Channel channel, boolean ackRequired)
 	{
 		synchronized (mutex)
 		{
@@ -291,4 +305,5 @@ public class QueueSessionListener extends BrokerListener
 	{
 		return sessions;
 	}
+
 }

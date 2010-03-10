@@ -20,6 +20,8 @@ import pt.com.gcs.messaging.LocalQueueConsumers;
 import pt.com.gcs.messaging.MessageListener;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
 import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
 
 /*
@@ -31,6 +33,7 @@ public class SynchronousMessageListener implements MessageListener
 
 	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
 	
+	private static final long RESERVE_TIME = 15 * 60 * 1000; // reserve for 15mn
 	private static final long ACTIVE_INTERVAL = 5 * 60 * 1000; // 5mn
 
 	private AtomicBoolean ready;
@@ -69,13 +72,16 @@ public class SynchronousMessageListener implements MessageListener
 		return DestinationType.QUEUE;
 	}
 
+	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
+	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
+	
 	@Override
-	public long onMessage(InternalMessage message)
+	public ForwardResult onMessage(InternalMessage message)
 	{
 		if (!ready.get())
 		{
 			log.error("We shouldn't be here. A SynchronousMessageListener should not be called when in a 'not ready' state.");
-			return -1;
+			return failed;
 		}
 
 		ready.set(false);
@@ -90,10 +96,10 @@ public class SynchronousMessageListener implements MessageListener
 		else
 		{
 			LocalQueueConsumers.remove(this);
-			return -1;
+			return failed;
 		}
 
-		return 15 * 60 * 1000; // reserve for 15mn
+		return success;
 	}
 
 	@Override

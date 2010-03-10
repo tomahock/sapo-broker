@@ -1,6 +1,8 @@
 package pt.com.gcs.messaging;
 
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
 
 /**
  * TopicToQueueDispatcher is responsible for enqueueing topic messages that have durable subscribers registered.
@@ -9,7 +11,6 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 class TopicToQueueDispatcher implements MessageListener
 {
-
 	private final String _queueName;
 
 	public TopicToQueueDispatcher(String queueName)
@@ -29,7 +30,9 @@ class TopicToQueueDispatcher implements MessageListener
 		return DestinationType.QUEUE;
 	}
 
-	public long onMessage(InternalMessage message)
+	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
+	
+	public ForwardResult onMessage(InternalMessage message)
 	{
 		if (!message.isFromRemotePeer())
 		{
@@ -37,7 +40,7 @@ class TopicToQueueDispatcher implements MessageListener
 			Gcs.enqueue(message);
 			// Gcs.enqueue(message, _queueName);
 		}
-		return 0;
+		return success;
 	}
 
 	public String getDestinationName()

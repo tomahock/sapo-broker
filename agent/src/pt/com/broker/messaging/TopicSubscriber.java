@@ -15,6 +15,8 @@ import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.InternalMessage;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
 
 /**
  * TopicSubscriber represents a local (agent connected) clients who subscribed to a specific topic.
@@ -96,10 +98,13 @@ public class TopicSubscriber extends BrokerListener
 
 	private Channel channel;
 
-	public long onMessage(final InternalMessage amsg)
+	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
+	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
+	
+	public ForwardResult onMessage(final InternalMessage amsg)
 	{
 		if (amsg == null)
-			return -1;
+			return failed;
 
 		try
 		{
@@ -168,7 +173,7 @@ public class TopicSubscriber extends BrokerListener
 		{
 			log.error("Error on message listener for '{}': {}", e.getMessage(), _dname);
 		}
-		return 0;
+		return success;
 	}
 
 	public int removeSessionConsumer(Channel channel)
@@ -186,7 +191,7 @@ public class TopicSubscriber extends BrokerListener
 		}
 	}
 
-	public int addConsumer(Channel channel)
+	public int addConsumer(Channel channel, boolean ackRequired)
 	{
 		synchronized (slock)
 		{

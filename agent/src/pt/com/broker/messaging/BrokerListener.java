@@ -46,7 +46,7 @@ public abstract class BrokerListener implements MessageListener
 	}
 
 
-	public abstract int addConsumer(Channel channel);
+	public abstract int addConsumer(Channel channel, boolean ackRequired);
 
 	public abstract int removeSessionConsumer(Channel channel);
 }

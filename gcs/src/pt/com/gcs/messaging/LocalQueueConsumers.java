@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
 
 /**
  * LocalQueueConsumers maintains current local queue consumers.
@@ -156,7 +158,7 @@ public class LocalQueueConsumers
 		return Collections.unmodifiableSet(instance.localQueueConsumers.keySet());
 	}
 
-	protected static long notify(InternalMessage message)
+	protected static ForwardResult notify(InternalMessage message)
 	{
 		return instance.doNotify(message);
 	}
@@ -336,7 +338,9 @@ public class LocalQueueConsumers
 		broadCastActionQueueConsumer(destinationName, "DELETE");
 	}
 
-	protected long doNotify(InternalMessage message)
+	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
+	
+	protected ForwardResult doNotify(InternalMessage message)
 	{
 		CopyOnWriteArrayList<MessageListener> listeners = localQueueConsumers.get(message.getDestination());
 		if (listeners != null)
@@ -357,7 +361,7 @@ public class LocalQueueConsumers
 			log.debug("There are no local listeners for queue: {}", message.getDestination());
 		}
 
-		return -1;
+		return failed;
 	}
 
 	private MessageListener pick(CopyOnWriteArrayList<MessageListener> listeners)

@@ -12,6 +12,9 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
+import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
+
 /**
  * RemoteQueueConsumers maintains current remote queue consumers (other agents).
  * 
@@ -120,7 +123,7 @@ public class RemoteQueueConsumers
 		instance.remoteQueueConsumers.remove(queueName);
 	}
 
-	protected static long notify(InternalMessage message)
+	protected static ForwardResult notify(InternalMessage message)
 	{
 		return instance.doNotify(message);
 	}
@@ -169,63 +172,11 @@ public class RemoteQueueConsumers
 	{
 	}
 
-//	protected long doNotify2(InternalMessage message)
-//	{
-//		CopyOnWriteArrayList<ChannelInfo> sessions = remoteQueueConsumers.get(message.getDestination());
-//		if (sessions != null)
-//		{
-//			int n = sessions.size();
-//
-//			if (n > 0)
-//			{
-//				ChannelInfo sessionInfo = pick(sessions);
-//				if (sessionInfo != null)
-//				{
-//					try
-//					{
-//
-//						if (sessionInfo.channel != null)
-//						{
-//							Channel ioSession = sessionInfo.channel;
-//							if (ioSession.isConnected() && ioSession.isWritable())
-//							{
-//								ioSession.write(message);
-//
-//								return 2 * 60 * 1000; // reserve for 2mn
-//							}
-//							else
-//							{
-//								System.out.print("NW");
-//							}
-//						}
-//					}
-//					catch (Throwable ct)
-//					{
-//						log.error(ct.getMessage(), ct);
-//						try
-//						{
-//							sessionInfo.channel.close();
-//						}
-//						catch (Throwable ict)
-//						{
-//							log.error(ict.getMessage(), ict);
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		if (log.isDebugEnabled())
-//		{
-//			log.debug("There are no remote consumers for queue: {}", message.getDestination());
-//		}
-//
-//		System.out.println("Returning -1");
-//
-//		return -1;
-//	}
 
-	protected long doNotify(final InternalMessage message)
+	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
+	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
+	
+	protected ForwardResult doNotify(final InternalMessage message)
 	{
 		final String dname = message.getDestination();
 
@@ -234,13 +185,13 @@ public class RemoteQueueConsumers
 
 		if (channelInfo == null)
 		{
-			return -1;
+			return failed;
 		}
 		final Channel channel = channelInfo.channel;
 
 		if (channel == null)
 		{
-			return -1;
+			return failed;
 		}
 
 		try
@@ -250,7 +201,7 @@ public class RemoteQueueConsumers
 				channel.write(message);
 				channelInfo.wasDeliverySuspeded = false;
 
-				return RESERVE_TIME;
+				return success;
 			}
 			else
 			{
@@ -278,7 +229,7 @@ public class RemoteQueueConsumers
 						}
 					}
 				});
-				return RESERVE_TIME;
+				return success;
 
 			}
 		}
@@ -295,7 +246,7 @@ public class RemoteQueueConsumers
 			}
 		}
 
-		return -1;
+		return failed;
 	}
 
 	private ChannelInfo pick(CopyOnWriteArrayList<ChannelInfo> channels)

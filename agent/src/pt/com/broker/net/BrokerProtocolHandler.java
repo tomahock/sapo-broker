@@ -68,8 +68,10 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	private static final BrokerProducer _brokerProducer = BrokerProducer.getInstance();
 
 	private static final BrokerConsumer _brokerConsumer = BrokerConsumer.getInstance();
-
+	
 	private static final BrokerProtocolHandler instance;
+	
+	private static final String ACK_REQUIRED = "ACK_REQUIRED";
 
 	static
 	{
@@ -384,9 +386,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			}
 			return;
 		}
-
 		sendAccepted(ctx, actionId);
-
 	}
 
 	private void handlePollMessage(ChannelHandlerContext ctx, NetMessage request)
@@ -432,10 +432,18 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			return;
 		}
 
+		boolean ackRequired = true;
+		
+		if( request.getHeaders() != null)
+		{
+			String value = request.getHeaders().get(ACK_REQUIRED);
+			ackRequired = (value == null) ? true : !value.equalsIgnoreCase("false");
+		}
+		
 		switch (subscritption.getDestinationType())
 		{
 		case QUEUE:
-			_brokerConsumer.listen(subscritption, channel);
+			_brokerConsumer.listen(subscritption, channel, ackRequired);
 			break;
 		case TOPIC:
 			if (!_brokerConsumer.subscribe(subscritption, channel))
@@ -454,7 +462,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		case VIRTUAL_QUEUE:
 			if (StringUtils.contains(subscritption.getDestination(), "@"))
 			{
-				_brokerConsumer.listen(subscritption, channel);
+				_brokerConsumer.listen(subscritption, channel, ackRequired);
 			}
 			else
 			{

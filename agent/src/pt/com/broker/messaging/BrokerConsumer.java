@@ -25,12 +25,12 @@ public class BrokerConsumer
 	{
 	}
 
-	public void listen(NetSubscribe subscription, Channel channel)
+	public void listen(NetSubscribe subscription, Channel channel, boolean ackRequired)
 	{
 		try
 		{
 			QueueSessionListener qsl = QueueSessionListenerList.get(subscription.getDestination());
-			qsl.addConsumer(channel);
+			qsl.addConsumer(channel, ackRequired);
 		}
 		catch (Throwable e)
 		{
@@ -43,7 +43,7 @@ public class BrokerConsumer
 		try
 		{
 			TopicSubscriber subscriber = TopicSubscriberList.get(sb.getDestination());
-			subscriber.addConsumer(channel);
+			subscriber.addConsumer(channel, false);
 		}
 
 		catch (Throwable e)
