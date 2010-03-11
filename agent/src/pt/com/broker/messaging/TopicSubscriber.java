@@ -37,7 +37,7 @@ public class TopicSubscriber extends BrokerListener
 			this.channel = channel;
 			discardMessages = new AtomicBoolean(false);
 		}
-		
+
 		@Override
 		public int hashCode()
 		{
@@ -100,7 +100,7 @@ public class TopicSubscriber extends BrokerListener
 
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
-	
+
 	public ForwardResult onMessage(final InternalMessage amsg)
 	{
 		if (amsg == null)
@@ -119,19 +119,18 @@ public class TopicSubscriber extends BrokerListener
 						if (channelInfo.channel.isWritable())
 						{
 							channel.write(response);
-							if (channelInfo.discardMessages.get())
+							if (channelInfo.discardMessages.compareAndSet(true, false))
 							{
-								log.info("Stopped discarding messages for topic '{}' and session '{}'.", _dname, channelInfo.channel.toString());
-								channelInfo.discardMessages.set(false);
+								String msg = String.format("Stopped discarding messages for topic '%s' and session '%s'. Dropped messages: %s", _dname, channelInfo.channel.toString(), droppedMessages.getAndSet(0));
+								log.info(msg);
+								
 							}
 						}
 						else
 						{
-
 							if (channelInfo.discardMessages.get())
 							{
-								String message = String.format("Slow client for '%s'. Message with id '%s' will be discarded. Client Address: '%s'. Messages discarded: '%s'", _dname, amsg.getMessageId(), channel.getRemoteAddress().toString(), droppedMessages.incrementAndGet());
-								log.warn(message);
+								droppedMessages.incrementAndGet();
 								continue;
 							}
 
@@ -147,8 +146,10 @@ public class TopicSubscriber extends BrokerListener
 
 									if (writeTime >= MAX_WRITE_TIME)
 									{
-										channelInfo.discardMessages.set(true);
-										log.info("Started discarding messages for topic '{}' and session '{}'.", _dname, channelInfo.channel.toString());
+										if (!channelInfo.discardMessages.getAndSet(true))
+										{
+											log.info("Started discarding messages for topic '{}' and session '{}'.", _dname, channelInfo.channel.toString());
+										}
 									}
 								}
 							});
@@ -218,8 +219,7 @@ public class TopicSubscriber extends BrokerListener
 			return getSessions().size();
 		}
 	}
-	
-	
+
 	@Override
 	public boolean ready()
 	{
