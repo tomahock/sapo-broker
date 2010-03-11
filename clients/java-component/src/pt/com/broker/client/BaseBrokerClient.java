@@ -291,18 +291,6 @@ public abstract class BaseBrokerClient
 			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
 			netAction.setSubscribeMessage(subscribe);
 
-			//------------------------
-			System.out.println("BaseBrokerClient.addAsyncConsumer()");
-			
-			Map<String, String> headers = subscribe.getHeaders();
-			for(String header : headers.keySet())
-			{
-				System.out.println(String.format("%s - %s", header, headers.get(header)  ));
-			}
-						
-			//------------------------
-			
-			
 			NetMessage msg = buildMessage(netAction, subscribe.getHeaders());
 
 			getNetHandler().sendMessage(msg);
