@@ -6,8 +6,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +17,8 @@ import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
 import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
 
 /**
- * TopicSubscriber represents a local (agent connected) clients who subscribed to a specific topic.
+ * TopicSubscriber represents a local (agent connected) clients who subscribed to a
+ * specific topic.
  * 
  */
 
@@ -30,12 +29,12 @@ public class TopicSubscriber extends BrokerListener
 	public static class ChannelInfo
 	{
 		public Channel channel;
-		public AtomicBoolean discardMessages;
+		public AtomicBoolean isDiscarding;
 
 		public ChannelInfo(Channel channel)
 		{
 			this.channel = channel;
-			discardMessages = new AtomicBoolean(false);
+			isDiscarding = new AtomicBoolean(false);
 		}
 
 		@Override
@@ -74,8 +73,6 @@ public class TopicSubscriber extends BrokerListener
 	private final String _dname;
 
 	private Object slock = new Object();
-
-	private static final long MAX_WRITE_TIME = 250;
 
 	public TopicSubscriber(String destinationName)
 	{
@@ -119,40 +116,20 @@ public class TopicSubscriber extends BrokerListener
 						if (channelInfo.channel.isWritable())
 						{
 							channel.write(response);
-							if (channelInfo.discardMessages.compareAndSet(true, false))
+							if (channelInfo.isDiscarding.compareAndSet(true, false))
 							{
 								String msg = String.format("Stopped discarding messages for topic '%s' and session '%s'. Dropped messages: %s", _dname, channelInfo.channel.toString(), droppedMessages.getAndSet(0));
 								log.info(msg);
-								
+
 							}
 						}
 						else
 						{
-							if (channelInfo.discardMessages.get())
+							if (!channelInfo.isDiscarding.getAndSet(true))
 							{
-								droppedMessages.incrementAndGet();
-								continue;
+								log.info("Started discarding messages for topic '{}' and session '{}'.", _dname, channelInfo.channel.toString());
 							}
-
-							ChannelFuture writeFuture = channel.write(response);
-
-							final long writeStartTime = System.nanoTime();
-							writeFuture.addListener(new ChannelFutureListener()
-							{
-								@Override
-								public void operationComplete(ChannelFuture channelFuture) throws Exception
-								{
-									final long writeTime = ((System.nanoTime() - writeStartTime) / (1000 * 1000));
-
-									if (writeTime >= MAX_WRITE_TIME)
-									{
-										if (!channelInfo.discardMessages.getAndSet(true))
-										{
-											log.info("Started discarding messages for topic '{}' and session '{}'.", _dname, channelInfo.channel.toString());
-										}
-									}
-								}
-							});
+							droppedMessages.incrementAndGet();
 						}
 
 					}
