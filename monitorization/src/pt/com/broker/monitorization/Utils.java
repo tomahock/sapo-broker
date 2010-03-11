@@ -21,9 +21,9 @@ public class Utils
 		return DateUtil.formatISODate(date);
 	}
 	
-	public static void schedule(Runnable task, long initialDelay, long period, TimeUnit unit)
+	public static void schedule(Runnable task, long initialDelay, long delay, TimeUnit unit)
 	{
-		scheduledThreadPool.scheduleAtFixedRate(task, initialDelay, period, unit);
+		scheduledThreadPool.scheduleWithFixedDelay(task, initialDelay, delay, unit);
 	}
 	public static void execute(Runnable task)
 	{

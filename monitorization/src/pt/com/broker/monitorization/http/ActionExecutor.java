@@ -45,7 +45,7 @@ public class ActionExecutor
 
 	public static String execute(String resource, Map<String,String> arguments)
 	{
-		String[] parts = resource.split("/");
+		String[] parts = resource.split("\\?");
 		Action executor = executors.get(parts[0]);
 		if (executor == null)
 		{
