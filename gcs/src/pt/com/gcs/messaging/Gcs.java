@@ -97,7 +97,6 @@ public class Gcs
 					instance.agentsConnection.add(cf.getChannel());
 				}
 			}
-			
 		}
 		else
 		{

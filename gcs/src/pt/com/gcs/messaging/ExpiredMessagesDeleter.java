@@ -10,5 +10,4 @@ public class ExpiredMessagesDeleter implements Runnable
 			qp.deleteExpiredMessages();
 		}
 	}
-
 }

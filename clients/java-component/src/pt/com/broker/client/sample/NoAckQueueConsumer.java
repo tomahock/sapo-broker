@@ -1,6 +1,7 @@
 package pt.com.broker.client.sample;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
@@ -63,6 +64,16 @@ public class NoAckQueueConsumer implements BrokerListener
 		System.out.printf("Destination: '%s'%n", notification.getDestination());
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+		
+		Map<String, String> headers = notification.getHeaders();
+		if(headers != null)
+		{
+			System.out.printf("Headers: %n");
+			for (String headerName : headers.keySet())
+			{
+				System.out.printf(" '%s' - '%s'%n", headerName, headers.get(headerName));
+			}
+		}
 		
 		Sleep.time(waitTime);
 	}

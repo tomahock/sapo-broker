@@ -24,11 +24,13 @@ import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
  */
 public class QueueSessionListener extends BrokerListener
 {
-	private static final long MAX_WRITE_TIME = 250;
-	
 	private static final Logger log = LoggerFactory.getLogger(QueueSessionListener.class);
+	
+	private static final long MAX_WRITE_TIME = 250;
 
 	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
+	
+	private static final String ACK_REQUIRED = "ACK_REQUIRED";
 
 	public static class ChannelInfo
 	{
@@ -133,6 +135,12 @@ public class QueueSessionListener extends BrokerListener
 		try
 		{
 			final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
+			
+			if(!channelInfo.ackRequired)
+			{
+				response.getHeaders().put(ACK_REQUIRED, "false");
+			}
+			
 			if (channel.isWritable())
 			{
 				channel.write(response);
