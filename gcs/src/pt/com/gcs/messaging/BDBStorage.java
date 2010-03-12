@@ -501,7 +501,7 @@ public class BDBStorage
 		if (isMarkedForDeletion.get())
 			return;
 
-		log.info("Runing BDBStorage.deleteExpiredMessages()");
+		log.info("Running BDBStorage.deleteExpiredMessages() for queue '{}'", queueProcessor.getDestinationName());
 
 		long now = System.currentTimeMillis();
 
