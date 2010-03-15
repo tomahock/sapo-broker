@@ -6,7 +6,7 @@ classpath="./conf:./lib/*:./dist/*:../common-libs/*:../comm-types/dist/*:../bind
 
 
 java -server \
--Xverify:none -Xms256M -Xmx256M \
+-Xverify:none -Xms32M -Xmx64M \
 -Djava.awt.headless=true \
 -Djava.net.preferIPv4Stack=true \
 -Djava.net.preferIPv6Addresses=false \
