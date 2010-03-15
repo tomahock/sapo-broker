@@ -24,7 +24,7 @@ import pt.com.broker.types.SimpleFramingEncoder;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
- * BrokerServer is responsible for initializing client's TCP interface (MINA infrastructure).
+ * BrokerServer is responsible for initializing client's TCP interface (Netty infrastructure).
  * 
  */
 
@@ -36,18 +36,7 @@ public class BrokerServer
 
 	private int _legacyPortNumber;
 
-	// public static final int PORT = 8007;
-	public static final int MIN_READ_BUFFER_SIZE = 64;
-	public static final int INITIAL_READ_BUFFER_SIZE = 16384;
-	public static final int MAX_READ_BUFFER_SIZE = 65536;
-	public static final int THREAD_POOL_SIZE = 16;
-	public static final int MESSAGE_COUNT = 500000;
-	public static final int CHANNEL_MEMORY_LIMIT = MAX_READ_BUFFER_SIZE * 2;
-	// public static final long GLOBAL_MEMORY_LIMIT__ = Runtime.getRuntime().maxMemory() / 3;
-
 	public static final int WRITE_BUFFER_HIGH_WATER_MARK = 128 * 1024;
-
-	
 
 	private final ThreadPoolExecutor tpeIo;
 	private final ThreadPoolExecutor tpeWorkers;
@@ -77,7 +66,8 @@ public class BrokerServer
 			bootstrap0.setOption("writeBufferHighWaterMark", WRITE_BUFFER_HIGH_WATER_MARK); // default=64K
 			// bootstrap0.setOption("writeBufferLowWaterMark", 1024); // default=32K
 
-			// water marks introduction: http://www.jboss.org/netty/community.html#nabble-td1611593
+			// water marks introduction:
+			// http://www.jboss.org/netty/community.html#nabble-td1611593
 
 			ChannelPipelineFactory serverPipelineFactory0 = new ChannelPipelineFactory()
 			{
