@@ -14,7 +14,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="module/protocol.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="module/advanced.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="module/support.xml"/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="module/bayeuxbridge.xml"/>
+  <!--  xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="module/bayeuxbridge.xml"/ -->
   <!-- xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="module/arch.xml"/ -->
 </book>
 

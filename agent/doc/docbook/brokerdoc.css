@@ -31,8 +31,8 @@ div.book {
 
 h2.subtitle {
 	
-	background-image:url(./images/broker_thumb.jpg);
-    background-repeat:no-repeat;
+	background-image:url(./images/broker_thumb.png);
+    	background-repeat:no-repeat;
 	height:80px;
 	min-height:80px;
 	padding-left:90px;
