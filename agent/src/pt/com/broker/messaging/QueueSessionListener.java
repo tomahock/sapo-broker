@@ -25,11 +25,11 @@ import pt.com.gcs.messaging.ForwardResult.Result;
 public class QueueSessionListener extends BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(QueueSessionListener.class);
-	
+
 	private static final long MAX_WRITE_TIME = 250;
 
 	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
-	
+
 	private static final String ACK_REQUIRED = "ACK_REQUIRED";
 
 	public static class ChannelInfo
@@ -43,12 +43,12 @@ public class QueueSessionListener extends BrokerListener
 		{
 			this(channel, false);
 		}
-		
+
 		public ChannelInfo(Channel channel, boolean ackRequired)
 		{
 			this.channel = channel;
 			deliveryTime = new AtomicLong(0);
-			this.ackRequired = ackRequired; 
+			this.ackRequired = ackRequired;
 		}
 
 		@Override
@@ -119,7 +119,7 @@ public class QueueSessionListener extends BrokerListener
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
 	private static final ForwardResult ackNotRequired = new ForwardResult(Result.NOT_ACKNOWLEDGE);
-	
+
 	public ForwardResult onMessage(final InternalMessage msg)
 	{
 		if (msg == null)
@@ -135,12 +135,12 @@ public class QueueSessionListener extends BrokerListener
 		try
 		{
 			final NetMessage response = BrokerListener.buildNotification(msg, _dname, pt.com.broker.types.NetAction.DestinationType.QUEUE);
-			
-			if(!channelInfo.ackRequired)
+
+			if (!channelInfo.ackRequired)
 			{
 				response.getHeaders().put(ACK_REQUIRED, "false");
 			}
-			
+
 			if (channel.isWritable())
 			{
 				channel.write(response);
@@ -151,6 +151,8 @@ public class QueueSessionListener extends BrokerListener
 			{
 				ChannelFuture writeFuture = channel.write(response);
 				final long writeStartTime = System.nanoTime();
+				
+				channelInfo.deliveryTime.set(System.currentTimeMillis() + 1);
 
 				writeFuture.addListener(new ChannelFutureListener()
 				{
@@ -164,20 +166,21 @@ public class QueueSessionListener extends BrokerListener
 						{
 							delayTime = System.currentTimeMillis() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.
 
+
 							channelInfo.deliveryTime.set(delayTime);
 							if (!channelInfo.wasDeliverySuspeded)
 							{
-								log.info("Suspending message delivery from queue '{}' to session '{}'.", _dname, channelInfo.channel.getRemoteAddress().toString());
+								log.info("Suspending message delivery for queue '{}' to session '{}'.", _dname, channelInfo.channel.getRemoteAddress().toString());
 							}
 							channelInfo.wasDeliverySuspeded = true;
 						}
 					}
 				});
 			}
-			
-			if(channelInfo.ackRequired)
+
+			if (channelInfo.ackRequired)
 				return success;
-			
+
 			return ackNotRequired;
 		}
 		catch (Throwable e)
@@ -249,7 +252,7 @@ public class QueueSessionListener extends BrokerListener
 
 				log.info(String.format("Create message consumer for queue: '%s', address: '%s', Total sessions: '%s'", _dname, channel.getRemoteAddress().toString(), getSessions().size()));
 			}
-			if(!ackRequired)
+			if (!ackRequired)
 			{
 				log.info(String.format("Adding queue consumer to '%s' that dosen't require ACK.", this._dname));
 			}

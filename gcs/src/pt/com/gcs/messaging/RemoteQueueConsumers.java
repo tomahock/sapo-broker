@@ -198,6 +198,8 @@ public class RemoteQueueConsumers
 				ChannelFuture writeFuture = channel.write(message);
 				final long writeStartTime = System.nanoTime();
 
+				channelInfo.deliveryTime.set(System.currentTimeMillis() + 1);
+
 				writeFuture.addListener(new ChannelFutureListener()
 				{
 					@Override

@@ -10,6 +10,8 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,6 +119,10 @@ public class BrokerServer
 					{
 						pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
 					}
+					
+//					ExecutionHandler executionHandler = new ExecutionHandler(
+//				             new OrderedMemoryAwareThreadPoolExecutor(16, 1048576, 1048576));
+//					pipeline.addLast("execution-handler", executionHandler);
 
 					pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
 

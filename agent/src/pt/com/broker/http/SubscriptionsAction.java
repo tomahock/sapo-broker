@@ -127,14 +127,16 @@ public class SubscriptionsAction extends HttpAction
 		
 		for(String topicSubscription : RemoteTopicConsumers.getSubscriptionNames() )
 		{
-			CopyOnWriteArrayList<Channel> subscriptions;
+			
+			
+			CopyOnWriteArrayList<pt.com.gcs.messaging.RemoteTopicConsumers.ChannelInfo> subscriptions;
 			subscriptions = RemoteTopicConsumers.getSubscription(topicSubscription);
 						
 			ArrayList<String> clients = new ArrayList<String>(subscriptions.size());
 			
-			for(Channel client : subscriptions)
+			for(pt.com.gcs.messaging.RemoteTopicConsumers.ChannelInfo client : subscriptions)
 			{
-				clients.add(client.getRemoteAddress().toString());
+				clients.add(client.channel.getRemoteAddress().toString());
 			}
 			
 			sb.append(generateHtml(topicSubscription, clients));

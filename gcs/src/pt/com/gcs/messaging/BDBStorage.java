@@ -430,7 +430,7 @@ public class BDBStorage
 
 							if (result.result == Result.FAILED)
 							{
-								log.info("Could not deliver message. Queue: '{}',  Id: '{}'.", msg.getDestination(), msg.getMessageId());
+								//log.info("Could not deliver message. Queue: '{}',  Id: '{}'.", msg.getDestination(), msg.getMessageId());
 								dumpMessage(msg);
 
 								++j0;

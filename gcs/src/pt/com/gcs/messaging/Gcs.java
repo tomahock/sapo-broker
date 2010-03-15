@@ -53,7 +53,7 @@ public class Gcs
 
 	private static final Gcs instance = new Gcs();
 
-	public static final int RECOVER_INTERVAL = 50;
+	public static final int RECOVER_INTERVAL = 5;
 
 	public static final int RECONNECT_INTERVAL = 5000;
 

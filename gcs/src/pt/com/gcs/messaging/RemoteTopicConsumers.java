@@ -5,8 +5,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +25,65 @@ public class RemoteTopicConsumers
 {
 	private static Logger log = LoggerFactory.getLogger(RemoteTopicConsumers.class);
 
+	private static final long MAX_WRITE_TIME = 50;
+
 	private static final RemoteTopicConsumers instance = new RemoteTopicConsumers();
 
-	private Map<String, CopyOnWriteArrayList<Channel>> remoteTopicConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<Channel>>();
+	private Map<String, CopyOnWriteArrayList<ChannelInfo>> remoteTopicConsumers = new ConcurrentHashMap<String, CopyOnWriteArrayList<ChannelInfo>>();
+
+	public static class ChannelInfo
+	{
+		public Channel channel;
+		public AtomicBoolean isDiscarding;
+		public AtomicLong deliveryTime;
+
+		public ChannelInfo(Channel channel)
+		{
+			this.channel = channel;
+			isDiscarding = new AtomicBoolean(false);
+			deliveryTime = new AtomicLong(0);
+		}
+
+		@Override
+		public int hashCode()
+		{
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((channel == null) ? 0 : channel.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ChannelInfo other = (ChannelInfo) obj;
+			if (channel == null)
+			{
+				if (other.channel != null)
+					return false;
+			}
+			else if (!channel.equals(other.channel))
+				return false;
+			return true;
+		}
+
+		public boolean isReady()
+		{
+			return isReady(System.currentTimeMillis());
+		}
+
+		public boolean isReady(long currentTime)
+		{
+			return currentTime >= deliveryTime.get();
+		}
+
+	}
 
 	private RemoteTopicConsumers()
 	{
@@ -33,15 +94,15 @@ public class RemoteTopicConsumers
 		log.info("Adding new remote topic consumer for topic:  '{}'", topicName);
 		try
 		{
-			CopyOnWriteArrayList<Channel> sessions = instance.remoteTopicConsumers.get(topicName);
+			CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteTopicConsumers.get(topicName);
 			if (sessions == null)
 			{
-				sessions = new CopyOnWriteArrayList<Channel>();
+				sessions = new CopyOnWriteArrayList<ChannelInfo>();
 			}
 
 			if (!sessions.contains(channel))
 			{
-				sessions.add(channel);
+				sessions.add(new ChannelInfo(channel));
 				log.info("Add remote topic consumer for '{}'", topicName);
 			}
 			else
@@ -92,10 +153,10 @@ public class RemoteTopicConsumers
 			Set<String> keys = instance.remoteTopicConsumers.keySet();
 			for (String topicName : keys)
 			{
-				CopyOnWriteArrayList<Channel> sessions = instance.remoteTopicConsumers.get(topicName);
+				CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteTopicConsumers.get(topicName);
 				if (sessions != null)
 				{
-					sessions.remove(channel);
+					sessions.remove(new ChannelInfo(channel));
 					log.info("Remove remote topic consumer for '{}' and session '{}'", topicName, channel.getRemoteAddress().toString());
 				}
 				instance.remoteTopicConsumers.put(topicName, sessions);
@@ -111,10 +172,10 @@ public class RemoteTopicConsumers
 	{
 		try
 		{
-			CopyOnWriteArrayList<Channel> sessions = instance.remoteTopicConsumers.get(topicName);
+			CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteTopicConsumers.get(topicName);
 			if (sessions != null)
 			{
-				sessions.remove(channel);
+				sessions.remove(new ChannelInfo(channel));
 			}
 			instance.remoteTopicConsumers.put(topicName, sessions);
 		}
@@ -131,7 +192,7 @@ public class RemoteTopicConsumers
 
 	protected synchronized static int size(String destinationName)
 	{
-		CopyOnWriteArrayList<Channel> sessions = instance.remoteTopicConsumers.get(destinationName);
+		CopyOnWriteArrayList<ChannelInfo> sessions = instance.remoteTopicConsumers.get(destinationName);
 		if (sessions != null)
 		{
 			return sessions.size();
@@ -139,11 +200,13 @@ public class RemoteTopicConsumers
 		return 0;
 	}
 
+	AtomicInteger droppedMessages = new AtomicInteger(0);
+
 	private void doNotify(String subscriptionName, InternalMessage message)
 	{
 		try
 		{
-			CopyOnWriteArrayList<Channel> sessions = remoteTopicConsumers.get(subscriptionName);
+			CopyOnWriteArrayList<ChannelInfo> sessions = remoteTopicConsumers.get(subscriptionName);
 			if (sessions != null)
 			{
 				if (sessions.size() == 0)
@@ -154,23 +217,52 @@ public class RemoteTopicConsumers
 
 				log.debug("There are {} remote peer(s) to deliver the message.", sessions.size());
 
-				for (Channel channel : sessions)
+				for (final ChannelInfo channelInfo : sessions)
 				{
-					if (channel != null)
+					Channel channel = channelInfo.channel;
+					if (channel.isWritable())
 					{
-						if (channel.isOpen() && channel.isWritable())
+						channel.write(message);
+						if (channelInfo.isDiscarding.compareAndSet(true, false))
 						{
-							channel.write(message);
+							String msg = String.format("Stopped discarding messages for topic '%s' and session '%s'. Dropped messages: %s", subscriptionName, channelInfo.channel.getRemoteAddress().toString(), droppedMessages.getAndSet(0));
+							log.info(msg);
+						}
+					}
+					else
+					{
+						if (channelInfo.isReady())
+						{
+							ChannelFuture future = channel.write(message);
+							final long writeStartTime = System.nanoTime();
+
+							future.addListener(new ChannelFutureListener()
+							{
+								@Override
+								public void operationComplete(ChannelFuture future) throws Exception
+								{
+									final long writeCompleteTime = ((System.nanoTime() - writeStartTime) / (1000 * 1000));
+
+									long delayTime = 0;
+									if (writeCompleteTime >= MAX_WRITE_TIME)
+									{
+										delayTime = System.currentTimeMillis() + (writeCompleteTime / 2);
+										channelInfo.deliveryTime.set(delayTime);
+									}
+								}
+							});
 						}
 						else
 						{
-							// Discard message
-							String log_msg = String.format("Write Queue is full, discard message. MessageId: '%s', Destination: '%s', Target Agent: '%s'", message.getMessageId(), message.getDestination(), channel.getRemoteAddress().toString());
-							log.warn(log_msg);
+							if (!channelInfo.isDiscarding.getAndSet(true))
+							{
+								log.info("Started discarding messages for topic '{}' and session '{}'.", subscriptionName, channelInfo.channel.getRemoteAddress().toString());
 
-							String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
-							String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), channel.getRemoteAddress().toString());
-							InternalPublisher.send(dname, info_msg);
+								String dname = String.format("/system/warn/write-queue/#%s#", GcsInfo.getAgentName());
+								String info_msg = String.format("%s#%s#%s", message.getMessageId(), message.getDestination(), channel.getRemoteAddress().toString());
+								InternalPublisher.send(dname, info_msg);
+							}
+							droppedMessages.incrementAndGet();
 						}
 					}
 				}
@@ -185,15 +277,14 @@ public class RemoteTopicConsumers
 			log.error(t.getMessage());
 		}
 	}
-	
-	public synchronized static CopyOnWriteArrayList<Channel> getSubscription(String subscriptionName)
+
+	public synchronized static CopyOnWriteArrayList<ChannelInfo> getSubscription(String subscriptionName)
 	{
-		 return instance.remoteTopicConsumers.get(subscriptionName);
+		return instance.remoteTopicConsumers.get(subscriptionName);
 	}
-	
-	
+
 	public synchronized static Set<String> getSubscriptionNames()
 	{
-		 return instance.remoteTopicConsumers.keySet();
+		return instance.remoteTopicConsumers.keySet();
 	}
 }
