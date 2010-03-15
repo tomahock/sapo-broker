@@ -4,17 +4,20 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.gcs.messaging.ForwardResult;
 import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
+import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * TopicSubscriber represents a local (agent connected) clients who subscribed to a
@@ -25,16 +28,19 @@ import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
 public class TopicSubscriber extends BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(TopicSubscriber.class);
+	private static final long MAX_WRITE_TIME = 50;
 
 	public static class ChannelInfo
 	{
 		public Channel channel;
 		public AtomicBoolean isDiscarding;
+		public AtomicLong deliveryTime;
 
 		public ChannelInfo(Channel channel)
 		{
 			this.channel = channel;
 			isDiscarding = new AtomicBoolean(false);
+			deliveryTime = new AtomicLong(0);
 		}
 
 		@Override
@@ -64,6 +70,16 @@ public class TopicSubscriber extends BrokerListener
 			else if (!channel.equals(other.channel))
 				return false;
 			return true;
+		}
+
+		public boolean isReady()
+		{
+			return isReady(System.currentTimeMillis());
+		}
+
+		public boolean isReady(long currentTime)
+		{
+			return currentTime >= deliveryTime.get();
 		}
 
 	}
@@ -113,25 +129,49 @@ public class TopicSubscriber extends BrokerListener
 					channel = channelInfo.channel;
 					try
 					{
-						if (channelInfo.channel.isWritable())
+						if (channel.isWritable())
 						{
 							channel.write(response);
 							if (channelInfo.isDiscarding.compareAndSet(true, false))
 							{
-								String msg = String.format("Stopped discarding messages for topic '%s' and session '%s'. Dropped messages: %s", _dname, channelInfo.channel.toString(), droppedMessages.getAndSet(0));
+								String msg = String.format("Stopped discarding messages for topic '%s' and session '%s'. Dropped messages: %s", _dname, channelInfo.channel.getRemoteAddress().toString(), droppedMessages.getAndSet(0));
 								log.info(msg);
 
 							}
 						}
 						else
 						{
-							if (!channelInfo.isDiscarding.getAndSet(true))
+							if (channelInfo.isReady())
 							{
-								log.info("Started discarding messages for topic '{}' and session '{}'.", _dname, channelInfo.channel.toString());
-							}
-							droppedMessages.incrementAndGet();
-						}
+								ChannelFuture future = channel.write(response);
+								final long writeStartTime = System.nanoTime();
 
+								future.addListener(new ChannelFutureListener()
+								{
+									@Override
+									public void operationComplete(ChannelFuture future) throws Exception
+									{
+										final long writeCompleteTime = ((System.nanoTime() - writeStartTime) / (1000 * 1000));
+
+										long delayTime = 0;
+										if (writeCompleteTime >= MAX_WRITE_TIME)
+										{
+											delayTime = System.currentTimeMillis() + (writeCompleteTime / 2);
+											channelInfo.deliveryTime.set(delayTime);
+										}
+									}
+								});
+							}
+							else
+							{
+								if (!channelInfo.isDiscarding.getAndSet(true))
+								{
+									log.info("Started discarding messages for topic '{}' and session '{}'.", _dname, channelInfo.channel.getRemoteAddress().toString());
+								}
+								droppedMessages.incrementAndGet();
+							}
+
+						}
 					}
 					catch (Throwable t)
 					{
