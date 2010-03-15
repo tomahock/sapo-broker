@@ -93,7 +93,8 @@ public class BrokerHttpAction extends HttpAction
 
 			if (request.getMethod().equals(HttpMethod.POST))
 			{
-				ChannelBuffer bb = (ChannelBuffer) request.getContent();
+				ChannelBuffer bb = request.getContent();
+
 				byte[] buf = bb.array();
 
 				NetMessage message = (NetMessage) bindingSerializer.unmarshal(buf);
@@ -102,16 +103,14 @@ public class BrokerHttpAction extends HttpAction
 
 				if (!validationResult.accessGranted)
 				{
-					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal
-					// server
-					// error?...
+					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 					response.setContent(ACCESS_DENIED_REQUEST_RESPONSE.duplicate());
 					return;
 				}
 
 				if ((message.getAction().getActionType() != NetAction.ActionType.PUBLISH) || (message.getAction().getPublishMessage() == null))
 				{
-					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal server error?
+					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 					response.setContent(INVALID_MESSAGE_TYPE_RESPONSE.duplicate());
 					return;
 				}
