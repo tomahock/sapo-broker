@@ -14,25 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class QueueProcessor
 {
-	public static class ForwardResult
-	{
-		public final Result result;
-		public final long time;
 
-		public enum Result{ SUCCESS, FAILED, NOT_ACKNOWLEDGE};
-		
-		public ForwardResult(Result result)
-		{
-			this(result, -1);
-		}
-		
-		public ForwardResult(Result result, long time)
-		{
-			this.result = result;
-			this.time = time;
-		}
-	}
-	
 	private static final ForwardResult failed = new ForwardResult(ForwardResult.Result.FAILED, -1);
 	
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);

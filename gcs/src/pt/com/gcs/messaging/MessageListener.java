@@ -1,7 +1,6 @@
 package pt.com.gcs.messaging;
 
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
 
 /**
  * Classes implement MessageListener in order to be notified of new topic publications.

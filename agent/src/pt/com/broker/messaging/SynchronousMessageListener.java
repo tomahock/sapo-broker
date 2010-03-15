@@ -14,14 +14,14 @@ import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.gcs.messaging.ForwardResult;
 import pt.com.gcs.messaging.GcsExecutor;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.LocalQueueConsumers;
 import pt.com.gcs.messaging.MessageListener;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
+import pt.com.gcs.messaging.ForwardResult.Result;
 import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
 
 /*

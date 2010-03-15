@@ -12,8 +12,7 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
+import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * RemoteQueueConsumers maintains current remote queue consumers (other agents).

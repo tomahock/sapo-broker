@@ -1,8 +1,7 @@
 package pt.com.gcs.messaging;
 
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
+import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * TopicToQueueDispatcher is responsible for enqueueing topic messages that have durable subscribers registered.

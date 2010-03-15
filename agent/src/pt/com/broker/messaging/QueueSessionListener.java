@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.gcs.messaging.ForwardResult;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult;
-import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
+import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * QueueSessionListener represents a local (agent connected) clients who subscribed to a specific topic.
