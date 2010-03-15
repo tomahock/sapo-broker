@@ -21,15 +21,6 @@ import pt.com.gcs.messaging.QueueProcessor.ForwardResult.Result;
  */
 public class RemoteQueueConsumers
 {
-	private static final int WRITE_BUFFER_SIZE = 128 * 1024;
-
-	private final static double MAX_SUSPENSION_TIME = 1000;
-
-	private final static double LOW_WATER_MARK = (double) WRITE_BUFFER_SIZE;
-	private final static double HIGH_WATER_MARK = LOW_WATER_MARK * 2;
-
-	private final static double DELTA = HIGH_WATER_MARK - LOW_WATER_MARK;
-
 	private static final long MAX_WRITE_TIME = 250;
 	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
 
