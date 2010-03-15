@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
+import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,8 @@ public class ConsumerWithFailover implements BrokerListener
 	private int port;
 	private DestinationType dtype;
 	private String dname;
-
+	private long waitTime;
+	
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);
@@ -40,6 +42,7 @@ public class ConsumerWithFailover implements BrokerListener
 
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
+		consumer.waitTime = cargs.getDelay();
 
 		Collection<HostInfo> hosts = new ArrayList<HostInfo>(2);
 		hosts.add(new HostInfo("localhost", 3423));
@@ -57,14 +60,7 @@ public class ConsumerWithFailover implements BrokerListener
 	@Override
 	public boolean isAutoAck()
 	{
-		if (dtype == DestinationType.TOPIC)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+		return dtype != DestinationType.TOPIC;
 	}
 
 	@Override
@@ -74,5 +70,10 @@ public class ConsumerWithFailover implements BrokerListener
 		System.out.printf("Destination: '%s'%n", notification.getDestination());
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+
+		if (waitTime > 0)
+		{
+			Sleep.time(waitTime);
+		}
 	}
 }

@@ -24,15 +24,14 @@ public class Consumer implements BrokerListener
 {
 
 	private static final Logger log = LoggerFactory.getLogger(Consumer.class);
-	private final AtomicInteger counter = new AtomicInteger(0);
+	private static final AtomicInteger counter = new AtomicInteger(0);
 
 	private String host;
 	private int port;
 	private DestinationType dtype;
 	private String dname;
 	private long waitTime;
-	
-	
+
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);
@@ -43,8 +42,7 @@ public class Consumer implements BrokerListener
 		consumer.port = cargs.getPort();
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
-		consumer.waitTime = cargs.getDelay();		
-		
+		consumer.waitTime = cargs.getDelay();
 
 		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer");
 
@@ -68,7 +66,10 @@ public class Consumer implements BrokerListener
 		System.out.printf("Destination: '%s'%n", notification.getDestination());
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
-		
-		Sleep.time(waitTime);
+
+		if (waitTime > 0)
+		{
+			Sleep.time(waitTime);
+		}
 	}
 }
