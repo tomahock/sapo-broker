@@ -536,6 +536,19 @@ function setAgentFaultInfo(faultInfo, panel)
 	}
 	panel.innerHTML = newContent;
 }
+// go to agent's subscription page
+
+function subscriptionsPage()
+{
+	var anPanel =  s$('agent_name'); 
+	var agentName = anPanel.innerHTML;
+	var agentIp = agentName.split(":")[0];
+
+	window.location = "http://"+ agentIp + ":3380/broker/subscriptions" 
+	
+	return false;
+}
+
 //
 // ALL QUEUES
 //
