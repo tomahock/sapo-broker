@@ -234,6 +234,7 @@ public class RemoteTopicConsumers
 						if (channelInfo.isReady())
 						{
 							ChannelFuture future = channel.write(message);
+							channelInfo.deliveryTime.set(System.currentTimeMillis() + 1);
 							final long writeStartTime = System.nanoTime();
 
 							future.addListener(new ChannelFutureListener()
