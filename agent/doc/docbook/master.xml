@@ -2,7 +2,7 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <book lang="en">
   <bookinfo>
-    <title>The Sapo-Broker 3.0 User Guide</title>
+    <title>The Sapo-Broker 4.0 User Guide</title>
     <subtitle>High performance distributed messaging framework</subtitle>
     <releaseinfo>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../../src/VERSION.txt" parse="text"/>
