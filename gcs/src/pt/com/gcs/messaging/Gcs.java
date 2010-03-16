@@ -289,29 +289,6 @@ public class Gcs
 			iaddQueueConsumer(vqueue, null);
 		}
 
-		String[] queues = BDBEnviroment.getQueueNames();
-
-		for (String queueName : queues)
-		{
-			QueueProcessor queueProcessor = null;
-			try
-			{
-				queueProcessor = QueueProcessorList.get(queueName);
-			}
-			catch (MaximumQueuesAllowedReachedException e)
-			{
-				// This never happens
-			}
-			if(queueProcessor != null)
-			{
-				if( (queueProcessor.getCounter() == 0 ) && (!queueName.contains("@")) )
-				{
-					log.info(String.format("Removing queue '%s' because it has no messages and it's not a VirtualQueue.", queueName));
-					QueueProcessorList.remove(queueName);					
-				}
-			}
-		}
-
 		connectToAllPeers();
 
 		Shutdown.isShutingDown();
