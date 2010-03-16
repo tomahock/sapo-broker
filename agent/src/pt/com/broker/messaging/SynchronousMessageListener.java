@@ -32,7 +32,7 @@ public class SynchronousMessageListener implements MessageListener
 	private static final Logger log = LoggerFactory.getLogger(SynchronousMessageListener.class);
 
 	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
-	
+
 	private static final long RESERVE_TIME = 15 * 60 * 1000; // reserve for 15mn
 	private static final long ACTIVE_INTERVAL = 5 * 60 * 1000; // 5mn
 
@@ -43,7 +43,7 @@ public class SynchronousMessageListener implements MessageListener
 	private volatile long expires;
 	private volatile boolean inNoWaitMode;
 	private volatile String actionId;
-	
+
 	private AtomicLong lastDeliveredMessage = new AtomicLong(0);
 
 	public SynchronousMessageListener(String queueName, Channel channel)
@@ -74,7 +74,7 @@ public class SynchronousMessageListener implements MessageListener
 
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
-	
+
 	@Override
 	public ForwardResult onMessage(InternalMessage message)
 	{
@@ -95,7 +95,10 @@ public class SynchronousMessageListener implements MessageListener
 		}
 		else
 		{
-			LocalQueueConsumers.remove(this);
+			if ((channel == null) || !channel.isConnected())
+			{
+				LocalQueueConsumers.remove(this);
+			}
 			return failed;
 		}
 
@@ -216,8 +219,8 @@ public class SynchronousMessageListener implements MessageListener
 
 	public static void removeSession(ChannelHandlerContext ctx)
 	{
-		//Set<String> attributeKeys = channel.getAttributeKeys();
-		//Channel channel = ctx.getChannel();
+		// Set<String> attributeKeys = channel.getAttributeKeys();
+		// Channel channel = ctx.getChannel();
 		Set<String> attributeKeys = ChannelAttributes.getAttributeKeys(ctx);
 		for (String attributeKey : attributeKeys)
 		{
