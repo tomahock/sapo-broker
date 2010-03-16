@@ -214,6 +214,7 @@ public class TestManager implements BrokerListener
 			}
 
 			String randName = RandomStringUtils.randomAlphanumeric(15);
+			
 			DistTestParams distTestParams = new DistTestParams(testName, String.format("/perf/%s/%s", destinationType.toString().toLowerCase(), randName), destinationType, messageSize, nrMessages, isSyncConsumer, isNoAckConsumer, encoding);
 
 			/*
@@ -381,20 +382,20 @@ public class TestManager implements BrokerListener
 
 	private void showTestResult(String testname, DistTestParams testParams, List<TestResult> testResults)
 	{
-		final double nano2second = (1000 * 1000 * 1000);
+		final double milli2second = (1000);
 
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("\n--------------------------------------------------\n");
 		sb.append("TEST: " + testname);
-		sb.append(String.format("\nConsumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
+		sb.append(String.format("\nConsumers: %s, Producers: %s, Destination Type: %s, Sync Consumer: %s, No-Ack Consumer: %s\nMessage size: %s, Number of messages: %s\n\n", testParams.getConsumers().size(), testParams.getProducers().size(), testParams.getDestinationType(), testParams.isSyncConsumer(), testParams.isNoAckConsumer(), testParams.getMessageSize(), testParams.getNumberOfMessagesToSend()));
 
-		long consumerEarliestStart = Long.MAX_VALUE;
-		long consumerLatestStop = 0;
+		double consumerEarliestStart = Long.MAX_VALUE;
+		double consumerLatestStop = 0;
 		int consumerMessages = 0;
 
-		long producerEarliestStart = Long.MAX_VALUE;
-		long producerLatestStop = 0;
+		double producerEarliestStart = Long.MAX_VALUE;
+		double producerLatestStop = 0;
 		int producerMessages = 0;
 
 		for (TestResult tRes : testResults)
@@ -426,22 +427,22 @@ public class TestManager implements BrokerListener
 				producerMessages += tRes.getMessages();
 			}
 
+			
 			double actorTestTime = tRes.getStopTime() - tRes.getStartTime();
-
-			double timePerMsg = ((actorTestTime) / tRes.getMessages()) / nano2second;
+			
+			double timePerMsg = ((actorTestTime) / tRes.getMessages()) / milli2second;
 			double messagesPerSecond = 1 / timePerMsg;
-			sb.append(String.format("%s: %s, Messages: %s, Time: %.2f, Messages/second: %.2f\n", tRes.getActorType(), tRes.getActorName(), tRes.getMessages(), actorTestTime / nano2second, messagesPerSecond));
 
+			sb.append(String.format("%s: %s, Messages: %s, Time: %.2f, Messages/second: %.2f\n", tRes.getActorType(), tRes.getActorName(), tRes.getMessages(), actorTestTime / milli2second, messagesPerSecond));
 		}
 
-		double timePerMsg = ((consumerLatestStop - consumerEarliestStart) / consumerMessages) / nano2second;
+		double timePerMsg = ((consumerLatestStop - consumerEarliestStart) / consumerMessages) / milli2second;
 		double messagesPerSecond = 1 / timePerMsg;
-
+		
 		sb.append(String.format("\nTOTAL CONSUMER: Messages/second: %.3f", messagesPerSecond));
-		
-		timePerMsg = ((producerLatestStop - producerEarliestStart) / producerMessages) / nano2second;
+
+		timePerMsg = ((producerLatestStop - producerEarliestStart) / producerMessages) / milli2second;
 		messagesPerSecond = 1 / timePerMsg;
-		
 
 		sb.append(String.format("\nTOTAL PRODUCER: Messages/second: %.3f", messagesPerSecond));
 

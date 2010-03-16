@@ -67,7 +67,6 @@ public class DistConsumerApp implements BrokerListener
 		{
 			//BrokerClient bk = new BrokerClient(host, port);
 			
-			
 			System.out.println("########## Consumer using: " + testParams.getEncoding());
 			
 			BrokerClient bk = new BrokerClient(testParams.getClientInfo().getAgentHost(), testParams.getClientInfo().getPort(), "ConsumerActor", testParams.getEncoding());
@@ -95,7 +94,7 @@ public class DistConsumerApp implements BrokerListener
 					@Override
 					public void onMessage(NetNotification notification)
 					{
-						startTime.compareAndSet(0, System.nanoTime());
+						startTime.compareAndSet(0, System.currentTimeMillis());
 						
 						if (notification.getMessage().getPayload()[0] == ProducerApp.REGULAR_MESSAGE)
 						{
@@ -103,7 +102,7 @@ public class DistConsumerApp implements BrokerListener
 						}
 						else
 						{
-							stopTime.compareAndSet(0, System.nanoTime());
+							stopTime.compareAndSet(0, System.currentTimeMillis());
 							countDown.countDown();
 						}
 					}
@@ -127,7 +126,7 @@ public class DistConsumerApp implements BrokerListener
 
 				System.out.println(actorName + " Sync consumer");
 
-				startTime.set(System.nanoTime());
+				startTime.set(System.currentTimeMillis());
 				
 				do
 				{
@@ -138,7 +137,7 @@ public class DistConsumerApp implements BrokerListener
 					}
 					else
 					{
-						stopTime.compareAndSet(0, System.nanoTime());
+						stopTime.compareAndSet(0, System.currentTimeMillis());
 						stop = true;
 					}
 					bk.acknowledge(notification);

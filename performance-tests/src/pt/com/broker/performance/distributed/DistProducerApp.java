@@ -78,7 +78,7 @@ public class DistProducerApp implements BrokerListener
 		NetBrokerMessage brokerMessage = new NetBrokerMessage(regularMessage);
 		NetBrokerMessage stopBrokerMessage = new NetBrokerMessage(stopMessage);
 
-		long startTime = System.nanoTime();
+		long startTime = System.currentTimeMillis();
 		
 		for (int i = 0; i != nrOfMessages; ++i)
 		{
@@ -93,7 +93,7 @@ public class DistProducerApp implements BrokerListener
 			}
 		}
 
-		long stopTime = System.nanoTime();
+		long stopTime = System.currentTimeMillis();
 		
 		System.out.println(actorName + " sending stop messages");
 		for (int i = 0; i != 150; ++i)
