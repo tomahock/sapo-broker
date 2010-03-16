@@ -218,6 +218,7 @@ public class RemoteQueueConsumers
 							{
 								log.info("Suspending remote message deliverty from queue '{}' to session '{}'.", dname, channelInfo.channel.toString());
 							}
+							channelInfo.wasDeliverySuspeded = true;
 						}
 					}
 				});
