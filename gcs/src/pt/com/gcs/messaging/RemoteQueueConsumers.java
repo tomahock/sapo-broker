@@ -216,7 +216,7 @@ public class RemoteQueueConsumers
 							channelInfo.deliveryTime.set(delayTime);
 							if (!channelInfo.wasDeliverySuspeded)
 							{
-								log.info("Suspending remote message deliverty from queue '{}' to session '{}'.", dname, channelInfo.channel.toString());
+								log.info(String.format("Suspending remote message delivery for queue '%s' to session '%s'.", dname, channelInfo.channel.getRemoteAddress().toString()) );
 							}
 							channelInfo.wasDeliverySuspeded = true;
 						}

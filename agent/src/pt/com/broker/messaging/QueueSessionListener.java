@@ -170,7 +170,8 @@ public class QueueSessionListener extends BrokerListener
 							channelInfo.deliveryTime.set(delayTime);
 							if (!channelInfo.wasDeliverySuspeded)
 							{
-								log.info("Suspending message delivery for queue '{}' to session '{}'.", _dname, channelInfo.channel.getRemoteAddress().toString());
+								
+								log.info(String.format("Suspending message delivery for queue '%s' to session '%s'.", _dname, channelInfo.channel.getRemoteAddress().toString()) );
 							}
 							channelInfo.wasDeliverySuspeded = true;
 						}
