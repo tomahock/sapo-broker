@@ -75,7 +75,7 @@ public class RemoteTopicConsumers
 
 		public boolean isReady()
 		{
-			return isReady(System.currentTimeMillis());
+			return isReady(System.nanoTime());
 		}
 
 		public boolean isReady(long currentTime)
@@ -234,7 +234,7 @@ public class RemoteTopicConsumers
 						if (channelInfo.isReady())
 						{
 							ChannelFuture future = channel.write(message);
-							channelInfo.deliveryTime.set(System.currentTimeMillis() + 1);
+							channelInfo.deliveryTime.set(System.nanoTime() + (10 * 1000));
 							final long writeStartTime = System.nanoTime();
 
 							future.addListener(new ChannelFutureListener()
@@ -242,12 +242,12 @@ public class RemoteTopicConsumers
 								@Override
 								public void operationComplete(ChannelFuture future) throws Exception
 								{
-									final long writeCompleteTime = ((System.nanoTime() - writeStartTime) / (1000 * 1000));
+									final long writeCompleteTime = ((System.nanoTime() - writeStartTime));
 
 									long delayTime = 0;
 									if (writeCompleteTime >= MAX_WRITE_TIME)
 									{
-										delayTime = System.currentTimeMillis() + (writeCompleteTime / 2);
+										delayTime = System.nanoTime() + (writeCompleteTime / 2);
 										channelInfo.deliveryTime.set(delayTime);
 									}
 								}

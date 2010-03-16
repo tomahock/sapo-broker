@@ -28,7 +28,7 @@ import pt.com.gcs.messaging.ForwardResult.Result;
 public class TopicSubscriber extends BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(TopicSubscriber.class);
-	private static final long MAX_WRITE_TIME = 50;
+	private static final long MAX_WRITE_TIME = 50 * 1000 * 1000;
 
 	public static class ChannelInfo
 	{
@@ -74,7 +74,7 @@ public class TopicSubscriber extends BrokerListener
 
 		public boolean isReady()
 		{
-			return isReady(System.currentTimeMillis());
+			return isReady(System.nanoTime());
 		}
 
 		public boolean isReady(long currentTime)
@@ -144,7 +144,7 @@ public class TopicSubscriber extends BrokerListener
 							if (channelInfo.isReady())
 							{
 								ChannelFuture future = channel.write(response);
-								channelInfo.deliveryTime.set(System.currentTimeMillis() + 1);
+								channelInfo.deliveryTime.set(System.nanoTime() + (10 * 1000));
 								final long writeStartTime = System.nanoTime();
 
 								future.addListener(new ChannelFutureListener()
@@ -152,12 +152,12 @@ public class TopicSubscriber extends BrokerListener
 									@Override
 									public void operationComplete(ChannelFuture future) throws Exception
 									{
-										final long writeCompleteTime = ((System.nanoTime() - writeStartTime) / (1000 * 1000));
+										final long writeCompleteTime = ((System.nanoTime() - writeStartTime));
 
 										long delayTime = 0;
 										if (writeCompleteTime >= MAX_WRITE_TIME)
 										{
-											delayTime = System.currentTimeMillis() + (writeCompleteTime / 2);
+											delayTime = System.nanoTime() + (writeCompleteTime / 2);
 											channelInfo.deliveryTime.set(delayTime);
 										}
 									}
