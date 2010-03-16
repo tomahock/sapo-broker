@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
+import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ public class QueueSyncConsumer
 	private String host;
 	private int port;
 	private String dname;
+	private long waitTime;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -33,6 +35,7 @@ public class QueueSyncConsumer
 		qsconsumer.host = cargs.getHost();
 		qsconsumer.port = cargs.getPort();
 		qsconsumer.dname = cargs.getDestination();
+		qsconsumer.waitTime = cargs.getDelay();
 
 		BrokerClient bk = new BrokerClient(qsconsumer.host, qsconsumer.port, "tcp://mycompany.com/mysniffer");
 
@@ -46,12 +49,17 @@ public class QueueSyncConsumer
 		while (true)
 		{
 			NetNotification notification = bk.poll(dname);
-			
+
 			System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
 			System.out.printf("Destination: '%s'%n", notification.getDestination());
 			System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 			System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
-			
+
+			if (waitTime > 0)
+			{
+				Sleep.time(waitTime);
+			}
+
 			bk.acknowledge(notification);
 		}
 	}
