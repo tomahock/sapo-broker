@@ -430,7 +430,8 @@ public class BDBStorage
 
 							if (result.result == Result.FAILED)
 							{
-								//log.info("Could not deliver message. Queue: '{}',  Id: '{}'.", msg.getDestination(), msg.getMessageId());
+								// log.info("Could not deliver message. Queue: '{}',  Id: '{}'.",
+								// msg.getDestination(), msg.getMessageId());
 								dumpMessage(msg);
 
 								++j0;
@@ -470,18 +471,16 @@ public class BDBStorage
 
 			if (log.isDebugEnabled())
 			{
-				log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivered: %s; Expired: %s; Delivered messages that don't require ack: %s", queueProcessor.getDestinationName(), i0, j0, e0, a0));
+				log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivery: %s; Expired: %s; Pre ack'ed: %s; Redelivered: %s", queueProcessor.getDestinationName(), i0, j0, e0, a0, k0));
+			}
+			else
+			{
+				if ((j0 + e0 + k0) > 0)
+				{
+					log.warn(String.format("Queue '%s' processing summary; Failed delivery: %s; Expired: %s; Redelivered: %s", queueProcessor.getDestinationName(), j0, e0, k0));
+				}
 			}
 
-			if (e0 > 0)
-			{
-				log.warn("Number of expired messages for queue '{}': {}", queueProcessor.getDestinationName(), e0);
-			}
-
-			if (k0 > 0)
-			{
-				log.info("Number of redelivered messages for queue '{}': {}", queueProcessor.getDestinationName(), k0);
-			}
 		}
 		catch (Throwable t)
 		{
