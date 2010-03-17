@@ -16,7 +16,7 @@ public class QueueProcessor
 {
 
 	private static final ForwardResult failed = new ForwardResult(ForwardResult.Result.FAILED, -1);
-	
+
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);
 
 	private final String _destinationName;

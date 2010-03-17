@@ -95,9 +95,11 @@ public class QueueProcessorList
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(ie);
 		}
-		catch (RuntimeException re)
+		catch (Throwable t)
 		{
-			Throwable rootCause = ErrorAnalyser.findRootCause(re);
+			log.error(String.format("Failed to get QueueProcessor for queue '%s'. Message: %s", destinationName, t.getMessage()) , t);
+			
+			Throwable rootCause = ErrorAnalyser.findRootCause(t);
 			CriticalErrors.exitIfCritical(rootCause);
 			if (rootCause instanceof MaximumQueuesAllowedReachedException)
 			{

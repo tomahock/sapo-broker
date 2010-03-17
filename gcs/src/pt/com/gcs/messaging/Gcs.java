@@ -232,7 +232,9 @@ public class Gcs
 	{
 		try
 		{
-			QueueProcessorList.get(queueName).ack(msgId);
+			QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
+			if(queueProcessor != null )
+				queueProcessor.ack(msgId);
 		}
 		catch (MaximumQueuesAllowedReachedException e)
 		{
@@ -287,6 +289,20 @@ public class Gcs
 		{
 			log.debug("Add VirtualQueue '{}' from storage", vqueue);
 			iaddQueueConsumer(vqueue, null);
+		}
+		
+		String[] queues = BDBEnviroment.getQueueNames();
+
+		for (String queueName : queues)
+		{
+			try
+			{
+				QueueProcessorList.get(queueName);
+			}
+			catch (MaximumQueuesAllowedReachedException e)
+			{
+				// This never happens
+			}
 		}
 
 		connectToAllPeers();
