@@ -223,7 +223,10 @@ public class LocalQueueConsumers
 		if (!queuesWithInactiveConsumers.contains(queueName))
 		{
 			queuesWithInactiveConsumers.add(queueName);
-			broadCastRemovedQueueConsumer(queueName);
+			if( (listeners != null) &&  listeners.size() != 0)
+			{
+				broadCastRemovedQueueConsumer(queueName);
+			}
 		}
 		return false;
 	}
