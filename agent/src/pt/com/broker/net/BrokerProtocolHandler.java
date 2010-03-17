@@ -132,6 +132,8 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			TopicSubscriberList.removeSession(channel);
 			SynchronousMessageListener.removeSession(ctx);
 
+			ChannelAttributes.remove(ctx);
+			
 			log.info("channel closed: " + remoteClient);
 		}
 		catch (Throwable t)

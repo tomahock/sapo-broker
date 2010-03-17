@@ -194,6 +194,8 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		log.info("Session Closed: '{}'", ctx.getChannel().getRemoteAddress());
 		RemoteTopicConsumers.remove(ctx.getChannel());
 		RemoteQueueConsumers.remove(ctx.getChannel());
+		
+		ChannelAttributes.remove(ctx);
 	}
 
 	private boolean validPeerAddress(ChannelHandlerContext ctx)
