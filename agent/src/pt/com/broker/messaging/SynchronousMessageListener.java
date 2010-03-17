@@ -272,6 +272,9 @@ public class SynchronousMessageListener implements MessageListener
 	@Override
 	public boolean isActive()
 	{
+		if(ready())
+			return true;
+		
 		return (lastDeliveredMessage.get() + ACTIVE_INTERVAL) >= System.currentTimeMillis();
 	}
 }
