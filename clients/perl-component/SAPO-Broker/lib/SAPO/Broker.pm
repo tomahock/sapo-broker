@@ -132,7 +132,7 @@ sub subscribe {
     return undef      unless $self->_connected;
 
     # TODO: i hate this :/
-    my @msg_types = ('TOPIC', 'TOPIC_AS_QUEUE');
+    my @msg_types = ('TOPIC', 'TOPIC_AS_QUEUE', 'QUEUE');
     my %msg_types  = map {$_ => 1} @msg_types;
 
     # default msg type
