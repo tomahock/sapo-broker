@@ -62,7 +62,7 @@ public abstract class BaseBrokerClient
 
 	private NetProtocolType protocolType;
 	private boolean oldFramming;
-	
+
 	protected BrokerClientState state = BrokerClientState.UNSTARTED;
 
 	protected BrokerProtocolHandler _netHandler;
@@ -153,7 +153,7 @@ public abstract class BaseBrokerClient
 		this.hosts.add(new HostInfo(host, portNumber));
 		_appName = appName;
 		protocolType = ptype;
-		oldFramming = (protocolType == NetProtocolType.SOAP_v0); 
+		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public abstract class BaseBrokerClient
 		this.hosts = new CircularContainer<HostInfo>(hosts);
 		_appName = appName;
 		protocolType = ptype;
-		oldFramming = (protocolType == NetProtocolType.SOAP_v0); 
+		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
 	}
 
 	protected abstract BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable;
@@ -341,10 +341,10 @@ public abstract class BaseBrokerClient
 
 		}
 	}
-	
+
 	private NetMessage buildMessage(NetAction action)
 	{
-		return buildMessage(action, null); 
+		return buildMessage(action, null);
 	}
 
 	private NetMessage buildMessage(NetAction action, Map<String, String> headers)
@@ -475,10 +475,29 @@ public abstract class BaseBrokerClient
 
 	protected void notifyListener(NetNotification notification)
 	{
+		Map<String, String> headers = notification.getHeaders();
+		boolean ackRequired = true;
+		if (headers != null)
+		{
+			String value = headers.get("ACK_REQUIRED");
+			if (value != null)
+			{
+				if (value.equalsIgnoreCase("false"))
+				{
+					ackRequired = false; // ACK is not required
+				}
+			}
+		}
+		
 		for (BrokerAsyncConsumer aconsumer : _consumerList)
 		{
 			boolean isDelivered = aconsumer.deliver(notification);
 			BrokerListener listener = aconsumer.getListener();
+
+			if(!ackRequired)
+			{
+				continue;
+			}
 
 			if ((notification.getDestinationType() != DestinationType.TOPIC) && listener.isAutoAck() && isDelivered)
 			{
@@ -619,7 +638,7 @@ public abstract class BaseBrokerClient
 			NetAction action = new NetAction(ActionType.PUBLISH);
 			action.setPublishMessage(publish);
 
-			NetMessage msg = buildMessage(action, brokerMessage.getHeaders());			
+			NetMessage msg = buildMessage(action, brokerMessage.getHeaders());
 
 			try
 			{
@@ -818,6 +837,7 @@ public abstract class BaseBrokerClient
 
 	/**
 	 * When using SOAP encoding it can be used old or the new framing.
+	 * 
 	 * @return
 	 */
 	public boolean isOldFramming()
