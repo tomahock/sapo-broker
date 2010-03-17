@@ -26,7 +26,6 @@ import pt.com.broker.codec.xml.SoapSerializer;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 
@@ -79,18 +78,6 @@ public class BrokerHttpAction extends HttpAction
 		Channel channel = ctx.getChannel();
 		try
 		{
-
-			Session sessionProps = null;
-			Object obj = ChannelAttributes.get(ctx, "BROKER_SESSION_PROPERTIES");
-			if (obj != null)
-			{
-				sessionProps = (Session) obj;
-			}
-			else
-			{
-				sessionProps = new Session(channel);
-			}
-
 			if (request.getMethod().equals(HttpMethod.POST))
 			{
 				ChannelBuffer bb = request.getContent();
@@ -99,7 +86,7 @@ public class BrokerHttpAction extends HttpAction
 
 				NetMessage message = (NetMessage) bindingSerializer.unmarshal(buf);
 
-				ValidationResult validationResult = AccessControl.validate(message, sessionProps);
+				ValidationResult validationResult = AccessControl.validate(message, new Session(channel));
 
 				if (!validationResult.accessGranted)
 				{
