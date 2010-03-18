@@ -225,10 +225,6 @@ public class QueueProcessor
 					isWorking.set(false);
 				}
 			}
-			else
-			{
-				log.debug("Queue '{}' does not have asynchronous consumers", _destinationName);
-			}
 		}
 		isWorking.set(false);
 	}
