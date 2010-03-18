@@ -162,10 +162,9 @@ public class RemoteQueueConsumers
 	{
 	}
 
-
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
-	
+
 	protected ForwardResult doNotify(final InternalMessage message)
 	{
 		final String dname = message.getDestination();
@@ -216,7 +215,7 @@ public class RemoteQueueConsumers
 							channelInfo.deliveryTime.set(delayTime);
 							if (!channelInfo.wasDeliverySuspeded)
 							{
-								log.info(String.format("Suspending remote message delivery for queue '%s' to session '%s'.", dname, channelInfo.channel.getRemoteAddress().toString()) );
+								log.info(String.format("Suspending remote message delivery for queue '%s' to session '%s'.", dname, channelInfo.channel.getRemoteAddress().toString()));
 							}
 							channelInfo.wasDeliverySuspeded = true;
 						}
@@ -244,52 +243,31 @@ public class RemoteQueueConsumers
 
 	private ChannelInfo pick(CopyOnWriteArrayList<ChannelInfo> channels)
 	{
+		long currentTime = System.currentTimeMillis();
 		synchronized (rr_mutex)
 		{
 			int n = channels.size();
 			if (n == 0)
 				return null;
 
-			if (currentQEP == (n - 1))
-			{
-				currentQEP = 0;
-			}
-			else
-			{
-				++currentQEP;
-			}
+			currentQEP = (currentQEP > 0) ? 0 : currentQEP + 1;
 
 			try
 			{
 				for (int i = 0; i != n; ++i)
 				{
-					ChannelInfo sessionInfo = channels.get(currentQEP);
-					if (sessionInfo.isReady())
+					int idx = (currentQEP + i) % n;
+					ChannelInfo sessionInfo = channels.get(idx);
+					if (sessionInfo.isReady(currentTime))
 					{
+						currentQEP = (currentQEP + i) % n;
 						return sessionInfo;
 					}
 				}
 			}
 			catch (Throwable t)
 			{
-				try
-				{
-					currentQEP = 0;
-					do
-					{
-						ChannelInfo sessionInfo = channels.get(currentQEP);
-						if (sessionInfo.isReady())
-						{
-							return sessionInfo;
-						}
-					}
-					while ((++currentQEP) != (n - 1));
-				}
-				catch (Throwable t2)
-				{
-					return null;
-				}
-
+				currentQEP = 0;
 			}
 		}
 		return null;

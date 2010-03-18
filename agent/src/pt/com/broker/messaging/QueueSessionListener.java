@@ -151,7 +151,7 @@ public class QueueSessionListener extends BrokerListener
 			{
 				ChannelFuture writeFuture = channel.write(response);
 				final long writeStartTime = System.nanoTime();
-				
+
 				channelInfo.deliveryTime.set(System.currentTimeMillis() + 1);
 
 				writeFuture.addListener(new ChannelFutureListener()
@@ -166,12 +166,11 @@ public class QueueSessionListener extends BrokerListener
 						{
 							delayTime = System.currentTimeMillis() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.
 
-
 							channelInfo.deliveryTime.set(delayTime);
 							if (!channelInfo.wasDeliverySuspeded)
 							{
-								
-								log.info(String.format("Suspending message delivery for queue '%s' to session '%s'.", _dname, channelInfo.channel.getRemoteAddress().toString()) );
+
+								log.info(String.format("Suspending message delivery for queue '%s' to session '%s'.", _dname, channelInfo.channel.getRemoteAddress().toString()));
 							}
 							channelInfo.wasDeliverySuspeded = true;
 						}
@@ -213,14 +212,8 @@ public class QueueSessionListener extends BrokerListener
 			if (n == 0)
 				return null;
 
-			if (currentQEP == (n - 1))
-			{
-				currentQEP = 0;
-			}
-			else
-			{
-				++currentQEP;
-			}
+			currentQEP = (currentQEP > 0) ? 0 : currentQEP + 1;
+
 			try
 			{
 				for (int i = 0; i != n; ++i)
@@ -229,6 +222,7 @@ public class QueueSessionListener extends BrokerListener
 					ChannelInfo channelInfo = getSessions().get(idx);
 					if (channelInfo.isReady(currentTime))
 					{
+						currentQEP = (currentQEP + i) % n;
 						return channelInfo;
 					}
 				}
@@ -236,7 +230,6 @@ public class QueueSessionListener extends BrokerListener
 			catch (Exception e)
 			{
 				currentQEP = 0;
-				return null;
 			}
 		}
 		return null;

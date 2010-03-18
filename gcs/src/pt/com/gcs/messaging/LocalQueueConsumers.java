@@ -374,15 +374,8 @@ public class LocalQueueConsumers
 			if (n == 0)
 				return null;
 
-			if (currentQEP == (n - 1))
-			{
-				currentQEP = 0;
-			}
-			else
-			{
-				++currentQEP;
-			}
-
+			currentQEP = (currentQEP > 0) ? 0 : currentQEP + 1;
+			
 			try
 			{
 				for (int i = 0; i != n; ++i)
@@ -394,22 +387,7 @@ public class LocalQueueConsumers
 			}
 			catch (Throwable t)
 			{
-				try
-				{
-					currentQEP = 0;
-					do
-					{
-						MessageListener messageListener = listeners.get(currentQEP);
-						if (messageListener.ready())
-							return messageListener;
-					}
-					while ((++currentQEP) != (n - 1));
-				}
-				catch (Throwable t2)
-				{
-					return null;
-				}
-
+				currentQEP = 0;
 			}
 		}
 		return null;
