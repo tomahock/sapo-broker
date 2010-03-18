@@ -101,8 +101,7 @@ public class LocalQueueConsumers
 
 				if (listeners.size() == 0)
 				{
-					instance.localQueueConsumers.remove(queueName);
-					queuesWithInactiveConsumers.remove(queueName);
+					delete(queueName);
 					broadCastRemovedQueueConsumer(queueName);
 				}
 			}
@@ -223,7 +222,7 @@ public class LocalQueueConsumers
 		if (!queuesWithInactiveConsumers.contains(queueName))
 		{
 			queuesWithInactiveConsumers.add(queueName);
-			if( (listeners != null) &&  listeners.size() != 0)
+			if ((listeners != null) && listeners.size() != 0)
 			{
 				broadCastRemovedQueueConsumer(queueName);
 			}
@@ -264,6 +263,11 @@ public class LocalQueueConsumers
 						// there are no active consumers - broadcast queue delete
 						if (!hasActive)
 						{
+							if (log.isDebugEnabled())
+							{
+								log.debug(String.format("Queue '%s' has no active consumers.", queueName));
+							}
+
 							queuesWithInactiveConsumers.add(queueName);
 							broadCastRemovedQueueConsumer(queueName);
 						}
@@ -279,6 +283,9 @@ public class LocalQueueConsumers
 			{
 				synchronized (LocalQueueConsumers.class)
 				{
+					if(queuesWithInactiveConsumers.size() == 0)
+						return;
+					
 					ArrayList<String> queuesWithActiveConsumers = new ArrayList<String>();
 					for (String queueName : queuesWithInactiveConsumers)
 					{
@@ -293,6 +300,11 @@ public class LocalQueueConsumers
 					}
 					for (String queueName : queuesWithActiveConsumers)
 					{
+						if (log.isDebugEnabled())
+						{
+							log.debug(String.format("Queue '%s' has inactive but now has active consumers.", queueName));
+						}
+
 						queuesWithInactiveConsumers.remove(queueName);
 						broadCastNewQueueConsumer(queueName);
 					}
@@ -300,8 +312,8 @@ public class LocalQueueConsumers
 			}
 		};
 
-		GcsExecutor.scheduleAtFixedRate(inactivityChecker, 5 * 60, 10, TimeUnit.SECONDS);
-		GcsExecutor.scheduleAtFixedRate(endOfInactivityChecker, (6 * 60) + 5, 10, TimeUnit.SECONDS);
+		GcsExecutor.scheduleWithFixedDelay(inactivityChecker, 5 * 60, 10, TimeUnit.SECONDS);
+		GcsExecutor.scheduleWithFixedDelay(endOfInactivityChecker, (6 * 60) + 5, 10, TimeUnit.SECONDS);
 	}
 
 	private static void broadCastActionQueueConsumer(String destinationName, String action)
@@ -341,7 +353,7 @@ public class LocalQueueConsumers
 	}
 
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
-	
+
 	protected ForwardResult doNotify(InternalMessage message)
 	{
 		CopyOnWriteArrayList<MessageListener> listeners = localQueueConsumers.get(message.getDestination());
@@ -375,7 +387,7 @@ public class LocalQueueConsumers
 				return null;
 
 			currentQEP = (currentQEP > 0) ? 0 : currentQEP + 1;
-			
+
 			try
 			{
 				for (int i = 0; i != n; ++i)

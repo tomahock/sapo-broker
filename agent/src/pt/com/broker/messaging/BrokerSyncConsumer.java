@@ -104,6 +104,12 @@ public class BrokerSyncConsumer
 					previous.incrementAndGet();
 				}
 			}
+			
+			if(log.isDebugEnabled())
+			{
+				log.debug(String.format("Poll request for queue '%s' by client '%s'.", destination, channel.getRemoteAddress()));
+			}
+			
 			msgListener.activate(poll.getTimeout(), poll.getActionId());
 		}
 		catch (Throwable t)

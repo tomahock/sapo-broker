@@ -108,7 +108,12 @@ public class SynchronousMessageListener implements MessageListener
 	@Override
 	public boolean ready()
 	{
-		return ready.get();
+		boolean isReady = ready.get();
+		if(log.isDebugEnabled())
+		{
+			log.debug(String.format("Sync consumer '%s' for queue '%s' is %s READY.", channel.getRemoteAddress(), queueName, isReady?"": "NOT"));
+		}
+		return isReady;
 	}
 
 	public void activate(long timeout, String actionId)
@@ -272,9 +277,20 @@ public class SynchronousMessageListener implements MessageListener
 	@Override
 	public boolean isActive()
 	{
-		if(ready())
+		boolean isReady = ready();
+		if(isReady)
 			return true;
 		
-		return (lastDeliveredMessage.get() + ACTIVE_INTERVAL) >= System.currentTimeMillis();
+		boolean isActive = (lastDeliveredMessage.get() + ACTIVE_INTERVAL) >= System.currentTimeMillis();
+		
+		if(log.isDebugEnabled())
+		{
+			if(log.isDebugEnabled())
+			{
+				log.debug(String.format("Sync consumer '%s' for queue '%s' is %s ACTIVE.", channel.getRemoteAddress(), queueName, isActive ? "" : "NOT"));
+			}
+		}
+		
+		return isActive;
 	}
 }

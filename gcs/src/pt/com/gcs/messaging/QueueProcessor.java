@@ -151,9 +151,18 @@ public class QueueProcessor
 		{
 			return true;
 		}
+		if(log.isDebugEnabled())
+		{
+			log.debug(String.format("Queue '%s' is has NO READY consumers.", this._destinationName));
+		}
+		
 		if (LocalQueueConsumers.hasActiveRecipients(_destinationName))
 		{
 			// it has sync consumers that are active but not ready. So, ignore remote consumers
+			if(log.isDebugEnabled())
+			{
+				log.debug(String.format("Queue '%s' is has ACTIVE consumers.", this._destinationName));
+			}
 			return false;
 		}
 
