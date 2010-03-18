@@ -196,25 +196,7 @@ public class Gcs
 
 	private Gcs()
 	{
-		log.info("{} starting.", SERVICE_NAME);
-		try
-		{
-			startAcceptor(GcsInfo.getAgentPort());
-			startConnector();
 
-			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), RECOVER_INTERVAL, RECOVER_INTERVAL, TimeUnit.MILLISECONDS);
-			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
-			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
-			
-			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
-		}
-		catch (Throwable t)
-		{
-			Throwable rootCause = ErrorAnalyser.findRootCause(t);
-			log.error(rootCause.getMessage(), rootCause);
-			Shutdown.now();
-		}
-		Sleep.time(GcsInfo.getInitialDelay());
 
 	}
 
@@ -304,10 +286,29 @@ public class Gcs
 				// This never happens
 			}
 		}
+		
+		log.info("{} starting.", SERVICE_NAME);
+		try
+		{
+			startAcceptor(GcsInfo.getAgentPort());
+			startConnector();
+
+			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), RECOVER_INTERVAL, RECOVER_INTERVAL, TimeUnit.MILLISECONDS);
+			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
+			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
+			
+			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
+		}
+		catch (Throwable t)
+		{
+			Throwable rootCause = ErrorAnalyser.findRootCause(t);
+			log.error(rootCause.getMessage(), rootCause);
+			Shutdown.now();
+		}
+		
+		Sleep.time(GcsInfo.getInitialDelay());
 
 		connectToAllPeers();
-
-		Shutdown.isShutingDown();
 
 		log.info("{} initialized.", SERVICE_NAME);
 	}
