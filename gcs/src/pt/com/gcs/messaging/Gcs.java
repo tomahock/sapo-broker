@@ -15,6 +15,7 @@ import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.CustomExecutors;
 import org.caudexorigo.concurrent.Sleep;
+import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -58,9 +59,9 @@ public class Gcs
 	public static final int RECONNECT_INTERVAL = 5000;
 
 	private Set<Channel> agentsConnection = new HashSet<Channel>();
-	
+
 	private ClientBootstrap connector;
-	
+
 	public static void ackMessage(String queueName, final String msgId)
 	{
 		instance.iackMessage(queueName, msgId);
@@ -118,9 +119,9 @@ public class Gcs
 	{
 		log.info("Reloading the world map");
 		Set<Channel> connectedSessions = getManagedConnectorSessions();
-		
+
 		ArrayList<Channel> sessionsToClose = new ArrayList<Channel>(connectedSessions.size());
-		
+
 		for (Channel channel : connectedSessions)
 		{
 			InetSocketAddress inet = (InetSocketAddress) channel.getRemoteAddress();
@@ -132,11 +133,11 @@ public class Gcs
 				sessionsToClose.add(channel);
 			}
 		}
-		for(Channel channel : sessionsToClose)
+		for (Channel channel : sessionsToClose)
 		{
 			channel.close();
 		}
-		
+
 		List<InetSocketAddress> remoteSessions = new ArrayList<InetSocketAddress>(connectedSessions.size());
 		for (Channel channel : connectedSessions)
 		{
@@ -152,7 +153,7 @@ public class Gcs
 			{
 				connect(addr);
 			}
-		}		
+		}
 	}
 
 	protected static Set<Channel> getManagedConnectorSessions()
@@ -190,13 +191,10 @@ public class Gcs
 		{
 			LocalQueueConsumers.remove(listener);
 		}
-
 	}
-
 
 	private Gcs()
 	{
-
 
 	}
 
@@ -214,8 +212,13 @@ public class Gcs
 	{
 		try
 		{
+			if (StringUtils.isNotBlank(queueName))
+			{
+				log.warn("Can't ack a message with no name.");
+				return;
+			}
 			QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
-			if(queueProcessor != null )
+			if (queueProcessor != null)
 				queueProcessor.ack(msgId);
 		}
 		catch (MaximumQueuesAllowedReachedException e)
@@ -253,7 +256,13 @@ public class Gcs
 	{
 		try
 		{
-			QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message, true);
+			QueueProcessor queueProcessor = QueueProcessorList.get((queueName != null) ? queueName : message.getDestination());
+			if( queueProcessor == null)
+			{
+				log.error("Failed to get a QueueProcessor.");
+				return false;
+			}
+			queueProcessor.store(message, true);
 			return true;
 		}
 		catch (MaximumQueuesAllowedReachedException e)
@@ -272,7 +281,7 @@ public class Gcs
 			log.debug("Add VirtualQueue '{}' from storage", vqueue);
 			iaddQueueConsumer(vqueue, null);
 		}
-		
+
 		String[] queues = BDBEnviroment.getQueueNames();
 
 		for (String queueName : queues)
@@ -286,7 +295,7 @@ public class Gcs
 				// This never happens
 			}
 		}
-		
+
 		log.info("{} starting.", SERVICE_NAME);
 		try
 		{
@@ -296,7 +305,7 @@ public class Gcs
 			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), RECOVER_INTERVAL, RECOVER_INTERVAL, TimeUnit.MILLISECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
-			
+
 			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
 		}
 		catch (Throwable t)
@@ -305,7 +314,7 @@ public class Gcs
 			log.error(rootCause.getMessage(), rootCause);
 			Shutdown.now();
 		}
-		
+
 		Sleep.time(GcsInfo.getInitialDelay());
 
 		connectToAllPeers();
@@ -347,7 +356,7 @@ public class Gcs
 		bootstrap.setOption("child.sendBufferSize", 128 * 1024);
 		bootstrap.setOption("reuseAddress", true);
 		bootstrap.setOption("backlog", 1024);
-		
+
 		ChannelPipelineFactory serverPipelineFactory = new ChannelPipelineFactory()
 		{
 			@Override
@@ -366,21 +375,20 @@ public class Gcs
 		};
 
 		bootstrap.setPipelineFactory(serverPipelineFactory);
-		
+
 		InetSocketAddress inet = new InetSocketAddress("0.0.0.0", portNumber);
 		bootstrap.bind(inet);
 		log.info("SAPO-BROKER Listening on: '{}'.", inet.toString());
 		log.info("{} listening on: '{}'.", SERVICE_NAME, inet.toString());
 	}
-	
-    private void startConnector()
-	{
-    	ThreadPoolExecutor tpe_io = CustomExecutors.newThreadPool(IO_THREADS, "gcs-io");
-		ThreadPoolExecutor tpe_workers = CustomExecutors.newThreadPool(IO_THREADS * 5, "gcs-worker");
-    	
-		ClientBootstrap bootstrap = new ClientBootstrap( new NioClientSocketChannelFactory( tpe_io, tpe_workers) );
 
-		
+	private void startConnector()
+	{
+		ThreadPoolExecutor tpe_io = CustomExecutors.newThreadPool(IO_THREADS, "gcs-io");
+		ThreadPoolExecutor tpe_workers = CustomExecutors.newThreadPool(IO_THREADS * 5, "gcs-worker");
+
+		ClientBootstrap bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(tpe_io, tpe_workers));
+
 		ChannelPipelineFactory connectorPipelineFactory = new ChannelPipelineFactory()
 		{
 			@Override
@@ -397,17 +405,16 @@ public class Gcs
 				return pipeline;
 			}
 		};
-		
-        bootstrap.setPipelineFactory(connectorPipelineFactory);
-        
-        bootstrap.setOption("child.keepAlive", true);
+
+		bootstrap.setPipelineFactory(connectorPipelineFactory);
+
+		bootstrap.setOption("child.keepAlive", true);
 		bootstrap.setOption("child.receiveBufferSize", 128 * 1024);
 		bootstrap.setOption("child.sendBufferSize", 128 * 1024);
-        bootstrap.setOption("connectTimeoutMillis", 5000);
+		bootstrap.setOption("connectTimeoutMillis", 5000);
 
-        this.connector = bootstrap;
+		this.connector = bootstrap;
 	}
-
 
 	public synchronized static void deleteQueue(String queueName)
 	{
@@ -419,7 +426,7 @@ public class Gcs
 		synchronized (instance.agentsConnection)
 		{
 			instance.agentsConnection.remove(channel);
-		}		
+		}
 	}
 
 }

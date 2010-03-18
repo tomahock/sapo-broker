@@ -144,6 +144,10 @@ public class SynchronousMessageListener implements MessageListener
 			try
 			{
 				queueProcessor = QueueProcessorList.get(getDestinationName());
+				if( queueProcessor == null)
+				{
+					log.error("Failed to get a QueueProcessor.");
+				}
 				if (queueProcessor.getQueuedMessagesCount() == 0)
 				{
 					noMessages = true;

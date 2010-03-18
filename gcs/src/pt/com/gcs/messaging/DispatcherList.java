@@ -48,6 +48,12 @@ public class DispatcherList
 	protected synchronized static void create(String queueName)
 	{
 		log.info("Get Dispatcher for: {}", queueName);
+		
+		if(StringUtils.isBlank(queueName))
+		{
+			log.error("Can't create a TopicToQueueDispatcher whose queue name is empty.");
+			return;
+		}
 
 		try
 		{

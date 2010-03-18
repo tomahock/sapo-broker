@@ -153,6 +153,11 @@ public class SubscriptionsAction extends HttpAction
 		{
 			QueueSessionListener queueSessionListener = QueueSessionListenerList.get(queueName);
 			
+			if(queueSessionListener == null)
+			{
+				continue;
+			}
+			
 			List<pt.com.broker.messaging.QueueSessionListener.ChannelInfo> sessions = queueSessionListener.getSessions();
 			
 			ArrayList<String> clients = new ArrayList<String>(sessions.size());

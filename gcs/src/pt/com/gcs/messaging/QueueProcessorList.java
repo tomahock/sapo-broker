@@ -86,6 +86,12 @@ public class QueueProcessorList
 	{
 		log.debug("Get Queue for: {}", destinationName);
 
+		if(StringUtils.isBlank(destinationName))
+		{
+			log.error("Can't get a QueueProcessor whose queue name is empty.");
+			return null;
+		}
+		
 		try
 		{
 			return qpCache.get(destinationName, qp_cf);
@@ -97,8 +103,6 @@ public class QueueProcessorList
 		}
 		catch (Throwable t)
 		{
-			
-			
 			Throwable rootCause = ErrorAnalyser.findRootCause(t);
 			
 			log.error(String.format("Failed to get QueueProcessor for queue '%s'. Message: %s", destinationName, rootCause.getMessage()) , rootCause);
@@ -132,6 +136,11 @@ public class QueueProcessorList
 				// This should never happens
 				log.error("Trying to remove an inexistent queue.");
 				return;
+			}
+			
+			if( qp == null)
+			{
+				log.error("Failed to get a QueueProcessor.");
 			}
 
 			if (qp.hasRecipient())

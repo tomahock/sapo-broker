@@ -20,6 +20,11 @@ public class DestinationMatcher
 		try
 		{
 			Pattern p = PatternCache.get(subscriptionName);
+			if(p == null)
+			{
+				log.error("Failed to get a Pattern");
+				return false;
+			}
 			Matcher m = p.matcher(topicName);
 			return m.matches();
 		}

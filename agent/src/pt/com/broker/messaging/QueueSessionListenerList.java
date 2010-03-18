@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
+import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,11 @@ public class QueueSessionListenerList
 	{
 		try
 		{
+			if(StringUtils.isBlank(destinationName))
+			{
+				log.error("Can't get a QueueSessionListener whose queue name is empty.");
+				return null;
+			}
 			return queueSessionListener.get(destinationName, queue_listeners_cf);
 		}
 		catch (InterruptedException ie)

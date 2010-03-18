@@ -203,6 +203,11 @@ public class LocalQueueConsumers
 		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 		if (listeners != null)
 		{
+			if(log.isDebugEnabled())
+			{
+				log.debug(String.format("Checking '%s' consumers for readiness for queue '%s'.", listeners.size(), queueName ));
+			}
+			
 			for (MessageListener ml : listeners)
 				if (ml.ready())
 					return true;
@@ -215,6 +220,10 @@ public class LocalQueueConsumers
 		CopyOnWriteArrayList<MessageListener> listeners = instance.localQueueConsumers.get(queueName);
 		if (listeners != null)
 		{
+			if(log.isDebugEnabled())
+			{
+				log.debug(String.format("Checking '%s' consumers for activeness for queue '%s'.", listeners.size(), queueName ));
+			}
 			for (MessageListener ml : listeners)
 				if (ml.isActive())
 					return true;

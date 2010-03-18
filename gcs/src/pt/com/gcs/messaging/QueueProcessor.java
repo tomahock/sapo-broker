@@ -147,6 +147,12 @@ public class QueueProcessor
 
 	protected boolean hasRecipient()
 	{
+	
+		if(log.isDebugEnabled())
+		{
+			log.debug("QueueProcessor.hasRecipient()");
+		}
+		
 		if (LocalQueueConsumers.hasReadyRecipients(_destinationName))
 		{
 			return true;
@@ -201,6 +207,12 @@ public class QueueProcessor
 			return;
 		}
 		long cnt = getQueuedMessagesCount();
+		
+		if(log.isDebugEnabled())
+		{
+			log.debug(String.format("Queue '%s' has %s messages.", _destinationName, cnt));
+		}
+		
 		if (cnt > 0)
 		{
 			emptyQueueInfoDisplay.set(false);
