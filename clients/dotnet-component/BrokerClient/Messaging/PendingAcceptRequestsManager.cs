@@ -24,7 +24,7 @@ namespace SapoBrokerClient.Messaging
         {
             request.Listener.MessageTimedout(request.ActionId);
         }
-
+	
         private static Timer timer = new Timer(delegate(object state)
             {
                 DateTime now = DateTime.Now;

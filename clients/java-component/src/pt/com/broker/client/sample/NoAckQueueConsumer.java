@@ -13,6 +13,7 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -26,6 +27,7 @@ public class NoAckQueueConsumer implements BrokerListener
 	private DestinationType dtype;
 	private String dname;
 	private long waitTime;
+	private NetProtocolType protocol; 
 	
 	
 	public static void main(String[] args) throws Throwable
@@ -38,10 +40,10 @@ public class NoAckQueueConsumer implements BrokerListener
 		consumer.port = cargs.getPort();
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
-		consumer.waitTime = cargs.getDelay();		
+		consumer.waitTime = cargs.getDelay();
+		consumer.protocol = NetProtocolType.valueOf(cargs.getProtocolType());
 		
-
-		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer");
+		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", consumer.protocol);
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 		subscribe.addHeader("ACK_REQUIRED", "false");
