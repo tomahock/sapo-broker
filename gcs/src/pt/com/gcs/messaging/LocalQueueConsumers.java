@@ -372,7 +372,7 @@ public class LocalQueueConsumers
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("There are no local listeners for queue: {}", message.getDestination());
+			log.debug("There are no available local listeners for queue: {}", message.getDestination());
 		}
 
 		return failed;
