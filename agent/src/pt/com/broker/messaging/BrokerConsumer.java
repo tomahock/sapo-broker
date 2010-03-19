@@ -154,7 +154,6 @@ public class BrokerConsumer
 		else if (dtype == DestinationType.QUEUE || dtype == DestinationType.VIRTUAL_QUEUE)
 		{
 			QueueProcessorList.removeListener(new BrokerQueueListener(lchannel, dname, true));
-			QueueProcessorList.removeListener(new BrokerQueueListener(lchannel, dname, false));
 		}
 	}
 }
