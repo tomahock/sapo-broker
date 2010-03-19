@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.Shutdown;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
