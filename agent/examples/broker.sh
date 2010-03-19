@@ -22,7 +22,7 @@ else # we assume 1.6 here
 fi
 
 java -server \
--Xverify:none -Xms256M -Xmx256M \
+-Xverify:none -Xms256M -Xmx256M -XX:-ReduceInitialCardMarks \
 -Djava.awt.headless=true \
 -Djava.net.preferIPv4Stack=true \
 -Djava.net.preferIPv6Addresses=false \
