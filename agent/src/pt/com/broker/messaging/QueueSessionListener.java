@@ -212,7 +212,10 @@ public class QueueSessionListener extends BrokerListener
 			if (n == 0)
 				return null;
 
-			currentQEP = (currentQEP > 0) ? 0 : currentQEP + 1;
+			if( (++currentQEP) >= n)
+			{
+				currentQEP = 0;
+			}
 
 			try
 			{

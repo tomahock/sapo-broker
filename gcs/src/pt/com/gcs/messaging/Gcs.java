@@ -212,7 +212,7 @@ public class Gcs
 	{
 		try
 		{
-			if (StringUtils.isNotBlank(queueName))
+			if (StringUtils.isBlank(queueName))
 			{
 				log.warn("Can't ack a message with no name.");
 				return;

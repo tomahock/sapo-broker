@@ -395,13 +395,17 @@ public class LocalQueueConsumers
 			if (n == 0)
 				return null;
 
-			currentQEP = (currentQEP > 0) ? 0 : currentQEP + 1;
-
+			if( (++currentQEP) >= n)
+			{
+				currentQEP = 0;
+			}
+			
 			try
 			{
 				for (int i = 0; i != n; ++i)
 				{
-					MessageListener messageListener = listeners.get(currentQEP);
+					int idx = (currentQEP + i) % n;
+					MessageListener messageListener = listeners.get(idx);
 					if (messageListener.ready())
 						return messageListener;
 				}
