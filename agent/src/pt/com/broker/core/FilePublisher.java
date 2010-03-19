@@ -31,9 +31,7 @@ import pt.com.gcs.messaging.InternalMessage;
 
 /**
  * FilePublisher deals with dropbox functionality publishing messages
- * 
  */
-
 public class FilePublisher
 {
 	private static Logger log = LoggerFactory.getLogger(FilePublisher.class);
@@ -139,7 +137,6 @@ public class FilePublisher
 						byte[] inputFileData = new byte[1024];
 						int dataRead = 0;
 
-						SoapEnvelope soap = null;
 						NetMessage netMessage = null;
 
 						boolean isFileValid = false;

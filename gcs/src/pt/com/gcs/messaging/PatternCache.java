@@ -4,7 +4,6 @@ import java.util.regex.Pattern;
 
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
-import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +38,6 @@ class PatternCache
 	{
 		try
 		{
-			if(StringUtils.isBlank(regex))
-			{
-				log.error("regex cannot be empty.");
-				return null;
-			}
 			return pCache.get(regex, p_cf);
 		}
 		catch (InterruptedException ie)

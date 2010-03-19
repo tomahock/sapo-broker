@@ -8,8 +8,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.NetMessage;
@@ -17,8 +15,6 @@ import pt.com.broker.types.NetMessage;
 @Sharable
 public class NoFramingEncoder extends OneToOneEncoder
 {
-	private static final Logger log = LoggerFactory.getLogger(NoFramingEncoder.class);
-
 	private static final SoapBindingSerializer serializer = new SoapBindingSerializer();
 
 	@Override
@@ -35,7 +31,7 @@ public class NoFramingEncoder extends OneToOneEncoder
 		}
 		catch (Throwable t)
 		{
-			throw new IOException( "Failed to encode message using NoFramingEncoder. Reason: " + t.getMessage());
+			throw new IOException("Failed to encode message using NoFramingEncoder. Reason: " + t.getMessage());
 		}
 	}
 }

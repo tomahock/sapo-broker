@@ -1,7 +1,6 @@
 package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.caudexorigo.Shutdown;
@@ -72,7 +71,7 @@ public class BrokerUdpServer
 			};
 
 			bootstrap0.setPipelineFactory(serverPipelineFactory0);
-			//bootstrap0.setOption("broadcast", "false");
+			// bootstrap0.setOption("broadcast", "false");
 			bootstrap0.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(BrokerDecoderRouter.MAX_MESSAGE_SIZE));
 
 			InetSocketAddress inet0 = new InetSocketAddress("0.0.0.0", _binProtoPort);
@@ -89,7 +88,7 @@ public class BrokerUdpServer
 		{
 			// Legacy message format
 
-			DatagramChannelFactory datagramChannelFactory1 = new NioDatagramChannelFactory(tpeIo/*Executors.newCachedThreadPool()*/);
+			DatagramChannelFactory datagramChannelFactory1 = new NioDatagramChannelFactory(tpeIo/* Executors.newCachedThreadPool() */);
 
 			ConnectionlessBootstrap bootstrap1 = new ConnectionlessBootstrap(datagramChannelFactory1);
 
@@ -116,7 +115,7 @@ public class BrokerUdpServer
 			};
 
 			bootstrap1.setPipelineFactory(serverPipelineFactory1);
-			//bootstrap1.setOption("broadcast", "false");
+			// bootstrap1.setOption("broadcast", "false");
 			bootstrap1.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(NoFramingDecoder.MAX_MESSAGE_SIZE));
 
 			InetSocketAddress inet1 = new InetSocketAddress("0.0.0.0", _legacyPort);

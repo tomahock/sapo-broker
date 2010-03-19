@@ -4,7 +4,6 @@ import java.util.List;
 
 /**
  * RolePredicate represents a client role predicate.
- * 
  */
 public class RolePredicate implements AclPredicate
 {
@@ -16,7 +15,6 @@ public class RolePredicate implements AclPredicate
 		this.role = role;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean match(SessionProperties properties)
 	{
@@ -44,5 +42,4 @@ public class RolePredicate implements AclPredicate
 	{
 		return "RolePredicate (" + role + ")";
 	}
-
 }

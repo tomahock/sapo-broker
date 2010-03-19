@@ -21,7 +21,6 @@ import pt.com.gcs.messaging.Gcs;
 
 /**
  * Main class for Sapo-Broker agents.
- * 
  */
 
 public class Start
@@ -115,6 +114,5 @@ public class Start
 			log.error(e.getMessage(), e);
 			Shutdown.now();
 		}
-
 	}
 }

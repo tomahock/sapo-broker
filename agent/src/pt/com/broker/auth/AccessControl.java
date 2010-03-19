@@ -30,9 +30,7 @@ import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
 
 /**
  * AccessControl class implements access control functionality, namely validation of users permission to perform intended operations such publishing or subscription.
- * 
  */
-
 public class AccessControl
 {
 	private static Logger log = LoggerFactory.getLogger(AccessControl.class);
