@@ -79,4 +79,12 @@ public interface DistTestCliArgs
 	 */
 	@Option(shortName = "M", defaultValue = "")
 	String getMachineName();
+	
+	/**
+	 * 
+	 * @return Perform initial warmup
+	 */
+	@Option(shortName = "w", defaultValue = "true")
+	boolean warmup();
+	
 }

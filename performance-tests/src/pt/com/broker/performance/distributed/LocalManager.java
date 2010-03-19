@@ -31,7 +31,7 @@ public class LocalManager implements BrokerListener
 	private int port;
 
 	private String machineName;
-
+	
 	public static void main(String[] args) throws Throwable
 	{
 		final DistTestCliArgs cargs = CliFactory.parseArguments(DistTestCliArgs.class, args);
@@ -45,7 +45,8 @@ public class LocalManager implements BrokerListener
 
 		testManager.brokerClient = new BrokerClient(testManager.hostname, testManager.port);
 	
-		testManager.harmUp();
+		if(cargs.warmup())
+			testManager.warmUp();
 		
 		NetSubscribe subscribe = new NetSubscribe(String.format("%s%s", TestManager.TEST_MANAGEMENT_LOCAL_MANAGERS, testManager.machineName), DestinationType.QUEUE);
 		testManager.brokerClient.addAsyncConsumer(subscribe, testManager);
@@ -56,7 +57,7 @@ public class LocalManager implements BrokerListener
 		}
 	}
 	
-	private void harmUp()
+	private void warmUp()
 	{
 		
 		System.out.println("Warming up!");
