@@ -1,6 +1,5 @@
 package pt.com.gcs.messaging;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -70,17 +69,11 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		switch (msg.getType())
 		{
 		case COM_TOPIC:
-			LocalTopicConsumers.notify(msg);
+			TopicProcessorList.notify(msg, true);
 			break;
 		case COM_QUEUE:
-			QueueProcessor queueProcessor = QueueProcessorList.get(msg.getDestination());
-			if( queueProcessor == null)
-			{
-				log.error("Failed to get a QueueProcessor.");
-				return;
-			}
-			queueProcessor.store(msg, true);
-			LocalQueueConsumers.acknowledgeMessage(msg, channel);
+			QueueProcessorList.get(msg.getDestination()).store(msg, true);
+			acknowledgeMessage(msg, channel);
 			break;
 		case SYSTEM_ACK:
 		{
@@ -98,15 +91,15 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
 		super.channelClosed(ctx, e);
-		
+
 		Channel channel = ctx.getChannel();
-		
+
 		log.info("Session Closed: '{}'", channel.getRemoteAddress());
 
 		SystemMessagesPublisher.sessionClosed(channel);
 		Gcs.remoteSessionClosed(channel);
 		GcsExecutor.schedule(new Connect(channel.getRemoteAddress()), 5000, TimeUnit.MILLISECONDS);
-		
+
 	}
 
 	@Override
@@ -116,6 +109,34 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 
 		log.info("Session Opened: '{}'", ctx.getChannel().getRemoteAddress());
 		sayHello(ctx);
+	}
+
+	private void acknowledgeMessage(InternalMessage msg, Channel channel)
+	{
+		log.debug("Acknowledge message with Id: '{}'.", msg.getMessageId());
+
+		try
+		{
+			NetBrokerMessage brkMsg = new NetBrokerMessage("ACK".getBytes("UTF-8"));
+
+			InternalMessage m = new InternalMessage(msg.getMessageId(), msg.getDestination(), brkMsg);
+			m.setType(MessageType.ACK);
+
+			channel.write(m);
+		}
+		catch (Throwable ct)
+		{
+			log.error(ct.getMessage(), ct);
+
+			try
+			{
+				channel.close();
+			}
+			catch (Throwable ict)
+			{
+				log.error(ict.getMessage(), ict);
+			}
+		}
 	}
 
 	public void sayHello(ChannelHandlerContext ctx)
@@ -154,31 +175,9 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			return;
 		}
 
-		Set<String> topicNameSet = LocalTopicConsumers.getBroadcastableTopics();
-		for (String topicName : topicNameSet)
-		{
-			LocalTopicConsumers.broadCastTopicInfo(topicName, "CREATE", channel);
-		}
+		TopicProcessorList.broadcast("CREATE", channel);
 
-		Set<String> queueNameSet = LocalQueueConsumers.getBroadcastableQueues();
-		for (String queueName : queueNameSet)
-		{
-			try
-			{
-				LocalQueueConsumers.broadCastQueueInfo(queueName, "CREATE", channel);
-			}
-			catch (Throwable t)
-			{
-				try
-				{
-					channel.close();
-				}
-				catch (Throwable ict)
-				{
-					log.error(ict.getMessage(), ict);
-				}
-			}
-		}
+		QueueProcessorList.broadcast("CREATE", channel);
 	}
 
 	private String extract(String ins, String prefix, String sufix)

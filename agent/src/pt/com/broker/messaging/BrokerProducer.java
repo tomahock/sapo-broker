@@ -15,7 +15,6 @@ import pt.com.gcs.messaging.MessageType;
 
 /**
  * BrokerProducer handles message publication both topic and queues.
- * 
  */
 public class BrokerProducer
 {
@@ -100,12 +99,5 @@ public class BrokerProducer
 		msg.setSourceApp(sb_source.toString());
 		msg.setType(MessageType.COM_TOPIC);
 		Gcs.publish(msg);
-	}
-
-	
-	public void acknowledge(NetAcknowledge ackReq, Channel channel)
-	{
-		String destination = ackReq.getDestination();
-		Gcs.ackMessage(destination, ackReq.getMessageId());
 	}
 }

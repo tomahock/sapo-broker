@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.CustomExecutors;
 import org.caudexorigo.concurrent.Sleep;
@@ -64,18 +63,36 @@ public class Gcs
 
 	public static void ackMessage(String queueName, final String msgId)
 	{
+		if (StringUtils.isBlank(queueName))
+		{
+			throw new IllegalArgumentException("Can not acknowledge a message with a blank queue name");
+		}
+		if (StringUtils.isBlank(msgId))
+		{
+			throw new IllegalArgumentException("Can not acknowledge a message with a blank message-id");
+		}
 		instance.iackMessage(queueName, msgId);
 	}
 
-	public static void addAsyncConsumer(String destinationName, MessageListener listener)
+	public static void addAsyncConsumer(String subscriptionKey, MessageListener listener)
 	{
+		if (StringUtils.isBlank(subscriptionKey))
+		{
+			throw new IllegalArgumentException("Can not make a subscription with a blank subscription name");
+		}
+
+		if (listener == null)
+		{
+			throw new IllegalArgumentException("Can not make a subscription with a null listener");
+		}
+
 		if (listener.getSourceDestinationType() == DestinationType.TOPIC)
 		{
-			instance.iaddTopicConsumer(destinationName, listener);
+			instance.iaddTopicConsumer(subscriptionKey, listener);
 		}
 		else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
 		{
-			instance.iaddQueueConsumer(destinationName, listener);
+			instance.iaddQueueConsumer(subscriptionKey, listener);
 		}
 	}
 
@@ -183,13 +200,20 @@ public class Gcs
 
 	public static void removeAsyncConsumer(MessageListener listener)
 	{
-		if (listener.getSourceDestinationType() == DestinationType.TOPIC)
+		if (listener != null)
 		{
-			LocalTopicConsumers.remove(listener);
+			if (listener.getSourceDestinationType() == DestinationType.TOPIC)
+			{
+				TopicProcessorList.get(listener.getsubscriptionKey()).remove(listener);
+			}
+			else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
+			{
+				QueueProcessorList.get(listener.getsubscriptionKey()).remove(listener);
+			}
 		}
-		else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
+		else
 		{
-			LocalQueueConsumers.remove(listener);
+			log.warn("Can not remove null listener");
 		}
 	}
 
@@ -200,6 +224,7 @@ public class Gcs
 
 	private void connectToAllPeers()
 	{
+
 		List<Peer> peerList = GlobalConfig.getPeerList();
 		for (Peer peer : peerList)
 		{
@@ -212,11 +237,6 @@ public class Gcs
 	{
 		try
 		{
-			if (StringUtils.isBlank(queueName))
-			{
-				log.warn("Can't ack a message with no name.");
-				return;
-			}
 			QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
 			if (queueProcessor != null)
 				queueProcessor.ack(msgId);
@@ -231,24 +251,22 @@ public class Gcs
 	{
 		try
 		{
-			QueueProcessorList.get(queueName);
+			if (listener != null)
+			{
+				QueueProcessorList.get(queueName).add(listener);
+			}
 		}
 		catch (MaximumQueuesAllowedReachedException e)
 		{
-			// This never happens
-		}
-
-		if (listener != null)
-		{
-			LocalQueueConsumers.add(queueName, listener);
+			log.error("MaximumQueuesAllowedReachedException", e);
 		}
 	}
 
-	private void iaddTopicConsumer(String topicName, MessageListener listener)
+	private void iaddTopicConsumer(String subscriptionName, MessageListener listener)
 	{
 		if (listener != null)
 		{
-			LocalTopicConsumers.add(topicName, listener, true);
+			TopicProcessorList.get(subscriptionName).add(listener, true);
 		}
 	}
 
@@ -256,13 +274,7 @@ public class Gcs
 	{
 		try
 		{
-			QueueProcessor queueProcessor = QueueProcessorList.get((queueName != null) ? queueName : message.getDestination());
-			if( queueProcessor == null)
-			{
-				log.error("Failed to get a QueueProcessor.");
-				return false;
-			}
-			queueProcessor.store(message, true);
+			QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message, true);
 			return true;
 		}
 		catch (MaximumQueuesAllowedReachedException e)
@@ -310,9 +322,7 @@ public class Gcs
 		}
 		catch (Throwable t)
 		{
-			Throwable rootCause = ErrorAnalyser.findRootCause(t);
-			log.error(rootCause.getMessage(), rootCause);
-			Shutdown.now();
+			Shutdown.now(t);
 		}
 
 		Sleep.time(GcsInfo.getInitialDelay());
@@ -338,8 +348,7 @@ public class Gcs
 	private void ipublish(final InternalMessage message)
 	{
 		message.setType(MessageType.COM_TOPIC);
-		LocalTopicConsumers.notify(message);
-		RemoteTopicConsumers.notify(message);
+		TopicProcessorList.notify(message, false);
 	}
 
 	private void startAcceptor(int portNumber) throws IOException

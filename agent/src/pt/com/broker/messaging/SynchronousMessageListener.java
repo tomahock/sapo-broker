@@ -1,23 +1,19 @@
 package pt.com.broker.messaging;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.ForwardResult;
 import pt.com.gcs.messaging.GcsExecutor;
 import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.LocalQueueConsumers;
+import pt.com.gcs.messaging.ListenerChannel;
 import pt.com.gcs.messaging.MessageListener;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
@@ -27,18 +23,15 @@ import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedExcept
 /*
  * SynchronousMessageListener represents a poll request by a client. 
  */
-public class SynchronousMessageListener implements MessageListener
+public class SynchronousMessageListener extends BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(SynchronousMessageListener.class);
-
-	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
 
 	private static final long RESERVE_TIME = 15 * 60 * 1000; // reserve for 15mn
 	private static final long ACTIVE_INTERVAL = 5 * 60 * 1000; // 5mn
 
 	private AtomicBoolean ready;
 	private final String queueName;
-	private final Channel channel;
 
 	private volatile long expires;
 	private volatile boolean inNoWaitMode;
@@ -46,16 +39,17 @@ public class SynchronousMessageListener implements MessageListener
 
 	private AtomicLong lastDeliveredMessage = new AtomicLong(0);
 
-	public SynchronousMessageListener(String queueName, Channel channel)
+	public SynchronousMessageListener(ListenerChannel lchannel, String queueName)
 	{
+		super(lchannel, queueName);
+
 		this.ready = new AtomicBoolean(false);
 		this.queueName = queueName;
-		this.channel = channel;
 		this.setInNoWaitMode(false);
 	}
 
 	@Override
-	public String getDestinationName()
+	public String getsubscriptionKey()
 	{
 		return queueName;
 	}
@@ -86,18 +80,20 @@ public class SynchronousMessageListener implements MessageListener
 
 		ready.set(false);
 
-		if ((channel != null) && channel.isConnected() && channel.isWritable())
+		final ListenerChannel lchannel = getChannel();
+
+		if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 		{
-			final NetMessage response = BrokerListener.buildNotification(message, getDestinationName(), getSourceDestinationType());
-			channel.write(response);
+			final NetMessage response = BrokerListener.buildNotification(message, queueName, getSourceDestinationType());
+			lchannel.write(response);
 
 			lastDeliveredMessage.set(System.currentTimeMillis());
 		}
 		else
 		{
-			if ((channel == null) || !channel.isConnected())
+			if ((lchannel == null) || !lchannel.isConnected())
 			{
-				LocalQueueConsumers.remove(this);
+				QueueProcessorList.removeListener(this);
 			}
 			return failed;
 		}
@@ -106,14 +102,9 @@ public class SynchronousMessageListener implements MessageListener
 	}
 
 	@Override
-	public boolean ready()
+	public boolean isReady()
 	{
-		boolean isReady = ready.get();
-		if(log.isDebugEnabled())
-		{
-			log.debug(String.format("Sync consumer '%s' for queue '%s' is %s READY.", channel.getRemoteAddress(), queueName, isReady?"": "NOT"));
-		}
-		return isReady;
+		return ready.get();
 	}
 
 	public void activate(long timeout, String actionId)
@@ -143,11 +134,7 @@ public class SynchronousMessageListener implements MessageListener
 			QueueProcessor queueProcessor;
 			try
 			{
-				queueProcessor = QueueProcessorList.get(getDestinationName());
-				if( queueProcessor == null)
-				{
-					log.error("Failed to get a QueueProcessor.");
-				}
+				queueProcessor = QueueProcessorList.get(getsubscriptionKey());
 				if (queueProcessor.getQueuedMessagesCount() == 0)
 				{
 					noMessages = true;
@@ -159,14 +146,16 @@ public class SynchronousMessageListener implements MessageListener
 			}
 			if (noMessages)
 			{
-				NetMessage faultMsg = NetFault.getMessageFaultWithDetail(NetFault.NoMessageInQueueErrorMessage, getDestinationName());
+				final ListenerChannel lchannel = getChannel();
+
+				NetMessage faultMsg = NetFault.getMessageFaultWithDetail(NetFault.NoMessageInQueueErrorMessage, getsubscriptionKey());
 				if (actionId != null)
 				{
 					faultMsg.getAction().getFaultMessage().setActionId(actionId);
 				}
-				if ((channel != null) && channel.isConnected() && channel.isWritable())
+				if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 				{
-					channel.write(faultMsg);
+					lchannel.write(faultMsg);
 				}
 
 				ready.set(false);
@@ -203,45 +192,21 @@ public class SynchronousMessageListener implements MessageListener
 
 			if (isInNoWaitMode())
 			{
-				faultMsg = NetFault.getMessageFaultWithDetail(NetFault.NoMessageInQueueErrorMessage, getDestinationName());
+				faultMsg = NetFault.getMessageFaultWithDetail(NetFault.NoMessageInQueueErrorMessage, getsubscriptionKey());
 			}
 			else
 			{
-				faultMsg = NetFault.getMessageFaultWithDetail(NetFault.PollTimeoutErrorMessage, getDestinationName());
+				faultMsg = NetFault.getMessageFaultWithDetail(NetFault.PollTimeoutErrorMessage, getsubscriptionKey());
 			}
 
 			if (actionId != null)
 			{
 				faultMsg.getAction().getFaultMessage().setActionId(actionId);
 			}
-			if ((channel != null) && channel.isConnected() && channel.isWritable())
+			final ListenerChannel lchannel = getChannel();
+			if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 			{
-				channel.write(faultMsg);
-			}
-		}
-	}
-
-	public static String getComposedQueueName(String queueName)
-	{
-		return SESSION_ATT_PREFIX + queueName;
-	}
-
-	public static void removeSession(ChannelHandlerContext ctx)
-	{
-		// Set<String> attributeKeys = channel.getAttributeKeys();
-		// Channel channel = ctx.getChannel();
-		Set<String> attributeKeys = ChannelAttributes.getAttributeKeys(ctx);
-		for (String attributeKey : attributeKeys)
-		{
-			if (attributeKey.toString().startsWith(SESSION_ATT_PREFIX))
-			{
-				Object attributeValue = ChannelAttributes.get(ctx, attributeKey);
-				if (attributeValue instanceof SynchronousMessageListener)
-				{
-					SynchronousMessageListener listener = (SynchronousMessageListener) attributeValue;
-					BrokerSyncConsumer.pollStoped(listener.getDestinationName());
-					LocalQueueConsumers.remove(listener);
-				}
+				lchannel.write(faultMsg);
 			}
 		}
 	}
@@ -281,20 +246,27 @@ public class SynchronousMessageListener implements MessageListener
 	@Override
 	public boolean isActive()
 	{
-		boolean isReady = ready();
-		if(isReady)
+		if (isReady())
 			return true;
-		
-		boolean isActive = (lastDeliveredMessage.get() + ACTIVE_INTERVAL) >= System.currentTimeMillis();
-		
-		if(log.isDebugEnabled())
-		{
-			if(log.isDebugEnabled())
-			{
-				log.debug(String.format("Sync consumer '%s' for queue '%s' is %s ACTIVE.", channel.getRemoteAddress(), queueName, isActive ? "" : "NOT"));
-			}
-		}
-		
-		return isActive;
+
+		return (lastDeliveredMessage.get() + ACTIVE_INTERVAL) >= System.currentTimeMillis();
+	}
+
+	@Override
+	public boolean isAckRequired()
+	{
+		return true;
+	}
+
+	@Override
+	public Type getType()
+	{
+		return MessageListener.Type.LOCAL;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "SynchronousMessageListener [type=" + getType().toString() + ", lchannel=" + getChannel() + ", queueName=" + queueName + "]";
 	}
 }

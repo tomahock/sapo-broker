@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
@@ -28,7 +29,6 @@ import pt.com.gcs.net.Peer;
 
 /**
  * GcsAcceptorProtocolHandler is an NETTY SimpleChannelHandler. It handles remote subscription messages and acknowledges from other agents.
- * 
  */
 
 @Sharable
@@ -43,13 +43,11 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		createPeersList();
 		GlobalConfigMonitor.addGlobalConfigModifiedListener(new GlobalConfigModifiedListener()
 		{
-
 			@Override
 			public void globalConfigModified()
 			{
 				globalConfigReloaded();
 			}
-
 		});
 	}
 
@@ -125,35 +123,43 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			final String action = extract(msgContent, "<action>", "</action>");
 			final String src_name = extract(msgContent, "<source-name>", "</source-name>");
 
-			final String destinationName = extract(msgContent, "<destination>", "</destination>");
+			final String subscriptionKey = extract(msgContent, "<destination>", "</destination>");
 
 			if (log.isInfoEnabled())
 			{
-				String lmsg = String.format("Action: '%s' Consumer; Destination: '%s'; Source: '%s'", action, destinationName, src_name);
+				String lmsg = String.format("Action: '%s' Consumer; Subscription: '%s'; Source: '%s'", action, subscriptionKey, src_name);
 				log.info(lmsg);
 			}
 
 			if (m.getType() == MessageType.SYSTEM_TOPIC)
 			{
+				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
+
+				TopicProcessor tp = TopicProcessorList.get(subscriptionKey);
+
 				if (action.equals("CREATE"))
 				{
-					RemoteTopicConsumers.add(m.getDestination(), ctx.getChannel());
+					tp.add(remoteListener, false);
 				}
 				else if (action.equals("DELETE"))
 				{
-					RemoteTopicConsumers.remove(m.getDestination(), ctx.getChannel());
+					tp.remove(remoteListener);
 				}
+
 			}
 			else if (m.getType() == MessageType.SYSTEM_QUEUE)
 			{
+				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
+
+				QueueProcessor qp = QueueProcessorList.get(subscriptionKey);
+
 				if (action.equals("CREATE"))
 				{
-					RemoteQueueConsumers.add(m.getDestination(), ctx.getChannel());
-					QueueProcessorList.get(destinationName);
+					qp.add(remoteListener);
 				}
 				else if (action.equals("DELETE"))
 				{
-					RemoteQueueConsumers.remove(m.getDestination(), ctx.getChannel());
+					qp.remove(remoteListener);
 				}
 			}
 			acknowledgeSystemMessage(m, ctx);
@@ -163,7 +169,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			log.warn("Unkwown message type. Don't know how to handle message");
 		}
 	}
-	
+
 	private void acknowledgeSystemMessage(InternalMessage message, ChannelHandlerContext ctx)
 	{
 		Channel channel = ctx.getChannel();
@@ -192,9 +198,10 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 	{
 		super.channelClosed(ctx, e);
 		log.info("Session Closed: '{}'", ctx.getChannel().getRemoteAddress());
-		RemoteTopicConsumers.remove(ctx.getChannel());
-		RemoteQueueConsumers.remove(ctx.getChannel());
-		
+
+		TopicProcessorList.removeSession(ctx.getChannel());
+		QueueProcessorList.removeSession(ctx.getChannel());
+
 		ChannelAttributes.remove(ctx);
 	}
 

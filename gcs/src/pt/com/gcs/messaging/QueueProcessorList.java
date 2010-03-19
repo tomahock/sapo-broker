@@ -2,11 +2,12 @@ package pt.com.gcs.messaging;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
-import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,13 +16,12 @@ import pt.com.gcs.conf.GcsInfo;
 
 /**
  * QueueProcessorList contains references for all active QueueProcessor objects.
- * 
  */
 
 public class QueueProcessorList
 {
 
-	public static class MaximumQueuesAllowedReachedException extends Exception
+	public static class MaximumQueuesAllowedReachedException extends RuntimeException
 	{
 	}
 
@@ -39,7 +39,7 @@ public class QueueProcessorList
 				{
 					throw new MaximumQueuesAllowedReachedException();
 				}
-				log.debug("Populate QueueProcessorList");
+				log.info("Populate QueueProcessorList with queue: '{}'", destinationName);
 				QueueProcessor qp = new QueueProcessor(destinationName);
 				return qp;
 			}
@@ -50,6 +50,11 @@ public class QueueProcessorList
 		}
 	};
 
+	public static void broadcast(final String action, final Channel channel)
+	{
+		instance.i_broadcast(action, channel);
+	}
+
 	public static QueueProcessor get(String destinationName) throws MaximumQueuesAllowedReachedException
 	{
 		return instance.i_get(destinationName);
@@ -58,6 +63,16 @@ public class QueueProcessorList
 	protected static void remove(String queueName)
 	{
 		instance.i_remove(queueName);
+	}
+
+	public static void removeListener(MessageListener listener)
+	{
+		instance.i_removeListener(listener);
+	}
+
+	public static void removeSession(Channel channel)
+	{
+		instance.i_removeSession(channel);
 	}
 
 	protected static void removeValue(QueueProcessor value)
@@ -70,7 +85,7 @@ public class QueueProcessorList
 		return instance.i_size();
 	}
 
-	protected static Collection<QueueProcessor> values()
+	public static Collection<QueueProcessor> values()
 	{
 		return instance.i_values();
 	}
@@ -82,16 +97,29 @@ public class QueueProcessorList
 	{
 	}
 
+	private void i_broadcast(final String action, final Channel channel)
+	{
+		try
+		{
+			for (QueueProcessor qp : qpCache.values())
+			{
+				if (qp.localListeners().size() > 0)
+				{
+					qp.broadCastQueueInfo(action, channel);
+				}
+			}
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		}
+	}
+
 	private QueueProcessor i_get(String destinationName) throws MaximumQueuesAllowedReachedException
 	{
 		log.debug("Get Queue for: {}", destinationName);
 
-		if(StringUtils.isBlank(destinationName))
-		{
-			log.error("Can't get a QueueProcessor whose queue name is empty.");
-			return null;
-		}
-		
 		try
 		{
 			return qpCache.get(destinationName, qp_cf);
@@ -103,10 +131,9 @@ public class QueueProcessorList
 		}
 		catch (Throwable t)
 		{
+			log.error(String.format("Failed to get QueueProcessor for queue '%s'. Message: %s", destinationName, t.getMessage()), t);
+
 			Throwable rootCause = ErrorAnalyser.findRootCause(t);
-			
-			log.error(String.format("Failed to get QueueProcessor for queue '%s'. Message: %s", destinationName, rootCause.getMessage()) , rootCause);
-			
 			CriticalErrors.exitIfCritical(rootCause);
 			if (rootCause instanceof MaximumQueuesAllowedReachedException)
 			{
@@ -137,25 +164,15 @@ public class QueueProcessorList
 				log.error("Trying to remove an inexistent queue.");
 				return;
 			}
-			
-			if( qp == null)
-			{
-				log.error("Failed to get a QueueProcessor.");
-			}
 
 			if (qp.hasRecipient())
 			{
 				String m = String.format("Queue '%s' has active consumers.", queueName);
 				throw new IllegalStateException(m);
 			}
-			
-			if (StringUtils.contains(queueName, "@"))
-			{
-				DispatcherList.removeDispatcher(queueName);
-			}
 
-			LocalQueueConsumers.delete(queueName);
-			RemoteQueueConsumers.delete(queueName);
+			// LocalQueueConsumers.delete(queueName);
+			// RemoteQueueConsumers.delete(queueName);
 			qp.clearStorage();
 
 			qpCache.remove(queueName);
@@ -167,6 +184,63 @@ public class QueueProcessorList
 		{
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(ie);
+		}
+	}
+
+	private void i_removeListener(MessageListener listener)
+	{
+		QueueProcessor qp = get(listener.getsubscriptionKey());
+		qp.remove(listener);
+	}
+
+	private void i_removeSession(Channel channel)
+	{
+		try
+		{
+			ListenerChannel lc = new ListenerChannel(channel);
+
+			for (QueueProcessor qp : qpCache.values())
+			{
+				List<MessageListener> toDelete = new ArrayList<MessageListener>();
+
+				for (MessageListener ml : qp.localListeners())
+				{
+					if (ml.getChannel().equals(lc))
+					{
+						toDelete.add(ml);
+					}
+				}
+
+				for (MessageListener ml : qp.remoteListeners())
+				{
+					if (ml.getChannel().equals(lc))
+					{
+						toDelete.add(ml);
+					}
+				}
+
+				for (MessageListener dml : toDelete)
+				{
+					qp.remove(dml);
+				}
+
+				toDelete.clear();
+
+				if (qp.size() == 0 && qp.getQueuedMessagesCount() == 0)
+				{
+					log.info("Remove QueueProcessor for '{}' because it has no consumers and no messages", qp.getQueueName());
+					i_removeValue(qp);
+				}
+			}
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		}
+		catch (Throwable t)
+		{
+			throw new RuntimeException(t);
 		}
 	}
 

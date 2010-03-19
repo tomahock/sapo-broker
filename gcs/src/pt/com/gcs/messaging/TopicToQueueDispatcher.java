@@ -5,16 +5,19 @@ import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * TopicToQueueDispatcher is responsible for enqueueing topic messages that have durable subscribers registered.
- * 
  */
 
 class TopicToQueueDispatcher implements MessageListener
 {
-	private final String _queueName;
+	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
 
-	public TopicToQueueDispatcher(String queueName)
+	private final String destinationQueueName;
+	private final String topicSubscriptionKey;
+
+	public TopicToQueueDispatcher(ListenerChannel lchannel, String topicSubscriptionKey, String destinationQueueName)
 	{
-		_queueName = queueName;
+		this.topicSubscriptionKey = topicSubscriptionKey;
+		this.destinationQueueName = destinationQueueName;
 	}
 
 	@Override
@@ -22,33 +25,32 @@ class TopicToQueueDispatcher implements MessageListener
 	{
 		return DestinationType.TOPIC;
 	}
-	
+
 	@Override
 	public DestinationType getTargetDestinationType()
 	{
 		return DestinationType.QUEUE;
 	}
 
-	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
-	
+	@Override
 	public ForwardResult onMessage(InternalMessage message)
 	{
 		if (!message.isFromRemotePeer())
 		{
-			message.setDestination(_queueName);
+			message.setDestination(destinationQueueName);
 			Gcs.enqueue(message);
-			// Gcs.enqueue(message, _queueName);
 		}
 		return success;
 	}
 
-	public String getDestinationName()
+	@Override
+	public String getsubscriptionKey()
 	{
-		return _queueName;
+		return topicSubscriptionKey;
 	}
 
 	@Override
-	public boolean ready()
+	public boolean isReady()
 	{
 		return true;
 	}
@@ -59,5 +61,22 @@ class TopicToQueueDispatcher implements MessageListener
 		return true;
 	}
 
+	@Override
+	public ListenerChannel getChannel()
+	{
+		// There is no underlying channel in a TopicToQueueDispatcher
+		return null;
+	}
 
+	@Override
+	public boolean isAckRequired()
+	{
+		return false;
+	}
+
+	@Override
+	public Type getType()
+	{
+		return MessageListener.Type.INTERNAL;
+	}
 }

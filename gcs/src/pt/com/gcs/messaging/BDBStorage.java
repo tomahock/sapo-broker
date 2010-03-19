@@ -53,7 +53,7 @@ public class BDBStorage
 			if (isMarkedForDeletion.get())
 				return;
 			queueProcessor = qp;
-			primaryDbName = queueProcessor.getDestinationName();
+			primaryDbName = queueProcessor.getQueueName();
 
 			env = BDBEnviroment.get();
 
@@ -64,7 +64,7 @@ public class BDBStorage
 			dbConfig.setBtreeComparator(BDBMessageComparator.class);
 			messageDb = env.openDatabase(null, primaryDbName, dbConfig);
 
-			log.info("Storage for queue '{}' is ready.", queueProcessor.getDestinationName());
+			log.info("Storage for queue '{}' is ready.", queueProcessor.getQueueName());
 		}
 		catch (Throwable t)
 		{
@@ -171,7 +171,7 @@ public class BDBStorage
 				env.truncateDatabase(null, dbName, false);
 				env.removeDatabase(null, dbName);
 				BDBEnviroment.sync();
-				log.info("Storage for queue '{}' was removed", queueProcessor.getDestinationName());
+				log.info("Storage for queue '{}' was removed", queueProcessor.getQueueName());
 
 				break;
 			}
@@ -304,7 +304,7 @@ public class BDBStorage
 
 			if (messageDb.put(null, key, data) != OperationStatus.SUCCESS)
 			{
-				log.error("Failed to insert message in queue '{}'", this.queueProcessor.getDestinationName());
+				log.error("Failed to insert message in queue '{}'", this.queueProcessor.getQueueName());
 			}
 		}
 		catch (Throwable t)
@@ -314,32 +314,6 @@ public class BDBStorage
 
 	}
 
-	// Added for compatibility reasons --- BEGIN
-	public void insert(InternalMessage msg, long sequence, boolean preferLocalConsumer, long reserveTimeout)
-	{
-		if (isMarkedForDeletion.get())
-			return;
-		try
-		{
-			BDBMessage bdbm = new BDBMessage(msg, sequence, preferLocalConsumer, reserveTimeout);
-
-			DatabaseEntry key = new DatabaseEntry();
-			DatabaseEntry data = buildDatabaseEntry(bdbm);
-
-			LongBinding.longToEntry(sequence, key);
-
-			if (messageDb.put(null, key, data) != OperationStatus.SUCCESS)
-			{
-				log.error("Failed to insert message in queue '{}'", this.queueProcessor.getDestinationName());
-			}
-		}
-		catch (Throwable t)
-		{
-			dealWithError(t, true);
-		}
-	}
-
-	// Added for compatibility reasons --- END
 
 	private volatile boolean recoveryRunning = false;
 
@@ -471,13 +445,13 @@ public class BDBStorage
 
 			if (log.isDebugEnabled())
 			{
-				log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivery: %s; Expired: %s; Pre ack'ed: %s; Redelivered: %s", queueProcessor.getDestinationName(), i0, j0, e0, a0, k0));
+				log.debug(String.format("Queue '%s' processing summary; Delivered: %s; Failed delivery: %s; Expired: %s; Pre ack'ed: %s; Redelivered: %s", queueProcessor.getQueueName(), i0, j0, e0, a0, k0));
 			}
 			else
 			{
 				if ((j0 + e0 + k0) > 0)
 				{
-					log.warn(String.format("Queue '%s' processing summary; Failed delivery: %s; Expired: %s; Redelivered: %s", queueProcessor.getDestinationName(), j0, e0, k0));
+					log.warn(String.format("Queue '%s' processing summary; Failed delivery: %s; Expired: %s; Redelivered: %s", queueProcessor.getQueueName(), j0, e0, k0));
 				}
 			}
 
@@ -499,7 +473,7 @@ public class BDBStorage
 		if (isMarkedForDeletion.get())
 			return;
 
-		log.info("Deleting expired messages for queue '{}'.", queueProcessor.getDestinationName());
+		log.info("Deleting expired messages for queue '{}'.", queueProcessor.getQueueName());
 
 		long now = System.currentTimeMillis();
 
@@ -558,7 +532,7 @@ public class BDBStorage
 			}
 			if (e0 > 0)
 			{
-				log.warn("Number of expired messages for queue '{}': {}", queueProcessor.getDestinationName(), e0);
+				log.warn("Number of expired messages for queue '{}': {}", queueProcessor.getQueueName(), e0);
 			}
 
 		}

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.Shutdown;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
@@ -34,12 +35,10 @@ import pt.com.broker.messaging.BrokerConsumer;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
-import pt.com.broker.messaging.QueueSessionListenerList;
-import pt.com.broker.messaging.SynchronousMessageListener;
-import pt.com.broker.messaging.TopicSubscriberList;
 import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetAccepted;
+import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetBrokerMessage;
@@ -52,6 +51,9 @@ import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.messaging.Gcs;
+import pt.com.gcs.messaging.QueueProcessorList;
+import pt.com.gcs.messaging.TopicProcessorList;
 
 /**
  * * BrokerProtocolHandler is an Netty ChannelHandler. It handles messages from clients.
@@ -67,9 +69,9 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	private static final BrokerProducer _brokerProducer = BrokerProducer.getInstance();
 
 	private static final BrokerConsumer _brokerConsumer = BrokerConsumer.getInstance();
-	
+
 	private static final BrokerProtocolHandler instance;
-	
+
 	private static final String ACK_REQUIRED = "ACK_REQUIRED";
 
 	static
@@ -128,12 +130,12 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		try
 		{
 			String remoteClient = channel.getRemoteAddress().toString();
-			QueueSessionListenerList.removeSession(channel);
-			TopicSubscriberList.removeSession(channel);
-			SynchronousMessageListener.removeSession(ctx);
+			QueueProcessorList.removeSession(channel);
+			TopicProcessorList.removeSession(channel);
+			BrokerSyncConsumer.removeSession(ctx);
 
 			ChannelAttributes.remove(ctx);
-			
+
 			log.info("channel closed: " + remoteClient);
 		}
 		catch (Throwable t)
@@ -188,7 +190,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 				log.info("Closing channel.");
 				channel.close();
 			}
-			
+
 			ErrorHandler.WTF wtf = ErrorHandler.buildSoapFault(cause);
 			SoapEnvelope soap_ex_msg = wtf.Message;
 
@@ -264,7 +266,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 		if (!(e.getMessage() instanceof NetMessage))
 		{
-			log.error("Uknown message type");
+			log.error("Unknown message type");
 			return;
 		}
 
@@ -398,8 +400,9 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 	private void handleAcknowledeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
-		Channel channel = ctx.getChannel();
-		_brokerProducer.acknowledge(request.getAction().getAcknowledgeMessage(), channel);
+		NetAcknowledge ackReq = request.getAction().getAcknowledgeMessage();
+		String queueName = ackReq.getDestination();
+		Gcs.ackMessage(queueName, ackReq.getMessageId());
 	}
 
 	private void handleUnsubscribeMessage(ChannelHandlerContext ctx, NetMessage request)
@@ -434,13 +437,13 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		}
 
 		boolean ackRequired = true;
-		
-		if( request.getHeaders() != null)
+
+		if (request.getHeaders() != null)
 		{
 			String value = request.getHeaders().get(ACK_REQUIRED);
 			ackRequired = (value == null) ? true : !value.equalsIgnoreCase("false");
 		}
-		
+
 		switch (subscritption.getDestinationType())
 		{
 		case QUEUE:

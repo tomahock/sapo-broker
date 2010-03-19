@@ -28,12 +28,12 @@ class QueueCounter implements Runnable
 			long cnt = qp.getQueuedMessagesCount();
 			if (cnt > 0)
 			{
-				log.info("Queue '{}' has {} message(s).", qp.getDestinationName(), cnt);
+				log.info("Queue '{}' has {} message(s).", qp.getQueueName(), cnt);
 				publishCount(qp, cnt);
 			}
 			else if ((cnt == 0) && !qp.emptyQueueInfoDisplay.getAndSet(true))
 			{
-				log.info("Queue '{}' is empty.", qp.getDestinationName());
+				log.info("Queue '{}' is empty.", qp.getQueueName());
 				publishCount(qp, cnt);
 			}
 
@@ -44,14 +44,14 @@ class QueueCounter implements Runnable
 	{
 		try
 		{
-			String dName = String.format("/system/stats/queue-size/#%s#", qp.getDestinationName());
-			String content = GcsInfo.getAgentName() + "#" + qp.getDestinationName() + "#" + cnt;
+			String dName = String.format("/system/stats/queue-size/#%s#", qp.getQueueName());
+			String content = GcsInfo.getAgentName() + "#" + qp.getQueueName() + "#" + cnt;
 
 			InternalPublisher.send(dName, content);
 		}
 		catch (Throwable error)
 		{
-			String emsg = String.format("Could not publish queue counter for '{}'", qp.getDestinationName());
+			String emsg = String.format("Could not publish queue counter for '{}'", qp.getQueueName());
 			log.error(emsg, error);
 		}
 	}

@@ -1,6 +1,7 @@
 package pt.com.broker.messaging;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -19,20 +20,22 @@ import pt.com.broker.types.NetPoll;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.LocalQueueConsumers;
+import pt.com.gcs.messaging.ListenerChannel;
 import pt.com.gcs.messaging.MessageType;
 import pt.com.gcs.messaging.QueueProcessorList;
 
 /**
  * BrokerSyncConsumer represents a queue synchronous consumer.
- * 
  */
 public class BrokerSyncConsumer
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerSyncConsumer.class);
 
-	private static ConcurrentMap<String, AtomicInteger> synConsumersCount = new ConcurrentHashMap<String, AtomicInteger>(); 
-	
+	private static final String SESSION_ATT_PREFIX = "SYNC_MESSAGE_LISTENER#";
+	private static final AtomicInteger zeroValue = new AtomicInteger(0);
+
+	private static ConcurrentMap<String, AtomicInteger> synConsumersCount = new ConcurrentHashMap<String, AtomicInteger>();
+
 	static
 	{
 		Runnable counter = new Runnable()
@@ -46,14 +49,14 @@ public class BrokerSyncConsumer
 					for (String queueName : synConsumersList)
 					{
 						String ctName = String.format("/system/stats/sync-consumer-count/#%s#", queueName);
-						
+
 						int size = 0;
 						AtomicInteger count = synConsumersCount.get(queueName);
-						if(count != null)
+						if (count != null)
 						{
 							size = count.get();
 						}
-												
+
 						String content = GcsInfo.getAgentName() + "#" + queueName + "#" + size;
 
 						NetBrokerMessage brkMessage = new NetBrokerMessage(content.getBytes("UTF-8"));
@@ -75,19 +78,39 @@ public class BrokerSyncConsumer
 		};
 		BrokerExecutor.scheduleWithFixedDelay(counter, 20, 20, TimeUnit.SECONDS);
 	}
-	
-	
+
+
+	public static void removeSession(ChannelHandlerContext ctx)
+	{
+		// Set<String> attributeKeys = channel.getAttributeKeys();
+		// Channel channel = ctx.getChannel();
+		Set<String> attributeKeys = ChannelAttributes.getAttributeKeys(ctx);
+		for (String attributeKey : attributeKeys)
+		{
+			if (attributeKey.toString().startsWith(SESSION_ATT_PREFIX))
+			{
+				Object attributeValue = ChannelAttributes.get(ctx, attributeKey);
+				if (attributeValue instanceof SynchronousMessageListener)
+				{
+					SynchronousMessageListener listener = (SynchronousMessageListener) attributeValue;
+					pollStoped(listener.getsubscriptionKey());
+					QueueProcessorList.removeListener(listener);
+				}
+			}
+		}
+	}
+
 	public static void poll(NetPoll poll, ChannelHandlerContext ctx)
 	{
 		Channel channel = ctx.getChannel();
 		try
 		{
 			QueueProcessorList.get(poll.getDestination());
-			
-			String destination = poll.getDestination();
-			String composedQueueName = SynchronousMessageListener.getComposedQueueName(destination);
+
+			String queueName = poll.getDestination();
+			String composedQueueName = SESSION_ATT_PREFIX + queueName;
 			Object attribute = ChannelAttributes.get(ctx, composedQueueName);
-			
+
 			SynchronousMessageListener msgListener = null;
 			if (attribute != null)
 			{
@@ -95,21 +118,18 @@ public class BrokerSyncConsumer
 			}
 			else
 			{
-				msgListener = new SynchronousMessageListener(destination, channel);
+				ListenerChannel lchannel = new ListenerChannel(channel);
+
+				msgListener = new SynchronousMessageListener(lchannel, queueName);
+
 				ChannelAttributes.set(ctx, composedQueueName, msgListener);
-				LocalQueueConsumers.add(destination, msgListener);
+				QueueProcessorList.get(queueName).add(msgListener);
 				AtomicInteger previous = synConsumersCount.putIfAbsent(poll.getDestination(), new AtomicInteger(1));
-				if(previous != null)
+				if (previous != null)
 				{
 					previous.incrementAndGet();
 				}
 			}
-			
-			if(log.isDebugEnabled())
-			{
-				log.debug(String.format("Poll request for queue '%s' by client '%s'.", destination, channel.getRemoteAddress()));
-			}
-			
 			msgListener.activate(poll.getTimeout(), poll.getActionId());
 		}
 		catch (Throwable t)
@@ -124,16 +144,14 @@ public class BrokerSyncConsumer
 			}
 		}
 	}
-	
-	static final AtomicInteger zeroValue = new AtomicInteger(0);
-	public static void pollStoped(String destination)
+
+	private static void pollStoped(String destination)
 	{
 		AtomicInteger count = synConsumersCount.get(destination);
-		if(count != null)
+		if (count != null)
 		{
 			count.decrementAndGet();
 			synConsumersCount.remove(destination, zeroValue); // remove if zero
 		}
 	}
-
 }

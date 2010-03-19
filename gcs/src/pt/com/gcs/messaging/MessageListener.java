@@ -3,26 +3,33 @@ package pt.com.gcs.messaging;
 import pt.com.broker.types.NetAction.DestinationType;
 
 /**
- * Classes implement MessageListener in order to be notified of new topic publications.
- * 
+ * A MessageListener object is used to receive asynchronously delivered messages. 
  */
 
 public interface MessageListener
 {
 	/**
-	 * 
-	 * @param message Message to be delivered.
-	 * @return Negative value if the message wasn't delivered or a positive value indicating for how long the message should be reserved (if applicable).
+	 * Passes a message to the listener.
+	 * @param message the message passed to the listener
 	 */
-	public ForwardResult onMessage(InternalMessage message);
+	
+	public enum Type{LOCAL, INTERNAL, REMOTE};
+	
+	public ForwardResult onMessage(InternalMessage message);	
+	
+	public ListenerChannel getChannel();
 
-	public String getDestinationName();
+	public String getsubscriptionKey();
 
 	public DestinationType getSourceDestinationType();
 	
 	public DestinationType getTargetDestinationType();
 	
-	public boolean ready();
+	public boolean isReady();
 	
 	public boolean isActive();
+	
+	public boolean isAckRequired();
+	
+	public Type getType();
 }
