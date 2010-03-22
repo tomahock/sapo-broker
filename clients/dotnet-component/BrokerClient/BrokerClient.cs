@@ -156,7 +156,7 @@ namespace SapoBrokerClient
 			NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
 			action.PublishMessage = publish;
 			
-			NetMessage netMessage = new NetMessage(action);
+			NetMessage netMessage = new NetMessage(action, message.Headers);
 			
 			protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);			
 		}
@@ -185,8 +185,8 @@ namespace SapoBrokerClient
 			NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
 			action.PublishMessage = publish;
 			
-			NetMessage netMessage = new NetMessage(action);
-			
+			NetMessage netMessage = new NetMessage(action, message.Headers);
+            
 			protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);
 		}
 		/// <summary>
@@ -212,8 +212,8 @@ namespace SapoBrokerClient
 			NetSubscribe netSubscribe = new NetSubscribe(subscription.DestinationPattern, subscription.DestinationType);
 			NetAction action = new NetAction(NetAction.ActionType.SUBSCRIBE);
 			action.SubscribeMessage = netSubscribe;
-			NetMessage netMessage = new NetMessage(action);
-			
+			NetMessage netMessage = new NetMessage(action, subscription.Headers);
+            
 			protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);
 			
 			protocolHandler.AddSubscription(subscription);
@@ -239,7 +239,7 @@ namespace SapoBrokerClient
 			NetUnsubscribe netUnsubscribe = new NetUnsubscribe(subscription.DestinationPattern, subscription.DestinationType);
 			NetAction action = new NetAction(NetAction.ActionType.UNSUBSCRIBE);
 			action.UnsbuscribeMessage = netUnsubscribe;
-			NetMessage netMessage = new NetMessage(action);
+			NetMessage netMessage = new NetMessage(action, subscription.Headers);
 			
 			protocolHandler.HandleOutgoingMessage(netMessage, acceptRequest);
 			
@@ -403,7 +403,7 @@ namespace SapoBrokerClient
             NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
             action.PublishMessage = publish;
 
-            NetMessage netMessage = new NetMessage(action);
+            NetMessage netMessage = new NetMessage(action, message.Headers);
 
             BrokerProtocolHandler.SendMessageOverUdp(netMessage, hostInfo, messageSerializer);
         }
@@ -422,7 +422,7 @@ namespace SapoBrokerClient
             NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
             action.PublishMessage = publish;
 
-            NetMessage netMessage = new NetMessage(action);
+            NetMessage netMessage = new NetMessage(action, message.Headers);
 
             BrokerProtocolHandler.SendMessageOverUdp(netMessage, hostInfo, messageSerializer);	
         }

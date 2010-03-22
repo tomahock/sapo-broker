@@ -85,7 +85,8 @@ namespace SapoBrokerClient.Networking
 
             if (currentMessageReceived != null)
             {
-                currentMessageReceived.BeginInvoke(messagePayload, null, null);
+                // process received messages in current I/O thread.
+                currentMessageReceived(messagePayload);
 			}
 		}
 		
@@ -123,6 +124,7 @@ namespace SapoBrokerClient.Networking
 
         virtual protected Stream GetCommunicationStream()
         {
+            NetworkStream ns = new NetworkStream(socket, true);
             return new NetworkStream(socket, true);
         }
 
@@ -153,8 +155,7 @@ namespace SapoBrokerClient.Networking
                 }
             }
 		}
-
-
+        
         private class ReadContext
         {
             private volatile MessageAccumulator msgAccumulator;
@@ -455,9 +456,7 @@ namespace SapoBrokerClient.Networking
                 socket.Close();
             }
         }
-
         
-
         #endregion
     }
 }

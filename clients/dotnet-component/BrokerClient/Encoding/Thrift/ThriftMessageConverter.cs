@@ -58,7 +58,7 @@ namespace SapoBrokerClient
 		
 		private static NetNotification getNotificationMessage(Atom atom)
 		{
-			NetNotification notification = new NetNotification(atom.Action.Notification.Destination, translate(atom.Action.Notification.Destination_type), getBrokerMessage( atom.Action.Notification.Message ), atom.Action.Notification.Subscription);
+			NetNotification notification = new NetNotification(atom.Action.Notification.Destination, translate(atom.Action.Notification.Destination_type), getBrokerMessage( atom.Action.Notification.Message ), atom.Action.Notification.Subscription, atom.Header.Parameters);
 			return notification;
 		}
 		
@@ -118,10 +118,10 @@ namespace SapoBrokerClient
 		public static Atom translate(NetMessage message)
 		{
 			Atom atom = new Atom();
-			
-			Action action = getAction(message);
-			Header header = getHeaders(message);
-			
+
+            Action action = getAction(message);
+            Header header = getHeaders(message);
+						
 			atom.Action = action;
 			atom.Header = header;			
 			

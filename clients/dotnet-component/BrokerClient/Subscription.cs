@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 
 namespace SapoBrokerClient
 {
@@ -11,7 +12,9 @@ namespace SapoBrokerClient
 	public class Subscription
 	{
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-                
+
+        private IDictionary<String, String> headers;
+
 		/// <summary>
         /// OnMessageHandler
 		/// </summary>
@@ -28,7 +31,7 @@ namespace SapoBrokerClient
 		private string destinationPattern;
 		private NetAction.DestinationType destinationType;
 
-        private bool autoAcknowledge = false;
+        private bool autoAcknowledge = true;
         private BrokerClient brokerClient;
 
 		#endregion
@@ -48,6 +51,27 @@ namespace SapoBrokerClient
 		}
 
         /// <summary>
+        /// Message headers
+        /// </summary>
+        public IDictionary<String, String> Headers
+        {
+            get { return headers; }
+            set { this.headers = value; }
+        }
+
+        /// <summary>
+        /// Set a message headers
+        /// </summary>
+        public void SetHeader(string header, string value)
+        {
+            if (headers == null)
+            {
+                Headers = new Dictionary<string, string>();
+            }
+            this.headers.Add(header, value);
+        }
+
+        /// <summary>
         /// Message used to notify clients of a new message received. This is meant to be used by the messaging framework.
         /// </summary>
         /// <param name="notification"></param>
@@ -58,6 +82,14 @@ namespace SapoBrokerClient
                 try
                 {
                     OnMessage(notification);
+                    if (notification.Headers != null)
+                    {
+                        if (notification.Headers.ContainsKey("ACK_REQUIRED"))
+                        {
+                            notification.Headers["ACK_REQUIRED"].ToLower().Equals("false");
+                            return;
+                        }
+                    }
                     if (autoAcknowledge && notification.DestinationType != NetAction.DestinationType.TOPIC)
                     {
                         brokerClient.Acknowledge(notification);

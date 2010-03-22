@@ -137,37 +137,43 @@ namespace SapoBrokerClient
         public NetAction(ActionType actionType)
         {
             this.actionType = actionType;
-        }
-
-       
+        }        
     }
 
     public class NetPublish
     {
         private string actionId;
+        private NetAction.DestinationType destinationType;
+        private string destination;
+        private NetBrokerMessage message;
+        
+        private IDictionary<string, string> headers;
 
         public string ActionId
         {
             get { return actionId; }
             set { actionId = value; }
         }
-        private NetAction.DestinationType destinationType;
-
+        
         public NetAction.DestinationType DestinationType
         {
             get { return destinationType; }
         }
-        private string destination;
-
+        
         public string Destination
         {
             get { return destination; }
         }
-        private NetBrokerMessage message;
-
+        
         public NetBrokerMessage Message
         {
             get { return message; }
+        }
+
+        public IDictionary<string, string> Headers
+        {
+            get { return headers; }
+            set { this.headers = value; }
         }
 
         public NetPublish(string destination, NetAction.DestinationType destinationType, NetBrokerMessage message)
@@ -181,31 +187,54 @@ namespace SapoBrokerClient
     public class NetBrokerMessage
     {
         private string messageId = "";
+        private byte[] payload;
+        private long expiration = -1;
+        private long timestamp = -1;
+
+        private IDictionary<string, string> headers;
 
         public string MessageId
         {
             get { return messageId; }
             set { messageId = value; }
         }
-        private byte[] payload;
 
         public byte[] Payload
         {
             get { return payload; }
         }
-        private long expiration = -1;
 
         public long Expiration
         {
             get { return expiration; }
             set { expiration = value; }
         }
-        private long timestamp = -1;
 
         public long Timestamp
         {
             get { return timestamp; }
             set { timestamp = value; }
+        }
+
+        /// <summary>
+        /// Message headers
+        /// </summary>
+        public IDictionary<String, String> Headers
+        {
+            get { return headers; }
+            set { this.headers = value; }
+        }
+
+        /// <summary>
+        /// Set a message headers
+        /// </summary>
+        public void SetHeader(string header, string value)
+        {
+            if (headers == null)
+            {
+                Headers = new Dictionary<string, string>();
+            }
+            this.headers.Add(header, value);
         }
 
         public NetBrokerMessage(byte[] payload)
@@ -303,19 +332,19 @@ namespace SapoBrokerClient
     public class NetSubscribe
     {
         private string actionId;
+        private string destination;
+        private NetAction.DestinationType destinationType;
 
         public string ActionId
         {
             get { return actionId; }
             set { actionId = value; }
         }
-        private string destination;
 
         public string Destination
         {
             get { return destination; }
         }
-        private NetAction.DestinationType destinationType;
 
         public NetAction.DestinationType DestinationType
         {
@@ -361,31 +390,39 @@ namespace SapoBrokerClient
     public class NetNotification
     {
         private string destination;
+        private string subscription;
+        private NetBrokerMessage message;
+
+        private NetAction.DestinationType destinationType;
+
+        private IDictionary<string, string> headers;
 
         public string Destination
         {
             get { return destination; }
         }
-        private string subscription;
 
         public string Subscription
         {
             get { return subscription; }
         }
-        private NetAction.DestinationType destinationType;
 
         public NetAction.DestinationType DestinationType
         {
             get { return destinationType; }
         }
-        private NetBrokerMessage message;
 
         public NetBrokerMessage Message
         {
             get { return message; }
         }
 
-        public NetNotification(string destination, NetAction.DestinationType destinationType, NetBrokerMessage message, string subscription)
+        public IDictionary<string, string> Headers
+        {
+            get { return headers; }
+        }
+
+        internal NetNotification(string destination, NetAction.DestinationType destinationType, NetBrokerMessage message, string subscription, IDictionary<string, string> headers)
         {
             this.destination = destination;
             this.destinationType = destinationType;
@@ -394,36 +431,45 @@ namespace SapoBrokerClient
                 this.subscription = "";
             else
                 this.subscription = subscription;
+            this.headers = headers;
         }
     }
 
     public class NetFault
     {
         private string actionId;
+        private string code;
+        private string message;
+        private string detail;
+
+        private IDictionary<string, string> headers;
 
         public string ActionId
         {
             get { return actionId; }
             set { actionId = value; }
         }
-        private string code;
 
         public string Code
         {
             get { return code; }
         }
-        private string message;
 
         public string Message
         {
             get { return message; }
         }
-        private string detail;
 
         public string Detail
         {
             get { return detail; }
             set { detail = value; }
+        }
+
+        public IDictionary<string, string> Headers
+        {
+            get { return headers; }
+            set { headers = value; }
         }
 
         public static readonly NetMessage InvalidMessageSizeErrorMessage;

@@ -28,8 +28,8 @@ namespace SapoBrokerClient.Messaging
 
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static NetNotification UnblockNotification = new NetNotification("UnblockNotification", NetAction.DestinationType.QUEUE, null, null);
-        public static NetNotification NoMessageNotification = new NetNotification("NoMessagekNotification", NetAction.DestinationType.QUEUE, null, null);
+        public static NetNotification UnblockNotification = new NetNotification("UnblockNotification", NetAction.DestinationType.QUEUE, null, null, null);
+        public static NetNotification NoMessageNotification = new NetNotification("NoMessagekNotification", NetAction.DestinationType.QUEUE, null, null, null);
 		
 		#region Private data members
 		private NetworkHandler networkHandler;
@@ -251,6 +251,9 @@ namespace SapoBrokerClient.Messaging
                     return;
                 }
             }
+
+            message.Action.FaultMessage.Headers = message.Headers;
+
             if (!PendingAcceptRequestsManager.MessageFailed(message.Action.FaultMessage))
             {
                 FaultHandler handler = OnFault;
