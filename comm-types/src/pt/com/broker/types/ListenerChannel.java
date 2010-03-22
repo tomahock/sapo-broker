@@ -1,4 +1,4 @@
-package pt.com.gcs.messaging;
+package pt.com.broker.types;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;

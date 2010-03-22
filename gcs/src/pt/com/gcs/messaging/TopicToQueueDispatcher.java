@@ -1,7 +1,14 @@
 package pt.com.gcs.messaging;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.types.DeliverableMessage;
+import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ListenerChannel;
+import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * TopicToQueueDispatcher is responsible for enqueueing topic messages that have durable subscribers registered.
@@ -9,7 +16,10 @@ import pt.com.gcs.messaging.ForwardResult.Result;
 
 class TopicToQueueDispatcher implements MessageListener
 {
+	private static final Logger log = LoggerFactory.getLogger(TopicToQueueDispatcher.class);
+
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
+	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
 
 	private final String destinationQueueName;
 	private final String topicSubscriptionKey;
@@ -33,12 +43,24 @@ class TopicToQueueDispatcher implements MessageListener
 	}
 
 	@Override
-	public ForwardResult onMessage(InternalMessage message)
+	public ForwardResult onMessage(DeliverableMessage msg)
 	{
-		if (!message.isFromRemotePeer())
+
+		InternalMessage imsg;
+		if (msg instanceof InternalMessage)
 		{
-			message.setDestination(destinationQueueName);
-			Gcs.enqueue(message);
+			imsg = (InternalMessage) msg;
+		}
+		else
+		{
+			log.warn("Don't know how to handle this message type");
+			return failed;
+		}
+
+		if (!imsg.isFromRemotePeer())
+		{
+			imsg.setDestination(destinationQueueName);
+			Gcs.enqueue(imsg);
 		}
 		return success;
 	}
@@ -78,5 +100,11 @@ class TopicToQueueDispatcher implements MessageListener
 	public Type getType()
 	{
 		return MessageListener.Type.INTERNAL;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "TopicToQueueDispatcher [type=" + getType().toString() + ", destinationQueueName=" + destinationQueueName + ", topicSubscriptionKey=" + topicSubscriptionKey + "]";
 	}
 }

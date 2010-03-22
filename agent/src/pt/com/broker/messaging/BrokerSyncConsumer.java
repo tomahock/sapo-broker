@@ -15,12 +15,12 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.ChannelAttributes;
+import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPoll;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.ListenerChannel;
 import pt.com.gcs.messaging.MessageType;
 import pt.com.gcs.messaging.QueueProcessorList;
 

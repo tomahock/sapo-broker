@@ -7,17 +7,17 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ListenerChannel;
+import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.ForwardResult;
 import pt.com.gcs.messaging.GcsExecutor;
 import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.ListenerChannel;
-import pt.com.gcs.messaging.MessageListener;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
-import pt.com.gcs.messaging.ForwardResult.Result;
 import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
 
 /*
@@ -70,7 +70,7 @@ public class SynchronousMessageListener extends BrokerListener
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
 
 	@Override
-	public ForwardResult onMessage(InternalMessage message)
+	protected ForwardResult doOnMessage(NetMessage response)
 	{
 		if (!ready.get())
 		{
@@ -84,7 +84,7 @@ public class SynchronousMessageListener extends BrokerListener
 
 		if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 		{
-			final NetMessage response = BrokerListener.buildNotification(message, queueName, getSourceDestinationType());
+			//final NetMessage response = BrokerListener.buildNotification(message, queueName, getSourceDestinationType());
 			lchannel.write(response);
 
 			lastDeliveredMessage.set(System.currentTimeMillis());

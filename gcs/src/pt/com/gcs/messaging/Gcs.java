@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,10 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
@@ -436,6 +442,31 @@ public class Gcs
 		{
 			instance.agentsConnection.remove(channel);
 		}
+	}
+	
+	
+	protected static NetMessage buildNotification(InternalMessage msg, DestinationType dtype)
+	{
+		return buildNotification(msg, null, dtype);
+	}
+
+	protected static NetMessage buildNotification(InternalMessage msg, String subscriptionName, DestinationType dtype)
+	{
+		NetNotification notification = new NetNotification(msg.getDestination(), dtype, msg.getContent(), subscriptionName);
+
+		NetAction action = new NetAction(NetAction.ActionType.NOTIFICATION);
+		action.setNotificationMessage(notification);
+
+		notification.getMessage().setMessageId(msg.getMessageId());
+
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("FROM", msg.getSourceApp());
+		params.put("ACTION", "http://services.sapo.pt/broker/notification/" + msg.getMessageId());
+		params.put("PUBLISHING_AGENT", msg.getPublishingAgent());
+
+		NetMessage message = new NetMessage(action, params);
+
+		return message;
 	}
 
 }

@@ -1,17 +1,19 @@
 package pt.com.gcs.messaging;
 
-import org.caudexorigo.Shutdown;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.DeliverableMessage;
+import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ListenerChannel;
+import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.ForwardResult.Result;
 
 public class RemoteListener implements MessageListener
 {
-
 	private static final Logger log = LoggerFactory.getLogger(RemoteListener.class);
 	private final ListenerChannel lchannel;
 	private final String subscriptionKey;
@@ -111,10 +113,16 @@ public class RemoteListener implements MessageListener
 	}
 
 	@Override
-	public ForwardResult onMessage(InternalMessage message)
+	public ForwardResult onMessage(DeliverableMessage message)
 	{
 		if (message == null)
 			return failed;
+		
+		if (!(message instanceof InternalMessage))
+		{
+			log.warn("Don't know how to handle this message type");
+			return failed;			
+		}
 
 		final ListenerChannel lchannel = getChannel();
 

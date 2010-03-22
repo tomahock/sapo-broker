@@ -11,7 +11,9 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
 import pt.com.gcs.conf.GcsInfo;
 
 public class TopicProcessor
@@ -183,6 +185,7 @@ public class TopicProcessor
 		if (size() > 0)
 		{
 			String topicName = message.getDestination();
+			NetMessage nmsg = null;
 
 			if (DestinationMatcher.match(subscriptionName, topicName))
 			{
@@ -194,7 +197,20 @@ public class TopicProcessor
 						{
 							continue;
 						}
-						ml.onMessage(message);
+
+						if (ml.getType() == MessageListener.Type.LOCAL)
+						{
+							if (nmsg == null)
+							{
+								nmsg = Gcs.buildNotification(message, ml.getsubscriptionKey(), ml.getTargetDestinationType());
+							}
+							ml.onMessage(nmsg);
+						}
+						else
+						{
+							ml.onMessage(message);
+						}
+
 						message.setDestination(topicName); // -> Set the destination name, queue dispatchers change it.
 					}
 				}
@@ -211,7 +227,7 @@ public class TopicProcessor
 				if (topicListeners.remove(listener))
 				{
 					log.info("Removed listener -> '{}'", listener.toString());
-					
+
 					boolean has_local = hasLocalConsumers();
 
 					if (!has_local && (listener.getType() == MessageListener.Type.LOCAL))

@@ -6,12 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.net.BrokerProtocolHandler;
+import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.ForwardResult;
-import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.ListenerChannel;
-import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * BrokerTopicListener a represents local topic consumer.
@@ -57,15 +56,14 @@ public class BrokerTopicListener extends BrokerListener
 		return DestinationType.TOPIC;
 	}
 
-	public ForwardResult onMessage(final InternalMessage amsg)
+	@Override
+	protected ForwardResult doOnMessage(NetMessage response)
 	{
-		if (amsg == null)
-			return failed;
 		final ListenerChannel lchannel = getChannel();
 
 		try
 		{
-			final NetMessage response = BrokerListener.buildNotification(amsg, getsubscriptionKey(), DestinationType.TOPIC);
+			// final NetMessage response = BrokerListener.buildNotification(amsg, getsubscriptionKey(), DestinationType.TOPIC);
 
 			try
 			{

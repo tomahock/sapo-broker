@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.CriticalErrors;
+import pt.com.broker.types.ListenerChannel;
+import pt.com.broker.types.MessageListener;
 
 public class TopicProcessorList
 {

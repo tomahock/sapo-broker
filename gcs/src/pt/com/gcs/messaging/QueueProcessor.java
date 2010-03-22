@@ -11,9 +11,12 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * QueueProcessor provides several queue related features, representing each instance a distinct queue.
@@ -338,7 +341,8 @@ public class QueueProcessor
 
 		int s = listeners.size();
 		int n = Math.abs(++current_idx % s);
-
+		NetMessage nmsg = null;
+		
 		try
 		{
 			int idx = 0;
@@ -351,7 +355,18 @@ public class QueueProcessor
 				{
 					if (ml.isReady())
 					{
-						return ml.onMessage(message);
+						if (ml.getType() == MessageListener.Type.LOCAL)
+						{
+							if (nmsg == null)
+							{
+								nmsg = Gcs.buildNotification(message, ml.getsubscriptionKey(), ml.getTargetDestinationType());
+							}
+							return ml.onMessage(nmsg);
+						}
+						else
+						{
+							return ml.onMessage(message);
+						}
 					}
 				}
 			}
@@ -366,7 +381,18 @@ public class QueueProcessor
 				{
 					if (ml.isReady())
 					{
-						return ml.onMessage(message);
+						if (ml.getType() == MessageListener.Type.LOCAL)
+						{
+							if (nmsg == null)
+							{
+								nmsg = Gcs.buildNotification(message, ml.getsubscriptionKey(), ml.getTargetDestinationType());
+							}
+							return ml.onMessage(nmsg);
+						}
+						else
+						{
+							return ml.onMessage(message);
+						}
 					}
 				}
 				else

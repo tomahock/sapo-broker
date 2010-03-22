@@ -70,6 +70,7 @@ public class BrokerDecoderRouter extends FrameDecoder
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception
 	{
+		
 		int readableBytes = buffer.readableBytes();
 		if (readableBytes < HEADER_LENGTH)
 		{
@@ -120,6 +121,8 @@ public class BrokerDecoderRouter extends FrameDecoder
 
 		byte[] decoded = new byte[len];
 		buffer.readBytes(decoded);
+		
+
 		NetMessage message = null;
 		try
 		{
@@ -143,5 +146,6 @@ public class BrokerDecoderRouter extends FrameDecoder
 		}
 
 		return message;
+
 	}
 }

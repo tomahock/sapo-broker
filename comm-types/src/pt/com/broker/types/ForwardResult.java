@@ -1,4 +1,4 @@
-package pt.com.gcs.messaging;
+package pt.com.broker.types;
 
 
 public class ForwardResult

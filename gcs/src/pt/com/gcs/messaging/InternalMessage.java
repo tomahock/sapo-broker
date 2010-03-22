@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.caudexorigo.cryto.MD5;
 import org.caudexorigo.text.StringUtils;
 
+import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;
 
@@ -15,7 +16,7 @@ import pt.com.gcs.conf.GcsInfo;
  * 
  */
 
-public class InternalMessage
+public class InternalMessage implements DeliverableMessage
 {
 
 	public static final short CURRENT_VERSION  = 1;

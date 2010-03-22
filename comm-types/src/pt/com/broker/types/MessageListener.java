@@ -1,4 +1,4 @@
-package pt.com.gcs.messaging;
+package pt.com.broker.types;
 
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -15,7 +15,7 @@ public interface MessageListener
 	
 	public enum Type{LOCAL, INTERNAL, REMOTE};
 	
-	public ForwardResult onMessage(InternalMessage message);	
+	public ForwardResult onMessage(DeliverableMessage message);	
 	
 	public ListenerChannel getChannel();
 

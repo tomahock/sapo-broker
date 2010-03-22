@@ -6,13 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.net.BrokerProtocolHandler;
+import pt.com.broker.types.DeliverableMessage;
+import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.ForwardResult;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.ListenerChannel;
-import pt.com.gcs.messaging.ForwardResult.Result;
 
 /**
  * BrokerQueueListener represents a local queue consumer.
@@ -25,10 +25,8 @@ public class BrokerQueueListener extends BrokerListener
 	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
 	private static final String ACK_REQUIRED = "ACK_REQUIRED";
 
-	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
 	private static final ForwardResult ackNotRequired = new ForwardResult(Result.NOT_ACKNOWLEDGE);
-
 	private final boolean ackRequired;
 
 	private boolean showResumedDeliveryMessage;
@@ -63,16 +61,14 @@ public class BrokerQueueListener extends BrokerListener
 		return DestinationType.QUEUE;
 	}
 
-	public ForwardResult onMessage(final InternalMessage msg)
+	@Override
+	protected ForwardResult doOnMessage(NetMessage response)
 	{
-		if (msg == null)
-			return failed;
-
 		final ListenerChannel lchannel = getChannel();
 
 		try
 		{
-			final NetMessage response = BrokerListener.buildNotification(msg, getsubscriptionKey(), pt.com.broker.types.NetAction.DestinationType.QUEUE);
+			//final NetMessage response = BrokerListener.buildNotification(msg, getsubscriptionKey(), pt.com.broker.types.NetAction.DestinationType.QUEUE);
 
 			if (!isAckRequired())
 			{
@@ -135,8 +131,9 @@ public class BrokerQueueListener extends BrokerListener
 			{
 				try
 				{
-					Gcs.ackMessage(getsubscriptionKey(), msg.getMessageId());
-					log.warn("Undeliverable message was deleted. Id: '{}'", msg.getMessageId());
+					String mid = response.getAction().getNotificationMessage().getMessage().getMessageId();
+					Gcs.ackMessage(getsubscriptionKey(), mid);
+					log.warn("Undeliverable message was deleted. Id: '{}'", mid);
 				}
 				catch (Throwable tx)
 				{
