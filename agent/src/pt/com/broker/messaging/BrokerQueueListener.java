@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.net.BrokerProtocolHandler;
-import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
@@ -68,8 +67,6 @@ public class BrokerQueueListener extends BrokerListener
 
 		try
 		{
-			//final NetMessage response = BrokerListener.buildNotification(msg, getsubscriptionKey(), pt.com.broker.types.NetAction.DestinationType.QUEUE);
-
 			if (!isAckRequired())
 			{
 				response.getHeaders().put(ACK_REQUIRED, "false");

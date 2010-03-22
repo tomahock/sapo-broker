@@ -7,6 +7,7 @@ import java.util.List;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
+import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,6 +125,11 @@ public class QueueProcessorList
 
 		try
 		{
+			if (StringUtils.isBlank(destinationName))
+			{
+				log.error("Can't obtain a QueueProcessor with a blank destinationName.");
+				return null;
+			}
 			return qpCache.get(destinationName, qp_cf);
 		}
 		catch (InterruptedException ie)
@@ -159,6 +165,10 @@ public class QueueProcessorList
 			try
 			{
 				qp = get(queueName);
+				if (qp == null)
+				{
+					return;
+				}
 			}
 			catch (MaximumQueuesAllowedReachedException e)
 			{
@@ -192,7 +202,10 @@ public class QueueProcessorList
 	private void i_removeListener(MessageListener listener)
 	{
 		QueueProcessor qp = get(listener.getsubscriptionKey());
-		qp.remove(listener);
+		if (qp != null)
+		{
+			qp.remove(listener);
+		}
 	}
 
 	private void i_removeSession(Channel channel)

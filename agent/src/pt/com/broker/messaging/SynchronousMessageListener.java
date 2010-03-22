@@ -135,6 +135,10 @@ public class SynchronousMessageListener extends BrokerListener
 			try
 			{
 				queueProcessor = QueueProcessorList.get(getsubscriptionKey());
+				if(queueProcessor == null)
+				{
+					return;
+				}
 				if (queueProcessor.getQueuedMessagesCount() == 0)
 				{
 					noMessages = true;

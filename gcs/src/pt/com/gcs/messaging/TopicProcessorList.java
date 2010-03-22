@@ -7,6 +7,7 @@ import java.util.List;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
+import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +108,12 @@ public class TopicProcessorList
 	{
 		log.debug("Get Topic for: {}", destinationName);
 
+		if (StringUtils.isBlank(destinationName))
+		{
+			log.error("Can't obtain a TopicProcessor with a blank destinationName.");
+			return null;
+		}
+
 		try
 		{
 			return tpCache.get(destinationName, tp_cf);
@@ -144,7 +151,10 @@ public class TopicProcessorList
 	private void i_removeListener(MessageListener listener)
 	{
 		TopicProcessor tp = get(listener.getsubscriptionKey());
-		tp.remove(listener);
+		if (tp != null)
+		{
+			tp.remove(listener);
+		}
 	}
 
 	private void i_removeSession(Channel channel)

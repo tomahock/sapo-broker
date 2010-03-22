@@ -209,10 +209,20 @@ public class QueueProcessor
 				log.info("Get Dispatcher for: {}", queueName);
 
 				String topicName = StringUtils.substringAfter(queueName, "@");
+				if(StringUtils.isBlank(topicName))
+				{
+					String errorMessage = String.format("Can't create a topic dispatcher whose name is empty. VirtualQueue name: '%s'", queueName);
+					log.error(errorMessage);
+					throw new RuntimeException(errorMessage);
+				}
 				topicFwd = new TopicToQueueDispatcher(null, topicName, queueName);
 
 				VirtualQueueStorage.saveVirtualQueue(queueName);
-				TopicProcessorList.get(topicName).add(topicFwd, false);
+				TopicProcessor topicProcessor = TopicProcessorList.get(topicName);
+				if(topicProcessor != null)
+				{
+					topicProcessor.add(topicFwd, false);
+				}
 			}
 		}
 		catch (Throwable e)

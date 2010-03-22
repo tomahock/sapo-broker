@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
@@ -105,9 +106,17 @@ public class BrokerSyncConsumer
 		Channel channel = ctx.getChannel();
 		try
 		{
-			QueueProcessorList.get(poll.getDestination());
-
 			String queueName = poll.getDestination();
+
+			if(StringUtils.isBlank(queueName))
+			{
+				String error = "Can't poll a message from a queue whose name is blank.";
+				log.error(error);
+				throw new RuntimeException(error);
+			}
+			
+			QueueProcessorList.get(queueName);
+
 			String composedQueueName = SESSION_ATT_PREFIX + queueName;
 			Object attribute = ChannelAttributes.get(ctx, composedQueueName);
 

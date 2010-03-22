@@ -16,7 +16,6 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.handler.ssl.SslHandler;
-import org.jboss.netty.handler.timeout.WriteTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +43,7 @@ import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPing;
+import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetPong;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
@@ -201,18 +201,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 			publishFault(soap_ex_msg);
 
-			String msg = "";
-
-			if (wtf.Cause instanceof WriteTimeoutException)
-			{
-				String emsg = "Connection was closed because client was too slow! Slow queue consumers should use polling.";
-				msg = "Client: " + client + ". Message: " + emsg;
-			}
-			else
-			{
-				String emsg = wtf.Cause.getMessage();
-				msg = "Client: " + client + ". Message: " + emsg;
-			}
+			String msg = String.format("Client: '%s'. Message: %s", client, wtf.Cause.getMessage());
 
 			if (wtf.Cause instanceof IOException)
 			{
@@ -344,8 +333,15 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		NetPublish publish = request.getAction().getPublishMessage();
 
 		String actionId = publish.getActionId();
+		String destination = publish.getDestination();
 
-		if (StringUtils.contains(publish.getDestination(), "@"))
+		if (!isValidDestination(destination))
+		{
+			writeInvalidDestinationFault(channel, actionId);
+			return;
+		}
+
+		if (StringUtils.contains(destination, "@"))
 		{
 			if (publish.getActionId() == null)
 			{
@@ -391,28 +387,70 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		sendAccepted(ctx, actionId);
 	}
 
+	private final boolean isValidDestination(String destination)
+	{
+		return StringUtils.isNotBlank(destination);
+	}
+
+	private void writeInvalidDestinationFault(Channel channel, String actionId)
+	{
+		if (actionId == null)
+		{
+			channel.write(NetFault.InvalidDestinationNameErrorMessage).addListener(ChannelFutureListener.CLOSE);
+		}
+		else
+		{
+			channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, actionId)).addListener(ChannelFutureListener.CLOSE);
+		}
+	}
+
 	private void handlePollMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
-		sendAccepted(ctx, request.getAction().getPollMessage().getActionId());
-		BrokerSyncConsumer.poll(request.getAction().getPollMessage(), ctx);
+		NetPoll pollMsg = request.getAction().getPollMessage();
+		String actionId = pollMsg.getActionId();
+		String destination = pollMsg.getDestination();
+		
+		if (!isValidDestination(destination))
+		{
+			writeInvalidDestinationFault(ctx.getChannel(), actionId);
+			return;
+		}
+		
+		sendAccepted(ctx, actionId);
+		BrokerSyncConsumer.poll(pollMsg, ctx);
 	}
 
 	private void handleAcknowledeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
 		NetAcknowledge ackReq = request.getAction().getAcknowledgeMessage();
-		String queueName = ackReq.getDestination();
-		Gcs.ackMessage(queueName, ackReq.getMessageId());
+	
+		String actionId = ackReq.getActionId();
+		String destination = ackReq.getDestination();
+		
+		if (!isValidDestination(destination))
+		{
+			writeInvalidDestinationFault(ctx.getChannel(), actionId);
+			return;
+		}
+		
+		Gcs.ackMessage(destination, ackReq.getMessageId());
 	}
 
 	private void handleUnsubscribeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
 		Channel channel = ctx.getChannel();
 		NetUnsubscribe unsubMsg = request.getAction().getUnsbuscribeMessage();
-		if (unsubMsg == null)
-			throw new RuntimeException("Not a valid request - inexistent Unsubscribe message");
 
-		_brokerConsumer.unsubscribe(unsubMsg, channel);
 		String actionId = unsubMsg.getActionId();
+		String destination = unsubMsg.getDestination();
+		
+		if (!isValidDestination(destination))
+		{
+			writeInvalidDestinationFault(ctx.getChannel(), actionId);
+			return;
+		}
+		
+		_brokerConsumer.unsubscribe(unsubMsg, channel);
 		sendAccepted(ctx, actionId);
 	}
 
@@ -422,16 +460,12 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		Channel channel = ctx.getChannel();
 		NetSubscribe subscritption = request.getAction().getSubscribeMessage();
 
-		if (StringUtils.isBlank(subscritption.getDestination()))
+		String actionId = subscritption.getActionId();
+		String destination = subscritption.getDestination();
+		
+		if (!isValidDestination(destination))
 		{
-			if (subscritption.getActionId() == null)
-			{
-				channel.write(NetFault.InvalidDestinationNameErrorMessage);
-			}
-			else
-			{
-				channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, subscritption.getActionId()));
-			}
+			writeInvalidDestinationFault(channel, actionId);
 			return;
 		}
 

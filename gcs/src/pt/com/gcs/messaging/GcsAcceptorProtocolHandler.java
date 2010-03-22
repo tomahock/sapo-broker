@@ -127,6 +127,13 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 
 			final String subscriptionKey = extract(msgContent, "<destination>", "</destination>");
 
+			if (StringUtils.isBlank(subscriptionKey))
+			{
+				String errorMessage = String.format("Sytem Queue or Topic message has a blank destination field. Message content: %s", msgContent);
+				log.error("Sytem Queue or Topic message has a blank destination field");
+				throw new RuntimeException(errorMessage);
+			}
+
 			if (log.isInfoEnabled())
 			{
 				String lmsg = String.format("Action: '%s' Consumer; Subscription: '%s'; Source: '%s'", action, subscriptionKey, src_name);
@@ -138,6 +145,11 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
 
 				TopicProcessor tp = TopicProcessorList.get(subscriptionKey);
+
+				if (tp == null)
+				{
+					return;
+				}
 
 				if (action.equals("CREATE"))
 				{
@@ -154,6 +166,10 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
 
 				QueueProcessor qp = QueueProcessorList.get(subscriptionKey);
+				if (qp == null)
+				{
+					return;
+				}
 
 				if (action.equals("CREATE"))
 				{

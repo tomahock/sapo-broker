@@ -72,8 +72,12 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			TopicProcessorList.notify(msg, true);
 			break;
 		case COM_QUEUE:
-			QueueProcessorList.get(msg.getDestination()).store(msg, true);
-			acknowledgeMessage(msg, channel);
+			QueueProcessor queueProcessor = QueueProcessorList.get(msg.getDestination());
+			if(queueProcessor != null)
+			{
+				queueProcessor.store(msg, true);
+				acknowledgeMessage(msg, channel);
+			}
 			break;
 		case SYSTEM_ACK:
 		{

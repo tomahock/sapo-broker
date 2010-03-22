@@ -210,11 +210,19 @@ public class Gcs
 		{
 			if (listener.getSourceDestinationType() == DestinationType.TOPIC)
 			{
-				TopicProcessorList.get(listener.getsubscriptionKey()).remove(listener);
+				TopicProcessor topicProcessor = TopicProcessorList.get(listener.getsubscriptionKey());
+				if( topicProcessor != null)
+				{
+					topicProcessor.remove(listener);
+				}
 			}
 			else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
 			{
-				QueueProcessorList.get(listener.getsubscriptionKey()).remove(listener);
+				QueueProcessor queueProcessor = QueueProcessorList.get(listener.getsubscriptionKey());
+				if(queueProcessor != null)
+				{
+					queueProcessor.remove(listener);
+				}
 			}
 		}
 		else
@@ -259,7 +267,11 @@ public class Gcs
 		{
 			if (listener != null)
 			{
-				QueueProcessorList.get(queueName).add(listener);
+				QueueProcessor qp = QueueProcessorList.get(queueName);
+				if (qp != null)
+				{
+					qp.add(listener);
+				}
 			}
 		}
 		catch (MaximumQueuesAllowedReachedException e)
@@ -272,7 +284,11 @@ public class Gcs
 	{
 		if (listener != null)
 		{
-			TopicProcessorList.get(subscriptionName).add(listener, true);
+			TopicProcessor topicProcessor = TopicProcessorList.get(subscriptionName);
+			if(topicProcessor != null)
+			{
+				topicProcessor.add(listener, true);
+			}			
 		}
 	}
 
@@ -280,8 +296,12 @@ public class Gcs
 	{
 		try
 		{
-			QueueProcessorList.get((queueName != null) ? queueName : message.getDestination()).store(message, true);
-			return true;
+			QueueProcessor qp = QueueProcessorList.get((queueName != null) ? queueName : message.getDestination());
+			if(qp != null)
+			{
+				qp.store(message, true);
+				return true;
+			}
 		}
 		catch (MaximumQueuesAllowedReachedException e)
 		{
@@ -443,8 +463,7 @@ public class Gcs
 			instance.agentsConnection.remove(channel);
 		}
 	}
-	
-	
+
 	protected static NetMessage buildNotification(InternalMessage msg, DestinationType dtype)
 	{
 		return buildNotification(msg, null, dtype);
