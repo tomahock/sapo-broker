@@ -116,7 +116,10 @@ public class QueueProcessor
 		{
 			if (localQueueListeners.add(listener))
 			{
-				broadCastNewQueueConsumer(listener);
+				if (localQueueListeners.size() == 1)
+				{
+					broadCastNewQueueConsumer(listener);
+				}
 
 				log.info("Add listener -> '{}'", listener.toString());
 			}

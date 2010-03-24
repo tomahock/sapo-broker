@@ -68,13 +68,24 @@ public class TopicProcessor
 
 	private void addLocal(MessageListener listener)
 	{
+		boolean has_local = false;
+		if (listener.getType() == MessageListener.Type.LOCAL)
+		{
+			// this value is just importat if current listener is local.
+			has_local = hasLocalConsumers();
+		}
+
 		if (topicListeners.add(listener))
 		{
 			log.info("Add listener -> '{}'", listener.toString());
 
 			if (listener.getType() == MessageListener.Type.LOCAL)
 			{
-				broadCastNewTopicConsumer();
+				// before adding current local listener it didn't had local listeners, so notify other agents
+				if (!has_local)
+				{
+					broadCastNewTopicConsumer();
+				}
 				broadcastable = true;
 			}
 		}
