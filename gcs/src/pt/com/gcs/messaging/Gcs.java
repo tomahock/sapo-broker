@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -250,6 +251,7 @@ public class Gcs
 		catch (MaximumQueuesAllowedReachedException e)
 		{
 			// This never happens
+			broadcastMaxQueueSizeReached();
 		}
 	}
 
@@ -269,6 +271,7 @@ public class Gcs
 		catch (MaximumQueuesAllowedReachedException e)
 		{
 			log.error("MaximumQueuesAllowedReachedException", e);
+			broadcastMaxQueueSizeReached();
 		}
 	}
 
@@ -298,6 +301,7 @@ public class Gcs
 		catch (MaximumQueuesAllowedReachedException e)
 		{
 			log.error("Tried to create a new queue ('{}'). Not allowed because the limit was reached", queueName);
+			broadcastMaxQueueSizeReached();
 		}
 		return false;
 	}
@@ -322,7 +326,7 @@ public class Gcs
 			}
 			catch (MaximumQueuesAllowedReachedException e)
 			{
-				// This never happens
+				broadcastMaxQueueSizeReached();
 			}
 		}
 
@@ -478,6 +482,15 @@ public class Gcs
 		NetMessage message = new NetMessage(action, params);
 
 		return message;
+	}
+	
+	public static void broadcastMaxQueueSizeReached()
+	{
+		String topic = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
+		
+		InternalMessage internalMsg = new InternalMessage(topic, new NetBrokerMessage(String.format("The maximum number of queues (%s) has been reached.",  GcsInfo.getMaxQueues())));
+		
+		Gcs.publish(internalMsg);
 	}
 
 }

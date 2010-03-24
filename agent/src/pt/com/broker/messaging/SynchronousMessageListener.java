@@ -14,6 +14,7 @@ import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.GcsExecutor;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
@@ -145,6 +146,7 @@ public class SynchronousMessageListener extends BrokerListener
 			}
 			catch (MaximumQueuesAllowedReachedException e)
 			{
+				Gcs.broadcastMaxQueueSizeReached();
 				noMessages = true;
 			}
 			if (noMessages)

@@ -37,6 +37,9 @@ public class QueueProcessorList
 		{
 			try
 			{
+				System.out.println("GcsInfo.getMaxQueues(): " + GcsInfo.getMaxQueues());
+				System.out.println("instance.qpCache.size(): " + instance.qpCache.size());
+				
 				if (instance.qpCache.size() > GcsInfo.getMaxQueues())
 				{
 					throw new MaximumQueuesAllowedReachedException();
@@ -154,6 +157,7 @@ public class QueueProcessorList
 			{
 				// This should never happens
 				log.error("Trying to remove an inexistent queue.");
+				Gcs.broadcastMaxQueueSizeReached();
 				return;
 			}
 
