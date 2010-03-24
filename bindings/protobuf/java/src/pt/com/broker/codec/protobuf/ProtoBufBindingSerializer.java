@@ -650,7 +650,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		}
 		catch (Throwable e)
 		{
-			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+			throw new RuntimeException(e);
 		}
 		return message;
 	}
@@ -666,7 +666,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		}
 		catch (Throwable e)
 		{
-			log.error("Error parsing Protocol Buffer message.", e.getMessage());
+			throw new RuntimeException(e);
 		}
 		return message;
 	}

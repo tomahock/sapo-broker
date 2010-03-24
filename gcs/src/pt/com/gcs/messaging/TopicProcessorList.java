@@ -7,7 +7,6 @@ import java.util.List;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
-import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,16 +65,6 @@ public class TopicProcessorList
 		instance.i_removeSession(channel);
 	}
 
-	protected static void removeValue(TopicProcessor value)
-	{
-		instance.i_removeValue(value);
-	}
-
-	protected static int size()
-	{
-		return instance.i_size();
-	}
-
 	public static Collection<TopicProcessor> values()
 	{
 		return instance.i_values();
@@ -107,12 +96,6 @@ public class TopicProcessorList
 	private TopicProcessor i_get(String destinationName)
 	{
 		log.debug("Get Topic for: {}", destinationName);
-
-		if (StringUtils.isBlank(destinationName))
-		{
-			log.error("Can't obtain a TopicProcessor with a blank destinationName.");
-			return null;
-		}
 
 		try
 		{
@@ -150,10 +133,21 @@ public class TopicProcessorList
 
 	private void i_removeListener(MessageListener listener)
 	{
-		TopicProcessor tp = get(listener.getsubscriptionKey());
-		if (tp != null)
+		try
 		{
-			tp.remove(listener);
+			for (TopicProcessor tp : tpCache.values())
+			{
+				if (tp.getSubscriptionName().equals(listener.getsubscriptionKey()))
+				{
+					tp.remove(listener);
+					break;
+				}
+			}
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -162,30 +156,36 @@ public class TopicProcessorList
 		try
 		{
 			ListenerChannel lc = new ListenerChannel(channel);
+			List<TopicProcessor> toDeleteProcessors = new ArrayList<TopicProcessor>();
 
 			for (TopicProcessor tp : tpCache.values())
 			{
-				List<MessageListener> toDelete = new ArrayList<MessageListener>();
+				List<MessageListener> toDeleteListeners = new ArrayList<MessageListener>();
 
 				for (MessageListener ml : tp.listeners())
 				{
 					if ((ml.getType() != MessageListener.Type.INTERNAL) && ml.getChannel().equals(lc))
 					{
-						toDelete.add(ml);
+						toDeleteListeners.add(ml);
 					}
 				}
 
-				for (MessageListener dml : toDelete)
+				for (MessageListener dml : toDeleteListeners)
 				{
 					tp.remove(dml);
 				}
 
-				toDelete.clear();
+				toDeleteListeners.clear();
 
 				if (tp.size() == 0)
 				{
-					i_removeValue(tp);
+					toDeleteProcessors.add(tp);
 				}
+			}
+
+			for (TopicProcessor tpd : toDeleteProcessors)
+			{
+				tpCache.remove(tpd.getSubscriptionName());
 			}
 		}
 		catch (InterruptedException e)
@@ -197,24 +197,6 @@ public class TopicProcessorList
 		{
 			throw new RuntimeException(t);
 		}
-	}
-
-	private void i_removeValue(TopicProcessor value)
-	{
-		try
-		{
-			tpCache.removeValue(value);
-		}
-		catch (InterruptedException ie)
-		{
-			Thread.currentThread().interrupt();
-			throw new RuntimeException(ie);
-		}
-	}
-
-	private int i_size()
-	{
-		return tpCache.size();
 	}
 
 	private Collection<TopicProcessor> i_values()

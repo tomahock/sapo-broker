@@ -7,7 +7,6 @@ import java.util.List;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
-import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +23,13 @@ import pt.com.gcs.conf.GcsInfo;
 public class QueueProcessorList
 {
 
-	public static class MaximumQueuesAllowedReachedException extends RuntimeException
-	{
-	}
+	private static final Logger log = LoggerFactory.getLogger(QueueProcessorList.class);
 
 	private static final QueueProcessorList instance = new QueueProcessorList();
 
-	private static final Logger log = LoggerFactory.getLogger(QueueProcessorList.class);
+	public static class MaximumQueuesAllowedReachedException extends RuntimeException
+	{
+	}
 
 	private static final CacheFiller<String, QueueProcessor> qp_cf = new CacheFiller<String, QueueProcessor>()
 	{
@@ -38,7 +37,7 @@ public class QueueProcessorList
 		{
 			try
 			{
-				if (size() > GcsInfo.getMaxQueues())
+				if (instance.qpCache.size() > GcsInfo.getMaxQueues())
 				{
 					throw new MaximumQueuesAllowedReachedException();
 				}
@@ -78,16 +77,6 @@ public class QueueProcessorList
 		instance.i_removeSession(channel);
 	}
 
-	protected static void removeValue(QueueProcessor value)
-	{
-		instance.i_removeValue(value);
-	}
-
-	protected static int size()
-	{
-		return instance.i_size();
-	}
-
 	public static Collection<QueueProcessor> values()
 	{
 		return instance.i_values();
@@ -125,11 +114,6 @@ public class QueueProcessorList
 
 		try
 		{
-			if (StringUtils.isBlank(destinationName))
-			{
-				log.error("Can't obtain a QueueProcessor with a blank destinationName.");
-				return null;
-			}
 			return qpCache.get(destinationName, qp_cf);
 		}
 		catch (InterruptedException ie)
@@ -165,10 +149,6 @@ public class QueueProcessorList
 			try
 			{
 				qp = get(queueName);
-				if (qp == null)
-				{
-					return;
-				}
 			}
 			catch (MaximumQueuesAllowedReachedException e)
 			{
@@ -183,11 +163,8 @@ public class QueueProcessorList
 				throw new IllegalStateException(m);
 			}
 
-			// LocalQueueConsumers.delete(queueName);
-			// RemoteQueueConsumers.delete(queueName);
-			qp.clearStorage();
-
 			qpCache.remove(queueName);
+			qp.clearStorage();
 
 			log.info("Destination '{}' was deleted", queueName);
 
@@ -201,10 +178,21 @@ public class QueueProcessorList
 
 	private void i_removeListener(MessageListener listener)
 	{
-		QueueProcessor qp = get(listener.getsubscriptionKey());
-		if (qp != null)
+		try
 		{
-			qp.remove(listener);
+			for (QueueProcessor qp : qpCache.values())
+			{
+				if (qp.getQueueName().equals(listener.getsubscriptionKey()))
+				{
+					qp.remove(listener);
+					break;
+				}
+			}
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -213,6 +201,7 @@ public class QueueProcessorList
 		try
 		{
 			ListenerChannel lc = new ListenerChannel(channel);
+			List<QueueProcessor> toDeleteProcessors = new ArrayList<QueueProcessor>();
 
 			for (QueueProcessor qp : qpCache.values())
 			{
@@ -243,9 +232,14 @@ public class QueueProcessorList
 
 				if (qp.size() == 0 && qp.getQueuedMessagesCount() == 0)
 				{
-					log.info("Remove QueueProcessor for '{}' because it has no consumers and no messages", qp.getQueueName());
-					i_removeValue(qp);
+					toDeleteProcessors.add(qp);
 				}
+			}
+
+			for (QueueProcessor qpd : toDeleteProcessors)
+			{
+				log.info("Remove QueueProcessor for '{}' because it has no consumers and no messages", qpd.getQueueName());
+				qpCache.removeValue(qpd);
 			}
 		}
 		catch (InterruptedException e)
@@ -257,24 +251,6 @@ public class QueueProcessorList
 		{
 			throw new RuntimeException(t);
 		}
-	}
-
-	private void i_removeValue(QueueProcessor value)
-	{
-		try
-		{
-			qpCache.removeValue(value);
-		}
-		catch (InterruptedException ie)
-		{
-			Thread.currentThread().interrupt();
-			throw new RuntimeException(ie);
-		}
-	}
-
-	private int i_size()
-	{
-		return qpCache.size();
 	}
 
 	private Collection<QueueProcessor> i_values()

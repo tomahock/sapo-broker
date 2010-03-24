@@ -2,6 +2,7 @@ package pt.com.broker.types;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 import org.slf4j.Logger;
@@ -66,13 +67,11 @@ public class SimpleFramingDecoder extends FrameDecoder
 			return null;
 		}
 
-		if (len > _max_message_size)
+		if ((len <= 0) || (len > _max_message_size))
 		{
-			throw new IllegalArgumentException(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
-		}
-		else if (len <= 0)
-		{
-			throw new IllegalArgumentException(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+			log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Channel: '%s'", len, channel.getRemoteAddress().toString()));
+			channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
+			return null;
 		}
 		
 		buffer.skipBytes(HEADER_LENGTH);

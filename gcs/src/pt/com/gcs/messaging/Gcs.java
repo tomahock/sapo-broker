@@ -210,19 +210,12 @@ public class Gcs
 		{
 			if (listener.getSourceDestinationType() == DestinationType.TOPIC)
 			{
-				TopicProcessor topicProcessor = TopicProcessorList.get(listener.getsubscriptionKey());
-				if( topicProcessor != null)
-				{
-					topicProcessor.remove(listener);
-				}
+				TopicProcessorList.removeListener(listener);
+
 			}
 			else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
 			{
-				QueueProcessor queueProcessor = QueueProcessorList.get(listener.getsubscriptionKey());
-				if(queueProcessor != null)
-				{
-					queueProcessor.remove(listener);
-				}
+				QueueProcessorList.removeListener(listener);
 			}
 		}
 		else
@@ -233,7 +226,6 @@ public class Gcs
 
 	private Gcs()
 	{
-
 	}
 
 	private void connectToAllPeers()
@@ -285,10 +277,10 @@ public class Gcs
 		if (listener != null)
 		{
 			TopicProcessor topicProcessor = TopicProcessorList.get(subscriptionName);
-			if(topicProcessor != null)
+			if (topicProcessor != null)
 			{
 				topicProcessor.add(listener, true);
-			}			
+			}
 		}
 	}
 
@@ -297,7 +289,7 @@ public class Gcs
 		try
 		{
 			QueueProcessor qp = QueueProcessorList.get((queueName != null) ? queueName : message.getDestination());
-			if(qp != null)
+			if (qp != null)
 			{
 				qp.store(message, true);
 				return true;

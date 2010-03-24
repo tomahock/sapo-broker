@@ -577,8 +577,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 		}
 		catch (Throwable e)
 		{
-			// TODO: decide what to do with exception
-			log.error("Error parsing Thrift message.", e);
+			throw new RuntimeException(e);
 		}
 		return message;
 	}

@@ -15,7 +15,6 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.GcsExecutor;
-import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
 import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
@@ -157,6 +156,7 @@ public class SynchronousMessageListener extends BrokerListener
 				{
 					faultMsg.getAction().getFaultMessage().setActionId(actionId);
 				}
+				
 				if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 				{
 					lchannel.write(faultMsg);
@@ -186,10 +186,9 @@ public class SynchronousMessageListener extends BrokerListener
 	}
 
 	public void notifyTimeout()
-	{
+	{	
 		if ((System.currentTimeMillis() >= getExpires()) && ready.get())
 		{
-
 			ready.set(false);
 
 			NetMessage faultMsg = null;

@@ -56,7 +56,6 @@ import pt.com.gcs.messaging.TopicProcessorList;
 
 /**
  * * BrokerProtocolHandler is an Netty ChannelHandler. It handles messages from clients.
- * 
  */
 
 @Sharable
@@ -103,7 +102,14 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 				@Override
 				public void operationComplete(ChannelFuture cf) throws Exception
 				{
-					log.info("BrokerProtocolHandler.channelConnected() - handshake complete. Success: " + cf.isSuccess());
+					if (cf.isSuccess())
+					{
+						log.info("SSL handshake complete.");
+					}
+					else
+					{
+						log.info("SSL handshake failled.");
+					}
 				}
 			});
 		}
@@ -254,7 +260,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 		if (!(e.getMessage() instanceof NetMessage))
 		{
-			log.error("Unknown message type");
+			log.error("Unknown message type,  Channel: '{}'", ctx.getChannel().getRemoteAddress().toString());
 			return;
 		}
 
@@ -306,24 +312,10 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	{
 
 		Channel channel = ctx.getChannel();
-		String actionId = null;
-		switch (request.getAction().getActionType())
-		{
-		case FAULT:
-			actionId = request.getAction().getFaultMessage().getActionId();
-			break;
-		case ACCEPTED:
-			actionId = request.getAction().getAcceptedMessage().getActionId();
-			break;
-		}
-		if (actionId == null)
-		{
-			channel.write(NetFault.UnexpectedMessageTypeErrorMessage);
-		}
-		else
-		{
-			channel.write(NetFault.getMessageFaultWithActionId(NetFault.UnexpectedMessageTypeErrorMessage, actionId));
-		}
+
+		log.error("Unexpected message type. Channel: '{}'", channel.getRemoteAddress().toString());
+
+		channel.write(NetFault.UnexpectedMessageTypeErrorMessage).addListener(ChannelFutureListener.CLOSE);
 	}
 
 	private void handlePublishMessage(ChannelHandlerContext ctx, NetMessage request)
@@ -337,20 +329,13 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 		if (!isValidDestination(destination))
 		{
-			writeInvalidDestinationFault(channel, actionId);
+			writeInvalidDestinationFault(channel, actionId, destination);
 			return;
 		}
 
 		if (StringUtils.contains(destination, "@"))
 		{
-			if (publish.getActionId() == null)
-			{
-				channel.write(NetFault.InvalidDestinationNameErrorMessage);
-			}
-			else
-			{
-				channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, publish.getActionId()));
-			}
+			writeInvalidDestinationFault(channel, actionId, destination);
 			return;
 		}
 
@@ -364,11 +349,11 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			{
 				if (actionId == null)
 				{
-					channel.write(NetFault.MaximumNrQueuesReachedErrorMessage);
+					channel.write(NetFault.MaximumNrQueuesReachedErrorMessage).addListener(ChannelFutureListener.CLOSE);
 				}
 				else
 				{
-					channel.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumNrQueuesReachedErrorMessage, actionId));
+					channel.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumNrQueuesReachedErrorMessage, actionId)).addListener(ChannelFutureListener.CLOSE);
 				}
 				return;
 			}
@@ -376,32 +361,15 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		default:
 			if (actionId == null)
 			{
-				channel.write(NetFault.InvalidMessageDestinationTypeErrorMessage);
+				channel.write(NetFault.InvalidMessageDestinationTypeErrorMessage).addListener(ChannelFutureListener.CLOSE);
 			}
 			else
 			{
-				channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidMessageDestinationTypeErrorMessage, actionId));
+				channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidMessageDestinationTypeErrorMessage, actionId)).addListener(ChannelFutureListener.CLOSE);
 			}
 			return;
 		}
 		sendAccepted(ctx, actionId);
-	}
-
-	private final boolean isValidDestination(String destination)
-	{
-		return StringUtils.isNotBlank(destination);
-	}
-
-	private void writeInvalidDestinationFault(Channel channel, String actionId)
-	{
-		if (actionId == null)
-		{
-			channel.write(NetFault.InvalidDestinationNameErrorMessage).addListener(ChannelFutureListener.CLOSE);
-		}
-		else
-		{
-			channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, actionId)).addListener(ChannelFutureListener.CLOSE);
-		}
 	}
 
 	private void handlePollMessage(ChannelHandlerContext ctx, NetMessage request)
@@ -409,13 +377,13 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		NetPoll pollMsg = request.getAction().getPollMessage();
 		String actionId = pollMsg.getActionId();
 		String destination = pollMsg.getDestination();
-		
+
 		if (!isValidDestination(destination))
 		{
-			writeInvalidDestinationFault(ctx.getChannel(), actionId);
+			writeInvalidDestinationFault(ctx.getChannel(), actionId, destination);
 			return;
 		}
-		
+
 		sendAccepted(ctx, actionId);
 		BrokerSyncConsumer.poll(pollMsg, ctx);
 	}
@@ -423,16 +391,16 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	private void handleAcknowledeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
 		NetAcknowledge ackReq = request.getAction().getAcknowledgeMessage();
-	
+
 		String actionId = ackReq.getActionId();
 		String destination = ackReq.getDestination();
-		
+
 		if (!isValidDestination(destination))
 		{
-			writeInvalidDestinationFault(ctx.getChannel(), actionId);
+			writeInvalidDestinationFault(ctx.getChannel(), actionId, destination);
 			return;
 		}
-		
+
 		Gcs.ackMessage(destination, ackReq.getMessageId());
 	}
 
@@ -443,13 +411,13 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 		String actionId = unsubMsg.getActionId();
 		String destination = unsubMsg.getDestination();
-		
+
 		if (!isValidDestination(destination))
 		{
-			writeInvalidDestinationFault(ctx.getChannel(), actionId);
+			writeInvalidDestinationFault(ctx.getChannel(), actionId, destination);
 			return;
 		}
-		
+
 		_brokerConsumer.unsubscribe(unsubMsg, channel);
 		sendAccepted(ctx, actionId);
 	}
@@ -462,10 +430,10 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 		String actionId = subscritption.getActionId();
 		String destination = subscritption.getDestination();
-		
+
 		if (!isValidDestination(destination))
 		{
-			writeInvalidDestinationFault(channel, actionId);
+			writeInvalidDestinationFault(channel, actionId, destination);
 			return;
 		}
 
@@ -487,11 +455,11 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			{
 				if (subscritption.getActionId() == null)
 				{
-					channel.write(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage);
+					channel.write(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage).addListener(ChannelFutureListener.CLOSE);
 				}
 				else
 				{
-					channel.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage, subscritption.getActionId()));
+					channel.write(NetFault.getMessageFaultWithActionId(NetFault.MaximumDistinctSubscriptionsReachedErrorMessage, subscritption.getActionId())).addListener(ChannelFutureListener.CLOSE);
 				}
 				return;
 			}
@@ -503,14 +471,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			}
 			else
 			{
-				if (subscritption.getActionId() == null)
-				{
-					channel.write(NetFault.InvalidDestinationNameErrorMessage);
-				}
-				else
-				{
-					channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, subscritption.getActionId()));
-				}
+				writeInvalidDestinationFault(channel, actionId, destination);
 				return;
 			}
 			break;
@@ -539,18 +500,26 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 		if (localAddress.getPort() != GcsInfo.getBrokerSSLPort())
 		{
-			channel.write(NetFault.InvalidAuthenticationChannelType);
+			channel.write(NetFault.InvalidAuthenticationChannelType).addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 
 		NetAuthentication netAuthentication = request.getAction().getAuthenticationMessage();
+
+		if (StringUtils.isBlank(netAuthentication.getAuthenticationType()))
+		{
+			log.error("Invalid  auth type: '{}'. Channel: '{}'", netAuthentication.getAuthenticationType(), channel.getRemoteAddress().toString());
+			channel.write(NetFault.UnknownAuthenticationTypeMessage).addListener(ChannelFutureListener.CLOSE);
+			return;
+		}
 
 		// // Validate client credentials
 		AuthInfo info = new AuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType());
 		AuthInfoValidator validator = AuthInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
 		if (validator == null)
 		{
-			channel.write(NetFault.UnknownAuthenticationTypeMessage);
+			log.error("Failled to obtain validator for auth type: '{}',  Channel: '{}'", netAuthentication.getAuthenticationType(), channel.getRemoteAddress().toString());
+			channel.write(NetFault.UnknownAuthenticationTypeMessage).addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 		AuthValidationResult validateResult = null;
@@ -560,13 +529,13 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		}
 		catch (Exception e)
 		{
-			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error"));
+			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error")).addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 
 		if (!validateResult.areCredentialsValid())
 		{
-			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure()));
+			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure())).addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 
@@ -579,6 +548,24 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		if (netAuthentication.getActionId() != null)
 		{
 			sendAccepted(ctx, netAuthentication.getActionId());
+		}
+	}
+
+	private final boolean isValidDestination(String destination)
+	{
+		return StringUtils.isNotBlank(destination);
+	}
+
+	private void writeInvalidDestinationFault(Channel channel, String actionId, String destinationName)
+	{
+		log.warn("Invalid destination name: '{}',  Channel: '{}'", destinationName, channel.getRemoteAddress().toString());
+		if (actionId == null)
+		{
+			channel.write(NetFault.InvalidDestinationNameErrorMessage).addListener(ChannelFutureListener.CLOSE);
+		}
+		else
+		{
+			channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, actionId)).addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 

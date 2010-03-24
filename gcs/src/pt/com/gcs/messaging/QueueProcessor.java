@@ -1,6 +1,6 @@
 package pt.com.gcs.messaging;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,6 +26,7 @@ public class QueueProcessor
 {
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	protected final AtomicLong counter = new AtomicLong(0);
 
@@ -171,20 +172,12 @@ public class QueueProcessor
 		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), channel.getLocalAddress().toString(), queueName);
 
 		InternalMessage m = new InternalMessage();
-		NetBrokerMessage brkMsg;
-		try
-		{
-			brkMsg = new NetBrokerMessage(payload.getBytes("UTF-8"));
-			m.setType(MessageType.SYSTEM_QUEUE);
 
-			m.setDestination(queueName);
-			m.setContent(brkMsg);
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			// This exception is never thrown because UTF-8 encoding is built-in
-			// in every JVM
-		}
+		NetBrokerMessage brkMsg = new NetBrokerMessage(payload.getBytes(UTF8));
+		m.setType(MessageType.SYSTEM_QUEUE);
+		m.setDestination(queueName);
+		m.setContent(brkMsg);
+
 		SystemMessagesPublisher.sendMessage(m, channel);
 	}
 
@@ -209,7 +202,7 @@ public class QueueProcessor
 				log.info("Get Dispatcher for: {}", queueName);
 
 				String topicName = StringUtils.substringAfter(queueName, "@");
-				if(StringUtils.isBlank(topicName))
+				if (StringUtils.isBlank(topicName))
 				{
 					String errorMessage = String.format("Can't create a topic dispatcher whose name is empty. VirtualQueue name: '%s'", queueName);
 					log.error(errorMessage);
@@ -219,7 +212,7 @@ public class QueueProcessor
 
 				VirtualQueueStorage.saveVirtualQueue(queueName);
 				TopicProcessor topicProcessor = TopicProcessorList.get(topicName);
-				if(topicProcessor != null)
+				if (topicProcessor != null)
 				{
 					topicProcessor.add(topicFwd, false);
 				}
@@ -352,7 +345,7 @@ public class QueueProcessor
 		int s = listeners.size();
 		int n = Math.abs(++current_idx % s);
 		NetMessage nmsg = null;
-		
+
 		try
 		{
 			int idx = 0;
@@ -380,12 +373,12 @@ public class QueueProcessor
 					}
 				}
 			}
-			
+
 			idx = 0;
 
 			// if no ready listener was found we cycle through the collection again and try the listeners with an "index" lower than the "current index"
 			for (MessageListener ml : listeners)
-			{			
+			{
 				++idx;
 				if (idx <= n)
 				{
@@ -424,8 +417,7 @@ public class QueueProcessor
 	{
 		return remoteQueueListeners;
 	}
-	
-	
+
 	public void remove(MessageListener listener)
 	{
 		if (listener != null)
@@ -461,7 +453,7 @@ public class QueueProcessor
 			log.error(String.format("Cannot add null listener to queue '%s'", queueName));
 		}
 	}
-	
+
 	private void removeDispatcher()
 	{
 		try
