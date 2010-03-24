@@ -487,6 +487,10 @@ class Test_Class {
       <para>
         <computeroutput>/system/faults/[agent name]</computeroutput>
       </para>
+      <para>A fault message can also be published when the maximum number of allowed queues is reached. Here is a sample of the fault message content:</para>
+      <para>
+        <computeroutput>The maximum number of queues (500) has been reached.</computeroutput>
+      </para>
     </section>
   </section>
 
