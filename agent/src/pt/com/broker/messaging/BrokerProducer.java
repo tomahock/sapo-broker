@@ -1,11 +1,9 @@
 package pt.com.broker.messaging;
 
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
 import pt.com.gcs.conf.GcsInfo;

@@ -146,6 +146,5 @@ public class BrokerDecoderRouter extends FrameDecoder
 		}
 
 		return message;
-
 	}
 }

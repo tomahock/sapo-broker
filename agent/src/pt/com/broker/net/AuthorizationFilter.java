@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -94,11 +95,11 @@ public class AuthorizationFilter extends SimpleChannelUpstreamHandler
 	{
 		if (reason == null)
 		{
-			channel.write(NetFault.AccessDeniedErrorMessage);
+			channel.write(NetFault.AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
 		}
 		else
 		{
-			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AccessDeniedErrorMessage, reason));
+			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 }

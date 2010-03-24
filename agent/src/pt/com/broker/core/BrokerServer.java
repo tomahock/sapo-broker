@@ -1,6 +1,7 @@
 package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.caudexorigo.Shutdown;
@@ -60,11 +61,12 @@ public class BrokerServer
 			bootstrap0.setOption("child.keepAlive", true);
 			bootstrap0.setOption("child.receiveBufferSize", 128 * 1024);
 			bootstrap0.setOption("child.sendBufferSize", 128 * 1024);
+			bootstrap0.setOption("child.soLinger", 1);
 			bootstrap0.setOption("reuseAddress", true);
 			bootstrap0.setOption("backlog", 1024);
 			bootstrap0.setOption("writeBufferHighWaterMark", WRITE_BUFFER_HIGH_WATER_MARK); // default=64K
 			// bootstrap0.setOption("writeBufferLowWaterMark", 1024); // default=32K
-
+			
 			// water marks introduction:
 			// http://www.jboss.org/netty/community.html#nabble-td1611593
 
@@ -98,6 +100,7 @@ public class BrokerServer
 			bootstrap0.bind(inet0);
 			log.info("SAPO-BROKER (legacy protocol)  Listening on: '{}'.", inet0.toString());
 
+
 			ChannelFactory factory1 = new NioServerSocketChannelFactory(tpeIo, tpeWorkers);
 			ServerBootstrap bootstrap1 = new ServerBootstrap(factory1);
 
@@ -129,10 +132,12 @@ public class BrokerServer
 			bootstrap1.setOption("child.keepAlive", true);
 			bootstrap1.setOption("child.receiveBufferSize", 128 * 1024);
 			bootstrap1.setOption("child.sendBufferSize", 128 * 1024);
+			bootstrap1.setOption("child.soLinger", 1);
 			bootstrap1.setOption("reuseAddress", true);
 			bootstrap1.setOption("backlog", 1024);
 			bootstrap1.setOption("writeBufferHighWaterMark", WRITE_BUFFER_HIGH_WATER_MARK); // default=64K
 			// bootstrap1.setOption("writeBufferLowWaterMark", 1024); // default=32K
+			
 
 			InetSocketAddress inet1 = new InetSocketAddress("0.0.0.0", _portNumber);
 			bootstrap1.bind(inet1);
