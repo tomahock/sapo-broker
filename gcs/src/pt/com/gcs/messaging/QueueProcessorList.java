@@ -15,6 +15,7 @@ import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.messaging.TopicProcessorList.MaximumDistinctSubscriptionsReachedException;
 
 /**
  * QueueProcessorList contains references for all active QueueProcessor objects.
@@ -29,6 +30,12 @@ public class QueueProcessorList
 
 	public static class MaximumQueuesAllowedReachedException extends RuntimeException
 	{
+		private static final long serialVersionUID = 542857696958738718L;
+		@Override
+		public String getMessage()
+		{
+			return "Maximum queues allowed reached";
+		}
 	}
 
 	private static final CacheFiller<String, QueueProcessor> qp_cf = new CacheFiller<String, QueueProcessor>()
@@ -37,9 +44,6 @@ public class QueueProcessorList
 		{
 			try
 			{
-				System.out.println("GcsInfo.getMaxQueues(): " + GcsInfo.getMaxQueues());
-				System.out.println("instance.qpCache.size(): " + instance.qpCache.size());
-				
 				if (instance.qpCache.size() > GcsInfo.getMaxQueues())
 				{
 					throw new MaximumQueuesAllowedReachedException();
@@ -60,7 +64,7 @@ public class QueueProcessorList
 		instance.i_broadcast(action, channel);
 	}
 
-	public static QueueProcessor get(String destinationName) throws MaximumQueuesAllowedReachedException
+	public static QueueProcessor get(String destinationName)
 	{
 		return instance.i_get(destinationName);
 	}
@@ -111,7 +115,7 @@ public class QueueProcessorList
 		}
 	}
 
-	private QueueProcessor i_get(String destinationName) throws MaximumQueuesAllowedReachedException
+	private QueueProcessor i_get(String destinationName)
 	{
 		log.debug("Get Queue for: {}", destinationName);
 
@@ -127,13 +131,25 @@ public class QueueProcessorList
 		catch (Throwable t)
 		{
 			log.error(String.format("Failed to get QueueProcessor for queue '%s'. Message: %s", destinationName, t.getMessage()), t);
-
+			
 			Throwable rootCause = ErrorAnalyser.findRootCause(t);
 			CriticalErrors.exitIfCritical(rootCause);
-			if (rootCause instanceof MaximumQueuesAllowedReachedException)
+			
+			
+			if(rootCause.getClass().isAssignableFrom(MaximumQueuesAllowedReachedException.class))
 			{
-				throw (MaximumQueuesAllowedReachedException) rootCause;
+				try
+				{
+					qpCache.remove(destinationName);
+				}
+				catch (InterruptedException e)
+				{
+					log.error("Failed to removed queue processor entry that caused  MaximumQueuesAllowedReachedException. Reason: '{}'", e);
+				}
+				Gcs.broadcastMaxQueueSizeReached();
 			}
+			
+			log.error(String.format("Failed to get TopicProcessor for topic '%s'. Message: %s", destinationName, rootCause.getMessage()), rootCause);
 		}
 		return null;
 	}
@@ -157,7 +173,6 @@ public class QueueProcessorList
 			{
 				// This should never happens
 				log.error("Trying to remove an inexistent queue.");
-				Gcs.broadcastMaxQueueSizeReached();
 				return;
 			}
 

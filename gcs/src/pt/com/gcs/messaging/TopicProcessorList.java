@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
+import pt.com.gcs.conf.GcsInfo;
 
 public class TopicProcessorList
 {
@@ -23,12 +24,30 @@ public class TopicProcessorList
 	// key: subscriptionKey
 	private Cache<String, TopicProcessor> tpCache = new Cache<String, TopicProcessor>();
 
+	
+	public static class MaximumDistinctSubscriptionsReachedException extends RuntimeException
+	{
+		private static final long serialVersionUID = 8022131893392381671L;
+		
+		@Override
+		public String getMessage()
+		{
+			return "Maximum distinct subscriptions reached";
+		}
+	}
+	
 	private static final CacheFiller<String, TopicProcessor> tp_cf = new CacheFiller<String, TopicProcessor>()
 	{
 		public TopicProcessor populate(String destinationName)
 		{
 			try
 			{
+				if (instance.tpCache.size() > GcsInfo.getMaxDistinctSubscriptions())
+				{
+					System.out.println("\n\n MaxDistinctSubscriptionsReached " + destinationName);
+					throw new MaximumDistinctSubscriptionsReachedException();
+					
+				}
 				log.info("Populate TopicProcessorList with topic: '{}'", destinationName);
 				TopicProcessor qp = new TopicProcessor(destinationName);
 				return qp;
@@ -106,11 +125,43 @@ public class TopicProcessorList
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(ie);
 		}
+		catch(MaximumDistinctSubscriptionsReachedException mdsre)
+		{
+			try
+			{
+				System.out.println("########### catch MaximumDistinctSubscriptionsReachedException");
+				
+				
+				System.out.println("tpCache size: " + tpCache.size());
+				tpCache.remove(destinationName);
+				System.out.println("(after delete)tpCache size: " + tpCache.size());
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			Gcs.broadcastMaxDistinctSubscriptionsReached();
+		}
 		catch (Throwable t)
 		{
 			Throwable rootCause = ErrorAnalyser.findRootCause(t);
-			log.error(String.format("Failed to get TopicProcessor for topic '%s'. Message: %s", destinationName, rootCause.getMessage()), rootCause);
 			CriticalErrors.exitIfCritical(rootCause);
+
+			if(rootCause.getClass().isAssignableFrom(MaximumDistinctSubscriptionsReachedException.class))
+			{
+				try
+				{
+					tpCache.remove(destinationName);
+				}
+				catch (InterruptedException e)
+				{
+					log.error("Failed to removed topic processor entry that caused  MaxDistinctSubscriptionsReached. Reason: '{}'", e);
+				}
+				
+				Gcs.broadcastMaxDistinctSubscriptionsReached();			
+			}
+			
+			log.error(String.format("Failed to get TopicProcessor for topic '%s'. Message: %s", destinationName, rootCause.getMessage()), rootCause);
 		}
 		return null;
 	}

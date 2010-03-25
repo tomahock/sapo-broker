@@ -14,11 +14,9 @@ import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.GcsExecutor;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
-import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
 
 /*
  * SynchronousMessageListener represents a poll request by a client. 
@@ -84,7 +82,7 @@ public class SynchronousMessageListener extends BrokerListener
 
 		if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 		{
-			//final NetMessage response = BrokerListener.buildNotification(message, queueName, getSourceDestinationType());
+			// final NetMessage response = BrokerListener.buildNotification(message, queueName, getSourceDestinationType());
 			lchannel.write(response);
 
 			lastDeliveredMessage.set(System.currentTimeMillis());
@@ -131,24 +129,17 @@ public class SynchronousMessageListener extends BrokerListener
 
 			setInNoWaitMode(true);
 
-			QueueProcessor queueProcessor;
-			try
+			QueueProcessor queueProcessor = QueueProcessorList.get(getsubscriptionKey());
+			if (queueProcessor == null)
 			{
-				queueProcessor = QueueProcessorList.get(getsubscriptionKey());
-				if(queueProcessor == null)
-				{
-					return;
-				}
-				if (queueProcessor.getQueuedMessagesCount() == 0)
-				{
-					noMessages = true;
-				}
+				noMessages = true;
+				return;
 			}
-			catch (MaximumQueuesAllowedReachedException e)
+			if (queueProcessor.getQueuedMessagesCount() == 0)
 			{
-				Gcs.broadcastMaxQueueSizeReached();
 				noMessages = true;
 			}
+
 			if (noMessages)
 			{
 				final ListenerChannel lchannel = getChannel();
@@ -158,7 +149,7 @@ public class SynchronousMessageListener extends BrokerListener
 				{
 					faultMsg.getAction().getFaultMessage().setActionId(actionId);
 				}
-				
+
 				if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 				{
 					lchannel.write(faultMsg);
@@ -188,7 +179,7 @@ public class SynchronousMessageListener extends BrokerListener
 	}
 
 	public void notifyTimeout()
-	{	
+	{
 		if ((System.currentTimeMillis() >= getExpires()) && ready.get())
 		{
 			ready.set(false);

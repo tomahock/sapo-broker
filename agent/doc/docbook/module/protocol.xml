@@ -534,7 +534,7 @@ Payload:
     </section>
     <section>
 	<title>Acknowledge required</title>
-	<para>When subscribing to Queues or Virtual Queues destination types clients can specify the ACK_REQUIRED set to false, meaning that they don't wish to acknowledge received messages. Messages will automatically be removed once delivered to the clients who specify this header set to false.</para>
+	<para>When subscribing to Queues or Virtual Queues destination types clients can specify the ACK_REQUIRED header set to false, meaning that they don't wish to acknowledge received messages. Messages will automatically be removed once delivered to the clients who specify this header set to false.</para>
 	<para>When delivering a message to a client who set the ACK_REQUIRED to false, the agent also sets ACK_REQUIRED header to false.</para>
 	<itemizedlist>
 	  <listitem>Name: <emphasis>ACK_REQUIRED</emphasis></listitem>

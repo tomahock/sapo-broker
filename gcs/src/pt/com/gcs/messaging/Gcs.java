@@ -38,7 +38,6 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
-import pt.com.gcs.messaging.QueueProcessorList.MaximumQueuesAllowedReachedException;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsDecoder;
 import pt.com.gcs.net.codec.GcsEncoder;
@@ -242,36 +241,22 @@ public class Gcs
 
 	private void iackMessage(String queueName, final String msgId)
 	{
-		try
+		QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
+		if (queueProcessor != null)
 		{
-			QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
-			if (queueProcessor != null)
-				queueProcessor.ack(msgId);
-		}
-		catch (MaximumQueuesAllowedReachedException e)
-		{
-			// This never happens
-			broadcastMaxQueueSizeReached();
+			queueProcessor.ack(msgId);
 		}
 	}
 
 	private void iaddQueueConsumer(String queueName, MessageListener listener)
 	{
-		try
+		if (listener != null)
 		{
-			if (listener != null)
+			QueueProcessor qp = QueueProcessorList.get(queueName);
+			if (qp != null)
 			{
-				QueueProcessor qp = QueueProcessorList.get(queueName);
-				if (qp != null)
-				{
-					qp.add(listener);
-				}
+				qp.add(listener);
 			}
-		}
-		catch (MaximumQueuesAllowedReachedException e)
-		{
-			log.error("MaximumQueuesAllowedReachedException", e);
-			broadcastMaxQueueSizeReached();
 		}
 	}
 
@@ -289,20 +274,13 @@ public class Gcs
 
 	private boolean ienqueue(InternalMessage message, String queueName)
 	{
-		try
+		QueueProcessor qp = QueueProcessorList.get((queueName != null) ? queueName : message.getDestination());
+		if (qp != null)
 		{
-			QueueProcessor qp = QueueProcessorList.get((queueName != null) ? queueName : message.getDestination());
-			if (qp != null)
-			{
-				qp.store(message, true);
-				return true;
-			}
+			qp.store(message, true);
+			return true;
 		}
-		catch (MaximumQueuesAllowedReachedException e)
-		{
-			log.error("Tried to create a new queue ('{}'). Not allowed because the limit was reached", queueName);
-			broadcastMaxQueueSizeReached();
-		}
+
 		return false;
 	}
 
@@ -320,14 +298,7 @@ public class Gcs
 
 		for (String queueName : queues)
 		{
-			try
-			{
-				QueueProcessorList.get(queueName);
-			}
-			catch (MaximumQueuesAllowedReachedException e)
-			{
-				broadcastMaxQueueSizeReached();
-			}
+			QueueProcessorList.get(queueName);
 		}
 
 		log.info("{} starting.", SERVICE_NAME);
@@ -483,14 +454,25 @@ public class Gcs
 
 		return message;
 	}
-	
+
 	public static void broadcastMaxQueueSizeReached()
 	{
-		String topic = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
-		
-		InternalMessage internalMsg = new InternalMessage(topic, new NetBrokerMessage(String.format("The maximum number of queues (%s) has been reached.",  GcsInfo.getMaxQueues())));
-		
-		Gcs.publish(internalMsg);
+		broadcastMaxSizeFault(String.format("The maximum number of queues (%s) has been reached.", GcsInfo.getMaxQueues()));
 	}
 
+	public static void broadcastMaxDistinctSubscriptionsReached()
+	{
+		broadcastMaxSizeFault(String.format("The maximum number of distinct subscriptions (%s) has been reached.", GcsInfo.getMaxDistinctSubscriptions()));
+	}
+
+	private static void broadcastMaxSizeFault(String message)
+	{
+		String topic = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
+
+		InternalMessage internalMsg = new InternalMessage(topic, new NetBrokerMessage(message));
+
+		Gcs.publish(internalMsg);
+
+		System.out.println("\n\n Message published: " + message);
+	}
 }
