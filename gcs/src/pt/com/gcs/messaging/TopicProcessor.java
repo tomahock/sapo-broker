@@ -204,7 +204,7 @@ public class TopicProcessor
 				{
 					if (ml != null)
 					{
-						if (localOnly && (ml.getType() != MessageListener.Type.LOCAL))
+						if (localOnly && (ml.getType() == MessageListener.Type.REMOTE))
 						{
 							continue;
 						}

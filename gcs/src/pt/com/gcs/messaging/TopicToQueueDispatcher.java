@@ -103,6 +103,43 @@ class TopicToQueueDispatcher implements MessageListener
 	}
 
 	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((destinationQueueName == null) ? 0 : destinationQueueName.hashCode());
+		result = prime * result + ((topicSubscriptionKey == null) ? 0 : topicSubscriptionKey.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TopicToQueueDispatcher other = (TopicToQueueDispatcher) obj;
+		if (destinationQueueName == null)
+		{
+			if (other.destinationQueueName != null)
+				return false;
+		}
+		else if (!destinationQueueName.equals(other.destinationQueueName))
+			return false;
+		if (topicSubscriptionKey == null)
+		{
+			if (other.topicSubscriptionKey != null)
+				return false;
+		}
+		else if (!topicSubscriptionKey.equals(other.topicSubscriptionKey))
+			return false;
+		return true;
+	}
+
+	@Override
 	public String toString()
 	{
 		return "TopicToQueueDispatcher [type=" + getType().toString() + ", destinationQueueName=" + destinationQueueName + ", topicSubscriptionKey=" + topicSubscriptionKey + "]";
