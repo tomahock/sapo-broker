@@ -90,7 +90,7 @@ public class SubscriptionsAction extends HttpAction
 				}
 				else if (l.getType() == MessageListener.Type.INTERNAL)
 				{
-					clients.add("Internal TopicDispatcher");
+					clients.add(l.toString());
 				}				
 			}
 
@@ -162,7 +162,7 @@ public class SubscriptionsAction extends HttpAction
 
 	private static String generateHtml(String title, Collection<String> elements)
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<h3>");
 		sb.append(title);
 		sb.append(" (");
@@ -179,5 +179,4 @@ public class SubscriptionsAction extends HttpAction
 
 		return sb.toString();
 	}
-
 }
