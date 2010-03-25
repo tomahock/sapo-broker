@@ -3,11 +3,11 @@ package pt.com.broker.functests.helpers;
 import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.functests.Test;
+import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetProtocolType;
 
 public abstract class BrokerTest extends Test
 {
-
 	private static NetProtocolType defaultEncodingProtocolType = NetProtocolType.PROTOCOL_BUFFER;
 
 	private NetProtocolType encodingProtocolType;
@@ -113,5 +113,35 @@ public abstract class BrokerTest extends Test
 		{
 			return defaultDataLenght;
 		}
+	}
+	
+	public static int getAgent1Port()
+	{
+		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
+		int port = 0;
+		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
+		{
+			port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-port"));
+		}
+		else
+		{
+			port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-port"));
+		}
+		return port;
+	}
+	
+	public static int getAgent2Port()
+	{
+		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
+		int port = 0;
+		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
+		{
+			port = Integer.parseInt(ConfigurationInfo.getParameter("agent2-legacy-port"));
+		}
+		else
+		{
+			port = Integer.parseInt(ConfigurationInfo.getParameter("agent2-port"));
+		}
+		return port;
 	}
 }
