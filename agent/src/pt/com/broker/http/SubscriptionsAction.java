@@ -91,10 +91,13 @@ public class SubscriptionsAction extends HttpAction
 				else if (l.getType() == MessageListener.Type.INTERNAL)
 				{
 					clients.add(l.toString());
-				}				
+				}
 			}
 
-			sb.append(generateHtml(tp.getSubscriptionName(), clients));
+			if (clients.size() > 0)
+			{
+				sb.append(generateHtml(tp.getSubscriptionName(), clients));
+			}
 		}
 
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
@@ -116,7 +119,10 @@ public class SubscriptionsAction extends HttpAction
 				}
 			}
 
-			sb.append(generateHtml(tp.getSubscriptionName(), clients));
+			if (clients.size() > 0)
+			{
+				sb.append(generateHtml(tp.getSubscriptionName(), clients));
+			}
 		}
 
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
@@ -130,12 +136,15 @@ public class SubscriptionsAction extends HttpAction
 		{
 			ArrayList<String> clients = new ArrayList<String>();
 
-			for (MessageListener l : p.localListeners())
+			if (p.localListeners().size() > 0)
 			{
-				clients.add(l.getChannel().getRemoteAddressAsString());
-			}
+				for (MessageListener l : p.localListeners())
+				{
+					clients.add(l.getChannel().getRemoteAddressAsString());
+				}
 
-			sb.append(generateHtml(p.getQueueName(), clients));
+				sb.append(generateHtml(p.getQueueName(), clients));
+			}
 		}
 
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
@@ -149,12 +158,15 @@ public class SubscriptionsAction extends HttpAction
 		{
 			ArrayList<String> clients = new ArrayList<String>();
 
-			for (MessageListener l : p.remoteListeners())
+			if (p.remoteListeners().size() > 0)
 			{
-				clients.add(l.getChannel().getRemoteAddressAsString());
-			}
+				for (MessageListener l : p.remoteListeners())
+				{
+					clients.add(l.getChannel().getRemoteAddressAsString());
+				}
 
-			sb.append(generateHtml(p.getQueueName(), clients));
+				sb.append(generateHtml(p.getQueueName(), clients));
+			}
 		}
 
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
