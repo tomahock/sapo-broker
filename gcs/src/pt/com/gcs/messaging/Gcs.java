@@ -44,7 +44,6 @@ import pt.com.gcs.net.codec.GcsEncoder;
 
 /**
  * Gcs is a facade for handling several message related functionality such as publish, acknowledge, etc.
- * 
  */
 
 public class Gcs
@@ -472,7 +471,5 @@ public class Gcs
 		InternalMessage internalMsg = new InternalMessage(topic, new NetBrokerMessage(message));
 
 		Gcs.publish(internalMsg);
-
-		System.out.println("\n\n Message published: " + message);
 	}
 }

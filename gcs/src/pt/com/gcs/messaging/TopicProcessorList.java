@@ -44,7 +44,6 @@ public class TopicProcessorList
 			{
 				if (instance.tpCache.size() > GcsInfo.getMaxDistinctSubscriptions())
 				{
-					System.out.println("\n\n MaxDistinctSubscriptionsReached " + destinationName);
 					throw new MaximumDistinctSubscriptionsReachedException();
 					
 				}
@@ -129,12 +128,7 @@ public class TopicProcessorList
 		{
 			try
 			{
-				System.out.println("########### catch MaximumDistinctSubscriptionsReachedException");
-				
-				
-				System.out.println("tpCache size: " + tpCache.size());
 				tpCache.remove(destinationName);
-				System.out.println("(after delete)tpCache size: " + tpCache.size());
 			}
 			catch (InterruptedException e)
 			{
