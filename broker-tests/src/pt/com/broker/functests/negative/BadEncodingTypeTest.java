@@ -14,7 +14,10 @@ public class BadEncodingTypeTest extends GenericNegativeTest
 		setFaultCode("1102");
 		setFaultMessage("Unknown encoding protocol");
 
-		setSkipTest(true);
+		
+		// TWO?? check this out
+		setOkToTimeOut(true);
+		setOkToTimeout(true);
 	}
 
 	public void addConsequece()

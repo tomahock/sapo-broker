@@ -13,7 +13,9 @@ public class BadEncodingVersionTest extends GenericNegativeTest
 		setFaultCode("1103");
 		setFaultMessage("Unknown encoding version");
 
-		setSkipTest(true);
+		// TWO?? check this out
+		setOkToTimeOut(true);
+		setOkToTimeout(true);
 	}
 
 	public void addConsequece()

@@ -3,6 +3,8 @@ package pt.com.broker.functests.negative;
 import java.util.Arrays;
 import java.util.Random;
 
+import pt.com.broker.functests.Prerequisite;
+import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
 
 public class InvalidRandomMessageTest extends GenericNegativeTest
@@ -27,5 +29,26 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
+		
+		//setOkToTimeOut(true);
+		getPrerequisites().add( new Prerequisite("Ping")
+		{
+			
+			@Override
+			public Step run() throws Exception
+			{
+				try
+				{
+					getBrokerClient().checkStatus();
+					setSucess(true);
+					setDone(true);
+				}
+				catch (Throwable e)
+				{
+					setReasonForFailure(e.getMessage());
+				}
+				return this;
+			}
+		});
 	}
 }

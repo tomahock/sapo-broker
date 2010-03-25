@@ -7,6 +7,8 @@ import java.io.IOException;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
+import pt.com.broker.functests.Prerequisite;
+import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAction;
@@ -23,6 +25,26 @@ public class InvalidMessageTest extends GenericNegativeTest
 
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
+	
+		getPrerequisites().add( new Prerequisite("Ping")
+		{
+			
+			@Override
+			public Step run() throws Exception
+			{
+				try
+				{
+					getBrokerClient().checkStatus();
+					setSucess(true);
+					setDone(true);
+				}
+				catch (Throwable e)
+				{
+					setReasonForFailure(e.getMessage());
+				}
+				return this;
+			}
+		});
 	}
 
 	private byte[] buildMessage()

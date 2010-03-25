@@ -32,10 +32,8 @@ public class NotificationConsequence extends Consequence
 		{
 			if (!netNotification.getDestinationType().toString().equals(destinationType.toString()))
 			{
-				String reason = String.format("Destination mismatch! Expected: %s Received: %s", destination, netNotification.getDestination());
+				String reason = String.format("Destination type mismatch! Expected: %s Received: %s", destinationType, netNotification.getDestinationType());
 				setReasonForFailure(reason);
-
-				setReasonForFailure("Destination type mismatch!");
 
 				return this;
 			}

@@ -8,14 +8,13 @@ import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAction.DestinationType;
 
-public class InvalidDestinationNameInPublishTest extends GenericNetMessageNegativeTest
+public class EmptyDestinationNameInPublication extends GenericNetMessageNegativeTest
 {
-	public InvalidDestinationNameInPublishTest()
+	public EmptyDestinationNameInPublication()
 	{
-		super("Invalid destination name - Publish with '@'");
+		super("Empty destination name in publication");
 
-		NetBrokerMessage brokerMsg = new NetBrokerMessage("This is the payload".getBytes());
-		NetPublish publish = new NetPublish("service@/system/foo", DestinationType.TOPIC, brokerMsg);
+		NetPublish publish = new NetPublish("", DestinationType.TOPIC, new NetBrokerMessage("content"));
 		NetAction action = new NetAction(ActionType.PUBLISH);
 		action.setPublishMessage(publish);
 		NetMessage message = new NetMessage(action);

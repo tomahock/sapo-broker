@@ -27,8 +27,9 @@ public class FaultConsequence extends Consequence
 	{
 		try
 		{
+			System.out.println("Calling future.get() Name: "+ getName());
 			NetFault fault = future.get();
-
+			System.out.println("future.get() returned Name: "+ getName());
 			if (faultCode != null)
 			{
 				if (!faultCode.equals(fault.getCode()))
@@ -74,6 +75,7 @@ public class FaultConsequence extends Consequence
 		}
 		catch (Throwable t)
 		{
+			System.out.println(String.format("FaultConsequence.run() failed. Name: '%s'. Actor name: '%s'. Reason: %s", getName(), getActorName(), t.getMessage()));
 			setReasonForFailure(t.toString());
 		}
 		return this;

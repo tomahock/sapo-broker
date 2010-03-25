@@ -65,7 +65,7 @@ public abstract class Test
 		if (skipTest())
 		{
 			System.out.println("test skiped");
-			testResults.addSkipedTest( getNameAndEncoding(testResults) );
+			testResults.addSkipedTest(getNameAndEncoding(testResults));
 			return true;
 		}
 		try
@@ -104,6 +104,7 @@ public abstract class Test
 						else
 						{
 							log.info("##### :( ##### Unsuccessfull step - " + step.getName() + " Reason: " + step.getReaseonForFailure());
+							result = false;
 						}
 					}
 					else
@@ -117,6 +118,23 @@ public abstract class Test
 		}
 		catch (Throwable t)
 		{
+			System.out.println(String.format(">>>> Test %s got an exception of type '%s' with message: ", getName(), t.getClass().getCanonicalName(), t.getMessage()));
+
+			if (!okToTimeOut())
+			{
+				if (!getAction().isSucess())
+				{
+					System.out.println(String.format(">>>> Action failed. Reason: %s", getAction().getReaseonForFailure()));
+				}
+				for (Consequence consequence : getConsequences())
+				{
+					if (!consequence.isSucess())
+					{
+						System.out.println(String.format(">>>> Consequence '%s' failed. Reason: %s", consequence.getName(), consequence.getReaseonForFailure()));
+					}
+				}
+			}
+
 			if ((t instanceof CancellationException) && okToTimeOut())
 			{
 				result = true;
@@ -151,11 +169,11 @@ public abstract class Test
 
 		return result;
 	}
-	
+
 	private String getNameAndEncoding(TestsResults testResults)
 	{
 		String encoding = testResults.getProperty("Encoding");
-		if(encoding == null)
+		if (encoding == null)
 			return getName();
 		return getName() + " : " + encoding;
 	}

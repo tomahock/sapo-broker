@@ -128,11 +128,4 @@ public class PollVirtualQueueTest extends BrokerTest
 		});
 
 	}
-	
-	@Override
-	public boolean skipTest()
-	{
-		return getEncodingProtocolType() == NetProtocolType.SOAP;
-	}
-
 }

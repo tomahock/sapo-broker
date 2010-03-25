@@ -1,5 +1,6 @@
 package pt.com.broker.functests.helpers;
 
+import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.functests.Action;
@@ -10,7 +11,7 @@ import pt.com.broker.types.NetFault;
 public class GenericNegativeTest extends BrokerTest
 {
 
-	private BrokerClient brokerClient = null;
+	private BaseBrokerClient brokerClient = null;
 
 	private boolean okToTimeout = false;
 
@@ -25,6 +26,7 @@ public class GenericNegativeTest extends BrokerTest
 		@Override
 		public void onFault(NetFault fault)
 		{
+			System.out.println("GenericNegativeTest.defaultErrorListener - Fault Received. Message: "+ fault.getMessage());
 			faultFuture.set(fault);
 		}
 	};
@@ -41,6 +43,16 @@ public class GenericNegativeTest extends BrokerTest
 	public GenericNegativeTest(String testName)
 	{
 		super(testName);
+		
+		try
+		{
+			brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+		}
+		catch (Throwable e)
+		{
+			setReasonForFailure(e);
+		}
 	}
 
 	@Override
@@ -71,8 +83,7 @@ public class GenericNegativeTest extends BrokerTest
 			{
 				try
 				{
-					brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
+					brokerClient = getBrokerClient();
 
 					brokerClient.setErrorListener(getErrorListener());
 
@@ -92,12 +103,12 @@ public class GenericNegativeTest extends BrokerTest
 
 	}
 
-	public void setBrokerClient(BrokerClient brokerClient)
+	public void setBrokerClient(BaseBrokerClient brokerClient)
 	{
 		this.brokerClient = brokerClient;
 	}
 
-	public BrokerClient getBrokerClient()
+	public BaseBrokerClient getBrokerClient()
 	{
 		return brokerClient;
 	}

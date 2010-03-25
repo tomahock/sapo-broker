@@ -10,8 +10,11 @@ import pt.com.broker.functests.negative.AccessDeniedTest;
 import pt.com.broker.functests.negative.AuthenticationFailedTest;
 import pt.com.broker.functests.negative.BadEncodingTypeTest;
 import pt.com.broker.functests.negative.BadEncodingVersionTest;
+import pt.com.broker.functests.negative.EmptyDestinationNameInAck;
+import pt.com.broker.functests.negative.EmptyDestinationNameInPoll;
+import pt.com.broker.functests.negative.EmptyDestinationNameInPublication;
+import pt.com.broker.functests.negative.EmptyDestinationNameInSubscription;
 import pt.com.broker.functests.negative.FaultTest;
-import pt.com.broker.functests.negative.FaultWithActionIdTest;
 import pt.com.broker.functests.negative.InvalidAuthChannelTypeTest;
 import pt.com.broker.functests.negative.InvalidDestinationName;
 import pt.com.broker.functests.negative.InvalidDestinationNameInPublishTest;
@@ -168,6 +171,11 @@ public class Main
 				new MessegeOversizedTest().run(numberOfTests, testResults);
 				new BadEncodingTypeTest().run(numberOfTests, testResults);
 				new BadEncodingVersionTest().run(numberOfTests, testResults);
+				
+				new EmptyDestinationNameInSubscription().run(numberOfTests, testResults);
+				new EmptyDestinationNameInPublication().run(numberOfTests, testResults);
+				new EmptyDestinationNameInPoll().run(numberOfTests, testResults);
+				new EmptyDestinationNameInAck().run(numberOfTests, testResults);
 
 				new InvalidMessageTest().run(numberOfTests, testResults);
 				new InvalidRandomMessageTest().run(numberOfTests, testResults);
@@ -176,7 +184,6 @@ public class Main
 				new NotificationTest().run(numberOfTests, testResults);
 				new PongTest().run(numberOfTests, testResults);
 				new FaultTest().run(numberOfTests, testResults);
-				new FaultWithActionIdTest().run(numberOfTests, testResults);
 				new AcceptedTest().run(numberOfTests, testResults);
 				new InvalidDestinationName().run(numberOfTests, testResults);
 				new InvalidDestinationType().run(numberOfTests, testResults);

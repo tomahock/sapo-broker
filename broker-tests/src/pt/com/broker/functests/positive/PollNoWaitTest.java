@@ -30,6 +30,8 @@ public class PollNoWaitTest extends BrokerTest
 			@Override
 			public Step run() throws Exception
 			{
+				setDone(true);
+				setSucess(true);
 				return this;
 			}
 
@@ -58,9 +60,6 @@ public class PollNoWaitTest extends BrokerTest
 					}
 
 					bk.close();
-
-					setDone(true);
-					setSucess(true);
 				}
 				catch (Throwable t)
 				{
