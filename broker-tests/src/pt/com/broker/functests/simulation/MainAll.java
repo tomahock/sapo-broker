@@ -4,20 +4,30 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.functests.conf.ConfigurationInfo;
+
 public class MainAll
 {
 	private static final Logger log = LoggerFactory.getLogger(MainAll.class);
 	
-	public static final String Agent1Hostname = "localhost";
-	public static final int Agent1Port = 3323;
-	public static final String Agent2Hostname = "localhost";
-	public static final int Agent2Port = 3423;
+	public static final String Agent1Hostname;
+	public static final int Agent1Port;
+	public static final String Agent2Hostname;
+	public static final int Agent2Port;
+	
+	
+	static {
+		ConfigurationInfo.init();
+
+		Agent1Hostname = ConfigurationInfo.getParameter("agent1-host");
+		Agent2Hostname = ConfigurationInfo.getParameter("agent2-host");
+		
+		Agent1Port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-port"));
+		Agent2Port = Integer.parseInt(ConfigurationInfo.getParameter("agent2-port"));		
+	}
 	
 	public static void main(String[] args)
 	{
-		System.out.println("TODO: Agens are hardcoded...");
-		
-		
 		/***** Scenario A *****/
 		
 		ScenarioA.run();

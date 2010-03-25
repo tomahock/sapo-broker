@@ -27,9 +27,7 @@ public class FaultConsequence extends Consequence
 	{
 		try
 		{
-			System.out.println("Calling future.get() Name: "+ getName());
 			NetFault fault = future.get();
-			System.out.println("future.get() returned Name: "+ getName());
 			if (faultCode != null)
 			{
 				if (!faultCode.equals(fault.getCode()))

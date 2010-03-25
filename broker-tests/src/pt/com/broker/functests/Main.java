@@ -110,8 +110,8 @@ public class Main
 
 			if (runAll || runSSLandAuth)
 			{
-				new DBRolesAuthenticationTest().run(numberOfTests, testResults);
-				new SslTopicNameSpeficied().run(numberOfTests, testResults);
+				//new DBRolesAuthenticationTest().run(numberOfTests, testResults);
+				//new SslTopicNameSpeficied().run(numberOfTests, testResults);
 				//new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests, testResults);
 			}
 
@@ -189,9 +189,9 @@ public class Main
 				new InvalidDestinationType().run(numberOfTests, testResults);
 				new InvalidDestinationNameInPublishTest().run(numberOfTests, testResults);
 				new AccessDeniedTest().run(numberOfTests, testResults);
+//				new AuthenticationFailedTest().run(numberOfTests, testResults);
+//				new UnknownAuthTypeFailedTest().run(numberOfTests, testResults);
 				new InvalidAuthChannelTypeTest().run(numberOfTests, testResults);
-				new AuthenticationFailedTest().run(numberOfTests, testResults);
-				new UnknownAuthTypeFailedTest().run(numberOfTests, testResults);
 				new TimeoutPollTest().run(numberOfTests, testResults);
 			}
 		}

@@ -188,10 +188,6 @@ public class MultipleGenericPubSubTest extends BrokerTest
 			
 			DestinationType dt = getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE) ? DestinationType.QUEUE : getConsumerDestinationType();
 			
-			System.out.println("### MultipleGenericPubSubTest.addConsequences() destination type : " + dt);
-			System.out.println("### MultipleGenericPubSubTest.addConsequences() destination : " + getDestinationName());
-			System.out.println("### MultipleGenericPubSubTest.addConsequences() subscription : " + getSubscriptionName());
-			
 			notConsequence.setDestinationType(dt);
 			notConsequence.setMessagePayload(getData());
 

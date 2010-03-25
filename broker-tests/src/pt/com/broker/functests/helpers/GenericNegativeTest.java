@@ -26,7 +26,6 @@ public class GenericNegativeTest extends BrokerTest
 		@Override
 		public void onFault(NetFault fault)
 		{
-			System.out.println("GenericNegativeTest.defaultErrorListener - Fault Received. Message: "+ fault.getMessage());
 			faultFuture.set(fault);
 		}
 	};

@@ -27,6 +27,8 @@ java -server \
 -Djava.net.preferIPv4Stack=true \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
--Dconfig-path=./conf/agent_example.config \
+-XX:+HeapDumpOnOutOfMemoryError \
+-Dagent-config-path=./conf/agent_example.config \
+-Dbroker-global-config-path=./conf/global.config \
 -cp $classpath \
 pt.com.broker.Start

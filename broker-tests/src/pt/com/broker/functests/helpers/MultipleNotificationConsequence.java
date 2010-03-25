@@ -49,11 +49,6 @@ public class MultipleNotificationConsequence extends Consequence
 
 			if (destination != null)
 			{
-				
-				System.out.println("MultipleNotificationConsequence.run() destination: " + destination);
-				System.out.println("MultipleNotificationConsequence.run() subscription: " + subscription);
-				System.out.println("MultipleNotificationConsequence.run() netNotification.getDestination(): " + netNotification.getDestination());
-								
 				if (subscription.contains("@"))
 				{
 					if (!netNotification.getDestination().equals(subscription))
