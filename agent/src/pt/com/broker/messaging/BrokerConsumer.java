@@ -48,12 +48,16 @@ public class BrokerConsumer
 					for (TopicProcessor tp : TopicProcessorList.values())
 					{
 						int ssize = countLocal(tp.listeners());
-						String skey = tp.getSubscriptionName();
 
-						String ctName = String.format("/system/stats/topic-consumer-count/#%s#", skey);
-						String content = GcsInfo.getAgentName() + "#" + skey + "#" + ssize;
+						if (ssize > 0)
+						{
+							String skey = tp.getSubscriptionName();
 
-						InternalPublisher.send(ctName, content);
+							String ctName = String.format("/system/stats/topic-consumer-count/#%s#", skey);
+							String content = GcsInfo.getAgentName() + "#" + skey + "#" + ssize;
+
+							InternalPublisher.send(ctName, content);
+						}
 					}
 				}
 				catch (Throwable e)
@@ -67,7 +71,7 @@ public class BrokerConsumer
 				int s = 0;
 				for (MessageListener l : listeners)
 				{
-					if (l.getType() == MessageListener.Type.LOCAL)
+					if ((l.getType() == MessageListener.Type.LOCAL))
 					{
 						s++;
 					}
@@ -85,10 +89,13 @@ public class BrokerConsumer
 					for (QueueProcessor qs : QueueProcessorList.values())
 					{
 						int ssize = qs.localListeners().size();
-						String ctName = String.format("/system/stats/queue-consumer-count/#%s#", qs.getQueueName());
-						String content = GcsInfo.getAgentName() + "#" + qs.getQueueName() + "#" + ssize;
 
-						InternalPublisher.send(ctName, content);
+						if (ssize > 0)
+						{
+							String ctName = String.format("/system/stats/queue-consumer-count/#%s#", qs.getQueueName());
+							String content = GcsInfo.getAgentName() + "#" + qs.getQueueName() + "#" + ssize;
+							InternalPublisher.send(ctName, content);
+						}
 					}
 				}
 				catch (Throwable t)
