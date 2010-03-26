@@ -50,10 +50,6 @@ public class Gcs
 {
 	private static Logger log = LoggerFactory.getLogger(Gcs.class);
 
-	private static final int NCPU = Runtime.getRuntime().availableProcessors();
-
-	private static final int IO_THREADS = NCPU + 1;
-
 	private static final String SERVICE_NAME = "SAPO GCS";
 
 	private static final Gcs instance = new Gcs();
@@ -345,8 +341,8 @@ public class Gcs
 
 	private void startAcceptor(int portNumber) throws IOException
 	{
-		ThreadPoolExecutor tpe_io = CustomExecutors.newThreadPool(IO_THREADS, "gcs-io");
-		ThreadPoolExecutor tpe_workers = CustomExecutors.newThreadPool(IO_THREADS * 5, "broker-worker");
+		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-1");
+		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-1");
 
 		ChannelFactory factory = new NioServerSocketChannelFactory(tpe_io, tpe_workers);
 		ServerBootstrap bootstrap = new ServerBootstrap(factory);
@@ -385,8 +381,8 @@ public class Gcs
 
 	private void startConnector()
 	{
-		ThreadPoolExecutor tpe_io = CustomExecutors.newThreadPool(IO_THREADS, "gcs-io");
-		ThreadPoolExecutor tpe_workers = CustomExecutors.newThreadPool(IO_THREADS * 5, "gcs-worker");
+		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-2");
+		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-2");
 
 		ClientBootstrap bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(tpe_io, tpe_workers));
 
