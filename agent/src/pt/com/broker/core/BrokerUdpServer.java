@@ -1,7 +1,7 @@
 package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executor;
 
 import org.caudexorigo.Shutdown;
 import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
@@ -28,9 +28,9 @@ public class BrokerUdpServer
 
 	private int _legacyPort;
 	private int _binProtoPort;
-	private final ThreadPoolExecutor tpeIo;
+	private final Executor tpeIo;
 
-	public BrokerUdpServer(ThreadPoolExecutor tpe_io, int legacyPort, int binProtoPort)
+	public BrokerUdpServer(Executor tpe_io, int legacyPort, int binProtoPort)
 	{
 		super();
 		tpeIo = tpe_io;
@@ -88,7 +88,7 @@ public class BrokerUdpServer
 		{
 			// Legacy message format
 
-			DatagramChannelFactory datagramChannelFactory1 = new NioDatagramChannelFactory(tpeIo/* Executors.newCachedThreadPool() */);
+			DatagramChannelFactory datagramChannelFactory1 = new NioDatagramChannelFactory(tpeIo);
 
 			ConnectionlessBootstrap bootstrap1 = new ConnectionlessBootstrap(datagramChannelFactory1);
 
@@ -127,6 +127,5 @@ public class BrokerUdpServer
 			log.error(e.getMessage(), e);
 			Shutdown.now();
 		}
-
 	}
 }

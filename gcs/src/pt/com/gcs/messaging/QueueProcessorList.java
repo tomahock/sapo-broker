@@ -31,6 +31,7 @@ public class QueueProcessorList
 	public static class MaximumQueuesAllowedReachedException extends RuntimeException
 	{
 		private static final long serialVersionUID = 542857696958738718L;
+
 		@Override
 		public String getMessage()
 		{
@@ -131,12 +132,11 @@ public class QueueProcessorList
 		catch (Throwable t)
 		{
 			log.error(String.format("Failed to get QueueProcessor for queue '%s'. Message: %s", destinationName, t.getMessage()), t);
-			
+
 			Throwable rootCause = ErrorAnalyser.findRootCause(t);
 			CriticalErrors.exitIfCritical(rootCause);
-			
-			
-			if(rootCause.getClass().isAssignableFrom(MaximumQueuesAllowedReachedException.class))
+
+			if (rootCause.getClass().isAssignableFrom(MaximumQueuesAllowedReachedException.class))
 			{
 				try
 				{
@@ -148,7 +148,7 @@ public class QueueProcessorList
 				}
 				Gcs.broadcastMaxQueueSizeReached();
 			}
-			
+
 			log.error(String.format("Failed to get TopicProcessor for topic '%s'. Message: %s", destinationName, rootCause.getMessage()), rootCause);
 		}
 		return null;
@@ -220,7 +220,6 @@ public class QueueProcessorList
 		try
 		{
 			ListenerChannel lc = new ListenerChannel(channel);
-			List<QueueProcessor> toDeleteProcessors = new ArrayList<QueueProcessor>();
 
 			for (QueueProcessor qp : qpCache.values())
 			{
@@ -248,17 +247,6 @@ public class QueueProcessorList
 				}
 
 				toDelete.clear();
-
-				if (qp.size() == 0 && qp.getQueuedMessagesCount() == 0)
-				{
-					toDeleteProcessors.add(qp);
-				}
-			}
-
-			for (QueueProcessor qpd : toDeleteProcessors)
-			{
-				log.info("Remove QueueProcessor for '{}' because it has no consumers and no messages", qpd.getQueueName());
-				qpCache.removeValue(qpd);
 			}
 		}
 		catch (InterruptedException e)

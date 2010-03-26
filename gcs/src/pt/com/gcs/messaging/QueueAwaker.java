@@ -3,7 +3,6 @@ package pt.com.gcs.messaging;
 
 /**
  * QueueAwaker is a Runnable type responsible form initialize the queue message deliver process.
- * 
  */
 
 class QueueAwaker implements Runnable
@@ -22,8 +21,6 @@ class QueueAwaker implements Runnable
 			};
 
 			GcsExecutor.execute(awaker);
-			//Sleep.time(100);
 		}
 	}
-
 }

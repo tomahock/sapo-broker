@@ -1,6 +1,6 @@
 package pt.com.broker.http;
 
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executor;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * BrokerServer is responsible for initializing client's HTTP interface (MINA infrastructure).
- * 
  */
 
 public class BrokerHttpService
@@ -18,12 +17,11 @@ public class BrokerHttpService
 	private static final Logger LOG = LoggerFactory.getLogger(BrokerHttpService.class);
 
 	private int _portNumber;
-	
-	private final ThreadPoolExecutor tpeIo;
-	private final ThreadPoolExecutor tpeWorkers;
 
+	private final Executor tpeIo;
+	private final Executor tpeWorkers;
 
-	public BrokerHttpService(ThreadPoolExecutor tpe_io, ThreadPoolExecutor tpe_workers, int portNumber)
+	public BrokerHttpService(Executor tpe_io, Executor tpe_workers, int portNumber)
 	{
 		tpeIo = tpe_io;
 		tpeWorkers = tpe_workers;

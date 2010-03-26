@@ -1,7 +1,7 @@
 package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executor;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -13,7 +13,6 @@ import pt.com.broker.net.BrokerSslPipelineFactory;
 
 /**
  * BrokerServer is responsible for initializing client's SSL interface (MINA infrastructure).
- * 
  */
 
 public class BrokerSSLServer
@@ -23,10 +22,10 @@ public class BrokerSSLServer
 
 	private int _portNumber;
 
-	private final ThreadPoolExecutor tpeIo;
-	private final ThreadPoolExecutor tpeWorkers;
+	private final Executor tpeIo;
+	private final Executor tpeWorkers;
 
-	public BrokerSSLServer(ThreadPoolExecutor tpe_io, ThreadPoolExecutor tpe_workers, int portNumber)
+	public BrokerSSLServer(Executor tpe_io, Executor tpe_workers, int portNumber)
 	{
 		tpeIo = tpe_io;
 		tpeWorkers = tpe_workers;
