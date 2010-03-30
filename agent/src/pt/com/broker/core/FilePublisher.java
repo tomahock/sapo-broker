@@ -25,9 +25,10 @@ import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.InternalMessage;
 
 /**
  * FilePublisher deals with dropbox functionality publishing messages
@@ -286,15 +287,11 @@ public class FilePublisher
 		
 		if(publish)
 		{
-			InternalMessage statsMessage = new InternalMessage();
-
 			String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
 			String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
-			statsMessage.setDestination(dName);
-			statsMessage.setContent(new NetBrokerMessage(content));
-			
-			
-			Gcs.publish(statsMessage);
+
+			NetPublish np = new NetPublish(dName, DestinationType.TOPIC, new NetBrokerMessage(content));
+			Gcs.publish(np);
 			previousPublish = now;
 		}
 	}	

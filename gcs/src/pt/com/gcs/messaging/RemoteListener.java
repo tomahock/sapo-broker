@@ -9,6 +9,7 @@ import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -117,11 +118,26 @@ public class RemoteListener implements MessageListener
 	{
 		if (message == null)
 			return failed;
-		
-		if (!(message instanceof InternalMessage))
+
+		NetMessage nmsg = null;
+
+		if (message instanceof NetMessage)
 		{
-			log.warn("Don't know how to handle this message type");
-			return failed;			
+			nmsg = (NetMessage) message;
+		}
+		else
+		{
+			log.warn("Don't know how to handle this message type: " + message.getClass().getName());
+			return failed;
+		}
+
+		if (targetType == DestinationType.TOPIC)
+		{
+			nmsg.getHeaders().put("TYPE", "COM_TOPIC");
+		}
+		else if (targetType == DestinationType.QUEUE)
+		{
+			nmsg.getHeaders().put("TYPE", "COM_QUEUE");
 		}
 
 		final ListenerChannel lchannel = getChannel();
@@ -147,7 +163,7 @@ public class RemoteListener implements MessageListener
 					showResumedDeliveryMessage = false;
 				}
 
-				lchannel.write(message);
+				lchannel.write(nmsg);
 				showSuspendedDeliveryMessage = true;
 			}
 			else
@@ -155,7 +171,7 @@ public class RemoteListener implements MessageListener
 
 				if (isReady())
 				{
-					ChannelFuture future = lchannel.write(message);
+					ChannelFuture future = lchannel.write(nmsg);
 					final long writeStartTime = System.nanoTime();
 					startDeliverAfter = writeStartTime + 2500;
 

@@ -10,8 +10,8 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.gcs.io.SerializerHelper;
-import pt.com.gcs.messaging.InternalMessage;
+import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
+import pt.com.broker.types.NetMessage;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between agents.
@@ -32,11 +32,13 @@ import pt.com.gcs.messaging.InternalMessage;
 public class GcsEncoder extends OneToOneEncoder
 {
 	private static final Logger log = LoggerFactory.getLogger(GcsEncoder.class);
+	
+	private final ProtoBufBindingSerializer serializer = new ProtoBufBindingSerializer();
 
 	@Override
 	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
 	{
-		if (!(msg instanceof InternalMessage))
+		if (!(msg instanceof NetMessage))
 		{
 			String errorMessage = "Message to be encoded is from an unexpected type - " + msg.getClass().getName();
 			log.error(errorMessage);
@@ -46,8 +48,8 @@ public class GcsEncoder extends OneToOneEncoder
 		ChannelBuffer out = ChannelBuffers.dynamicBuffer();
 		ChannelBufferOutputStream sout = new ChannelBufferOutputStream(out);
 		sout.writeInt(0);
-
-		SerializerHelper.toStream((InternalMessage) msg, sout);
+		
+		serializer.marshal((NetMessage) msg, sout);
 
 		int len = out.writerIndex() - 4;
 

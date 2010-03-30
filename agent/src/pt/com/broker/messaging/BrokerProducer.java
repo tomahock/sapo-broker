@@ -1,15 +1,12 @@
 package pt.com.broker.messaging;
 
-import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.MessageType;
 
 /**
  * BrokerProducer handles message publication both topic and queues.
@@ -29,73 +26,35 @@ public class BrokerProducer
 	{
 	}
 
-	private InternalMessage prepareForSending(NetPublish publish)
+	public boolean enqueueMessage(final NetPublish np, String messageSource)
 	{
-		try
-		{
-			NetBrokerMessage brkMessage = publish.getMessage();
-
-			final InternalMessage message = new InternalMessage();
-
-			if (StringUtils.isNotBlank(brkMessage.getMessageId()))
-				message.setMessageId(brkMessage.getMessageId());
-
-			message.setDestination(publish.getDestination());
-			
-			if (brkMessage.getTimestamp() != -1)
-				message.setTimestamp(brkMessage.getTimestamp());
-
-			if (brkMessage.getExpiration() != -1)
-			{
-				message.setExpiration(brkMessage.getExpiration());
-			}
-
-			message.setContent(brkMessage);
-
-			if (log.isDebugEnabled())
-			{
-				log.debug("Received message: {}", message.getMessageId());
-			}
-
-			return message;
-		}
-		catch (Throwable e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	public boolean enqueueMessage(final NetPublish enqReq, String messageSource)
-	{
-		InternalMessage msg = prepareForSending(enqReq);
-		
-		StringBuilder sb_source = new StringBuilder();
-		sb_source.append("queue@");
-		sb_source.append(GcsInfo.getAgentName());
-		sb_source.append("://");
-		sb_source.append(enqReq.getDestination());
-		sb_source.append("?app=");
-		sb_source.append(messageSource);
-		msg.setSourceApp(sb_source.toString());
-		msg.setType(MessageType.COM_QUEUE);
-
-		return Gcs.enqueue(msg);
-	}
-
-	
-	public void publishMessage(final NetPublish pubReq, final String messageSource)
-	{
-		InternalMessage msg = prepareForSending(pubReq);
-
 		StringBuilder sb_source = new StringBuilder();
 		sb_source.append("topic@");
 		sb_source.append(GcsInfo.getAgentName());
 		sb_source.append("://");
-		sb_source.append(pubReq.getDestination());
+		sb_source.append(np.getDestination());
 		sb_source.append("?app=");
 		sb_source.append(messageSource);
-		msg.setSourceApp(sb_source.toString());
-		msg.setType(MessageType.COM_TOPIC);
-		Gcs.publish(msg);
+
+		np.getMessage().addHeader("FROM", sb_source.toString());
+
+		NetMessage nmsg = Gcs.buildNotification(np, np.getDestination());
+
+		return Gcs.enqueue(nmsg, np.getDestination());
+	}
+
+	public void publishMessage(final NetPublish np, final String messageSource)
+	{
+		StringBuilder sb_source = new StringBuilder();
+		sb_source.append("topic@");
+		sb_source.append(GcsInfo.getAgentName());
+		sb_source.append("://");
+		sb_source.append(np.getDestination());
+		sb_source.append("?app=");
+		sb_source.append(messageSource);
+
+		np.getMessage().addHeader("FROM", sb_source.toString());
+
+		Gcs.publish(np);
 	}
 }

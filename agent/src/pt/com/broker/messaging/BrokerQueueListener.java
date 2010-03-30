@@ -67,11 +67,6 @@ public class BrokerQueueListener extends BrokerListener
 
 		try
 		{
-			if (!isAckRequired())
-			{
-				response.getHeaders().put(ACK_REQUIRED, "false");
-			}
-
 			if (lchannel.isWritable())
 			{
 				if (showResumedDeliveryMessage)
@@ -91,6 +86,14 @@ public class BrokerQueueListener extends BrokerListener
 					final long writeStartTime = System.nanoTime();
 					startDeliverAfter = writeStartTime + 1000000;
 
+					showResumedDeliveryMessage = true;
+
+					if (showSuspendedDeliveryMessage)
+					{
+						log.info(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+						showSuspendedDeliveryMessage = false;
+					}
+
 					future.addListener(new ChannelFutureListener()
 					{
 						@Override
@@ -107,13 +110,7 @@ public class BrokerQueueListener extends BrokerListener
 				}
 				else
 				{
-					showResumedDeliveryMessage = true;
-
-					if (showSuspendedDeliveryMessage)
-					{
-						log.info(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-						showSuspendedDeliveryMessage = false;
-					}
+					return failed;
 				}
 			}
 

@@ -67,6 +67,7 @@ public class BrokerTopicListener extends BrokerListener
 
 			try
 			{
+				
 				if (lchannel.isWritable())
 				{
 					if (showResumedDeliveryMessage)

@@ -1,8 +1,5 @@
 package pt.com.broker.messaging;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +8,8 @@ import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
-import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.ForwardResult.Result;
-import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.gcs.messaging.InternalMessage;
 
 /**
  * BrokerListener is a base class for types representing local message consumers.

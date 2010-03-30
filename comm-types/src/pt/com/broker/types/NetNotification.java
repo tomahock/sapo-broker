@@ -56,5 +56,5 @@ public final class NetNotification
 	public Map<String, String> getHeaders()
 	{
 		return headers;
-	}
+	}	
 }

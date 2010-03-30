@@ -7,6 +7,9 @@ import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -45,24 +48,39 @@ class TopicToQueueDispatcher implements MessageListener
 	@Override
 	public ForwardResult onMessage(DeliverableMessage msg)
 	{
-
-		InternalMessage imsg;
-		if (msg instanceof InternalMessage)
+		if (msg instanceof NetMessage)
 		{
-			imsg = (InternalMessage) msg;
+			NetMessage nmsg = (NetMessage) msg;
+			NetNotification nnot_orig = nmsg.getAction().getNotificationMessage();
+
+			NetNotification nnot_fwd = new NetNotification(destinationQueueName, DestinationType.QUEUE, nnot_orig.getMessage(), destinationQueueName);
+			NetAction action_fwd = new NetAction(NetAction.ActionType.NOTIFICATION);
+			action_fwd.setNotificationMessage(nnot_fwd);
+
+			NetMessage nmsg_fwd = new NetMessage(action_fwd);
+
+			if (!isFromRemotePeer(nmsg))
+			{
+				Gcs.enqueue(nmsg_fwd, destinationQueueName);
+				return success;
+			}
 		}
 		else
 		{
-			log.warn("Don't know how to handle this message type");
-			return failed;
+			log.error("Don't know how to handle message");
+		}
+		return failed;
+	}
+
+	private boolean isFromRemotePeer(NetMessage nmsg)
+	{
+		if (nmsg.getHeaders() != null)
+		{
+			return Boolean.parseBoolean(nmsg.getHeaders().get("IS_REMOTE"));
 		}
 
-		if (!imsg.isFromRemotePeer())
-		{
-			imsg.setDestination(destinationQueueName);
-			Gcs.enqueue(imsg);
-		}
-		return success;
+		return false;
+
 	}
 
 	@Override

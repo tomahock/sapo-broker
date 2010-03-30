@@ -10,20 +10,20 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetMessage;
+
 /**
  * SystemMessagesPublisher is responsible for holding and delivering system messages such as SYSTEM_TOPIC and SYSTEM_QUEUE. If these messages are not acknowledged them are resent.
- * 
  */
-
 public class SystemMessagesPublisher
 {
 	private static class TimeoutMessage
 	{
-		final InternalMessage message;
+		final NetMessage message;
 		long timeout;
 		final Channel session;
 
-		TimeoutMessage(InternalMessage message, Channel session, long timeout)
+		TimeoutMessage(NetMessage message, Channel session, long timeout)
 		{
 			this.message = message;
 			this.session = session;
@@ -61,7 +61,7 @@ public class SystemMessagesPublisher
 
 					for (TimeoutMessage tm : retryMessages)
 					{
-						log.info("System message with message id '{}' timed out. Remote address: '{}'", tm.message.getMessageId(), tm.session.getRemoteAddress().toString());
+						log.info("System message with message id '{}' timed out. Remote address: '{}'", tm.message.getAction().getNotificationMessage().getMessage().getMessageId(), tm.session.getRemoteAddress().toString());
 						tm.session.write(tm.message);
 						tm.timeout = System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL;
 					}
@@ -80,13 +80,13 @@ public class SystemMessagesPublisher
 
 	private static Map<String, TimeoutMessage> pending_messages = new HashMap<String, TimeoutMessage>();
 
-	public static void sendMessage(InternalMessage message, Channel session)
+	public static void sendMessage(NetMessage message, Channel session)
 	{
 		TimeoutMessage tm = new TimeoutMessage(message, session, System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL);
 
 		synchronized (pending_messages)
 		{
-			pending_messages.put(message.getMessageId(), tm);
+			pending_messages.put(message.getAction().getNotificationMessage().getMessage().getMessageId(), tm);
 		}
 		session.write(message);
 	}
@@ -101,7 +101,7 @@ public class SystemMessagesPublisher
 			{
 				if (entry.getValue().session.equals(session))
 				{
-					message_identifiers.add(entry.getValue().message.getMessageId());
+					message_identifiers.add(entry.getValue().message.getAction().getNotificationMessage().getMessage().getMessageId());
 				}
 			}
 			for (String msgId : message_identifiers)

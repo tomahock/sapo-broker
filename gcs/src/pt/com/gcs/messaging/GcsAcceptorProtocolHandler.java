@@ -1,8 +1,8 @@
 package pt.com.gcs.messaging;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +22,10 @@ import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
@@ -37,6 +40,7 @@ import pt.com.gcs.net.Peer;
 class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 {
 	private static Logger log = LoggerFactory.getLogger(GcsAcceptorProtocolHandler.class);
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	private static List<InetSocketAddress> peersAddressList;
 
@@ -84,25 +88,25 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
 	{
-		final InternalMessage m = (InternalMessage) e.getMessage();
+		final NetMessage m = (NetMessage) e.getMessage();
+		String mtype = m.getHeaders().get("TYPE");
 
-		NetBrokerMessage brkMsg = m.getContent();
+		NetNotification nnot = m.getAction().getNotificationMessage();
+		NetBrokerMessage brkMsg = nnot.getMessage();
 
 		String msgContent = new String(brkMsg.getPayload(), "UTF-8");
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("Message Received from: '{}', Type: '{}'", ctx.getChannel().getRemoteAddress(), m.getType());
+			log.debug("Message Received from: '{}', Type: '{}'", ctx.getChannel().getRemoteAddress(), nnot.getDestination());
 		}
 
-		if (m.getType() == MessageType.ACK)
+		if (mtype.equals("ACK"))
 		{
-
-			Gcs.ackMessage(m.getDestination(), m.getMessageId());
-
+			Gcs.ackMessage(nnot.getDestination(), brkMsg.getMessageId());
 			return;
 		}
-		else if (m.getType() == (MessageType.HELLO))
+		else if (mtype.equals("HELLO"))
 		{
 			validatePeer(ctx, msgContent);
 			boolean isValid = ((Boolean) ChannelAttributes.get(ctx, "GcsAcceptorProtocolHandler.ISVALID")).booleanValue();
@@ -119,7 +123,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			}
 			return;
 		}
-		else if ((m.getType() == MessageType.SYSTEM_TOPIC) || (m.getType() == MessageType.SYSTEM_QUEUE))
+		else if (mtype.equals("SYSTEM_TOPIC") || mtype.equals("SYSTEM_QUEUE"))
 		{
 
 			final String action = extract(msgContent, "<action>", "</action>");
@@ -140,7 +144,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				log.info(lmsg);
 			}
 
-			if (m.getType() == MessageType.SYSTEM_TOPIC)
+			if (mtype.equals("SYSTEM_TOPIC"))
 			{
 				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
 
@@ -161,7 +165,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				}
 
 			}
-			else if (m.getType() == MessageType.SYSTEM_QUEUE)
+			else if (mtype.equals("SYSTEM_QUEUE"))
 			{
 				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
 
@@ -180,7 +184,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 					qp.remove(remoteListener);
 				}
 			}
-			acknowledgeSystemMessage(m, ctx);
+			acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
 		}
 		else
 		{
@@ -188,27 +192,24 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		}
 	}
 
-	private void acknowledgeSystemMessage(InternalMessage message, ChannelHandlerContext ctx)
+	private void acknowledgeSystemMessage(String messageId, ChannelHandlerContext ctx)
 	{
 		Channel channel = ctx.getChannel();
 
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><message-id>%s</message-id></sysmessage>";
-		String payload = String.format(ptemplate, "SYSTEM_ACKNOWLEDGE", GcsInfo.getAgentName(), channel.getLocalAddress().toString(), message.getMessageId());
-		InternalMessage ackMsg = new InternalMessage();
-		NetBrokerMessage brkMsg;
-		try
-		{
-			brkMsg = new NetBrokerMessage(payload.getBytes("UTF-8"));
-			ackMsg.setType(MessageType.SYSTEM_ACK);
+		String payload = String.format(ptemplate, "SYSTEM_ACKNOWLEDGE", GcsInfo.getAgentName(), channel.getLocalAddress().toString(), messageId);
 
-			ackMsg.setContent(brkMsg);
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			// This exception is never thrown because UTF-8 encoding is built-in in every JVM
-		}
+		NetBrokerMessage brkMsg = new NetBrokerMessage(payload.getBytes(UTF8));
 
-		channel.write(ackMsg);
+		NetNotification notification = new NetNotification("/system/peer", DestinationType.TOPIC, brkMsg, "/system/peer");
+
+		NetAction naction = new NetAction(NetAction.ActionType.NOTIFICATION);
+		naction.setNotificationMessage(notification);
+
+		NetMessage nmsg = new NetMessage(naction);
+		nmsg.getHeaders().put("TYPE", "SYSTEM_ACK");
+
+		channel.write(nmsg);
 	}
 
 	@Override

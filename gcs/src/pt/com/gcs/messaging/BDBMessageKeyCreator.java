@@ -30,7 +30,7 @@ public class BDBMessageKeyCreator implements SecondaryKeyCreator
 			return false;
 		}
 
-		String msgId = bdbm.getMessage().getMessageId();
+		String msgId = bdbm.getMessage().getAction().getNotificationMessage().getMessage().getMessageId();
 		StringBinding.stringToEntry(msgId, resultEntry);
 
 		return true;

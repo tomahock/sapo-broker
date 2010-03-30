@@ -57,10 +57,10 @@ public class BrokerServer
 			ChannelFactory factory0 = new NioServerSocketChannelFactory(tpeIo, tpeWorkers);
 			ServerBootstrap bootstrap0 = new ServerBootstrap(factory0);
 
-			bootstrap0.setOption("child.tcpNoDelay", true);
+			bootstrap0.setOption("child.tcpNoDelay", false);
 			bootstrap0.setOption("child.keepAlive", true);
-			bootstrap0.setOption("child.receiveBufferSize", 128 * 1024);
-			bootstrap0.setOption("child.sendBufferSize", 128 * 1024);
+			bootstrap0.setOption("child.receiveBufferSize", 256 * 1024);
+			bootstrap0.setOption("child.sendBufferSize", 256 * 1024);
 			bootstrap0.setOption("child.soLinger", 1);
 			bootstrap0.setOption("reuseAddress", true);
 			bootstrap0.setOption("backlog", 1024);

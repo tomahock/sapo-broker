@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetPublish;
 import pt.com.gcs.conf.GcsInfo;
 
 public class TopicProcessorList
@@ -68,9 +69,9 @@ public class TopicProcessorList
 		return instance.i_get(destinationName);
 	}
 
-	public static void notify(final InternalMessage message, boolean localOnly)
+	public static void notify(final NetPublish np, boolean localOnly)
 	{
-		instance.i_notify(message, localOnly);
+		instance.i_notify(np, localOnly);
 	}
 
 	public static void removeListener(MessageListener listener)
@@ -160,13 +161,13 @@ public class TopicProcessorList
 		return null;
 	}
 
-	private void i_notify(final InternalMessage message, boolean localOnly)
+	private void i_notify(final NetPublish np, boolean localOnly)
 	{
 		try
 		{
 			for (TopicProcessor tp : tpCache.values())
 			{
-				tp.notify(message, localOnly);
+				tp.notify(np, localOnly);
 			}
 		}
 		catch (InterruptedException e)

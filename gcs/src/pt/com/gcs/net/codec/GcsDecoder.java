@@ -9,7 +9,8 @@ import org.jboss.netty.handler.codec.frame.FrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.gcs.io.SerializerHelper;
+import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
+import pt.com.broker.types.NetMessage;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between agents.
@@ -29,9 +30,12 @@ import pt.com.gcs.io.SerializerHelper;
 @Sharable
 public class GcsDecoder extends FrameDecoder
 {
+
 	private static final Logger log = LoggerFactory.getLogger(GcsDecoder.class);
 	private static final int HEADER_LENGTH = 4;
-	
+
+	private final ProtoBufBindingSerializer serializer = new ProtoBufBindingSerializer();
+
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception
 	{
@@ -44,10 +48,9 @@ public class GcsDecoder extends FrameDecoder
 		int mark = buffer.readerIndex();
 
 		int len = buffer.getInt(mark);
-		
+
 		if (len <= 0)
 		{
-			// throw new IllegalArgumentException(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
 			log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
 			channel.close();
 		}
@@ -56,14 +59,25 @@ public class GcsDecoder extends FrameDecoder
 		{
 			return null;
 		}
-		
+
 		buffer.skipBytes(HEADER_LENGTH);
-		
-		ChannelBufferInputStream sIn = new ChannelBufferInputStream(buffer);
-		
-		Object msg = SerializerHelper.fromStream(sIn);
-		
-		return msg;
+
+		byte[] decoded = new byte[len];
+		buffer.readBytes(decoded);
+
+		//ChannelBufferInputStream sIn = new ChannelBufferInputStream(buffer);
+
+		try
+		{
+			NetMessage msg = serializer.unmarshal(decoded);
+			return msg;
+		}
+		catch (Throwable e)
+		{
+			log.error(String.format("Can not unmarshall message"));
+			channel.close();
+			return null;
+		}
 	}
-	
+
 }

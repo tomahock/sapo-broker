@@ -19,10 +19,11 @@ import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPoll;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.InternalMessage;
-import pt.com.gcs.messaging.MessageType;
+import pt.com.gcs.messaging.InternalPublisher;
 import pt.com.gcs.messaging.QueueProcessorList;
 
 /**
@@ -60,14 +61,7 @@ public class BrokerSyncConsumer
 
 						String content = GcsInfo.getAgentName() + "#" + queueName + "#" + size;
 
-						NetBrokerMessage brkMessage = new NetBrokerMessage(content.getBytes("UTF-8"));
-
-						InternalMessage intMsg = new InternalMessage();
-						intMsg.setContent(brkMessage);
-						intMsg.setDestination(ctName);
-						intMsg.setType(MessageType.COM_TOPIC);
-
-						Gcs.publish(intMsg);
+						InternalPublisher.send(ctName, content);
 					}
 				}
 				catch (Throwable t)
@@ -79,7 +73,6 @@ public class BrokerSyncConsumer
 		};
 		BrokerExecutor.scheduleWithFixedDelay(counter, 20, 20, TimeUnit.SECONDS);
 	}
-
 
 	public static void removeSession(ChannelHandlerContext ctx)
 	{
@@ -108,13 +101,13 @@ public class BrokerSyncConsumer
 		{
 			String queueName = poll.getDestination();
 
-			if(StringUtils.isBlank(queueName))
+			if (StringUtils.isBlank(queueName))
 			{
 				String error = "Can't poll a message from a queue whose name is blank.";
 				log.error(error);
 				throw new RuntimeException(error);
 			}
-			
+
 			QueueProcessorList.get(queueName);
 
 			String composedQueueName = SESSION_ATT_PREFIX + queueName;

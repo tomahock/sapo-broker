@@ -27,6 +27,11 @@ public class NetworkConnector extends BaseNetworkConnector
 		this.setConnectionVersion(connectionVersion);
 		this.hostInfo = host;
 		client = new Socket();
+
+		client.setReceiveBufferSize(256 * 1024);
+		client.setReceiveBufferSize(256 * 1024);
+		client.setSoLinger(true, 2);
+
 		client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), 15 * 1000);
 		rawOutput = new DataOutputStream(getSocket().getOutputStream());
 		rawInput = new DataInputStream(getSocket().getInputStream());

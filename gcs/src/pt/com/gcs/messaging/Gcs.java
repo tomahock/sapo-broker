@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +33,7 @@ import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
@@ -54,13 +53,15 @@ public class Gcs
 
 	private static final Gcs instance = new Gcs();
 
-	public static final int RECOVER_INTERVAL = 5;
+	public static final int RECOVER_INTERVAL = 50;
 
 	public static final int RECONNECT_INTERVAL = 5000;
 
 	private Set<Channel> agentsConnection = new HashSet<Channel>();
 
 	private ClientBootstrap connector;
+
+	private static final long expiry;
 
 	public static void ackMessage(String queueName, final String msgId)
 	{
@@ -123,14 +124,14 @@ public class Gcs
 		}
 	}
 
-	public static boolean enqueue(final InternalMessage message)
-	{
-		return instance.ienqueue(message, null);
-	}
+	// public static boolean enqueue(final NetMessage nmsg)
+	// {
+	// return instance.ienqueue(nmsg, null);
+	// }
 
-	public static boolean enqueue(InternalMessage message, String queueName)
+	public static boolean enqueue(NetMessage nmsg, String queueName)
 	{
-		return instance.ienqueue(message, queueName);
+		return instance.ienqueue(nmsg, queueName);
 	}
 
 	protected static void reloadWorldMap()
@@ -194,9 +195,9 @@ public class Gcs
 		instance.iinit();
 	}
 
-	public static void publish(InternalMessage message)
+	public static void publish(NetPublish np)
 	{
-		instance.ipublish(message);
+		instance.ipublish(np);
 	}
 
 	public static void removeAsyncConsumer(MessageListener listener)
@@ -217,6 +218,11 @@ public class Gcs
 		{
 			log.warn("Can not remove null listener");
 		}
+	}
+
+	static
+	{
+		expiry = GcsInfo.getMessageStorageTime();
 	}
 
 	private Gcs()
@@ -267,12 +273,14 @@ public class Gcs
 		}
 	}
 
-	private boolean ienqueue(InternalMessage message, String queueName)
+	private boolean ienqueue(NetMessage nmsg, String queueName)
 	{
-		QueueProcessor qp = QueueProcessorList.get((queueName != null) ? queueName : message.getDestination());
+		// QueueProcessor qp = QueueProcessorList.get((queueName != null) ? queueName : np.getDestination());
+		QueueProcessor qp = QueueProcessorList.get(queueName);
 		if (qp != null)
 		{
-			qp.store(message, true);
+
+			qp.store(nmsg, true);
 			return true;
 		}
 
@@ -333,10 +341,9 @@ public class Gcs
 		}
 	}
 
-	private void ipublish(final InternalMessage message)
+	private void ipublish(final NetPublish np)
 	{
-		message.setType(MessageType.COM_TOPIC);
-		TopicProcessorList.notify(message, false);
+		TopicProcessorList.notify(np, false);
 	}
 
 	private void startAcceptor(int portNumber) throws IOException
@@ -426,26 +433,34 @@ public class Gcs
 		}
 	}
 
-	protected static NetMessage buildNotification(InternalMessage msg, DestinationType dtype)
+	public static NetMessage buildNotification(NetPublish np, String subscriptionName)
 	{
-		return buildNotification(msg, null, dtype);
-	}
+		String msg_id = MessageId.getMessageId();
 
-	protected static NetMessage buildNotification(InternalMessage msg, String subscriptionName, DestinationType dtype)
-	{
-		NetNotification notification = new NetNotification(msg.getDestination(), dtype, msg.getContent(), subscriptionName);
+		if (StringUtils.isBlank(np.getMessage().getMessageId()))
+		{
+			np.getMessage().setMessageId(msg_id);
+		}
+
+		long now = System.currentTimeMillis();
+		if (np.getMessage().getTimestamp() == -1)
+		{
+			np.getMessage().setTimestamp(now);
+		}
+
+		if (np.getMessage().getExpiration() == -1)
+		{
+			np.getMessage().setExpiration(now + expiry);
+		}
+
+		NetNotification notification = new NetNotification(np.getDestination(), np.getDestinationType(), np.getMessage(), subscriptionName);
 
 		NetAction action = new NetAction(NetAction.ActionType.NOTIFICATION);
 		action.setNotificationMessage(notification);
 
-		notification.getMessage().setMessageId(msg.getMessageId());
+		NetMessage message = new NetMessage(action);
 
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("FROM", msg.getSourceApp());
-		params.put("ACTION", "http://services.sapo.pt/broker/notification/" + msg.getMessageId());
-		params.put("PUBLISHING_AGENT", msg.getPublishingAgent());
-
-		NetMessage message = new NetMessage(action, params);
+		message.getHeaders().putAll(np.getMessage().getHeaders());
 
 		return message;
 	}
@@ -464,8 +479,10 @@ public class Gcs
 	{
 		String topic = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
 
-		InternalMessage internalMsg = new InternalMessage(topic, new NetBrokerMessage(message));
+		// InternalMessage internalMsg = new InternalMessage(topic, new NetBrokerMessage(message));
 
-		Gcs.publish(internalMsg);
+		NetPublish np = new NetPublish(topic, DestinationType.TOPIC, new NetBrokerMessage(message));
+
+		Gcs.publish(np);
 	}
 }

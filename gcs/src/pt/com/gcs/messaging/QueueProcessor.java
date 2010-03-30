@@ -13,9 +13,12 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.ForwardResult.Result;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
@@ -47,6 +50,7 @@ public class QueueProcessor
 	private TopicToQueueDispatcher topicFwd;
 
 	private int current_idx = 0;
+	private AtomicLong wakeupAfter = new AtomicLong(System.currentTimeMillis() + 500);
 
 	protected QueueProcessor(String queueName)
 	{
@@ -95,13 +99,19 @@ public class QueueProcessor
 	{
 		if (listener != null)
 		{
+			boolean is_new_listener = false;
 			if (listener.getType() == MessageListener.Type.LOCAL)
 			{
-				addLocal(listener);
+				is_new_listener = addLocal(listener);
 			}
 			else if (listener.getType() == MessageListener.Type.REMOTE)
 			{
-				addRemote(listener);
+				is_new_listener = addRemote(listener);
+			}
+
+			if (is_new_listener)
+			{
+				wakeup();
 			}
 		}
 		else
@@ -110,7 +120,7 @@ public class QueueProcessor
 		}
 	}
 
-	private void addLocal(MessageListener listener)
+	private boolean addLocal(MessageListener listener)
 	{
 		synchronized (localQueueListeners)
 		{
@@ -122,18 +132,23 @@ public class QueueProcessor
 				}
 
 				log.info("Add listener -> '{}'", listener.toString());
+				return true;
 			}
+
+			return false;
 		}
 	}
 
-	private void addRemote(MessageListener listener)
+	private boolean addRemote(MessageListener listener)
 	{
 		synchronized (remoteQueueListeners)
 		{
 			if (remoteQueueListeners.add(listener))
 			{
 				log.info("Add listener -> '{}'", listener.toString());
+				return true;
 			}
+			return false;
 		}
 	}
 
@@ -174,14 +189,18 @@ public class QueueProcessor
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><destination>%s</destination></sysmessage>";
 		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), channel.getLocalAddress().toString(), queueName);
 
-		InternalMessage m = new InternalMessage();
-
 		NetBrokerMessage brkMsg = new NetBrokerMessage(payload.getBytes(UTF8));
-		m.setType(MessageType.SYSTEM_QUEUE);
-		m.setDestination(queueName);
-		m.setContent(brkMsg);
 
-		SystemMessagesPublisher.sendMessage(m, channel);
+		NetNotification notification = new NetNotification("/system/peer", DestinationType.TOPIC, brkMsg, "/system/peer");
+
+		NetAction naction = new NetAction(NetAction.ActionType.NOTIFICATION);
+		naction.setNotificationMessage(notification);
+
+		NetMessage nmsg = new NetMessage(naction);
+
+		nmsg.getHeaders().put("TYPE", "SYSTEM_QUEUE");
+
+		SystemMessagesPublisher.sendMessage(nmsg, channel);
 	}
 
 	private void broadCastRemovedQueueConsumer(MessageListener listener)
@@ -242,47 +261,23 @@ public class QueueProcessor
 
 	}
 
-	protected ForwardResult forward(InternalMessage message, boolean preferLocalConsumer) throws IllegalStateException
+	protected ForwardResult forward(NetMessage nmsg, boolean preferLocalConsumer) throws IllegalStateException
 	{
-		message.setType((MessageType.COM_QUEUE));
-		boolean hasLocal = hasReadyListeners(localQueueListeners);
-		boolean hasRemote = hasReadyListeners(remoteQueueListeners);
-		boolean hasListeners = hasLocal || hasRemote;
+		ForwardResult result = notify(localQueueListeners, nmsg);
 
-		ForwardResult result = failed;
-
-		if (!hasListeners)
+		if (result.result == Result.FAILED)
 		{
-			return failed;
-		}
-		else
-		{
-			if (hasLocal && preferLocalConsumer)
+			if (!hasActiveListeners(localQueueListeners))
 			{
-				result = notify(localQueueListeners, message);
-			}
-			else if (!hasLocal && hasRemote)
-			{
-				result = notify(remoteQueueListeners, message);
-			}
-			else if (hasLocal && !hasRemote)
-			{
-				result = notify(localQueueListeners, message);
-			}
-			else if (hasListeners)
-			{
-				long n = Math.abs(++current_idx % 2);
-				if (n == 0)
-					result = notify(localQueueListeners, message);
-				else
-					result = notify(remoteQueueListeners, message);
+				result = notify(remoteQueueListeners, nmsg);
 			}
 		}
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("forward-> isDelivered: " + result.result.toString() + ", hasLocal: " + hasLocal + ", hasRemote: " + hasRemote + ", message.id: " + message.getMessageId());
+			log.debug("forward-> isDelivered: " + result.result.toString());
 		}
+
 		return result;
 	}
 
@@ -342,12 +337,14 @@ public class QueueProcessor
 		return localQueueListeners;
 	}
 
-	private ForwardResult notify(Set<MessageListener> listeners, InternalMessage message)
+	private ForwardResult notify(Set<MessageListener> listeners, NetMessage nmsg)
 	{
-
 		int s = listeners.size();
+		if (s == 0)
+		{
+			return failed;
+		}
 		int n = Math.abs(++current_idx % s);
-		NetMessage nmsg = null;
 
 		try
 		{
@@ -361,49 +358,30 @@ public class QueueProcessor
 				{
 					if (ml.isReady())
 					{
-						if (ml.getType() == MessageListener.Type.LOCAL)
-						{
-							if (nmsg == null)
-							{
-								nmsg = Gcs.buildNotification(message, ml.getsubscriptionKey(), ml.getTargetDestinationType());
-							}
-							return ml.onMessage(nmsg);
-						}
-						else
-						{
-							return ml.onMessage(message);
-						}
+						return ml.onMessage(nmsg);
 					}
 				}
 			}
 
-			idx = 0;
-
 			// if no ready listener was found we cycle through the collection again and try the listeners with an "index" lower than the "current index"
-			for (MessageListener ml : listeners)
+			if (s > 1)
 			{
-				++idx;
-				if (idx <= n)
+				idx = 0;
+
+				for (MessageListener ml : listeners)
 				{
-					if (ml.isReady())
+					++idx;
+					if (idx <= n)
 					{
-						if (ml.getType() == MessageListener.Type.LOCAL)
+						if (ml.isReady())
 						{
-							if (nmsg == null)
-							{
-								nmsg = Gcs.buildNotification(message, ml.getsubscriptionKey(), ml.getTargetDestinationType());
-							}
 							return ml.onMessage(nmsg);
 						}
-						else
-						{
-							return ml.onMessage(message);
-						}
 					}
-				}
-				else
-				{
-					break;
+					else
+					{
+						break;
+					}
 				}
 			}
 
@@ -483,17 +461,17 @@ public class QueueProcessor
 		return localQueueListeners.size() + remoteQueueListeners.size();
 	}
 
-	public void store(final InternalMessage msg)
+	public void store(final NetMessage nmsg)
 	{
-		store(msg, false);
+		store(nmsg, false);
 	}
 
-	public void store(final InternalMessage msg, boolean preferLocalConsumer)
+	public void store(final NetMessage nmsg, boolean preferLocalConsumer)
 	{
 		try
 		{
 			long seq_nr = sequence.incrementAndGet();
-			storage.insert(msg, seq_nr, preferLocalConsumer);
+			String mid = storage.insert(nmsg, seq_nr, preferLocalConsumer);
 			counter.incrementAndGet();
 		}
 		catch (Throwable t)
@@ -506,15 +484,20 @@ public class QueueProcessor
 	{
 		if (isWorking.getAndSet(true))
 		{
-			log.debug("Queue '{}' is running, skip wakeup", queueName);
+			if (log.isDebugEnabled())
+			{
+				log.debug("Queue '{}' is running, skip wakeup", queueName);
+			}
+
 			return;
 		}
+
 		long cnt = getQueuedMessagesCount();
 		if (cnt > 0)
 		{
 			emptyQueueInfoDisplay.set(false);
 
-			if (hasRecipient())
+			if (hasReadyListeners(localQueueListeners) || hasReadyListeners(remoteQueueListeners))
 			{
 				try
 				{
@@ -533,10 +516,6 @@ public class QueueProcessor
 				{
 					isWorking.set(false);
 				}
-			}
-			else
-			{
-				log.debug("Queue '{}' does not have asynchronous consumers", queueName);
 			}
 		}
 		isWorking.set(false);

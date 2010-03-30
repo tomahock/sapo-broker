@@ -8,6 +8,7 @@
 
 	<path id="project.classpath">
 		<pathelement location="../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
+		<pathelement location="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" />
 		<fileset dir="../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>

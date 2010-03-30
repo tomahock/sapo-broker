@@ -99,9 +99,7 @@
 		<ant antfile="../comm-types/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" />
 		</ant>
-		<ant antfile="../gcs/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" />
-		</ant>
+
 		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="package">
 			<property name="project.location" value="../bindings/xml/java" />
 			<property name="version" value="${version}" />
@@ -113,6 +111,9 @@
 			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package">
+			<property name="version" value="${version}" />
+		</ant>
+		<ant antfile="../gcs/build.xml" inheritAll="false" target="package">
 			<property name="version" value="${version}" />
 		</ant>
 		<ant antfile="../clients/java-component/build.xml" inheritAll="false" target="package">

@@ -1,7 +1,7 @@
 package pt.com.gcs.messaging;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
@@ -12,13 +12,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 
 public class TopicProcessor
 {
 	private static Logger log = LoggerFactory.getLogger(TopicProcessor.class);
+
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	private final String subscriptionName;
 
@@ -139,29 +145,20 @@ public class TopicProcessor
 
 	protected void broadCastTopicInfo(String action, Channel channel)
 	{
-		InternalMessage msg = new InternalMessage();
-		msg.setType(MessageType.SYSTEM_TOPIC);
-
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><destination>%s</destination></sysmessage>";
 		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), ((InetSocketAddress) channel.getRemoteAddress()).getHostName(), subscriptionName);
 
-		NetBrokerMessage brokerMsg;
-		try
-		{
-			brokerMsg = new NetBrokerMessage(payload.getBytes("UTF-8"));
-			brokerMsg.setMessageId(msg.getMessageId());
-			brokerMsg.setTimestamp(msg.getTimestamp());
-			brokerMsg.setExpiration(msg.getExpiration());
-			msg.setDestination(subscriptionName);
+		NetBrokerMessage brkMsg = new NetBrokerMessage(payload.getBytes(UTF8));
 
-			msg.setContent(brokerMsg);
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			// This exception dosen't happen: "UTF-8" is built-in in every JVM
-		}
+		NetNotification notification = new NetNotification("/system/peer", DestinationType.TOPIC, brkMsg, "/system/peer");
 
-		SystemMessagesPublisher.sendMessage(msg, channel);
+		NetAction naction = new NetAction(NetAction.ActionType.NOTIFICATION);
+		naction.setNotificationMessage(notification);
+
+		NetMessage nmsg = new NetMessage(naction);
+		nmsg.getHeaders().put("TYPE", "SYSTEM_TOPIC");
+
+		SystemMessagesPublisher.sendMessage(nmsg, channel);
 	}
 
 	public String getSubscriptionName()
@@ -191,15 +188,15 @@ public class TopicProcessor
 		return topicListeners;
 	}
 
-	protected void notify(InternalMessage message, boolean localOnly)
+	protected void notify(NetPublish np, boolean localOnly)
 	{
 		if (size() > 0)
 		{
-			String topicName = message.getDestination();
-			NetMessage nmsg = null;
+			String topicName = np.getDestination();
 
 			if (DestinationMatcher.match(subscriptionName, topicName))
 			{
+				NetMessage nmsg = Gcs.buildNotification(np, subscriptionName);
 				for (MessageListener ml : topicListeners)
 				{
 					if (ml != null)
@@ -208,22 +205,15 @@ public class TopicProcessor
 						{
 							continue;
 						}
-
-						if (ml.getType() == MessageListener.Type.LOCAL)
-						{
-							if (nmsg == null)
-							{
-								nmsg = Gcs.buildNotification(message, ml.getsubscriptionKey(), ml.getTargetDestinationType());
-							}
-							ml.onMessage(nmsg);
-						}
 						else
 						{
-							ml.onMessage(message);
+							ml.onMessage(nmsg);
 						}
 
-						message.setDestination(topicName); // -> Set the destination name, queue dispatchers change it.
+						// nmsg.setDestination(topicName); // -> Set the destination name, queue dispatchers change it.
 					}
+
+					// np.s (topicName); // -> Set the destination name, queue dispatchers change it.
 				}
 			}
 		}

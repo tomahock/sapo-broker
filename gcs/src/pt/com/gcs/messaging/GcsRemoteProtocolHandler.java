@@ -1,5 +1,6 @@
 package pt.com.gcs.messaging;
 
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -15,7 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.CriticalErrors;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
@@ -27,6 +33,7 @@ import pt.com.gcs.conf.GcsInfo;
 class GcsRemoteProtocolHandler extends SimpleChannelHandler
 {
 	private static Logger log = LoggerFactory.getLogger(GcsRemoteProtocolHandler.class);
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
@@ -55,39 +62,45 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
 	{
-		final InternalMessage msg = (InternalMessage) e.getMessage();
+		final NetMessage m = (NetMessage) e.getMessage();
+		String mtype = m.getHeaders().get("TYPE");
+
+		NetNotification nnot = m.getAction().getNotificationMessage();	
+		
+		NetBrokerMessage brkMsg = nnot.getMessage();
 
 		Channel channel = ctx.getChannel();
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("Message Received from: '{}', Type: '{}'", channel.getRemoteAddress(), msg.getType());
+			log.debug("Message Received from: '{}', Type: '{}'", channel.getRemoteAddress(), mtype);
 		}
 
-		msg.setFromRemotePeer(true);
+		brkMsg.addHeader("IS_REMOTE", "true");
 
-		switch (msg.getType())
+		if (mtype.equals("COM_TOPIC"))
 		{
-		case COM_TOPIC:
-			TopicProcessorList.notify(msg, true);
-			break;
-		case COM_QUEUE:
-			QueueProcessor queueProcessor = QueueProcessorList.get(msg.getDestination());
-			if(queueProcessor != null)
+			NetPublish np = new NetPublish(nnot.getDestination(), DestinationType.TOPIC, brkMsg);
+			TopicProcessorList.notify(np, true);
+		}
+		else if (mtype.equals("COM_QUEUE"))
+		{
+			QueueProcessor queueProcessor = QueueProcessorList.get(nnot.getDestination());
+			if (queueProcessor != null)
 			{
-				queueProcessor.store(msg, true);
-				acknowledgeMessage(msg, channel);
+				queueProcessor.store(m, true);
+				acknowledgeMessage(brkMsg.getMessageId(), channel);
 			}
-			break;
-		case SYSTEM_ACK:
+		}
+		else if (mtype.equals("SYSTEM_ACK"))
 		{
-			String msgContent = new String(msg.getContent().getPayload(), "UTF-8");
+			String msgContent = new String(brkMsg.getPayload(), UTF8);
 			String messageId = extract(msgContent, "<message-id>", "</message-id>");
 			SystemMessagesPublisher.messageAcknowledged(messageId);
 		}
-			break;
-		default:
-			log.warn("Unkwown message type. Don't know how to handle message");
+		else
+		{
+			log.warn("Unkwown message type. Don't know how to handle message. Type: '{}'", mtype);
 		}
 	}
 
@@ -115,18 +128,24 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		sayHello(ctx);
 	}
 
-	private void acknowledgeMessage(InternalMessage msg, Channel channel)
+	private void acknowledgeMessage(String messageId, Channel channel)
 	{
-		log.debug("Acknowledge message with Id: '{}'.", msg.getMessageId());
+		log.debug("Acknowledge message with Id: '{}'.", messageId);
 
 		try
 		{
-			NetBrokerMessage brkMsg = new NetBrokerMessage("ACK".getBytes("UTF-8"));
+			NetBrokerMessage brkMsg = new NetBrokerMessage(new byte[0]);
+			brkMsg.setMessageId(messageId);
 
-			InternalMessage m = new InternalMessage(msg.getMessageId(), msg.getDestination(), brkMsg);
-			m.setType(MessageType.ACK);
+			NetNotification notification = new NetNotification("/system/peer", DestinationType.TOPIC, brkMsg, "/system/peer");
 
-			channel.write(m);
+			NetAction naction = new NetAction(NetAction.ActionType.NOTIFICATION);
+			naction.setNotificationMessage(notification);
+
+			NetMessage nmsg = new NetMessage(naction);
+			nmsg.getHeaders().put("TYPE", "ACK");
+
+			channel.write(nmsg);
 		}
 		catch (Throwable ct)
 		{
@@ -155,16 +174,19 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		try
 		{
 			String agentId = GcsInfo.getAgentName() + "@" + GcsInfo.getAgentHost() + ":" + GcsInfo.getAgentPort();
-			NetBrokerMessage brkMsg = new NetBrokerMessage(agentId.getBytes("UTF-8"));
+			NetBrokerMessage brkMsg = new NetBrokerMessage(agentId.getBytes(UTF8));
 
-			InternalMessage m = new InternalMessage();
-			m.setType((MessageType.HELLO));
-			m.setDestination("HELLO");
-			m.setContent(brkMsg);
+			NetNotification notification = new NetNotification("/system/peer", DestinationType.TOPIC, brkMsg, "/system/peer");
+
+			NetAction naction = new NetAction(NetAction.ActionType.NOTIFICATION);
+			naction.setNotificationMessage(notification);
+
+			NetMessage nmsg = new NetMessage(naction);
+			nmsg.getHeaders().put("TYPE", "HELLO");
 
 			log.info("Send agentId: '{}'", agentId);
 
-			channel.write(m);
+			channel.write(nmsg);
 		}
 		catch (Throwable t)
 		{

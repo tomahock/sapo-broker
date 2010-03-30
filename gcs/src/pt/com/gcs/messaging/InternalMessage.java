@@ -1,9 +1,5 @@
 package pt.com.gcs.messaging;
 
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.caudexorigo.cryto.MD5;
 import org.caudexorigo.text.StringUtils;
 
 import pt.com.broker.types.DeliverableMessage;
@@ -13,21 +9,16 @@ import pt.com.gcs.conf.GcsInfo;
 /**
  * InternalMessage is the internal representation of a message. It contains a NetBrokerMessage and other fields related with the original message. <br/>
  * It's used for storage and passing between agents.
- * 
  */
-
 public class InternalMessage implements DeliverableMessage
 {
 
-	public static final short CURRENT_VERSION  = 1;
-	
-	private static final AtomicLong SEQ = new AtomicLong(0L);
+	public static final short CURRENT_VERSION = 1;
+
 	private static final long serialVersionUID = -3656321513130930115L;
 	public static final int DEFAULT_PRIORITY = 4;
 	private static final long DEFAULT_EXPIRY;// = 1000L * 3600L * 24L * 7L; // 7days
 	private static final String SEPARATOR = "<#>";
-
-	private static final String BASE_MESSAGE_ID;
 
 	private String id;
 	private NetBrokerMessage content;
@@ -40,18 +31,12 @@ public class InternalMessage implements DeliverableMessage
 	private pt.com.gcs.messaging.MessageType type = pt.com.gcs.messaging.MessageType.UNDEF;
 	private boolean isFromRemotePeer = false;
 	private String publishingAgent = GcsInfo.getAgentName(); // Agent through which the message entered the messaging system
-	
+
 	private short version = CURRENT_VERSION;
 
 	static
 	{
-		BASE_MESSAGE_ID = MD5.getHashString(UUID.randomUUID().toString());
 		DEFAULT_EXPIRY = GcsInfo.getMessageStorageTime();
-	}
-
-	protected static String getBaseMessageId()
-	{
-		return BASE_MESSAGE_ID + "#";
 	}
 
 	private void checkArg(String value)
@@ -72,11 +57,8 @@ public class InternalMessage implements DeliverableMessage
 
 	public InternalMessage()
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append(BASE_MESSAGE_ID);
-		sb.append("#");
-		sb.append(SEQ.incrementAndGet());
-		setId(sb.toString());
+
+		setId(MessageId.getMessageId());
 	}
 
 	public InternalMessage(String destination, NetBrokerMessage content)
@@ -85,7 +67,7 @@ public class InternalMessage implements DeliverableMessage
 		checkArg(content);
 		this.content = content;
 		this.destination = destination;
-		setId(BASE_MESSAGE_ID + "#" + SEQ.incrementAndGet());
+		setId(MessageId.getMessageId());
 	}
 
 	public InternalMessage(String id, String destination, NetBrokerMessage content)
@@ -200,7 +182,7 @@ public class InternalMessage implements DeliverableMessage
 	{
 		return isFromRemotePeer;
 	}
-	
+
 	public void setPublishingAgent(String publishingAgent)
 	{
 		this.publishingAgent = publishingAgent;
@@ -210,7 +192,6 @@ public class InternalMessage implements DeliverableMessage
 	{
 		return publishingAgent;
 	}
-
 
 	@Override
 	public String toString()
@@ -237,7 +218,7 @@ public class InternalMessage implements DeliverableMessage
 		buf.append(getExpiration());
 		buf.append(SEPARATOR);
 		buf.append(getType().getValue());
-		
+
 		return buf.toString();
 	}
 
