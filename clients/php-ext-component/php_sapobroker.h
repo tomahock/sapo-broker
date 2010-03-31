@@ -21,7 +21,7 @@ PHP_FUNCTION(sapo_broker_receive);
 PHP_FUNCTION(sapo_broker_msg_free);
 PHP_FUNCTION(sapo_broker_msg_ack);
 PHP_FUNCTION(sapo_broker_send);
-PHP_FUNCTION(sapo_broker_enqueue);
+PHP_FUNCTION(sapo_broker_publish);
 PHP_FUNCTION(sapo_broker_enqueue);
 PHP_FUNCTION(sapo_broker_error);
 #endif
