@@ -429,8 +429,7 @@ public abstract class BaseBrokerClient
 			}
 			catch (Throwable t)
 			{
-				log.error("Could not acknowledge message, messageId: '{}'", publish.getMessage().getMessageId());
-				log.error(t.getMessage(), t);
+				log.error("Failed to deliver message.", t);
 			}
 		}
 		else
