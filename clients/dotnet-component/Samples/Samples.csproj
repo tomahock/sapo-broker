@@ -12,7 +12,7 @@
     <AssemblyName>Samples</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>Samples.Consumers.ConsumerWithNoAckRequired</StartupObject>
+    <StartupObject>Samples.Producers.Producer</StartupObject>
     <TargetFrameworkSubset>Client</TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -65,6 +65,7 @@
     <Compile Include="Consumers\SslConsumer.cs" />
     <Compile Include="Consumers\Ping.cs" />
     <Compile Include="Consumers\Poll.cs" />
+    <Compile Include="Producers\MultipleProducers.cs" />
     <Compile Include="Producers\UdpProducer.cs" />
     <Compile Include="Utils\CommandLineArguments.cs" />
     <Compile Include="Producers\Producer.cs" />

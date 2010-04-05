@@ -71,7 +71,7 @@ namespace SapoBrokerClient.Networking
 		private volatile Stream communicationStream;
 	    private CircularContainer<HostInfo> hosts;
         private HostInfo hostInfo;
-        private int connectionVersion = 0;
+        private long connectionVersion = 0;
 
         private bool closed = false;
 				
@@ -173,14 +173,14 @@ namespace SapoBrokerClient.Networking
                 set { rawData = value; }
             }
 
-            private int connectionVersion;
+            private long connectionVersion;
 
-            public int ConnectionVersion
+            public long ConnectionVersion
             {
                 get { return connectionVersion; }
             }
 
-            public ReadContext(int dataBufferLength, int connectionVersion)
+            public ReadContext(int dataBufferLength, long connectionVersion)
             {
                 msgAccumulator = new MessageAccumulator();
                 rawData = new byte[dataBufferLength];
@@ -193,10 +193,8 @@ namespace SapoBrokerClient.Networking
         /// </summary>
         /// <param name="connectionVersion">A value indicating witch connection version is being used. Useful for ensuring that only one thread performs this action.</param>
         /// <returns>false if it failed to reconnect or false indicating that reconnection was sucessfull</returns>
-        private bool OnIoFailure(int connectionVersion)
+        private bool OnIoFailure(long connectionVersion)
         {
-            log.ErrorFormat("Connection failed. {0}", hosts.Peek());
-            
             lock (this)
             {
                 if (closed)
@@ -208,7 +206,7 @@ namespace SapoBrokerClient.Networking
                     // Another thread already sinalized the failure so return
                     return !closed; // If the reconnection was sucessful then it's not closed, otherwise it is.
                 }
-
+                log.ErrorFormat("Connection failed. {0}", hosts.Peek());
 
                 // Fire event
                 IoSyncStatus syncStatus = new IoSyncStatus(IoStatus.Failed, new NotifiableEvent<IoStatus>());
@@ -228,6 +226,7 @@ namespace SapoBrokerClient.Networking
                 {
                     try
                     {
+                        ++this.connectionVersion;
                         StartReading(hostInfo);
                         retry = false;
                     }
@@ -252,9 +251,9 @@ namespace SapoBrokerClient.Networking
                         log.ErrorFormat("Re-connection failed. {0}", hosts.Peek());
                 } while (retry);
 
-                ++connectionVersion;
 
                 syncStatus.Status = IoStatus.Ok;
+                
                 syncStatus.OnChange.Fire(syncStatus.Status);
             }
             return true;
@@ -304,7 +303,7 @@ namespace SapoBrokerClient.Networking
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                log.Error(e);
             }
         }
 
@@ -359,7 +358,6 @@ namespace SapoBrokerClient.Networking
 
 		public bool SendMessage(byte[] messagePayload, IMessageSerializer encodingType)
 		{
-			Stream stream = WriteStream;
 			short netProtocolType = IPAddress.HostToNetworkOrder(encodingType.ProtocolType);
 			short netProtocolVersion = IPAddress.HostToNetworkOrder(encodingType.ProtocolVersion);
 			int netMessageLength = IPAddress.HostToNetworkOrder(messagePayload.Length);
@@ -368,11 +366,12 @@ namespace SapoBrokerClient.Networking
 			byte[] netProtocolVersionData =  BitConverter.GetBytes(netProtocolVersion);
 			byte[] netMessageLengthData = BitConverter.GetBytes(netMessageLength);
 
-            int currentConVersion = 0;
+            long currentConVersion = 0;
             try
             {
                 lock (this)
                 {
+                    Stream stream = WriteStream;
                     currentConVersion = this.connectionVersion;
                     if (closed)
                         throw new InvalidOperationException("Network object is closed.");

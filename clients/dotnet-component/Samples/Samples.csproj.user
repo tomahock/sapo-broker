@@ -1,5 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <StartArguments>-hn:10.134.134.17 -port:3323 -dt:QUEUE -dn:/queue/foo</StartArguments>
+    <StartArguments>-hn:10.134.134.17 -port:3323 -dt:TOPIC -dn:/topic/foo</StartArguments>
   </PropertyGroup>
 </Project>

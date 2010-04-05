@@ -40,9 +40,9 @@ namespace SapoBrokerClient.Messaging
         private IDictionary<string, PollRequest> syncSubscriptions = new Dictionary<string, PollRequest>();
 
         // Send-related fieds. Ensures that only one message is sent at a time and ensures that no message are sent during reconnect.
-        private object sendLock = new Object(); // send-related operations should lock/synch in this object.
-        private bool sendSuspended = false; // informs is send is suspended (reconnecting) or not.
-        private bool sendOk; // after failure, is it ok to send message?
+        private object sendLock = new Object(); // send-related operations should lock/sync in this object.
+        private volatile bool sendSuspended = false; // informs is send is suspended (reconnecting) or not.
+        private volatile bool sendOk; // after failure, is it ok to send message?
 
 		#endregion
 				
@@ -124,11 +124,9 @@ namespace SapoBrokerClient.Messaging
 
         private void IoFailHandler(NetworkHandler.IoSyncStatus syncStatus)
         {
-            lock (sendLock)
-            {
-                sendSuspended = true;
-                sendOk = false;
-            }
+            sendSuspended = true;
+            sendOk = false;
+            
             syncStatus.OnChange.OnEvent += delegate(NetworkHandler.IoStatus status)
             {
                 if (status == NetworkHandler.IoStatus.Ok)
@@ -297,9 +295,10 @@ namespace SapoBrokerClient.Messaging
                     if (!this.sendOk)
                         return false;
                 }
-                // send message
-                 return networkHandler.SendMessage(encoded, this.messageSerializer);
             }
+
+            // send message
+            return networkHandler.SendMessage(encoded, this.messageSerializer);
         }
 
 
@@ -312,7 +311,7 @@ namespace SapoBrokerClient.Messaging
         
         public bool Authenticate(ICredentialsProvider provider, AuthenticationInfo authInfo)
         {
-            Console.WriteLine("Authenticating");
+            log.Info("Authenticating");
             if (authInfo == null)
             {
                 throw new ArgumentNullException("AuthenticationInfo can not be null in order to authenticate.");
@@ -380,7 +379,7 @@ namespace SapoBrokerClient.Messaging
                 return false;
             }
 
-            Console.WriteLine("Authenticated");
+            log.Info("Authenticated");
 
             return true;
         }
