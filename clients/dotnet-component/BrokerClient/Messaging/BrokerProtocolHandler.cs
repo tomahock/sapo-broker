@@ -3,13 +3,11 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 
-
 using SapoBrokerClient;
 using SapoBrokerClient.Utils;
 using SapoBrokerClient.Encoding;
 using SapoBrokerClient.Networking;
 using SapoBrokerClient.Authentication;
-
 
 namespace SapoBrokerClient.Messaging
 {
@@ -146,7 +144,7 @@ namespace SapoBrokerClient.Messaging
                             Authenticate(this.provider, this.clientAuthInfo);
                         }
                     }
-                                        
+
                     SendSubscriptions();
                 }
                 else

@@ -29,10 +29,10 @@ namespace Samples.Producers
 
             BrokerClient brokerClient = new BrokerClient(new HostInfo(cliArgs.Hostname, cliArgs.PortNumber));
 
-            PublishMessages(brokerClient, cliArgs.DestinationName, 100);
+            PublishMessages(brokerClient, cliArgs.DestinationName, 100, cliArgs.DestinationType);
         }
 
-        private static void PublishMessages(BrokerClient brokerClient, string destination, int numberOfMessages)
+        private static void PublishMessages(BrokerClient brokerClient, string destination, int numberOfMessages, NetAction.DestinationType destinationType)
         {
             //string message = "Hello, how are you?";
             int i = 0;
@@ -40,7 +40,14 @@ namespace Samples.Producers
             {
                 System.Console.WriteLine("Publishing message");
                 NetBrokerMessage brokerMessage = new NetBrokerMessage(System.Text.Encoding.UTF8.GetBytes((i++).ToString()));
-                brokerClient.Enqueue(brokerMessage, destination);
+                if (destinationType == NetAction.DestinationType.TOPIC)
+                {
+                    brokerClient.Publish(brokerMessage, destination);
+                }
+                else
+                {
+                    brokerClient.Enqueue(brokerMessage, destination);
+                }
                 System.Threading.Thread.Sleep(50);
             }
         }

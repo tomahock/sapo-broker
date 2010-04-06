@@ -12,8 +12,8 @@ namespace Samples.Producers
 {
     class MultipleProducers
     {
-
         private static readonly int NR_THREADS = 8;
+        private static int message_id = 0;
 
         public static void Main(string[] args)
         {
@@ -43,15 +43,22 @@ namespace Samples.Producers
                     {
                         int msgs = numberOfMessages;
                         int threadId = i;
-
-                        string message = threadId + " - Message";
-
-                        NetBrokerMessage brokerMessage = new NetBrokerMessage(System.Text.Encoding.UTF8.GetBytes(message));
-
+                        
                         while ((--msgs) != 0)
                         {
+                            int msgId = Interlocked.Increment(ref message_id);
+                            string message = String.Format("{0} - Thread id: {1}", msgId, threadId);
+                            NetBrokerMessage brokerMessage = new NetBrokerMessage(System.Text.Encoding.UTF8.GetBytes(message));
+                            
                             System.Console.WriteLine(message);
-                            brokerClient.Publish(brokerMessage, cliArgs.DestinationName);
+                            if (cliArgs.DestinationType == NetAction.DestinationType.TOPIC)
+                            {
+                                brokerClient.Publish(brokerMessage, cliArgs.DestinationName);
+                            }
+                            else
+                            {
+                                brokerClient.Enqueue(brokerMessage, cliArgs.DestinationName);
+                            }
                         }
                     }
                 )

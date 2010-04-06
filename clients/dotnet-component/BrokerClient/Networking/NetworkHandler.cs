@@ -14,33 +14,34 @@ using SapoBrokerClient.Utils;
 
 namespace SapoBrokerClient.Networking
 {
-	/// <summary>
-	/// NetworkHandler deals with network connectivity.
+    /// <summary>
+    /// NetworkHandler deals with network connectivity.
     /// It also encodes and decoded messages at the network level (processes network header - encoding type and version and payload length).
-	/// </summary>
-	
-	public class NetworkHandler : IDisposable
-	{
-        public enum IoStatus { Unstarted, Ok, Failed, Closed};
-        
+    /// </summary>
+
+    public class NetworkHandler : IDisposable
+    {
+        public enum IoStatus { Unstarted, Ok, Failed, Closed };
+
         /// <summary>
         /// IoSyncStatus contains NetworkHandler status and provides an object were clients can synchronize to be notified of state transiotion.
         /// </summary>
-        public class IoSyncStatus{
+        public class IoSyncStatus
+        {
 
             private readonly NotifiableEvent<IoStatus> notifiableEvent;
 
             public NotifiableEvent<IoStatus> OnChange
             {
-                get { return notifiableEvent; }  
-            } 
+                get { return notifiableEvent; }
+            }
 
             private volatile IoStatus status;
 
             public IoStatus Status
             {
-              get { return status; }
-              set { status = value; }
+                get { return status; }
+                set { status = value; }
             }
 
             public IoSyncStatus(IoStatus status, NotifiableEvent<IoStatus> notifiableEvent)
@@ -50,13 +51,13 @@ namespace SapoBrokerClient.Networking
             }
         }
 
-		public delegate void MessageReceivedHandler(byte[] messagePayload);
+        public delegate void MessageReceivedHandler(byte[] messagePayload);
         public delegate void IoFailureHandler(IoSyncStatus syncStatus);
-		
-		public event MessageReceivedHandler MessageReceived;
+
+        public event MessageReceivedHandler MessageReceived;
         public event IoFailureHandler IoFailed;
-		
-		#region Private Members
+
+        #region Private Members
 
         private readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         volatile private int retriesCount = int.MaxValue;
@@ -68,44 +69,44 @@ namespace SapoBrokerClient.Networking
         }
 
         protected Socket socket;
-		private volatile Stream communicationStream;
-	    private CircularContainer<HostInfo> hosts;
+        private volatile Stream communicationStream;
+        private CircularContainer<HostInfo> hosts;
         private HostInfo hostInfo;
         private long connectionVersion = 0;
 
         private bool closed = false;
-				
-		#endregion
 
-		#region Auxiliary methods
-		private void OnMessageReceived(short protovolType, short protocolVersion, byte[] messagePayload)
-		{
+        #endregion
+
+        #region Auxiliary methods
+        private void OnMessageReceived(short protovolType, short protocolVersion, byte[] messagePayload)
+        {
             // Save the delegate field in a temporary field for thread safety
-			MessageReceivedHandler currentMessageReceived = MessageReceived;
+            MessageReceivedHandler currentMessageReceived = MessageReceived;
 
             if (currentMessageReceived != null)
             {
                 // process received messages in current I/O thread.
                 currentMessageReceived(messagePayload);
-			}
-		}
-		
-		
-		private void DecodeHeader(MessageAccumulator.DecodedMessageHeader decodedMessageHeader, byte[] encodedMessageHeader)
-		{
-			short protocolTypeNet =  BitConverter.ToInt16(encodedMessageHeader, 0);
-			short protocolVerionNet =  BitConverter.ToInt16(encodedMessageHeader, 2);
-			int messageLengthNet =  BitConverter.ToInt32(encodedMessageHeader, 4);
+            }
+        }
+
+
+        private void DecodeHeader(MessageAccumulator.DecodedMessageHeader decodedMessageHeader, byte[] encodedMessageHeader)
+        {
+            short protocolTypeNet = BitConverter.ToInt16(encodedMessageHeader, 0);
+            short protocolVerionNet = BitConverter.ToInt16(encodedMessageHeader, 2);
+            int messageLengthNet = BitConverter.ToInt32(encodedMessageHeader, 4);
 
             decodedMessageHeader.EncodingType = IPAddress.NetworkToHostOrder(protocolTypeNet);
-			decodedMessageHeader.EncodingVersion = IPAddress.NetworkToHostOrder(protocolVerionNet);
-			decodedMessageHeader.Length = IPAddress.NetworkToHostOrder(messageLengthNet);
-		}
-		
-		#endregion
-		
-		public NetworkHandler(IList<HostInfo> hosts)
-		{
+            decodedMessageHeader.EncodingVersion = IPAddress.NetworkToHostOrder(protocolVerionNet);
+            decodedMessageHeader.Length = IPAddress.NetworkToHostOrder(messageLengthNet);
+        }
+
+        #endregion
+
+        public NetworkHandler(IList<HostInfo> hosts)
+        {
             this.hosts = new CircularContainer<HostInfo>(hosts);
         }
 
@@ -115,7 +116,7 @@ namespace SapoBrokerClient.Networking
             IAsyncResult asyncResult = socket.BeginConnect(hostInfo.Hostname, hostInfo.Port, null, null);
             if (!asyncResult.CompletedSynchronously)
             {
-                bool signaled =  asyncResult.AsyncWaitHandle.WaitOne(15 * 1000, false);
+                bool signaled = asyncResult.AsyncWaitHandle.WaitOne(15 * 1000, false);
                 if (!signaled)
                     throw new TimeoutException(String.Format("Connection timeout while connectig to agent {0}:{1}", hostInfo.Hostname, hostInfo.Port));
             }
@@ -140,13 +141,15 @@ namespace SapoBrokerClient.Networking
             ReadStream.BeginRead(readContext.Data, 0, readContext.Data.Length, new AsyncCallback(ReadCallback), readContext);
         }
 
-		public void Start()
-		{
+        public void Start()
+        {
             try
             {
                 hostInfo = hosts.Get();
                 StartReading(hostInfo);
-            }catch(Exception e) {
+            }
+            catch (Exception e)
+            {
                 // Connection failed
                 if (!OnIoFailure(this.connectionVersion))
                 {
@@ -154,8 +157,8 @@ namespace SapoBrokerClient.Networking
                     throw e;
                 }
             }
-		}
-        
+        }
+
         private class ReadContext
         {
             private volatile MessageAccumulator msgAccumulator;
@@ -233,7 +236,7 @@ namespace SapoBrokerClient.Networking
                     catch (Exception)
                     {
                         retry = (++tryCount) != retriesCount;
-                        if( ! retry)
+                        if (!retry)
                         {
                             closed = true;
                             //Notify clients
@@ -244,16 +247,16 @@ namespace SapoBrokerClient.Networking
                             return false;
                         }
                         // wait for while, give the agent time to get back to life.
-                        System.Threading.Thread.Sleep(tryCount * 500);
+                        System.Threading.Thread.Sleep(1000);
                         hostInfo = hosts.Get();
                     }
-                    if(retry)
+                    if (retry)
                         log.ErrorFormat("Re-connection failed. {0}", hosts.Peek());
                 } while (retry);
 
 
                 syncStatus.Status = IoStatus.Ok;
-                
+
                 syncStatus.OnChange.Fire(syncStatus.Status);
             }
             return true;
@@ -313,19 +316,19 @@ namespace SapoBrokerClient.Networking
             int readIndex;
             //int newDataLength;
             bool hasMoreData;
-            
+
             hasMoreData = false;
             readIndex = 0;
-            
+
             do
             {
                 workingBuffer = (msgAccumulator.Stage == MessageAccumulator.AccumatingStage.HEADER) ? msgAccumulator.Header : msgAccumulator.Payload;
-                
+
                 int neededBytes = msgAccumulator.DesiredBytes - msgAccumulator.ReceivedBytes;
                 int bytesToCopy = (dataLength > neededBytes) ? neededBytes : dataLength;
-                
+
                 Array.Copy(rawData, readIndex, workingBuffer, msgAccumulator.ReceivedBytes, bytesToCopy);
-                
+
 
                 msgAccumulator.ReceivedBytes += bytesToCopy;
                 readIndex += bytesToCopy;
@@ -350,58 +353,73 @@ namespace SapoBrokerClient.Networking
                         msgAccumulator = new MessageAccumulator();
                     }
                 }
-                
+
 
             } while (hasMoreData);
 
         }
 
-		public bool SendMessage(byte[] messagePayload, IMessageSerializer encodingType)
-		{
-			short netProtocolType = IPAddress.HostToNetworkOrder(encodingType.ProtocolType);
-			short netProtocolVersion = IPAddress.HostToNetworkOrder(encodingType.ProtocolVersion);
-			int netMessageLength = IPAddress.HostToNetworkOrder(messagePayload.Length);
-			
-			byte[] netProtocolTypeData =  BitConverter.GetBytes(netProtocolType);
-			byte[] netProtocolVersionData =  BitConverter.GetBytes(netProtocolVersion);
-			byte[] netMessageLengthData = BitConverter.GetBytes(netMessageLength);
+        public bool SendMessage(byte[] messagePayload, IMessageSerializer encodingType)
+        {
+            short netProtocolType = IPAddress.HostToNetworkOrder(encodingType.ProtocolType);
+            short netProtocolVersion = IPAddress.HostToNetworkOrder(encodingType.ProtocolVersion);
+            int netMessageLength = IPAddress.HostToNetworkOrder(messagePayload.Length);
+
+            byte[] netProtocolTypeData = BitConverter.GetBytes(netProtocolType);
+            byte[] netProtocolVersionData = BitConverter.GetBytes(netProtocolVersion);
+            byte[] netMessageLengthData = BitConverter.GetBytes(netMessageLength);
 
             long currentConVersion = 0;
-            try
+            bool retry;
+            lock (this)
             {
-                lock (this)
+                do
                 {
-                    Stream stream = WriteStream;
-                    currentConVersion = this.connectionVersion;
-                    if (closed)
-                        throw new InvalidOperationException("Network object is closed.");
+                    try
+                    {
+                        retry = false;
 
-                    // Write header
-                    stream.Write(netProtocolTypeData, 0, netProtocolTypeData.Length);
-                    stream.Write(netProtocolVersionData, 0, netProtocolVersionData.Length);
-                    stream.Write(netMessageLengthData, 0, netMessageLengthData.Length);
+                        Stream stream = WriteStream;
+                        currentConVersion = this.connectionVersion;
+                        if (closed)
+                            throw new InvalidOperationException("Network connection is closed.");
 
-                    // Write payload
-                    stream.Write(messagePayload, 0, messagePayload.Length);
-                    stream.Flush();
-                }
-            }
-            catch (Exception)
-            {
-                return OnIoFailure(currentConVersion);
+                        // Write header
+                        stream.Write(netProtocolTypeData, 0, netProtocolTypeData.Length);
+                        stream.Write(netProtocolVersionData, 0, netProtocolVersionData.Length);
+                        stream.Write(netMessageLengthData, 0, netMessageLengthData.Length);
+
+                        // Write payload
+                        stream.Write(messagePayload, 0, messagePayload.Length);
+                        stream.Flush();
+
+                    }
+                    catch (Exception)
+                    {
+                        bool success = OnIoFailure(currentConVersion);
+                        if (success)
+                        {
+                            retry = true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                } while (retry);
             }
             return true;
-		}
-		
-		protected Stream WriteStream
-		{
-			get{ return communicationStream;}
-		}
-		
-		protected Stream ReadStream
-		{
-			get{ return communicationStream;}
-		}
+        }
+
+        protected Stream WriteStream
+        {
+            get { return communicationStream; }
+        }
+
+        protected Stream ReadStream
+        {
+            get { return communicationStream; }
+        }
 
 
         #region IDisposable and Close Members
@@ -455,7 +473,7 @@ namespace SapoBrokerClient.Networking
                 socket.Close();
             }
         }
-        
+
         #endregion
     }
 }
