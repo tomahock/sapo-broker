@@ -9,6 +9,7 @@ import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.stats.EncodingStats;
 
 /**
  * SOAP utility class for encoding and decoding.
@@ -23,7 +24,9 @@ public class SoapBindingSerializer implements BindingSerializer
 		SoapEnvelope soap = Builder.netMessageToSoap(message);
 		UnsynchronizedByteArrayOutputStream holder = new UnsynchronizedByteArrayOutputStream();
 		SoapSerializer.ToXml(soap, holder);
-		return holder.toByteArray();
+		byte[] data = holder.toByteArray();
+		EncodingStats.newSoapEncodedMessage();
+		return data;
 	}
 
 	@Override
@@ -31,6 +34,7 @@ public class SoapBindingSerializer implements BindingSerializer
 	{
 		SoapEnvelope soap = Builder.netMessageToSoap(message);
 		SoapSerializer.ToXml(soap, out);
+		EncodingStats.newSoapEncodedMessage();
 	}
 
 	@Override
@@ -39,14 +43,18 @@ public class SoapBindingSerializer implements BindingSerializer
 		UnsynchronizedByteArrayInputStream bin = new UnsynchronizedByteArrayInputStream(packet);
 		SoapEnvelope msg = SoapSerializer.FromXml(bin);
 
-		return Builder.soapToNetMessage(msg);
+		NetMessage message = Builder.soapToNetMessage(msg);
+		EncodingStats.newSoapDecodedMessage();
+		return message;
 	}
 
 	@Override
 	public NetMessage unmarshal(InputStream in)
 	{
 		SoapEnvelope msg = SoapSerializer.FromXml(in);
-		return Builder.soapToNetMessage(msg);
+		NetMessage message = Builder.soapToNetMessage(msg);
+		EncodingStats.newSoapDecodedMessage();
+		return message;
 	}
 	
 	@Override

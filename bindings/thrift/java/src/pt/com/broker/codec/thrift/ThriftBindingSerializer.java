@@ -27,6 +27,7 @@ import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
+import pt.com.broker.types.stats.EncodingStats;
 
 /**
  * Thrift utility class for encoding and decoding.
@@ -510,10 +511,11 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 			TSerializer serializer = new TSerializer(new TBinaryProtocol.Factory());
 			result = serializer.serialize(tm);
+			
+			EncodingStats.newThriftEncodedMessage();
 		}
 		catch (Throwable e)
 		{
-			// TODO: decide what to do with exception
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
 		return result;
@@ -525,10 +527,10 @@ public class ThriftBindingSerializer implements BindingSerializer
 		try
 		{
 			out.write(marshal(message));
+			EncodingStats.newThriftEncodedMessage();
 		}
 		catch (Throwable e)
 		{
-			// TODO: decide what to do with exception
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
 	}
@@ -574,6 +576,8 @@ public class ThriftBindingSerializer implements BindingSerializer
 			TDeserializer deserializer = new TDeserializer(new TBinaryProtocol.Factory());
 			deserializer.deserialize(tm, packet);
 			message = constructMessage(tm);
+			
+			EncodingStats.newThriftDecodedMessage();
 		}
 		catch (Throwable e)
 		{
@@ -599,10 +603,10 @@ public class ThriftBindingSerializer implements BindingSerializer
 			TDeserializer deserializer = new TDeserializer(new TBinaryProtocol.Factory());
 			deserializer.deserialize(tm, out.toByteArray());
 			message = constructMessage(tm);
+			EncodingStats.newThriftDecodedMessage();
 		}
 		catch (Throwable e)
 		{
-			// TODO: decide what to do with exception
 			log.error("Error parsing Thrift message.", e);
 		}
 		return message;

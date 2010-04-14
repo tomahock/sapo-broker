@@ -42,6 +42,7 @@ import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.stats.EncodingStats;
 
 import com.google.protobuf.ByteString;
 
@@ -583,6 +584,9 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		{
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
+		
+		EncodingStats.newProtoEncodedMessage();
+		
 		return result;
 	}
 
@@ -601,6 +605,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 			// Atom build = atomBuilder.build();
 			build = atomBuilder.build();
 			build.writeTo(out);
+			EncodingStats.newProtoEncodedMessage();
 		}
 		catch (Throwable e)
 		{
@@ -647,6 +652,8 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		{
 			PBMessage.Atom atom = PBMessage.Atom.parseFrom(packet);
 			message = constructMessage(atom);
+			
+			EncodingStats.newProtoDecodedMessage();
 		}
 		catch (Throwable e)
 		{
@@ -663,6 +670,8 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		{
 			PBMessage.Atom atom = PBMessage.Atom.parseFrom(in);
 			message = constructMessage(atom);
+			
+			EncodingStats.newProtoDecodedMessage();
 		}
 		catch (Throwable e)
 		{
