@@ -124,11 +124,6 @@ public class Gcs
 		}
 	}
 
-	// public static boolean enqueue(final NetMessage nmsg)
-	// {
-	// return instance.ienqueue(nmsg, null);
-	// }
-
 	public static boolean enqueue(NetMessage nmsg, String queueName)
 	{
 		return instance.ienqueue(nmsg, queueName);
@@ -313,6 +308,7 @@ public class Gcs
 			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), RECOVER_INTERVAL, RECOVER_INTERVAL, TimeUnit.MILLISECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
+			GcsExecutor.scheduleWithFixedDelay(new GlobalStatisticsPublisher(), 2, 5, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
 		}
@@ -429,7 +425,7 @@ public class Gcs
 	{
 		synchronized (instance.agentsConnection)
 		{
-			instance.agentsConnection.remove(channel);
+			boolean removed = instance.agentsConnection.remove(channel);
 		}
 	}
 
@@ -460,7 +456,10 @@ public class Gcs
 
 		NetMessage message = new NetMessage(action);
 
-		message.getHeaders().putAll(np.getMessage().getHeaders());
+		if (np.getMessage().getHeaders() != null)
+		{
+			message.getHeaders().putAll(np.getMessage().getHeaders());
+		}
 
 		return message;
 	}

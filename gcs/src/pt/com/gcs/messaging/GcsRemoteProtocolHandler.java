@@ -56,7 +56,6 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		{
 			log.error("STACKTRACE", t);
 		}
-
 	}
 
 	@Override
@@ -88,8 +87,10 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			QueueProcessor queueProcessor = QueueProcessorList.get(nnot.getDestination());
 			if (queueProcessor != null)
 			{
-				queueProcessor.store(m, true);
-				acknowledgeMessage(brkMsg.getMessageId(), channel);
+				if( acknowledgeMessage(brkMsg.getMessageId(), channel) )
+				{
+					queueProcessor.store(m, true);
+				}
 			}
 		}
 		else if (mtype.equals("SYSTEM_ACK"))
@@ -128,10 +129,16 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		sayHello(ctx);
 	}
 
-	private void acknowledgeMessage(String messageId, Channel channel)
+	private boolean acknowledgeMessage(String messageId, Channel channel)
 	{
 		log.debug("Acknowledge message with Id: '{}'.", messageId);
 
+		if(!channel.isWritable())
+		{
+			log.warn("Can't acknowledge message because channel is not writable");
+			return false;
+		}
+		
 		try
 		{
 			NetBrokerMessage brkMsg = new NetBrokerMessage(new byte[0]);
@@ -145,7 +152,8 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			NetMessage nmsg = new NetMessage(naction);
 			nmsg.getHeaders().put("TYPE", "ACK");
 
-			channel.write(nmsg);
+			// channel is writable. checked before
+			channel.write(nmsg);	
 		}
 		catch (Throwable ct)
 		{
@@ -159,7 +167,9 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			{
 				log.error(ict.getMessage(), ict);
 			}
+			return false;
 		}
+		return true;
 	}
 
 	public void sayHello(ChannelHandlerContext ctx)

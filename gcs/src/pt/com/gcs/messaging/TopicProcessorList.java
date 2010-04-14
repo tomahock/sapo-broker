@@ -3,6 +3,7 @@ package pt.com.gcs.messaging;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
@@ -22,6 +23,18 @@ public class TopicProcessorList
 	private static final TopicProcessorList instance = new TopicProcessorList();
 	private static final Logger log = LoggerFactory.getLogger(TopicProcessorList.class);
 
+	/*** Statistics ***/
+	// received
+	private final static AtomicLong tReceivedMessages = new AtomicLong(0);
+	private static final void newTopicMessageReceived()
+	{
+		tReceivedMessages.incrementAndGet();
+	}
+	public static long getTopicMessagesReceivedAndReset()
+	{
+		return tReceivedMessages.getAndSet(0);
+	}
+	
 	// key: subscriptionKey
 	private Cache<String, TopicProcessor> tpCache = new Cache<String, TopicProcessor>();
 
@@ -165,6 +178,7 @@ public class TopicProcessorList
 	{
 		try
 		{
+			newTopicMessageReceived();
 			for (TopicProcessor tp : tpCache.values())
 			{
 				tp.notify(np, localOnly);

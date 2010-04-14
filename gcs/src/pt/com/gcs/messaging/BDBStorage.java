@@ -425,6 +425,7 @@ public class BDBStorage
 								if (bdbm.getReserveTimeout() != 0)
 								{
 									++k0; // It's a re-delivery
+									queueProcessor.newQueueRedeliveredMessage();
 								}
 
 								if (result.result == Result.SUCCESS)

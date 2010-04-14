@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import org.caudexorigo.text.StringUtils;
@@ -11,6 +12,7 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
@@ -23,9 +25,46 @@ import pt.com.gcs.conf.GcsInfo;
 public class TopicProcessor
 {
 	private static Logger log = LoggerFactory.getLogger(TopicProcessor.class);
-
+	
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
+	/*** Statistics ***/
+	
+	// delivered
+	private final AtomicLong tDeliveredMessages = new AtomicLong(0);
+	private final void newTopicMessageDelivered()
+	{
+		tDeliveredMessages.incrementAndGet();
+	}
+	public long getTopicMessagesDeliveredAndReset()
+	{
+		return tDeliveredMessages.getAndSet(0);
+	}
+	
+	// discarded
+	private final AtomicLong tDiscardedMessages = new AtomicLong(0);
+	protected final void newTopicDiscardedMessage()
+	{
+		tDiscardedMessages.incrementAndGet();
+	}
+	public final long getTopicMessagesDiscardedAndReset()
+	{
+		return tDiscardedMessages.getAndSet(0);
+	}
+
+	// dispatched to queue
+	private final AtomicLong tTopicDispatchedToQueueMessages = new AtomicLong(0);
+	protected final void newTopicDispatchedToQueueMessage()
+	{
+		tTopicDispatchedToQueueMessages.incrementAndGet();
+	}
+	public final long getTopicMessagesDispatchedToQueueAndReset()
+	{
+		return tTopicDispatchedToQueueMessages.getAndSet(0);
+	}
+	
+	/******************/
+	
 	private final String subscriptionName;
 
 	private final Set<MessageListener> topicListeners = new CopyOnWriteArraySet<MessageListener>();
@@ -55,7 +94,6 @@ public class TopicProcessor
 		{
 			synchronized (topicListeners)
 			{
-
 				if (listener.getType() == MessageListener.Type.REMOTE)
 				{
 					addRemote(listener);
@@ -77,7 +115,7 @@ public class TopicProcessor
 		boolean has_local = false;
 		if (listener.getType() == MessageListener.Type.LOCAL)
 		{
-			// this value is just importat if current listener is local.
+			// this value is just important if current listener is local.
 			has_local = hasLocalConsumers();
 		}
 
@@ -149,6 +187,7 @@ public class TopicProcessor
 		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), ((InetSocketAddress) channel.getRemoteAddress()).getHostName(), subscriptionName);
 
 		NetBrokerMessage brkMsg = new NetBrokerMessage(payload.getBytes(UTF8));
+		brkMsg.setMessageId(MessageId.getMessageId());
 
 		NetNotification notification = new NetNotification("/system/peer", DestinationType.TOPIC, brkMsg, "/system/peer");
 
@@ -207,7 +246,21 @@ public class TopicProcessor
 						}
 						else
 						{
-							ml.onMessage(nmsg);
+							if( ml.onMessage(nmsg).result == ForwardResult.Result.SUCCESS)
+							{
+								if( ml.getTargetDestinationType() == DestinationType.TOPIC)
+								{
+									newTopicMessageDelivered();
+								}
+								else
+								{
+									newTopicDispatchedToQueueMessage();
+								}
+							}
+							else
+							{
+								newTopicDiscardedMessage();
+							}
 						}
 
 						// nmsg.setDestination(topicName); // -> Set the destination name, queue dispatchers change it.

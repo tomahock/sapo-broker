@@ -1,7 +1,9 @@
 package pt.com.gcs.messaging;
 
 import java.util.Collection;
+import java.util.Date;
 
+import org.caudexorigo.text.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,36 +25,33 @@ class QueueCounter implements Runnable
 
 		log.debug("Number of registered Queues: {}", qpl.size());
 
-		for (QueueProcessor qp : qpl)
+		// New format
+		
+		final String queueSubscriptionTopic = "/system/stats/queues/";
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("<qinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+		
+		for (QueueProcessor qp : QueueProcessorList.values())
 		{
 			long cnt = qp.getQueuedMessagesCount();
+			
 			if (cnt > 0)
 			{
 				log.info("Queue '{}' has {} message(s).", qp.getQueueName(), cnt);
-				publishCount(qp, cnt);
+				sb.append(String.format("\n	<item subject='queue://%s' predicate='queue-size' value='%s' />", qp.getQueueName(), cnt));
 			}
-			else if ((cnt == 0) && !qp.emptyQueueInfoDisplay.getAndSet(true))
+			else if ((cnt == 0)/* && !qp.emptyQueueInfoDisplay.getAndSet(true)*/)
 			{
 				log.info("Queue '{}' is empty.", qp.getQueueName());
-				publishCount(qp, cnt);
+				sb.append(String.format("\n	<item subject='queue://%s' predicate='queue-size' value='%s' />", qp.getQueueName(), cnt));			
 			}
-
 		}
-	}
-
-	private void publishCount(QueueProcessor qp, long cnt)
-	{
-		try
-		{
-			String dName = String.format("/system/stats/queue-size/#%s#", qp.getQueueName());
-			String content = GcsInfo.getAgentName() + "#" + qp.getQueueName() + "#" + cnt;
-
-			InternalPublisher.send(dName, content);
-		}
-		catch (Throwable error)
-		{
-			String emsg = String.format("Could not publish queue counter for '{}'", qp.getQueueName());
-			log.error(emsg, error);
-		}
+		
+		sb.append("\n</qinfo>");
+		
+		String result = sb.toString();
+		log.info('\n'+result);
+		InternalPublisher.send(String.format("%s#%s#", queueSubscriptionTopic, GcsInfo.getAgentName()), result);		
 	}
 }

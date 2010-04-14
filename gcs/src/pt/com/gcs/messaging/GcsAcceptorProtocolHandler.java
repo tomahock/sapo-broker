@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -109,10 +110,10 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		else if (mtype.equals("HELLO"))
 		{
 			validatePeer(ctx, msgContent);
-			boolean isValid = ((Boolean) ChannelAttributes.get(ctx, "GcsAcceptorProtocolHandler.ISVALID")).booleanValue();
+			boolean isValid = ((Boolean) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.ISVALID")).booleanValue();
 			if (!isValid)
 			{
-				String paddr = String.valueOf(ChannelAttributes.get(ctx, "GcsAcceptorProtocolHandler.PEER_ADDRESS"));
+				String paddr = String.valueOf(ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.PEER_ADDRESS"));
 				log.warn("A peer from \"{}\" tried to connect but it does not appear in the world map.", paddr);
 				ctx.getChannel().close();
 			}
@@ -152,6 +153,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 
 				if (tp == null)
 				{
+					log.error("Failed to obtain a TopicProcessor instance for topic '{}'.", subscriptionKey);
 					return;
 				}
 
@@ -172,6 +174,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				QueueProcessor qp = QueueProcessorList.get(subscriptionKey);
 				if (qp == null)
 				{
+					log.error("Failed to obtain a QueueProcessor instance for queue '{}'.", subscriptionKey);
 					return;
 				}
 
@@ -221,7 +224,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		TopicProcessorList.removeSession(ctx.getChannel());
 		QueueProcessorList.removeSession(ctx.getChannel());
 
-		ChannelAttributes.remove(ctx);
+		ChannelAttributes.remove(ChannelAttributes.getChannelId(ctx));
 	}
 
 	private boolean validPeerAddress(ChannelHandlerContext ctx)
@@ -267,23 +270,23 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			String peerHost = StringUtils.substringBefore(peerAddr, ":");
 			int peerPort = Integer.parseInt(StringUtils.substringAfter(peerAddr, ":"));
 
-			ChannelAttributes.set(ctx, "GcsAcceptorProtocolHandler.PEER_ADDRESS", peerAddr);
+			ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.PEER_ADDRESS", peerAddr);
 
 			Peer peer = new Peer(peerName, peerHost, peerPort);
 			if (Gcs.getPeerList().contains(peer))
 			{
 				log.debug("Peer '{}' exists in the world map'", peer.toString());
-				ChannelAttributes.set(ctx, "GcsAcceptorProtocolHandler.ISVALID", true);
+				ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.ISVALID", true);
 				return;
 			}
 		}
 		catch (Throwable t)
 		{
-			ChannelAttributes.set(ctx, "GcsAcceptorProtocolHandler.PEER_ADDRESS", "Unknown address");
+			ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.PEER_ADDRESS", "Unknown address");
 
 			log.error(t.getMessage(), t);
 		}
-		ChannelAttributes.set(ctx, "GcsAcceptorProtocolHandler.ISVALID", false);
+		ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.ISVALID", false);
 	}
 
 	private String extract(String ins, String prefix, String sufix)

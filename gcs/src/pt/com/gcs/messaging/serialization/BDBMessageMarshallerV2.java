@@ -54,7 +54,7 @@ public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 		message.setSequence(oIn.readLong());
 		message.setPreferLocalConsumer(oIn.readBoolean());
 		message.setReserveTimeout(oIn.readLong());
-
+		
 		NetMessage nmsg = serializer.unmarshal(oIn);
 
 		message.setMessage(nmsg);
