@@ -1,5 +1,6 @@
 package pt.com.broker.types;
 
+import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,32 +13,24 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 
 public class ChannelAttributes
 {
-	private static final ConcurrentMap<Channel, Map<String, Object>> PROPS = new ConcurrentHashMap<Channel, Map<String, Object>>();
+	private static final ConcurrentMap<String, Map<String, Object>> PROPS = new ConcurrentHashMap<String, Map<String, Object>>();
 
-	public static void set(ChannelHandlerContext ctx, String name, Object value)
+	public static void set(String channelId, String name, Object value)
 	{
-		Channel channel = ctx.getChannel();
-//		System.out.println("ChannelAttributes.set.ctx: " + ctx.toString());
-//		System.out.println("ChannelAttributes.set.name: " + name);
-//		System.out.println("ChannelAttributes.set.channel: " + ctx.getChannel().toString());
-		Map<String, Object> attribs = PROPS.get(channel);
+		Map<String, Object> attribs = PROPS.get(channelId);
 
 		if (attribs == null)
 		{
 			attribs = new HashMap<String, Object>();
+			PROPS.put(channelId, attribs);
 		}
 
 		attribs.put(name, value);
-		PROPS.put(channel, attribs);
 	}
 
-	public static Object get(ChannelHandlerContext ctx, String name)
+	public static Object get(String channelId, String name)
 	{
-		Channel channel = ctx.getChannel();
-//		System.out.println("ChannelAttributes.get.ctx: " + ctx.toString());
-//		System.out.println("ChannelAttributes.get.name: " + name);
-//		System.out.println("ChannelAttributes.get.channel: " + channel.toString());
-		Map<String, Object> attribs = PROPS.get(channel);
+		Map<String, Object> attribs = PROPS.get(channelId);
 		if (attribs == null)
 		{
 			return null;
@@ -45,15 +38,14 @@ public class ChannelAttributes
 		return attribs.get(name);
 	}
 
-	public static void remove(ChannelHandlerContext ctx)
+	public static void remove(String channelId)
 	{
-		PROPS.remove(ctx.getChannel());
+		PROPS.remove(channelId);
 	}
 
-	public static Set<String> getAttributeKeys(ChannelHandlerContext ctx)
+	public static Set<String> getAttributeKeys(String channelId)
 	{
-		Channel channel = ctx.getChannel();
-		Map<String, Object> attribs = PROPS.get(channel);
+		Map<String, Object> attribs = PROPS.get(channelId);
 		if (attribs != null)
 		{
 			return attribs.keySet();
@@ -63,5 +55,16 @@ public class ChannelAttributes
 			return Collections.emptySet();
 		}
 	}
-
+	
+	public static String getChannelId(ChannelHandlerContext ctx)
+	{
+		return getChannelId(ctx.getChannel());
+	}
+	
+	public static String getChannelId(Channel channel)
+	{
+		InetSocketAddress remoteAddress = (InetSocketAddress)channel.getRemoteAddress();
+		String channelId = remoteAddress.toString();
+		return channelId;
+	}
 }
