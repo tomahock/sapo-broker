@@ -61,6 +61,8 @@ public class BrokerTopicListener extends BrokerListener
 	{
 		final ListenerChannel lchannel = getChannel();
 
+		ForwardResult result = success;
+		
 		try
 		{
 			// final NetMessage response = BrokerListener.buildNotification(amsg, getsubscriptionKey(), DestinationType.TOPIC);
@@ -113,6 +115,7 @@ public class BrokerTopicListener extends BrokerListener
 							showSuspendedDeliveryMessage = false;
 						}
 						droppedMessages++;
+						result = failed;
 					}
 				}
 			}
@@ -133,7 +136,7 @@ public class BrokerTopicListener extends BrokerListener
 		{
 			log.error("Error on message listener for '{}': {}", e.getMessage(), getsubscriptionKey());
 		}
-		return success;
+		return result;
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.global.ChannelType;
 
@@ -57,15 +58,14 @@ public class AuthorizationFilter extends SimpleChannelUpstreamHandler
 			sessionProps = new Session(channel);
 		}
 
-		ChannelAttributes.set(ctx, "BROKER_SESSION_PROPERTIES", sessionProps);
-
+		ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "BROKER_SESSION_PROPERTIES", sessionProps);
 	}
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 	{
 		Channel channel = ctx.getChannel();
-		Object _session = ChannelAttributes.get(ctx, "BROKER_SESSION_PROPERTIES");
+		Object _session = ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "BROKER_SESSION_PROPERTIES");
 
 		if(_session == null)
 		{
@@ -101,5 +101,6 @@ public class AuthorizationFilter extends SimpleChannelUpstreamHandler
 		{
 			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
 		}
+		MiscStats.newAccessDenied();
 	}
 }

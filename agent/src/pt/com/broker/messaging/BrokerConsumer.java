@@ -1,8 +1,10 @@
 package pt.com.broker.messaging;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.caudexorigo.text.DateUtil;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,21 +46,31 @@ public class BrokerConsumer
 			{
 				try
 				{
-
+					// New format
+					
+					final String topicSubscriptionTopic = "/system/stats/topics/";
+					
+					StringBuilder sb = new StringBuilder();
+					sb.append(String.format("<qinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+					
 					for (TopicProcessor tp : TopicProcessorList.values())
 					{
 						int ssize = countLocal(tp.listeners());
 
 						if (ssize > 0)
 						{
-							String skey = tp.getSubscriptionName();
-
-							String ctName = String.format("/system/stats/topic-consumer-count/#%s#", skey);
-							String content = GcsInfo.getAgentName() + "#" + skey + "#" + ssize;
-
-							InternalPublisher.send(ctName, content);
+							sb.append(String.format("\n	<item subject='topic://%s' predicate='subscriptions' value='%s' />", tp.getSubscriptionName(), ssize));
 						}
 					}
+					
+					sb.append("\n</qinfo>");
+					
+					String result = sb.toString();
+					
+					log.info('\n' + result);
+					
+					InternalPublisher.send(String.format("%s#%s#", topicSubscriptionTopic, GcsInfo.getAgentName()), result);
+					
 				}
 				catch (Throwable e)
 				{
@@ -85,18 +97,27 @@ public class BrokerConsumer
 			public void run()
 			{
 				try
-				{
+				{					
+					// New format
+					
+					final String queueSubscriptionTopic = "/system/stats/queues/";
+					
+					StringBuilder sb = new StringBuilder();
+					sb.append(String.format("<qinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+					
 					for (QueueProcessor qs : QueueProcessorList.values())
 					{
 						int ssize = qs.localListeners().size();
 
-						if (ssize > 0)
-						{
-							String ctName = String.format("/system/stats/queue-consumer-count/#%s#", qs.getQueueName());
-							String content = GcsInfo.getAgentName() + "#" + qs.getQueueName() + "#" + ssize;
-							InternalPublisher.send(ctName, content);
-						}
+						sb.append(String.format("\n	<item subject='queue://%s' predicate='subscriptions' value='%s' />", qs.getQueueName(), ssize));
 					}
+					
+					sb.append("\n</qinfo>");
+					
+					String result = sb.toString();
+					log.info('\n' + result);
+					
+					InternalPublisher.send(String.format("%s#%s#", queueSubscriptionTopic, GcsInfo.getAgentName()), result);
 				}
 				catch (Throwable t)
 				{

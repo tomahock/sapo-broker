@@ -17,13 +17,10 @@ import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ListenerChannel;
-import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPoll;
-import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalPublisher;
+import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
 
 /**
@@ -78,12 +75,12 @@ public class BrokerSyncConsumer
 	{
 		// Set<String> attributeKeys = channel.getAttributeKeys();
 		// Channel channel = ctx.getChannel();
-		Set<String> attributeKeys = ChannelAttributes.getAttributeKeys(ctx);
+		Set<String> attributeKeys = ChannelAttributes.getAttributeKeys(ChannelAttributes.getChannelId(ctx));
 		for (String attributeKey : attributeKeys)
 		{
 			if (attributeKey.toString().startsWith(SESSION_ATT_PREFIX))
 			{
-				Object attributeValue = ChannelAttributes.get(ctx, attributeKey);
+				Object attributeValue = ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), attributeKey);
 				if (attributeValue instanceof SynchronousMessageListener)
 				{
 					SynchronousMessageListener listener = (SynchronousMessageListener) attributeValue;
@@ -111,7 +108,7 @@ public class BrokerSyncConsumer
 			QueueProcessorList.get(queueName);
 
 			String composedQueueName = SESSION_ATT_PREFIX + queueName;
-			Object attribute = ChannelAttributes.get(ctx, composedQueueName);
+			Object attribute = ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), composedQueueName);
 
 			SynchronousMessageListener msgListener = null;
 			if (attribute != null)
@@ -124,8 +121,12 @@ public class BrokerSyncConsumer
 
 				msgListener = new SynchronousMessageListener(lchannel, queueName);
 
-				ChannelAttributes.set(ctx, composedQueueName, msgListener);
-				QueueProcessorList.get(queueName).add(msgListener);
+				ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), composedQueueName, msgListener);
+				QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
+				if(queueProcessor != null)
+				{
+					queueProcessor.add(msgListener);
+				}
 				AtomicInteger previous = synConsumersCount.putIfAbsent(poll.getDestination(), new AtomicInteger(1));
 				if (previous != null)
 				{

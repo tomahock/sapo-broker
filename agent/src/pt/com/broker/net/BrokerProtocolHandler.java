@@ -1,6 +1,7 @@
 package pt.com.broker.net;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -49,6 +50,7 @@ import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.ActionType;
+import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.QueueProcessorList;
@@ -104,6 +106,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 				{
 					if (cf.isSuccess())
 					{
+						MiscStats.newSslConnection();
 						log.info("SSL handshake complete.");
 					}
 					else
@@ -112,6 +115,18 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 					}
 				}
 			});
+		}
+		else
+		{
+			int port = ((InetSocketAddress)ctx.getChannel().getLocalAddress()).getPort();
+			if(port == GcsInfo.getBrokerPort())
+			{
+				MiscStats.newTcpConnection();
+			}
+			else if (port == GcsInfo.getBrokerLegacyPort())
+			{
+				MiscStats.newTcpLegacyConnection();
+			}
 		}
 	}
 
@@ -138,8 +153,17 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			QueueProcessorList.removeSession(channel);
 			TopicProcessorList.removeSession(channel);
 			BrokerSyncConsumer.removeSession(ctx);
+			
+			if( ((InetSocketAddress)channel.getLocalAddress()).getPort() != GcsInfo.getBrokerSSLPort())
+			{
+				MiscStats.tcpConnectionClosed();
+			}
+			else
+			{
+				MiscStats.sslConnectionClosed();
+			}
 
-			ChannelAttributes.remove(ctx);
+			ChannelAttributes.remove(ChannelAttributes.getChannelId(ctx));
 
 			log.info("channel closed: " + remoteClient);
 		}
@@ -236,6 +260,8 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			NetPublish p = new NetPublish((String.format("/system/faults/#%s#", GcsInfo.getAgentName())), NetAction.DestinationType.TOPIC, xfaultMessage);
 
 			_brokerProducer.publishMessage(p, null);
+			
+			MiscStats.newFault();
 		}
 		catch (Throwable t)
 		{
@@ -539,7 +565,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			return;
 		}
 
-		Session plainSession = (Session) ChannelAttributes.get(ctx, "BROKER_SESSION_PROPERTIES");
+		Session plainSession = (Session) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "BROKER_SESSION_PROPERTIES");
 
 		SessionProperties plainSessionProps = plainSession.getSessionProperties();
 		plainSessionProps.setRoles(validateResult.getRoles());

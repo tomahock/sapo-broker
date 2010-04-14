@@ -28,6 +28,7 @@ import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.stats.ChannelStats;
 
 /**
  * BrokerHttpAction is an HttpAction. It supports message publishing.
@@ -86,6 +87,8 @@ public class BrokerHttpAction extends HttpAction
 
 				NetMessage message = (NetMessage) bindingSerializer.unmarshal(buf);
 
+				ChannelStats.newHttpMessageReceived();
+				
 				ValidationResult validationResult = AccessControl.validate(message, new Session(channel));
 
 				if (!validationResult.accessGranted)

@@ -27,6 +27,7 @@ import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.stats.ChannelStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 
@@ -175,6 +176,8 @@ public class FilePublisher
 								{
 									if (netMessage.getAction().getActionType().equals(NetAction.ActionType.PUBLISH))
 									{
+										ChannelStats.newDropboxMessageReceived();
+										
 										if (netMessage.getAction().getPublishMessage().getDestinationType() == NetAction.DestinationType.TOPIC)
 										{
 											BrokerProducer.getInstance().publishMessage(netMessage.getAction().getPublishMessage(), MQ.requestSource(netMessage));

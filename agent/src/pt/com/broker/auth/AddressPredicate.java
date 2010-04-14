@@ -9,7 +9,6 @@ import java.net.InetAddress;
 
 public class AddressPredicate implements AclPredicate
 {
-
 	private Subnet subnet;
 
 	public AddressPredicate(InetAddress address, int mask)

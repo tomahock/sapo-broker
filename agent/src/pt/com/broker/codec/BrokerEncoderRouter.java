@@ -56,8 +56,8 @@ public class BrokerEncoderRouter extends OneToOneEncoder
 	{
 		try
 		{
-			Short protocol_type = (Short) ChannelAttributes.get(ctx, "PROTOCOL_TYPE");
-			Short protocol_version = (Short) ChannelAttributes.get(ctx, "PROTOCOL_VERSION");
+			Short protocol_type = (Short) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "PROTOCOL_TYPE");
+			Short protocol_version = (Short) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "PROTOCOL_VERSION");
 
 			if (protocol_type == null)
 			{

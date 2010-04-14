@@ -11,7 +11,6 @@ import pt.com.broker.auth.AccessControl.Privilege;
 
 public class Session
 {
-	private Channel session;
 	private SessionProperties sessionProperties;
 	private SessionAcl readSessionAcl;
 	private SessionAcl writeSessionAcl;
@@ -28,14 +27,8 @@ public class Session
 
 	public Session(Channel session, SessionProperties sessionProperties)
 	{
-		this.session = session;
 		this.sessionProperties = sessionProperties;
 		updateAcl();
-	}
-
-	public Channel getSession()
-	{
-		return session;
 	}
 
 	public SessionProperties getSessionProperties()

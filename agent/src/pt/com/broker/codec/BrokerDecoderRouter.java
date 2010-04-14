@@ -114,8 +114,8 @@ public class BrokerDecoderRouter extends FrameDecoder
 			return null;
 		}
 
-		ChannelAttributes.set(ctx, "PROTOCOL_TYPE", new Short(protocol_type));
-		ChannelAttributes.set(ctx, "PROTOCOL_VERSION", new Short(protocol_version));
+		ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "PROTOCOL_TYPE", new Short(protocol_type));
+		ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "PROTOCOL_VERSION", new Short(protocol_version));
 
 		buffer.skipBytes(HEADER_LENGTH);
 
