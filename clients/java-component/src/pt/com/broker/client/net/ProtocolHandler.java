@@ -117,20 +117,18 @@ public abstract class ProtocolHandler<T>
 
 	private T doDecode(DataInputStream in) throws IOException
 	{
-//		synchronized (in)
-//		{
-//			return decode(in);
-//		}
-		return decode(in);
+		synchronized (in)
+		{
+			return decode(in);
+		}
 	}
 
 	public void doEncode(T message, DataOutputStream out) throws IOException
 	{
-//		synchronized (out)
-//		{
-//			encode(message, out);
-//		}
-		encode(message, out);
+		synchronized (out)
+		{
+			encode(message, out);
+		}
 	}
 
 	public void sendMessage(final T message) throws Throwable
