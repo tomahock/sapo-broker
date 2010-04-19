@@ -64,8 +64,8 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		final NetMessage m = (NetMessage) e.getMessage();
 		String mtype = m.getHeaders().get("TYPE");
 
-		NetNotification nnot = m.getAction().getNotificationMessage();	
-		
+		NetNotification nnot = m.getAction().getNotificationMessage();
+
 		NetBrokerMessage brkMsg = nnot.getMessage();
 
 		Channel channel = ctx.getChannel();
@@ -75,6 +75,10 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			log.debug("Message Received from: '{}', Type: '{}'", channel.getRemoteAddress(), mtype);
 		}
 
+		if (m.getHeaders() != null)
+		{
+			brkMsg.addAllHeaders(m.getHeaders());
+		}
 		brkMsg.addHeader("IS_REMOTE", "true");
 
 		if (mtype.equals("COM_TOPIC"))
@@ -87,7 +91,7 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			QueueProcessor queueProcessor = QueueProcessorList.get(nnot.getDestination());
 			if (queueProcessor != null)
 			{
-				if( acknowledgeMessage(brkMsg.getMessageId(), channel) )
+				if (acknowledgeMessage(queueProcessor.getQueueName(), brkMsg.getMessageId(), channel))
 				{
 					queueProcessor.store(m, true);
 				}
@@ -129,22 +133,22 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		sayHello(ctx);
 	}
 
-	private boolean acknowledgeMessage(String messageId, Channel channel)
+	private boolean acknowledgeMessage(String destination, String messageId, Channel channel)
 	{
 		log.debug("Acknowledge message with Id: '{}'.", messageId);
 
-		if(!channel.isWritable())
+		if (!channel.isWritable())
 		{
 			log.warn("Can't acknowledge message because channel is not writable");
 			return false;
 		}
-		
+
 		try
 		{
 			NetBrokerMessage brkMsg = new NetBrokerMessage(new byte[0]);
 			brkMsg.setMessageId(messageId);
 
-			NetNotification notification = new NetNotification("/system/peer", DestinationType.TOPIC, brkMsg, "/system/peer");
+			NetNotification notification = new NetNotification(destination, DestinationType.TOPIC, brkMsg, destination);
 
 			NetAction naction = new NetAction(NetAction.ActionType.NOTIFICATION);
 			naction.setNotificationMessage(notification);
@@ -153,7 +157,7 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			nmsg.getHeaders().put("TYPE", "ACK");
 
 			// channel is writable. checked before
-			channel.write(nmsg);	
+			channel.write(nmsg);
 		}
 		catch (Throwable ct)
 		{

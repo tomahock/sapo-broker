@@ -17,6 +17,7 @@ import pt.com.gcs.messaging.InternalMessage;
 public class BDBMessageMarshallerV1 implements Codec<BDBMessage>
 {
 	private static final short VERSION = 1;
+	private static final short CURRENT_VERSION = 2;
 
 	private static Logger log = LoggerFactory.getLogger(BDBMessageMarshallerV1.class);
 
@@ -70,6 +71,10 @@ public class BDBMessageMarshallerV1 implements Codec<BDBMessage>
 
 		NetBrokerMessage brkMsg = imsg.getContent();
 
+		brkMsg.setExpiration(imsg.getExpiration());
+		brkMsg.setMessageId(imsg.getMessageId());
+		brkMsg.setTimestamp(imsg.getTimestamp());
+
 		NetNotification notification = new NetNotification(imsg.getDestination(), DestinationType.TOPIC, brkMsg, imsg.getDestination());
 
 		NetAction naction = new NetAction(NetAction.ActionType.NOTIFICATION);
@@ -78,6 +83,9 @@ public class BDBMessageMarshallerV1 implements Codec<BDBMessage>
 		NetMessage nmsg = new NetMessage(naction);
 
 		message.setMessage(nmsg);
+
+		// Set current Version!!
+		message.setVersion(CURRENT_VERSION);
 
 		return message;
 	}

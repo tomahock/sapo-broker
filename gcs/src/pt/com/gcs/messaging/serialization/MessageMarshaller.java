@@ -13,6 +13,9 @@ public class MessageMarshaller
 {
 	private static Logger log = LoggerFactory.getLogger(MessageMarshaller.class);
 
+	// BDBMessageMarshallerV2 is stateless
+	private static BDBMessageMarshallerV2 marshallerV2 = new BDBMessageMarshallerV2();
+	
 	public static BDBMessage unmarshallBDBMessage(byte[] data) throws Throwable
 	{
 		ObjectInputStream oIn;
@@ -22,7 +25,7 @@ public class MessageMarshaller
 
 		if (version == 2)
 		{
-			return new BDBMessageMarshallerV2().unmarshall(data);
+			return marshallerV2.unmarshall(data);
 		}
 		else if (version == 1)
 		{
@@ -37,7 +40,7 @@ public class MessageMarshaller
 
 	public static byte[] marshallBDBMessage(BDBMessage message) throws Throwable
 	{
-		return new BDBMessageMarshallerV2().marshall(message);
+		return marshallerV2.marshall(message);
 	}
 
 	public static InternalMessage unmarshallInternalMessage(byte[] data) throws Throwable

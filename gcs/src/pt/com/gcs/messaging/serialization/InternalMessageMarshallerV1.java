@@ -90,7 +90,7 @@ public class InternalMessageMarshallerV1 implements Codec<InternalMessage>
 		message.setTimestamp(oIn.readLong());
 
 		message.setExpiration(oIn.readLong());
-
+		
 		message.setType(MessageType.lookup(oIn.readInt()));
 
 		NetBrokerMessage content = NetBrokerMessage.read(oIn);
