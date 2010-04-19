@@ -107,6 +107,13 @@ public interface CliArgs
 	 */
 	@Option(shortName = "T", defaultValue = "PROTOCOL_BUFFER")
 	String getProtocolType();
+	
+	/**
+	 * 
+	 * @return Poll Timeout
+	 */
+	@Option(shortName = "t", defaultValue = "0")
+	long getPollTimeout();	
 
 
 }
