@@ -118,8 +118,8 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		}
 		else
 		{
-			int port = ((InetSocketAddress)ctx.getChannel().getLocalAddress()).getPort();
-			if(port == GcsInfo.getBrokerPort())
+			int port = ((InetSocketAddress) ctx.getChannel().getLocalAddress()).getPort();
+			if (port == GcsInfo.getBrokerPort())
 			{
 				MiscStats.newTcpConnection();
 			}
@@ -153,8 +153,8 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			QueueProcessorList.removeSession(channel);
 			TopicProcessorList.removeSession(channel);
 			BrokerSyncConsumer.removeSession(ctx);
-			
-			if( ((InetSocketAddress)channel.getLocalAddress()).getPort() != GcsInfo.getBrokerSSLPort())
+
+			if (((InetSocketAddress) channel.getLocalAddress()).getPort() != GcsInfo.getBrokerSSLPort())
 			{
 				MiscStats.tcpConnectionClosed();
 			}
@@ -260,7 +260,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			NetPublish p = new NetPublish((String.format("/system/faults/#%s#", GcsInfo.getAgentName())), NetAction.DestinationType.TOPIC, xfaultMessage);
 
 			_brokerProducer.publishMessage(p, null);
-			
+
 			MiscStats.newFault();
 		}
 		catch (Throwable t)
@@ -363,6 +363,11 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		{
 			writeInvalidDestinationFault(channel, actionId, destination);
 			return;
+		}
+
+		if (request.getHeaders() != null)
+		{
+			publish.getMessage().addAllHeaders(request.getHeaders());
 		}
 
 		switch (publish.getDestinationType())

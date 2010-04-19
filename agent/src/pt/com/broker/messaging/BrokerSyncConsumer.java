@@ -37,38 +37,38 @@ public class BrokerSyncConsumer
 
 	static
 	{
-		Runnable counter = new Runnable()
-		{
-			public void run()
-			{
-				try
-				{
-					Collection<String> synConsumersList = synConsumersCount.keySet();
-
-					for (String queueName : synConsumersList)
-					{
-						String ctName = String.format("/system/stats/sync-consumer-count/#%s#", queueName);
-
-						int size = 0;
-						AtomicInteger count = synConsumersCount.get(queueName);
-						if (count != null)
-						{
-							size = count.get();
-						}
-
-						String content = GcsInfo.getAgentName() + "#" + queueName + "#" + size;
-
-						InternalPublisher.send(ctName, content);
-					}
-				}
-				catch (Throwable t)
-				{
-					log.error(t.getMessage(), t);
-				}
-
-			}
-		};
-		BrokerExecutor.scheduleWithFixedDelay(counter, 20, 20, TimeUnit.SECONDS);
+//		Runnable counter = new Runnable()
+//		{
+//			public void run()
+//			{
+//				try
+//				{
+//					Collection<String> synConsumersList = synConsumersCount.keySet();
+//
+//					for (String queueName : synConsumersList)
+//					{
+//						String ctName = String.format("/system/stats/sync-consumer-count/#%s#", queueName);
+//
+//						int size = 0;
+//						AtomicInteger count = synConsumersCount.get(queueName);
+//						if (count != null)
+//						{
+//							size = count.get();
+//						}
+//
+//						String content = GcsInfo.getAgentName() + "#" + queueName + "#" + size;
+//
+//						InternalPublisher.send(ctName, content);
+//					}
+//				}
+//				catch (Throwable t)
+//				{
+//					log.error(t.getMessage(), t);
+//				}
+//
+//			}
+//		};
+//		BrokerExecutor.scheduleWithFixedDelay(counter, 20, 20, TimeUnit.SECONDS);
 	}
 
 	public static void removeSession(ChannelHandlerContext ctx)

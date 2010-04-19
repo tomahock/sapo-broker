@@ -1,5 +1,7 @@
 package pt.com.broker.http;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +37,22 @@ public class SubscriptionsAction extends HttpAction
 
 	private static final String NO_SUBSCRIPTIONS = "<p>No subscriptions</p>";
 
-	private static final String template = "<html><head><title>Sapo-Broker Subscription Information</title></head><body>" + "<h1>Agent name: %s</h1>" + "<h2>Local topic subscriptions</h2>%s" + "<h2>Local queue subscriptions</h2>%s" + "<h2>Remote topic subscriptions</h2>%s" + "<h2>Remote queue subscriptions</h2>%s" + "</body></html>";
+	private static final String templateLocation = "./templates/subscriptions.template";
+	private static final String cssLocation = "./templates/style.css";
+
+	private static String template = null;
+	private static String cssTemplate = null;
+
+	static
+	{
+		template = readFile(templateLocation);
+		cssTemplate = readFile(cssLocation);
+
+		if ((template == null) || (cssTemplate == null))
+		{
+			log.error("Failed to read templates");
+		}
+	}
 
 	public SubscriptionsAction()
 	{
@@ -52,15 +69,25 @@ public class SubscriptionsAction extends HttpAction
 		{
 			String agentName = GcsInfo.constructAgentName(GcsInfo.getAgentHost(), GcsInfo.getAgentPort());
 
-			String smessage = String.format(template, agentName, getLocalTopicConsumers(), getLocalQueueConsumers(), getRemoteTopicConsumers(), getRemoteQueueConsumers());
-			byte[] bmessage = smessage.getBytes("UTF-8");
-			response.setHeader("Pragma", "no-cache");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/html");
+			if (template != null)
+			{
+				String smessage = String.format(template, getCss(), agentName, getLocalTopicConsumers(), getLocalQueueConsumers(), getRemoteTopicConsumers(), getRemoteQueueConsumers());
+				byte[] bmessage = smessage.getBytes("UTF-8");
+				response.setHeader("Pragma", "no-cache");
+				response.setHeader("Cache-Control", "no-cache");
+				response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/html");
 
-			response.setStatus(HttpResponseStatus.OK);
+				response.setStatus(HttpResponseStatus.OK);
 
-			out.write(bmessage);
+				out.write(bmessage);
+			}
+			else
+			{
+				response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/html");
+
+				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+				out.write("No template loadded.".getBytes("UTF-8"));
+			}
 		}
 		catch (Throwable e)
 		{
@@ -190,5 +217,31 @@ public class SubscriptionsAction extends HttpAction
 		}
 
 		return sb.toString();
+	}
+
+	public static String getCss()
+	{
+		return cssTemplate;
+	}
+
+	public static String readFile(String fileLocation)
+	{
+		try
+		{
+			StringBuilder sb = new StringBuilder();
+			BufferedReader reader = new BufferedReader(new FileReader(fileLocation));
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				sb.append(line);
+				sb.append('\n');
+			}
+			return sb.toString();
+		}
+		catch (Throwable t)
+		{
+			log.error(String.format("Failed to read file '%s'.", fileLocation), t);
+		}
+		return null;
 	}
 }

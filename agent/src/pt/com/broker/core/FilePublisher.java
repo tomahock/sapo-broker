@@ -121,7 +121,7 @@ public class FilePublisher
 				}
 				int goodFileCount = files.length;
 				
-				publishInfo(goodFileCount);
+//				publishInfo(goodFileCount);
 
 				if ((files != null) && (files.length > 0))
 				{
@@ -272,6 +272,7 @@ public class FilePublisher
 		return null;
 	}
 	
+/*	
 	private void publishInfo(int goodFileCount)
 	{
 		long now  = System.currentTimeMillis();
@@ -297,7 +298,8 @@ public class FilePublisher
 			Gcs.publish(np);
 			previousPublish = now;
 		}
-	}	
+	}
+	*/
 }
 
 

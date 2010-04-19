@@ -19,6 +19,8 @@ public class BrokerRequestRouter implements RequestRouter
 	
 	private final SubscriptionsAction subscription_action = new SubscriptionsAction();
 
+	private final MiscInfoAction misc_action = new MiscInfoAction();
+	
 	public HttpAction map(HttpRequest req)
 	{
 		String path = req.getUri();
@@ -38,6 +40,10 @@ public class BrokerRequestRouter implements RequestRouter
 		else if (path.equals("/broker/subscriptions"))
 		{
 			return subscription_action;
+		}
+		else if (path.equals("/broker/miscinfo"))
+		{
+			return misc_action;
 		}
 		
 		return null;

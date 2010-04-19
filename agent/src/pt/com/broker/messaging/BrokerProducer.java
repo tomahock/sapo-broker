@@ -29,7 +29,7 @@ public class BrokerProducer
 	public boolean enqueueMessage(final NetPublish np, String messageSource)
 	{
 		StringBuilder sb_source = new StringBuilder();
-		sb_source.append("topic@");
+		sb_source.append("queue@");
 		sb_source.append(GcsInfo.getAgentName());
 		sb_source.append("://");
 		sb_source.append(np.getDestination());
