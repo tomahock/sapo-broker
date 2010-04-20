@@ -18,7 +18,7 @@ my %parameters_map = (
 );
 
 sub new {
-    my $class = shift @_;
+    my $class  = shift @_;
     my %params = @_;
 
     my $self = $class->SUPER::new(%params);
@@ -58,9 +58,9 @@ sub __write {
 
     use bytes;
 
-    my $select      = $self->{'__select'};
-    my $tot_writen  = 0;
-    my $tot_write   = length($payload);
+    my $select     = $self->{'__select'};
+    my $tot_writen = 0;
+    my $tot_write  = length($payload);
 
     while ( ( not defined($timeout) or $timeout > 0 ) and $tot_writen < $tot_write ) {
         my $start = time();
@@ -68,8 +68,8 @@ sub __write {
         if ($sock) {
             my $writen;
             {
-            local $SIG{'PIPE'} = 'IGNORE';
-            $writen = $sock->syswrite( $payload, $tot_write - $tot_writen, $tot_writen );
+                local $SIG{'PIPE'} = 'IGNORE';
+                $writen = $sock->syswrite( $payload, $tot_write - $tot_writen, $tot_writen );
             }
             my $delta = time() - $start;
             if ( not defined $writen ) {

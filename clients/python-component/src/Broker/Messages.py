@@ -26,15 +26,6 @@ class Message:
         id is supposed to be a unique id of the message and defaults to None meaning that the Broker server will generate one automatically.
 
         This object should be constructed to send an event notification to the Server and is returned by the Client object when a new event is received.
-
-        Notice regarding Unicode and all text fields (payload, destination, id, and correlationId):
-            All text fields may either be Unicode strings (preferably) or regular strings (byte arrays).
-            If these fields are Unicode strings, then their content is xml escaped, encoded into utf-8 bytes and sent through the network.
-            If the fields are regular strings they are only XML-escaped and apart from that are sent "ipis verbis". This can be problematic in case one wishes to sent raw binary information (no character semantics) because this stream might no be valid utf-8 and a decent XML browser will throw an error.
-
-        Bottom line:
-            If you don't use Unicode strings as input make sure you know what you are doing (utf-8 encode everything)
-            If you want to send binary data consider first encoding it to an ASCII string (base64 or uuencode) and then send these characters.
         """
 
         self.payload       = payload

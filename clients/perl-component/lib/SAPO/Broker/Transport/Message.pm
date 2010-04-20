@@ -18,10 +18,10 @@ sub new{
 }
 =cut
 
-sub serialize{
+sub serialize {
     my ($self) = @_;
 
-    return __header_from_meta($self->{'type'}, $self->{'version'}, length($self->{'payload'})).$self->{'payload'};
+    return __header_from_meta( $self->{'type'}, $self->{'version'}, length( $self->{'payload'} ) ) . $self->{'payload'};
 }
 
 #utility static method
@@ -30,9 +30,10 @@ sub __meta_from_header($) {
     return unpack( 'nnN', $data );
 }
 
-sub __header_from_meta{
+sub __header_from_meta {
+
     #my ($type, $version, $length) = @_;
-    return pack('nnN', @_);
+    return pack( 'nnN', @_ );
 }
 
 1;

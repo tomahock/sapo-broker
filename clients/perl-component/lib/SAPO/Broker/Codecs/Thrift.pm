@@ -185,10 +185,6 @@ sub serialize {
             #reset the hash iterator
             scalar keys(%__dispatch_serialize);
 
-            #XXX REMOVE ME (DEBUG)
-            my $payload = $transport->getBuffer();
-            use Data::Dumper;
-            print Dumper($self->__deserialize($payload));
             return SAPO::Broker::Transport::Message->new( type=>$ENCODING_TYPE, version=>1, payload =>  $payload);
         }
     }

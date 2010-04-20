@@ -1,5 +1,6 @@
 namespace java pt.com.broker.codec.thrift
 namespace csharp SapoBrokerClient.Encoding.Thrift.Messages
+namespace perl SAPO.Broker.Codecs.Autogen.Thrift
 
 
 enum DestinationType

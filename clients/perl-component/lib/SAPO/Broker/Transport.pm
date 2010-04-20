@@ -9,18 +9,19 @@ use warnings;
 
 class( 'mandatory' => [qw(codec)] );
 
-sub send{
-    my ($self, $message) = @_;
+sub send {
+    my ( $self, $message ) = @_;
 
     my $transport_message = $self->codec->serialize($message);
-    return $self->__write($transport_message->serialize());
+    return $self->__write( $transport_message->serialize() );
 }
 
-sub receive{
+sub receive {
     my ($self) = @_;
 
     #read the header
-    my ($type, $version, $length) = SAPO::Broker::Transport::Message::__meta_from_header($self->__read(8));
+    my ( $type, $version, $length ) = SAPO::Broker::Transport::Message::__meta_from_header( $self->__read(8) );
+
     #read the payload
     my $payload = $self->__read($length);
 

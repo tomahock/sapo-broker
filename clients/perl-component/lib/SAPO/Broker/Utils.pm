@@ -26,8 +26,8 @@ sub class {
     #XXX non reentrant
     $caller_pkg = caller(0);
 
-    my @mandatory = @{ $params{'mandatory'} || []};
-    my @optional  = @{ $params{'optional'} || [] };
+    my @mandatory = @{ $params{'mandatory'} || [] };
+    my @optional  = @{ $params{'optional'}  || [] };
 
     #aux function to create functions in the caller namespace
 
@@ -42,9 +42,9 @@ sub class {
         my %params;
         my $first_param = $params[0];
 
-        if(@params and UNIVERSAL::isa( $first_param, 'HASH' )){
+        if ( @params and UNIVERSAL::isa( $first_param, 'HASH' ) ) {
             %params = %$first_param;
-        }else{
+        } else {
             %params = @params;
         }
 

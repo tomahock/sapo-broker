@@ -15,7 +15,7 @@ _string2kind = {
     'VIRTUAL_QUEUE' : ttypes.DestinationType.VIRTUAL_QUEUE
 }
 
-#invert the dicitonary
+#invert the dictionary
 _kind2string = dict([ (_string2kind[k], k) for k in _string2kind ])
 
 def string2kind(skind):
