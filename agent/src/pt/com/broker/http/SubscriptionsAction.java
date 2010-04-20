@@ -76,7 +76,7 @@ public class SubscriptionsAction extends HttpAction
 
 			if (template != null)
 			{
-				String smessage = String.format(template, getCss(), agentName, getLocalTopicConsumers(), getLocalQueueConsumers(), getRemoteTopicConsumers(), getRemoteQueueConsumers());
+				String smessage = String.format(template, getCss(), agentName, getLocalQueueConsumers(), getRemoteQueueConsumers(), getLocalTopicConsumers(),  getRemoteTopicConsumers());
 				byte[] bmessage = smessage.getBytes("UTF-8");
 				response.setHeader("Pragma", "no-cache");
 				response.setHeader("Cache-Control", "no-cache");
