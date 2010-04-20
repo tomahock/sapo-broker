@@ -6,7 +6,7 @@ enum DestinationType
 {
 	TOPIC = 0;
 	QUEUE = 1;
-	VIRTUAL_QUEUE = 2;		
+	VIRTUAL_QUEUE = 2;
 }
 
 enum ActionType
@@ -30,9 +30,9 @@ struct Header
 }
 
 struct BrokerMessage
-{		
+{
 	1: optional string message_id;
-	2: binary payload;		
+	2: binary payload;
 	3: optional i64 expiration;
 	4: optional i64 timestamp;
 }
@@ -50,7 +50,7 @@ struct Poll
 	1: optional string action_id;
 	2: string destination;
 	3: i64 timeout;
-}	
+}
 
 struct Accepted
 {
@@ -112,7 +112,7 @@ struct Authentication
 	4: optional string user_id;
 	5: optional list<string> roles;		
 }
-	
+
 struct Action
 {				
 	1: optional Publish publish;
