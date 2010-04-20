@@ -11,7 +11,7 @@ use Carp qw(carp croak);
 use strict;
 use warnings;
 
-Readonly::Scalar my $ENCODING_TYPE => 2; #Thrift encoding type
+Readonly::Scalar my $ENCODING_TYPE => 2;    #Thrift encoding type
 
 Readonly::Hash my %_string2kind => (
     'TOPIC'         => SAPO::Broker::Codecs::Autogen::Thrift::DestinationType::TOPIC,
@@ -21,7 +21,7 @@ Readonly::Hash my %_string2kind => (
 
 Readonly::Hash my %_kind2string => reverse(%_string2kind);
 
-sub new{
+sub new {
     my ($class) = @_;
     return bless {}, $class;
 }
@@ -54,13 +54,21 @@ sub serialize_publish($$) {
 
     my $broker_message = SAPO::Broker::Codecs::Autogen::Thrift::BrokerMessage->new( $message->message() );
     my $publish        = SAPO::Broker::Codecs::Autogen::Thrift::Publish->new($message);
+
+    #XXX ugly kludge to workaround a broker bug that doesn't check whether the field is sent over the wire
+    for my $field (qw(timestamp expiration)) {
+        if ( not defined $broker_message->$field() ) {
+            $broker_message->$field(-1);
+        }
+    }
+
     $publish->message($broker_message);
     $publish->destination_type( _string2kind( $message->destination_type() ) );
 
     $action->action_type(SAPO::Broker::Codecs::Autogen::Thrift::ActionType::PUBLISH);
     $action->publish($publish);
     return $action;
-}
+} ## end sub serialize_publish($$)
 
 sub serialize_poll($$) {
     my ( $message, $action ) = @_;
@@ -161,7 +169,7 @@ my %__dispatch_deserialize = (
 );
 
 sub serialize {
-    my ($self, $message) = @_;
+    my ( $self, $message ) = @_;
 
     #try to find the serializer
     #could use ref but I wan't to make this robust to serialize subclasses of broker messages
@@ -169,6 +177,9 @@ sub serialize {
 
     while ( my ( $class, $serializer ) = each(%__dispatch_serialize) ) {
         if ( $message->isa($class) ) {
+            #reset the hash iterator
+            scalar keys(%__dispatch_serialize);
+
             my $action = SAPO::Broker::Codecs::Autogen::Thrift::Action->new();
 
             #populate action
@@ -181,20 +192,22 @@ sub serialize {
             my $transport = Thrift::MemoryBuffer->new();
             my $protocol  = Thrift::BinaryProtocol->new($transport);
             $atom->write($protocol);
+            my $payload = $transport->getBuffer();
 
-            #reset the hash iterator
-            scalar keys(%__dispatch_serialize);
-
-            return SAPO::Broker::Transport::Message->new( type=>$ENCODING_TYPE, version=>1, payload =>  $payload);
-        }
-    }
+            return SAPO::Broker::Transport::Message->new(
+                type    => $ENCODING_TYPE,
+                version => 1,
+                payload => $payload
+            );
+        } ## end if ( $message->isa($class...
+    } ## end while ( my ( $class, $serializer...
 
     croak("Can't serialize $message");
     return;
-} ## end sub serialize($)
+} ## end sub serialize
 
-sub __deserialize{
-    my ($self, $payload) = @_;
+sub __deserialize {
+    my ( $self, $payload ) = @_;
 
     my $atom = SAPO::Broker::Codecs::Autogen::Thrift::Atom->new();
 
@@ -207,9 +220,9 @@ sub __deserialize{
 }
 
 sub deserialize {
-    my ($self, $payload) = @_;
+    my ( $self, $payload ) = @_;
 
-    my $atom = $self->__deserialize($payload);
+    my $atom   = $self->__deserialize($payload);
     my $action = $atom->action();
 
     my $deserialize = $__dispatch_deserialize{ $action->action_type() };
@@ -219,6 +232,6 @@ sub deserialize {
         croak( "Unknown action_type " . $action->action_type() . ". Can't deserialize" );
         return;
     }
-} ## end sub deserialize($)
+}
 
 1;
