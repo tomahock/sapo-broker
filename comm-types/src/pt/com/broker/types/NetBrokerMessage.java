@@ -112,4 +112,13 @@ public class NetBrokerMessage
 		}
 		headers.put(header, value);
 	}
+	
+	public void addAllHeaders(Map<String, String> headers)
+	{
+		if(this.headers == null)
+		{
+			this.headers = new HashMap<String, String>();
+		}
+		this.headers.putAll(headers);
+	}
 }

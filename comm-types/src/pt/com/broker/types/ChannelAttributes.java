@@ -17,6 +17,10 @@ public class ChannelAttributes
 
 	public static void set(String channelId, String name, Object value)
 	{
+		if(channelId == null)
+		{
+			return;
+		}
 		Map<String, Object> attribs = PROPS.get(channelId);
 
 		if (attribs == null)
@@ -30,6 +34,10 @@ public class ChannelAttributes
 
 	public static Object get(String channelId, String name)
 	{
+		if(channelId == null)
+		{
+			return null;
+		}
 		Map<String, Object> attribs = PROPS.get(channelId);
 		if (attribs == null)
 		{
@@ -64,6 +72,10 @@ public class ChannelAttributes
 	public static String getChannelId(Channel channel)
 	{
 		InetSocketAddress remoteAddress = (InetSocketAddress)channel.getRemoteAddress();
+		if(remoteAddress == null)
+		{
+			return null;
+		}
 		String channelId = remoteAddress.toString();
 		return channelId;
 	}
