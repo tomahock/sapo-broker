@@ -1,0 +1,277 @@
+[BuiltinFunctions::ProhibitSleepViaSelect]
+add_themes = sapo_broker
+
+[BuiltinFunctions::ProhibitStringyEval]
+add_themes = sapo_broker
+
+[BuiltinFunctions::ProhibitStringySplit]
+add_themes = sapo_broker
+
+[BuiltinFunctions::ProhibitVoidGrep]
+add_themes = sapo_broker
+
+[BuiltinFunctions::ProhibitVoidMap]
+add_themes = sapo_broker
+
+[BuiltinFunctions::RequireBlockGrep]
+add_themes = sapo_broker
+
+[BuiltinFunctions::RequireBlockMap]
+add_themes = sapo_broker
+
+[BuiltinFunctions::RequireGlobFunction]
+add_themes = sapo_broker
+
+[ClassHierarchies::ProhibitOneArgBless]
+add_themes = sapo_broker
+
+[CodeLayout::ProhibitHardTabs]
+add_themes = sapo_broker
+allow_leading_tabs = 0
+
+#This makes no sense
+#[CodeLayout::ProhibitQuotedWordLists]
+#add_themes = sapo_broker
+#min_elements = 4
+
+[CodeLayout::ProhibitTrailingWhitespace]
+add_themes = sapo_broker
+
+[CodeLayout::RequireConsistentNewlines]
+add_themes = sapo_broker
+
+[CodeLayout::RequireTidyCode]
+add_themes = sapo_broker
+perltidyrc = QA/perltidy_config
+
+[ControlStructures::ProhibitCascadingIfElse]
+add_themes = sapo_broker
+max_elsif = 5
+
+#[ControlStructures::ProhibitCStyleForLoops]
+#add_themes = sapo_broker
+
+[ControlStructures::ProhibitDeepNests]
+add_themes = sapo_broker
+
+[ControlStructures::ProhibitLabelsWithSpecialBlockNames]
+add_themes = sapo_broker
+
+[ControlStructures::ProhibitMutatingListFunctions]
+add_themes = sapo_broker
+
+[ControlStructures::ProhibitPostfixControls]
+add_themes = sapo_broker
+allow = if
+
+[ControlStructures::ProhibitUnlessBlocks]
+add_themes = sapo_broker
+
+[ControlStructures::ProhibitUntilBlocks]
+add_themes = sapo_broker
+
+[ControlStructures::ProhibitUnreachableCode]
+add_themes = sapo_broker
+
+[InputOutput::ProhibitBacktickOperators]
+add_themes = sapo_broker
+
+[InputOutput::ProhibitBarewordFileHandles]
+add_themes = sapo_broker
+
+[InputOutput::ProhibitExplicitStdin]
+add_themes = sapo_broker
+
+[InputOutput::ProhibitInteractiveTest]
+add_themes = sapo_broker
+
+[InputOutput::ProhibitJoinedReadline]
+add_themes = sapo_broker
+
+[InputOutput::ProhibitOneArgSelect]
+add_themes = sapo_broker
+
+[InputOutput::ProhibitReadlineInForLoop]
+add_themes = sapo_broker
+
+[InputOutput::RequireCheckedOpen]
+add_themes = sapo_broker
+
+[Miscellanea::ProhibitFormats]
+add_themes = sapo_broker
+
+[Modules::ProhibitAutomaticExportation]
+add_themes = sapo_broker
+
+[Modules::ProhibitEvilModules]
+add_themes = sapo_broker
+
+[Modules::ProhibitExcessMainComplexity]
+add_themes = sapo_broker
+max_mccabe = 30
+
+#[Modules::ProhibitMultiplePackages]
+#add_themes = sapo_broker
+
+[Modules::RequireEndWithOne]
+add_themes = sapo_broker
+
+[Modules::RequireExplicitPackage]
+add_themes = sapo_broker
+
+[Modules::RequireFilenameMatchesPackage]
+add_themes = sapo_broker
+
+[NamingConventions::ProhibitMixedCaseSubs]
+add_themes = sapo_broker
+
+[NamingConventions::ProhibitMixedCaseVars]
+add_themes = sapo_broker
+
+[RegularExpressions::ProhibitCaptureWithoutTest]
+add_themes = sapo_broker
+
+[RegularExpressions::ProhibitComplexRegexes]
+add_themes = sapo_broker
+max_characters = 50
+
+# To check later
+[RegularExpressions::ProhibitFixedStringMatches]
+add_themes = sapo_broker
+
+[RegularExpressions::ProhibitSingleCharAlternation]
+add_themes = sapo_broker
+
+[Subroutines::ProhibitAmpersandSigils]
+add_themes = sapo_broker
+
+[Subroutines::ProhibitBuiltinHomonyms]
+add_themes = sapo_broker
+
+[Subroutines::ProhibitExcessComplexity]
+add_themes = sapo_broker
+
+[Subroutines::ProhibitExplicitReturnUndef]
+add_themes = sapo_broker
+
+[Subroutines::ProhibitNestedSubs]
+add_themes = sapo_broker
+
+[Subroutines::ProtectPrivateSubs]
+add_themes = sapo_broker
+
+[Subroutines::RequireArgUnpacking]
+short_subroutine_statements = 5
+add_themes = sapo_broker
+
+[Subroutines::RequireFinalReturn]
+add_themes = sapo_broker
+
+[TestingAndDebugging::ProhibitNoStrict]
+add_themes = sapo_broker
+
+[TestingAndDebugging::ProhibitNoWarnings]
+add_themes = sapo_broker
+
+[TestingAndDebugging::ProhibitProlongedStrictureOverride]
+add_themes = sapo_broker
+statements = 10
+
+[TestingAndDebugging::RequireUseStrict]
+add_themes = sapo_broker
+
+[TestingAndDebugging::RequireUseWarnings]
+add_themes = sapo_broker
+
+#[ValuesAndExpressions::ProhibitCommaSeparatedStatements]
+#add_themes = sapo_broker
+
+#[ValuesAndExpressions::ProhibitConstantPragma]
+#add_themes = sapo_broker
+
+[ValuesAndExpressions::ProhibitImplicitNewlines]
+add_themes = sapo_broker
+
+[ValuesAndExpressions::ProhibitLeadingZeros]
+add_themes = sapo_broker
+
+[ValuesAndExpressions::ProhibitLongChainsOfMethodCalls]
+add_themes = sapo_broker
+max_chain_length = 3
+
+[ValuesAndExpressions::ProhibitMagicNumbers]
+add_themes = sapo_broker
+allowed_values = -1 0 1 2
+
+[ValuesAndExpressions::ProhibitMismatchedOperators]
+add_themes = sapo_broker
+
+[ValuesAndExpressions::ProhibitMixedBooleanOperators]
+add_themes = sapo_broker
+
+[Variables::ProhibitConditionalDeclarations]
+add_themes = sapo_broker
+
+[Variables::ProhibitMatchVars]
+add_themes = sapo_broker
+
+[Variables::ProhibitPackageVars]
+add_themes = sapo_broker
+
+[Variables::ProhibitUnusedVariables]
+add_themes = sapo_broker
+
+[Variables::ProtectPrivateVars]
+add_themes = sapo_broker
+
+[Variables::RequireInitializationForLocalVars]
+add_themes = sapo_broker
+
+[Variables::RequireLexicalLoopIterators]
+add_themes = sapo_broker
+
+[Variables::RequireLocalizedPunctuationVars]
+add_themes = sapo_broker
+
+[Variables::RequireNegativeIndices]
+add_themes = sapo_broker
+
+
+#############################
+# Perl::Critic::Policy::Bangs
+#############################
+
+[Bangs::ProhibitNumberedNames]
+add_themes = sapo_broker
+
+[Bangs::ProhibitRefProtoOrProto]
+add_themes = sapo_broker
+
+[Bangs::ProhibitUselessRegexModifiers]
+add_themes = sapo_broker
+
+
+############################
+# Perl::Critic::StricterSubs
+############################
+
+[Modules::RequireExplicitInclusion]
+add_themes = sapo_broker
+
+[Subroutines::ProhibitCallsToUndeclaredSubs]
+add_themes = sapo_broker
+exempt_subs = Data::Dumper::Dumper
+
+[Subroutines::ProhibitExportingUndeclaredSubs]
+add_themes = sapo_broker
+
+[Subroutines::ProhibitQualifiedSubDeclarations]
+add_themes = sapo_broker
+
+
+##################
+# Perl-Critic-Tics
+##################
+
+[Tics::ProhibitManyArrows]
+add_themes = sapo_broker

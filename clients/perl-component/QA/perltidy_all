@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+#get the execution path
+use FindBin qw($Bin);
+use File::Spec::Functions;
+
+use strict;
+
+my $conf     = catfile( $Bin, 'perltidy_config' );
+my $perltidy = catfile( $Bin, 'perltidy' );
+
+sub tidy_dir {
+    my ( $dir, $rx ) = @_;
+
+    system "find $dir -iname '$rx' -print0 | xargs -0 $perltidy 2>/dev/null";
+}
+
+tidy_dir( catfile( $Bin, '..', 'lib' ), '*.pm' );
+tidy_dir( catfile( $Bin, '..', 'QA' ), '*.pl' );
