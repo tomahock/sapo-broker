@@ -1,11 +1,11 @@
 package SAPO::Broker;
 
-use 5.008008;
 use strict;
 use warnings;
 
 1;
 __END__
+
 =head1 NAME
 
 SAPO::Broker - Perl extension for using SAPO Broker

@@ -1376,7 +1376,7 @@ sub new {
         if ( defined $vals->{action_type} ) {
             $self->{action_type} = $vals->{action_type};
         }
-    } ## end if ( UNIVERSAL::isa( $vals...
+    } ## end if ( UNIVERSAL::isa( $vals...))
     return bless( $self, $classname );
 } ## end sub new
 

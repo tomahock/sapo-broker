@@ -7,13 +7,15 @@ use Carp qw(croak);
 use strict;
 use warnings;
 
-class( 'mandatory' => [qw(codec)] );
+sub new {
+    my ($pack) = @_;
+    return bless {}, $pack;
+}
 
 sub send {
     my ( $self, $message ) = @_;
 
-    my $transport_message = $self->codec->serialize($message);
-    return $self->__write( $transport_message->serialize() );
+    return $self->__write( $message->serialize() );
 }
 
 sub receive {
@@ -25,9 +27,11 @@ sub receive {
     #read the payload
     my $payload = $self->__read($length);
 
-    #now do the message parsing and "cast" into a common object for the messages
-
-    return $self->codec->deserialize($payload);
+    return SAPO::Broker::Transport::Message->new( {
+            'type'    => $type,
+            'version' => $version,
+            'payload' => $payload
+    } );
 }
 
 1;

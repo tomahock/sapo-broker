@@ -177,6 +177,7 @@ sub serialize {
 
     while ( my ( $class, $serializer ) = each(%__dispatch_serialize) ) {
         if ( $message->isa($class) ) {
+
             #reset the hash iterator
             scalar keys(%__dispatch_serialize);
 
@@ -199,8 +200,8 @@ sub serialize {
                 version => 1,
                 payload => $payload
             );
-        } ## end if ( $message->isa($class...
-    } ## end while ( my ( $class, $serializer...
+        } ## end if ( $message->isa($class...))
+    } ## end while ( my ( $class, $serializer...))
 
     croak("Can't serialize $message");
     return;

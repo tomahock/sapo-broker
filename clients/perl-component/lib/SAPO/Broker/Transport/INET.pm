@@ -94,7 +94,7 @@ sub __write {
             #timeout, raise exception
             die "Write timeout. $!";
         }
-    } ## end while ( ( not defined($timeout...
+    } ## end while ( ( not defined($timeout...)))
     if ( $tot_writen == $tot_write ) {
         return $tot_writen;
     } else {
@@ -138,7 +138,7 @@ sub __read {
             #timeout, raise exception
             die "Read timeout. $!";
         }
-    } ## end while ( ( not defined($timeout...
+    } ## end while ( ( not defined($timeout...)))
     if ( 0 == $len ) {
         return $buf;
     } else {

@@ -10,14 +10,6 @@ use bytes;
 
 class( 'mandatory' => [qw(payload type version)] );
 
-=cut
-sub new{
-    my ($class, %data) = @_;
-
-    return bless \%data, $class;
-}
-=cut
-
 sub serialize {
     my ($self) = @_;
 
