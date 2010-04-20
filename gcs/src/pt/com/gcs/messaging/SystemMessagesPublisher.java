@@ -69,7 +69,9 @@ public class SystemMessagesPublisher
 						}
 						else
 						{
-							log.warn(String.format("System message with id: '%s' could not be sent.", tm.message.getAction().getNotificationMessage().getMessage().getMessageId()));
+							log.warn(String.format("System message with id: '%s' could not be sent. Closing connection.", tm.message.getAction().getNotificationMessage().getMessage().getMessageId(), tm.session.getRemoteAddress().toString()));
+							MiscStats.newSystemMessageFailed();
+							tm.session.close();
 						}
 						tm.timeout = System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL;
 					}
@@ -128,9 +130,7 @@ public class SystemMessagesPublisher
 				pending_messages.remove(msgId);
 			}
 		}
-	}
-	
-	
+	}	
 
 	public static void messageAcknowledged(String messageId)
 	{
