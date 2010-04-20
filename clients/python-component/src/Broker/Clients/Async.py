@@ -172,6 +172,9 @@ class Client(threading.Thread):
         raise NotImplementedError
         pass
 
+    def handle_fault(self, fault):
+        self.__log.error('Broker Fault: %r', fault)
+
     def __dispatch_notification(self, msg):
         try:
             with self.__callback_lock:
@@ -199,7 +202,8 @@ class Client(threading.Thread):
                 Notification: self.__dispatch_notification,
                 Fault:        self.__dispatch_fault,
                 Pong:         self.__dispatch_pong,
-                Accepted:     self.__dispatch_accepted
+                Accepted:     self.__dispatch_accepted,
+                Fault:        self.handle_fault
             }[msg.__class__](msg)
 
         except KeyError:
