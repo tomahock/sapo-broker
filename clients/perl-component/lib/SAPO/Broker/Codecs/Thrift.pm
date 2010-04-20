@@ -91,7 +91,7 @@ sub serialize_acknowledge($$) {
     my $acknowledge = SAPO::Broker::Codecs::Autogen::Thrift::Acknowledge->new($message);
 
     $action->action_type(SAPO::Broker::Codecs::Autogen::Thrift::ActionType::ACKNOWLEDGE);
-    $action->acknowledge($acknowledge);
+    $action->ack_message($acknowledge);
     return $action;
 }
 
@@ -123,7 +123,7 @@ sub serialize_unsubscribe($$) {
 
 sub parse_notification($) {
     my ($action) = @_;
-    my $notification = SAPO::Broker::Messages::Notification->( $action->notification() );
+    my $notification = SAPO::Broker::Messages::Notification->new( $action->notification() );
 
     #now cast the actual message containing the payload
     $notification->message( SAPO::Broker::Messages::Message->new( $notification->message() ) );
