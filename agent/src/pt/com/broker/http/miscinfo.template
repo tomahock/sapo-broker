@@ -1,0 +1,14 @@
+<html>
+      <head>
+        <title>Sapo-Broker Misc Information</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  	<style type="text/css">
+  	%s
+  	</style>
+      </head>
+      <body>
+  	<h1>Agent: %s</h1>
+  	<div class="infoLabel"><span class="labelName">Version:</span><span class="labelBody">%s</span></div>
+  	<div class="infoLabel"><span class="labelName">Pending system ack:</span><span class="labelBody">%s</span></div>
+      </body>
+</html>

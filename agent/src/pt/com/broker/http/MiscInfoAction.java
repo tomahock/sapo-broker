@@ -1,8 +1,11 @@
 package pt.com.broker.http;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
+import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
+import org.caudexorigo.io.IOUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -28,16 +31,19 @@ public class MiscInfoAction extends HttpAction
 {
 	private static final Logger log = LoggerFactory.getLogger(MiscInfoAction.class);
 
-	private static final String templateLocation = "./templates/miscinfo.template";
+	private static final String templateLocation = "/pt/com/broker/http/miscinfo.template";
 
 	private static String template;
 
 	public MiscInfoAction()
 	{
-		template = SubscriptionsAction.readFile(templateLocation);
-		if (template == null)
+		try
 		{
-			log.error("Failed to read template.");
+			template = IOUtils.toString(MiscInfoAction.class.getResourceAsStream(templateLocation));
+		}
+		catch (IOException e)
+		{
+			Shutdown.now(e);
 		}
 	}
 

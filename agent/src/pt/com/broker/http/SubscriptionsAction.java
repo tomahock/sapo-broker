@@ -2,11 +2,14 @@ package pt.com.broker.http;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
+import org.caudexorigo.io.IOUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -37,20 +40,22 @@ public class SubscriptionsAction extends HttpAction
 
 	private static final String NO_SUBSCRIPTIONS = "<p>No subscriptions</p>";
 
-	private static final String templateLocation = "./templates/subscriptions.template";
-	private static final String cssLocation = "./templates/style.css";
+	private static final String templateLocation = "/pt/com/broker/http/subscriptions.template";
+	private static final String cssLocation = "/pt/com/broker/http/style.css";
 
 	private static String template = null;
 	private static String cssTemplate = null;
 
 	static
 	{
-		template = readFile(templateLocation);
-		cssTemplate = readFile(cssLocation);
-
-		if ((template == null) || (cssTemplate == null))
+		try
 		{
-			log.error("Failed to read templates");
+			template = IOUtils.toString(MiscInfoAction.class.getResourceAsStream(templateLocation));
+			cssTemplate = IOUtils.toString(MiscInfoAction.class.getResourceAsStream(cssLocation));
+		}
+		catch (IOException e)
+		{
+			Shutdown.now(e);
 		}
 	}
 
@@ -222,26 +227,5 @@ public class SubscriptionsAction extends HttpAction
 	public static String getCss()
 	{
 		return cssTemplate;
-	}
-
-	public static String readFile(String fileLocation)
-	{
-		try
-		{
-			StringBuilder sb = new StringBuilder();
-			BufferedReader reader = new BufferedReader(new FileReader(fileLocation));
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				sb.append(line);
-				sb.append('\n');
-			}
-			return sb.toString();
-		}
-		catch (Throwable t)
-		{
-			log.error(String.format("Failed to read file '%s'.", fileLocation), t);
-		}
-		return null;
 	}
 }

@@ -150,10 +150,6 @@
 		<copy todir="${target-dir}/conf">
 			<fileset dir="conf" />
 		</copy>
-		
-		<copy todir="${target-dir}/templates">
-			<fileset dir="templates" />
-		</copy>
 
 		<copy todir="${target-dir}/license">
 			<fileset dir="../license" />
