@@ -27,6 +27,7 @@ import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
@@ -144,6 +145,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				log.info(lmsg);
 			}
 
+
 			if (mtype.equals("SYSTEM_TOPIC"))
 			{
 				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
@@ -211,7 +213,15 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		NetMessage nmsg = new NetMessage(naction);
 		nmsg.getHeaders().put("TYPE", "SYSTEM_ACK");
 
-		channel.write(nmsg);
+		if(channel.isWritable())
+		{
+			channel.write(nmsg);
+		}
+		else
+		{
+			log.warn(String.format("Can ack system message because the channel is not writable. Message id '%s' could not be sent to '%s'. Closing connection.", messageId, channel.getRemoteAddress().toString()));
+			channel.close();
+		}
 	}
 
 	@Override

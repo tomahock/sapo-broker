@@ -67,8 +67,6 @@ public class BrokerConsumer
 					
 					String result = sb.toString();
 					
-					log.info('\n' + result);
-					
 					InternalPublisher.send(String.format("%s#%s#", topicSubscriptionTopic, GcsInfo.getAgentName()), result);
 					
 				}
@@ -115,8 +113,7 @@ public class BrokerConsumer
 					sb.append("\n</qinfo>");
 					
 					String result = sb.toString();
-					log.info('\n' + result);
-					
+
 					InternalPublisher.send(String.format("%s#%s#", queueSubscriptionTopic, GcsInfo.getAgentName()), result);
 				}
 				catch (Throwable t)

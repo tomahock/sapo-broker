@@ -36,8 +36,8 @@ public class RemoteListener implements MessageListener
 
 	private boolean showResumedDeliveryMessage;
 	private boolean showSuspendedDeliveryMessage;
-	private long startDeliverAfter;
-
+	volatile private long startDeliverAfter;
+	
 	private long droppedMessages;
 
 	public RemoteListener(ListenerChannel lchannel, String subscriptionKey, DestinationType sourceType, DestinationType targetType)
@@ -173,8 +173,8 @@ public class RemoteListener implements MessageListener
 				{
 					ChannelFuture future = lchannel.write(nmsg);
 					final long writeStartTime = System.nanoTime();
-					startDeliverAfter = writeStartTime + 2500;
-
+					startDeliverAfter = writeStartTime + 1000000; // 1 millisecond
+					
 					future.addListener(new ChannelFutureListener()
 					{
 						@Override
@@ -188,14 +188,9 @@ public class RemoteListener implements MessageListener
 							}
 						}
 					});
-				}
-				else
-				{
-					showResumedDeliveryMessage = true;
-
+					
 					if (showSuspendedDeliveryMessage)
 					{
-
 						if (targetType == DestinationType.TOPIC)
 						{
 							log.info("Started discarding messages for topic '{}' and session '{}'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString());
@@ -212,6 +207,10 @@ public class RemoteListener implements MessageListener
 					{
 						droppedMessages++;
 					}
+				}
+				else
+				{
+					return failed;
 				}
 			}
 

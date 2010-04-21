@@ -51,7 +51,6 @@ class QueueCounter implements Runnable
 		sb.append("\n</qinfo>");
 		
 		String result = sb.toString();
-		log.info('\n'+result);
 		InternalPublisher.send(String.format("%s#%s#", queueSubscriptionTopic, GcsInfo.getAgentName()), result);		
 	}
 }

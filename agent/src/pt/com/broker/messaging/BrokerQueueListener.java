@@ -31,7 +31,7 @@ public class BrokerQueueListener extends BrokerListener
 	private boolean showResumedDeliveryMessage;
 	private boolean showSuspendedDeliveryMessage;
 
-	private long startDeliverAfter;
+	private volatile long startDeliverAfter;
 
 	public BrokerQueueListener(ListenerChannel lchannel, String destinationName, boolean ackRequired)
 	{
@@ -84,7 +84,7 @@ public class BrokerQueueListener extends BrokerListener
 				{
 					ChannelFuture future = lchannel.write(response);
 					final long writeStartTime = System.nanoTime();
-					startDeliverAfter = writeStartTime + 1000000;
+					startDeliverAfter = writeStartTime + 1000000; // 1 millisecond
 
 					showResumedDeliveryMessage = true;
 
