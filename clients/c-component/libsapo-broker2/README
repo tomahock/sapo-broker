@@ -1,6 +1,5 @@
 New libsapo-broker2, a C client library for sapo-broker.
 
-THIS IS A WORK IN PROGRESS
 
 Tentative Features:
  - Support several comunication protocols by design.
@@ -31,21 +30,20 @@ WHAT WORKS NOW:
             after that, it tries diferent server.
 
 TODO:
-    - Handle PONG/FAULT/* messages from Broker.
-    - broker_send must support: timestamp, message_id, expiration
-    - Debian package
-    - performance tests.
-    - valgrind runs.
+    - thread safe
+    - POLL support
+    - Handle disconnects better:
+        - on disconnect, re-subscribe current topics in (some other) accessible broker.
+    - Handle to user PONG/FAULT/* messages from Broker.
     - Better support for multiple servers:
         - balance enqueues or publishes through ALL servers
         - subscribe to topics/queues in ALL servers.
-    - POLL support
     - support adicional features:
         - priorities?
         - expiration times
         - action_id
     - support assyncronous API with callbacks.
-    -comunication protocols:
+    - comunication protocols:
         - THRIFT (patches are welcome)
         - SOAP (patches are welcome)
 
