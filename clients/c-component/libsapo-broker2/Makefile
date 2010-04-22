@@ -13,6 +13,8 @@ DEBUG_TARGET = $(REL_NAME)d.$(SO_LIB).$(REL_VER)
 TEST_TARGETS := test_consume test_publish test_enqueue
 TEST_CXX := test_protobuf
 
+# set /usr prefix if none defined
+PREFIX ?= /usr
 
 # Default settings for gcc
 CC      := gcc
@@ -77,6 +79,20 @@ SRC_OBJS_DEBUG := $(subst $(SOURCE_DIR),$(DEBUG_DIR),$(SRC_DEPS_DEBUG))
 CXX_DEPS_DEBUG := $(CXX_FILES:.cc=.o)
 CXX_OBJS_DEBUG := $(subst $(CXX_DIR),$(DEBUG_DIR),$(CXX_DEPS_DEBUG))
 
+all: release
+
+install: release Makefile
+	mkdir -p $(PREFIX)/lib
+	mkdir -p $(PREFIX)/include
+	chmod 755 $(PREFIX)
+	chmod 755 $(PREFIX)/lib
+	chmod 755 $(PREFIX)/include
+	cp $(RELEASE_TARGET) $(PREFIX)/lib/$(RELEASE_TARGET)
+	chmod 644 $(PREFIX)/lib/$(RELEASE_TARGET)
+	ln -s $(RELEASE_TARGET) $(PREFIX)/lib/$(REL_NAME).so.2
+# FIXME: this is ugly
+	cp $(SOURCE_DIR)/sapo_broker.h $(PREFIX)/include/libsapo-broker2.h
+	chmod 644 $(PREFIX)/include/libsapo-broker2.h
 
 # RELEASE RULES
 release: base_deps $(RELEASE_TARGET)
@@ -100,13 +116,13 @@ $(DEBUG_TARGET): $(SRC_OBJS_DEBUG) $(CXX_OBJS_DEBUG)
 # TEST RULES
 tests: base_deps debug $(TEST_TARGETS) test_protobuf
 
-test_protobuf: base_deps debug test/test_protobuf.cc test/broker.pb.cc 
+test_protobuf: base_deps debug test/test_protobuf.cc test/broker.pb.cc
 	$(CXX) $(CFLAGS) $(OPTS)  $(TEST_LDFLAGS) -Itest/  test/test_protobuf.cc test/broker.pb.cc -pthread -lprotobuf -lz -ggdb  $(DEBUG_TARGET) -o $@
-
 
 $(TEST_TARGETS): %: $(TEST_DIR)/%.c $(SRC_OBJS_DEBUG) $(INCLUDE_FILES) debug Makefile
 	$(CC) $(CFLAGS) $(OPTS) -I$(INCLUDE_DIR) $(TEST_LDFLAGS) $(DEBUG_TARGET) $< -o $@
 
+# for dbg & test builds
 $(SRC_OBJS_DEBUG): $(DEBUG_DIR)/%.o: $(SOURCE_DIR)/%.c $(INCLUDE_FILES) Makefile
 	$(CC) $(CFLAGS) $(DEBUG) -c -o $@ $< -I$(INCLUDE_DIR)
 
@@ -114,7 +130,7 @@ $(CXX_OBJS_DEBUG): $(DEBUG_DIR)/%.o: $(SOURCE_DIR)/%.cc $(INCLUDE_FILES) Makefil
 	$(CXX) $(CFLAGS) $(DEBUG) -c -o $@ $< -I$(INCLUDE_DIR)
 
 base_deps: $(CXX_DIR)/broker.pb.cc
-	mkdir  -p $(RELEASE_DIR) $(DEBUG_DIR)
+	@mkdir  -p $(RELEASE_DIR) $(DEBUG_DIR)
 
 $(CXX_DIR)/broker.pb.cc: $(SOURCE_DIR)/broker.proto
 	protoc -I$(SOURCE_DIR) $(SOURCE_DIR)/broker.proto --cpp_out=$(CXX_DIR)
@@ -128,7 +144,6 @@ clean: FORCE
 	rm -f *~ $(SOURCE_DIR)/*~ $(CXX_DIR)/*~ $(SI_DIR)/*~ $(INCLUDE_DIR)/*~ gmon.out
 	rm -f core $(CXX_DIR)/broker.pb.cc $(CXX_DIR)/broker.pb.h
 
-all: release debug
 
 rebuild: clean all
 

@@ -60,4 +60,4 @@ echo '  libc-dev   libprotobuf-dev  libprotobuf3'
 echo
 echo
 
-make_libsapo-broker
+make_libsapo-broker2
