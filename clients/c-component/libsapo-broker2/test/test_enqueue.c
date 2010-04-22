@@ -10,7 +10,7 @@
 #include <netdb.h>
 #include <errno.h>
 
-#include "sapo_broker.h"
+#include "libsapo-broker2.h"
 
 #define HOST        "127.0.0.1"
 
