@@ -72,7 +72,6 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append("\n</mqinfo>");
 		
 		String result = sb.toString();
-		log.info('\n' + result);
 
 		NetPublish np = new NetPublish(String.format("%s#%s#", topic, GcsInfo.getAgentName()), DestinationType.TOPIC, new NetBrokerMessage(result));
 		
@@ -105,8 +104,7 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append("\n</mqinfo>");
 
 		String result = sb.toString();
-		log.info('\n' + result);
-
+		
 		NetPublish np = new NetPublish(String.format("%s#%s#", topic, GcsInfo.getAgentName()), DestinationType.TOPIC, new NetBrokerMessage(result));
 		
 		Gcs.publish(np);
@@ -131,7 +129,6 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append("\n</mqinfo>");
 
 		String result = sb.toString();
-		log.info('\n' + result);
 		
 		NetPublish np = new NetPublish(String.format("%s#%s#", topic, GcsInfo.getAgentName()), DestinationType.TOPIC, new NetBrokerMessage(result));
 		
@@ -167,7 +164,6 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append("\n</mqinfo>");
 		
 		String result = sb.toString();
-		log.info('\n' + result);
 
 		NetPublish np = new NetPublish(String.format("%s#%s#", topic, GcsInfo.getAgentName()), DestinationType.TOPIC, new NetBrokerMessage(result));
 		
@@ -205,11 +201,12 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append("\n</mqinfo>");
 
 		String result = sb.toString();
-		log.info('\n' + result);
 		
 		NetPublish np = new NetPublish(String.format("%s#%s#", topic, GcsInfo.getAgentName()), DestinationType.TOPIC, new NetBrokerMessage(result));
 		
 		Gcs.publish(np);	
+		
+		log.info("Pending system messages: '{}'.", SystemMessagesPublisher.getPendingMessagesCount()); 
 	}
 
 }
