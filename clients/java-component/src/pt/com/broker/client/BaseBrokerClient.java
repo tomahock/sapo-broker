@@ -20,6 +20,7 @@ import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.utils.CircularContainer;
+import pt.com.broker.types.Headers;
 import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
@@ -338,7 +339,6 @@ public abstract class BaseBrokerClient
 			{
 				getNetHandler().sendMessage(_syncSubscriptions.get(queueName));
 			}
-
 		}
 	}
 
@@ -512,19 +512,21 @@ public abstract class BaseBrokerClient
 			}
 		}
 	}
-
+	
 	/**
 	 * Obtain a queue message synchronously.
 	 * 
 	 * @param queueName
 	 *            Name of the queue from where to retrieve a message
 	 * @param timeout
-	 *            Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown. Zero means that the client wants to wait for ever. A negative value means that the client dosen't want to wait if there are no messages is local agent's queue.
+	 *            Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown. Zero means that the client wants to wait forever. A negative value means that the client dosen't want to wait if there are no messages is local agent's queue.
+	 * @param reserveTime
+	 *            Message reserve time, in milliseconds. Polled messages are reserved, by default, for 15 minutes. If clients prefer a different reserve time , bigger or small, they can specify it.
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
 	 * @return A notification containing the queue message. Or null if timeout was a negative value and there was no message in local agent's queue.
 	 */
-	public NetNotification poll(String queueName, long timeout, AcceptRequest acceptRequest) throws Throwable
+	public NetNotification poll(String queueName, long timeout, long reserveTime, AcceptRequest acceptRequest) throws Throwable
 	{
 		if (StringUtils.isBlank(queueName))
 			throw new IllegalArgumentException("Mal-formed Poll request. queueName is blank.");
@@ -546,6 +548,11 @@ public abstract class BaseBrokerClient
 			pendingPolls.put(queueName, synQueue);
 		}
 
+		if(reserveTime > 0)
+		{
+			message.getHeaders().put(Headers.RESERVE_TIME, reserveTime+"");
+		}
+		
 		if (acceptRequest != null)
 		{
 			poll.setActionId(acceptRequest.getActionId());
@@ -580,7 +587,36 @@ public abstract class BaseBrokerClient
 
 		return m;
 	}
+	
 
+	/**
+	 * Obtain a queue message synchronously.
+	 * 
+	 * @param queueName
+	 *            Name of the queue from where to retrieve a message
+	 * @param timeout
+	 *            Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown. Zero means that the client wants to wait forever. A negative value means that the client dosen't want to wait if there are no messages is local agent's queue.
+	 * @param acceptRequest
+	 *            An AcceptRequest object used handling Accept messages.
+	 * @return A notification containing the queue message. Or null if timeout was a negative value and there was no message in local agent's queue.
+	 */
+	public NetNotification poll(String queueName, long timeout, AcceptRequest acceptRequest) throws Throwable
+	{
+		return poll(queueName, timeout, -1, acceptRequest);
+	}
+
+	/**
+	 * Obtain a queue message synchronously, waiting forever.
+	 * 
+	 * @param queueName
+	 *            Name of the queue from where to retrieve a message
+	 * @return A notification containing the queue message.
+	 */
+	public NetNotification poll(String queueName) throws Throwable
+	{
+		return poll(queueName, 0, null);
+	}
+	
 	/**
 	 * Offer a message that may have a synchronous consumer waiting.
 	 * 
@@ -600,18 +636,6 @@ public abstract class BaseBrokerClient
 			}
 			return false;
 		}
-	}
-
-	/**
-	 * Obtain a queue message synchronously, waiting forever.
-	 * 
-	 * @param queueName
-	 *            Name of the queue from where to retrieve a message
-	 * @return A notification containing the queue message.
-	 */
-	public NetNotification poll(String queueName) throws Throwable
-	{
-		return poll(queueName, 0, null);
 	}
 
 	/**

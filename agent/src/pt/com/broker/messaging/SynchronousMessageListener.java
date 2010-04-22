@@ -25,8 +25,10 @@ public class SynchronousMessageListener extends BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(SynchronousMessageListener.class);
 
-	private static final long RESERVE_TIME = 15 * 60 * 1000; // reserve for 15mn
 	private static final long ACTIVE_INTERVAL = 5 * 60 * 1000; // 5mn
+	private static final long DEFAULT_RESERVE_TIME = 15 * 60 * 1000; // reserve for 15mn
+
+	private static final ForwardResult FAILED = new ForwardResult(Result.FAILED);
 
 	private AtomicBoolean ready;
 	private final String queueName;
@@ -37,13 +39,17 @@ public class SynchronousMessageListener extends BrokerListener
 
 	private AtomicLong lastDeliveredMessage = new AtomicLong(0);
 
+	private ForwardResult sucess;
+	
 	public SynchronousMessageListener(ListenerChannel lchannel, String queueName)
 	{
 		super(lchannel, queueName);
 
-		this.ready = new AtomicBoolean(false);
+		sucess = new ForwardResult(Result.SUCCESS, DEFAULT_RESERVE_TIME);
+		
 		this.queueName = queueName;
 		this.setInNoWaitMode(false);
+		this.ready = new AtomicBoolean(false);
 	}
 
 	@Override
@@ -64,8 +70,6 @@ public class SynchronousMessageListener extends BrokerListener
 		return DestinationType.QUEUE;
 	}
 
-	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
-	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
 
 	@Override
 	protected ForwardResult doOnMessage(NetMessage response)
@@ -73,7 +77,7 @@ public class SynchronousMessageListener extends BrokerListener
 		if (!ready.get())
 		{
 			log.error("We shouldn't be here. A SynchronousMessageListener should not be called when in a 'not ready' state.");
-			return failed;
+			return FAILED;
 		}
 
 		ready.set(false);
@@ -93,10 +97,10 @@ public class SynchronousMessageListener extends BrokerListener
 			{
 				QueueProcessorList.removeListener(this);
 			}
-			return failed;
+			return FAILED;
 		}
 
-		return success;
+		return sucess;
 	}
 
 	@Override
@@ -264,5 +268,10 @@ public class SynchronousMessageListener extends BrokerListener
 	public String toString()
 	{
 		return "SynchronousMessageListener [type=" + getType().toString() + ", lchannel=" + getChannel() + ", queueName=" + queueName + "]";
+	}
+
+	public void setReserveTime(long reserveTime)
+	{
+		this.sucess.time = reserveTime;
 	}
 }

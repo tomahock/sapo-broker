@@ -99,7 +99,6 @@ public interface CliArgs
 	 */
 	@Option(shortName = "z", defaultValue = "1000000")
 	long getMessageNumber();	
-
 	
 	/**
 	 * 
@@ -115,5 +114,10 @@ public interface CliArgs
 	@Option(shortName = "t", defaultValue = "0")
 	long getPollTimeout();	
 
-
+	/**
+	 * 
+	 * @return Reserve Time (used in poll)
+	 */
+	@Option(shortName = "r", defaultValue = "-1")
+	long getReserveTime();
 }

@@ -4,7 +4,7 @@ package pt.com.broker.types;
 public class ForwardResult
 {
 	public final Result result;
-	public final long time;
+	public long time;
 
 	public enum Result{ SUCCESS, FAILED, NOT_ACKNOWLEDGE};
 	

@@ -3,6 +3,7 @@ package pt.com.broker.messaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.Headers;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;
 import pt.com.gcs.conf.GcsInfo;
@@ -36,7 +37,7 @@ public class BrokerProducer
 		sb_source.append("?app=");
 		sb_source.append(messageSource);
 
-		np.getMessage().addHeader("FROM", sb_source.toString());
+		np.getMessage().addHeader(Headers.FROM, sb_source.toString());
 
 		NetMessage nmsg = Gcs.buildNotification(np, np.getDestination());
 
@@ -53,7 +54,7 @@ public class BrokerProducer
 		sb_source.append("?app=");
 		sb_source.append(messageSource);
 
-		np.getMessage().addHeader("FROM", sb_source.toString());
+		np.getMessage().addHeader(Headers.FROM, sb_source.toString());
 
 		Gcs.publish(np);
 	}

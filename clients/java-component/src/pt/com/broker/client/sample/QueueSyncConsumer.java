@@ -27,6 +27,7 @@ public class QueueSyncConsumer
 	private String dname;
 	private long waitTime;
 	private long timeout;
+	private long reserveTime;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -39,6 +40,7 @@ public class QueueSyncConsumer
 		qsconsumer.dname = cargs.getDestination();
 		qsconsumer.waitTime = cargs.getDelay();
 		qsconsumer.timeout = cargs.getPollTimeout();
+		qsconsumer.reserveTime = cargs.getReserveTime();
 
 		BrokerClient bk = new BrokerClient(qsconsumer.host, qsconsumer.port, "tcp://mycompany.com/mysniffer");
 
@@ -58,7 +60,14 @@ public class QueueSyncConsumer
 
 				try
 				{
-					notification = bk.poll(dname, timeout, null);
+					if(reserveTime == -1)
+					{
+						notification = bk.poll(dname, timeout, null);
+					}
+					else
+					{
+						notification = bk.poll(dname, timeout, reserveTime, null);
+					}
 				}
 				catch (TimeoutException te)
 				{
@@ -78,7 +87,15 @@ public class QueueSyncConsumer
 			else
 			{
 				log.info("Send Poll request without timeout");
-				notification = bk.poll(dname);
+				//notification = bk.poll(dname);
+				if(reserveTime == -1)
+				{
+					notification = bk.poll(dname, 0, null);
+				}
+				else
+				{
+					notification = bk.poll(dname, 0, reserveTime, null);
+				}
 			}
 
 			if (notification != null)

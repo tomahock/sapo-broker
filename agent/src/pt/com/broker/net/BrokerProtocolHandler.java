@@ -1,7 +1,6 @@
 package pt.com.broker.net;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -36,6 +35,7 @@ import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
 import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.CriticalErrors;
+import pt.com.broker.types.Headers;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
@@ -72,7 +72,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 	private static final BrokerProtocolHandler instance;
 
-	private static final String ACK_REQUIRED = "ACK_REQUIRED";
+	
 
 	static
 	{
@@ -415,8 +415,14 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			return;
 		}
 
+		String value = null;
+		if (request.getHeaders() != null)
+		{
+			value = request.getHeaders().get(Headers.RESERVE_TIME);
+		}
+		
 		sendAccepted(ctx, actionId);
-		BrokerSyncConsumer.poll(pollMsg, ctx);
+		BrokerSyncConsumer.poll(pollMsg, ctx, value);
 	}
 
 	private void handleAcknowledeMessage(ChannelHandlerContext ctx, NetMessage request)
@@ -472,7 +478,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 		if (request.getHeaders() != null)
 		{
-			String value = request.getHeaders().get(ACK_REQUIRED);
+			String value = request.getHeaders().get(Headers.ACK_REQUIRED);
 			ackRequired = (value == null) ? true : !value.equalsIgnoreCase("false");
 		}
 

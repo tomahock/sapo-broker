@@ -1,10 +1,8 @@
 package pt.com.broker.messaging;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.text.StringUtils;
@@ -13,13 +11,10 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetPoll;
-import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.InternalPublisher;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
 
@@ -37,38 +32,38 @@ public class BrokerSyncConsumer
 
 	static
 	{
-//		Runnable counter = new Runnable()
-//		{
-//			public void run()
-//			{
-//				try
-//				{
-//					Collection<String> synConsumersList = synConsumersCount.keySet();
-//
-//					for (String queueName : synConsumersList)
-//					{
-//						String ctName = String.format("/system/stats/sync-consumer-count/#%s#", queueName);
-//
-//						int size = 0;
-//						AtomicInteger count = synConsumersCount.get(queueName);
-//						if (count != null)
-//						{
-//							size = count.get();
-//						}
-//
-//						String content = GcsInfo.getAgentName() + "#" + queueName + "#" + size;
-//
-//						InternalPublisher.send(ctName, content);
-//					}
-//				}
-//				catch (Throwable t)
-//				{
-//					log.error(t.getMessage(), t);
-//				}
-//
-//			}
-//		};
-//		BrokerExecutor.scheduleWithFixedDelay(counter, 20, 20, TimeUnit.SECONDS);
+		// Runnable counter = new Runnable()
+		// {
+		// public void run()
+		// {
+		// try
+		// {
+		// Collection<String> synConsumersList = synConsumersCount.keySet();
+		//
+		// for (String queueName : synConsumersList)
+		// {
+		// String ctName = String.format("/system/stats/sync-consumer-count/#%s#", queueName);
+		//
+		// int size = 0;
+		// AtomicInteger count = synConsumersCount.get(queueName);
+		// if (count != null)
+		// {
+		// size = count.get();
+		// }
+		//
+		// String content = GcsInfo.getAgentName() + "#" + queueName + "#" + size;
+		//
+		// InternalPublisher.send(ctName, content);
+		// }
+		// }
+		// catch (Throwable t)
+		// {
+		// log.error(t.getMessage(), t);
+		// }
+		//
+		// }
+		// };
+		// BrokerExecutor.scheduleWithFixedDelay(counter, 20, 20, TimeUnit.SECONDS);
 	}
 
 	public static void removeSession(ChannelHandlerContext ctx)
@@ -91,7 +86,7 @@ public class BrokerSyncConsumer
 		}
 	}
 
-	public static void poll(NetPoll poll, ChannelHandlerContext ctx)
+	public static void poll(NetPoll poll, ChannelHandlerContext ctx, String reserveArgument)
 	{
 		Channel channel = ctx.getChannel();
 		try
@@ -123,7 +118,7 @@ public class BrokerSyncConsumer
 
 				ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), composedQueueName, msgListener);
 				QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
-				if(queueProcessor != null)
+				if (queueProcessor != null)
 				{
 					queueProcessor.add(msgListener);
 				}
@@ -132,6 +127,12 @@ public class BrokerSyncConsumer
 				{
 					previous.incrementAndGet();
 				}
+			}
+
+			long reserveTime = getReserveTime(reserveArgument);
+			if (reserveTime != -1)
+			{
+				msgListener.setReserveTime(reserveTime);
 			}
 			msgListener.activate(poll.getTimeout(), poll.getActionId());
 		}
@@ -156,5 +157,22 @@ public class BrokerSyncConsumer
 			count.decrementAndGet();
 			synConsumersCount.remove(destination, zeroValue); // remove if zero
 		}
+	}
+
+	private static long getReserveTime(String reserveArgument)
+	{
+		long reserveTime = -1;
+		if (StringUtils.isNotBlank(reserveArgument))
+		{
+			try
+			{
+				reserveTime = Long.parseLong(reserveArgument);
+			}
+			catch (NumberFormatException nfe)
+			{
+				log.error("");
+			}
+		}
+		return reserveTime;
 	}
 }

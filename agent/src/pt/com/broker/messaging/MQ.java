@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import org.caudexorigo.text.StringUtils;
 
 import pt.com.broker.codec.xml.SoapEnvelope;
+import pt.com.broker.types.Headers;
 import pt.com.broker.types.NetMessage;
 
 /**
@@ -68,7 +69,7 @@ public class MQ
 
 	public static String requestSource(NetMessage message)
 	{
-		String from = message.getHeaders().get("FROM");
+		String from = message.getHeaders().get(Headers.FROM);
 
 		if (StringUtils.isNotBlank(from))
 		{
