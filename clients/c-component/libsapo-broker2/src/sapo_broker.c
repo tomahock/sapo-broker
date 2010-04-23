@@ -364,8 +364,21 @@ broker_destroy(sapo_broker_t *sb)
     /* close all open connections to servers */
     _broker_server_disconnect_all(sb);
 
+    pthread_mutex_lock(sb->lock);
+
     /* deallocate all memory */
     if( NULL != sb->servers.server ) {
+        /* release server r/w locks */
+        for(int i = 0; i < sb->servers.server_count; i++) {
+            /* if any of these locks are still aquired,
+               (concurrent broker_receive() or broker_send()
+                any attempt to lock/unlock will fail and calls will pass through..
+                but will fail on attempting to read/write do fd.
+                so... this is safe..
+             */
+            pthread_mutex_destroy( sb->servers.server[i].lock_r );
+            pthread_mutex_destroy( sb->servers.server[i].lock_w );
+        }
         free(sb->servers.server);
         sb->servers.server = NULL;
     }
@@ -374,6 +387,9 @@ broker_destroy(sapo_broker_t *sb)
         free(sb->destinations.dest );
         sb->destinations.dest = NULL;
     }
+
+    pthread_mutex_unlock(sb->lock);
+    pthread_mutex_destroy(sb->lock);
 
     free( sb );
 
