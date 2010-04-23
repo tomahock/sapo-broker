@@ -4,6 +4,7 @@ extern "C" {
     #include <stdio.h>
     #include <time.h>
     #include <strings.h>
+    #include <string.h>
 #ifdef __cplusplus
 } /* closing brace for extern "C" */
 #endif
