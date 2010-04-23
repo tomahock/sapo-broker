@@ -541,6 +541,15 @@ Payload:
 	  <listitem>Example: <emphasis>false</emphasis></listitem>
 	</itemizedlist>
     </section>
+    <section>
+    <title>Reserve time</title>
+	<para>When a queue message is delivered to a client a reserve time is set. Asynchronous clients have their messages reserved for two minutes, meaning that they have two minutes to acknowledge the message or it will be redelivered. By default, messages delivered to synchronous consumers, the ones who send Poll messages, will have a reserve time of 15 minutes. However, the reserve time can be specified using <emphasis>RESERVE_TIME</emphasis> header. The time is specified in milliseconds.</para>
+	<para>This header is specific to Poll messages.</para>
+	<itemizedlist>
+	  <listitem>Name: <emphasis>RESERVE_TIME</emphasis></listitem>
+	  <listitem>Example (for 25mn) : <emphasis>1500000</emphasis></listitem>
+	</itemizedlist>
+    </section>
   </section>
 </chapter>
 
