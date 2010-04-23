@@ -117,7 +117,7 @@ proto_protobuf_read_msg( sapo_broker_t *sb, _broker_server_t *srv)
 
     log_debug(sb, "protobuf_read_msg(), reading from network");
     buf = net_recv( sb, srv, &buf_len);
-    if( buf_len == SB_ERROR ) {
+    if( NULL == buf ) {
         log_err(sb, "protobuf_read_msg(): failed reading msg from network.");
         return NULL;
     }

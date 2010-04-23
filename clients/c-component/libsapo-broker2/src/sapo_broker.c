@@ -12,7 +12,7 @@
 /* private members */
 static char _global_broker_err_msg[SB_BUFSIZ];
 static int broker_add_destination(sapo_broker_t *sb, broker_destination_t dest);
-static int broker_del_destination(sapo_broker_t *sb, broker_destination_t dest);
+//static int broker_del_destination(sapo_broker_t *sb, broker_destination_t dest);
 
 static _broker_server_t *
 broker_get_server_from_msg(sapo_broker_t *sb, broker_msg_t *msg)
@@ -44,14 +44,16 @@ broker_init( broker_server_t server_1)
         return NULL;
     }
 
+    sb->lock = (pthread_mutex_t *) malloc( sizeof(pthread_mutex_t) );
+
+    pthread_mutex_init( sb->lock, NULL);
+
     broker_add_server(sb, server_1);
 
     sb->destinations.dest = calloc(2, sizeof(broker_destination_t) );
     sb->destinations.array_count = 2;
     sb->destinations.dest_count = 0;
 
-
-    pthread_mutex_init( sb->lock, NULL);
     return sb;
 }
 
@@ -89,6 +91,10 @@ broker_add_server( sapo_broker_t *sb, broker_server_t server)
 
     memset( &(sb->servers.server[ sb->servers.server_count ]), 0, sizeof(_broker_server_t));
     sb->servers.server[ sb->servers.server_count ].srv = server;
+
+    sb->servers.server[ sb->servers.server_count ].lock_r = malloc( sizeof(pthread_mutex_t) );
+    sb->servers.server[ sb->servers.server_count ].lock_w = malloc( sizeof(pthread_mutex_t) );
+
     pthread_mutex_init( sb->servers.server[ sb->servers.server_count ].lock_r, NULL );
     pthread_mutex_init( sb->servers.server[ sb->servers.server_count ].lock_w, NULL );
 
@@ -114,7 +120,6 @@ broker_send( sapo_broker_t *sb,
 
     for(int i=0; i < 3; i++) {
         srv = _broker_server_get_active( sb );
-        pthread_mutex_lock(srv->lock_w);
         switch ( srv->srv.protocol ) {
             case SOAP:
                 rc = proto_soap_send( sb, srv, &dest, &sendmsg );
@@ -130,7 +135,6 @@ broker_send( sapo_broker_t *sb,
                 log_err(sb, "invalid server protocol.");
                 break;
         }
-        pthread_mutex_unlock(srv->lock_w);
         if( rc != SB_OK ) {
             log_err(sb, "broker_send: failed, trying again.");
             continue;
@@ -151,7 +155,7 @@ broker_publish( sapo_broker_t *sb,
                 size_t size)
 {
     broker_destination_t dest;
-    broker_sendmsg_t sendmsg =  { NULL, 0, 0, 0, NULL };
+    broker_sendmsg_t sendmsg =  { 0, NULL, NULL, 0, 0 };
 
     sendmsg.payload = msg;
     sendmsg.payload_size = size;
@@ -169,7 +173,7 @@ broker_enqueue( sapo_broker_t *sb,
                 size_t size)
 {
     broker_destination_t dest;
-    broker_sendmsg_t sendmsg = (broker_sendmsg_t) { NULL, 0, 0, 0, NULL };
+    broker_sendmsg_t sendmsg = { 0, NULL, NULL, 0, 0 };
 
     sendmsg.payload = msg;
     sendmsg.payload_size = size;
@@ -177,6 +181,34 @@ broker_enqueue( sapo_broker_t *sb,
     dest.name = queue;
     dest.type = SB_QUEUE;
     return broker_send(sb, dest, sendmsg);
+}
+
+static int
+server_subscribe( sapo_broker_t *sb,_broker_server_t *srv, broker_destination_t *dest)
+{
+    int rc = 0;
+    if( NULL == srv )
+        return SB_ERROR;
+
+    switch ( srv->srv.protocol ) {
+        case SOAP:
+            rc = proto_soap_subscribe( sb, srv, dest );
+            break;
+
+        case PROTOBUF:
+            rc = proto_protobuf_subscribe( sb, srv, dest );
+            break;
+
+        case THRIFT:
+            rc = proto_thrift_subscribe( sb, srv, dest );
+            break;
+
+        default:
+            rc = SB_ERROR;
+            log_err(sb, "broker_subscribe: invalid server protocol.");
+            break;
+    }
+    return rc;
 }
 
 
@@ -191,26 +223,7 @@ broker_subscribe( sapo_broker_t *sb, broker_destination_t dest)
 
     for(int i=0; i < 3; i++) {
         srv = _broker_server_get_active( sb );
-        pthread_mutex_lock(srv->lock_w);
-        switch ( srv->srv.protocol ) {
-            case SOAP:
-                rc = proto_soap_subscribe( sb, srv, &dest );
-                break;
-
-            case PROTOBUF:
-                rc = proto_protobuf_subscribe( sb, srv, &dest );
-                break;
-
-            case THRIFT:
-                rc = proto_thrift_subscribe( sb, srv, &dest );
-                break;
-
-            default:
-                rc = SB_ERROR;
-                log_err(sb, "broker_subscribe: invalid server protocol.");
-                break;
-        }
-        pthread_mutex_unlock(srv->lock_w);
+        rc = server_subscribe( sb, srv, &dest);
         if( rc != SB_OK ) {
             log_err(sb, "broker_subscribe: failed, trying again.");
             continue;
@@ -220,7 +233,6 @@ broker_subscribe( sapo_broker_t *sb, broker_destination_t dest)
     if( rc != SB_OK ) {
         log_err(sb, "broker_subscribe(): failed multiple times talking to server");
     } else {
-
         broker_add_destination(sb, dest);
     }
 
@@ -281,7 +293,6 @@ broker_msg_ack( sapo_broker_t *sb, broker_msg_t *msg)
     }
 
     _broker_server_t *srv = broker_get_server_from_msg(sb, msg);
-    pthread_mutex_lock(srv->lock_w);
     switch ( msg->server.protocol ) {
         case SOAP:
             rc = proto_soap_send_ack( sb, srv, msg->origin.name, msg->message_id);
@@ -297,7 +308,6 @@ broker_msg_ack( sapo_broker_t *sb, broker_msg_t *msg)
             log_err(sb, "broker_msg_ack: invalid server in msg.");
             break;
     }
-    pthread_mutex_lock(srv->lock_w);
 
     broker_msg_free(msg);
     return rc;
@@ -325,7 +335,6 @@ broker_receive( sapo_broker_t *sb, struct timeval *timeout)
 
         log_debug(sb, "receive(): data from: %s:%d",
                 srv->srv.hostname, srv->srv.port);
-        pthread_mutex_lock(srv->lock_r);
         switch ( srv->srv.protocol ) {
             case SOAP:
                 msg = proto_soap_read_msg( sb, srv );
@@ -343,7 +352,6 @@ broker_receive( sapo_broker_t *sb, struct timeval *timeout)
                 rc = SB_ERROR;
                 log_err(sb, "broker_receive: invalid server protocol in received packet.");
         }
-        pthread_mutex_unlock(srv->lock_r);
         if( NULL == msg ) {
             log_err(sb, "broker_receive: failed, trying again.");
             continue;
@@ -369,7 +377,7 @@ broker_destroy(sapo_broker_t *sb)
     /* deallocate all memory */
     if( NULL != sb->servers.server ) {
         /* release server r/w locks */
-        for(int i = 0; i < sb->servers.server_count; i++) {
+        for(uint_t i = 0; i < sb->servers.server_count; i++) {
             /* if any of these locks are still aquired,
                (concurrent broker_receive() or broker_send()
                 any attempt to lock/unlock will fail and calls will pass through..
@@ -378,6 +386,9 @@ broker_destroy(sapo_broker_t *sb)
              */
             pthread_mutex_destroy( sb->servers.server[i].lock_r );
             pthread_mutex_destroy( sb->servers.server[i].lock_w );
+
+            free( sb->servers.server[i].lock_r );
+            free( sb->servers.server[i].lock_w );
         }
         free(sb->servers.server);
         sb->servers.server = NULL;
@@ -391,6 +402,7 @@ broker_destroy(sapo_broker_t *sb)
     pthread_mutex_unlock(sb->lock);
     pthread_mutex_destroy(sb->lock);
 
+    free( sb->lock );
     free( sb );
 
    return SB_OK;
@@ -421,6 +433,7 @@ broker_add_destination(sapo_broker_t *sb, broker_destination_t dest)
         dst = realloc( sb->destinations.dest, sizeof(broker_destination_t) * new_count );
         if( dst == NULL ) {
             log_err(sb, "broker_subscribe(): realloc() failed, can't save destination");
+            pthread_mutex_unlock(sb->lock);
             return rc; // maybe everything will work just fine...
         }
         sb->destinations.dest = dst;
@@ -442,15 +455,43 @@ broker_get_destination( sapo_broker_t *sb, const char *dest_name, uint8_t type)
     broker_destination_t *dest;
     for(uint_t i = 0; i < sb->destinations.dest_count; i++) {
         dest = &(sb->destinations.dest[i]);
-        if( dest->type == type && !strcmp(dest->name, dest_name) )
+        if( dest->type == type && !strcmp(dest->name, dest_name) ) {
+            pthread_mutex_unlock(sb->lock);
             return *dest;
+        }
     }
     /* not found? .. log error and return destination without auto-ack */
-    broker_destination_t dst = (broker_destination_t) { dest_name, type, 0 };
+    broker_destination_t dst = { (char *) dest_name, type, 0 };
     log_err(sb, "broker_get_destination: cannot find this destination on destination list.");
 
     pthread_mutex_unlock(sb->lock);
     return dst;
 }
+
+int
+broker_resubscribe_destinations( sapo_broker_t *sb, _broker_server_t *srv)
+{
+    int rc = 0;
+    broker_destination_t *dest;
+
+    if(!sb)
+        return SB_NOT_INITIALIZED;
+
+    log_info(sb, "resubscribing to current destinations.");
+    pthread_mutex_lock(sb->lock);
+    for(uint_t i = 0; i < sb->destinations.dest_count; i++) {
+        dest = &(sb->destinations.dest[i]);
+        log_info(sb, "broker_resubscribe_destinations: resubscribe to: %s", dest->name);
+        /* optimistic subscribe, dunno how to handle failure here. */
+        rc = server_subscribe( sb, srv, dest);
+        if( rc != SB_OK ) {
+            log_err(sb, "broker_resubscribe_destinations: failed to subscribe to: %s, skipping.", dest->name);
+        }
+    }
+    pthread_mutex_unlock(sb->lock);
+
+    return 0;
+}
+
 
 

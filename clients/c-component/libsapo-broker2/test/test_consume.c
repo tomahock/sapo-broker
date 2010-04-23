@@ -1,6 +1,7 @@
 #define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "libsapo-broker2.h"
 
@@ -65,6 +66,13 @@ int main(int argc, char *argv[])
     /* by default: process 2^31-1 msgs, depends on int overflow */
     for(; i <= count; i++) {
         m = broker_receive(sb, NULL);
+        if( !m ) {
+            printf("NO MSG\n");
+            count++;
+            sleep(1);
+            continue;
+        }
+
         printf("%s\n", m->payload);
 
         if( dest.type == SB_QUEUE && dest.queue_autoack == FALSE ) {

@@ -28,12 +28,12 @@ WHAT WORKS NOW:
         - if failures are reported during comunication with a given server,
             at most 3 reconnect are tried,
             after that, it tries diferent server.
+    - thread safe
 
 TODO:
-    - thread safe
-    - POLL support
     - Handle disconnects better:
         - on disconnect, re-subscribe current topics in (some other) accessible broker.
+    - POLL support
     - Handle to user PONG/FAULT/* messages from Broker.
     - Better support for multiple servers:
         - balance enqueues or publishes through ALL servers

@@ -62,5 +62,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    broker_destroy(sb);
+
     exit(0);
 }

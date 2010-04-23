@@ -3,6 +3,7 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <unistd.h>
 
 
@@ -32,7 +33,6 @@ _broker_server_get_active( sapo_broker_t *sb)
     pthread_mutex_lock(sb->lock);
 
     srv = sb->servers.server;
-
     for(i= 0; i < sb->servers.server_count; i++) {
         if ( srv[i].connected ) {
             pthread_mutex_unlock(sb->lock);
@@ -40,10 +40,12 @@ _broker_server_get_active( sapo_broker_t *sb)
         }
     }
 
+    log_info(sb, "broker_get_active(): not connected, trying servers in order.");
     for(i = 0; i < sb->servers.server_count; i++) {
         if ( ! _server_connect( sb, &srv[i] ) ) {
-            log_info(sb, "connected to: %s:%d", srv[i].srv.hostname, srv[i].srv.port);
             pthread_mutex_unlock(sb->lock);
+            log_info(sb, "connected to: %s:%d", srv[i].srv.hostname, srv[i].srv.port);
+            broker_resubscribe_destinations(sb, srv);
             return srv;
         }
     }
@@ -77,6 +79,18 @@ _broker_server_connect_all(sapo_broker_t *sb)
     return SB_OK;
 }
 
+static int
+_broker_server_disconnect(sapo_broker_t *sb, _broker_server_t *srv)
+{
+    if( srv->connected ) {
+        close(srv->fd); // best effort only.
+        srv->fail_count = 0;
+        srv->connected = 0;
+    }
+    return 0;
+}
+
+
 int
 _broker_server_disconnect_all(sapo_broker_t *sb)
 {
@@ -91,11 +105,7 @@ _broker_server_disconnect_all(sapo_broker_t *sb)
 
     srv = sb->servers.server;
     for(i = 0; i < sb->servers.server_count; i++) {
-        if( srv[i].connected ) {
-            close(srv[i].fd); // best effort only.
-            srv[i].fail_count = 0;
-            srv[i].connected = 0;
-        }
+        _broker_server_disconnect(sb, &srv[i]);
     }
 
     pthread_mutex_unlock(sb->lock);
@@ -122,8 +132,6 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
         return SB_OK;
     }
 
-
-    log_info(sb, "");
     log_debug(sb, "connect(): trying %s:%d", server->srv.hostname , server->srv.port);
 
     /* FIXME: do this sooner and only once on server_add */
@@ -178,7 +186,7 @@ _net_send(sapo_broker_t *sb, int socket, const char *buf, size_t len, int flags)
             continue;
         }
 
-        if (errno == ENOTCONN) {
+        if (errno == ENOTCONN || errno == EPIPE || errno == ECONNRESET) {
             log_err(sb, "send(): Error writing (Not connected): %s",
                     strerror(errno));
             return SB_NOT_CONNECTED;
@@ -205,7 +213,7 @@ _net_recv(sapo_broker_t *sb, int socket, char *buf, size_t len, int flags)
             continue;
         }
 
-        if (errno == ENOTCONN) {
+        if (errno == ENOTCONN || 0 == rc) {
             log_err(sb, "recv(): Error writing (Not connected): %s",
                     strerror(errno));
             return SB_NOT_CONNECTED;
@@ -233,38 +241,47 @@ net_send(sapo_broker_t *sb, _broker_server_t *srv, const char *bytes, size_t len
 
     *(uint32_t *)(header+2) = htonl( len );
 
-    log_info(sb, "");
+    log_debug(sb, "net_send(): sending data (size: %zd)", len);
 
-    log_debug(sb, "net_send(): sending data (size: %d)", len);
+    pthread_mutex_lock(srv->lock_w);
     rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), SB_MSG_NOSIGPIPE);
     if( rc != SB_OK) {
         log_err(sb, "net_send(): failed to send header");
-        return rc;
+        goto err;
     }
     rc = _net_send(sb, srv->fd, bytes, len, SB_MSG_NOSIGPIPE);
     if( rc != SB_OK){
         log_err(sb, "net_send(): failed to send message");
-        return rc;
+        goto err;
     }
+    pthread_mutex_unlock(srv->lock_w);
     return rc;
+
+err:
+    pthread_mutex_unlock(srv->lock_w);
+
+    if( SB_NOT_CONNECTED == rc) {
+        pthread_mutex_lock(sb->lock);
+        _broker_server_disconnect(sb, srv);
+        pthread_mutex_unlock(sb->lock);
+    }
+
+    return  rc;
 }
 
 /* net_poll waits for packets from any connected server.
    returns the 1st server that writes to us.
-FIXME: this is THREAD UNSAFE
-    depends on servers' connect state stability during select
 */
 _broker_server_t *
 net_poll( sapo_broker_t *sb, struct timeval *tv)
 {
     if(!sb)
-        return SB_NOT_INITIALIZED;
+        return NULL;
 
     pthread_mutex_lock(sb->lock);
 
-    log_info(sb, "");
     /* try only once to connect to all srvs */
-    int i = 0;
+    uint_t i = 0;
     int rc = 0;
     int num_srvs = 0;
     fd_set read_set;
@@ -287,9 +304,10 @@ net_poll( sapo_broker_t *sb, struct timeval *tv)
         log_debug(sb, "net_poll(): timed out");
     } else if( rc > 0) { // return server.
         for(i = 0; i < sb->servers.server_count; i++ ) {
-            if( sb->servers.server[i].connected  &&
-                 FD_ISSET( sb->servers.server[i].fd, &read_set) )
+            if( sb->servers.server[i].connected  && FD_ISSET( sb->servers.server[i].fd, &read_set) ) {
+                pthread_mutex_unlock(sb->lock);
                 return &(sb->servers.server[i]);
+            }
         }
     } else {
         /* error.. */
@@ -304,17 +322,24 @@ net_poll( sapo_broker_t *sb, struct timeval *tv)
 char *
 net_recv( sapo_broker_t *sb, _broker_server_t *srv, int *buf_len)
 {
-    log_info(sb, "");
     uint16_t header[SB_NET_HEADER_SIZ];
     uint32_t len = 0;
     int rc = 0;
     char *buf;
 
-    log_debug(sb, "net_recv(): waiting %d bytes", sizeof(header));
+    /* clean header */
+    bzero( header, sizeof(header) );
+
+    pthread_mutex_lock(srv->lock_r);
+
+    log_debug(sb, "net_recv(): waiting %zd bytes", sizeof(header));
     rc = _net_recv(sb, srv->fd, (char *) header, sizeof(header), 0);
+    if( rc != SB_OK) {
+        goto err;
+    }
 
     if( srv->srv.protocol != ntohs( header[0] ) ) {
-            log_err(sb, "net_recv: protocol in received header doesn't match connection setup.");
+        log_err(sb, "net_recv: protocol in received header doesn't match connection setup.");
     }
 
     len = ntohl( *(uint32_t *)(header+2) );
@@ -326,9 +351,20 @@ net_recv( sapo_broker_t *sb, _broker_server_t *srv, int *buf_len)
     rc = _net_recv(sb, srv->fd, buf, *buf_len, 0);
     if( rc != SB_OK ) {
         free(buf);
-        *buf_len = 0;
-        return  NULL;
+        goto err;
+    }
+    pthread_mutex_unlock(srv->lock_r);
+    return buf;
+
+err:
+    pthread_mutex_unlock(srv->lock_r);
+    if( rc = SB_NOT_CONNECTED ) {
+        pthread_mutex_lock(sb->lock);
+        _broker_server_disconnect(sb, srv);
+        pthread_mutex_unlock(sb->lock);
     }
 
-    return buf;
+    *buf_len = rc;
+    return  NULL;
+
 }

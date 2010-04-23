@@ -46,4 +46,7 @@ _log_err(sapo_broker_t *sb, const char *, const char *, int, ...);
 broker_destination_t
 broker_get_destination( sapo_broker_t *sb, const char *dest_name, uint8_t type);
 
+int
+broker_resubscribe_destinations( sapo_broker_t *sb, _broker_server_t *srv );
+
 #endif // _BROKER_INTERNALS_H
