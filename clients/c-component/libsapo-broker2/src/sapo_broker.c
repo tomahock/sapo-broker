@@ -12,6 +12,7 @@
 /* private members */
 static char _global_broker_err_msg[SB_BUFSIZ];
 static int broker_add_destination(sapo_broker_t *sb, broker_destination_t dest);
+static int broker_del_destination(sapo_broker_t *sb, broker_destination_t dest);
 
 static _broker_server_t *
 broker_get_server_from_msg(sapo_broker_t *sb, broker_msg_t *msg)
@@ -48,6 +49,9 @@ broker_init( broker_server_t server_1)
     sb->destinations.dest = calloc(2, sizeof(broker_destination_t) );
     sb->destinations.array_count = 2;
     sb->destinations.dest_count = 0;
+
+
+    pthread_mutex_init( sb->lock, NULL);
     return sb;
 }
 
@@ -59,6 +63,8 @@ broker_add_server( sapo_broker_t *sb, broker_server_t server)
 
     if(!sb)
         return SB_NOT_INITIALIZED;
+
+    pthread_mutex_lock(sb->lock);
 
     if(sb->servers.array_count == sb->servers.server_count ){
         uint_t new_count = 1 + (sb->servers.array_count * 2);
@@ -83,9 +89,14 @@ broker_add_server( sapo_broker_t *sb, broker_server_t server)
 
     memset( &(sb->servers.server[ sb->servers.server_count ]), 0, sizeof(_broker_server_t));
     sb->servers.server[ sb->servers.server_count ].srv = server;
+    pthread_mutex_init( sb->servers.server[ sb->servers.server_count ].lock_r, NULL );
+    pthread_mutex_init( sb->servers.server[ sb->servers.server_count ].lock_w, NULL );
+
     log_debug(sb, "server: { %s, %d, %d, %d }", server.hostname, server.port, (int) server.transport, (int) server.protocol);
 
     sb->servers.server_count++;
+
+    pthread_mutex_unlock(sb->lock);
     return SB_OK;
 }
 
@@ -103,6 +114,7 @@ broker_send( sapo_broker_t *sb,
 
     for(int i=0; i < 3; i++) {
         srv = _broker_server_get_active( sb );
+        pthread_mutex_lock(srv->lock_w);
         switch ( srv->srv.protocol ) {
             case SOAP:
                 rc = proto_soap_send( sb, srv, &dest, &sendmsg );
@@ -118,6 +130,7 @@ broker_send( sapo_broker_t *sb,
                 log_err(sb, "invalid server protocol.");
                 break;
         }
+        pthread_mutex_unlock(srv->lock_w);
         if( rc != SB_OK ) {
             log_err(sb, "broker_send: failed, trying again.");
             continue;
@@ -138,7 +151,7 @@ broker_publish( sapo_broker_t *sb,
                 size_t size)
 {
     broker_destination_t dest;
-    broker_sendmsg_t sendmsg = { NULL, 0, 0, 0, NULL };
+    broker_sendmsg_t sendmsg =  { NULL, 0, 0, 0, NULL };
 
     sendmsg.payload = msg;
     sendmsg.payload_size = size;
@@ -156,7 +169,7 @@ broker_enqueue( sapo_broker_t *sb,
                 size_t size)
 {
     broker_destination_t dest;
-    broker_sendmsg_t sendmsg = { NULL, 0, 0, 0, NULL };
+    broker_sendmsg_t sendmsg = (broker_sendmsg_t) { NULL, 0, 0, 0, NULL };
 
     sendmsg.payload = msg;
     sendmsg.payload_size = size;
@@ -178,6 +191,7 @@ broker_subscribe( sapo_broker_t *sb, broker_destination_t dest)
 
     for(int i=0; i < 3; i++) {
         srv = _broker_server_get_active( sb );
+        pthread_mutex_lock(srv->lock_w);
         switch ( srv->srv.protocol ) {
             case SOAP:
                 rc = proto_soap_subscribe( sb, srv, &dest );
@@ -196,6 +210,7 @@ broker_subscribe( sapo_broker_t *sb, broker_destination_t dest)
                 log_err(sb, "broker_subscribe: invalid server protocol.");
                 break;
         }
+        pthread_mutex_unlock(srv->lock_w);
         if( rc != SB_OK ) {
             log_err(sb, "broker_subscribe: failed, trying again.");
             continue;
@@ -266,6 +281,7 @@ broker_msg_ack( sapo_broker_t *sb, broker_msg_t *msg)
     }
 
     _broker_server_t *srv = broker_get_server_from_msg(sb, msg);
+    pthread_mutex_lock(srv->lock_w);
     switch ( msg->server.protocol ) {
         case SOAP:
             rc = proto_soap_send_ack( sb, srv, msg->origin.name, msg->message_id);
@@ -281,6 +297,7 @@ broker_msg_ack( sapo_broker_t *sb, broker_msg_t *msg)
             log_err(sb, "broker_msg_ack: invalid server in msg.");
             break;
     }
+    pthread_mutex_lock(srv->lock_w);
 
     broker_msg_free(msg);
     return rc;
@@ -308,6 +325,7 @@ broker_receive( sapo_broker_t *sb, struct timeval *timeout)
 
         log_debug(sb, "receive(): data from: %s:%d",
                 srv->srv.hostname, srv->srv.port);
+        pthread_mutex_lock(srv->lock_r);
         switch ( srv->srv.protocol ) {
             case SOAP:
                 msg = proto_soap_read_msg( sb, srv );
@@ -325,6 +343,7 @@ broker_receive( sapo_broker_t *sb, struct timeval *timeout)
                 rc = SB_ERROR;
                 log_err(sb, "broker_receive: invalid server protocol in received packet.");
         }
+        pthread_mutex_unlock(srv->lock_r);
         if( NULL == msg ) {
             log_err(sb, "broker_receive: failed, trying again.");
             continue;
@@ -376,6 +395,8 @@ broker_add_destination(sapo_broker_t *sb, broker_destination_t dest)
     if(!sb)
         return SB_NOT_INITIALIZED;
 
+    pthread_mutex_lock(sb->lock);
+
     int rc = 0;
     /* any space left on destinations array ? */
     if( sb->destinations.dest_count == sb->destinations.array_count ) {
@@ -391,6 +412,8 @@ broker_add_destination(sapo_broker_t *sb, broker_destination_t dest)
     }
 
     sb->destinations.dest[ sb->destinations.dest_count++ ] = dest;
+
+    pthread_mutex_unlock(sb->lock);
     return rc;
 }
 
@@ -398,6 +421,8 @@ broker_add_destination(sapo_broker_t *sb, broker_destination_t dest)
 broker_destination_t
 broker_get_destination( sapo_broker_t *sb, const char *dest_name, uint8_t type)
 {
+    pthread_mutex_lock(sb->lock);
+
     broker_destination_t *dest;
     for(uint_t i = 0; i < sb->destinations.dest_count; i++) {
         dest = &(sb->destinations.dest[i]);
@@ -405,9 +430,10 @@ broker_get_destination( sapo_broker_t *sb, const char *dest_name, uint8_t type)
             return *dest;
     }
     /* not found? .. log error and return destination without auto-ack */
-    broker_destination_t dst = { dest_name, type, 0 };
+    broker_destination_t dst = (broker_destination_t) { dest_name, type, 0 };
     log_err(sb, "broker_get_destination: cannot find this destination on destination list.");
 
+    pthread_mutex_unlock(sb->lock);
     return dst;
 }
 

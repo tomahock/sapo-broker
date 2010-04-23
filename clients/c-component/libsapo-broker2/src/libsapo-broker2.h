@@ -5,17 +5,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 // error codes
-#define SB_OK                  0
-#define SB_NO_MESSAGE       -100
-#define SB_HAS_MESSAGE      -101
-#define SB_ERROR            -102
-#define SB_NO_ERROR         -103
-#define SB_BAD_MESSAGE_TYPE -110
-#define SB_NOT_CONNECTED    -120
-#define SB_ERROR_UNKNOWN    -121
-#define SB_NOT_INITIALIZED  -122
+enum {
+    SB_OK = 0,
+    SB_ERROR    = -100,
+    SB_NOT_CONNECTED = 120,
+    SB_ERROR_UNKNOWN = 121,
+    SB_NOT_INITIALIZED = -122
+} sb_return_codes_t;
 
 #define TRUE    1
 #define FALSE   !TRUE
@@ -74,6 +73,8 @@ typedef struct {
     uint16_t  fail_count;
     int     socket_type;
     uint_t fd;
+    pthread_mutex_t *lock_r; /* reading from net is thread-safe */
+    pthread_mutex_t *lock_w; /* writing to   net is thread-safe */
 } _broker_server_t;
 
 
@@ -96,6 +97,7 @@ typedef struct {
     _broker_server_array_t servers;
     _destinations_array_t destinations;
     char last_error_msg[SB_BUFSIZ];
+    pthread_mutex_t *lock; /* global lock for changing global struct */
 } sapo_broker_t;
 
 

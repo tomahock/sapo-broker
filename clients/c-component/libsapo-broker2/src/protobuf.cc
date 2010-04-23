@@ -129,7 +129,7 @@ proto_protobuf_read_msg( sapo_broker_t *sb, _broker_server_t *srv)
     free(buf);
 
 
-    /* FIXME: assuming notification messages */
+    /* FIXME: handle other message types properly */
     if( atom.action().action_type() != sapo_broker::Atom_Action_ActionType_NOTIFICATION) {
         log_info(sb, "protobuf_read_msg(): msg is not NOTIFICATION, NOT IMPLEMENTED YET.");
         return NULL;
@@ -168,7 +168,7 @@ proto_protobuf_read_msg( sapo_broker_t *sb, _broker_server_t *srv)
     memcpy(msg->message_id, message.message_id().c_str(), id_len);
     msg->message_id[id_len] = NULL;
 
-    log_info(sb, "protobuf_read_msg: from: %s, size: %u", msg->origin.name, msg->payload_len);
+    log_info(sb, "protobuf_read_msg: from: %s, size: %u", msg->origin.name, (uint_t) msg->payload_len);
     return msg;
 }
 

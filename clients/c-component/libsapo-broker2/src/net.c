@@ -29,20 +29,28 @@ _broker_server_get_active( sapo_broker_t *sb)
         NULL == sb->servers.server )
         return NULL;
 
+    pthread_mutex_lock(sb->lock);
+
     srv = sb->servers.server;
 
     for(i= 0; i < sb->servers.server_count; i++) {
-        if ( srv[i].connected )
+        if ( srv[i].connected ) {
+            pthread_mutex_unlock(sb->lock);
             return srv;
+        }
     }
 
-    for(i= 0; i < sb->servers.server_count; i++) {
-        if ( ! _server_connect( sb, &srv[i] ) )
+    for(i = 0; i < sb->servers.server_count; i++) {
+        if ( ! _server_connect( sb, &srv[i] ) ) {
             log_info(sb, "connected to: %s:%d", srv[i].srv.hostname, srv[i].srv.port);
+            pthread_mutex_unlock(sb->lock);
             return srv;
+        }
     }
 
     log_err(sb, "server_get_active(): couldn't connect to any of the servers.");
+
+    pthread_mutex_unlock(sb->lock);
     return NULL;
 }
 
@@ -56,6 +64,8 @@ _broker_server_connect_all(sapo_broker_t *sb)
         NULL == sb->servers.server )
         return SB_NOT_CONNECTED;
 
+    pthread_mutex_lock(sb->lock);
+
     srv = sb->servers.server;
     for(i = 0; i < sb->servers.server_count; i++) {
         if( ! srv[i].connected ) {
@@ -63,6 +73,7 @@ _broker_server_connect_all(sapo_broker_t *sb)
         }
     }
 
+    pthread_mutex_unlock(sb->lock);
     return SB_OK;
 }
 
@@ -74,7 +85,9 @@ _broker_server_disconnect_all(sapo_broker_t *sb)
 
     if( NULL == sb ||
         NULL == sb->servers.server )
-        return SB_NOT_CONNECTED;
+        return SB_ERROR;
+
+    pthread_mutex_lock(sb->lock);
 
     srv = sb->servers.server;
     for(i = 0; i < sb->servers.server_count; i++) {
@@ -85,6 +98,7 @@ _broker_server_disconnect_all(sapo_broker_t *sb)
         }
     }
 
+    pthread_mutex_unlock(sb->lock);
     return SB_OK;
 }
 
@@ -99,9 +113,15 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
     struct sockaddr_in server_addr;
     int rc = 0;
 
+    if(!sb)
+        return SB_NOT_INITIALIZED;
+
+    /* don't lock because parent functions of this one allready handle locking */
+
     if (server && server->connected) {
         return SB_OK;
     }
+
 
     log_info(sb, "");
     log_debug(sb, "connect(): trying %s:%d", server->srv.hostname , server->srv.port);
@@ -237,6 +257,11 @@ FIXME: this is THREAD UNSAFE
 _broker_server_t *
 net_poll( sapo_broker_t *sb, struct timeval *tv)
 {
+    if(!sb)
+        return SB_NOT_INITIALIZED;
+
+    pthread_mutex_lock(sb->lock);
+
     log_info(sb, "");
     /* try only once to connect to all srvs */
     int i = 0;
@@ -270,6 +295,8 @@ net_poll( sapo_broker_t *sb, struct timeval *tv)
         /* error.. */
         log_err(sb, "net_poll: error on select(): %s", strerror(errno));
     }
+
+    pthread_mutex_unlock(sb->lock);
 
     return NULL;
 }
