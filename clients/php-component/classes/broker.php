@@ -23,7 +23,7 @@ class SAPO_Broker {
         // args defaults 
         $this->args=array_merge(array('port'=>3322,
                                 'debug'=>FALSE,
-		                'timeout'=>60*5, // in seconds
+                                'timeout'=>60*5, // in seconds
                                 'force_expat'=>FALSE,
                                 'locale'=>'pt_PT',
                                 'force_dom'=>FALSE),$args);
@@ -181,13 +181,13 @@ class SAPO_Broker {
         $msg.='<soap:Body>';
 
         switch(strtoupper($args['destination_type'])) {
-	        case 'QUEUE':
+          case 'QUEUE':
             $msg.='<mq:Enqueue>';
-	          break;
-	        case 'TOPIC':
-	        default:
+            break;
+          case 'TOPIC':
+          default:
             $msg.='<mq:Publish>';
-	          break;
+            break;
           }
 
         $msg.='<mq:BrokerMessage>';
@@ -219,13 +219,13 @@ class SAPO_Broker {
         $msg .= '</mq:BrokerMessage>';
 
         switch(strtoupper($args['destination_type'])) {
-	        case 'QUEUE':
+          case 'QUEUE':
             $msg.='</mq:Enqueue>';
-	          break;
-	        case 'TOPIC':
-	        default:
+            break;
+          case 'TOPIC':
+          default:
             $msg.='</mq:Publish>';
-	          break;
+            break;
           }
 
         $msg .= '</soap:Body>';
@@ -240,9 +240,9 @@ class SAPO_Broker {
             fwrite($fd, $msg);
             fclose($fd);
             rename($filename, $filename . '.good');
-            } else { return false; }
+          } else { return false; }
           return true;
-	  }
+    }
         return $this->net->write($msg);
     }
 
@@ -315,9 +315,9 @@ class SAPO_Broker {
             $len=(double)(ord($tmp[3])+(ord($tmp[2])<<8)+(ord($tmp[1])<<16)+(ord($tmp[0])<<24)); // unpack("N");
             if($len==0) {
               SAPO_Broker::dodebug("consumer() WARNING: packet length is 0!");
-	      }
-	      else
-	      {
+        }
+        else
+        {
               SAPO_Broker::dodebug("consumer() I'm about to read ".$len." bytes");
               $tmp=$this->net->netread($len);
               SAPO_Broker::dodebug("consumer() got this xml: ".$tmp."");
@@ -330,10 +330,54 @@ class SAPO_Broker {
                   $this->net->write($msg);
                   break;
                 }
-	      }
+        }
         } while ($this->net->con_retry_count<10);
     }
 
+  /**
+   * Builds a poll message type
+   * 
+   * @param $topicName
+   * @return string a message
+   */
+  function buildPollMessage($queueName) {
+    return"<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope' xmlns:mq='http://services.sapo.pt/broker'>"
+         . "<soap:Body>"
+         . "<mq:Poll>"
+         . "<mq:DestinationName>{$queueName}</mq:DestinationName>"
+         . "</mq:Poll>"
+         . "</soap:Body>"
+         . "</soap:Envelope>";
+  }
+  
+  /**
+   * Sends a poll message
+   * 
+   * @param string $queueName the queue name
+   * @return Array (destinationName,MessageId,Payload)
+   */
+  function poll($queueName) {
+    $res = $this->net->write($this->buildPollMessage($queueName));
+    if (!empty($res)) {
+      $res = $this->net->readPoll();
+      if (!empty($res)) {
+        return $this->parser->parsePackets($res);
+      }
+    }
+    return array(false, false, false);
+  }
+  
+  /**
+   * Sends an ack message
+   * 
+   * @param string $destName the destination name
+   * @param string $msgId a unique message id
+   */
+  function sendAcknowledge($destName, $msgId) {
+    SAPO_Broker::dodebug("consumer() Got QUEUE message. Acknowledging $destName with id $msgId");
+    $msg = "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope' xmlns:mq='http://services.sapo.pt/broker'><soap:Body><mq:Acknowledge><mq:DestinationName>" . $destName . "</mq:DestinationName><mq:MessageId>" . $msgId . "</mq:MessageId></mq:Acknowledge></soap:Body></soap:Envelope>";
+    $res = $this->net->write($msg);
+  }
 }
 
 class SAPO_Broker_Net {
@@ -423,9 +467,9 @@ class SAPO_Broker_Net {
 
     function tryConnect($server,$port,$timeout=5) {
       $address = gethostbyname($server);
-      $socket = fsockopen($address, $port, $errno, $errstr, $timeout);
+      $socket = @fsockopen($address, $port, $errno, $errstr, $timeout);
       if(!$socket) return(FALSE);
-      fclose($socket);
+      @fclose($socket);
       return(TRUE);
       }
 
@@ -465,7 +509,7 @@ class SAPO_Broker_Net {
     function write($msg)
     {
         if($this->connected==false) {
-            SAPO_Broker::dodebug("SAPO_Broker_Net::write() ups, we're not connected, let's go for ir");
+            SAPO_Broker::dodebug("SAPO_Broker_Net::write() ups, we're not connected, let's go for it");
 
             if($this->connect()==false) {
                 return(false);
@@ -479,6 +523,28 @@ class SAPO_Broker_Net {
         return(true);
     }
 
+  function readPoll() {
+    if ($this->connected == false) {
+      SAPO_Broker::dodebug("SAPO_Broker_Net::write() ups, we're not connected, let's go for it");
+      
+      if ($this->connect() == false) {
+        return false;
+      }
+    }
+    
+    $tmp = $this->netread(4);
+    $len = (double)(ord($tmp[3]) + (ord($tmp[2]) << 8) + (ord($tmp[1]) << 16) + (ord($tmp[0]) << 24)); // unpack("N");
+    //$len = unpack('N', $tmp); //returns array
+    //$len = $len[1];
+    
+    if ($len == 0) {
+      return false;
+    } else {
+      $res = $this->netread($len);
+      return $res;
+    }
+  }
+
     function sendKeepalive($net) {
       $m="<?xml version='1.0' encoding='UTF-8'?>\n<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope' xmlns:mq='http://services.sapo.pt/broker'><soap:Body>
 <mq:CheckStatus /></soap:Body></soap:Envelope>";
@@ -489,7 +555,7 @@ class SAPO_Broker_Net {
     function netread($len) {
         SAPO_Broker::dodebug("netread(".$len.") entering sokbuflen is ".$this->sokbuflen."");
         if($this->connected==false) {
-            SAPO_Broker::dodebug("SAPO_Broker_Net::netread() ups, we're not connected, let's go for ir");
+            SAPO_Broker::dodebug("SAPO_Broker_Net::netread() ups, we're not connected, let's go for it");
             if($this->connect()==false) {
               SAPO_Broker::dodebug("SAPO_Broker_Net::netread() couldn't reconnect");
               return('');
@@ -522,7 +588,7 @@ class SAPO_Broker_Net {
             // Execute callbacks on subscribed topics
             foreach($this->callbacks as $callback) { // periodic callbacks here, if any
                 if(($this->callbacks_ts[$callback['id']]+$callback['period'])<=$this->timer->utime()) {
-	            SAPO_Broker::dodebug("SAPO_Broker_Net::Callbacking #".$callback['id']." ".$callback['name'].". Next in ".$callback['period']." seconds");
+              SAPO_Broker::dodebug("SAPO_Broker_Net::Callbacking #".$callback['id']." ".$callback['name'].". Next in ".$callback['period']." seconds");
                     $this->callbacks_ts[$callback['id']]=$this->timer->utime();
                     call_user_func($callback['name'],$this);
                 }
@@ -643,6 +709,44 @@ class SAPO_Broker_Parser {
         }
       return(array(null,null,null));
       } // end handlePackets()
+      
+  /**
+   * Parse the packet and return the payload
+   * 
+   * @var string $msg Broker message
+   * 
+   * @return array with DestinationName, MessageId, TextPayload
+   */
+  function parsePackets($msg) {
+    //
+    // Get XML elements needed to handle subscriptions.
+    //
+    $elements = $this->getElements($msg, 'http://services.sapo.pt/broker');
+    
+//var_dump($elements);
+//print "RECEIVED:\n$msg\n\n";
+    
+    // It's a status message
+    if (!empty($elements['Status'])) {
+      $this->instance->latest_status_message = $elements['Message'];
+      $this->instance->latest_status_timestamp_received = $elements['Timestamp'];
+    } else {// It's a payload
+      //
+      // If the destination name wasn't found try to find it
+      // without using a namespace.
+      //
+      if (empty($elements['DestinationName'])) {
+        $elements = $this->getElements($msg);
+      }
+      //
+      // If a destination name was found, handle its associated callback.
+      //
+      if (!empty($elements['DestinationName'])) {
+        return (array($elements['DestinationName'], $elements['MessageId'], $elements['TextPayload']));
+      }
+    }
+    return (array(null, null, null));
+  } // end parsePackets()
 }
 
 class SAPO_Broker_Parser_DOM extends SAPO_Broker_Parser {
