@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Sapo-Broker Monitorization Console</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="scripts/sapolib.js" ></script>
+	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+        <script type="text/javascript" src="scripts/monitor_new.js"></script>
+	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
+	<script type="text/javascript">
+	</script>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="header">
+                <div id="logo">
+                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
+                </div>
+		<div id="menu-items">
+		    <div class="menu-item">
+		        <p><a href="main.html">Main page</a></p>
+		    </div>
+		    <div class="menu-item">
+		        <p><a href="#">Queues</a></p>
+		    </div>
+		    <div class="menu-item">
+		        <p><a href="#">Subscriptions</a></p>
+		    </div>
+		</div>
+            </div>
+            <div id="container">
+                <div id="main-stats">
+
+                    <div class="dashboard-widget">
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption>Agents</caption>
+                            <thead>
+                                <tr>
+                                    <td>Queue Name</th>
+                                    <td>Size</th>
+                                    <td></th>
+                                    <td>Input Rate</th>
+                                    <td></th>
+                                    <td>Output Rate</th>
+                                    <td></th>
+                                    <td>Failed Rate</th>
+                                    <td></th>
+                                    <td>Redelivered Rate</th>
+                                    <td></th>
+                                    <td>Expired Rate</th>
+                                    <td></th>
+                                </tr>
+                            </thead>
+                            <tbody id="agents">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

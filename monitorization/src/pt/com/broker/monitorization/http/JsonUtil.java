@@ -3,7 +3,7 @@ package pt.com.broker.monitorization.http;
 import java.util.Collection;
 import java.util.Iterator;
 
-import pt.com.broker.monitorization.collectors.JsonEncodable;
+import pt.com.broker.monitorization.actions.JsonEncodable;
 
 public class JsonUtil
 {

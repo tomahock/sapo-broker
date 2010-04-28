@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.monitorization.actions.DeleteQueue;
-import pt.com.broker.monitorization.collectors.JsonEncodable;
+import pt.com.broker.monitorization.actions.JsonEncodable;
 
 public class ActionExecutor
 {

@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.HostInfo;
-import pt.com.broker.monitorization.collectors.JsonEncodable;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo.AgentInfo;
 

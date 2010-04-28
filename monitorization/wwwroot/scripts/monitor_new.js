@@ -9,41 +9,56 @@ function mainMonitorizationInit()
 {
   // queues
   var f_queues = function() {
-   new Ajax.Request('/dataquery/last?predicate=queue-size&minvalue=0',
+   new Ajax.Request('/dataquery/last?predicate=queue-size&minvalue=0&count=10',
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('queuesInformationPanel');
+      var panel = s$('queue_size');
       var data = transport.responseJSON;      
       setQueueInfo(data, panel);
     },
-    onFailure: function(){ alert('Something went wrong while trying to get queue info...') }
+    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
    });  
   }
-  // dropbox
-  var f_dropboxes = function() {
-   new Ajax.Request('/data/dropbox',
+ 
+  // pending ack
+   var f_pendingAck = function() {
+   new Ajax.Request('/dataquery/last?subject=system-message&predicate=ack-pending&minvalue=-1&count=10',
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('dropboxInformationPanel');
+      var panel = s$('pending_ack');
+      var data = transport.responseJSON;      
+      setSysMsgInfo(data, panel);
+    },
+    onFailure: function(){ alert('Something went wrong while trying to get pending ack info...'); }
+   });  
+  }
+ 
+  // dropbox
+  var f_dropboxes = function() {
+   new Ajax.Request('/dataquery/last?predicate=count&subject=dropbox&count=10&minvalue=-1&orderby=object_value',
+   {
+    method:'get',
+    onSuccess: function(transport){
+      var panel = s$('dropbox_files');
       var data = transport.responseJSON;      
       setDropboxInfo(data, panel);
     },
-    onFailure: function(){ alert('Something went wrong while trying to get dropbox info...') }
+    onFailure: function(){ alert('Something went wrong while trying to get dropbox info...'); }
    });  
   }
-  // faults
-  var f_faults = function() {
-   new Ajax.Request('/dataquery/fault?count=10',
+  // errors
+  var f_errors = function() {
+   new Ajax.Request('dataquery/groupfault?groupby=shortmessage',
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('faultsInformationPanel');
+      var panel = s$('errors');
       var data = transport.responseJSON;      
-      setFaultInfo(data, panel);
+      setErrorInfo(data, panel);
     },
-    onFailure: function(){ alert('Something went wrong while trying to get faults info...') }
+    onFailure: function(){ alert('Something went wrong while trying to get faults info...'); }
    });  
   }
 
@@ -57,19 +72,105 @@ function mainMonitorizationInit()
       var data = transport.responseJSON;      
       setAgentsInfo(data, panel);
     },
-    onFailure: function(){ alert('Something went wrong while trying to get agent status info...') }
+    onFailure: function(){ alert('Something went wrong while trying to get agent status info...'); }
    });  
   }
 
+  // rate
+  var f_rates = function() {
+	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate");
+	processGraph("/dataquery/static?queuecount", "img_queue_size_rate", "queue_size_rate");
+	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate");
+	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate");
+  }
+
   f_queues();
-  setInterval(f_queues, 3000);
+  setInterval(f_queues, 5000);
+  f_pendingAck();
+  setInterval(f_pendingAck, 5100);
   f_agents();
-  setInterval(f_agents, 3000);
-  f_faults();
-  setInterval(f_faults, 3000);
- /* f_dropboxes();
-  setInterval(f_dropboxes, 3000);
-*/
+  setInterval(f_agents, 5300);
+  f_errors();
+  setInterval(f_errors, 5400);
+  f_dropboxes();
+  setInterval(f_dropboxes, 5500);
+  f_rates();
+  setInterval(f_rates, 5600);
+}
+
+
+function processGraph(queryStr, imgId, legendId)
+{
+  new Ajax.Request(queryStr,
+   {
+    method:'get',
+    onSuccess: function(transport){
+	var img = s$(imgId);
+	var data = transport.responseJSON;
+	var min = 0;
+	var max = 0;
+	var dif = 0;
+	if( data.length != 0)
+	{
+	 var min = parseFloat(data[0].value);
+	 var max = parseFloat(data[0].value);
+	}
+	for(var i = 1; i < data.length;i++)
+	{
+		var curValue = parseFloat(data[i].value);
+		if(curValue < min) min = curValue;
+		if(curValue > max) max = curValue;
+	}
+	dif = max-min;
+	var normalizedValues = new Array(data.length);
+	var originalData = new Array(data.length);
+	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
+	if( data.length != 0)
+	{
+		
+		var sample = (parseFloat(data[0].value));
+		originalData[0] = sample;
+		var bottom = sample - min;	
+		var curValue = (bottom != 0) ? ((bottom / dif) * 100) : sample;
+		curValue = round(curValue);	
+		normalizedValues[0] = curValue;
+		url = url + curValue;
+	}
+	for(var i = 1; i < data.length;i++)
+	{
+		var sample = (parseFloat(data[i].value));
+		originalData[i] = sample;		
+		var bottom = sample - min;	
+		var curValue = (bottom != 0) ? ((bottom / dif) * 100) : sample;		
+		//var curValue = (sample != 0) ? (((sample - min) / dif) * 100) : sample;
+		curValue = round(curValue);
+		normalizedValues[i] = curValue;
+		url = url + ","+curValue;
+	}
+	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (data.length-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|"
+	//url = url + Math.round(parseFloat(data[data.length-1].value));
+	url = url + "|1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
+
+	min = round(min);
+	max = round(max);
+	var latest = round(parseFloat(data[data.length-1].value));
+
+	var legend = s$(legendId);
+	legend.innerHTML = "<span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span><span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span><span class='mlabel'> Latest: </span><span class='mvalue'>" + latest + "</span>";
+	
+	img.src = url;
+
+
+	
+    },
+    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
+   });
+}
+
+function round(value)
+{
+	if(value == 0) return 0;
+	return Math.round(value * 10) / 10;
 }
 
 var previousQueueInfo = new Object();
@@ -81,7 +182,7 @@ function setQueueInfo(queueInfo, panel)
 
 	if (queueInfo.length == 0)
 	{
-        	newContent = "<p>There is no queue info</P>";
+        	newContent = "<td class=\"oddrow\" colspan=\"3\">No information available.</td>";
   	}
 	else
 	{
@@ -108,7 +209,8 @@ function setQueueInfo(queueInfo, panel)
 				queues[queueName].time = curDate;
 			}
 		}
-		var content = "<table>";
+		var content = "";
+		var count = 0;
 		for(var queueName in queues)
 		{
 			var count = queues[queueName].count;
@@ -116,14 +218,48 @@ function setQueueInfo(queueInfo, panel)
 			var pic = getLocalPic(previousValue, count);
 			var curDate = queues[queueName].time;
 			previousQueueInfo[queueName] = count;
-			//newContent = newContent + "<p><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a> : " + count + "<img src='" + pic + "' /></p>";
-			content = content + "<tr><td><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td style='text-align:right'>" +  count + "</td><td>" + getHumanTextDiff(curDate) +"</td><td><img src='"+ pic + "' /></td></tr>";
+			var rowClass =  ( ((count++)%2) == 0) ? "evenrow" : "oddrow";
+			content = content + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
-		content += "</table>";
 		newContent = content;
 	}
 	panel.innerHTML = newContent;
 }
+
+var previousSysMsgInfo = new Object();
+// pending sys messages 
+function setSysMsgInfo(sysMsgInfo, panel)
+{
+	var newContent = "";
+
+	if (sysMsgInfo.length == 0)
+	{
+        	newContent = "<td class=\"oddrow\" colspan=\"3\">No information available.</td>";
+  	}
+	else
+	{
+		var content = "";
+		var count = 0;
+		for(var i = 0; i != sysMsgInfo.length; ++i)
+		{
+			var sysInfo = sysMsgInfo[i];
+			var agentname = sysInfo.agentName;
+			var agentHostname = sysInfo.agentHostname;
+			
+			var count = parseFloat(sysInfo.value);
+
+			var previousValue = previousSysMsgInfo[agentname];
+			var pic = getLocalPic(previousValue, count);
+			previousSysMsgInfo[agentname] = count;
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+			content = content + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+agentname+"'>" + agentHostname + "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
+		}
+		newContent = content;
+	}
+	panel.innerHTML = newContent;
+}
+
+var previousDropboxInfo = new Object();
 
 // general dropbox info
 function setDropboxInfo(dropboxInfo, panel)
@@ -132,35 +268,49 @@ function setDropboxInfo(dropboxInfo, panel)
 
 	if (dropboxInfo.length == 0)
 	{
-        	newContent = "<p>There is no dropbox info</P>";
+        	newContent = "<td class=\"oddrow\" colspan=\"3\">No information available.</td>";
   	}
 	else
 	{
 		for(var i = 0; i != dropboxInfo.length; ++i)
 		{
 			var agentname = dropboxInfo[i].agentName;
-			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentname + "</a> : " + dropboxInfo[i].dropboxLocation + " : " + dropboxInfo[i].messages + " : " + dropboxInfo[i].goodMessages +"</p>";
+			var agentHostname = dropboxInfo[i].agentHostname;
+			var count = parseFloat(dropboxInfo[i].value);
+
+			var previousValue = previousDropboxInfo[agentname];
+			var pic = getLocalPic(previousValue, count);
+			previousDropboxInfo[agentname] = count;
+
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+agentname+"'>"+ agentHostname+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
 	panel.innerHTML = newContent;
 }
+
+var previousFaultInfo = new Object();
 // general fault info
-function setFaultInfo(faultInfo, panel)
+function setErrorInfo(errorInfo, panel)
 {
 	var newContent = "";
 
-	if (faultInfo.length == 0)
+	if (errorInfo.length == 0)
 	{
-        	newContent = "<p>There is no faults info</P>";
+        	newContent = "<td class=\"oddrow\" colspan=\"3\">No information available.</td>";
   	}
 	else
 	{
-		for(var i = 0; i != faultInfo.length; ++i)
+		for(var i = 0; i != errorInfo.length; ++i)
 		{
-			var agentname = faultInfo[i].agentName;
+			var shortMessage = errorInfo[i].shortMessage;
+			var count = errorInfo[i].count;
+			var previousValue = previousSysMsgInfo[shortMessage];
+			var pic = getLocalPic(previousValue, count);
+			previousSysMsgInfo[shortMessage] = count;
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentname + "</a> : <a href='./fault.html?faultid="+faultInfo[i].id+"' title='"  + faultInfo[i].time + "'> : " + faultInfo[i].shortMessage + "</a></p>";
-			//if(i == 0) alert(newContent);
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faults.html?shortmessage="+shortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
 	panel.innerHTML = newContent;
@@ -237,10 +387,10 @@ function queueMonitorizationInit()
    });  
   }
   f_agents();
-  setInterval(f_agents, 3000);
+  setInterval(f_agents, 5000);
   
   f_subscriptions();
-  setInterval(f_subscriptions, 3000);
+  setInterval(f_subscriptions, 5000);
 }
 
 var previousAgentQueueInfo = new Object();
@@ -404,6 +554,46 @@ function faultInformationInit()
    });
 }
 //
+// ALL AGENT PAGE
+//
+
+function allAgentInit()
+{
+   new Ajax.Request('/dataquery/last?predicate=status&order=agent_name',
+   {
+    method:'get',
+    onSuccess: function(transport){
+	var panel = s$('agents');
+	var data = transport.responseJSON;
+	
+	var newContent = "";
+
+	if (data.length == 0)
+	{
+        	newContent = "<td class=\"oddrow\" colspan=\"3\">No information available.</td>";
+  	}
+	else
+	{
+		var count = 1;
+		var content = "";
+		for(var i = 0; i != data.length; ++i)
+		{
+			var status = ( data[i].value == "1.0") ? "Ok" : "Down";
+			var rowClass =  ( ((count++)%2) == 0) ? "evenrow" : "oddrow";
+			var agentName = data[i].agentName;
+			//content = content + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+agentName+"'>"+ agentName+ "</a></td><td class=\"countrow\">" +  data[i].agentHostname + "</td><td>"+ status + "</td></tr>";
+			content = content + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+agentName+"'>"+ data[i].agentHostname+ "</a></td><td>"+ status + "</td></tr>";
+		}
+		newContent = content;
+	}
+	panel.innerHTML = newContent;
+    },
+    onFailure: function(){ alert('Something went wrong while trying to get all agent\'s info...') }
+   });  
+	
+}
+
+//
 // AGENT PAGE
 //
 function agentMonitorizationInit() 
@@ -510,15 +700,15 @@ function agentMonitorizationInit()
   f_hostname();
 
   f_queues();
-  setInterval(f_queues, 3000);
+  setInterval(f_queues, 5000);
   f_subscriptions();
-  setInterval(f_subscriptions, 3000);
+  setInterval(f_subscriptions, 5000);
   f_faults();
-  setInterval(f_faults, 3000);
+  setInterval(f_faults, 5000);
   f_state();
-  setInterval(f_state, 3000);
+  setInterval(f_state, 5000);
 //  f_dropbox();
-//  setInterval(f_dropbox, 30000);
+//  setInterval(f_dropbox, 50000);
 }
 // agent queue info
 function setAgentQueueInfo(queueInfo, panel)
@@ -634,7 +824,7 @@ function allQueuesInformationInit()
 	   });
 	}
   f_allQueues();
-  setInterval(f_allQueues, 30000);
+  setInterval(f_allQueues, 50000);
 }
 
 

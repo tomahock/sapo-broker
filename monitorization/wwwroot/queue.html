@@ -1,32 +1,93 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Sapo-Broker Monitorization HTTP Server</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" href="css/style.css" type="text/css" />
+        <title>Sapo-Broker Monitorization Console</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<script type="text/javascript" src="scripts/sapolib.js" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
-	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
-        <script type="text/javascript" src="scripts/monitor.js"></script>
-	<script type="text/javascript">
-		window.onload = queueMonitorizationInit;
-	</script>
+        <script type="text/javascript" src="scripts/monitor_new.js"></script>
+	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
+	<!--script type="text/javascript">
+		window.onload = agentMonitorizationInit;
+	</script-->
     </head>
     <body>
-	<a href="./main.html"><img src="images/broker_thumb.png" class="logo" /> </a>
-	<h1 class="title">Queue Information (<span id='queue_name'> </span>)</h1>
-	<div class="infoLabel"><span class="labelName">Total messages:</span><span class="labelBody" id='queue_msg_count'></span></div>
-	<span class="infoPannel">
-		<div class="infoPannelTitle">Agents</div>
-		<div class="infoPannelBody" id="queue_agents">
+        <div id="wrapper">
+            <div id="header">
+                <div id="logo">
+                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
+                </div>
+			<div id="menu-items">
+		            <div class="menu-item">
+		                <p><a href="main.html">Main</a></p>
+		            </div>
+		            <div class="menu-item">
+		                <p><a href="queues.html">Queues</a></p>
+		            </div>
+		            <div class="menu-item">
+		                <p><a href="subscriptions.html">Subscriptions</a></p>
+		            </div>
+			</div>
+            </div>
+            <div id="container">
+		<div id="info-pannel">
+			<h1 class="title">Queue: <span id='host_name'>/queue/foo</span></h1> 
+			<h2 class="title">Total size: <span id='host_name'>558</span></h1>      		
 		</div>
-	</span>
-
-	<span class="infoPannel">
-		<div class="infoPannelTitle">Subscriptions</div>
-		<div class="infoPannelBody" id="queue_subscriptions"></div>
-	</span>
-	<div class="footer">
-		<span class="jsLink" onclick="confirmDelete()">Delete queue</span> | <a href="./allqueues.html">All queues</a> | <a href="./main.html">Back to main</a>		
-	</div>
+                <div id="main-stats">
+			    <div id="status-box">
+			    	<!--<img src="./images/danger_small.png" border="0" />
+					<h2><a href="agents.html">3 agents are down</a></h2> -->
+			    </div>
+				<div class="stat-widget">
+					<h1>Input Rate</h1>
+					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+				</div>
+				<div class="stat-widget">
+					<h1>Output Rate</h1>
+					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+				</div>
+				<div class="stat-widget">
+					<h1>Failed Rate</h1>
+					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+				</div>
+				<div class="stat-widget">
+					<h1>Redelivered Rate</h1>
+					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+				</div>
+				<div class="stat-widget">
+					<h1>Expired Rate</h1>
+					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+				</div>
+		</div>
+                <div id="dashboard">
+                    <div class="dashboard-widget">
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption>Queue Size</caption>
+                            <thead>
+                                <tr>
+                                    <td>Agent</th>
+                                    <td>Size</th>
+                                    <td></th>
+                                </tr>
+                            </thead>
+                            <tbody id='agent_messages'>
+                                <tr class="oddrow">
+                                    <td><a href="#">machine1</a></td>
+                                    <td>213</td>
+                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td><a href="#">machine2</a></td>
+                                    <td>345</td>
+                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>  			
+                </div>
+            </div>
+        </div>
     </body>
 </html>

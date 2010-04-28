@@ -9,14 +9,17 @@ import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 
 public class ActionRouter implements RequestRouter
 {
-	private static final String DATA_PREFIX = "/data/";
 	private static final String ACTION_PREFIX = "/action/";
 	
+	private static final String DATAQUERY_PREFIX = "/dataquery/";
+	
+	private static final String AGENT_NAME = "/hostname";
 	
 	// These HttpAction are stateless
-	private static final DataAction dataAction = new DataAction();
+	//private static final DataAction dataAction = new DataAction();
+	private static final DataQueryAction dataQueryAction = new DataQueryAction(DATAQUERY_PREFIX);
 	private static final ActionExecuterAction actionExecuter = new ActionExecuterAction();
-	
+	private static final HostnameAction hostnameAction= new HostnameAction(AGENT_NAME);
 	
 	@Override
 	public HttpAction map(HttpRequest request)
@@ -28,13 +31,17 @@ public class ActionRouter implements RequestRouter
 		
 		String lowerUri = uriBase.toLowerCase();
 		
-		if (lowerUri.startsWith(DATA_PREFIX))
+		if (lowerUri.startsWith(DATAQUERY_PREFIX))
 		{
-			return dataAction;
+			return dataQueryAction;
 		}
 		else if(lowerUri.startsWith(ACTION_PREFIX))
 		{
 			return actionExecuter;
+		}
+		else if(lowerUri.startsWith(AGENT_NAME))
+		{
+			return hostnameAction;
 		}
 		
 		return new StaticFileAction(ConfigurationInfo.getWwwrootPath());

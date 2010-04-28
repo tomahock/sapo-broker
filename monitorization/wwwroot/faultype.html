@@ -9,7 +9,7 @@
         <script type="text/javascript" src="scripts/monitor_new.js"></script>
 	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 	<!--script type="text/javascript">
-		window.onload = faultInformationInit;
+		window.onload = agentMonitorizationInit;
 	</script-->
     </head>
     <body>
@@ -26,21 +26,39 @@
 		                <p><a href="queues.html">Queues</a></p>
 		            </div>
 		            <div class="menu-item">
-		                <p><a href="agents.html">Agents</a></p>
-		            </div>
-		            <div class="menu-item">
 		                <p><a href="subscriptions.html">Subscriptions</a></p>
 		            </div>
 			</div>
             </div>
             <div id="container">
 		<div id="info-pannel">
-			<div class="infoLabel"><span class="labelName">Agent:</span><span class="labelBody" id='agent_name'>solr01.portalsvc.bk.sapo.pt</span></div>
-			<div class="infoLabel"><span class="labelName">Fault short description:</span><span class="labelBody" id='fault_shortmsg'>Connection reset by peer</span></div>
-			<div class="infoLabel"><span class="labelName">Fault date:</span><span class="labelBody" id='fault_date'>12:15</span></div>
+			<h1 class="title">Fault type: <span id='fault_type'>Connection reset by peer</span></h1> 
 		</div>
                 <div id="dashboard">
-                   stack trace...
+                    <div class="dashboard-widget">
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption>Agent</caption>
+                            <thead>
+                                <tr>
+                                    <td>Agent</th>
+                                    <td>Time</th>
+                                    <td></th>
+                                </tr>
+                            </thead>
+                            <tbody id='agent_messages'>
+                                <tr class="oddrow">
+                                    <td><a href="#">machine1</a></td>
+                                    <td>3 seconds ago</td>
+                                    <td><a href="fault.html"><img src="./images/trend_flat.gif" alt="Detail" title="Detail" border="0" /></a></td>
+                                </tr>
+                                <tr class="oddrow">
+                                    <td><a href="#">machine1</a></td>
+                                    <td>5 seconds ago</td>
+                                    <td><a href="fault.html"><img src="./images/trend_flat.gif" alt="Detail" title="Detail" border="0" /></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>  			
                 </div>
             </div>
         </div>

@@ -1,47 +1,182 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Sapo-Broker Monitorization HTTP Server</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" href="css/style.css" type="text/css" />
+        <title>Sapo-Broker Monitorization Console</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<script type="text/javascript" src="scripts/sapolib.js" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
-	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
-        <script type="text/javascript" src="scripts/monitor.js"></script>
-	<script type="text/javascript">
+        <script type="text/javascript" src="scripts/monitor_new.js"></script>
+	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
+	<!--script type="text/javascript">
 		window.onload = agentMonitorizationInit;
-	</script>
+	</script-->
     </head>
     <body>
-	<a href="./main.html"><img src="images/broker_thumb.png" class="logo" /> </a>
-	<h1 class="title">Agent Information (<span id='agent_name'> </span> - <span id='host_name'> </span>) </h1>	
+        <div id="wrapper">
+            <div id="header">
+                <div id="logo">
+                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
+                </div>
+			<div id="menu-items">
+		            <div class="menu-item">
+		                <p><a href="main.html">Main</a></p>
+		            </div>
+		            <div class="menu-item">
+		                <p><a href="queues.html">Queues</a></p>
+		            </div>
+		            <div class="menu-item">
+		                <p><a href="subscriptions.html">Subscriptions</a></p>
+		            </div>
+			</div>
+            </div>
+            <div id="container">
+		<div id="info-pannel">
+			<h1 class="title">Agent: <span id='host_name'>blogs1.blogs.bk.sapo.pt</span></h1>      		
+		</div>
+                <div id="main-stats">
+			    <div id="status-box">
+			    	<!--<img src="./images/danger_small.png" border="0" />
+					<h2><a href="agents.html">3 agents are down</a></h2> -->
+			    </div>
+		            <div class="stat-widget">
+						<h1>Queued Messages</h1>
+						<p><img title="Queued Messages" alt="Queued Messages" id="img_queue_size_rate"  src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+						<p><span id="queue_size_rate"></span></p>
+			    </div>
+		            <div class="stat-widget">
+						<h1>Error Rate</h1>
+						<p><img title="Error Rate" alt="Error Rate" id="img_error_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+						<p><span id="count_error_rate"></span></p>
+					</div>
+		            <div class="stat-widget">
+						<h1>Input Rate</h1>
+						<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+					</div>
+		            <div class="stat-widget">
+						<h1>Output Rate</h1>
+						<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+					</div>
+				</div>
 
-	<span class="infoPannel">
-		<div class="infoPannelTitle">Queues</div>
-		<div class="infoPannelBody" id="queuesInformationPanel">
-		</div>
-	</span>
-
-	<span class="infoPannel">
-		<div class="infoPannelTitle">Faults</div>
-		<div class="infoPannelBody" id="faultsInformationPanel">
-		</div>
-	</span>
-	
-	<span class="infoPannel">
-		<div class="infoPannelTitle">Subscriptions</div>
-		<div class="infoPannelBody" id="subscriptionInformationPanel">
-		</div>
-	</span>
-
-	<span class="infoPannel">
-		<div class="infoPannelTitle">Misc</div>
-		<div class="infoPannelBody" id="dropboxInformationPanel">
-			<div class="infoLabel"><span class="labelName">State:</span><span class="labelBody" id='agent_state'></span></div>
-			<div class="infoLabel"><span class="labelName">Dropbox:</span><span class="labelBody" id='agent_dropbox'></span></div>
-		</div>
-	</span>
-	<div class="footer">
-		<span class="jsLink" onclick="subscriptionsPage()">Subscriptions</span> (warning: very ugly page) | <a href="./main.html">Back to main</a>	
-	</div>
+                <div id="dashboard">
+                    <div class="dashboard-widget">
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption>Queue Size</caption>
+                            <thead>
+                                <tr>
+                                    <td>Queue Name</th>
+                                    <td>Size</th>
+                                    <td></th>
+                                </tr>
+                            </thead>
+                            <tbody id='queue_size'>
+                                <tr class="oddrow">
+                                    <td><a href="#">FOO@/sapo/xpto</a></td>
+                                    <td>213</td>
+                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td><a href="#">BAR@/sapo/gugu</a></td>
+                                    <td>345</td>
+                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
+                                </tr>
+                                <tr class="oddrow">
+                                    <td><a href="#">FOO@/sapo/xpto</a></td>
+                                    <td>213</td>
+                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td><a href="#">BAR@/sapo/gugu</a></td>
+                                    <td>345</td>
+                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
+                                </tr>
+                                <tr class="oddrow">
+                                    <td><a href="#">FOO@/sapo/xpto</a></td>
+                                    <td>213</td>
+                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td><a href="#">BAR@/sapo/gugu</a></td>
+                                    <td>345</td>
+                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
+                                </tr>
+                                <tr class="oddrow">
+                                    <td><a href="#">FOO@/sapo/xpto</a></td>
+                                    <td>213</td>
+                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td><a href="#">BAR@/sapo/gugu</a></td>
+                                    <td>345</td>
+                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
+                                </tr>
+                                <tr class="oddrow">
+                                    <td><a href="#">FOO@/sapo/xpto</a></td>
+                                    <td>213</td>
+                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td><a href="#">BAR@/sapo/gugu</a></td>
+                                    <td>345</td>
+                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="dashboard-widget">
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption>Errors</caption>
+                            <thead>
+                                <tr>
+                                    <td>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody id="errors">
+                                <!--<tr class="oddrow">
+                                    <td><a href="#">Connection reset by peer</a></td>
+                                    <td>213</td>
+                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td><a href="#">Invalid XML format</a></td>
+                                    <td>345</td>
+                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
+                                </tr>-->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="dashboard-widget">
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption>Generic Information</caption>
+                            <thead>
+				<tr>
+                                    <td>Type</th>
+				    <td></th>
+                                </tr>
+                            </thead>
+                            <tbody id="errors">
+                                <tr class="oddrow">
+                                    <td>Pending Sys</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td>Dropbox</a></td>
+                                    <td>123</td>
+                                </tr>
+                                <tr class="oddrow">
+                                    <td>TCP connections</a></td>
+                                    <td>100</td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td>Status</a></td>
+                                    <td>Ok</td>
+                                </tr>
+                            </tbody>
+                    </div>
+   			
+                </div>
+            </div>
+        </div>
     </body>
 </html>

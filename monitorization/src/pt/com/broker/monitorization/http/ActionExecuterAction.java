@@ -17,5 +17,4 @@ public class ActionExecuterAction extends JsonHttpAction
 	{
 		return ActionExecutor.execute(path, params);
 	}
-
 }

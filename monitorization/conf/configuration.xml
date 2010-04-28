@@ -1,9 +1,9 @@
 <monitorization-configuration>
-	<console http-port="8877" />
+	<console http-port="8878" />
 	<root-paths filesystem-path="." wwwroot-path="wwwroot" />
 	<agents>
-		<agent hostname="broker.bk.sapo.pt" port="3323"/>
-		<!--  agent hostname="127.0.0.1" port="3323" / -->
+		<!--  agent hostname="broker.bk.sapo.pt" port="3323"/ -->
+		<agent hostname="172.17.1.102" port="3323" />
 	</agents>
 	<tcp-port-exceptions>
 <!--
