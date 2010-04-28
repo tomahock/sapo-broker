@@ -1,11 +1,8 @@
 #!/usr/bin/env php
 <?php
-$skey = array_search("-b", $argv); $brokeraddr = $argv[$skey+1];
-$pkey = array_search("-p", $argv); $brokerport = $argv[$pkey+1];
-$qkey = array_search("-q", $argv); $brokerqueue = $argv[$qkey+1];
 
-$broker = broker_init($brokeraddr, $brokerport, 0, 1);
-$ret = broker_subscribe_queue($broker, $brokerqueue, 0);
+$broker = broker_init("127.0.0.1", 3323, 0, 1);
+$ret = broker_subscribe_queue($broker, "/test/foo", 0);
 
 $start = time();
 $msgs = 0;
