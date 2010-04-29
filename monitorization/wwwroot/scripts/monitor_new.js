@@ -78,8 +78,8 @@ function mainMonitorizationInit()
 
   // rate
   var f_rates = function() {
-	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate");
 	processGraph("/dataquery/static?queuecount", "img_queue_size_rate", "queue_size_rate");
+	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate");
 	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate");
 	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate");
   }
@@ -110,11 +110,15 @@ function processGraph(queryStr, imgId, legendId)
 	var min = 0;
 	var max = 0;
 	var dif = 0;
-	if( data.length != 0)
-	{
-	 var min = parseFloat(data[0].value);
-	 var max = parseFloat(data[0].value);
-	}
+	
+	if(data.length == 0)
+		return;
+
+	// determine max ans min	
+	// first sample
+	var min = parseFloat(data[0].value);
+	var max = parseFloat(data[0].value);
+	
 	for(var i = 1; i < data.length;i++)
 	{
 		var curValue = parseFloat(data[i].value);
@@ -125,23 +129,26 @@ function processGraph(queryStr, imgId, legendId)
 	var normalizedValues = new Array(data.length);
 	var originalData = new Array(data.length);
 	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
-	if( data.length != 0)
-	{
-		
-		var sample = (parseFloat(data[0].value));
-		originalData[0] = sample;
-		var bottom = sample - min;	
-		var curValue = (bottom != 0) ? ((bottom / dif) * 100) : sample;
-		curValue = round(curValue);	
-		normalizedValues[0] = curValue;
-		url = url + curValue;
-	}
+	
+	// process first sample
+	var sample = (parseFloat(data[0].value));
+	originalData[0] = sample;
+	var bottom = sample - min;	
+	var curValue = (bottom != 0) ? ((bottom / dif) * 100) : bottom;
+	curValue = round(curValue);	
+	normalizedValues[0] = curValue;
+	url = url + curValue;
+	
+
+	// ((originalData[0]-min) != 0) ? (((originalData[0]-min) / dif) * 100) : originalData[0]
+
+	// process remaining samples
 	for(var i = 1; i < data.length;i++)
 	{
 		var sample = (parseFloat(data[i].value));
 		originalData[i] = sample;		
 		var bottom = sample - min;	
-		var curValue = (bottom != 0) ? ((bottom / dif) * 100) : sample;		
+		var curValue = (bottom != 0) ? ((bottom / dif) * 100) : bottom;		
 		//var curValue = (sample != 0) ? (((sample - min) / dif) * 100) : sample;
 		curValue = round(curValue);
 		normalizedValues[i] = curValue;
