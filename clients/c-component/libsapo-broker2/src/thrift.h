@@ -1,8 +1,6 @@
 #ifndef _THRIFT_H_
 #define _THRIFT_H_
 
-#include "sapo_broker.h"
-
 int
 proto_thrift_send(
         sapo_broker_t *sb,
