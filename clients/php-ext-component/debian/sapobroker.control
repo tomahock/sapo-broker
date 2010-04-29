@@ -1,0 +1,10 @@
+Package: sapobroker
+Priority: optional
+Architecture: amd64
+Depends: php5, libsapo-broker2
+Version: 0.2
+Maintainer: Filipe Varela <filipe.varela@caixamagica.pt>
+Description: PHP extension for SAPO Broker server.
+			 This extension wraps libsapo-broker2.
+
+
