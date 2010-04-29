@@ -1,5 +1,0 @@
-libsapo-broker2 (0.2) unstable; urgency=low
- * first public build
- * on-par with libsapobroker2
-
- -- Filipe Varela <filipe.varela@caixamagica.pt>  Thu Apr 29 12:15:00 WEST 2010
