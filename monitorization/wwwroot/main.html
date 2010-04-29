@@ -2,37 +2,30 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Sapo-Broker Monitorization Console</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<script type="text/javascript" src="scripts/sapolib.js" ></script>
-	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
-        <script type="text/javascript" src="scripts/monitor_new.js"></script>
-	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
-	<script type="text/javascript">
-		window.onload = mainMonitorizationInit;
-	</script>
+		<title>Sapo-Broker Monitorization Console</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="scripts/sapolib.js" ></script>
+		<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+		<script type="text/javascript" src="scripts/monitor_new.js"></script>
+		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
+		<script type="text/javascript">
+			window.onload = mainMonitorizationInit;
+		</script>
     </head>
     <body>
         <div id="wrapper">
             <div id="header">
                 <div id="logo">
-                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
-		</div>
-			<div id="menu-items">
-			    <div class="menu-item">
-				<p><a href="main.html">Main</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="agents.html">Agents</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="queues.html">Queues</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="subscriptions.html">Subscriptions</a></p>
-			    </div>
+                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>			
+				</div>
+				<div id="menu-items">
+					<p class="menu-item"><a href="main.html">Main</a></p>
+					<p class="menu-item"><a href="agents.html">Agents</a></p>
+					<p class="menu-item"><a href="queues.html">Queues</a></p>
+					<p class="menu-item"><a href="subscriptions.html">Subscriptions</a></p>
+				</div>
 			</div>
-		</div>
+
             <div id="container">
 
                 <div id="main-stats">
@@ -42,22 +35,22 @@
 			    </div-->
 		            <div class="stat-widget">
 						<h1>Queued Messages</h1>
-						<p><img title="Queued Messages" alt="Queued Messages" id="img_queue_size_rate" /></p>
+						<p><img title="Queued Messages" alt="Queued Messages" id="img_queue_size_rate" src="#" /></p>
 						<p><span id="queue_size_rate"></span></p>
 			    </div>
 		            <div class="stat-widget">
 						<h1>Error Rate</h1>
-						<p><img title="Error Rate" alt="Error Rate" id="img_error_rate" /></p>
+						<p><img title="Error Rate" alt="Error Rate" id="img_error_rate" src="#" /></p>
 						<p><span id="count_error_rate"></span></p>
 					</div>
 		            <div class="stat-widget">
 						<h1>Input Rate</h1>
-						<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" /></p>
+						<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="#" /></p>
 						<p><span id="count_input_rate"></span></p>
 					</div>
 		            <div class="stat-widget">
 						<h1>Output Rate</h1>
-						<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" /></p>
+						<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" src="#" /></p>
 						<p><span id="count_output_rate"></span></p>
 					</div>
 				</div>
@@ -68,62 +61,12 @@
                             <caption>Queue Size</caption>
                             <thead>
                                 <tr>
-                                    <td>Queue Name</th>
-                                    <td>Size</th>
-                                    <td></th>
+                                    <td>Queue Name</td>
+                                    <td>Size</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody id='queue_size'>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -132,22 +75,12 @@
                             <caption>Errors</caption>
                             <thead>
                                 <tr>
-                                    <td>Message</th>
-                                    <td>Count</th>
-                                    <td></th>
+                                    <td>Message</td>
+                                    <td>Count</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody id="errors">
-                                <tr class="oddrow">
-                                    <td><a href="faultype.html">Connection reset by peer</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="faultype.html">Invalid XML format</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -156,27 +89,12 @@
                             <caption>Dropbox Files</caption>
                             <thead>
                                 <tr>
-                                    <td>Agent</th>
-                                    <td>Count</th>
-                                    <td></th>
+                                    <td>Agent</td>
+                                    <td>Count</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody id="dropbox_files">
-                                <tr class="oddrow">
-                                    <td><a href="#">ana2-collector02.analytics2.bk.sapo.pt</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">solr01.portalsvc.bk.sapo.pt</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">gis-fe01.gis.bk.sapo.pt</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -185,28 +103,12 @@
                             <caption>Pending System Ack's</caption>
                             <thead>
                                 <tr>
-                                    <td>Agent</th>
-                                    <td>Count</th>
-                                    <td></th>
+                                    <td>Agent</td>
+                                    <td>Count</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody id="pending_ack">
-				
-                                <tr class="oddrow">
-                                    <td><a href="#">ana2-collector02.analytics2.bk.sapo.pt</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">solr01.portalsvc.bk.sapo.pt</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">gis-fe01.gis.bk.sapo.pt</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>

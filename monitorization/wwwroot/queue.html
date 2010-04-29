@@ -1,99 +1,83 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Sapo-Broker Monitorization Console</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<script type="text/javascript" src="scripts/sapolib.js" ></script>
-	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
-	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
-        <script type="text/javascript" src="scripts/monitor_new.js"></script>
-	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
-	<script type="text/javascript">
-		window.onload = queueMonitorizationInit;
-	</script>
+		<title>Sapo-Broker Monitorization Console</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="scripts/sapolib.js" ></script>
+		<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+		<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
+		<script type="text/javascript" src="scripts/monitor_new.js"></script>
+		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
+		<script type="text/javascript">
+			window.onload = queueMonitorizationInit;
+		</script>
     </head>
     <body>
         <div id="wrapper">
             <div id="header">
                 <div id="logo">
-                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
-                </div>
-			<div id="menu-items">
-			    <div class="menu-item">
-				<p><a href="main.html">Main</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="agents.html">Agents</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="queues.html">Queues</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="subscriptions.html">Subscriptions</a></p>
-			    </div>
+                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>			
+				</div>
+				<div id="menu-items">
+					<p class="menu-item"><a href="main.html">Main</a></p>
+					<p class="menu-item"><a href="agents.html">Agents</a></p>
+					<p class="menu-item"><a href="queues.html">Queues</a></p>
+					<p class="menu-item"><a href="subscriptions.html">Subscriptions</a></p>
+				</div>
 			</div>
-            </div>
+
             <div id="container">
-		<div id="info-pannel">
-			<h1 class="title">Queue: <span id='queue_name'></span></h1>		
-		</div>
+				<div id="info-pannel">
+					<h1 class="title">Queue: <span id='queue_name'></span></h1>		
+				</div>
                 <div id="main-stats">
-			    <div id="status-box">
-				<div class="stat-widget">
-					<h1>Queue size</h1>
-					<p><img title="Queue size" alt="Queue size" id="img_queue_size" /></p>
-					<p><span id="count_queue_size"></span></p>
+					<div id="status-box">
+		            <div class="stat-widget">
+						<h1>Queued Messages</h1>
+						<p><img title="Queued Messages" alt="Queued Messages" id="img_queue_size_rate" src="#" /></p>
+						<p><span id="queue_size_rate"></span></p>
+					</div>
+			        <div class="stat-widget">
+						<h1>Error Rate</h1>
+						<p><img title="Error Rate" alt="Error Rate" id="img_error_rate" src="#" /></p>
+						<p><span id="count_error_rate"></span></p>
+					</div>
+			        <div class="stat-widget">
+						<h1>Input Rate</h1>
+						<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="#" /></p>
+						<p><span id="count_input_rate"></span></p>
+					</div>
+			        <div class="stat-widget">
+						<h1>Output Rate</h1>
+						<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" src="#" /></p>
+						<p><span id="count_output_rate"></span></p>
+					</div>
 				</div>
-				<div class="stat-widget">
-					<h1>Input Rate</h1>
-					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" /></p>
-					<p><span id="count_input_rate"></span></p>
-				</div>
-				<div class="stat-widget">
-					<h1>Output Rate</h1>
-					<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" /></p>
-					<p><span id="count_output_rate"></span></p>
-				</div>
-				<div class="stat-widget">
-					<h1>Failed Rate</h1>
-					<p><img title="Failed Rate" alt="Failed Rate" id="img_failed_rate" /></p>
-					<p><span id="count_failed_rate"></span></p>
-				</div>
-		</div>
+
                 <div id="dashboard">
                     <div class="dashboard-widget">
                         <table cellspacing="0" cellpadding="7" border="0">
                             <caption>Queue Information</caption>
                             <thead>
                                 <tr>
-                                    <td>Agent</th>
-                                    <td>Size</th>
-                                    <td></th>
-                                    <td>Input Rate</th>
-                                    <td></th>
-                                    <td>Output Rate</th>
-                                    <td></th>
-                                    <td>Failed Rate</th>
-                                    <td></th>
-                                    <td>Expired Rate</th>
-                                    <td></th>
-                                    <td>Redelivered Rate</th>
-                                    <td></th>
-                                    <td>Subscriptions</th>
+                                    <td>Agent</td>
+                                    <td>Size</td>
+                                    <td></td>
+                                    <td>Input Rate</td>
+                                    <td></td>
+                                    <td>Output Rate</td>
+                                    <td></td>
+                                    <td>Failed Rate</td>
+                                    <td></td>
+                                    <td>Expired Rate</td>
+                                    <td></td>
+                                    <td>Redelivered Rate</td>
+                                    <td></td>
+                                    <td>Subscriptions</td>
                                 </tr>
                             </thead>
                             <tbody id='general_queue_information'>
-                                <tr class="oddrow">
-                                    <td><a href="#">machine1</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">machine2</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>  			

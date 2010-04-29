@@ -1,51 +1,44 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Sapo-Broker Monitorization Console</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<script type="text/javascript" src="scripts/sapolib.js" ></script>
-	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
-        <script type="text/javascript" src="scripts/monitor_new.js"></script>
-	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
-	<!--script type="text/javascript">
-		window.onload = agentMonitorizationInit;
-	</script-->
+		<title>Sapo-Broker Monitorization Console</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="scripts/sapolib.js" ></script>
+		<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+		<script type="text/javascript" src="scripts/monitor_new.js"></script>
+		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
+		<script type="text/javascript">
+			// window.onload = agentMonitorizationInit;
+		</script>
     </head>
     <body>
         <div id="wrapper">
             <div id="header">
                 <div id="logo">
-                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
-                </div>
-			<div id="menu-items">
-			    <div class="menu-item">
-				<p><a href="main.html">Main</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="agents.html">Agents</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="queues.html">Queues</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="subscriptions.html">Subscriptions</a></p>
-			    </div>
+                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>			
+				</div>
+				<div id="menu-items">
+					<p class="menu-item"><a href="main.html">Main</a></p>
+					<p class="menu-item"><a href="agents.html">Agents</a></p>
+					<p class="menu-item"><a href="queues.html">Queues</a></p>
+					<p class="menu-item"><a href="subscriptions.html">Subscriptions</a></p>
+				</div>
 			</div>
-            </div>
+
             <div id="container">
-		<div id="info-pannel">
-			<h1 class="title">Fault type: <span id='fault_type'>Connection reset by peer</span></h1> 
-		</div>
+				<div id="info-pannel">
+					<h1 class="title">Fault type: <span id='fault_type'>Connection reset by peer</span></h1> 
+				</div>
                 <div id="dashboard">
                     <div class="dashboard-widget">
                         <table cellspacing="0" cellpadding="7" border="0">
                             <caption>Agent</caption>
                             <thead>
                                 <tr>
-                                    <td>Agent</th>
-                                    <td>Time</th>
-                                    <td></th>
+                                    <td>Agent</td>
+                                    <td>Time</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody id='agent_messages'>

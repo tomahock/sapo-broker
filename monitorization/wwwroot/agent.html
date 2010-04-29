@@ -1,39 +1,31 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Sapo-Broker Monitorization Console</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<script type="text/javascript" src="scripts/sapolib.js" ></script>
-	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
-        <script type="text/javascript" src="scripts/monitor_new.js"></script>
-	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
-	<!--script type="text/javascript">
-		window.onload = agentMonitorizationInit;
-	</script-->
+		<title>Sapo-Broker Monitorization Console</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="scripts/sapolib.js" ></script>
+		<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+		<script type="text/javascript" src="scripts/monitor_new.js"></script>
+		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
+		<script type="text/javascript">
+			// window.onload = mainMonitorizationInit;
+		</script>
     </head>
     <body>
         <div id="wrapper">
             <div id="header">
                 <div id="logo">
-                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
-                </div>
-			<div id="menu-items">
-			    <div class="menu-item">
-				<p><a href="main.html">Main</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="agents.html">Agents</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="queues.html">Queues</a></p>
-			    </div>
-			    <div class="menu-item">
-				<p><a href="subscriptions.html">Subscriptions</a></p>
-			    </div>
+                    <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>			
+				</div>
+				<div id="menu-items">
+					<p class="menu-item"><a href="main.html">Main</a></p>
+					<p class="menu-item"><a href="agents.html">Agents</a></p>
+					<p class="menu-item"><a href="queues.html">Queues</a></p>
+					<p class="menu-item"><a href="subscriptions.html">Subscriptions</a></p>
+				</div>
 			</div>
-		</div>
-            </div>
+
             <div id="container">
 		<div id="info-pannel">
 			<h1 class="title">Agent: <span id='host_name'>blogs1.blogs.bk.sapo.pt</span></h1>      		
@@ -69,62 +61,12 @@
                             <caption>Queue Size</caption>
                             <thead>
                                 <tr>
-                                    <td>Queue Name</th>
-                                    <td>Size</th>
-                                    <td></th>
+                                    <td>Queue Name</td>
+                                    <td>Size</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody id='queue_size'>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td><a href="#">FOO@/sapo/xpto</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">BAR@/sapo/gugu</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_down_good.gif" border="0" /></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -133,20 +75,10 @@
                             <caption>Errors</caption>
                             <thead>
                                 <tr>
-                                    <td>Message</th>
+                                    <td>Message</td>
                                 </tr>
                             </thead>
                             <tbody id="errors">
-                                <!--<tr class="oddrow">
-                                    <td><a href="#">Connection reset by peer</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">Invalid XML format</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>-->
                             </tbody>
                         </table>
                     </div>
@@ -155,22 +87,12 @@
                             <caption>Subscriptions</caption>
                             <thead>
                                 <tr>
-                                    <td>Name</th>
-                                    <td>Type</th>
-                                    <td>Count</th>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Count</td>
                                 </tr>
                             </thead>
                             <tbody id="errors">
-                                <!--<tr class="oddrow">
-                                    <td><a href="#">Connection reset by peer</a></td>
-                                    <td>213</td>
-                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td><a href="#">Invalid XML format</a></td>
-                                    <td>345</td>
-                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
-                                </tr>-->
                             </tbody>
                         </table>
                     </div>
@@ -178,31 +100,15 @@
                         <table cellspacing="0" cellpadding="7" border="0">
                             <caption>Generic Information</caption>
                             <thead>
-				<tr>
-                                    <td>Type</th>
-				    <td></th>
+								<tr>
+                                    <td>Type</td>
+				    				<td></td>
                                 </tr>
                             </thead>
                             <tbody id="errors">
-                                <tr class="oddrow">
-                                    <td>Pending Sys</td>
-                                    <td>2</td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td>Dropbox</a></td>
-                                    <td>123</td>
-                                </tr>
-                                <tr class="oddrow">
-                                    <td>TCP connections</a></td>
-                                    <td>100</td>
-                                </tr>
-                                <tr class="evenrow">
-                                    <td>Status</a></td>
-                                    <td>Ok</td>
-                                </tr>
                             </tbody>
+                        </table>
                     </div>
-   			
                 </div>
             </div>
         </div>
