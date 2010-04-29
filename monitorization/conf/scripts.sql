@@ -48,7 +48,7 @@ $BODY$
 		,(
 			SELECT max(event_time) as m_time, agent_name
 			FROM raw_data
-			WHERE predicate=$1 AND event_time<=$2 GROUP BY agent_name
+			WHERE predicate=$1 AND event_time<=$2 AND event_time > $2 - time '00:05' GROUP BY agent_name
 		) last_events
 	WHERE
 		raw_data.event_time = last_events.m_time
@@ -58,6 +58,7 @@ $BODY$
   LANGUAGE 'sql' VOLATILE
   COST 100;
 ALTER FUNCTION last_event_for_predicate(text, timestamp with time zone) OWNER TO postgres;
+
 
 -- Function: last_event_for_subject_and_predicate(text, text, timestamp with time zone)
 
@@ -71,7 +72,7 @@ $BODY$
 		,(
 			SELECT max(event_time) as m_time, agent_name
 			FROM raw_data
-			WHERE subject=$1 AND predicate=$2 AND event_time<=$3 GROUP BY agent_name
+			WHERE subject=$1 AND predicate=$2 AND event_time<=$3 AND event_time > $3 - time '00:05' GROUP BY agent_name
 		) last_events
 	WHERE
 		raw_data.event_time = last_events.m_time
@@ -83,5 +84,98 @@ $BODY$
   COST 100;
 ALTER FUNCTION last_event_for_subject_and_predicate(text, text, timestamp with time zone) OWNER TO postgres;
 
+-- Function: last_event_for_subject_predicate_agent(text, text, text, timestamp with time zone)
 
+-- DROP FUNCTION last_event_for_subject_predicate_agent(text, text, text, timestamp with time zone);
+
+CREATE OR REPLACE FUNCTION last_event_for_subject_predicate_agent(text, text, text, timestamp with time zone)
+  RETURNS double precision AS
+$BODY$
+
+	SELECT COALESCE(object_value, 0)
+	FROM raw_data
+	WHERE
+		subject=$1
+		AND predicate=$2
+		AND event_time<=$4
+		AND event_time > ($4 - time '00:35')
+		AND agent_name = $3
+	ORDER BY event_time DESC LIMIT 1;
+			
+$BODY$
+  LANGUAGE 'sql' VOLATILE
+  COST 100;
+ALTER FUNCTION last_event_for_subject_predicate_agent(text, text, text, timestamp with time zone) OWNER TO broker_console;
+
+-- Function: last_event_input_message(timestamp with time zone)
+
+-- DROP FUNCTION last_event_input_message(timestamp with time zone);
+
+CREATE OR REPLACE FUNCTION last_event_input_message(timestamp with time zone)
+  RETURNS double precision AS
+$BODY$
+	SELECT COALESCE(SUM(raw_data.object_value), 0) FROM
+		raw_data
+		,(
+			SELECT max(event_time) as m_time, agent_name
+			FROM raw_data
+			WHERE predicate = 'input-rate' AND (subject='topic://.*' OR subject='http' OR subject='dropbox' OR subject ~'^queue://' ) AND event_time<=$1 GROUP BY agent_name
+		) last_events
+	WHERE
+		raw_data.event_time = last_events.m_time
+		AND raw_data.agent_name = last_events.agent_name
+		AND predicate = 'input-rate'
+		AND (subject='topic://.*' OR subject='http' OR subject='dropbox' OR subject ~'^queue://' )
+$BODY$
+  LANGUAGE 'sql' VOLATILE
+  COST 100;
+ALTER FUNCTION last_event_input_message(timestamp with time zone) OWNER TO postgres;
+
+-- Function: last_event_input_message_for_agent(text, timestamp with time zone)
+
+-- DROP FUNCTION last_event_input_message_for_agent(text, timestamp with time zone);
+
+CREATE OR REPLACE FUNCTION last_event_input_message_for_agent(text, timestamp with time zone)
+  RETURNS double precision AS
+$BODY$
+	SELECT COALESCE(SUM(raw_data.object_value), 0) FROM
+		raw_data
+		,(
+			SELECT max(event_time) as m_time
+			FROM raw_data
+			WHERE predicate = 'input-rate' AND (subject='topic://.*' OR subject='http' OR subject='dropbox' OR subject ~'^queue://' ) AND event_time<=$2 AND agent_name = $1
+		) last_events
+	WHERE
+		raw_data.event_time = last_events.m_time
+		AND predicate = 'input-rate'
+		AND agent_name = $1
+		AND (subject='topic://.*' OR subject='http' OR subject='dropbox' OR subject ~'^queue://' )
+$BODY$
+  LANGUAGE 'sql' VOLATILE
+  COST 100;
+ALTER FUNCTION last_event_input_message_for_agent(text, timestamp with time zone) OWNER TO postgres;
+
+-- Function: last_event_ouput_message(timestamp with time zone)
+
+-- DROP FUNCTION last_event_ouput_message(timestamp with time zone);
+
+CREATE OR REPLACE FUNCTION last_event_ouput_message(timestamp with time zone)
+  RETURNS double precision AS
+$BODY$
+	SELECT COALESCE(SUM(raw_data.object_value), 0) FROM
+		raw_data
+		,(
+			SELECT max(event_time) as m_time, agent_name
+			FROM raw_data
+			WHERE predicate = 'output-rate' AND (subject ~'^topic://' OR subject ~'^queue://' ) AND event_time<=$1 GROUP BY agent_name
+		) last_events
+	WHERE
+		raw_data.event_time = last_events.m_time
+		AND raw_data.agent_name = last_events.agent_name
+		AND predicate = 'output-rate'
+		AND (subject ~'^topic://' OR subject ~'^queue://' )
+$BODY$
+  LANGUAGE 'sql' VOLATILE
+  COST 100;
+ALTER FUNCTION last_event_ouput_message(timestamp with time zone) OWNER TO postgres;
 

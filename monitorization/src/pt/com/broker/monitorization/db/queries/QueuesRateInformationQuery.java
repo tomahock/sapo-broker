@@ -28,7 +28,6 @@ public class QueuesRateInformationQuery extends SubjectPredicateQuery
 		RATE_TYPES.put("expired", "expired");
 	}
 	
-	
 	@Override
 	public String getId()
 	{
