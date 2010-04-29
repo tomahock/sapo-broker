@@ -8,11 +8,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ProtoBufCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ThriftCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-XmlCodec"/>
-	<classpathentry kind="lib" path="lib/logback-classic-0.9.20.jar"/>
-	<classpathentry kind="lib" path="lib/logback-core-0.9.20.jar"/>
 	<classpathentry kind="lib" path="lib/org.caudexorigo.jar"/>
 	<classpathentry kind="lib" path="lib/org.caudexorigo.jdbc.v2.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-8.4-701.jdbc4.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.5.11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

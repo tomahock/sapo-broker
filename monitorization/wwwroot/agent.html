@@ -19,16 +19,20 @@
                     <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
                 </div>
 			<div id="menu-items">
-		            <div class="menu-item">
-		                <p><a href="main.html">Main</a></p>
-		            </div>
-		            <div class="menu-item">
-		                <p><a href="queues.html">Queues</a></p>
-		            </div>
-		            <div class="menu-item">
-		                <p><a href="subscriptions.html">Subscriptions</a></p>
-		            </div>
+			    <div class="menu-item">
+				<p><a href="main.html">Main</a></p>
+			    </div>
+			    <div class="menu-item">
+				<p><a href="agents.html">Agents</a></p>
+			    </div>
+			    <div class="menu-item">
+				<p><a href="queues.html">Queues</a></p>
+			    </div>
+			    <div class="menu-item">
+				<p><a href="subscriptions.html">Subscriptions</a></p>
+			    </div>
 			</div>
+		</div>
             </div>
             <div id="container">
 		<div id="info-pannel">
@@ -130,6 +134,30 @@
                             <thead>
                                 <tr>
                                     <td>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody id="errors">
+                                <!--<tr class="oddrow">
+                                    <td><a href="#">Connection reset by peer</a></td>
+                                    <td>213</td>
+                                    <td><img src="./images/trend_flat.gif" border="0" /></td>
+                                </tr>
+                                <tr class="evenrow">
+                                    <td><a href="#">Invalid XML format</a></td>
+                                    <td>345</td>
+                                    <td><img src="./images/trend_up_bad.gif" border="0" /></td>
+                                </tr>-->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="dashboard-widget">
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption>Subscriptions</caption>
+                            <thead>
+                                <tr>
+                                    <td>Name</th>
+                                    <td>Type</th>
+                                    <td>Count</th>
                                 </tr>
                             </thead>
                             <tbody id="errors">

@@ -1,19 +1,21 @@
 package pt.com.broker.monitorization.db.queries;
 
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
 import org.caudexorigo.jdbc.Db;
 
-public class FaultRateStaticQuery extends StaticQuery
+
+
+public class FaultRateStaticQuery extends SubjectPredicateQuery
 {
 
 //	private static final Logger log = LoggerFactory.getLogger(FaultRateStaticQuery.class);
 
-	private static final String predicate = "rate";
-	private static final String subject = "faults";
-
-	private static String QUERY = "SELECT last_event_for_subject_and_predicate(?, ?, generate_series) FROM generate_series(now()- time '00:20',  now(), '60 seconds')";
-
+	private final String subject = "faults";
+	private final String predicate = "rate";
+	
 	@Override
 	public String getId()
 	{
@@ -21,7 +23,7 @@ public class FaultRateStaticQuery extends StaticQuery
 	}
 	
 	@Override
-	public ResultSet getResultSet(Db db)
+	public ResultSet getResultSet(Db db, Map<String,List<String>> params)
 	{
 		return db.runRetrievalPreparedStatement(QUERY, subject, predicate);
 	}

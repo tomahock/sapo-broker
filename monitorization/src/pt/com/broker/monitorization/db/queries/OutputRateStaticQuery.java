@@ -1,6 +1,8 @@
 package pt.com.broker.monitorization.db.queries;
 
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
 import org.caudexorigo.jdbc.Db;
 
@@ -18,7 +20,7 @@ public class OutputRateStaticQuery extends StaticQuery
 	}
 
 	@Override
-	public ResultSet getResultSet(Db db)
+	public ResultSet getResultSet(Db db, Map<String,List<String>> params)
 	{
 		return  db.runRetrievalPreparedStatement(QUERY);
 	}

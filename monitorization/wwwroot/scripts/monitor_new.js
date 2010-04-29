@@ -79,9 +79,9 @@ function mainMonitorizationInit()
   // rate
   var f_rates = function() {
 	processGraph("/dataquery/static?queuecount", "img_queue_size_rate", "queue_size_rate");
-	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate");
-	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate");
-	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate");
+	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate", "m/s");
+	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate", "m/s");
+	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate", "m/s");
   }
 
   f_queues();
@@ -99,7 +99,7 @@ function mainMonitorizationInit()
 }
 
 
-function processGraph(queryStr, imgId, legendId)
+function processGraph(queryStr, imgId, legendId, unit)
 {
   new Ajax.Request(queryStr,
    {
@@ -162,22 +162,20 @@ function processGraph(queryStr, imgId, legendId)
 	max = round(max);
 	var latest = round(parseFloat(data[data.length-1].value));
 
+	var s_unit = "";
+	if(typeof(unit)!=undefined && unit!=null)
+	{
+		s_unit="&nbsp;" + unit;
+	}
+	
+
 	var legend = s$(legendId);
-	legend.innerHTML = "<span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span><span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span><span class='mlabel'> Latest: </span><span class='mvalue'>" + latest + "</span>";
+	legend.innerHTML = "<p><span class='mvalue-latest'>" + latest + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
 	
 	img.src = url;
-
-
-	
     },
     onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
    });
-}
-
-function round(value)
-{
-	if(value == 0) return 0;
-	return Math.round(value * 10) / 10;
 }
 
 var previousQueueInfo = new Object();
@@ -354,8 +352,8 @@ function setAgentsInfo(agentInfo, panel)
 function queueMonitorizationInit() 
 {
   var params = SAPO.Utility.Url.getQueryString();
-  var qnPanel =  s$('queue_name'); 
   var queueName = params.queuename;
+  var qnPanel =  s$('queue_name'); 
   
   var countPanel = s$('queue_msg_count');
 
@@ -364,75 +362,98 @@ function queueMonitorizationInit()
         qnPanel.innerHTML = "<b>Queue name not specified</b>";
 	return;
   }
-  qnPanel.innerHTML = queueName;
+ qnPanel.innerHTML = queueName;
 
-  var f_agents = function() {
-   new Ajax.Request('/dataquery/last?predicate=queue-size&subject='+ QUEUE_PREFIX + queueName,
+  var f_rates = function() {
+	processGraph("/dataquery/queue?rate=count&queuename=" + queueName, "img_queue_size", "count_queue_size");
+	processGraph("/dataquery/queue?rate=input&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s");
+	processGraph("/dataquery/queue?rate=output&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s");
+	processGraph("/dataquery/queue?rate=failed&queuename=" + queueName, "img_failed_rate", "count_failed_rate", "m/s");
+  }
+
+  var f_generalInfo = function() {
+   new Ajax.Request("/dataquery/queue?queuename=" + queueName,
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('queue_agents');
+      var panel = s$('general_queue_information');
       var data = transport.responseJSON;      
-      setQueueAgentInfo(data,panel,countPanel);
+      setGeneralQueueInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong...') }
    });  
   }
-  var f_subscriptions = function() {
 
-
-
-   new Ajax.Request('/dataquery/last?predicate=subscriptions&subject='+ QUEUE_PREFIX + queueName,
-   {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = s$('queue_subscriptions');
-      var data = transport.responseJSON;      
-      setQueueSubscriptionsInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong...') }
-   });  
-  }
-  f_agents();
-  setInterval(f_agents, 5000);
-  
-  f_subscriptions();
-  setInterval(f_subscriptions, 5000);
+  f_rates();
+  setInterval(f_rates, 5200);
+  f_generalInfo();
+  setInterval(f_generalInfo, 5000);
 }
 
-var previousAgentQueueInfo = new Object();
-var previousCount = undefined;
+var previousGeneralQueueInfo = new Object();
 // queue agent info
-function setQueueAgentInfo(agentQueueInfo, panel,countPanel)
+function setGeneralQueueInfo(queueGeneralInfo,  panel)
 {
 	var count = 0;
 	var newContent = "";
-	if (agentQueueInfo.length == 0)
+	if (queueGeneralInfo.length == 0)
 	{
-        	newContent = "<p>There are no agents that contain the specified queue</P>";
+        	newContent = "<p>No information available.</P>";
   	}
 	else
 	{
-		for(var i = 0; i != agentQueueInfo.length; ++i)
+		for(var i = 0; i != queueGeneralInfo.length; ++i)
 		{
-			var agentCount = parseFloat(agentQueueInfo[i].value);
-			var agentname = agentQueueInfo[i].agentName;
+			var agentname = queueGeneralInfo[i].agentName;		
 
-			var previousAgentCount = previousAgentQueueInfo[agentname];
+			var prevQueueInfo = previousGeneralQueueInfo[agentname];
+
+			if( prevQueueInfo === undefined)
+			{	
+				prevQueueInfo = new Object();
+				previousGeneralQueueInfo[agentname] = prevQueueInfo;
+			}
+		
+			var agentCount = parseFloat(queueGeneralInfo[i].queueSize);
+			var pic = getLocalPic(prevQueueInfo.queueSize, agentCount);
+			prevQueueInfo.queueSize = agentCount;
 			
-			var pic = getLocalPic(previousAgentCount, agentCount);
-			
-			previousAgentQueueInfo[agentname] = agentCount;
-			
-			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentname + "</a> :  " + agentCount + " : " + agentQueueInfo[i].time + "<img src='" + pic + "' /></p>";
-			count += agentCount;
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+ agentname+ "'>" + queueGeneralInfo[i].agentHostname + "</a></td><td>" + agentCount + "</td><td><img src='" + pic + "' /></td>";
+
+
+			var inputRate = round(parseFloat(queueGeneralInfo[i].inputRate));
+			pic = getLocalPic(prevQueueInfo.inputRate, inputRate);
+			prevQueueInfo.inputRate = inputRate;
+			newContent = newContent + "<td>" + inputRate + "</td><td><img src='" + pic + "' /></td>";
+	
+			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
+			pic = getLocalPic(prevQueueInfo.outputRate, outputRate);
+			prevQueueInfo.outputRate = outputRate;
+			newContent = newContent + "<td>" + outputRate + "</td><td><img src='" + pic + "' /></td>";
+
+			var failedRate = round(parseFloat(queueGeneralInfo[i].failedRate));
+			pic = getLocalPic(prevQueueInfo.failedRate, failedRate);
+			prevQueueInfo.failedRate = failedRate;
+			newContent = newContent + "<td>" + failedRate + "</td><td><img src='" + pic + "' /></td>";
+
+			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
+			pic = getLocalPic(prevQueueInfo.expiredRate, expiredRate);
+			prevQueueInfo.expiredRate = expiredRate;
+			newContent = newContent + "<td>" + expiredRate + "</td><td><img src='" + pic + "' /></td>";
+
+			var redeliveredRate = round(parseFloat(queueGeneralInfo[i].redeliveredRate));
+			pic = getLocalPic(prevQueueInfo.redeliveredRate, redeliveredRate);
+			prevQueueInfo.redeliveredRate = redeliveredRate;
+			newContent = newContent + "<td>" + redeliveredRate + "</td><td><img src='" + pic + "' /></td>";
+
+			newContent = newContent + "<td>" + parseFloat(queueGeneralInfo[i].subscriptions) + "</td><td><img src='" + pic + "' /></td></tr>";
+
 		}
 	}
-	var tendencyPic = getLocalPic(previousCount, count);
-	previousCount = count;
-	
+
 	panel.innerHTML = newContent;
-	countPanel.innerHTML = count + "<img src='" + tendencyPic + " />";
 }
 // Delete queue confirmation
 function confirmDelete()
@@ -447,26 +468,6 @@ function confirmDelete()
 	
 	
 	return false;
-}
-
-// queue subscription info
-function setQueueSubscriptionsInfo(subscriptionsQueueInfo, panel)
-{
-	var newContent = "";
-
-	if (subscriptionsQueueInfo.length == 0)
-	{
-        	newContent = "<p>There are no subscriptions</P>";
-  	}
-	else
-	{
-		for(var i = 0; i != subscriptionsQueueInfo.length; ++i)
-		{
-			var agentname = subscriptionsQueueInfo[i].agentName;
-			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentname + "</a> :  " + parseFloat(subscriptionsQueueInfo[i].value) + " : " + subscriptionsQueueInfo[i].time +"</p>";
-		}
-	}
-	panel.innerHTML = newContent;
 }
 
 //
@@ -861,6 +862,12 @@ function removePrefix(string, prefix)
 function isPrefix(string, prefix)
 {
 	return string.match("^"+prefix)==prefix;
+}
+
+function round(value)
+{
+	if(value == 0) return 0;
+	return Math.round(value * 10) / 10;
 }
 
 function parseISO8601(str) {

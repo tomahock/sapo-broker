@@ -1,6 +1,7 @@
 package pt.com.broker.monitorization.db;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pt.com.broker.monitorization.db.queries.FaultRateStaticQuery;
@@ -29,13 +30,13 @@ public class StaticQueries
 
 	}
 
-	public static String getData(String queryType)
+	public static String getData(String queryType, Map<String,List<String>> params)
 	{
 		StaticQuery sq = queries.get(queryType);
 		if (sq == null)
 		{
 			return "";
 		}
-		return sq.getJsonData();
+		return sq.getJsonData(params);
 	}
 }

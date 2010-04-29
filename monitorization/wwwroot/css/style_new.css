@@ -104,9 +104,15 @@ text-align:right;
 
 .mlabel {
  /* font-style: italic; */
+ font-weight: bold;
 }
 .mvalue {
+  font-weight: normal;
+}
+.mvalue-latest {
   font-weight: bold;
+  font-size:1.7em;
+  color:#990000;
 }
 
 a {

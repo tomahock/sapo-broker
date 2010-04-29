@@ -4,6 +4,8 @@
 package pt.com.broker.monitorization.db.queries;
 
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
 import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbPool;
@@ -16,7 +18,7 @@ public abstract class StaticQuery
 	
 	abstract public String getId();
 
-	public String getJsonData()
+	public String getJsonData(Map<String,List<String>> params)
 	{
 		Db db = null;
 
@@ -26,7 +28,9 @@ public abstract class StaticQuery
 		{
 			db = DbPool.obtain();
 
-			ResultSet queryResult = getResultSet(db);
+			ResultSet queryResult = getResultSet(db, params);
+			if(queryResult == null)
+				return "";
 
 			boolean first = true;
 
@@ -57,5 +61,5 @@ public abstract class StaticQuery
 		return sb.toString();
 	}
 	
-	abstract protected ResultSet getResultSet(Db db);
+	abstract protected ResultSet getResultSet(Db db, Map<String,List<String>> params);
 }

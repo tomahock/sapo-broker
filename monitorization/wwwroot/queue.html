@@ -5,12 +5,13 @@
         <title>Sapo-Broker Monitorization Console</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<script type="text/javascript" src="scripts/sapolib.js" ></script>
+	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
 	<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
         <script type="text/javascript" src="scripts/monitor_new.js"></script>
 	<link rel="stylesheet" href="css/style_new.css" type="text/css" />
-	<!--script type="text/javascript">
-		window.onload = agentMonitorizationInit;
-	</script-->
+	<script type="text/javascript">
+		window.onload = queueMonitorizationInit;
+	</script>
     </head>
     <body>
         <div id="wrapper">
@@ -19,60 +20,70 @@
                     <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>
                 </div>
 			<div id="menu-items">
-		            <div class="menu-item">
-		                <p><a href="main.html">Main</a></p>
-		            </div>
-		            <div class="menu-item">
-		                <p><a href="queues.html">Queues</a></p>
-		            </div>
-		            <div class="menu-item">
-		                <p><a href="subscriptions.html">Subscriptions</a></p>
-		            </div>
+			    <div class="menu-item">
+				<p><a href="main.html">Main</a></p>
+			    </div>
+			    <div class="menu-item">
+				<p><a href="agents.html">Agents</a></p>
+			    </div>
+			    <div class="menu-item">
+				<p><a href="queues.html">Queues</a></p>
+			    </div>
+			    <div class="menu-item">
+				<p><a href="subscriptions.html">Subscriptions</a></p>
+			    </div>
 			</div>
             </div>
             <div id="container">
 		<div id="info-pannel">
-			<h1 class="title">Queue: <span id='host_name'>/queue/foo</span></h1> 
-			<h2 class="title">Total size: <span id='host_name'>558</span></h1>      		
+			<h1 class="title">Queue: <span id='queue_name'></span></h1>		
 		</div>
                 <div id="main-stats">
 			    <div id="status-box">
-			    	<!--<img src="./images/danger_small.png" border="0" />
-					<h2><a href="agents.html">3 agents are down</a></h2> -->
-			    </div>
+				<div class="stat-widget">
+					<h1>Queue size</h1>
+					<p><img title="Queue size" alt="Queue size" id="img_queue_size" /></p>
+					<p><span id="count_queue_size"></span></p>
+				</div>
 				<div class="stat-widget">
 					<h1>Input Rate</h1>
-					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" /></p>
+					<p><span id="count_input_rate"></span></p>
 				</div>
 				<div class="stat-widget">
 					<h1>Output Rate</h1>
-					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+					<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" /></p>
+					<p><span id="count_output_rate"></span></p>
 				</div>
 				<div class="stat-widget">
 					<h1>Failed Rate</h1>
-					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
-				</div>
-				<div class="stat-widget">
-					<h1>Redelivered Rate</h1>
-					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
-				</div>
-				<div class="stat-widget">
-					<h1>Expired Rate</h1>
-					<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:5.3,26.5,15.9,31.7,42.3,21.2,26.5,42.3,47.6,95.2,18.5,26.5,21.2,37.0,52.9,58.2,47.6,68.8,26.5,31.7,42.3&chco=336699&chls=3,1,0&chm=o,990000,0,20,4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|8|1:||2:||&chxp=0,42.3&chf=bg,s,cecece"/></p>
+					<p><img title="Failed Rate" alt="Failed Rate" id="img_failed_rate" /></p>
+					<p><span id="count_failed_rate"></span></p>
 				</div>
 		</div>
                 <div id="dashboard">
                     <div class="dashboard-widget">
                         <table cellspacing="0" cellpadding="7" border="0">
-                            <caption>Queue Size</caption>
+                            <caption>Queue Information</caption>
                             <thead>
                                 <tr>
                                     <td>Agent</th>
                                     <td>Size</th>
                                     <td></th>
+                                    <td>Input Rate</th>
+                                    <td></th>
+                                    <td>Output Rate</th>
+                                    <td></th>
+                                    <td>Failed Rate</th>
+                                    <td></th>
+                                    <td>Expired Rate</th>
+                                    <td></th>
+                                    <td>Redelivered Rate</th>
+                                    <td></th>
+                                    <td>Subscriptions</th>
                                 </tr>
                             </thead>
-                            <tbody id='agent_messages'>
+                            <tbody id='general_queue_information'>
                                 <tr class="oddrow">
                                     <td><a href="#">machine1</a></td>
                                     <td>213</td>

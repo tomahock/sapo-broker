@@ -136,6 +136,8 @@ public class LastResultQuery extends QueryGenerator
 		}
 
 		sqlQuery = sb.toString();
+		
+		System.out.println("\n\n"+sqlQuery);
 	}
 
 	private boolean isAgentQuery()

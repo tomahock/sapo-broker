@@ -25,6 +25,8 @@ import pt.com.broker.monitorization.db.queries.FaultsQueryGenerator;
 import pt.com.broker.monitorization.db.queries.IntervalQuery;
 import pt.com.broker.monitorization.db.queries.LastResultQuery;
 import pt.com.broker.monitorization.db.queries.QueryGenerator;
+import pt.com.broker.monitorization.db.queries.QueueInformationRouter;
+import pt.com.broker.monitorization.db.queries.QueuesRateInformationQuery;
 
 public class DataQueryAction extends HttpAction
 {
@@ -39,6 +41,7 @@ public class DataQueryAction extends HttpAction
 	private final static String GROUPT_FAULT_QUERY = "groupfault";
 
 	private final static String STATIC_QUEURY = "static";
+	private final static String QUEUE_QUERY = "queue";
 	
 	public DataQueryAction(String queryPrefix)
 	{
@@ -77,7 +80,7 @@ public class DataQueryAction extends HttpAction
 			qr = FaultsQueryGenerator.getInstance(params);
 			sqlQuery = qr.getSqlQuery();
 		}
-		else if(queryType.equals (STATIC_QUEURY) )
+		else if(queryType.equals (STATIC_QUEURY) || queryType.equals (QUEUE_QUERY) )
 		{
 			
 		}
@@ -125,7 +128,11 @@ public class DataQueryAction extends HttpAction
 		else if(queryType.equals(STATIC_QUEURY))
 		{
 			String queuryId = path.substring(index + 1);
-			sb.append(StaticQueries.getData(queuryId));
+			sb.append(StaticQueries.getData(queuryId, params));
+		}
+		else if(queryType.equals (QUEUE_QUERY))
+		{
+			sb.append(QueueInformationRouter.getQueueData(params));
 		}
 		else
 		{
