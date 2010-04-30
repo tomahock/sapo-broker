@@ -25,7 +25,7 @@ cd ../
 
 # build deb
 mkdir tmp
-mv $EXT_VERSION.tgz tmp/
+cp $EXT_VERSION.tgz tmp/
 cd tmp/
 
 dh-make-pecl --maintainer "Filipe Varela <filipe.varela@caixamagica.pt>" --only 5 $EXT_VERSION.tgz
