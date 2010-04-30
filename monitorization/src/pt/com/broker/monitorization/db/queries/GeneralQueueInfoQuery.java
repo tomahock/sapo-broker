@@ -94,7 +94,7 @@ public class GeneralQueueInfoQuery
 		}
 		catch (Throwable t)
 		{
-			log.error("Failed to get queue count.", t);
+			log.error("Failed to get queue general info.", t);
 		}
 		finally
 		{

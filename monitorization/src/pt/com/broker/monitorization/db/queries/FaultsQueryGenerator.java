@@ -10,7 +10,8 @@ public class FaultsQueryGenerator extends QueryGenerator
 	
 	protected static final String ID_PARAMETER = "id";
 	protected static final String ID_ATTRIBUTE = "id";
-
+	protected static final String AGENT_PARAMETER = "agent";
+	
 	protected static final String GROUP_BY_PARAMETER = "groupby";
 	protected static final String SHORT_MSG_PARAMETER = "shortmessage";
 	
@@ -32,7 +33,17 @@ public class FaultsQueryGenerator extends QueryGenerator
 		{
 			if(group.get(0).equals(SHORT_MSG_PARAMETER))
 			{
-				sqlQuery = "select short_message, count(id) from fault_data where event_time > (now()- time '00:05') group by short_message limit 10";
+				sb.append("select short_message, count(id) from fault_data where event_time > (now()- time '00:05')");
+				List<String> agent = queryParameters.get(AGENT_PARAMETER);
+				if(agent != null)
+				{
+					sb.append(" and agent_name = '");
+					sb.append(agent.get(0));
+					sb.append("' ");
+				}
+				sb.append(" group by short_message limit 10");
+				
+				sqlQuery = sb.toString();
 			}
 			return;
 		}

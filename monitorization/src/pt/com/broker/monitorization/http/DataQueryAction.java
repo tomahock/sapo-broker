@@ -21,12 +21,12 @@ import pt.com.broker.monitorization.db.StatisticsDB;
 import pt.com.broker.monitorization.db.FaultsDB.FaultItem;
 import pt.com.broker.monitorization.db.FaultsDB.GroupItem;
 import pt.com.broker.monitorization.db.StatisticsDB.StatisticsItem;
+import pt.com.broker.monitorization.db.queries.AgentInformationRouter;
 import pt.com.broker.monitorization.db.queries.FaultsQueryGenerator;
 import pt.com.broker.monitorization.db.queries.IntervalQuery;
 import pt.com.broker.monitorization.db.queries.LastResultQuery;
 import pt.com.broker.monitorization.db.queries.QueryGenerator;
 import pt.com.broker.monitorization.db.queries.QueueInformationRouter;
-import pt.com.broker.monitorization.db.queries.QueuesRateInformationQuery;
 
 public class DataQueryAction extends HttpAction
 {
@@ -42,6 +42,7 @@ public class DataQueryAction extends HttpAction
 
 	private final static String STATIC_QUEURY = "static";
 	private final static String QUEUE_QUERY = "queue";
+	private final static String AGENT_QUERY = "agent";
 	
 	public DataQueryAction(String queryPrefix)
 	{
@@ -57,11 +58,8 @@ public class DataQueryAction extends HttpAction
 		Map<String,List<String>> params = getParams(request);
 		
 		int index = path.indexOf('?');
-		if(index < 0)
-		{
-			return;
-		}
-		String queryType = path.substring(0, index);
+		
+		String queryType = (index > 0) ? path.substring(0, index) : path;
 		
 		QueryGenerator qr = null;
 		String sqlQuery = null;
@@ -80,7 +78,7 @@ public class DataQueryAction extends HttpAction
 			qr = FaultsQueryGenerator.getInstance(params);
 			sqlQuery = qr.getSqlQuery();
 		}
-		else if(queryType.equals (STATIC_QUEURY) || queryType.equals (QUEUE_QUERY) )
+		else if(queryType.equals (STATIC_QUEURY) || queryType.equals (QUEUE_QUERY) || queryType.equals (AGENT_QUERY) )
 		{
 			
 		}
@@ -133,6 +131,10 @@ public class DataQueryAction extends HttpAction
 		else if(queryType.equals (QUEUE_QUERY))
 		{
 			sb.append(QueueInformationRouter.getQueueData(params));
+		}
+		else if(queryType.equals (AGENT_QUERY))
+		{
+			sb.append(AgentInformationRouter.getAgentData(params));
 		}
 		else
 		{

@@ -9,6 +9,7 @@
 		<script type="text/javascript" src="scripts/monitor_new.js"></script>
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
+			window.onload = allQueuesInformationInit;
 		</script>
     </head>
     <body>
@@ -32,23 +33,17 @@
                         <table cellspacing="0" cellpadding="7" border="0">
                             <caption>Queues</caption>
                             <thead>
-                                <tr>
+                                <tr style="text-align:center">
                                     <td>Queue Name</td>
-                                    <td>Size</td>
-                                    <td></td>
-                                    <td>Input Rate</td>
-                                    <td></td>
-                                    <td>Output Rate</td>
-                                    <td></td>
-                                    <td>Failed Rate</td>
-                                    <td></td>
-                                    <td>Redelivered Rate</td>
-                                    <td></td>
-                                    <td>Expired Rate</td>
-                                    <td></td>
+                                    <td colspan="2">Size</td>
+                                    <td colspan="2">Input Rate</td>
+                                    <td colspan="2">Output Rate</td>
+                                    <td colspan="2">Failed Rate</td>
+                                    <td colspan="2">Redelivered Rate</td>
+                                    <td colspan="2">Expired Rate</td>
                                 </tr>
                             </thead>
-                            <tbody id="agents">
+                            <tbody id="queues_info">
                             </tbody>
                         </table>
                     </div>

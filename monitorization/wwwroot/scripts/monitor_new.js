@@ -4,6 +4,7 @@
 //
 
 var QUEUE_PREFIX = "queue://";
+var TOPIC_PREFIX = "topic://";
 
 function mainMonitorizationInit() 
 {
@@ -365,10 +366,10 @@ function queueMonitorizationInit()
  qnPanel.innerHTML = queueName;
 
   var f_rates = function() {
-	processGraph("/dataquery/queue?rate=count&queuename=" + queueName, "img_queue_size", "count_queue_size");
+	processGraph("/dataquery/queue?rate=count&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate");
+	processGraph("/dataquery/queue?rate=failed&queuename=" + queueName, "img_error_rate", "count_error_rate", "m/s");
 	processGraph("/dataquery/queue?rate=input&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s");
 	processGraph("/dataquery/queue?rate=output&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s");
-	processGraph("/dataquery/queue?rate=failed&queuename=" + queueName, "img_failed_rate", "count_failed_rate", "m/s");
   }
 
   var f_generalInfo = function() {
@@ -422,31 +423,30 @@ function setGeneralQueueInfo(queueGeneralInfo,  panel)
 
 			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+ agentname+ "'>" + queueGeneralInfo[i].agentHostname + "</a></td><td>" + agentCount + "</td><td><img src='" + pic + "' /></td>";
 
-
 			var inputRate = round(parseFloat(queueGeneralInfo[i].inputRate));
 			pic = getLocalPic(prevQueueInfo.inputRate, inputRate);
 			prevQueueInfo.inputRate = inputRate;
-			newContent = newContent + "<td>" + inputRate + "</td><td><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
 	
 			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
 			pic = getLocalPic(prevQueueInfo.outputRate, outputRate);
 			prevQueueInfo.outputRate = outputRate;
-			newContent = newContent + "<td>" + outputRate + "</td><td><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
 
 			var failedRate = round(parseFloat(queueGeneralInfo[i].failedRate));
 			pic = getLocalPic(prevQueueInfo.failedRate, failedRate);
 			prevQueueInfo.failedRate = failedRate;
-			newContent = newContent + "<td>" + failedRate + "</td><td><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
 
 			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
 			pic = getLocalPic(prevQueueInfo.expiredRate, expiredRate);
 			prevQueueInfo.expiredRate = expiredRate;
-			newContent = newContent + "<td>" + expiredRate + "</td><td><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
 
 			var redeliveredRate = round(parseFloat(queueGeneralInfo[i].redeliveredRate));
 			pic = getLocalPic(prevQueueInfo.redeliveredRate, redeliveredRate);
 			prevQueueInfo.redeliveredRate = redeliveredRate;
-			newContent = newContent + "<td>" + redeliveredRate + "</td><td><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
 
 			newContent = newContent + "<td>" + parseFloat(queueGeneralInfo[i].subscriptions) + "</td><td><img src='" + pic + "' /></td></tr>";
 
@@ -567,39 +567,73 @@ function faultInformationInit()
 
 function allAgentInit()
 {
-   new Ajax.Request('/dataquery/last?predicate=status&order=agent_name',
+   new Ajax.Request('/dataquery/agent',
    {
     method:'get',
     onSuccess: function(transport){
 	var panel = s$('agents');
 	var data = transport.responseJSON;
-	
-	var newContent = "";
-
-	if (data.length == 0)
-	{
-        	newContent = "<td class=\"oddrow\" colspan=\"3\">No information available.</td>";
-  	}
-	else
-	{
-		var count = 1;
-		var content = "";
-		for(var i = 0; i != data.length; ++i)
-		{
-			var status = ( data[i].value == "1.0") ? "Ok" : "Down";
-			var rowClass =  ( ((count++)%2) == 0) ? "evenrow" : "oddrow";
-			var agentName = data[i].agentName;
-			//content = content + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+agentName+"'>"+ agentName+ "</a></td><td class=\"countrow\">" +  data[i].agentHostname + "</td><td>"+ status + "</td></tr>";
-			content = content + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+agentName+"'>"+ data[i].agentHostname+ "</a></td><td>"+ status + "</td></tr>";
-		}
-		newContent = content;
-	}
-	panel.innerHTML = newContent;
+	setAllAgentGeneralInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong while trying to get all agent\'s info...') }
    });  
 	
 }
+
+var previousAllAgentGeneralInfo = new Object();
+// queue agent info
+function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
+{
+	var count = 0;
+	var newContent = "";
+	if (agentGeneralInfo.length == 0)
+	{
+        	newContent = "<p>No information available.</P>";
+  	}
+	else
+	{
+		for(var i = 0; i != agentGeneralInfo.length; ++i)
+		{
+			var agentname = agentGeneralInfo[i].agentName;		
+
+			var prevAgentInfo = previousAllAgentGeneralInfo[agentname];
+
+			if( prevAgentInfo === undefined)
+			{	
+				prevAgentInfo = new Object();
+				previousAllAgentGeneralInfo[agentname] = prevAgentInfo;
+			}
+		
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+ agentname+ "'>" + agentGeneralInfo[i].agentHostname + "</a></td>";
+
+			newContent = newContent + "<td>" + agentGeneralInfo[i].status + "</td>";
+
+			var inputRate = round(parseFloat(agentGeneralInfo[i].inputRate));
+			pic = getLocalPic(prevAgentInfo.inputRate, inputRate);
+			prevAgentInfo.inputRate = inputRate;
+			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+	
+			var outputRate = round(parseFloat(agentGeneralInfo[i].outputRate));
+			pic = getLocalPic(prevAgentInfo.outputRate, outputRate);
+			prevAgentInfo.outputRate = outputRate;
+			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+
+			var faultRate = round(parseFloat(agentGeneralInfo[i].faultRate));
+			pic = getLocalPic(prevAgentInfo.faultRate, faultRate);
+			prevAgentInfo.faultRate = faultRate;
+			newContent = newContent + "<td style='padding-left:2em'>" + faultRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+
+			newContent = newContent + "<td>" + agentGeneralInfo[i].pendingAckSystemMsg + "</td>";
+
+			newContent = newContent + "<td>" + agentGeneralInfo[i].dropboxCount + "</td></tr>";
+		}
+	}
+
+	panel.innerHTML = newContent;
+}
+
 
 //
 // AGENT PAGE
@@ -607,7 +641,7 @@ function allAgentInit()
 function agentMonitorizationInit() 
 {
   var params = SAPO.Utility.Url.getQueryString();
-  var idPanel = s$('agent_name');
+  var idPanel = s$('host_name');
   var agentname = params.agentname;
   if (agentname == null)
   {
@@ -617,11 +651,11 @@ function agentMonitorizationInit()
   idPanel.innerHTML = agentname;
   // queues
   var f_queues = function() {
-   new Ajax.Request('/dataquery/last?predicate=queue-size&agent='+agentname,
+   new Ajax.Request('/dataquery/queue?agentname='+agentname,
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('queuesInformationPanel');
+      var panel = s$('queue_size');
       var data = transport.responseJSON;      
       setAgentQueueInfo(data, panel);
     },
@@ -630,13 +664,13 @@ function agentMonitorizationInit()
   }
   // faults
   var f_faults = function() {
-   new Ajax.Request('/dataquery/fault?count=10&agent='+agentname,
+   new Ajax.Request('/dataquery/groupfault?groupby=shortmessage&agent='+agentname,
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('faultsInformationPanel');
+      var panel = s$('errors');
       var data = transport.responseJSON;      
-      setAgentFaultInfo(data, panel);
+      setAgentFaultInfo(data, panel, agentname);
     },
     onFailure: function(){ alert('Something went wrong while trying to get agent\'s faults info...') }
    });  
@@ -705,34 +739,52 @@ function agentMonitorizationInit()
    });  
   }
 
+  var f_rates = function() {
+	processGraph("/dataquery/static?querytype=agentqueuecount&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate");
+	processGraph("/dataquery/static?querytype=agentfaultrate&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s");
+	processGraph("/dataquery/static?querytype=agentinputrate&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s");
+	processGraph("/dataquery/static?querytype=agentoutputrate&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s");
+  }
+
   f_hostname();
 
-  f_queues();
+  f_rates();
   setInterval(f_queues, 5000);
+
+  f_queues();
+  setInterval(f_queues, 5100);
   f_subscriptions();
-  setInterval(f_subscriptions, 5000);
+  setInterval(f_subscriptions, 5200);
   f_faults();
-  setInterval(f_faults, 5000);
+  setInterval(f_faults, 5300);
   f_state();
-  setInterval(f_state, 5000);
+  setInterval(f_state, 5400);
 //  f_dropbox();
 //  setInterval(f_dropbox, 50000);
 }
 // agent queue info
+var previousAgentQueueCount = new Object();
 function setAgentQueueInfo(queueInfo, panel)
 {
 	var newContent = "";
 
 	if (queueInfo.length == 0)
 	{
-        	newContent = "<p>There is no queue info</P>";
+        	newContent = "<p>No information available.</P>";
   	}
 	else
 	{
 		for(var i = 0; i != queueInfo.length; ++i)
 		{
-			var queueName = removePrefix(queueInfo[i].subject, QUEUE_PREFIX);
-			newContent = newContent + "<p><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a> : " + parseFloat(queueInfo[i].value) +"</p>";
+			var queueName = removePrefix(queueInfo[i].queueName, QUEUE_PREFIX);
+			var queueCount = parseFloat(queueInfo[i].queueSize);
+			
+			var previous = previousAgentQueueCount[queueName];
+			var pic = getLocalPic(previous, queueCount);
+			previousAgentQueueCount[queueName] = queueCount;	
+
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td style='padding-right:2em'>" + queueCount +"</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
 		}
 	}
 	panel.innerHTML = newContent;
@@ -752,14 +804,14 @@ function setAgentSubscriptionInfo(subscriptionsInfo, panel)
 		for(var i = 0; i != subscriptionsInfo.length; ++i)
 		{
 			var destinationName = subscriptionsInfo[i].subject;
-			var isTopic = isPrefix(destinationName, "topic://");
+			var isTopic = isPrefix(destinationName, TOPIC_PREFIX);
 			var imageLoc;
 			if(isTopic)
 			{
-				destinationName = removePrefix(destinationName, "topic://");
+				destinationName = removePrefix(destinationName, TOPIC_PREFIX);
 				imageLoc = "images/topic.gif";
 			} else {
-				destinationName = removePrefix(destinationName, "queue://");
+				destinationName = removePrefix(destinationName, QUEUE_PREFIX);
 				imageLoc = "images/queue.gif";
 			}
 			newContent =  newContent + "<p><img src=\"images/clock.gif\" title=\"" + subscriptionsInfo[i].time + "\"/><img src=\"" + imageLoc + "\"/>" + destinationName + " : "  + parseFloat( subscriptionsInfo[i].value ) + "</p>";
@@ -769,19 +821,24 @@ function setAgentSubscriptionInfo(subscriptionsInfo, panel)
 }
 
 // agent's fault info
-function setAgentFaultInfo(faultInfo, panel)
+function setAgentFaultInfo(errorInfo, panel, agentname)
 {
-	var newContent = "";
-
-	if (faultInfo.length == 0)
+	if (errorInfo.length == 0)
 	{
-        	newContent = "<p>There is no faults info</P>";
+        	newContent = "<td class=\"oddrow\" colspan=\"1\">No information available.</td>";
   	}
 	else
 	{
-		for(var i = 0; i != faultInfo.length; ++i)
+		for(var i = 0; i != errorInfo.length; ++i)
 		{
-			newContent = newContent + "<p><a href='./fault.html?faultid="+faultInfo[i].id+"'>"  + faultInfo[i].shortMessage + "</a> : " + faultInfo[i].time +"</p>";
+			var shortMessage = errorInfo[i].shortMessage;
+			var count = errorInfo[i].count;
+			var previousValue = previousSysMsgInfo[shortMessage];
+			var pic = getLocalPic(previousValue, count);
+			previousSysMsgInfo[shortMessage] = count;
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faults.html?shortmessage="+shortMessage+"'&agentname=" + agentname + ">"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
 	panel.innerHTML = newContent;
@@ -816,25 +873,90 @@ function goToAgentPage(page)
 //
 function allQueuesInformationInit()
 {
-  var infoPanel = s$('queue_list');
+  var infoPanel = s$('queues_info');
   infoPanel.innerHTML = "Information not available";
   var f_allQueues = function(){
-	  new Ajax.Request('/dataquery/last?predicate=queue-size',
+	  new Ajax.Request('/dataquery/queue',
 	   {
 	    method:'get',
 	    onSuccess: function(transport){
-	      var infoPanel = s$('queue_list');
-	var response = transport.responseText;
+	      var infoPanel = s$('queues_info');
+	      var response = transport.responseText;
 	      var data = transport.responseJSON;
-	      setQueueInfo(data, infoPanel);
+	      setAllQueueGeneralInfo(data, infoPanel);
 	    },
-	    onFailure: function(){ alert('Something went wrong...') }
+	    onFailure: function(){ alert('Something went wrong while trying to get all queues general info...') }
 	   });
 	}
   f_allQueues();
   setInterval(f_allQueues, 50000);
 }
 
+
+
+var previousAllQueuesGeneralInfo = new Object();
+// queue agent info
+function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
+{
+	var count = 0;
+	var newContent = "";
+	if (queueGeneralInfo.length == 0)
+	{
+        	newContent = "<p>No information available.</P>";
+  	}
+	else
+	{
+		for(var i = 0; i != queueGeneralInfo.length; ++i)
+		{
+			var queueName = removePrefix(queueGeneralInfo[i].queueName, QUEUE_PREFIX);
+
+			var prevQueueInfo = previousGeneralQueueInfo[queueName];
+
+			if( prevQueueInfo === undefined)
+			{	
+				prevQueueInfo = new Object();
+				previousGeneralQueueInfo[queueName] = prevQueueInfo;
+			}
+		
+			var queueSize = parseFloat(queueGeneralInfo[i].queueSize);
+			var pic = getLocalPic(prevQueueInfo.queueSize, queueSize);
+			prevQueueInfo.queueSize = queueSize;
+			
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ queueName+ "'>" + queueName + "</a></td><td>" + queueSize + "</td><td><img src='" + pic + "' /></td>";
+
+
+			var inputRate = round(parseFloat(queueGeneralInfo[i].inputRate));
+			pic = getLocalPic(prevQueueInfo.inputRate, inputRate);
+			prevQueueInfo.inputRate = inputRate;
+			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+	
+			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
+			pic = getLocalPic(prevQueueInfo.outputRate, outputRate);
+			prevQueueInfo.outputRate = outputRate;
+			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+
+			var failedRate = round(parseFloat(queueGeneralInfo[i].failedRate));
+			pic = getLocalPic(prevQueueInfo.failedRate, failedRate);
+			prevQueueInfo.failedRate = failedRate;
+			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+
+			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
+			pic = getLocalPic(prevQueueInfo.expiredRate, expiredRate);
+			prevQueueInfo.expiredRate = expiredRate;
+			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+
+			var redeliveredRate = round(parseFloat(queueGeneralInfo[i].redeliveredRate));
+			pic = getLocalPic(prevQueueInfo.redeliveredRate, redeliveredRate);
+			prevQueueInfo.redeliveredRate = redeliveredRate;
+			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td></tr>";
+
+		}
+	}
+
+	panel.innerHTML = newContent;
+}
 
 //
 // UTILS
