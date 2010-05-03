@@ -72,8 +72,6 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 	private static final BrokerProtocolHandler instance;
 
-	
-
 	static
 	{
 		instance = new BrokerProtocolHandler();
