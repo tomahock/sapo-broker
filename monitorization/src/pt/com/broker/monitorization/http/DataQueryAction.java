@@ -15,18 +15,15 @@ import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.monitorization.db.FaultsDB;
 import pt.com.broker.monitorization.db.StaticQueries;
 import pt.com.broker.monitorization.db.StatisticsDB;
-import pt.com.broker.monitorization.db.FaultsDB.FaultItem;
-import pt.com.broker.monitorization.db.FaultsDB.GroupItem;
 import pt.com.broker.monitorization.db.StatisticsDB.StatisticsItem;
 import pt.com.broker.monitorization.db.queries.AgentInformationRouter;
-import pt.com.broker.monitorization.db.queries.FaultsQueryGenerator;
-import pt.com.broker.monitorization.db.queries.IntervalQuery;
+import pt.com.broker.monitorization.db.queries.FaultsInformationRouter;
 import pt.com.broker.monitorization.db.queries.LastResultQuery;
 import pt.com.broker.monitorization.db.queries.QueryGenerator;
 import pt.com.broker.monitorization.db.queries.QueueInformationRouter;
+import pt.com.broker.monitorization.db.queries.SubscriptionsInformationRouter;
 
 public class DataQueryAction extends HttpAction
 {
@@ -35,15 +32,14 @@ public class DataQueryAction extends HttpAction
 
 	private final String pathPrefix;
 
-	private final static String REGULAR_QUERY = "query";
 	private final static String LAST_VALUE_QUERY = "last";
-	private final static String FAULT_QUERY = "fault";
-	private final static String GROUPT_FAULT_QUERY = "groupfault";
 
 	private final static String STATIC_QUEURY = "static";
 	private final static String QUEUE_QUERY = "queue";
 	private final static String AGENT_QUERY = "agent";
-	
+	private final static String SUBSCRIPTION_QUERY = "subscription";
+	private final static String FAULTS_QUERY = "faults";
+
 	public DataQueryAction(String queryPrefix)
 	{
 		pathPrefix = queryPrefix;
@@ -55,104 +51,77 @@ public class DataQueryAction extends HttpAction
 
 		path = path.substring(pathPrefix.length()).toLowerCase();
 
-		Map<String,List<String>> params = getParams(request);
-		
+		Map<String, List<String>> params = getParams(request);
+
 		int index = path.indexOf('?');
-		
+
 		String queryType = (index > 0) ? path.substring(0, index) : path;
-		
+
 		QueryGenerator qr = null;
 		String sqlQuery = null;
-		if(queryType.equals(REGULAR_QUERY))
-		{
-			qr = IntervalQuery.getInstance(params);
-			sqlQuery = qr.getSqlQuery();
-		}
-		else if (queryType.equals(LAST_VALUE_QUERY))
+		
+		if (queryType.equals(LAST_VALUE_QUERY))
 		{
 			qr = LastResultQuery.getInstance(params);
 			sqlQuery = qr.getSqlQuery();
 		}
-		else if (queryType.equals(FAULT_QUERY) || queryType.equals(GROUPT_FAULT_QUERY) )
+
+		else if (queryType.equals(STATIC_QUEURY) || queryType.equals(QUEUE_QUERY) || queryType.equals(AGENT_QUERY) || queryType.equals(SUBSCRIPTION_QUERY) || queryType.equals(FAULTS_QUERY))
 		{
-			qr = FaultsQueryGenerator.getInstance(params);
-			sqlQuery = qr.getSqlQuery();
-		}
-		else if(queryType.equals (STATIC_QUEURY) || queryType.equals (QUEUE_QUERY) || queryType.equals (AGENT_QUERY) )
-		{
-			
+
 		}
 		else
 		{
-			throw new IllegalArgumentException(String.format("Use /%s?... or /%s?...", REGULAR_QUERY, LAST_VALUE_QUERY));
+			throw new IllegalArgumentException("Ivalid query string...");
 		}
-				
-		if(log.isDebugEnabled())
+
+		if (log.isDebugEnabled())
 		{
-			log.debug(String.format("URI: %s\nSQL: %s", path, sqlQuery ));
+			log.debug(String.format("URI: %s\nSQL: %s", path, sqlQuery));
 		}
-		
+
 		StringBuffer sb = new StringBuffer();
-		
+
 		sb.append("[");
-		
-		
-		if (queryType.equals(FAULT_QUERY))
-		{
-			List<FaultItem> items = FaultsDB.getItems(sqlQuery);
-			if(items.size() > 0)
-			{
-				sb.append(items.get(0).toJson());
-			}
-			for(int i = 1; i < items.size(); ++i )
-			{
-				sb.append(", ");
-				sb.append(items.get(i).toJson());
-			}
-		}
-		else if (queryType.equals(GROUPT_FAULT_QUERY))
-		{
-			List<GroupItem> items = FaultsDB.getGroupedItems(sqlQuery);
-			if(items.size() > 0)
-			{
-				sb.append(items.get(0).toJson());
-			}
-			for(int i = 1; i < items.size(); ++i )
-			{
-				sb.append(", ");
-				sb.append(items.get(i).toJson());
-			}
-		}
-		else if(queryType.equals(STATIC_QUEURY))
+
+		if (queryType.equals(STATIC_QUEURY))
 		{
 			String queuryId = path.substring(index + 1);
 			sb.append(StaticQueries.getData(queuryId, params));
 		}
-		else if(queryType.equals (QUEUE_QUERY))
+		else if (queryType.equals(QUEUE_QUERY))
 		{
 			sb.append(QueueInformationRouter.getQueueData(params));
 		}
-		else if(queryType.equals (AGENT_QUERY))
+		else if (queryType.equals(AGENT_QUERY))
 		{
 			sb.append(AgentInformationRouter.getAgentData(params));
+		}
+		else if (queryType.equals(SUBSCRIPTION_QUERY))
+		{
+			sb.append(SubscriptionsInformationRouter.getSubscriptionData(params));
+		}
+		else if (queryType.equals(FAULTS_QUERY))
+		{
+			sb.append(FaultsInformationRouter.getFaultsInfo(params));
 		}
 		else
 		{
 
 			List<StatisticsItem> items = StatisticsDB.getItems(sqlQuery);
-			if(items.size() > 0)
+			if (items.size() > 0)
 			{
 				sb.append(items.get(0).toJson());
 			}
-			for(int i = 1; i < items.size(); ++i )
+			for (int i = 1; i < items.size(); ++i)
 			{
 				sb.append(", ");
 				sb.append(items.get(i).toJson());
 			}
 		}
-		
+
 		sb.append("]");
-		
+
 		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(ChannelBuffers.BIG_ENDIAN, sb.toString(), Charset.forName("utf-8"));
 
 		response.addHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json");

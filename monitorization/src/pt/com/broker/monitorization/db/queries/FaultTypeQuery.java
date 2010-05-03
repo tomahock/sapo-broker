@@ -1,24 +1,28 @@
 package pt.com.broker.monitorization.db.queries;
 
 import java.sql.ResultSet;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbPool;
+import org.caudexorigo.text.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QueueAgentQuery
+import pt.com.broker.monitorization.AgentHostname;
+
+public class FaultTypeQuery
 {
-	private static final Logger log = LoggerFactory.getLogger(QueueAgentQuery.class);
-	
-	private static String AGENTNAME_PARAM = "agentname";
-	private static String QUERY = "SELECT * FROM (\nSELECT\n	queues.subject\n	, last_event_for_subject_predicate_agent(queues.subject, 'queue-size', ?,now()) AS queuesize\nFROM (SELECT DISTINCT subject FROM raw_data WHERE agent_name = ? AND subject ~ '^queue://' AND event_time > now() - time '00:30'  ) AS queues\n) AS q\nWHERE queuesize IS NOT NULL\nORDER BY queuesize DESC";
+	private static final Logger log = LoggerFactory.getLogger(FaultTypeQuery.class);
+
+	private static String FAULTTYPE_PARAM = "type";
+	private static String QUERY = "SELECT id, agent_name, event_time FROM fault_data \nWHERE event_time > (now() -  time '00:30') AND short_message = ?\nORDER BY event_time DESC\nLIMIT 10";
 
 	public String getId()
 	{
-		return "queueAgentInfo";
+		return "faultTypeInfo";
 	}
 
 	public String getJsonData(Map<String, List<String>> params)
@@ -49,15 +53,25 @@ public class QueueAgentQuery
 				}
 				int idx = 1;
 				sb.append("{");
-				sb.append("\"queueName\":\"");
+				
+				sb.append("\"id\":\"");
+				sb.append(queryResult.getInt(idx++));
+				sb.append("\",");
+				
+				sb.append("\"agentName\":\"");
 				String agentName = queryResult.getString(idx++);
 				sb.append(agentName);
 				sb.append("\",");
-
-				sb.append("\"queueSize\":\"");
-				sb.append(queryResult.getDouble(idx++));
+				
+				sb.append("\"agentHostname\":\"");
+				sb.append(AgentHostname.get(agentName));
+				sb.append("\",");
+				
+				sb.append("\"time\":\"");
+				sb.append(DateUtil.formatISODate(new Date(queryResult.getTimestamp(idx++).getTime())));
 				sb.append("\"");
 				
+
 				sb.append("}");
 			}
 		}
@@ -75,16 +89,16 @@ public class QueueAgentQuery
 
 	protected ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
-		List<String> list = params.get(AGENTNAME_PARAM);
-		String agentName = null;
-		if( (list != null) && list.size() == 1)
+		List<String> list = params.get(FAULTTYPE_PARAM);
+		String faultType = null;
+		if ((list != null) && list.size() == 1)
 		{
-			agentName = list.get(0);
+			faultType = list.get(0);
 		}
-		if(agentName == null)
+		if (faultType == null)
 		{
 			return null;
 		}
-		return db.runRetrievalPreparedStatement(QUERY, agentName, agentName);
+		return db.runRetrievalPreparedStatement(QUERY, faultType);
 	}
 }

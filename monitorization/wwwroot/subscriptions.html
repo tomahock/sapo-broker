@@ -9,6 +9,7 @@
 		<script type="text/javascript" src="scripts/monitor_new.js"></script>
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
+			window.onload = allSubscriptionsInformationInit;
 		</script>
     </head>
     <body>
@@ -36,13 +37,11 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Input Rate</td>
-                                    <td></td>
                                     <td>Output Rate</td>
-                                    <td></td>
                                     <td>Count</td>
                                 </tr>
                             </thead>
-                            <tbody id="agents">
+                            <tbody id="subscriptions">
                             </tbody>
                         </table>
                     </div>

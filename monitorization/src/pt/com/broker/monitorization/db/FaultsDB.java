@@ -25,6 +25,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import pt.com.broker.monitorization.AgentHostname;
+import pt.com.broker.monitorization.collector.AgentName;
+
 public class FaultsDB
 {
 	private static Logger log = LoggerFactory.getLogger(FaultsDB.class);
@@ -78,7 +81,7 @@ public class FaultsDB
 
 		public String toJson()
 		{
-			return String.format("{\"id\":\"%s\",\"agentName\":\"%s\",\"time\":\"%s\",\"shortMessage\":\"%s\",\"message\":\"%s\"}", this.id, this.agentName, DateUtil.formatISODate(new Date(time)), shortMessage, message);
+			return String.format("{\"id\":\"%s\",\"agentName\":\"%s\",\"agentHostname\":\"%s\",\"time\":\"%s\",\"shortMessage\":\"%s\",\"message\":\"%s\"}", this.id, this.agentName, AgentHostname.get(this.agentName), DateUtil.formatISODate(new Date(time)), shortMessage, message);
 		}
 	}
 

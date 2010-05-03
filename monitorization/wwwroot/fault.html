@@ -6,10 +6,11 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<script type="text/javascript" src="scripts/sapolib.js" ></script>
 		<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+		<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
 		<script type="text/javascript" src="scripts/monitor_new.js"></script>
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
-			// window.onload = faultInformationInit;
+			window.onload = faultInformationInit;
 		</script>
     </head>
     <body>
@@ -17,25 +18,24 @@
             <div id="header">
                 <div id="logo">
                     <a href="main.html" class="logo"><img src="./images/broker_console_text.png" alt="Broker Console" title="Broker Console" border="0" /></a>			
-				</div>
-				<div id="menu-items">
-					<p class="menu-item"><a href="main.html">Main</a></p>
-					<p class="menu-item"><a href="agents.html">Agents</a></p>
-					<p class="menu-item"><a href="queues.html">Queues</a></p>
-					<p class="menu-item"><a href="subscriptions.html">Subscriptions</a></p>
-				</div>
-			</div>
+		</div>
+		<div id="menu-items">
+			<p class="menu-item"><a href="main.html">Main</a></p>
+			<p class="menu-item"><a href="agents.html">Agents</a></p>
+			<p class="menu-item"><a href="queues.html">Queues</a></p>
+			<p class="menu-item"><a href="subscriptions.html">Subscriptions</a></p>
+		</div>
 
-            <div id="container">
-				<div id="info-pannel">
-					<div class="infoLabel"><span class="labelName">Agent:</span><span class="labelBody" id='agent_name'>solr01.portalsvc.bk.sapo.pt</span></div>
-					<div class="infoLabel"><span class="labelName">Fault short description:</span><span class="labelBody" id='fault_shortmsg'>Connection reset by peer</span></div>
-					<div class="infoLabel"><span class="labelName">Fault date:</span><span class="labelBody" id='fault_date'>12:15</span></div>
-				</div>
-                <div id="dashboard">
-                   stack trace...
-                </div>
-            </div>
+		 <div id="container">
+			<div id="info-pannel">
+				<div class="infoLabel"><span class="labelName">Agent:</span><span class="labelBody" id='agent_name'></span></div>
+				<div class="infoLabel"><span class="labelName">Fault short description:</span><span class="labelBody" id='shortmsg'></span></div>
+				<div class="infoLabel"><span class="labelName">Fault occurrence:</span><span class="labelBody" id='fault_date'></span></div>
+			</div>
+			<div id="message">
+			</div>
+		</div>
+             </div>
         </div>
     </body>
 </html>

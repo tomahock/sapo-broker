@@ -99,7 +99,6 @@ function mainMonitorizationInit()
   setInterval(f_rates, 5600);
 }
 
-
 function processGraph(queryStr, imgId, legendId, unit)
 {
   new Ajax.Request(queryStr,
@@ -110,7 +109,6 @@ function processGraph(queryStr, imgId, legendId, unit)
 	var data = transport.responseJSON;
 	var min = 0;
 	var max = 0;
-	var dif = 0;
 	
 	if(data.length == 0)
 		return;
@@ -120,44 +118,24 @@ function processGraph(queryStr, imgId, legendId, unit)
 	var min = parseFloat(data[0].value);
 	var max = parseFloat(data[0].value);
 	
-	for(var i = 1; i < data.length;i++)
+	for(var i = 1; i < data.length;++i)
 	{
 		var curValue = parseFloat(data[i].value);
 		if(curValue < min) min = curValue;
 		if(curValue > max) max = curValue;
 	}
-	dif = max-min;
-	var normalizedValues = new Array(data.length);
-	var originalData = new Array(data.length);
+
 	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
 	
-	// process first sample
-	var sample = (parseFloat(data[0].value));
-	originalData[0] = sample;
-	var bottom = sample - min;	
-	var curValue = (bottom != 0) ? ((bottom / dif) * 100) : bottom;
-	curValue = round(curValue);	
-	normalizedValues[0] = curValue;
-	url = url + curValue;
-	
-
-	// ((originalData[0]-min) != 0) ? (((originalData[0]-min) / dif) * 100) : originalData[0]
-
 	// process remaining samples
-	for(var i = 1; i < data.length;i++)
+	for(var i = 0; i < data.length; ++i)
 	{
-		var sample = (parseFloat(data[i].value));
-		originalData[i] = sample;		
-		var bottom = sample - min;	
-		var curValue = (bottom != 0) ? ((bottom / dif) * 100) : bottom;		
-		//var curValue = (sample != 0) ? (((sample - min) / dif) * 100) : sample;
-		curValue = round(curValue);
-		normalizedValues[i] = curValue;
-		url = url + ","+curValue;
+		var sample = normalizeValue(parseFloat(data[i].value), min, max);
+		
+		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
 	}
-	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (data.length-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:|"
-	//url = url + Math.round(parseFloat(data[data.length-1].value));
-	url = url + "|1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
+
+	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (data.length-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
 
 	min = round(min);
 	max = round(max);
@@ -177,6 +155,14 @@ function processGraph(queryStr, imgId, legendId, unit)
     },
     onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
    });
+}
+
+function normalizeValue(curValue, minValue, maxValue)
+{
+	var dif = maxValue-minValue;
+	var bottom = curValue - minValue;
+	var curValue = (bottom != 0) ? ((bottom / dif) * 100) : bottom;
+	return round(curValue);	
 }
 
 var previousQueueInfo = new Object();
@@ -316,7 +302,7 @@ function setErrorInfo(errorInfo, panel)
 			previousSysMsgInfo[shortMessage] = count;
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faults.html?shortmessage="+shortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faulttype.html?type="+shortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
 	panel.innerHTML = newContent;
@@ -532,33 +518,33 @@ function faultInformationInit()
 {
   var params = SAPO.Utility.Url.getQueryString();
   var params = SAPO.Utility.Url.getQueryString();
-  var idPanel = s$('fault_id');
-  var faultId = params.faultid;
+  var idPanel = s$('shortmsg');
+  var faultId = params.id;
   if (faultId == null)
   {
         idPanel.innerHTML = "Fault id not specified";
 	return;
   }
   idPanel.innerHTML = faultId;
-  new Ajax.Request('/dataquery/fault?id='+faultId,
+  new Ajax.Request('/dataquery/faults?id='+faultId,
    {
     method:'get',
     onSuccess: function(transport){
       var data = transport.responseJSON; 
 
-      var shortMsgPanel = s$('fault_shortmsg');
-      shortMsgPanel.innerHTML = data[0].shortMessage;
+      var shortMsgPanel = s$('shortmsg');
+      shortMsgPanel.innerHTML =  "<a href='./faulttype.html?type=" + data[0].shortMessage + "'>"+ data[0].shortMessage + "</a>"; data[0].shortMessage;
 
       var datePanel = s$('fault_date');
-      datePanel.innerHTML = data[0].time;
+      datePanel.innerHTML =  getHumanTextDiff(parseISO8601(data[0].time)) + " ago";
 
       var agentPanel = s$('agent_name');
-      agentPanel.innerHTML = data[0].agentName;
+      agentPanel.innerHTML = "<a href='./agent.html?agentname=" + data[0].agentName + "'>"+ data[0].agentHostname + "</a>";
 
-      var msgPanel = s$('fault_msg');
+      var msgPanel = s$('message');
       msgPanel.innerHTML = data[0].message;
     },
-    onFailure: function(){ alert('Something went wrong...') }
+    onFailure: function(){ alert('Something went wrong while trying to get fault message...') }
    });
 }
 //
@@ -664,24 +650,25 @@ function agentMonitorizationInit()
   }
   // faults
   var f_faults = function() {
-   new Ajax.Request('/dataquery/groupfault?groupby=shortmessage&agent='+agentname,
+   new Ajax.Request('/dataquery/faults?agentname='+agentname,
+   //new Ajax.Request('/dataquery/groupfault?groupby=shortmessage&agent='+agentname,
    {
     method:'get',
     onSuccess: function(transport){
       var panel = s$('errors');
       var data = transport.responseJSON;      
-      setAgentFaultInfo(data, panel, agentname);
+      setAgentFaultInfo(data, panel);
     },
     onFailure: function(){ alert('Something went wrong while trying to get agent\'s faults info...') }
    });  
   }
   // subscriptions
   var f_subscriptions = function() {
-   new Ajax.Request('/dataquery/last?predicate=subscriptions&agent='+agentname,
+   new Ajax.Request('/dataquery/subscription?agentname='+agentname,
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('subscriptionInformationPanel');
+      var panel = s$('subscriptions');
       var data = transport.responseJSON;      
       setAgentSubscriptionInfo(data, panel);
     },
@@ -689,22 +676,6 @@ function agentMonitorizationInit()
    });  
   }
 
-  // state
-  var f_state = function() {
-   new Ajax.Request('/dataquery/last?predicate=status&agent='+agentname,
-   {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = s$('agent_state');
-      var data = transport.responseJSON;      
-      var content = "<p>Agent status not available.</p>";
-      if(data.length != 0)
-	content = ( ( parseFloat(data[0].value) == 0) ? "Down" : "Ok") +" : " + data[0].time;
-      panel.innerHTML = content;     
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get agent\'s status info...') }
-   });  
-  }
   // dropbox
   var f_dropbox = function() {
    new Ajax.Request('/data/dropbox/agent?agentname='+agentname,
@@ -718,7 +689,7 @@ function agentMonitorizationInit()
 	content = data[0].dropboxLocation +" : " + data[0].messages +" : " + data[0].goodMessages;
       panel.innerHTML = content;     
     },
-    onFailure: function(){ alert('Something went wrong while trying to get agent\'s dropbox info...') }
+    onFailure: function(){ alert('Something went wrong while trying to get agent\'s dropbox info...'); }
    });
   }
 
@@ -736,6 +707,20 @@ function agentMonitorizationInit()
       panel.innerHTML = content;     
     },
     onFailure: function(){ var panel = s$('host_name'); panel.innerHTML = "";}
+   });  
+  }
+  // misc
+  var f_misc = function() {
+   new Ajax.Request('/dataquery/agent?agentname='+agentname,
+   {
+    method:'get',
+    onSuccess: function(transport){
+      var response = transport.responseText;
+      var panel = s$('misc_info');
+      var data = response.evalJSON();
+      setMiscAgentInfo(data, panel);
+    },
+    onFailure: function(){ alert('Something went wrong while trying to get agent\'s misc info...');}
    });  
   }
 
@@ -757,11 +742,48 @@ function agentMonitorizationInit()
   setInterval(f_subscriptions, 5200);
   f_faults();
   setInterval(f_faults, 5300);
-  f_state();
-  setInterval(f_state, 5400);
-//  f_dropbox();
-//  setInterval(f_dropbox, 50000);
+  f_misc();
+  setInterval(f_misc, 5500);
 }
+
+// agent queue info
+function setMiscAgentInfo(miscInfo, panel)
+{
+	var newContent = "";
+
+	if (miscInfo.length != 1)
+	{
+        	newContent = "<p>No information available.</P>";
+  	}
+	else
+	{
+		var i = 1;
+
+		var rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
+		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Status</td><td style='padding-right:2em'>" + miscInfo[0].status +"</td></tr>";
+
+		rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
+		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>TCP Connections</td><td style='padding-right:2em'>" + round(parseFloat(miscInfo[0].tcpConnections), 0) +"</td></tr>";
+
+		rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
+		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Legacy TCP Connections</td><td style='padding-right:2em'>" + round(parseFloat(miscInfo[0].tcpLegacyConnections), 0) +"</td></tr>";
+
+		rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
+		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>SSL Connections</td><td style='padding-right:2em'>" + round(parseFloat(miscInfo[0].ssl), 0) +"</td></tr>";
+
+		rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
+		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Dropbox</td><td style='padding-right:2em'>" + round(parseFloat(miscInfo[0].dropboxCount), 0) +"</td></tr>";
+
+		rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
+		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Fault Rate</td><td style='padding-right:2em'>" + round(parseFloat(miscInfo[0].faultRate), 1) +"</td></tr>";
+
+		rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
+		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Pending Sys Ack</td><td style='padding-right:2em'>" +  round(parseFloat(miscInfo[0].pendingAckSystemMsg), 0) +"</td></tr>";
+	}
+	panel.innerHTML = newContent;
+}
+
+
 // agent queue info
 var previousAgentQueueCount = new Object();
 function setAgentQueueInfo(queueInfo, panel)
@@ -784,7 +806,7 @@ function setAgentQueueInfo(queueInfo, panel)
 			previousAgentQueueCount[queueName] = queueCount;	
 
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td style='padding-right:2em'>" + queueCount +"</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td style='padding-right:2em'>" + queueCount +"</td><td style='padding-right:2em'><img src='" + pic + "' /></td></tr>";
 		}
 	}
 	panel.innerHTML = newContent;
@@ -797,32 +819,36 @@ function setAgentSubscriptionInfo(subscriptionsInfo, panel)
 
 	if (subscriptionsInfo.length == 0)
 	{
-        	newContent = "<p>There are no subscriptions</P>";
+        	newContent = "<p>No information available.</P>";
   	}
 	else
 	{
 		for(var i = 0; i != subscriptionsInfo.length; ++i)
 		{
-			var destinationName = subscriptionsInfo[i].subject;
-			var isTopic = isPrefix(destinationName, TOPIC_PREFIX);
-			var imageLoc;
+			var subscriptionName = subscriptionsInfo[i].subscriptionName;
+			var count = parseFloat(subscriptionsInfo[i].subscriptions);
+			var isTopic = isPrefix(subscriptionName, TOPIC_PREFIX);
+			
+			subscriptionName = removePrefix(subscriptionName, isTopic ? TOPIC_PREFIX : QUEUE_PREFIX);
+			
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 			if(isTopic)
 			{
-				destinationName = removePrefix(destinationName, TOPIC_PREFIX);
-				imageLoc = "images/topic.gif";
-			} else {
-				destinationName = removePrefix(destinationName, QUEUE_PREFIX);
-				imageLoc = "images/queue.gif";
+				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td><td style='padding-right:2em'>" +  count + "</td></tr>";
 			}
-			newContent =  newContent + "<p><img src=\"images/clock.gif\" title=\"" + subscriptionsInfo[i].time + "\"/><img src=\"" + imageLoc + "\"/>" + destinationName + " : "  + parseFloat( subscriptionsInfo[i].value ) + "</p>";
+			else
+			{
+				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+subscriptionName+"'>"+ subscriptionName+ "</a></td><td style='padding-right:2em'>QUEUE</td><td style='padding-right:2em'>" + count +"</td></tr>";	
+			}
 		}
 	}
 	panel.innerHTML = newContent;
 }
 
 // agent's fault info
-function setAgentFaultInfo(errorInfo, panel, agentname)
+function setAgentFaultInfo(errorInfo, panel)
 {
+	var newContent = "";
 	if (errorInfo.length == 0)
 	{
         	newContent = "<td class=\"oddrow\" colspan=\"1\">No information available.</td>";
@@ -838,7 +864,7 @@ function setAgentFaultInfo(errorInfo, panel, agentname)
 			previousSysMsgInfo[shortMessage] = count;
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faults.html?shortmessage="+shortMessage+"'&agentname=" + agentname + ">"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faulttype.html?type="+shortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
 	panel.innerHTML = newContent;
@@ -889,7 +915,7 @@ function allQueuesInformationInit()
 	   });
 	}
   f_allQueues();
-  setInterval(f_allQueues, 50000);
+  setInterval(f_allQueues, 5000);
 }
 
 
@@ -959,6 +985,120 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 }
 
 //
+// ALL SUBSCRIPTIONS
+//
+function allSubscriptionsInformationInit()
+{
+  var infoPanel = s$('subscriptions');
+  infoPanel.innerHTML = "Information not available";
+  var f_allSubscriptions = function(){
+	  new Ajax.Request('/dataquery/subscription',
+	   {
+	    method:'get',
+	    onSuccess: function(transport){
+	      var infoPanel = s$('subscriptions');
+	      var response = transport.responseText;
+	      var data = transport.responseJSON;
+	      setAllSubscriptionsGeneralInfo(data, infoPanel);
+	    },
+	    onFailure: function(){ alert('Something went wrong while trying to get all subscriptions general info...') }
+	   });
+	}
+  f_allSubscriptions();
+  setInterval(f_allSubscriptions, 5000);
+}
+
+function setAllSubscriptionsGeneralInfo(subscriptionsInfo, panel)
+{
+	var newContent = "";
+
+	if (subscriptionsInfo.length == 0)
+	{
+        	newContent = "<p>No information available.</P>";
+  	}
+	else
+	{
+		for(var i = 0; i != subscriptionsInfo.length; ++i)
+		{
+			var subscriptionName = subscriptionsInfo[i].subscriptionName;
+			var count = parseFloat(subscriptionsInfo[i].subscriptions);
+			var inputRate = round(parseFloat(subscriptionsInfo[i].inputRate));
+			var outputRate = round(parseFloat(subscriptionsInfo[i].outputRate));
+			var isTopic = isPrefix(subscriptionName, TOPIC_PREFIX);
+			
+			subscriptionName = removePrefix(subscriptionName, isTopic ? TOPIC_PREFIX : QUEUE_PREFIX);
+			
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\">";
+			if(isTopic)
+			{
+				newContent = newContent + "<td>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td>";
+			}
+			else
+			{
+				newContent = newContent + "<td><a href='./queue.html?queuename="+subscriptionName+"'>"+ subscriptionName+ "</a></td><td style='padding-right:2em'>QUEUE</td>";
+			}
+
+			newContent = newContent + "<td style='padding-right:2em'>" + inputRate +"</td><td style='padding-right:2em'>" + outputRate + "</td><td style='padding-right:2em'>" + count +"</td></tr>";	
+		}
+	}
+	panel.innerHTML = newContent;
+}
+
+faultTypeMonitorizationInit
+
+//
+// FAULT TYPE PAGE
+//
+function faultTypeMonitorizationInit()
+{
+  var params = SAPO.Utility.Url.getQueryString();
+  var faultType = params.type;  
+  var ftPanel = s$('fault_type');
+  ftPanel.innerHTML = faultType;
+  
+  var f_faultTypes = function(){
+	  new Ajax.Request('dataquery/faults?type='+faultType,
+	   {
+	    method:'get',
+	    onSuccess: function(transport){
+	      var infoPanel = s$('agents_messages');
+	      var response = transport.responseText;
+	      var data = transport.responseJSON;
+	      setFaultTypeInfo(data, infoPanel);
+	    },
+	    onFailure: function(){ alert('Something went wrong while trying to get all subscriptions general info...') }
+	   });
+	}
+  f_faultTypes();
+  setInterval(f_faultTypes, 5000);
+}
+
+function setFaultTypeInfo(faultInfo, panel)
+{
+	var newContent = "";
+
+	if (faultInfo.length == 0)
+	{
+        	newContent = "<p>No information available.</P>";
+  	}
+	else
+	{
+		for(var i = 0; i != faultInfo.length; ++i)
+		{
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+faultInfo[i].agentName+"'>"+ faultInfo[i].agentHostname + "</a></td><td style='padding-right:2em'>" + getHumanTextDiff( parseISO8601(faultInfo[i].time) ) +" ago. </td><td style='padding-right:2em'><a href='./fault.html?id=" + faultInfo[i].id +  "'>detail...</a></td></tr>";
+//<td style='padding-right:2em'><a href='./fault.html?id=" + faultInfo[i].id+ "'>detail...</a></td></tr>";
+			
+		}
+	}
+	panel.innerHTML = newContent;
+}
+
+
+//
 // UTILS
 //
 
@@ -986,10 +1126,30 @@ function isPrefix(string, prefix)
 	return string.match("^"+prefix)==prefix;
 }
 
-function round(value)
+function round(value, precision)
 {
 	if(value == 0) return 0;
-	return Math.round(value * 10) / 10;
+	
+	var mult = 1;
+	
+	if(typeof(precision)!=undefined && precision!=null)
+	{
+		mult = precision;
+	}
+
+	if(precision == 0)
+	{
+		Math.round(value);
+	}
+	
+	var factor = 10;	
+	for(var i = 1;  mult > i; ++i)
+	{
+		factor = factor * 10;
+	}
+	
+	
+	return Math.round(value * factor) / factor;
 }
 
 function parseISO8601(str) {
@@ -1016,10 +1176,20 @@ function parseISO8601(str) {
 }
 function getHumanTextDiff(date)
 {
-	var dDif = new Date( new Date() - date);
-	var str = "  ";
+	var now = new Date();
+	var dDif = new Date( now - date);
+
+	var tzOffsetHours = (now.getTimezoneOffset() != 0) ? (now.getTimezoneOffset() / 60) : 0;
+
+	var str = "";
+
+	if( (dDif.getHours() + tzOffsetHours) != 0 )
+	{
+		str += (dDif.getHours() + tzOffsetHours) +  " hours";
+	}
 	if( dDif.getMinutes() != 0 )
 	{
+		str = (str == "") ? str : str + " and "; 
 		str += " " + dDif.getMinutes() +  " minutes";
 	}
 	
@@ -1028,6 +1198,7 @@ function getHumanTextDiff(date)
 		str = (str == "") ? str : str + " and "; 
 		str += " " + dDif.getSeconds() + " seconds";
 	}
+
 	
 	return str;
 	//return dDif.toTimeString();
