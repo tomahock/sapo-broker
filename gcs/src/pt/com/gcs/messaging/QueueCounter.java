@@ -26,31 +26,38 @@ class QueueCounter implements Runnable
 		log.debug("Number of registered Queues: {}", qpl.size());
 
 		// New format
-		
-		final String queueSubscriptionTopic = "/system/stats/queues/";
-		
+
 		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("<qinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
-		
+		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+
 		for (QueueProcessor qp : QueueProcessorList.values())
 		{
 			long cnt = qp.getQueuedMessagesCount();
-			
-			if (cnt > 0)
+
+			if (cnt == 0)
 			{
-				log.info("Queue '{}' has {} message(s).", qp.getQueueName(), cnt);
-				sb.append(String.format("\n	<item subject='queue://%s' predicate='queue-size' value='%s' />", qp.getQueueName(), cnt));
+				if (!qp.emptyQueueInfoDisplay.getAndSet(true))
+				{
+					log.info("Queue '{}' is empty.", qp.getQueueName());
+				}
 			}
-			else if ((cnt == 0)/* && !qp.emptyQueueInfoDisplay.getAndSet(true)*/)
+			else if (cnt == 1)
 			{
-				log.info("Queue '{}' is empty.", qp.getQueueName());
-				sb.append(String.format("\n	<item subject='queue://%s' predicate='queue-size' value='%s' />", qp.getQueueName(), cnt));			
+				log.info("Queue '{}' has 1 message.", qp.getQueueName());
 			}
+			else if (cnt > 1)
+			{
+				log.info("Queue '{}' has {} messages.", qp.getQueueName(), cnt);
+			}
+
+			sb.append(String.format("\n\t<item subject='queue://%s' predicate='queue-size' value='%s' />", qp.getQueueName(), cnt));
 		}
-		
-		sb.append("\n</qinfo>");
-		
+
+		sb.append("\n</mqinfo>");
+
 		String result = sb.toString();
-		InternalPublisher.send(String.format("%s#%s#", queueSubscriptionTopic, GcsInfo.getAgentName()), result);		
+
+		final String sys_topic = String.format("/system/stats/queues/#%s#", GcsInfo.getAgentName());
+		InternalPublisher.send(sys_topic, result);
 	}
 }

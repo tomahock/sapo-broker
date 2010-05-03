@@ -30,62 +30,75 @@ public class QueueProcessor
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
 	private static final Charset UTF8 = Charset.forName("UTF-8");
-	
+	protected final AtomicBoolean emptyQueueInfoDisplay = new AtomicBoolean(false);
+
 	/*** Statistics ***/
-	
+
 	// received
 	private final AtomicLong qReceivedMessages = new AtomicLong(0);
+
 	private final void newQueueMessageReceived()
 	{
 		qReceivedMessages.incrementAndGet();
 	}
+
 	public long getQueueMessagesReceivedAndReset()
 	{
 		return qReceivedMessages.getAndSet(0);
 	}
+
 	// delivered
 	private final AtomicLong qDeliveredMessages = new AtomicLong(0);
+
 	private final void newQueueMessageDelivered()
 	{
 		qDeliveredMessages.incrementAndGet();
 	}
+
 	public long getQueueMessagesDeliveredAndReset()
 	{
 		return qDeliveredMessages.getAndSet(0);
 	}
-	
+
 	// redelivered
 	private final AtomicLong qRedeliveredMessages = new AtomicLong(0);
+
 	protected final void newQueueRedeliveredMessage()
 	{
 		qRedeliveredMessages.incrementAndGet();
 	}
+
 	public final long getQueueMessagesRedeliveredAndReset()
 	{
 		return qRedeliveredMessages.getAndSet(0);
 	}
+
 	// failed
 	private final AtomicLong qFailedMessages = new AtomicLong(0);
+
 	private final void newQueueFailedMessage()
 	{
 		qFailedMessages.incrementAndGet();
 	}
+
 	public final long getQueueMessagesFailedAndReset()
 	{
 		return qFailedMessages.getAndSet(0);
 	}
-	
+
 	// expired
 	private final AtomicLong qExpiredMessages = new AtomicLong(0);
+
 	private final void newQueueExpiredMessage()
 	{
 		qExpiredMessages.incrementAndGet();
 	}
+
 	public final long getQueueMessagesExpiredAndReset()
 	{
 		return qExpiredMessages.getAndSet(0);
 	}
-	
+
 	/******************/
 
 	protected final AtomicLong counter = new AtomicLong(0);
@@ -319,7 +332,7 @@ public class QueueProcessor
 	protected ForwardResult forward(NetMessage nmsg, boolean preferLocalConsumer) throws IllegalStateException
 	{
 		ForwardResult result = notify(localQueueListeners, nmsg);
-	
+
 		if (result.result == Result.FAILED)
 		{
 			newQueueFailedMessage();
@@ -531,7 +544,7 @@ public class QueueProcessor
 		try
 		{
 			newQueueMessageReceived();
-			
+
 			long seq_nr = sequence.incrementAndGet();
 			String mid = storage.insert(nmsg, seq_nr, preferLocalConsumer);
 			counter.incrementAndGet();
@@ -557,6 +570,8 @@ public class QueueProcessor
 		long cnt = getQueuedMessagesCount();
 		if (cnt > 0)
 		{
+			emptyQueueInfoDisplay.set(false);
+			
 			if (hasReadyListeners(localQueueListeners) || hasReadyListeners(remoteQueueListeners))
 			{
 				try
