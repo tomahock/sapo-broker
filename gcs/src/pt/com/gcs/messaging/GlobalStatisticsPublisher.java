@@ -50,23 +50,49 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", date, GcsInfo.getAgentName()));
 
 		double rate;
+		long value;
 		for (QueueProcessor qp : QueueProcessorList.values())
 		{
-			rate = ((double) qp.getQueueMessagesReceivedAndReset() / dSeconds);
-			sb.append(String.format("\n\t<item subject='queue://%s' predicate='input-rate' value='%s' />", qp.getQueueName(), rate));
-			rate = ((double) qp.getQueueMessagesDeliveredAndReset() / dSeconds);
-			sb.append(String.format("\n\t<item subject='queue://%s' predicate='output-rate' value='%s' />", qp.getQueueName(), rate));
-			rate = ((double) qp.getQueueMessagesFailedAndReset() / dSeconds);
-			sb.append(String.format("\n\t<item subject='queue://%s' predicate='failed-rate' value='%s' />", qp.getQueueName(), rate));
-			rate = ((double) qp.getQueueMessagesExpiredAndReset() / dSeconds);
-			sb.append(String.format("\n\t<item subject='queue://%s' predicate='expired-rate' value='%s' />", qp.getQueueName(), rate));
-			rate = ((double) qp.getQueueMessagesRedeliveredAndReset() / dSeconds);
-			sb.append(String.format("\n\t<item subject='queue://%s' predicate='redelivered-rate' value='%s' />", qp.getQueueName(), rate));
+			value = qp.getQueueStatistics().getQueueMessagesReceivedAndReset();
+			if (value != -1)
+			{
+				rate = ((double) value / dSeconds);
+				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"input-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+			}
+
+			value = qp.getQueueStatistics().getQueueMessagesDeliveredAndReset();
+			if (value != -1)
+			{
+				rate = ((double) value / dSeconds);
+				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"output-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+			}
+
+			value = qp.getQueueStatistics().getQueueMessagesFailedAndReset();
+			if (value != -1)
+			{
+				rate = ((double) value / dSeconds);
+				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"failed-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+			}
+			
+			value = qp.getQueueStatistics().getQueueMessagesExpiredAndReset();
+			if (value != -1)
+			{
+				rate = ((double) value / dSeconds);
+				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"expired-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+			}
+			
+			value = qp.getQueueStatistics().getQueueMessagesRedeliveredAndReset();
+			if (value != -1)
+			{
+				rate = ((double) value / dSeconds);
+				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"redelivered-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+			}
 		}
 
 		sb.append("\n</mqinfo>");
 
 		String result = sb.toString();
+
 
 		final String sys_topic = String.format("/system/stats/queues/#%s#", GcsInfo.getAgentName());
 
@@ -84,22 +110,39 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", date, GcsInfo.getAgentName()));
 
 		double rate;
+		long value;
+
 		rate = ((double) TopicProcessorList.getTopicMessagesReceivedAndReset() / dSeconds);
+
 		sb.append(String.format("\n\t<item subject='topic://.*' predicate='input-rate' value='%s' />", rate));
 		for (TopicProcessor tp : TopicProcessorList.values())
 		{
-			rate = ((double) tp.getTopicMessagesDeliveredAndReset() / dSeconds);
-			sb.append(String.format("\n\t<item subject='topic://%s' predicate='output-rate' value='%s' />", tp.getSubscriptionName(), rate));
-			rate = ((double) tp.getTopicMessagesDiscardedAndReset() / dSeconds);
-			sb.append(String.format("\n\t<item subject='topic://%s' predicate='discarded-rate' value='%s' />", tp.getSubscriptionName(), rate));
-			rate = ((double) tp.getTopicMessagesDispatchedToQueueAndReset() / dSeconds);
-			sb.append(String.format("\n\t<item subject='topic://%s' predicate='dispatched-to-queue-rate' value='%s' />", tp.getSubscriptionName(), rate));
+			value = tp.getTopicStatistics().getTopicMessagesDeliveredAndReset();
+			if (value != -1)
+			{
+				rate = ((double) value / dSeconds);
+				sb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"output-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+			}
+			
+			value = tp.getTopicStatistics().getTopicMessagesDiscardedAndReset();
+			if (value != -1)
+			{
+				rate = ((double) value / dSeconds);
+				sb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"discarded-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+			}
+			
+			value = tp.getTopicStatistics().getTopicMessagesDispatchedToQueueAndReset();
+			if (value != -1)
+			{
+				rate = ((double) value/ dSeconds);
+				sb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"dispatched-to-queue-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+			}
 		}
 
 		sb.append("\n</mqinfo>");
 
 		String result = sb.toString();
-		
+
 		final String sys_topic = String.format("/system/stats/topics/#%s#", GcsInfo.getAgentName());
 
 		NetPublish np = new NetPublish(sys_topic, DestinationType.TOPIC, new NetBrokerMessage(result));
@@ -112,20 +155,22 @@ public class GlobalStatisticsPublisher implements Runnable
 		double dSeconds = (double) seconds;
 
 		StringBuilder sb = new StringBuilder();
+
 		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", date, GcsInfo.getAgentName()));
 
+
 		double rate;
+
 		rate = ((double) ChannelStats.getDropboxReceivedMessagesAndReset() / dSeconds);
 		sb.append(String.format("\n\t<item subject='dropbox' predicate='input-rate' value='%s' />", rate));
 		rate = ((double) ChannelStats.getHttpReceivedMessagesAndReset() / dSeconds);
 		sb.append(String.format("\n\t<item subject='http' predicate='input-rate' value='%s' />", rate));
 
+
 		sb.append("\n</mqinfo>");
-
 		String result = sb.toString();
-		
-		final String sys_topic = String.format("/system/stats/channels/#%s#", GcsInfo.getAgentName());
 
+		final String sys_topic = String.format("/system/stats/channels/#%s#", GcsInfo.getAgentName());
 		NetPublish np = new NetPublish(sys_topic, DestinationType.TOPIC, new NetBrokerMessage(result));
 
 		Gcs.publish(np);
@@ -136,9 +181,11 @@ public class GlobalStatisticsPublisher implements Runnable
 		double dSeconds = (double) seconds;
 
 		StringBuilder sb = new StringBuilder();
+
 		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", date, GcsInfo.getAgentName()));
 
 		double rate;
+
 		rate = ((double) EncodingStats.getSoapDecodedMessageAndReset() / dSeconds);
 		sb.append(String.format("\n\t<item subject='xml' predicate='input-rate' value='%s' />", rate));
 		rate = ((double) EncodingStats.getSoapEncodedMessageAndReset() / dSeconds);
@@ -157,9 +204,8 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append("\n</mqinfo>");
 
 		String result = sb.toString();
-		
-		final String sys_topic = String.format("/system/stats/encoding/#%s#", GcsInfo.getAgentName());
 
+		final String sys_topic = String.format("/system/stats/encoding/#%s#", GcsInfo.getAgentName());
 		NetPublish np = new NetPublish(sys_topic, DestinationType.TOPIC, new NetBrokerMessage(result));
 
 		Gcs.publish(np);
@@ -176,17 +222,22 @@ public class GlobalStatisticsPublisher implements Runnable
 		// invalid messages
 		rate = ((double) MiscStats.getInvalidMessagesAndReset() / dSeconds);
 		sb.append(String.format("\n\t<item subject='invalid-messages' predicate='input-rate' value='%s' />", rate));
+		
 		// access denied
 		rate = ((double) MiscStats.getAccessesDeniedAndReset() / dSeconds);
 		sb.append(String.format("\n\t<item subject='access' predicate='denied' value='%s' />", rate));
+		
 		// tcp, tcp-legacy, ssl
 		sb.append(String.format("\n\t<item subject='tcp' predicate='connections' value='%s' />", MiscStats.getTcpConnectionsAndReset()));
 		sb.append(String.format("\n\t<item subject='tcp-legacy' predicate='connections' value='%s' />", MiscStats.getTcpLegacyConnectionsAndReset()));
 		sb.append(String.format("\n\t<item subject='ssl' predicate='connections' value='%s' />", MiscStats.getSslConnectionsAndReset()));
+		
 		// pending system message ack (count)
 		sb.append(String.format("\n\t<item subject='system-message' predicate='ack-pending' value='%s' />", SystemMessagesPublisher.getPendingMessagesCount()));
+		
 		// System messages - failed delivery (count)
 		sb.append(String.format("\n\t<item subject='system-message' predicate='failed-delivery' value='%s' />", MiscStats.getSystemMessagesFailuresAndReset()));
+		
 		// faults (rate)
 		rate = ((double) MiscStats.getFaultsAndReset() / dSeconds);
 		sb.append(String.format("\n\t<item subject='faults' predicate='rate' value='%s' />", rate));
@@ -196,7 +247,6 @@ public class GlobalStatisticsPublisher implements Runnable
 		String result = sb.toString();
 
 		final String sys_topic = String.format("/system/stats/misc/#%s#", GcsInfo.getAgentName());
-
 		NetPublish np = new NetPublish(sys_topic, DestinationType.TOPIC, new NetBrokerMessage(result));
 
 		Gcs.publish(np);

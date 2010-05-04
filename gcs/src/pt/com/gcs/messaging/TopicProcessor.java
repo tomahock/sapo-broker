@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import org.caudexorigo.text.StringUtils;
@@ -28,42 +27,7 @@ public class TopicProcessor
 	
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-	/*** Statistics ***/
-	
-	// delivered
-	private final AtomicLong tDeliveredMessages = new AtomicLong(0);
-	private final void newTopicMessageDelivered()
-	{
-		tDeliveredMessages.incrementAndGet();
-	}
-	public long getTopicMessagesDeliveredAndReset()
-	{
-		return tDeliveredMessages.getAndSet(0);
-	}
-	
-	// discarded
-	private final AtomicLong tDiscardedMessages = new AtomicLong(0);
-	protected final void newTopicDiscardedMessage()
-	{
-		tDiscardedMessages.incrementAndGet();
-	}
-	public final long getTopicMessagesDiscardedAndReset()
-	{
-		return tDiscardedMessages.getAndSet(0);
-	}
-
-	// dispatched to queue
-	private final AtomicLong tTopicDispatchedToQueueMessages = new AtomicLong(0);
-	protected final void newTopicDispatchedToQueueMessage()
-	{
-		tTopicDispatchedToQueueMessages.incrementAndGet();
-	}
-	public final long getTopicMessagesDispatchedToQueueAndReset()
-	{
-		return tTopicDispatchedToQueueMessages.getAndSet(0);
-	}
-	
-	/******************/
+	private final TopicStatistics topicStatistics = new TopicStatistics();
 	
 	private final String subscriptionName;
 
@@ -250,23 +214,19 @@ public class TopicProcessor
 							{
 								if( ml.getTargetDestinationType() == DestinationType.TOPIC)
 								{
-									newTopicMessageDelivered();
+									topicStatistics.newTopicMessageDelivered();
 								}
 								else
 								{
-									newTopicDispatchedToQueueMessage();
+									topicStatistics.newTopicDispatchedToQueueMessage();
 								}
 							}
 							else
 							{
-								newTopicDiscardedMessage();
+								topicStatistics.newTopicDiscardedMessage();
 							}
 						}
-
-						// nmsg.setDestination(topicName); // -> Set the destination name, queue dispatchers change it.
 					}
-
-					// np.s (topicName); // -> Set the destination name, queue dispatchers change it.
 				}
 			}
 		}
@@ -296,5 +256,10 @@ public class TopicProcessor
 	protected int size()
 	{
 		return topicListeners.size();
+	}
+
+	public TopicStatistics getTopicStatistics()
+	{
+		return topicStatistics;
 	}
 }

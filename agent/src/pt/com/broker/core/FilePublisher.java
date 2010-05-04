@@ -6,10 +6,12 @@ import java.io.FileInputStream;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.text.DateUtil;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +123,7 @@ public class FilePublisher
 				}
 				int goodFileCount = files.length;
 				
-//				publishInfo(goodFileCount);
+				publishInfo(goodFileCount);
 
 				if ((files != null) && (files.length > 0))
 				{
@@ -272,7 +274,7 @@ public class FilePublisher
 		return null;
 	}
 	
-/*	
+	
 	private void publishInfo(int goodFileCount)
 	{
 		long now  = System.currentTimeMillis();
@@ -291,15 +293,19 @@ public class FilePublisher
 		
 		if(publish)
 		{
-			String dName = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
-			String content = GcsInfo.getAgentName() + "#" + dropBoxDir.getAbsolutePath() + "#" + fileCount + "#" + goodFileCount;
+			StringBuilder sb = new StringBuilder();
+			String topic = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
+			sb.append(String.format("<mqinfo date=\"%s\" agent-name=\"%s\">", DateUtil.formatISODate( new Date(now) ), GcsInfo.getAgentName()));
+			
+			sb.append(String.format("\n	<item subject=\"dropbox\" predicate=\"count\" value=\"%s\" />",fileCount));
+			
+			sb.append("\n</mqinfo>");
 
-			NetPublish np = new NetPublish(dName, DestinationType.TOPIC, new NetBrokerMessage(content));
+			NetPublish np = new NetPublish(topic, DestinationType.TOPIC, new NetBrokerMessage(sb.toString()));
 			Gcs.publish(np);
 			previousPublish = now;
 		}
 	}
-	*/
 }
 
 

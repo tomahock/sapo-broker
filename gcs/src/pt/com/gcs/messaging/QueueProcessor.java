@@ -32,74 +32,6 @@ public class QueueProcessor
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	protected final AtomicBoolean emptyQueueInfoDisplay = new AtomicBoolean(false);
 
-	/*** Statistics ***/
-
-	// received
-	private final AtomicLong qReceivedMessages = new AtomicLong(0);
-
-	private final void newQueueMessageReceived()
-	{
-		qReceivedMessages.incrementAndGet();
-	}
-
-	public long getQueueMessagesReceivedAndReset()
-	{
-		return qReceivedMessages.getAndSet(0);
-	}
-
-	// delivered
-	private final AtomicLong qDeliveredMessages = new AtomicLong(0);
-
-	private final void newQueueMessageDelivered()
-	{
-		qDeliveredMessages.incrementAndGet();
-	}
-
-	public long getQueueMessagesDeliveredAndReset()
-	{
-		return qDeliveredMessages.getAndSet(0);
-	}
-
-	// redelivered
-	private final AtomicLong qRedeliveredMessages = new AtomicLong(0);
-
-	protected final void newQueueRedeliveredMessage()
-	{
-		qRedeliveredMessages.incrementAndGet();
-	}
-
-	public final long getQueueMessagesRedeliveredAndReset()
-	{
-		return qRedeliveredMessages.getAndSet(0);
-	}
-
-	// failed
-	private final AtomicLong qFailedMessages = new AtomicLong(0);
-
-	private final void newQueueFailedMessage()
-	{
-		qFailedMessages.incrementAndGet();
-	}
-
-	public final long getQueueMessagesFailedAndReset()
-	{
-		return qFailedMessages.getAndSet(0);
-	}
-
-	// expired
-	private final AtomicLong qExpiredMessages = new AtomicLong(0);
-
-	private final void newQueueExpiredMessage()
-	{
-		qExpiredMessages.incrementAndGet();
-	}
-
-	public final long getQueueMessagesExpiredAndReset()
-	{
-		return qExpiredMessages.getAndSet(0);
-	}
-
-	/******************/
 
 	protected final AtomicLong counter = new AtomicLong(0);
 
@@ -117,6 +49,8 @@ public class QueueProcessor
 
 	private TopicToQueueDispatcher topicFwd;
 
+	private final QueueStatistics queueStatistics = new QueueStatistics();
+	
 	private int current_idx = 0;
 	private AtomicLong wakeupAfter = new AtomicLong(System.currentTimeMillis() + 500);
 
@@ -335,7 +269,7 @@ public class QueueProcessor
 
 		if (result.result == Result.FAILED)
 		{
-			newQueueFailedMessage();
+			queueStatistics.newQueueFailedMessage();
 			if (!hasActiveListeners(localQueueListeners))
 			{
 				result = notify(remoteQueueListeners, nmsg);
@@ -343,7 +277,7 @@ public class QueueProcessor
 		}
 		else
 		{
-			newQueueMessageDelivered();
+			queueStatistics.newQueueMessageDelivered();
 		}
 
 		if (log.isDebugEnabled())
@@ -543,7 +477,7 @@ public class QueueProcessor
 	{
 		try
 		{
-			newQueueMessageReceived();
+			queueStatistics.newQueueMessageReceived();
 
 			long seq_nr = sequence.incrementAndGet();
 			String mid = storage.insert(nmsg, seq_nr, preferLocalConsumer);
@@ -594,5 +528,10 @@ public class QueueProcessor
 			}
 		}
 		isWorking.set(false);
+	}
+
+	public QueueStatistics getQueueStatistics()
+	{
+		return queueStatistics;
 	}
 }

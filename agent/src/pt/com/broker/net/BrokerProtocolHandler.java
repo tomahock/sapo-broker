@@ -104,7 +104,6 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 				{
 					if (cf.isSuccess())
 					{
-						MiscStats.newSslConnection();
 						log.info("SSL handshake complete.");
 					}
 					else
@@ -113,6 +112,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 					}
 				}
 			});
+			MiscStats.newSslConnection();
 		}
 		else
 		{
@@ -152,15 +152,24 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			TopicProcessorList.removeSession(channel);
 			BrokerSyncConsumer.removeSession(ctx);
 
-			if (((InetSocketAddress) channel.getLocalAddress()).getPort() != GcsInfo.getBrokerSSLPort())
+			final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
+			if (sslHandler == null)
 			{
-				MiscStats.tcpConnectionClosed();
+				int port = ((InetSocketAddress) ctx.getChannel().getLocalAddress()).getPort();
+				if (port == GcsInfo.getBrokerPort())
+				{
+					MiscStats.tcpConnectionClosed();
+				}
+				else if (port == GcsInfo.getBrokerLegacyPort())
+				{
+					MiscStats.tcpLegacyConnectionClosed();
+				}
 			}
 			else
 			{
 				MiscStats.sslConnectionClosed();
 			}
-
+			
 			ChannelAttributes.remove(ChannelAttributes.getChannelId(ctx));
 
 			log.info("channel closed: " + remoteClient);
