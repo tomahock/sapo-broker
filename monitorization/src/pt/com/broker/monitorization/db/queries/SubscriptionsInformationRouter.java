@@ -7,7 +7,7 @@ public class SubscriptionsInformationRouter
 {
 	private static String AGENTNAME_PARAM = "agentname";
 	
-	private final static AllSubscriptionsGeneralInfoQuery ALL_SUBSCRIPTION_GENERAL_INFO = new AllSubscriptionsGeneralInfoQuery();
+	private final static TopicsInfoQuery ALL_SUBSCRIPTION_GENERAL_INFO = new TopicsInfoQuery();
 	private final static SubscriptionAgentInformationQuery SUBSCRIPTION_AGENT_INFO = new SubscriptionAgentInformationQuery();
 	
 	public static String getSubscriptionData(Map<String,List<String>> params)

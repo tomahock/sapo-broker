@@ -9,7 +9,7 @@
 		<script type="text/javascript" src="scripts/monitor_new.js"></script>
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
-			window.onload = allAgentInit;
+			window.onload = topicMonitorizationInit;
 		</script>
     </head>
     <body>
@@ -30,20 +30,16 @@
                 <div id="main-stats">
 
                     <div class="dashboard-widget">
-                        <table cellspacing="0" cellpadding="5" border="0">
-                            <caption>Agents</caption>
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption>Topics</caption>
                             <thead>
-                                <tr style="text-align:center">
-                                    <td>Agent</td>
-                                    <td>Status</td>
-                                    <td colspan="2">Input Rate</td>
-                                    <td colspan="2">Output Rate</td>
-                                    <td colspan="2">Error Rate</td>
-                                    <td>Pending Sys Ack</td>
-                                    <td>Dropbox</td>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Output Rate</td>
+                                    <td>Subscriptions</td>
                                 </tr>
                             </thead>
-                            <tbody id="agents">
+                            <tbody id="topics">
                             </tbody>
                         </table>
                     </div>

@@ -9,11 +9,11 @@ import org.caudexorigo.jdbc.DbPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AllSubscriptionsGeneralInfoQuery
+public class TopicsInfoQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(GeneralQueueInfoQuery.class);
 	
-	private static String QUERY = "SELECT \n	subscriptions.subject AS subscription\n	, last_event_for_subject_and_predicate(subscriptions.subject,'input-rate', now()) as inputrate\n	, last_event_for_subject_and_predicate(subscriptions.subject,'output-rate', now()) as outputrate\n	, last_event_for_subject_and_predicate(subscriptions.subject, 'subscriptions', now()) AS subscription_count\nFROM (SELECT DISTINCT subject FROM raw_data WHERE predicate = 'subscriptions' AND event_time > (now() - time '00:10')) AS subscriptions\nOrder BY 2 DESC;";
+	private static String QUERY = "SELECT \n	subscriptions.subject AS subscription\n	, last_event_for_subject_and_predicate(subscriptions.subject,'output-rate', now()) as outputrate\n	, last_event_for_subject_and_predicate(subscriptions.subject, 'subscriptions', now()) AS subscription_count\nFROM (SELECT DISTINCT subject FROM raw_data WHERE predicate = 'subscriptions' AND subject ~ '^topic://' AND event_time > (now() - time '00:10')) AS subscriptions\nORDER BY 3 DESC;";
 
 	public String getId()
 	{
@@ -53,10 +53,6 @@ public class AllSubscriptionsGeneralInfoQuery
 				sb.append(queuename);
 				sb.append("\",");
 
-				sb.append("\"inputRate\":\"");
-				sb.append(queryResult.getDouble(idx++));
-				sb.append("\",");
-				
 				sb.append("\"outputRate\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\",");

@@ -411,32 +411,21 @@ function setGeneralQueueInfo(queueGeneralInfo,  panel)
 			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+ agentname+ "'>" + queueGeneralInfo[i].agentHostname + "</a></td><td>" + agentCount + "</td><td><img src='" + pic + "' /></td>";
 
 			var inputRate = round(parseFloat(queueGeneralInfo[i].inputRate));
-			pic = getLocalPic(prevQueueInfo.inputRate, inputRate);
-			prevQueueInfo.inputRate = inputRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td>";
 	
 			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
-			pic = getLocalPic(prevQueueInfo.outputRate, outputRate);
-			prevQueueInfo.outputRate = outputRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td>";
 
 			var failedRate = round(parseFloat(queueGeneralInfo[i].failedRate));
-			pic = getLocalPic(prevQueueInfo.failedRate, failedRate);
-			prevQueueInfo.failedRate = failedRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td>";
 
 			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
-			pic = getLocalPic(prevQueueInfo.expiredRate, expiredRate);
-			prevQueueInfo.expiredRate = expiredRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td>";
 
 			var redeliveredRate = round(parseFloat(queueGeneralInfo[i].redeliveredRate));
-			pic = getLocalPic(prevQueueInfo.redeliveredRate, redeliveredRate);
-			prevQueueInfo.redeliveredRate = redeliveredRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td>";
 
-			newContent = newContent + "<td>" + parseFloat(queueGeneralInfo[i].subscriptions) + "</td><td><img src='" + pic + "' /></td></tr>";
-
+			newContent = newContent + "<td>" + parseFloat(queueGeneralInfo[i].subscriptions) + "</td></tr>";
 		}
 	}
 
@@ -955,29 +944,22 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 
 
 			var inputRate = round(parseFloat(queueGeneralInfo[i].inputRate));
-			pic = getLocalPic(prevQueueInfo.inputRate, inputRate);
-			prevQueueInfo.inputRate = inputRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td>";
 	
 			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
-			pic = getLocalPic(prevQueueInfo.outputRate, outputRate);
-			prevQueueInfo.outputRate = outputRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td>";
 
 			var failedRate = round(parseFloat(queueGeneralInfo[i].failedRate));
-			pic = getLocalPic(prevQueueInfo.failedRate, failedRate);
-			prevQueueInfo.failedRate = failedRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td>";
 
 			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
-			pic = getLocalPic(prevQueueInfo.expiredRate, expiredRate);
-			prevQueueInfo.expiredRate = expiredRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td>";
 
 			var redeliveredRate = round(parseFloat(queueGeneralInfo[i].redeliveredRate));
-			pic = getLocalPic(prevQueueInfo.redeliveredRate, redeliveredRate);
-			prevQueueInfo.redeliveredRate = redeliveredRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td></tr>";
+			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td>";
+
+			var subscriptions = "?"; //round(parseFloat(queueGeneralInfo[i].redeliveredRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + subscriptions + "</td></tr>";
 
 		}
 	}
@@ -986,62 +968,54 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 }
 
 //
-// ALL SUBSCRIPTIONS
+// TOPICS PAGE
 //
-function allSubscriptionsInformationInit()
+function topicMonitorizationInit()
 {
-  var infoPanel = s$('subscriptions');
+  var infoPanel = s$('topics');
   infoPanel.innerHTML = "Information not available";
-  var f_allSubscriptions = function(){
+  var f_topicInfo = function(){
 	  new Ajax.Request('/dataquery/subscription',
 	   {
 	    method:'get',
 	    onSuccess: function(transport){
-	      var infoPanel = s$('subscriptions');
+	      var infoPanel = s$('topics');
 	      var response = transport.responseText;
 	      var data = transport.responseJSON;
-	      setAllSubscriptionsGeneralInfo(data, infoPanel);
+	      setTopicGeneralInfo(data, infoPanel);
 	    },
 	    onFailure: function(){ alert('Something went wrong while trying to get all subscriptions general info...') }
 	   });
 	}
-  f_allSubscriptions();
-  setInterval(f_allSubscriptions, 5000);
+  f_topicInfo();
+  setInterval(f_topicInfo, 5000);
 }
 
-function setAllSubscriptionsGeneralInfo(subscriptionsInfo, panel)
+function setTopicGeneralInfo(topicsInfo, panel)
 {
 	var newContent = "";
 
-	if (subscriptionsInfo.length == 0)
+	if (topicsInfo.length == 0)
 	{
         	newContent = "<p>No information available.</P>";
   	}
 	else
 	{
-		for(var i = 0; i != subscriptionsInfo.length; ++i)
+		for(var i = 0; i != topicsInfo.length; ++i)
 		{
-			var subscriptionName = subscriptionsInfo[i].subscriptionName;
-			var count = parseFloat(subscriptionsInfo[i].subscriptions);
-			var inputRate = round(parseFloat(subscriptionsInfo[i].inputRate));
-			var outputRate = round(parseFloat(subscriptionsInfo[i].outputRate));
+			var subscriptionName = topicsInfo[i].subscriptionName;
+			var count = parseFloat(topicsInfo[i].subscriptions);
+			var outputRate = round(parseFloat(topicsInfo[i].outputRate));
 			var isTopic = isPrefix(subscriptionName, TOPIC_PREFIX);
-			
-			subscriptionName = removePrefix(subscriptionName, isTopic ? TOPIC_PREFIX : QUEUE_PREFIX);
-			
-			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\">";
-			if(isTopic)
-			{
-				newContent = newContent + "<td>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td>";
-			}
-			else
-			{
-				newContent = newContent + "<td><a href='./queue.html?queuename="+subscriptionName+"'>"+ subscriptionName+ "</a></td><td style='padding-right:2em'>QUEUE</td>";
-			}
+			if(isTopic){	
+				subscriptionName = removePrefix(subscriptionName, isTopic ? TOPIC_PREFIX : QUEUE_PREFIX);
+			
+				var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<td style='padding-right:2em'>" + inputRate +"</td><td style='padding-right:2em'>" + outputRate + "</td><td style='padding-right:2em'>" + count +"</td></tr>";	
+				newContent = newContent + "<tr class=\"" + rowClass +"\"><td>" + subscriptionName + "</td>";
+				newContent = newContent + "<td style='padding-right:2em'>" + outputRate + "</td><td style='padding-right:2em'>" + count +"</td></tr>";	
+		    	}
 		}
 	}
 	panel.innerHTML = newContent;
