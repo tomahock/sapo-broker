@@ -11,7 +11,7 @@ public class OutputRateStaticQuery extends StaticQuery
 
 	// private static final Logger log = LoggerFactory.getLogger(OutputRateStaticQuery.class);
 
-	private static String QUERY = "SELECT last_event_ouput_message(generate_series, '00:01') FROM generate_series(now()- time '00:20',  now(), '00:01'::time)";
+	private static String QUERY = "SELECT last_event_ouput_message(generate_series, '00:06') FROM generate_series(now()- time '00:20',  now(), '00:01'::time)";
 
 	@Override
 	public String getId()
