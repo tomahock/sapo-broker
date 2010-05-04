@@ -13,7 +13,7 @@ public class AllSubscriptionsGeneralInfoQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(GeneralQueueInfoQuery.class);
 	
-	private static String QUERY = "SELECT \n	subscriptions.subject AS subscription\n	, last_event_for_subject_and_predicate(subscriptions.subject,'input-rate', now()) as inputrate\n	, last_event_for_subject_and_predicate(subscriptions.subject,'output-rate', now()) as outputrate\n	, last_event_for_subject_and_predicate(subscriptions.subject, 'subscriptions', now()) AS subscription_count\nFROM (SELECT DISTINCT subject FROM raw_data WHERE predicate = 'subscriptions' AND event_time > (now() - time '00:30')) AS subscriptions\nOrder BY 2 DESC;";
+	private static String QUERY = "SELECT \n	subscriptions.subject AS subscription\n	, last_event_for_subject_and_predicate(subscriptions.subject,'input-rate', now()) as inputrate\n	, last_event_for_subject_and_predicate(subscriptions.subject,'output-rate', now()) as outputrate\n	, last_event_for_subject_and_predicate(subscriptions.subject, 'subscriptions', now()) AS subscription_count\nFROM (SELECT DISTINCT subject FROM raw_data WHERE predicate = 'subscriptions' AND event_time > (now() - time '00:10')) AS subscriptions\nOrder BY 2 DESC;";
 
 	public String getId()
 	{
