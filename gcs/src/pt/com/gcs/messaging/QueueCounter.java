@@ -33,12 +33,17 @@ class QueueCounter implements Runnable
 		for (QueueProcessor qp : QueueProcessorList.values())
 		{
 			long cnt = qp.getQueuedMessagesCount();
+			boolean sendstats = true;
 
 			if (cnt == 0)
 			{
 				if (!qp.emptyQueueInfoDisplay.getAndSet(true))
 				{
 					log.info("Queue '{}' is empty.", qp.getQueueName());
+				}
+				else
+				{
+					sendstats = false;
 				}
 			}
 			else if (cnt == 1)
@@ -50,7 +55,10 @@ class QueueCounter implements Runnable
 				log.info("Queue '{}' has {} messages.", qp.getQueueName(), cnt);
 			}
 
-			sb.append(String.format("\n\t<item subject='queue://%s' predicate='queue-size' value='%s' />", qp.getQueueName(), cnt));
+			if (sendstats)
+			{
+				sb.append(String.format("\n\t<item subject='queue://%s' predicate='queue-size' value='%s' />", qp.getQueueName(), cnt));
+			}
 		}
 
 		sb.append("\n</mqinfo>");
