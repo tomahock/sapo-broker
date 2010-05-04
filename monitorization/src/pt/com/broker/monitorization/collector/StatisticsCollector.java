@@ -1,18 +1,17 @@
 package pt.com.broker.monitorization.collector;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 
 import org.caudexorigo.text.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -31,37 +30,13 @@ public class StatisticsCollector
 	private final String SUBSCRIPTION = "/system/stats/.*";
 	private final BaseBrokerClient brokerClient;
 
-	private XPath xpath;
+	private static final XMLInputFactory factory = XMLInputFactory.newInstance();
 
-	private XPathExpression agentExpr;
-	private XPathExpression dateExpr;
-
-	private XPathExpression itemsExpr;
-	private XPathExpression subjectExpr;
-	private XPathExpression predicateExpr;
-	private XPathExpression valueExpr;
-	
 
 	public StatisticsCollector(BaseBrokerClient brokerClient)
 	{
 		this.brokerClient = brokerClient;
 
-		xpath = XPathFactory.newInstance().newXPath();
-		try
-		{
-			agentExpr = xpath.compile("//@agent-name");
-			dateExpr = xpath.compile("//@date");
-			
-			itemsExpr = xpath.compile("//item");
-			subjectExpr = xpath.compile("./@subject");
-			predicateExpr = xpath.compile("./@predicate");
-			valueExpr = xpath.compile("./@value");
-		}
-		catch (Throwable t)
-		{
-			log.error("Failed to initialize XPATH.", t);
-			throw new RuntimeException(t);
-		}
 	}
 
 	public void start()
@@ -94,40 +69,58 @@ public class StatisticsCollector
 
 	private void messageReceived(NetNotification notification)
 	{
-		String xml = new String(notification.getMessage().getPayload());
-		if(log.isDebugEnabled())
+
+		if (log.isDebugEnabled())
 		{
+			String xml = new String(notification.getMessage().getPayload());
 			log.debug("Message received: '{}'", xml);
 		}
-		
+
 		try
 		{
-			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
 
-			String agent = agentExpr.evaluate(document);
-			String sampleStart = dateExpr.evaluate(document);
-			Date sampleStartDate = DateUtil.parseISODate(sampleStart);
+			XMLStreamReader staxXmlReader = factory.createXMLStreamReader(new InputStreamReader(new ByteArrayInputStream(notification.getMessage().getPayload())));
 
-			//process items
-			
-			NodeList itemsList = (NodeList) itemsExpr.evaluate(document, XPathConstants.NODESET);
-			int itemsCount = itemsList.getLength();
-			for(int i = 0; i != itemsCount; ++i)
+			String agent = null;
+			Date sampleStartDate = null;
+
+			int eventType = staxXmlReader.getEventType();
+			do
 			{
-				Node item = itemsList.item(i);
-				
-				String subject = subjectExpr.evaluate(item);
-				String predicate = predicateExpr.evaluate(item);
-				String strValue = valueExpr.evaluate(item);
-				double value = Double.parseDouble(strValue);
-				
-				processItem(agent, sampleStartDate, subject, predicate, value);
+				if (eventType == XMLStreamConstants.START_ELEMENT)
+				{
+					String lname = staxXmlReader.getLocalName();
+
+					if (lname.equals("qinfo") || lname.equals("mqinfo"))
+					{
+						agent = staxXmlReader.getAttributeValue("", "agent-name");
+						String sampleStart = staxXmlReader.getAttributeValue("", "date");
+						sampleStartDate = DateUtil.parseISODate(sampleStart);
+
+						// System.out.printf("agent: %s; date: %s%n", agent, sampleStartDate);
+					}
+					else if (lname.equals("item"))
+					{
+						String subject = staxXmlReader.getAttributeValue("", "subject");
+						String predicate = staxXmlReader.getAttributeValue("", "predicate");
+						String svalue = staxXmlReader.getAttributeValue("", "value");
+						double value = Double.parseDouble(svalue);
+
+						if ((agent != null) && (sampleStartDate != null))
+						{
+							// System.out.printf("\t -> subject: %s; predicate: %s; value: %s%n", subject, predicate, value);
+							processItem(agent, sampleStartDate, subject, predicate, value);
+						}
+					}
+				}
+				eventType = staxXmlReader.next();
 			}
-						
+			while (eventType != XMLStreamConstants.END_DOCUMENT);
+
 		}
 		catch (Throwable t)
 		{
-			log.error(String.format("Failed to process received message. Error: %s. Message: \n'%s'", t.getMessage(), xml));
+			log.error(String.format("Failed to process received message. Error: %s. Message: \n'%s'", t.getMessage(), new String(notification.getMessage().getPayload())));
 		}
 	}
 
@@ -153,9 +146,9 @@ public class StatisticsCollector
 			String xml = "<stats date='2010-04-06T15:09:25.650Z' agent-name='127.0.0.1:3315'><item subject='queue:///queue/foo' predicate='input-rate' value='123' /><item subject='queue:///queue/foo' predicate='output-rate' value='23' /> 	<item subject='queue:///queue/foo' predicate='subscriptions' value='11223' /> 	<item subject='queue:///queue/foo' predicate='failed' value='123213' /> 	<item subject='queue:///queue/foo' predicate='expired' value='3' /> 	<item subject='queue:///queue/foo' predicate='redelivered' value='23' /> </stats>";
 
 			NetNotification notification = new NetNotification("/system/stats/....", DestinationType.TOPIC, new NetBrokerMessage(xml), "/system/stats/.*");
-			
+
 			new StatisticsCollector(null).messageReceived(notification);
-			
+
 			System.out.println("END");
 		}
 		catch (Throwable t)
