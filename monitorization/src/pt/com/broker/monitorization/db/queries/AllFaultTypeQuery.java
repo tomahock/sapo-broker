@@ -13,7 +13,7 @@ public class AllFaultTypeQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(AllFaultTypeQuery.class);
 
-	private static String QUERY = "SELECT short_message, count (id) AS count\nFROM fault_data \nWHERE event_time > ( now() - time '00:15' )\nGROUP BY short_message ORDER BY count DESC";
+	private static String QUERY = "SELECT short_message, count (id) AS count FROM fault_data WHERE event_time > (now() - '00:15'::time) GROUP BY short_message ORDER BY count DESC";
 
 	public String getId()
 	{

@@ -12,7 +12,7 @@ public class QueueCountStaticQuery extends StaticQuery
 
 	private static final String predicate = "queue-size";
 
-	private static String QUERY = "SELECT last_event_for_predicate(?, generate_series) FROM generate_series(now()- time '00:10',  now(), '20 seconds')";
+	private static String QUERY = "SELECT last_event_for_predicate(?, generate_series, '00:00:20') FROM generate_series(now()- '00:10'::time,  now(), '00:00:20'::time)";
 
 	@Override
 	public String getId()

@@ -8,9 +8,9 @@ import org.caudexorigo.jdbc.Db;
 
 public class InputRateStaticQuery extends StaticQuery
 {
-	//private static final Logger log = LoggerFactory.getLogger(InputRateStaticQuery.class);
+	// private static final Logger log = LoggerFactory.getLogger(InputRateStaticQuery.class);
 
-	private static String QUERY = "SELECT last_event_input_message(generate_series) FROM generate_series(now()- time '00:20',  now(), '60 seconds')";
+	private static String QUERY = "SELECT last_event_input_message(generate_series, '00:01') FROM generate_series(now()- '00:20',  now(), '00:01'::time)";
 
 	@Override
 	public String getId()
@@ -19,7 +19,7 @@ public class InputRateStaticQuery extends StaticQuery
 	}
 
 	@Override
-	public ResultSet getResultSet(Db db, Map<String,List<String>> params)
+	public ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
 		return db.runRetrievalPreparedStatement(QUERY);
 	}

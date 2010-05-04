@@ -13,7 +13,7 @@ public class SubscriptionAgentInformationQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(SubscriptionAgentInformationQuery.class);
 
-	private static final String QUERY = "SELECT \n	subscriptions.subject AS subscription\n	, last_event_for_subject_predicate_agent(subscriptions.subject, 'subscriptions', ?, now()) AS subscription_count\nFROM (SELECT DISTINCT subject FROM raw_data WHERE agent_name = ? and predicate = 'subscriptions' AND event_time > (now() - time '00:10')) AS subscriptions\nOrder BY 1 DESC";
+	private static final String QUERY = "SELECT  subscriptions.subject AS subscription , last_event_for_subject_predicate_agent(subscriptions.subject, 'subscriptions', ?, now(), '00:10') AS subscription_count FROM (SELECT DISTINCT subject FROM raw_data WHERE agent_name = ? and predicate = 'subscriptions' AND event_time > (now() - '00:10'::time)) AS subscriptions Order BY 1 DESC";
 
 	private final static String AGENTNAME_PARAM = "agentname";
 

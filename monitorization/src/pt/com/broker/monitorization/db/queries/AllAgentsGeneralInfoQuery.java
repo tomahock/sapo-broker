@@ -15,7 +15,7 @@ public class AllAgentsGeneralInfoQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(AllAgentsGeneralInfoQuery.class);
 	
-	private static String QUERY = "SELECT\n	agents.agent_name\n	, last_event_for_subject_predicate_agent('agent', 'status', agents.agent_name,now()) AS status\n	, last_event_input_message_for_agent(agents.agent_name,now()) AS input\n	, last_event_ouput_message_for_agent(agents.agent_name,now()) AS output\n	, last_event_for_subject_predicate_agent('faults', 'rate', agents.agent_name,now()) AS faulTrate\n	, last_event_for_subject_predicate_agent('system-message', 'ack-pending', agents.agent_name,now()) AS pending_sys_msg\n	, last_event_for_subject_predicate_agent('dropbox', 'count', agents.agent_name,now()) AS dropboxcount\nFROM (SELECT DISTINCT agent_name FROM raw_data WHERE event_time > (now() - time '00:10') ) AS agents\nOrder BY 1 DESC";
+	private static String QUERY = "SELECT agents.agent_name , last_event_for_subject_predicate_agent('agent', 'status', agents.agent_name, now(), '00:10') AS status , last_event_input_message_for_agent(agents.agent_name, now(), '00:10') AS input , last_event_ouput_message_for_agent(agents.agent_name, now(), '00:10') AS output , last_event_for_subject_predicate_agent('faults', 'rate', agents.agent_name, now(), '00:10') AS faulTrate , last_event_for_subject_predicate_agent('system-message', 'ack-pending', agents.agent_name, now(), '00:10') AS pending_sys_msg , last_event_for_subject_predicate_agent('dropbox', 'count', agents.agent_name, now(), '00:10') AS dropboxcount FROM (SELECT DISTINCT agent_name FROM raw_data WHERE event_time > (now() - '00:10'::time) ) AS agents ORDER BY 1 DESC";
 
 	public String getId()
 	{

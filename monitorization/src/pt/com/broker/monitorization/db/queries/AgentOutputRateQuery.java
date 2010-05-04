@@ -9,7 +9,7 @@ import org.caudexorigo.jdbc.Db;
 public class AgentOutputRateQuery extends AgentIntervalQuery
 {
 
-	private final static String QUERY = "SELECT last_event_ouput_message_for_agent(?, generate_series) FROM generate_series(now()- time '00:20',  now(), '60 seconds')";
+	private final static String QUERY = "SELECT last_event_ouput_message_for_agent(?, generate_series, '00:01') FROM generate_series(now()- time '00:20',  now(), '00:01'::time)";
 	
 	@Override
 	public String getId()

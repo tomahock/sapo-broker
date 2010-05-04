@@ -9,7 +9,7 @@ import org.caudexorigo.jdbc.Db;
 public class AgentQueueCountQuery extends AgentIntervalQuery
 {
 
-	private final static String QUERY = "SELECT last_event_predicate_for_agent(?, ?, generate_series) FROM generate_series(now()- time '00:20',  now(), '60 seconds')";
+	private final static String QUERY = "SELECT last_event_predicate_for_agent(?, ?, generate_series, '00:01') FROM generate_series(now()- time '00:20',  now(), '00:01'::time)";
 	private final static String PREDICATE = "queue-size"; 
 	
 	@Override

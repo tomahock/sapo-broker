@@ -39,7 +39,7 @@ public class LastResultQuery extends QueryGenerator
 		
 		sb.append("distinct raw_data.agent_name, mtime, raw_data.subject, raw_data.predicate, raw_data.object_value from raw_data, ");
 		sb.append("\n");
-		sb.append("(select agent_name, subject,  max(event_time)  as mtime from raw_data where event_time > (now() - time '00:05') AND ");
+		sb.append("(select agent_name, subject,  max(event_time)  as mtime from raw_data where event_time > (now() - '00:05'::time) AND ");
 
 		if (subjectQuery)
 		{

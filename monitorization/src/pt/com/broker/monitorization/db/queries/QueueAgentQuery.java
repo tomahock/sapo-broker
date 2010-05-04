@@ -14,7 +14,7 @@ public class QueueAgentQuery
 	private static final Logger log = LoggerFactory.getLogger(QueueAgentQuery.class);
 	
 	private static String AGENTNAME_PARAM = "agentname";
-	private static String QUERY = "SELECT * FROM (\nSELECT\n	queues.subject\n	, last_event_for_subject_predicate_agent(queues.subject, 'queue-size', ?,now()) AS queuesize\nFROM (SELECT DISTINCT subject FROM raw_data WHERE agent_name = ? AND subject ~ '^queue://' AND event_time > now() - time '00:30'  ) AS queues\n) AS q\nWHERE queuesize IS NOT NULL\nORDER BY queuesize DESC";
+	private static String QUERY = "SELECT * FROM ( SELECT queues.subject , last_event_for_subject_predicate_agent(queues.subject, 'queue-size', ?, now(), '00:05') AS queuesize FROM (SELECT DISTINCT subject FROM raw_data WHERE agent_name = ? AND subject ~ '^queue://' AND event_time > now() - '00:05'::time) AS queues ) AS q WHERE queuesize IS NOT NULL ORDER BY queuesize DESC";
 
 	public String getId()
 	{
