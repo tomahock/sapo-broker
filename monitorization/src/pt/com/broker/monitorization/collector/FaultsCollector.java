@@ -58,11 +58,8 @@ public class FaultsCollector
 		String content = new String(notification.getMessage().getPayload());
 		try
 		{
-			System.out.println("FaultsCollector() " + content);
-			
 			String destination = notification.getDestination();
-			String agent = destination.substring("/system/faults/#".length(), destination.length() - 1);
-			
+			String agent = destination.substring("/system/faults/#".length(), destination.length() - 1);			
 			FaultsDB.add(agent, new Date(), content);
 									
 		}
