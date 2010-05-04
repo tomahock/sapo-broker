@@ -46,29 +46,27 @@ public class BrokerConsumer
 			{
 				try
 				{
-					// New format
-					
-					final String topicSubscriptionTopic = "/system/stats/topics/";
-					
 					StringBuilder sb = new StringBuilder();
-					sb.append(String.format("<qinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
-					
+					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+
 					for (TopicProcessor tp : TopicProcessorList.values())
 					{
 						int ssize = countLocal(tp.listeners());
 
 						if (ssize > 0)
 						{
-							sb.append(String.format("\n	<item subject='topic://%s' predicate='subscriptions' value='%s' />", tp.getSubscriptionName(), ssize));
+							sb.append(String.format("\n\t<item subject='topic://%s' predicate='subscriptions' value='%s' />", tp.getSubscriptionName(), ssize));
 						}
 					}
-					
-					sb.append("\n</qinfo>");
-					
+
+					sb.append("\n</mqinfo>");
+
 					String result = sb.toString();
-					
-					InternalPublisher.send(String.format("%s#%s#", topicSubscriptionTopic, GcsInfo.getAgentName()), result);
-					
+
+					String sys_topic = String.format("/system/stats/topics/#%s#", GcsInfo.getAgentName());
+
+					InternalPublisher.send(sys_topic, result);
+
 				}
 				catch (Throwable e)
 				{
@@ -95,26 +93,27 @@ public class BrokerConsumer
 			public void run()
 			{
 				try
-				{					
-					// New format
-					
-					final String queueSubscriptionTopic = "/system/stats/queues/";
-					
+				{
 					StringBuilder sb = new StringBuilder();
-					sb.append(String.format("<qinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
-					
+					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+
 					for (QueueProcessor qs : QueueProcessorList.values())
 					{
 						int ssize = qs.localListeners().size();
 
-						sb.append(String.format("\n	<item subject='queue://%s' predicate='subscriptions' value='%s' />", qs.getQueueName(), ssize));
+						if (ssize > 0)
+						{
+							sb.append(String.format("\n\t<item subject='queue://%s' predicate='subscriptions' value='%s' />", qs.getQueueName(), ssize));
+						}
 					}
-					
-					sb.append("\n</qinfo>");
-					
+
+					sb.append("\n</mqinfo>");
+
 					String result = sb.toString();
 
-					InternalPublisher.send(String.format("%s#%s#", queueSubscriptionTopic, GcsInfo.getAgentName()), result);
+					String sys_topic = String.format("/system/stats/queues/#%s#", GcsInfo.getAgentName());
+
+					InternalPublisher.send(sys_topic, result);
 				}
 				catch (Throwable t)
 				{
@@ -123,9 +122,9 @@ public class BrokerConsumer
 			}
 		};
 
-		BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 20, 20, TimeUnit.SECONDS);
+		BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 120, 120, TimeUnit.SECONDS);
 
-		BrokerExecutor.scheduleWithFixedDelay(queue_consumer_counter, 20, 20, TimeUnit.SECONDS);
+		BrokerExecutor.scheduleWithFixedDelay(queue_consumer_counter, 120, 120, TimeUnit.SECONDS);
 	}
 
 	public void listen(NetSubscribe sb, Channel channel, boolean ackRequired)
