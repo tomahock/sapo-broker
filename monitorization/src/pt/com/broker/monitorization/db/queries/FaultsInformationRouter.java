@@ -12,6 +12,8 @@ public class FaultsInformationRouter
 	private final static FaultTypeQuery FAULT_TYPE_INFO = new FaultTypeQuery();
 	private final static FaultQuery FAULT_INFO = new FaultQuery();
 	private final static AgentFaultTypeQuery AGENT_FAULT_TYPE_INFO = new AgentFaultTypeQuery();
+	private final static AllFaultTypeQuery ALL_FAULT_TYPE_INFO = new AllFaultTypeQuery();
+	
 	
 	public static String getFaultsInfo(Map<String,List<String>> params)
 	{
@@ -30,6 +32,6 @@ public class FaultsInformationRouter
 		{
 			return AGENT_FAULT_TYPE_INFO.getJsonData(params);
 		}
-		return "";
+		return ALL_FAULT_TYPE_INFO.getJsonData(params);
 	}	
 }

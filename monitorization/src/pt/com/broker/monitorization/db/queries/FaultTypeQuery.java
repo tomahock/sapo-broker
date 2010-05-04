@@ -18,7 +18,7 @@ public class FaultTypeQuery
 	private static final Logger log = LoggerFactory.getLogger(FaultTypeQuery.class);
 
 	private static String FAULTTYPE_PARAM = "type";
-	private static String QUERY = "SELECT id, agent_name, event_time FROM fault_data \nWHERE event_time > (now() -  time '00:30') AND short_message = ?\nORDER BY event_time DESC\nLIMIT 10";
+	private static String QUERY = "SELECT id, agent_name, event_time FROM fault_data \nWHERE event_time > (now() -  time '00:15') AND short_message = ?\nORDER BY event_time DESC\nLIMIT 10";
 
 	public String getId()
 	{

@@ -51,7 +51,8 @@ function mainMonitorizationInit()
   }
   // errors
   var f_errors = function() {
-   new Ajax.Request('dataquery/groupfault?groupby=shortmessage',
+   new Ajax.Request('dataquery/faults',
+   //new Ajax.Request('dataquery/faults?groupby=shortmessage',
    {
     method:'get',
     onSuccess: function(transport){

@@ -9,16 +9,15 @@ import org.caudexorigo.jdbc.DbPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AgentFaultTypeQuery
+public class AllFaultTypeQuery
 {
-	private static final Logger log = LoggerFactory.getLogger(AgentFaultTypeQuery.class);
+	private static final Logger log = LoggerFactory.getLogger(AllFaultTypeQuery.class);
 
-	private static String AGNETNAME_PARAM = "agentname";
-	private static String QUERY = "SELECT short_message, count (id) AS count\nFROM fault_data \nWHERE agent_name = ?  AND event_time > ( now() - time '00:15' )\nGROUP BY short_message ORDER BY count DESC";
+	private static String QUERY = "SELECT short_message, count (id) AS count\nFROM fault_data \nWHERE event_time > ( now() - time '00:15' )\nGROUP BY short_message ORDER BY count DESC";
 
 	public String getId()
 	{
-		return "agentFaultTypeInfo";
+		return "allFaultTypeInfo";
 	}
 
 	public String getJsonData(Map<String, List<String>> params)
@@ -77,16 +76,6 @@ public class AgentFaultTypeQuery
 
 	protected ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
-		List<String> list = params.get(AGNETNAME_PARAM);
-		String agentname = null;
-		if ((list != null) && list.size() == 1)
-		{
-			agentname = list.get(0);
-		}
-		if (agentname == null)
-		{
-			return null;
-		}
-		return db.runRetrievalPreparedStatement(QUERY, agentname);
+		return db.runRetrievalPreparedStatement(QUERY);
 	}
 }
