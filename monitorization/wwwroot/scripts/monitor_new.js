@@ -24,7 +24,7 @@ function mainMonitorizationInit()
  
   // pending ack
    var f_pendingAck = function() {
-   new Ajax.Request('/dataquery/last?subject=system-message&predicate=ack-pending&minvalue=-1&count=10',
+   new Ajax.Request('/dataquery/last?subject=system-message&predicate=ack-pending&minvalue=0&count=10',
    {
     method:'get',
     onSuccess: function(transport){
@@ -37,6 +37,7 @@ function mainMonitorizationInit()
   }
  
   // dropbox
+/*
   var f_dropboxes = function() {
    new Ajax.Request('/dataquery/last?predicate=count&subject=dropbox&count=10&minvalue=-1&orderby=object_value',
    {
@@ -49,9 +50,10 @@ function mainMonitorizationInit()
     onFailure: function(){ alert('Something went wrong while trying to get dropbox info...'); }
    });  
   }
+*/
   // errors
   var f_errors = function() {
-   new Ajax.Request('dataquery/faults',
+   new Ajax.Request('/dataquery/faults',
    //new Ajax.Request('dataquery/faults?groupby=shortmessage',
    {
     method:'get',
@@ -92,10 +94,10 @@ function mainMonitorizationInit()
   setInterval(f_pendingAck, 5100);
   f_agents();
   setInterval(f_agents, 5300);
- // f_errors();
- // setInterval(f_errors, 5400);
-  f_dropboxes();
-  setInterval(f_dropboxes, 5500);
+  f_errors();
+  setInterval(f_errors, 5400);
+// f_dropboxes();
+// setInterval(f_dropboxes, 5500);
   f_rates();
   setInterval(f_rates, 5600);
 }
@@ -203,7 +205,7 @@ function setQueueInfo(queueInfo, panel)
 			}
 		}
 		var content = "";
-		var count = 0;
+		var styleIdx = 1;
 		for(var queueName in queues)
 		{
 			var count = queues[queueName].count;
@@ -211,7 +213,7 @@ function setQueueInfo(queueInfo, panel)
 			var pic = getLocalPic(previousValue, count);
 			var curDate = queues[queueName].time;
 			previousQueueInfo[queueName] = count;
-			var rowClass =  ( ((count++)%2) == 0) ? "evenrow" : "oddrow";
+			var rowClass =  ( ((styleIdx++)%2) == 0) ? "evenrow" : "oddrow";
 			content = content + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 		newContent = content;
@@ -543,6 +545,8 @@ function faultInformationInit()
 
 function allAgentInit()
 {
+   var panel = s$('agents');
+   panel.innerHTML = "<tr><td colspan='10' class='oddrow'>Please wait...</td></tr>";
    new Ajax.Request('/dataquery/agent',
    {
     method:'get',
@@ -564,7 +568,7 @@ function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 	var newContent = "";
 	if (agentGeneralInfo.length == 0)
 	{
-        	newContent = "<p>No information available.</P>";
+        	newContent = "<tr><td colspan='10' class='oddrow'>No information available.</td></tr>";
   	}
 	else
 	{
@@ -890,7 +894,7 @@ function goToAgentPage(page)
 function allQueuesInformationInit()
 {
   var infoPanel = s$('queues_info');
-  infoPanel.innerHTML = "Information not available";
+  infoPanel.innerHTML = "<tr><td colspan='9' class='oddrow'>Please wait...</td></tr>";
   var f_allQueues = function(){
 	  new Ajax.Request('/dataquery/queue',
 	   {
@@ -918,7 +922,7 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 	var newContent = "";
 	if (queueGeneralInfo.length == 0)
 	{
-        	newContent = "<p>No information available.</P>";
+        	newContent = "<tr><td colspan='9' class='oddrow'>No information available.</td></tr><p>No information available.</P>";
   	}
 	else
 	{
@@ -958,7 +962,7 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 			var redeliveredRate = round(parseFloat(queueGeneralInfo[i].redeliveredRate));
 			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td>";
 
-			var subscriptions = "?"; //round(parseFloat(queueGeneralInfo[i].redeliveredRate));
+			var subscriptions = round(parseFloat(queueGeneralInfo[i].subscriptions));
 			newContent = newContent + "<td style='padding-left:2em'>" + subscriptions + "</td></tr>";
 
 		}
@@ -972,6 +976,8 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 //
 function topicMonitorizationInit()
 {
+  test_circular_queue();
+
   var infoPanel = s$('topics');
   infoPanel.innerHTML = "Information not available";
   var f_topicInfo = function(){
@@ -1179,3 +1185,55 @@ function getHumanTextDiff(date)
 	//return dDif.toTimeString();
 }
 
+/*
+	Circular queue
+*/
+
+
+function test_circular_queue()
+{
+	var cq = new CircularQueue(); 
+	cq.init(3);
+
+	cq.add(1);
+	cq.add(2);
+	cq.add(3);
+	cq.add(4);
+
+	var count = cq.size();
+
+	var value = cq.get(2);
+}
+
+function CircularQueue()
+{
+	var _buffer;
+	var _current;
+	var _size;
+	var _elementCount;
+	this.init = function(size)
+	{
+		this._buffer = new Object();
+		this._current = 0;
+		this._size = size;
+		this._elementCount = 0;
+		this._current = 0;
+	}
+	this.add = function(value)
+	{
+		this._current = (this._current +1 ) % this._size;
+		this._buffer[this._current] =  value;
+		this._elementCount = (++this._elementCount > this._size) ? this._size : this._elementCount;
+	}
+	this.size = function()
+	{
+		return this._elementCount;
+	}
+	this.get = function(index)
+	{
+		return  this._buffer[(this._current + index) % _size];
+	}
+}
+/*
+	Circular queue end
+*/
