@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,7 @@ public class SystemMessagesPublisher
 					for (TimeoutMessage tm : retryMessages)
 					{
 						log.info("System message with message id '{}' timed out. Remote address: '{}'", tm.message.getAction().getNotificationMessage().getMessage().getMessageId(), tm.session.getRemoteAddress().toString());
+						
 						if(tm.session.isWritable())
 						{
 							tm.session.write(tm.message);
@@ -71,10 +73,10 @@ public class SystemMessagesPublisher
 						{
 							log.warn(String.format("System message with id: '%s' could not be sent. Closing connection.", tm.message.getAction().getNotificationMessage().getMessage().getMessageId()));
 							MiscStats.newSystemMessageFailed();
+							
 							tm.session.close();
-							sessionClosed(tm.session);
 						}
-						tm.timeout = System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL;
+						tm.timeout = currentTime + ACKNOWLEDGE_INTERVAL;
 					}
 
 				}
@@ -125,6 +127,10 @@ public class SystemMessagesPublisher
 				{
 					message_identifiers.add(entry.getValue().message.getAction().getNotificationMessage().getMessage().getMessageId());
 				}
+			}
+			if(message_identifiers.size() !=  0)
+			{
+				log.info("Removing pending system messages because channel '{}' has closed.", session);
 			}
 			for (String msgId : message_identifiers)
 			{
