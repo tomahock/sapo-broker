@@ -14,17 +14,7 @@ public class TopicStatistics
 	}
 	public long getTopicMessagesDeliveredAndReset()
 	{
-		long value = tDeliveredMessages.getAndSet(0);
-
-		if(value == 0)
-		{
-			value = tDeliveredPublish.getAndSet(false) ? 0 : -1 ;
-		}
-		else
-		{
-			tDeliveredPublish.set(true);
-		}
-		return value;
+		return getPublishInformationInformation(tDeliveredMessages, tDeliveredPublish);
 	}
 	
 	// discarded
@@ -36,17 +26,7 @@ public class TopicStatistics
 	}
 	public final long getTopicMessagesDiscardedAndReset()
 	{
-		long value = tDiscardedMessages.getAndSet(0);
-
-		if(value == 0)
-		{
-			value = tDiscardedPublish.getAndSet(false) ? 0 : -1 ;
-		}
-		else
-		{
-			tDiscardedPublish.set(true);
-		}
-		return value;
+		return getPublishInformationInformation(tDiscardedMessages, tDiscardedPublish);
 	}
 
 	// dispatched to queue
@@ -58,16 +38,21 @@ public class TopicStatistics
 	}
 	public final long getTopicMessagesDispatchedToQueueAndReset()
 	{
-		long value = tTopicDispatchedToQueueMessages.getAndSet(0);
+		return getPublishInformationInformation(tTopicDispatchedToQueueMessages, tTopicDispatchedToQueuePublish);
+	}
+	
+	private long getPublishInformationInformation(AtomicLong value, AtomicBoolean status)
+	{
+		long retValue = value.getAndSet(0);
 
-		if(value == 0)
+		if(retValue == 0)
 		{
-			value = tTopicDispatchedToQueuePublish.getAndSet(false) ? 0 : -1 ;
+			retValue = status.getAndSet(false) ? 0 : -1 ;
 		}
 		else
 		{
-			tTopicDispatchedToQueuePublish.set(true);
+			status.set(true);
 		}
-		return value;
+		return retValue;
 	}
 }

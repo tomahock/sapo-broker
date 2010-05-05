@@ -69,9 +69,10 @@ public class SystemMessagesPublisher
 						}
 						else
 						{
-							log.warn(String.format("System message with id: '%s' could not be sent. Closing connection.", tm.message.getAction().getNotificationMessage().getMessage().getMessageId(), tm.session.getRemoteAddress().toString()));
+							log.warn(String.format("System message with id: '%s' could not be sent. Closing connection.", tm.message.getAction().getNotificationMessage().getMessage().getMessageId()));
 							MiscStats.newSystemMessageFailed();
 							tm.session.close();
+							sessionClosed(tm.session);
 						}
 						tm.timeout = System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL;
 					}

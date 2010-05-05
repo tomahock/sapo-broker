@@ -53,39 +53,52 @@ public class GlobalStatisticsPublisher implements Runnable
 		long value;
 		for (QueueProcessor qp : QueueProcessorList.values())
 		{
+			StringBuilder qSb = new StringBuilder();
+			int infoCount = 0;
+			
 			value = qp.getQueueStatistics().getQueueMessagesReceivedAndReset();
 			if (value != -1)
 			{
 				rate = ((double) value / dSeconds);
-				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"input-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				qSb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"input-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				++infoCount;
 			}
 
 			value = qp.getQueueStatistics().getQueueMessagesDeliveredAndReset();
 			if (value != -1)
 			{
 				rate = ((double) value / dSeconds);
-				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"output-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				qSb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"output-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				++infoCount;
 			}
 
 			value = qp.getQueueStatistics().getQueueMessagesFailedAndReset();
 			if (value != -1)
 			{
 				rate = ((double) value / dSeconds);
-				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"failed-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				qSb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"failed-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				++infoCount;
 			}
 			
 			value = qp.getQueueStatistics().getQueueMessagesExpiredAndReset();
 			if (value != -1)
 			{
 				rate = ((double) value / dSeconds);
-				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"expired-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				qSb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"expired-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				++infoCount;
 			}
 			
 			value = qp.getQueueStatistics().getQueueMessagesRedeliveredAndReset();
 			if (value != -1)
 			{
 				rate = ((double) value / dSeconds);
-				sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"redelivered-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				qSb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"redelivered-rate\" value=\"%s\" />", qp.getQueueName(), rate));
+				++infoCount;
+			}
+			
+			if(infoCount != 0)
+			{
+				sb.append(qSb.toString()); // Add queue information only when something is different from zero
 			}
 		}
 
@@ -117,25 +130,35 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append(String.format("\n\t<item subject='topic://.*' predicate='input-rate' value='%s' />", rate));
 		for (TopicProcessor tp : TopicProcessorList.values())
 		{
+			StringBuilder tSb = new StringBuilder();
+			int infoCount = 0;
+			
 			value = tp.getTopicStatistics().getTopicMessagesDeliveredAndReset();
 			if (value != -1)
 			{
 				rate = ((double) value / dSeconds);
-				sb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"output-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+				tSb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"output-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+				++infoCount;
 			}
 			
 			value = tp.getTopicStatistics().getTopicMessagesDiscardedAndReset();
 			if (value != -1)
 			{
 				rate = ((double) value / dSeconds);
-				sb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"discarded-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+				tSb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"discarded-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+				++infoCount;
 			}
 			
 			value = tp.getTopicStatistics().getTopicMessagesDispatchedToQueueAndReset();
 			if (value != -1)
 			{
 				rate = ((double) value/ dSeconds);
-				sb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"dispatched-to-queue-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+				tSb.append(String.format("\n	<item subject=\"topic://%s\" predicate=\"dispatched-to-queue-rate\" value=\"%s\" />", tp.getSubscriptionName(), rate));
+				++infoCount;
+			}
+			if(infoCount != 0)
+			{
+				sb.append(tSb.toString()); // Add queue information only when something is different from zero
 			}
 		}
 

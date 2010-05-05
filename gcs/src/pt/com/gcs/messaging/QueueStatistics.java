@@ -13,17 +13,7 @@ public class QueueStatistics
 	}
 	public long getQueueMessagesReceivedAndReset()
 	{
-		long value = qReceivedMessages.getAndSet(0);
-
-		if(value == 0)
-		{
-			value = qReceivedPublish.getAndSet(false) ? 0 : -1 ;
-		}
-		else
-		{
-			qReceivedPublish.set(true);
-		}
-		return value;
+		return getPublishInformationInformation(qReceivedMessages, qReceivedPublish);
 	}
 	// delivered
 	private final AtomicLong qDeliveredMessages = new AtomicLong(0);
@@ -34,17 +24,7 @@ public class QueueStatistics
 	}
 	public long getQueueMessagesDeliveredAndReset()
 	{
-		long value = qDeliveredMessages.getAndSet(0);
-
-		if(value == 0)
-		{
-			value = qDeliveredPublish.getAndSet(false) ? 0 : -1 ;
-		}
-		else
-		{
-			qDeliveredPublish.set(true);
-		}
-		return value;
+		return getPublishInformationInformation(qDeliveredMessages, qDeliveredPublish);
 	}
 	
 	// redelivered
@@ -56,17 +36,7 @@ public class QueueStatistics
 	}
 	public final long getQueueMessagesRedeliveredAndReset()
 	{
-		long value = qRedeliveredMessages.getAndSet(0);
-
-		if(value == 0)
-		{
-			value = qRedeliveredPublish.getAndSet(false) ? 0 : -1 ;
-		}
-		else
-		{
-			qRedeliveredPublish.set(true);
-		}
-		return value;
+		return getPublishInformationInformation(qRedeliveredMessages, qRedeliveredPublish);
 	}
 	// failed
 	private final AtomicLong qFailedMessages = new AtomicLong(0);
@@ -77,17 +47,7 @@ public class QueueStatistics
 	}
 	public final long getQueueMessagesFailedAndReset()
 	{
-		long value = qFailedMessages.getAndSet(0);
-
-		if(value == 0)
-		{
-			value = qFailedPublish.getAndSet(false) ? 0 : -1 ;
-		}
-		else
-		{
-			qFailedPublish.set(true);
-		}
-		return value;
+		return getPublishInformationInformation(qFailedMessages, qFailedPublish);
 	}
 	
 	// expired
@@ -99,16 +59,21 @@ public class QueueStatistics
 	}
 	public final long getQueueMessagesExpiredAndReset()
 	{
-		long value = qExpiredMessages.getAndSet(0);
+		return getPublishInformationInformation(qExpiredMessages, qExpiredPublish);
+	}
+	
+	private long getPublishInformationInformation(AtomicLong value, AtomicBoolean status)
+	{
+		long retValue = value.getAndSet(0);
 
-		if(value == 0)
+		if(retValue == 0)
 		{
-			value = qExpiredPublish.getAndSet(false) ? 0 : -1 ;
+			retValue = status.getAndSet(false) ? 0 : -1 ;
 		}
 		else
 		{
-			qExpiredPublish.set(true);
+			status.set(true);
 		}
-		return value;
+		return retValue;
 	}
 }
