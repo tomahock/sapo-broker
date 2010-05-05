@@ -92,8 +92,8 @@ function mainMonitorizationInit()
   setInterval(f_pendingAck, 5100);
   f_agents();
   setInterval(f_agents, 5300);
-  f_errors();
-  setInterval(f_errors, 5400);
+ // f_errors();
+ // setInterval(f_errors, 5400);
   f_dropboxes();
   setInterval(f_dropboxes, 5500);
   f_rates();
