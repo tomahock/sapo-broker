@@ -10,9 +10,12 @@ import pt.com.broker.monitorization.db.queries.AgentOutputRateQuery;
 import pt.com.broker.monitorization.db.queries.AgentQueueCountQuery;
 import pt.com.broker.monitorization.db.queries.FaultRateStaticQuery;
 import pt.com.broker.monitorization.db.queries.InputRateStaticQuery;
+import pt.com.broker.monitorization.db.queries.LatestQueueCountStaticQuery;
 import pt.com.broker.monitorization.db.queries.OutputRateStaticQuery;
 import pt.com.broker.monitorization.db.queries.QueueCountStaticQuery;
 import pt.com.broker.monitorization.db.queries.StaticQuery;
+import pt.com.broker.monitorization.db.queries.SubscriptionDiscardedRateQuery;
+import pt.com.broker.monitorization.db.queries.SubscriptionOutputRateQuery;
 
 public class StaticQueries
 {
@@ -35,25 +38,35 @@ public class StaticQueries
 
 		AgentQueueCountQuery aqc = new AgentQueueCountQuery();
 		queries.put(aqc.getId(), aqc);
-		
+
 		AgentFaultsRateQuery afrq = new AgentFaultsRateQuery();
 		queries.put(afrq.getId(), afrq);
-		
+
 		AgentInputRateQuery airq = new AgentInputRateQuery();
 		queries.put(airq.getId(), airq);
-		
+
 		AgentOutputRateQuery aorq = new AgentOutputRateQuery();
 		queries.put(aorq.getId(), aorq);
+
+		SubscriptionOutputRateQuery sorq = new SubscriptionOutputRateQuery();
+		queries.put(sorq.getId(), sorq);
+		
+		SubscriptionDiscardedRateQuery  sdrq = new SubscriptionDiscardedRateQuery();
+		queries.put(sdrq.getId(), sdrq);
+		
+		// test
+		LatestQueueCountStaticQuery lqcsq = new LatestQueueCountStaticQuery();
+		queries.put(lqcsq.getId(), lqcsq);
 	}
 
 	public static String getData(String queryType, Map<String, List<String>> params)
 	{
 		List<String> list = params.get(QUERY_TYPE_PARAM);
-		if((list != null) && (list.size() == 1) )
+		if ((list != null) && (list.size() == 1))
 		{
 			queryType = list.get(0);
 		}
-		
+
 		StaticQuery sq = queries.get(queryType);
 		if (sq == null)
 		{

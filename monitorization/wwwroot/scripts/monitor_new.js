@@ -80,12 +80,75 @@ function mainMonitorizationInit()
    });  
   }
 
-  // rate
-  var f_rates = function() {
-	processGraph("/dataquery/static?queuecount", "img_queue_size_rate", "queue_size_rate");
-	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate", "m/s");
-	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate", "m/s");
-	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate", "m/s");
+  var imagesMetadataMap = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
+
+  // rate// queue agent info
+function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
+{
+	var count = 0;
+	var newContent = "";
+	if (queueGeneralInfo.length == 0)
+	{
+        	newContent = "<tr><td colspan='9' class='oddrow'>No information available.</td></tr><p>No information available.</P>";
+  	}
+	else
+	{
+		for(var i = 0; i != queueGeneralInfo.length; ++i)
+		{
+			var queueName = removePrefix(queueGeneralInfo[i].queueName, QUEUE_PREFIX);
+
+			var prevQueueInfo = previousGeneralQueueInfo[queueName];
+
+			if( prevQueueInfo === undefined)
+			{	
+				prevQueueInfo = new Object();
+				previousGeneralQueueInfo[queueName] = prevQueueInfo;
+			}
+		
+			var queueSize = parseFloat(queueGeneralInfo[i].queueSize);
+			var pic = getLocalPic(prevQueueInfo.queueSize, queueSize);
+			prevQueueInfo.queueSize = queueSize;
+			
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ queueName+ "'>" + queueName + "</a></td><td>" + queueSize + "</td><td><img src='" + pic + "' /></td>";
+
+
+			var inputRate = round(parseFloat(queueGeneralInfo[i].inputRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td>";
+	
+			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td>";
+
+			var failedRate = round(parseFloat(queueGeneralInfo[i].failedRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td>";
+
+			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td>";
+
+			var redeliveredRate = round(parseFloat(queueGeneralInfo[i].redeliveredRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td>";
+
+			var subscriptions = round(parseFloat(queueGeneralInfo[i].subscriptions));
+			newContent = newContent + "<td style='padding-left:2em'>" + subscriptions + "</td></tr>";
+
+		}
+	}
+
+	panel.innerHTML = newContent;
+}
+  var f_rates_all = function() {
+	processGraphAll("/dataquery/static?queuecount", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMap);
+	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMap);
+	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMap);
+	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMap);
+  }
+
+  var f_rates_latest = function() {
+	processGraphLatest("/dataquery/static?lastqueuecount", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMap);
+	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMap);
+	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMap);
+	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMap);
   }
 
   f_queues();
@@ -98,8 +161,149 @@ function mainMonitorizationInit()
   setInterval(f_errors, 5400);
 // f_dropboxes();
 // setInterval(f_dropboxes, 5500);
-  f_rates();
-  setInterval(f_rates, 5600);
+  f_rates_all();
+  setInterval(f_rates_latest, 5600);
+}
+
+function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
+{
+  new Ajax.Request(queryStr,
+   {
+    method:'get',
+    onSuccess: function(transport){
+
+	var imgMetadata = imagesMetadataMap[imgId];
+	if( (imgMetadata == undefined) || (imgMetadata == null) )
+	{
+		return;
+	}
+
+	var data = transport.responseJSON;
+
+	if(data.length != 1)
+		return;
+
+	var img = s$(imgId);
+	var data = transport.responseJSON;
+	var min = imgMetadata.min;
+	var max = imgMetadata.max;
+	
+	//get sample
+	var newSample  = parseFloat(data[0].value);
+	if(newSample < min)
+	{
+		min = newSample;
+		imgMetadata.min = newSample;
+	}
+	
+	var circularQueue = imgMetadata.circularQueue;
+	circularQueue.add(newSample);
+	
+	var circularQueueSize = circularQueue.size();
+	
+
+	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
+
+	// process remaining samples
+	for(var i = 0; i < circularQueueSize; ++i)
+	{
+		var sample = normalizeValue(circularQueue.get(i), min, max);
+	
+		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
+	}
+
+	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (circularQueueSize-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
+
+	min = round(min,2);
+	max = round(max,2);
+
+	var s_unit = "";
+	if(typeof(unit)!=undefined && unit!=null)
+	{
+		s_unit="&nbsp;" + unit;
+	}
+	
+
+	var legend = s$(legendId);
+	legend.innerHTML = "<p><span class='mvalue-latest'>" + newSample + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
+
+
+	img.src = url;
+    },
+    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
+   });
+}
+
+function processGraphAll(queryStr, imgId, legendId, unit, imagesMetadataMap)
+{
+  new Ajax.Request(queryStr,
+   {
+    method:'get',
+    onSuccess: function(transport){
+	var img = s$(imgId);
+	var data = transport.responseJSON;
+	var min = 0;
+	var max = 0;
+	
+	if(data.length == 0)
+		return;
+min
+	// determine max ans min	
+	// first sample
+	var min = parseFloat(data[0].value);
+	var max = parseFloat(data[0].value);
+	
+	for(var i = 1; i < data.length;++i)
+	{
+		var curValue = parseFloat(data[i].value);
+		if(curValue < min) min = curValue;
+		if(curValue > max) max = curValue;
+	}
+
+	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
+
+	var imgMetadata = new Object();
+	imgMetadata.min = min;
+	imgMetadata.max = max;
+	
+	var circularQueue = new CircularQueue();
+	circularQueue.init(data.length);
+	imgMetadata.circularQueue = circularQueue; 
+
+	
+	// process remaining samples
+	for(var i = 0; i < data.length; ++i)
+	{
+		var parsedValue = parseFloat(data[i].value);
+		circularQueue.add(parsedValue);
+		
+		var sample = normalizeValue(parsedValue, min, max);
+			
+		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
+	}
+
+	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (data.length-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
+
+	min = round(min,2);
+	max = round(max,2);
+	var latest = round(parseFloat(data[data.length-1].value));
+
+	var s_unit = "";
+	if(typeof(unit)!=undefined && unit!=null)
+	{
+		s_unit="&nbsp;" + unit;
+	}
+	
+
+	var legend = s$(legendId);
+	legend.innerHTML = "<p><span class='mvalue-latest'>" + latest + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
+	
+	imagesMetadataMap[imgId] = imgMetadata;
+
+	img.src = url;
+    },
+    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
+   });
 }
 
 function processGraph(queryStr, imgId, legendId, unit)
@@ -972,14 +1176,12 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 }
 
 //
-// TOPICS PAGE
+// ALL TOPICS PAGE
 //
-function topicMonitorizationInit()
+function allTopicsMonitorizationInit()
 {
-  test_circular_queue();
-
   var infoPanel = s$('topics');
-  infoPanel.innerHTML = "Information not available";
+  infoPanel.innerHTML = "<tr><td colspan='3' class='oddrow'>Please wait...</td></tr>";
   var f_topicInfo = function(){
 	  new Ajax.Request('/dataquery/subscription',
 	   {
@@ -1003,7 +1205,7 @@ function setTopicGeneralInfo(topicsInfo, panel)
 
 	if (topicsInfo.length == 0)
 	{
-        	newContent = "<p>No information available.</P>";
+        	newContent = "<tr><td colspan='9' class='oddrow'>No information available.</td></tr>";
   	}
 	else
 	{
@@ -1019,15 +1221,89 @@ function setTopicGeneralInfo(topicsInfo, panel)
 			
 				var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-				newContent = newContent + "<tr class=\"" + rowClass +"\"><td>" + subscriptionName + "</td>";
-				newContent = newContent + "<td style='padding-right:2em'>" + outputRate + "</td><td style='padding-right:2em'>" + count +"</td></tr>";	
+				newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./topic.html?subscriptionname=" + subscriptionName + "'>" + subscriptionName + "</a></td><td style='padding-right:2em'>" + outputRate + "</td><td style='padding-right:2em'>" + count +"</td></tr>";
 		    	}
 		}
 	}
 	panel.innerHTML = newContent;
 }
 
-faultTypeMonitorizationInit
+
+//
+// TOPIC PAGE
+//
+function topicMonitorizationInit() 
+{
+  var params = SAPO.Utility.Url.getQueryString();
+  var subscriptionname = params.subscriptionname;
+  var tnPanel =  s$('topic_name'); 
+
+  if (subscriptionname == null)
+  {
+        tnPanel.innerHTML = "<b>Queue name not specified</b>";
+	return;
+  }
+ tnPanel.innerHTML = subscriptionname;
+ var panel = s$('general_topic_information');
+ panel.innerHTML = "<tr><td colspan='5' class='oddrow'>Please wait...</td></tr>";
+
+  var f_rates = function() {
+	processGraph("/dataquery/static?querytype=subscriptionoutputrate&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s");
+	processGraph("/dataquery/static?querytype=subscriptiondiscardedrate&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s");
+  }
+
+  var f_generalInfo = function() {
+   new Ajax.Request("/dataquery/subscription?subscriptionname=" + subscriptionname,
+   {
+    method:'get',
+    onSuccess: function(transport){
+      var panel = s$('general_topic_information');
+      var data = transport.responseJSON;      
+      setGeneralTopicInfo(data, panel);
+    },
+    onFailure: function(){ alert('Something went wrong...') }
+   });  
+  }
+
+  f_rates();
+  setInterval(f_rates, 5200);
+  f_generalInfo();
+  setInterval(f_generalInfo, 5000);
+}
+
+function setGeneralTopicInfo(topicGeneralInfo,  panel)
+{
+	var count = 0;
+	var newContent = "";
+	if (topicGeneralInfo.length == 0)
+	{
+        	newContent = "<tr><td colspan='5' class='oddrow'>No information available.</td></tr>";
+  	}
+	else
+	{
+		for(var i = 0; i != topicGeneralInfo.length; ++i)
+		{
+			var agentname = topicGeneralInfo[i].agentName;		
+
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+ agentname+ "'>" + topicGeneralInfo[i].agentHostname + "</a></td>";
+	
+			var outputRate = round(parseFloat(topicGeneralInfo[i].outputRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td>";
+
+			var discardedRate = round(parseFloat(topicGeneralInfo[i].discardedRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + discardedRate + "</td>";
+
+			var dispatchedToQueueRate = round(parseFloat(topicGeneralInfo[i].dispatchedToQueueRate));
+			newContent = newContent + "<td style='padding-left:2em'>" + dispatchedToQueueRate + "</td>";
+
+			newContent = newContent + "<td>" + parseFloat(topicGeneralInfo[i].subscriptions) + "</td></tr>";
+		}
+	}
+
+	panel.innerHTML = newContent;
+}
 
 //
 // FAULT TYPE PAGE
@@ -1208,22 +1484,21 @@ function test_circular_queue()
 function CircularQueue()
 {
 	var _buffer;
-	var _current;
+	var _next;
 	var _size;
 	var _elementCount;
 	this.init = function(size)
 	{
 		this._buffer = new Object();
-		this._current = 0;
+		this._next = 0;
 		this._size = size;
 		this._elementCount = 0;
-		this._current = 0;
 	}
 	this.add = function(value)
 	{
-		this._current = (this._current +1 ) % this._size;
-		this._buffer[this._current] =  value;
+		this._buffer[this._next] =  value;
 		this._elementCount = (++this._elementCount > this._size) ? this._size : this._elementCount;
+		this._next = (this._next +1 ) % this._size;
 	}
 	this.size = function()
 	{
@@ -1231,7 +1506,7 @@ function CircularQueue()
 	}
 	this.get = function(index)
 	{
-		return  this._buffer[(this._current + index) % _size];
+		return  this._buffer[(this._next-1 + index) % this._size];
 	}
 }
 /*

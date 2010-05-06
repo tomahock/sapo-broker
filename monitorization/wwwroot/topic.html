@@ -10,7 +10,7 @@
 		<script type="text/javascript" src="scripts/monitor_new.js"></script>
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
-			window.onload = queueMonitorizationInit;
+			window.onload = topicMonitorizationInit;
 		</script>
     </head>
     <body>
@@ -28,48 +28,35 @@
 	     </div>
              <div id="container">
 		<div id="info-pannel">
-			<h1 class="title">Queue: <span id='queue_name'></span></h1>		
+			<h1 class="title">Topic: <span id='topic_name'></span></h1>		
 		</div>
                 <div id="main-stats">
 			<div id="status-box">
+			        <div class="stat-widget">
+					<h1>Output Rate</h1>
+					<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" src="#" /></p>
+					<p><span id="count_output_rate"></span></p>
+				</div>
 		           	<div class="stat-widget">
-					<h1>Queued Messages</h1>
-					<p><img title="Queued Messages" alt="Queued Messages" id="img_queue_size_rate" src="#" /></p>
-					<p><span id="queue_size_rate"></span></p>
-				</div>
-			        <div class="stat-widget">
-						<h1>Error Rate</h1>
-						<p><img title="Error Rate" alt="Error Rate" id="img_error_rate" src="#" /></p>
-						<p><span id="count_error_rate"></span></p>
-				</div>
-			        <div class="stat-widget">
-						<h1>Input Rate</h1>
-						<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="#" /></p>
-						<p><span id="count_input_rate"></span></p>
-				</div>
-			        <div class="stat-widget">
-						<h1>Output Rate</h1>
-						<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" src="#" /></p>
-						<p><span id="count_output_rate"></span></p>
+					<h1>Dicarded Rate</h1>
+					<p><img title="Discarded Rate" alt="Discarded Rate" id="img_discarded_rate" src="#" /></p>
+					<p><span id="discarded_size_rate"></span></p>
 				</div>
 			</div>
                 <div id="dashboard">
                     <div class="dashboard-widget">
                         <table cellspacing="0" cellpadding="7" border="0">
-                            <caption>Queue Information</caption>
+                            <caption>Topic Information</caption>
                             <thead>
                                 <tr style="text-align:center">
                                     <td>Agent</td>
-                                    <td colspan="2">Size</td>
-                                    <td>Input Rate</td>
                                     <td>Output Rate</td>
-                                    <td>Failed Rate</td>
-                                    <td>Expired Rate</td>
-                                    <td>Redelivered Rate</td>
+                                    <td>Discarded Rate</td>
+                                    <td>Dispatched To Queue Rate</td>
                                     <td>Subscriptions</td>
                                 </tr>
                             </thead>
-                            <tbody id='general_queue_information'>
+                            <tbody id='general_topic_information'>
                             </tbody>
                         </table>
                     </div>  			
