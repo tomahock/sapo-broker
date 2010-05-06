@@ -9,11 +9,13 @@ import org.caudexorigo.jdbc.Db;
 
 
 
-public class QueuesRateInformationQuery extends SubjectPredicateQuery
+public class QueuesRateInformationQuery extends StaticQuery
 {
 
 //	private static final Logger log = LoggerFactory.getLogger(FaultRateStaticQuery.class);
 
+	protected static String QUERY = "SELECT last_event_for_subject_and_predicate(?, ?, generate_series, '00:06') FROM generate_series(now()- time '00:20',  now(), '00:01'::time)";
+	
 	private static final String QUEUENAME_PARAM = "queuename";
 	private static final String RATE_PARAM = "rate";
 	private static Map<String, String> RATE_TYPES = new HashMap<String, String>(5);

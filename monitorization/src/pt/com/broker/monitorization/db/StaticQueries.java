@@ -10,7 +10,6 @@ import pt.com.broker.monitorization.db.queries.AgentOutputRateQuery;
 import pt.com.broker.monitorization.db.queries.AgentQueueCountQuery;
 import pt.com.broker.monitorization.db.queries.FaultRateStaticQuery;
 import pt.com.broker.monitorization.db.queries.InputRateStaticQuery;
-import pt.com.broker.monitorization.db.queries.LatestQueueCountStaticQuery;
 import pt.com.broker.monitorization.db.queries.OutputRateStaticQuery;
 import pt.com.broker.monitorization.db.queries.QueueCountStaticQuery;
 import pt.com.broker.monitorization.db.queries.StaticQuery;
@@ -54,9 +53,6 @@ public class StaticQueries
 		SubscriptionDiscardedRateQuery  sdrq = new SubscriptionDiscardedRateQuery();
 		queries.put(sdrq.getId(), sdrq);
 		
-		// test
-		LatestQueueCountStaticQuery lqcsq = new LatestQueueCountStaticQuery();
-		queries.put(lqcsq.getId(), lqcsq);
 	}
 
 	public static String getData(String queryType, Map<String, List<String>> params)

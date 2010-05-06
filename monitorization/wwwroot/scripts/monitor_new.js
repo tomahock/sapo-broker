@@ -4,6 +4,7 @@
 //
 
 var QUEUE_PREFIX = "queue://";
+
 var TOPIC_PREFIX = "topic://";
 
 function mainMonitorizationInit() 
@@ -80,7 +81,7 @@ function mainMonitorizationInit()
    });  
   }
 
-  var imagesMetadataMap = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
+  var imagesMetadataMapX = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
 
   // rate// queue agent info
 function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
@@ -138,17 +139,17 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 	panel.innerHTML = newContent;
 }
   var f_rates_all = function() {
-	processGraphAll("/dataquery/static?queuecount", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMap);
-	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMap);
-	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMap);
-	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMap);
+	processGraphAll("/dataquery/static?querytype=queuecount&window=all", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphAll("/dataquery/static?querytype=faultrate&window=all", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/static?querytype=inputrate&window=all", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/static?querytype=outputrate&window=all", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
 
   var f_rates_latest = function() {
-	processGraphLatest("/dataquery/static?lastqueuecount", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMap);
-	processGraph("/dataquery/static?faultrate", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMap);
-	processGraph("/dataquery/static?inputrate", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMap);
-	processGraph("/dataquery/static?outputrate", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMap);
+	processGraphLatest("/dataquery/static?querytype=queuecount&window=last", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphLatest("/dataquery/static?querytype=faultrate&window=last", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/static?querytype=inputrate&window=last", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/static?querytype=outputrate&window=last", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
 
   f_queues();
@@ -185,30 +186,53 @@ function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 
 	var img = s$(imgId);
 	var data = transport.responseJSON;
-	var min = imgMetadata.min;
-	var max = imgMetadata.max;
+	var min = imgMetadata.getMin();
+	var max = imgMetadata.getMax();
+
+	console.log(imgId + ' Min: '+min + ' Max: ' + max);
 	
 	//get sample
 	var newSample  = parseFloat(data[0].value);
+	//console.log('new sample: ' + newSample);
+	//var newSample  = 100;
 	if(newSample < min)
 	{
+		console.log(imgId + ' replacing min. Was '+min+ ' Now is: ' + newSample);
 		min = newSample;
-		imgMetadata.min = newSample;
+		imgMetadata.setMin(newSample);
+
+	}
+	if(newSample > max)
+	{
+		console.log( imgId + ' replacing Max. Was '+max+ ' Now is: ' + newSample);
+
+		max = newSample;
+		imgMetadata.setMax(newSample);
 	}
 	
-	var circularQueue = imgMetadata.circularQueue;
+	var circularQueue = imgMetadata.getCircularQueue();
 	circularQueue.add(newSample);
 	
 	var circularQueueSize = circularQueue.size();
-	
+
+	for(var i = 0; i < circularQueueSize; ++i)
+	{
+		var x = circularQueue.get(i);
+		if(x < min)
+			alert('MIN alert. Sample: ' + sample + 'Min: ' + min );
+		if(x > max)
+			alert('MAX alert. Sample: ' + sample + 'Max: ' + max );
+
+	}
+
+	//console.log('min '+min+ ' max: ' + max);
 
 	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
 
-	// process remaining samples
+
 	for(var i = 0; i < circularQueueSize; ++i)
 	{
 		var sample = normalizeValue(circularQueue.get(i), min, max);
-	
 		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
 	}
 
@@ -225,7 +249,7 @@ function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	
 
 	var legend = s$(legendId);
-	legend.innerHTML = "<p><span class='mvalue-latest'>" + newSample + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
+	legend.innerHTML = "<p><span class='mvalue-latest'>" + round(newSample) + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
 
 
 	img.src = url;
@@ -247,7 +271,7 @@ function processGraphAll(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	
 	if(data.length == 0)
 		return;
-min
+
 	// determine max ans min	
 	// first sample
 	var min = parseFloat(data[0].value);
@@ -262,13 +286,14 @@ min
 
 	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
 
-	var imgMetadata = new Object();
-	imgMetadata.min = min;
-	imgMetadata.max = max;
+
+	var imgMetadata = new ImageMetadata();
+	imgMetadata.init(min, max);
+	
 	
 	var circularQueue = new CircularQueue();
 	circularQueue.init(data.length);
-	imgMetadata.circularQueue = circularQueue; 
+	imgMetadata.setCircularQueue(circularQueue); 
 
 	
 	// process remaining samples
@@ -1032,7 +1057,11 @@ function setAgentSubscriptionInfo(subscriptionsInfo, panel)
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 			if(isTopic)
 			{
-				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td><td style='padding-right:2em'>" +  count + "</td></tr>";
+//<a href='./topic.html?subscriptionname=" + subscriptionName + "'>" + subscriptionName + "
+				
+				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./topic.html?subscriptionname=" + subscriptionName + "'>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td><td style='padding-right:2em'>" +  count + "</td></tr>";
+
+				//newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td><td style='padding-right:2em'>" +  count + "</td></tr>";
 			}
 			else
 			{
@@ -1295,9 +1324,6 @@ function setGeneralTopicInfo(topicGeneralInfo,  panel)
 			var discardedRate = round(parseFloat(topicGeneralInfo[i].discardedRate));
 			newContent = newContent + "<td style='padding-left:2em'>" + discardedRate + "</td>";
 
-			var dispatchedToQueueRate = round(parseFloat(topicGeneralInfo[i].dispatchedToQueueRate));
-			newContent = newContent + "<td style='padding-left:2em'>" + dispatchedToQueueRate + "</td>";
-
 			newContent = newContent + "<td>" + parseFloat(topicGeneralInfo[i].subscriptions) + "</td></tr>";
 		}
 	}
@@ -1346,9 +1372,7 @@ function setFaultTypeInfo(faultInfo, panel)
 		{
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+faultInfo[i].agentName+"'>"+ faultInfo[i].agentHostname + "</a></td><td style='padding-right:2em'>" + getHumanTextDiff( parseISO8601(faultInfo[i].time) ) +" ago. </td><td style='padding-right:2em'><a href='./fault.html?id=" + faultInfo[i].id +  "'>detail...</a></td></tr>";
-//<td style='padding-right:2em'><a href='./fault.html?id=" + faultInfo[i].id+ "'>detail...</a></td></tr>";
-			
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+faultInfo[i].agentName+"'>"+ faultInfo[i].agentHostname + "</a></td><td style='padding-right:2em'>" + getHumanTextDiff( parseISO8601(faultInfo[i].time) ) +" ago. </td><td style='padding-right:2em'><a href='./fault.html?id=" + faultInfo[i].id +  "'>detail...</a></td></tr>";			
 		}
 	}
 	panel.innerHTML = newContent;
@@ -1440,9 +1464,9 @@ function getHumanTextDiff(date)
 
 	var str = "";
 
-	if( (dDif.getHours() + tzOffsetHours) != 0 )
+	if( ((dDif.getHours() + tzOffsetHours) % 24) != 0 )
 	{
-		str += (dDif.getHours() + tzOffsetHours) +  " hours";
+		str += ((dDif.getHours() + tzOffsetHours) % 24) +  " hours";
 	}
 	if( dDif.getMinutes() != 0 )
 	{
@@ -1456,9 +1480,18 @@ function getHumanTextDiff(date)
 		str += " " + dDif.getSeconds() + " seconds";
 	}
 
+	if( str === "" && dDif.getMilliseconds() != 0 )
+	{
+		//str = (str == "") ? str : str + " and "; 
+		str += dDif.getMilliseconds() + " milliseconds";
+	}
+
+	if(str === "")
+	{
+		return date.toString();
+	}
 	
 	return str;
-	//return dDif.toTimeString();
 }
 
 /*
@@ -1479,6 +1512,50 @@ function test_circular_queue()
 	var count = cq.size();
 
 	var value = cq.get(2);
+}
+
+
+function ImageMetadata()
+{
+	var _min;
+	var _max;
+	var _circularQueue;
+	
+	this.init = function(min, max)
+	{
+		this._min = min;
+		this._max = max;
+	}
+	
+	this.getMin = function()
+	{
+		return this._min;
+	}
+	
+	this.setMin = function(min)
+	{
+		this._min = min;
+	}
+
+	this.getMax = function()
+	{
+		return this._max;
+	}
+
+	this.setMax = function(max)
+	{
+		this._max = max;
+	}
+
+	this.getCircularQueue = function()
+	{
+		return this._circularQueue;
+	}
+
+	this.setCircularQueue = function(circularQueue)
+	{
+		this._circularQueue = circularQueue;
+	}
 }
 
 function CircularQueue()
