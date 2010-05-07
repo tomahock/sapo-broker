@@ -24,14 +24,14 @@ import pt.com.gcs.conf.GcsInfo;
 
 public class ErrorHandler
 {
-	
+
 	static
 	{
 		Throwable t = new RuntimeException();
 		ErrorAnalyser.findRootCause(t);
 		CriticalErrors.exitIfCritical(t);
 	}
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);
 
 	public void exceptionCaught(Throwable cause)
@@ -82,7 +82,8 @@ public class ErrorHandler
 
 	private static WTF _buildSoapFault(String faultCode, Throwable ex)
 	{
-		String reason = ex.getMessage();
+		String reason = StringUtils.isBlank(ex.getMessage()) ? ex.getClass().getCanonicalName() : ex.getMessage();
+
 		String detail = buildStackTrace(ex);
 
 		SoapEnvelope faultMessage = new SoapEnvelope();
