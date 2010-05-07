@@ -1,6 +1,7 @@
 package pt.com.broker.monitorization.db;
 
 import java.io.ByteArrayInputStream;
+import java.sql.NClob;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +15,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbExecutor;
 import org.caudexorigo.jdbc.DbPool;
@@ -245,7 +247,7 @@ public class FaultsDB
 	{
 
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		String shortMessage = "[failed to extract 'Text' from Fault message]";
+		String shortMessage = "[failed to extract data from Fault message]";
 		String content = message;
 
 		try
@@ -257,15 +259,28 @@ public class FaultsDB
 
 			xpath.setNamespaceContext(SoapFaultNS.getInstance());
 
-			Element codeElem = (Element) ((NodeList) xpath.evaluate("/Envelope/Body/Fault/Reason/Text", doc, XPathConstants.NODESET)).item(0);
-			shortMessage = codeElem.getTextContent();
+			NodeList n_code = (NodeList) xpath.evaluate("/Envelope/Body/Fault/Reason/Text", doc, XPathConstants.NODESET);
 
-			Element contentElem = (Element) ((NodeList) xpath.evaluate("/Envelope/Body/Fault/Detail", doc, XPathConstants.NODESET)).item(0);
-			content = contentElem.getTextContent();
+			if (n_code != null && n_code.getLength() > 0)
+			{
+				Element codeElem = (Element) n_code.item(0);
+				shortMessage = codeElem.getTextContent();
+			}
+
+			NodeList n_detail = (NodeList) xpath.evaluate("/Envelope/Body/Fault/Detail", doc, XPathConstants.NODESET);
+
+			if (n_detail != null && n_detail.getLength() > 0)
+			{
+				Element contentElem = (Element) n_detail.item(0);
+				content = contentElem.getTextContent();
+			}
+
 		}
 		catch (Throwable t)
 		{
-			return new ErrorInfo(shortMessage, content);
+			Throwable r = ErrorAnalyser.findRootCause(t);
+			log.error(r.getMessage(), r);
+			return new ErrorInfo(r.getMessage(), message);
 		}
 
 		return new ErrorInfo(shortMessage, content);

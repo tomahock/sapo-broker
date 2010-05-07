@@ -10,6 +10,10 @@ public class QueryStringParameters
 	public final static String WINDOW_PARAM_LAST = "last";
 	public final static String WINDOW_PARAM_ALL = "all";
 	
+	public final static String SUBSCRIPTION_PARAM = "subscriptionname";
+	
+	public final static String AGENTNAME_PARAM = "agentname";
+	
 	private static String getParameter(String paramName, Map<String, List<String>> params)
 	{
 		List<String> list = params.get(paramName);
@@ -23,5 +27,25 @@ public class QueryStringParameters
 	public static String getWindowParam(Map<String, List<String>> params)
 	{
 		return getParameter(WINDOW_PARAM, params);
+	}
+	
+	public static String getSubscriptionNameParam(Map<String, List<String>> params)
+	{
+		String subsName = getParameter(SUBSCRIPTION_PARAM, params);
+		if(subsName != null)
+		{
+			return "topic://" + subsName;
+		}
+		return null;
+	}
+	
+	public static String getAgentNameParam(Map<String, List<String>> params)
+	{
+		String agentName = getParameter(AGENTNAME_PARAM, params);
+		if(agentName != null)
+		{
+			return agentName;
+		}
+		return null;
 	}
 }

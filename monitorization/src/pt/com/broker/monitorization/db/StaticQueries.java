@@ -15,6 +15,7 @@ import pt.com.broker.monitorization.db.queries.QueueCountStaticQuery;
 import pt.com.broker.monitorization.db.queries.StaticQuery;
 import pt.com.broker.monitorization.db.queries.SubscriptionDiscardedRateQuery;
 import pt.com.broker.monitorization.db.queries.SubscriptionOutputRateQuery;
+import pt.com.broker.monitorization.db.queries.SubscriptionRateQuery;
 
 public class StaticQueries
 {
@@ -35,6 +36,12 @@ public class StaticQueries
 		InputRateStaticQuery irq = new InputRateStaticQuery();
 		queries.put(irq.getId(), irq);
 
+		SubscriptionRateQuery sorq = new SubscriptionOutputRateQuery();
+		queries.put(sorq.getId(), sorq);
+		
+		SubscriptionDiscardedRateQuery  sdrq = new SubscriptionDiscardedRateQuery();
+		queries.put(sdrq.getId(), sdrq);
+
 		AgentQueueCountQuery aqc = new AgentQueueCountQuery();
 		queries.put(aqc.getId(), aqc);
 
@@ -45,14 +52,7 @@ public class StaticQueries
 		queries.put(airq.getId(), airq);
 
 		AgentOutputRateQuery aorq = new AgentOutputRateQuery();
-		queries.put(aorq.getId(), aorq);
-
-		SubscriptionOutputRateQuery sorq = new SubscriptionOutputRateQuery();
-		queries.put(sorq.getId(), sorq);
-		
-		SubscriptionDiscardedRateQuery  sdrq = new SubscriptionDiscardedRateQuery();
-		queries.put(sdrq.getId(), sdrq);
-		
+		queries.put(aorq.getId(), aorq);		
 	}
 
 	public static String getData(String queryType, Map<String, List<String>> params)

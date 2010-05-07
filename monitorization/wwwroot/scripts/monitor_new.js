@@ -7,6 +7,8 @@ var QUEUE_PREFIX = "queue://";
 
 var TOPIC_PREFIX = "topic://";
 
+var imagesMetadataMapX = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
+
 function mainMonitorizationInit() 
 {
   // queues
@@ -80,8 +82,6 @@ function mainMonitorizationInit()
     onFailure: function(){ alert('Something went wrong while trying to get agent status info...'); }
    });  
   }
-
-  var imagesMetadataMapX = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
 
   // rate// queue agent info
 function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
@@ -184,12 +184,87 @@ function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	if(data.length != 1)
 		return;
 
+	var newSample = parseFloat(data[0].value);
+
+	var img = s$(imgId);
+	var data = transport.responseJSON;
+
+	
+	var circularQueue = imgMetadata.getCircularQueue();
+	circularQueue.add(newSample);
+	
+	var circularQueueSize = circularQueue.size();
+
+	var norm_min = circularQueue.get(0);
+	var norm_max = circularQueue.get(0);
+	
+	for(var i = 1; i < circularQueueSize;++i)
+	{
+		var curValue = circularQueue.get(i);
+		if(curValue < norm_min)
+			norm_min = curValue;
+		if(curValue > norm_max)
+			norm_max = curValue;
+	}
+
+
+	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
+
+	for(var i = 0; i < circularQueueSize; ++i)
+	{
+		var curValue = circularQueue.get(i);
+		var sample = normalizeValue(curValue, norm_min, norm_max);
+		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
+	}
+
+	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (circularQueueSize-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
+
+	min = round(norm_min,2);
+	max = round(norm_max,2);
+
+	var s_unit = "";
+	if(typeof(unit)!=undefined && unit!=null)
+	{
+		s_unit="&nbsp;" + unit;
+	}
+	
+
+	var legend = s$(legendId);
+	legend.innerHTML = "<p><span class='mvalue-latest'>" + round(newSample) + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
+
+
+	img.src = url;
+    },
+    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
+   });
+}
+
+function processGraphLatestTest(queryStr, imgId, legendId, unit, imagesMetadataMap)
+{
+  new Ajax.Request(queryStr,
+   {
+    method:'get',
+    onSuccess: function(transport){
+
+	var imgMetadata = imagesMetadataMap[imgId];
+	if( (imgMetadata == undefined) || (imgMetadata == null) )
+	{
+		return;
+	}
+
+	var data = transport.responseJSON;
+
+	if(data.length != 1)
+		return;
+
 	var img = s$(imgId);
 	var data = transport.responseJSON;
 	var min = imgMetadata.getMin();
 	var max = imgMetadata.getMax();
+	var originalMin = min;
+	var originalMax = max;
 
-	console.log(imgId + ' Min: '+min + ' Max: ' + max);
+//	console.log(imgId + ' Min: '+min + ' Max: ' + max);
 	
 	//get sample
 	var newSample  = parseFloat(data[0].value);
@@ -197,14 +272,14 @@ function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	//var newSample  = 100;
 	if(newSample < min)
 	{
-		console.log(imgId + ' replacing min. Was '+min+ ' Now is: ' + newSample);
+		//console.log(imgId + ' replacing min. Was '+min+ ' Now is: ' + newSample);
 		min = newSample;
 		imgMetadata.setMin(newSample);
 
 	}
 	if(newSample > max)
 	{
-		console.log( imgId + ' replacing Max. Was '+max+ ' Now is: ' + newSample);
+		//console.log( imgId + ' replacing Max. Was '+max+ ' Now is: ' + newSample);
 
 		max = newSample;
 		imgMetadata.setMax(newSample);
@@ -214,7 +289,7 @@ function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	circularQueue.add(newSample);
 	
 	var circularQueueSize = circularQueue.size();
-
+/*
 	for(var i = 0; i < circularQueueSize; ++i)
 	{
 		var x = circularQueue.get(i);
@@ -224,22 +299,60 @@ function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 			alert('MAX alert. Sample: ' + sample + 'Max: ' + max );
 
 	}
+	console.log(imgId);
+*/
 
 	//console.log('min '+min+ ' max: ' + max);
+
+	var norm_min = circularQueue.get(0);
+	var norm_max = circularQueue.get(0);
+	
+	for(var i = 1; i < data.length;++i)
+	{
+		var curValue = circularQueue.get(i);
+		if(curValue < norm_min) norm_min = curValue;
+		if(curValue > norm_max) norm_max = curValue;
+	}
+
 
 	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
 
 
+//	test_min = circularQueue.get(0);
+//	test_max = circularQueue.get(0);
+
 	for(var i = 0; i < circularQueueSize; ++i)
 	{
-		var sample = normalizeValue(circularQueue.get(i), min, max);
+		var curValue = circularQueue.get(i);
+		var sample = normalizeValue(curValue, norm_min, norm_max);
 		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
+/*
+		if(curValue < test_min)
+		{
+			test_min = curValue;
+			console.log('Last min: ' + curValue);
+		}
+		if(curValue > test_max)
+		{
+			test_max = curValue;
+			console.log('Last max: ' + curValue);
+		}
+*/
 	}
-
+/*
+	if(test_min != min)
+	{
+		console.error('MIN error. Min is: ' + test_min + ' Used for normalization: ' + min + ' Original Min: ' + originalMin);
+	}
+	if(test_max != max)
+	{
+		console.error('MAX error. Max is: ' + test_max + ' Used for normalization: ' + max + ' Original Max: ' + originalMax);
+	}
+*/
 	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (circularQueueSize-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
 
-	min = round(min,2);
-	max = round(max,2);
+	min = round(norm_min,2);
+	max = round(norm_max,2);
 
 	var s_unit = "";
 	if(typeof(unit)!=undefined && unit!=null)
@@ -296,7 +409,6 @@ function processGraphAll(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	imgMetadata.setCircularQueue(circularQueue); 
 
 	
-	// process remaining samples
 	for(var i = 0; i < data.length; ++i)
 	{
 		var parsedValue = parseFloat(data[i].value);
@@ -789,7 +901,6 @@ function allAgentInit()
 	
 }
 
-var previousAllAgentGeneralInfo = new Object();
 // queue agent info
 function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 {
@@ -805,14 +916,6 @@ function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 		{
 			var agentname = agentGeneralInfo[i].agentName;		
 
-			var prevAgentInfo = previousAllAgentGeneralInfo[agentname];
-
-			if( prevAgentInfo === undefined)
-			{	
-				prevAgentInfo = new Object();
-				previousAllAgentGeneralInfo[agentname] = prevAgentInfo;
-			}
-		
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
 			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+ agentname+ "'>" + agentGeneralInfo[i].agentHostname + "</a></td>";
@@ -820,19 +923,13 @@ function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 			newContent = newContent + "<td>" + agentGeneralInfo[i].status + "</td>";
 
 			var inputRate = round(parseFloat(agentGeneralInfo[i].inputRate));
-			pic = getLocalPic(prevAgentInfo.inputRate, inputRate);
-			prevAgentInfo.inputRate = inputRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + inputRate + "</td><td style='padding-right:2em'></td>";
 	
 			var outputRate = round(parseFloat(agentGeneralInfo[i].outputRate));
-			pic = getLocalPic(prevAgentInfo.outputRate, outputRate);
-			prevAgentInfo.outputRate = outputRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td><td style='padding-right:2em'></td>";
 
 			var faultRate = round(parseFloat(agentGeneralInfo[i].faultRate));
-			pic = getLocalPic(prevAgentInfo.faultRate, faultRate);
-			prevAgentInfo.faultRate = faultRate;
-			newContent = newContent + "<td style='padding-left:2em'>" + faultRate + "</td><td style='padding-right:2em'><img src='" + pic + "' /></td>";
+			newContent = newContent + "<td style='padding-left:2em'>" + faultRate + "</td><td style='padding-right:2em'></td>";
 
 			newContent = newContent + "<td>" + agentGeneralInfo[i].pendingAckSystemMsg + "</td>";
 
@@ -947,17 +1044,23 @@ function agentMonitorizationInit()
    });  
   }
 
-  var f_rates = function() {
-	processGraph("/dataquery/static?querytype=agentqueuecount&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate");
-	processGraph("/dataquery/static?querytype=agentfaultrate&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s");
-	processGraph("/dataquery/static?querytype=agentinputrate&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s");
-	processGraph("/dataquery/static?querytype=agentoutputrate&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s");
+  var f_rates_all = function() {
+	processGraphAll("/dataquery/static?querytype=agentqueuecount&window=all&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphAll("/dataquery/static?querytype=agentfaultrate&window=all&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/static?querytype=agentinputrate&window=all&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/static?querytype=agentoutputrate&window=all&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+  }
+  var f_rates_latest = function() {
+	processGraphLatest("/dataquery/static?querytype=agentqueuecount&window=last&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphLatest("/dataquery/static?querytype=agentfaultrate&window=last&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/static?querytype=agentinputrate&window=last&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/static?querytype=agentoutputrate&window=last&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
 
   f_hostname();
 
-  f_rates();
-  setInterval(f_queues, 5000);
+  f_rates_all();
+  setInterval(f_rates_latest, 5000);
 
   f_queues();
   setInterval(f_queues, 5100);
@@ -1276,9 +1379,13 @@ function topicMonitorizationInit()
  var panel = s$('general_topic_information');
  panel.innerHTML = "<tr><td colspan='5' class='oddrow'>Please wait...</td></tr>";
 
-  var f_rates = function() {
-	processGraph("/dataquery/static?querytype=subscriptionoutputrate&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s");
-	processGraph("/dataquery/static?querytype=subscriptiondiscardedrate&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s");
+  var f_rates_all = function() {
+	processGraphAll("/dataquery/static?querytype=subscriptionoutputrate&window=all&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/static?querytype=subscriptiondiscardedrate&window=all&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
+  }
+  var f_rates_latest = function() {
+	processGraphLatest("/dataquery/static?querytype=subscriptionoutputrate&window=last&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/static?querytype=subscriptiondiscardedrate&window=last&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
   }
 
   var f_generalInfo = function() {
@@ -1294,8 +1401,8 @@ function topicMonitorizationInit()
    });  
   }
 
-  f_rates();
-  setInterval(f_rates, 5200);
+  f_rates_all();
+  setInterval(f_rates_latest, 5200);
   f_generalInfo();
   setInterval(f_generalInfo, 5000);
 }
@@ -1502,18 +1609,53 @@ function getHumanTextDiff(date)
 function test_circular_queue()
 {
 	var cq = new CircularQueue(); 
-	cq.init(3);
+	cq.init(5);
+	
+	var counter = 0;
+	cq.add(counter++);
+	console.log('showing after: ' + counter);
+	showAllElements(cq);
+	cq.add(counter++);
+	
+	console.log('showing after: ' + counter);
+	showAllElements(cq);
 
-	cq.add(1);
-	cq.add(2);
-	cq.add(3);
-	cq.add(4);
+	cq.add(counter++);
+	cq.add(counter++);
+	cq.add(counter++);
 
-	var count = cq.size();
+	console.log('showing after: ' + counter);
+	showAllElements(cq);
 
-	var value = cq.get(2);
+	cq.add(counter++);
+	cq.add(counter++);
+	cq.add(counter++);
+	cq.add(counter++);
+
+	console.log('showing after: ' + counter);
+	showAllElements(cq);
+
+	cq.add(counter++);
+	cq.add(counter++);
+	cq.add(counter++);
+	cq.add(counter++);
+
+	console.log('showing after: ' + counter);
+	showAllElements(cq);
+
+//	var count = cq.size();
+
+//	var value = cq.get(2);
 }
 
+function showAllElements(circular_queue)
+{
+	var size = circular_queue.size();
+	for(var i = 0; i != size; ++i)
+	{
+		console.log(circular_queue.get(i));
+	}
+}
 
 function ImageMetadata()
 {
@@ -1574,7 +1716,10 @@ function CircularQueue()
 	this.add = function(value)
 	{
 		this._buffer[this._next] =  value;
-		this._elementCount = (++this._elementCount > this._size) ? this._size : this._elementCount;
+		if(this._elementCount < this._size)
+		{
+			++this._elementCount;
+		}
 		this._next = (this._next +1 ) % this._size;
 	}
 	this.size = function()
@@ -1583,7 +1728,7 @@ function CircularQueue()
 	}
 	this.get = function(index)
 	{
-		return  this._buffer[(this._next-1 + index) % this._size];
+		return  this._buffer[ ( ((this._count < this._size) ? 0 : this._next ) + index ) % this._elementCount];
 	}
 }
 /*
