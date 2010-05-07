@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerInfo;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.SystemMessagesPublisher;
 
 /**
  * StatusAction outputs agent status in XML.
@@ -60,7 +59,7 @@ public class MiscInfoAction extends HttpAction
 			{
 				String agentName = GcsInfo.constructAgentName(GcsInfo.getAgentHost(), GcsInfo.getAgentPort());
 
-				String smessage = String.format(template, SubscriptionsAction.getCss(),agentName, BrokerInfo.getVersion(), SystemMessagesPublisher.getPendingMessagesCount());
+				String smessage = String.format(template, SubscriptionsAction.getCss(), agentName, BrokerInfo.getVersion());
 				byte[] bmessage = smessage.getBytes("UTF-8");
 				response.setHeader("Pragma", "no-cache");
 				response.setHeader("Cache-Control", "no-cache");

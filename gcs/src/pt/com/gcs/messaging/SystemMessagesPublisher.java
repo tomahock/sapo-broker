@@ -1,158 +1,86 @@
 package pt.com.gcs.messaging;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.stats.MiscStats;
+import pt.com.gcs.conf.GcsInfo;
 
 /**
  * SystemMessagesPublisher is responsible for holding and delivering system messages such as SYSTEM_TOPIC and SYSTEM_QUEUE. If these messages are not acknowledged them are resent.
  */
 public class SystemMessagesPublisher
 {
-	private static class TimeoutMessage
-	{
-		final NetMessage message;
-		long timeout;
-		final Channel session;
-
-		TimeoutMessage(NetMessage message, Channel session, long timeout)
-		{
-			this.message = message;
-			this.session = session;
-			this.timeout = timeout;
-		}
-	}
 
 	private static Logger log = LoggerFactory.getLogger(SystemMessagesPublisher.class);
 
-	private static final long ACKNOWLEDGE_INTERVAL = 5 * 1000;
+	private static Set<String> pending_messages = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
-	static
+	private static final String fault_destination = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
+
+	private static final String fault_template = "<s:Envelope xmlns:s='http://www.w3.org/2003/05/soap-envelope' xmlns:w='http://www.w3.org/2005/08/addressing'>%n<s:Header><w:From><w:Address>%s</w:Address></w:From></s:Header>%n<s:Body>%n<s:Fault><s:Code><s:Value>s:Receiver</s:Value></s:Code><s:Reason><s:Text>%s</s:Text></s:Reason></s:Fault>%n</s:Body>%n</s:Envelope>";
+
+	public static void sendMessage(NetMessage message, final Channel channel)
 	{
-		Runnable command = new Runnable()
+		final String messageId = message.getAction().getNotificationMessage().getMessage().getMessageId();
+
+		if (channel.isWritable())
 		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					long currentTime = System.currentTimeMillis();
-					List<TimeoutMessage> retryMessages = new ArrayList<TimeoutMessage>();
-
-					synchronized (pending_messages)
-					{
-						for (Map.Entry<String, TimeoutMessage> entry : pending_messages.entrySet())
-						{
-							if (entry.getValue().timeout <= currentTime)
-							{
-								retryMessages.add(entry.getValue());
-								break;
-							}
-						}
-					}
-
-					for (TimeoutMessage tm : retryMessages)
-					{
-						log.info("System message with message id '{}' timed out. Remote address: '{}'", tm.message.getAction().getNotificationMessage().getMessage().getMessageId(), tm.session.getRemoteAddress().toString());
-						
-						if(tm.session.isWritable())
-						{
-							tm.session.write(tm.message);
-						}
-						else
-						{
-							log.warn(String.format("System message with id: '%s' could not be sent. Closing connection.", tm.message.getAction().getNotificationMessage().getMessage().getMessageId()));
-							MiscStats.newSystemMessageFailed();
-							
-							tm.session.close();
-						}
-						tm.timeout = currentTime + ACKNOWLEDGE_INTERVAL;
-					}
-
-				}
-				catch (Throwable t)
-				{
-					log.error("Timeout verification runnable", t);
-				}
-			}
-
-		};
-
-		GcsExecutor.scheduleAtFixedRate(command, ACKNOWLEDGE_INTERVAL, 500, TimeUnit.MILLISECONDS);
-	}
-
-	private static Map<String, TimeoutMessage> pending_messages = new HashMap<String, TimeoutMessage>();
-
-	public static void sendMessage(NetMessage message, Channel channel)
-	{
-		TimeoutMessage tm = new TimeoutMessage(message, channel, System.currentTimeMillis() + ACKNOWLEDGE_INTERVAL);
-
-		String messageId = message.getAction().getNotificationMessage().getMessage().getMessageId();
-		synchronized (pending_messages)
-		{
-			pending_messages.put(messageId, tm);
-		}
-		
-		if(channel.isWritable())
-		{
+			pending_messages.add(messageId);
 			channel.write(message);
+
+			Runnable r = new Runnable()
+			{
+				public void run()
+				{
+					if (pending_messages.contains(messageId))
+					{
+						pending_messages.remove(messageId);
+						MiscStats.newSystemMessageFailed();
+						closeChannel(channel);
+					}
+				}
+			};
+
+			GcsExecutor.schedule(r, 1000, TimeUnit.MILLISECONDS);
 		}
 		else
 		{
-			log.warn(String.format("System message with id: '%s' could not be sent. Closing connection.", messageId));
-			MiscStats.newSystemMessageFailed();
-			channel.close();
+			closeChannel(channel);
 		}
 	}
 
-	public static void sessionClosed(Channel session)
+	private static final void closeChannel(final Channel channel)
 	{
-		List<String> message_identifiers = new ArrayList<String>();
-
-		synchronized (pending_messages)
+		try
 		{
-			for (Map.Entry<String, TimeoutMessage> entry : pending_messages.entrySet())
+			ChannelFuture f = channel.close();
+
+			f.awaitUninterruptibly(250, TimeUnit.MILLISECONDS);
+
+			if (!(f.isDone() && f.isSuccess()))
 			{
-				if (entry.getValue().session.equals(session))
-				{
-					message_identifiers.add(entry.getValue().message.getAction().getNotificationMessage().getMessage().getMessageId());
-				}
-			}
-			if(message_identifiers.size() !=  0)
-			{
-				log.info("Removing pending system messages because channel '{}' has closed.", session);
-			}
-			for (String msgId : message_identifiers)
-			{
-				pending_messages.remove(msgId);
+				String message = String.format("Unable to close connection to agent: '%s'", f.getChannel().getRemoteAddress());
+				String error_message = String.format(fault_template, GcsInfo.getAgentName(), message);
+				InternalPublisher.send(fault_destination, String.format(fault_template, GcsInfo.getAgentName(), error_message));
 			}
 		}
-	}	
+		catch (Throwable t)
+		{
+			log.error(t.getMessage(), t);
+		}
+	}
 
 	public static void messageAcknowledged(String messageId)
 	{
-		synchronized (pending_messages)
-		{
-			pending_messages.remove(messageId);
-		}
+		pending_messages.remove(messageId);
 	}
-	
-	public static int getPendingMessagesCount()
-	{
-		synchronized (pending_messages)
-		{
-			return pending_messages.size();
-		}
-	}
-
 }
