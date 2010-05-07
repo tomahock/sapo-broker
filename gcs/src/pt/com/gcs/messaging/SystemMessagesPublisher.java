@@ -69,6 +69,9 @@ public class SystemMessagesPublisher
 			if (!(f.isDone() && f.isSuccess()))
 			{
 				String message = String.format("Unable to close connection to agent: '%s'", f.getChannel().getRemoteAddress());
+
+				log.error(message);
+
 				String error_message = String.format(fault_template, GcsInfo.getAgentName(), message);
 				InternalPublisher.send(fault_destination, String.format(fault_template, GcsInfo.getAgentName(), error_message));
 			}
