@@ -13,7 +13,7 @@ function mainMonitorizationInit()
 {
   // queues
   var f_queues = function() {
-   new Ajax.Request('/dataquery/last?predicate=queue-size&minvalue=0&count=10',
+   new Ajax.Request('/dataquery/snapshot?type=queuecountsnapshot',
    {
     method:'get',
     onSuccess: function(transport){
@@ -25,9 +25,9 @@ function mainMonitorizationInit()
    });  
   }
  
-  // pending ack
+  // sys message failed delivery
    var f_pendingAck = function() {
-   new Ajax.Request('/dataquery/last?subject=system-message&predicate=ack-pending&minvalue=0&count=10',
+   new Ajax.Request('/dataquery/snapshot?type=sysmsgfailsnapshot',
    {
     method:'get',
     onSuccess: function(transport){
@@ -42,7 +42,7 @@ function mainMonitorizationInit()
   // dropbox
 /*
   var f_dropboxes = function() {
-   new Ajax.Request('/dataquery/last?predicate=count&subject=dropbox&count=10&minvalue=-1&orderby=object_value',
+   new Ajax.Request('/dataquery/snapshot?type=dropboxcountsnapshot',
    {
     method:'get',
     onSuccess: function(transport){
@@ -57,7 +57,6 @@ function mainMonitorizationInit()
   // errors
   var f_errors = function() {
    new Ajax.Request('/dataquery/faults',
-   //new Ajax.Request('dataquery/faults?groupby=shortmessage',
    {
     method:'get',
     onSuccess: function(transport){
@@ -71,7 +70,7 @@ function mainMonitorizationInit()
 
   // agents
   var f_agents = function() {
-   new Ajax.Request('/dataquery/last?predicate=status',
+   new Ajax.Request('/dataquery/snapshot?type=agentstatussnapshot',
    {
     method:'get',
     onSuccess: function(transport){
@@ -522,41 +521,22 @@ function setQueueInfo(queueInfo, panel)
   	}
 	else
 	{
-		var queues = new Object();
+		var content = "";
 		for(var i = 0; i != queueInfo.length; ++i)
 		{
-			var queueName = removePrefix(queueInfo[i].subject, QUEUE_PREFIX);
-			var strCount = queueInfo[i].value;
+			var queueName = removePrefix(queueInfo[i].queueName, QUEUE_PREFIX);
+			var strCount = queueInfo[i].count;
 			var count = parseFloat(strCount);
-			var curDate = parseISO8601(queueInfo[i].time);
-			//queues[queueName] += count;
-			if( queues[queueName] === undefined)
-			{	
-				queues[queueName] = new Object();
-				queues[queueName].count = count;
-				queues[queueName].time = curDate;
-			}
-			else
-			{
-				queues[queueName].count += count;
-			}
-			if (curDate > queues[queueName].time)
-			{
-				queues[queueName].time = curDate;
-			}
-		}
-		var content = "";
-		var styleIdx = 1;
-		for(var queueName in queues)
-		{
-			var count = queues[queueName].count;
+	
 			var previousValue = previousQueueInfo[queueName];
 			var pic = getLocalPic(previousValue, count);
-			var curDate = queues[queueName].time;
 			previousQueueInfo[queueName] = count;
-			var rowClass =  ( ((styleIdx++)%2) == 0) ? "evenrow" : "oddrow";
+	
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 			content = content + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
+
 		}
+
 		newContent = content;
 	}
 	panel.innerHTML = newContent;
@@ -582,7 +562,7 @@ function setSysMsgInfo(sysMsgInfo, panel)
 			var agentname = sysInfo.agentName;
 			var agentHostname = sysInfo.agentHostname;
 			
-			var count = parseFloat(sysInfo.value);
+			var count = parseFloat(sysInfo.count);
 
 			var previousValue = previousSysMsgInfo[agentname];
 			var pic = getLocalPic(previousValue, count);
@@ -612,7 +592,7 @@ function setDropboxInfo(dropboxInfo, panel)
 		{
 			var agentname = dropboxInfo[i].agentName;
 			var agentHostname = dropboxInfo[i].agentHostname;
-			var count = parseFloat(dropboxInfo[i].value);
+			var count = parseFloat(dropboxInfo[i].count);
 
 			var previousValue = previousDropboxInfo[agentname];
 			var pic = getLocalPic(previousValue, count);
@@ -666,11 +646,9 @@ function setAgentsInfo(agentInfo, panel)
 		for(var i = 0; i != agentInfo.length; ++i)
 		{
 			var agentname = agentInfo[i].agentName;
-			var result = parseFloat(agentInfo[i].value);
-			if( result == 0)
-			{
-				newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentname + "</a> : Down : " + agentInfo[i].time +"</p>";
-			}
+			var agentHostname = agentInfo[i].agentHostname;
+			var status = agentInfo[i].status;
+			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentHostname + "</a> : Status : " +  +"</p>";
 		}
 	}
 	panel.innerHTML = newContent;

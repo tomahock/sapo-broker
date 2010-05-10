@@ -15,7 +15,6 @@ import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.monitorization.db.RateQueries;
 import pt.com.broker.monitorization.db.StatisticsDB;
 import pt.com.broker.monitorization.db.StatisticsDB.StatisticsItem;
 import pt.com.broker.monitorization.db.queries.AgentInformationRouter;
@@ -23,6 +22,8 @@ import pt.com.broker.monitorization.db.queries.FaultsInformationRouter;
 import pt.com.broker.monitorization.db.queries.LastResultQuery;
 import pt.com.broker.monitorization.db.queries.QueryGenerator;
 import pt.com.broker.monitorization.db.queries.QueueInformationRouter;
+import pt.com.broker.monitorization.db.queries.RateQueries;
+import pt.com.broker.monitorization.db.queries.SnapshotQueries;
 import pt.com.broker.monitorization.db.queries.SubscriptionsInformationRouter;
 
 public class DataQueryAction extends HttpAction
@@ -32,9 +33,10 @@ public class DataQueryAction extends HttpAction
 
 	private final String pathPrefix;
 
-	private final static String LAST_VALUE_QUERY = "last";
+//	private final static String LAST_VALUE_QUERY = "last";
 
-	private final static String RATE_QUEURY = "rate";
+	private final static String RATE_QUERY = "rate";
+	private final static String SNAPSHOT_QUERY = "snapshot";
 	private final static String QUEUE_QUERY = "queue";
 	private final static String AGENT_QUERY = "agent";
 	private final static String SUBSCRIPTION_QUERY = "subscription";
@@ -60,13 +62,13 @@ public class DataQueryAction extends HttpAction
 		QueryGenerator qr = null;
 		String sqlQuery = null;
 		
-		if (queryType.equals(LAST_VALUE_QUERY))
-		{
-			qr = LastResultQuery.getInstance(params);
-			sqlQuery = qr.getSqlQuery();
-		}
+//		if (queryType.equals(LAST_VALUE_QUERY))
+//		{
+//			qr = LastResultQuery.getInstance(params);
+//			sqlQuery = qr.getSqlQuery();
+//		}
 
-		else if (queryType.equals(RATE_QUEURY) || queryType.equals(QUEUE_QUERY) || queryType.equals(AGENT_QUERY) || queryType.equals(SUBSCRIPTION_QUERY) || queryType.equals(FAULTS_QUERY))
+		if (queryType.equals(RATE_QUERY) || queryType.equals(QUEUE_QUERY) || queryType.equals(AGENT_QUERY) || queryType.equals(SUBSCRIPTION_QUERY) || queryType.equals(FAULTS_QUERY) || queryType.equals(SNAPSHOT_QUERY))
 		{
 
 		}
@@ -84,7 +86,7 @@ public class DataQueryAction extends HttpAction
 
 		sb.append("[");
 
-		if (queryType.equals(RATE_QUEURY))
+		if (queryType.equals(RATE_QUERY))
 		{
 			String queuryId = path.substring(index + 1);
 			sb.append(RateQueries.getData(queuryId, params));
@@ -104,6 +106,11 @@ public class DataQueryAction extends HttpAction
 		else if (queryType.equals(FAULTS_QUERY))
 		{
 			sb.append(FaultsInformationRouter.getFaultsInfo(params));
+		}
+		else if(queryType.equals(SNAPSHOT_QUERY))
+		{
+			String queuryId = path.substring(index + 1);
+			sb.append(SnapshotQueries.getData(queuryId, params));
 		}
 		else
 		{

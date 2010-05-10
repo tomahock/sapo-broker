@@ -11,7 +11,7 @@ import pt.com.broker.monitorization.collector.AgentName;
 public class AgentHostname
 {
 	private static Logger log = LoggerFactory.getLogger(AgentHostname.class);
-	
+
 	private static Cache<String, String> hostnames = new Cache<String, String>();
 	private static CacheFiller<String, String> CF_HOSTS = new CacheFiller<String, String>()
 	{
@@ -19,14 +19,14 @@ public class AgentHostname
 		public String populate(String agentName)
 		{
 			String hostname = AgentName.findHostname(agentName);
-			return ((agentName == null) ||  (agentName.equals(AgentName.FAIL)) ) ? agentName : hostname;
+			return ((agentName == null) || (agentName.equals(AgentName.FAIL))) ? agentName : hostname;
 		}
 	};
-	
+
 	public static String get(String agentName)
 	{
 		String hostname = null;
-		if(StringUtils.isBlank(agentName))
+		if (StringUtils.isBlank(agentName))
 		{
 			return null;
 		}
