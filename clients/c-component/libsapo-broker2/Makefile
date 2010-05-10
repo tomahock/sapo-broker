@@ -4,7 +4,7 @@
 # Compiler settings (gcc, icc, win32)
 
 REL_NAME := libsapo-broker
-REL_VER	 := 2.0.1
+REL_VER	 := 2.0.2
 
 # Targets
 RELEASE_TARGET = $(REL_NAME).$(SO_LIB).$(REL_VER)
