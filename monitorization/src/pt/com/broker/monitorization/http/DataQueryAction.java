@@ -16,13 +16,13 @@ import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.monitorization.db.queries.AgentInformationRouter;
-import pt.com.broker.monitorization.db.queries.FaultsInformationRouter;
 import pt.com.broker.monitorization.db.queries.QueryDataProvider;
-import pt.com.broker.monitorization.db.queries.QueueInformationRouter;
 import pt.com.broker.monitorization.db.queries.RateQueries;
 import pt.com.broker.monitorization.db.queries.SnapshotQueries;
-import pt.com.broker.monitorization.db.queries.SubscriptionsInformationRouter;
+import pt.com.broker.monitorization.db.queries.agents.AgentInformationRouter;
+import pt.com.broker.monitorization.db.queries.faults.FaultsInformationRouter;
+import pt.com.broker.monitorization.db.queries.queues.QueueInformationRouter;
+import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionsInformationRouter;
 
 public class DataQueryAction extends HttpAction
 {

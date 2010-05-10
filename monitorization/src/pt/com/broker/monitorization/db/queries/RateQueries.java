@@ -4,6 +4,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pt.com.broker.monitorization.db.queries.agents.AgentFaultsRateQuery;
+import pt.com.broker.monitorization.db.queries.agents.AgentInputRateQuery;
+import pt.com.broker.monitorization.db.queries.agents.AgentOutputRateQuery;
+import pt.com.broker.monitorization.db.queries.agents.AgentQueueCountQuery;
+import pt.com.broker.monitorization.db.queries.faults.FaultRateStaticQuery;
+import pt.com.broker.monitorization.db.queries.queues.QueueCountRateQuery;
+import pt.com.broker.monitorization.db.queries.queues.QueueCountStaticQuery;
+import pt.com.broker.monitorization.db.queries.queues.QueueErrorRateQuery;
+import pt.com.broker.monitorization.db.queries.queues.QueueInputRateQuery;
+import pt.com.broker.monitorization.db.queries.queues.QueueOutputRateQuery;
+import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionDiscardedRateQuery;
+import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionOutputRateQuery;
+import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionRateQuery;
+
 
 public class RateQueries implements QueryDataProvider
 {
