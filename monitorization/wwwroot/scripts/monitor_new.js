@@ -139,17 +139,17 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 	panel.innerHTML = newContent;
 }
   var f_rates_all = function() {
-	processGraphAll("/dataquery/static?querytype=queuecount&window=all", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphAll("/dataquery/static?querytype=faultrate&window=all", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/static?querytype=inputrate&window=all", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/static?querytype=outputrate&window=all", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=queuecount&window=all", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=faultrate&window=all", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=inputrate&window=all", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=outputrate&window=all", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
 
   var f_rates_latest = function() {
-	processGraphLatest("/dataquery/static?querytype=queuecount&window=last", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphLatest("/dataquery/static?querytype=faultrate&window=last", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/static?querytype=inputrate&window=last", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/static?querytype=outputrate&window=last", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=queuecount&window=last", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=faultrate&window=last", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=inputrate&window=last", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=outputrate&window=last", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
 
   f_queues();
@@ -695,11 +695,18 @@ function queueMonitorizationInit()
   }
  qnPanel.innerHTML = queueName;
 
-  var f_rates = function() {
-	processGraph("/dataquery/queue?rate=count&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate");
-	processGraph("/dataquery/queue?rate=failed&queuename=" + queueName, "img_error_rate", "count_error_rate", "m/s");
-	processGraph("/dataquery/queue?rate=input&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s");
-	processGraph("/dataquery/queue?rate=output&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s");
+  var f_rates_all = function() {
+	processGraphAll("/dataquery/rate?ratetype=queuecountrate&window=all&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=queueinputrate&window=all&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=queueoutputrate&window=all&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=queueerrorrate&window=all&queuename=" + queueName, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+  }
+
+  var f_rates_latest = function() {
+	processGraphLatest("/dataquery/rate?ratetype=queuecountrate&window=last&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=queueinputrate&window=last&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=queueoutputrate&window=last&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=queueerrorrate&window=last&queuename=" + queueName, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
   }
 
   var f_generalInfo = function() {
@@ -715,8 +722,11 @@ function queueMonitorizationInit()
    });  
   }
 
-  f_rates();
-  setInterval(f_rates, 5200);
+  f_rates_all();
+  setInterval(f_rates_latest, 5200);
+
+//  f_rates();
+//  setInterval(f_rates, 5200);
   f_generalInfo();
   setInterval(f_generalInfo, 5000);
 }
@@ -1045,16 +1055,16 @@ function agentMonitorizationInit()
   }
 
   var f_rates_all = function() {
-	processGraphAll("/dataquery/static?querytype=agentqueuecount&window=all&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphAll("/dataquery/static?querytype=agentfaultrate&window=all&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/static?querytype=agentinputrate&window=all&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/static?querytype=agentoutputrate&window=all&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=agentqueuecount&window=all&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=agentfaultrate&window=all&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=agentinputrate&window=all&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=agentoutputrate&window=all&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
   var f_rates_latest = function() {
-	processGraphLatest("/dataquery/static?querytype=agentqueuecount&window=last&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphLatest("/dataquery/static?querytype=agentfaultrate&window=last&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/static?querytype=agentinputrate&window=last&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/static?querytype=agentoutputrate&window=last&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=agentqueuecount&window=last&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=agentfaultrate&window=last&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=agentinputrate&window=last&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=agentoutputrate&window=last&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
 
   f_hostname();
@@ -1380,12 +1390,12 @@ function topicMonitorizationInit()
  panel.innerHTML = "<tr><td colspan='5' class='oddrow'>Please wait...</td></tr>";
 
   var f_rates_all = function() {
-	processGraphAll("/dataquery/static?querytype=subscriptionoutputrate&window=all&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/static?querytype=subscriptiondiscardedrate&window=all&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=subscriptionoutputrate&window=all&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=subscriptiondiscardedrate&window=all&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
   }
   var f_rates_latest = function() {
-	processGraphLatest("/dataquery/static?querytype=subscriptionoutputrate&window=last&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/static?querytype=subscriptiondiscardedrate&window=last&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=subscriptionoutputrate&window=last&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=subscriptiondiscardedrate&window=last&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
   }
 
   var f_generalInfo = function() {

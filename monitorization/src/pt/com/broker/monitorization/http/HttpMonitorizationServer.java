@@ -1,5 +1,9 @@
 package pt.com.broker.monitorization.http;
 
+import org.caudexorigo.Shutdown;
+import org.caudexorigo.cli.ArgumentValidationException;
+import org.caudexorigo.cli.CliFactory;
+import org.caudexorigo.http.netty.CliArgs;
 import org.caudexorigo.http.netty.NettyHttpServer;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
@@ -18,21 +22,28 @@ public class HttpMonitorizationServer
 	{
 		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
 
+		CliArgs cargs = null;
+		try
+		{
+			cargs = CliFactory.parseArguments(CliArgs.class, args);
+		}
+		catch (ArgumentValidationException t)
+		{
+			Shutdown.now(t);
+		}
+
 		log.info("Starting Sapo-Broker HTTP Monitorization Server...");
 
 		ConfigurationInfo.init();
 		CollectorManager.init();
 
-		int port = ConfigurationInfo.getConsoleHttpPort();
-		String host = "0.0.0.0";
-
-		NettyHttpServer server = new NettyHttpServer("./wwwroot/");
-		server.setPort(port);
-		server.setHost(host);
+		NettyHttpServer server = new NettyHttpServer(cargs.getRootDirectory());
+		server.setPort(cargs.getPort());
+		server.setHost(cargs.getHost());
 
 		server.setRouter(new ActionRouter());
 
 		server.start();
-		log.info("Monitorization Console is accessible at 'http://localhost:{}/main.html'", port + "");
+		log.info("Monitorization Console is accessible at 'http://localhost:{}/main.html'", cargs.getPort() + "");
 	}
 }

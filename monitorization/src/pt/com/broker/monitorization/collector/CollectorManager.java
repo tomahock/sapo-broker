@@ -24,7 +24,7 @@ public class CollectorManager
 	private static AgentStatusCollector agentStatusCollector;
 	private static FaultsCollector faultsCollector;
 
-	private static final ScheduledExecutorService sched_exec = CustomExecutors.newScheduledThreadPool(2, "sched-exec");
+	protected static final ScheduledExecutorService SCHED_EXEC = CustomExecutors.newScheduledThreadPool(3, "sched-exec");
 
 	public static void init()
 	{
@@ -50,7 +50,7 @@ public class CollectorManager
 
 				log.info("Running Database cleaner. Delete old entries");
 
-				//del_counter += DbExecutor.runActionPreparedStatement("DELETE FROM raw_data WHERE (predicate='output-rate' OR predicate='input-rate') AND (object_value=0) AND (event_time < (now()-'00:10'::time));");
+				// del_counter += DbExecutor.runActionPreparedStatement("DELETE FROM raw_data WHERE (predicate='output-rate' OR predicate='input-rate') AND (object_value=0) AND (event_time < (now()-'00:10'::time));");
 
 				del_counter += DbExecutor.runActionPreparedStatement("DELETE FROM raw_data WHERE (event_time < (now()-'00:30'::time));");
 
@@ -58,7 +58,7 @@ public class CollectorManager
 			}
 		};
 
-		sched_exec.scheduleWithFixedDelay(db_cleaner, 1, 1, TimeUnit.MINUTES);
+		SCHED_EXEC.scheduleWithFixedDelay(db_cleaner, 1, 1, TimeUnit.MINUTES);
 	}
 
 	private static void initCollectors()
@@ -124,5 +124,15 @@ public class CollectorManager
 	public static AgentStatusCollector getAgentStatusCollector()
 	{
 		return agentStatusCollector;
+	}
+
+	public static void scheduleWithFixedDelay(Runnable command, long initial_delay, long delay, TimeUnit unit)
+	{
+		SCHED_EXEC.scheduleWithFixedDelay(command, initial_delay, delay, unit);
+	}
+
+	public static void schedule(Runnable command, long delay, TimeUnit unit)
+	{
+		SCHED_EXEC.schedule(command, delay, unit);
 	}
 }

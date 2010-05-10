@@ -14,6 +14,8 @@ public class QueryStringParameters
 	
 	public final static String AGENTNAME_PARAM = "agentname";
 	
+	private static final String QUEUENAME_PARAM = "queuename";
+	
 	private static String getParameter(String paramName, Map<String, List<String>> params)
 	{
 		List<String> list = params.get(paramName);
@@ -35,6 +37,16 @@ public class QueryStringParameters
 		if(subsName != null)
 		{
 			return "topic://" + subsName;
+		}
+		return null;
+	}
+	
+	public static String getQueueNameParam(Map<String, List<String>> params)
+	{
+		String subsName = getParameter(QUEUENAME_PARAM, params);
+		if(subsName != null)
+		{
+			return "queue://" + subsName;
 		}
 		return null;
 	}

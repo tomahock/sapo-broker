@@ -5,22 +5,16 @@ import java.util.Map;
 
 public class QueueInformationRouter
 {
-	private static String RATE_TYPE_PARAM = "rate";
 	private static String QUEUENAME_PARAM = "queuename";
 	private static String AGENTNAME_PARAM = "agentname";
 	
-	private final static QueuesRateInformationQuery QUEUES_RATE_INFO = new QueuesRateInformationQuery();
 	private final static GeneralQueueInfoQuery GENERAL_QUEUE_INFO = new GeneralQueueInfoQuery();
 	private final static AllQueuesGeneralInfoQuery ALL_QUEUE_GENERAL_INFO = new AllQueuesGeneralInfoQuery();
 	private final static QueueAgentQuery QUEUE_AGENT_INFO = new QueueAgentQuery();
 	
 	public static String getQueueData(Map<String,List<String>> params)
 	{
-		List<String> list = params.get(RATE_TYPE_PARAM);
-		if(list != null && list.size() != 0)
-		{
-			return QUEUES_RATE_INFO.getJsonData(params);
-		}
+		List<String> list = null;
 		list = params.get(QUEUENAME_PARAM);
 		if(list != null && list.size() != 0)
 		{

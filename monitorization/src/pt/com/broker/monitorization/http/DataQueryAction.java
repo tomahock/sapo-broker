@@ -15,7 +15,7 @@ import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.monitorization.db.StaticQueries;
+import pt.com.broker.monitorization.db.RateQueries;
 import pt.com.broker.monitorization.db.StatisticsDB;
 import pt.com.broker.monitorization.db.StatisticsDB.StatisticsItem;
 import pt.com.broker.monitorization.db.queries.AgentInformationRouter;
@@ -34,7 +34,7 @@ public class DataQueryAction extends HttpAction
 
 	private final static String LAST_VALUE_QUERY = "last";
 
-	private final static String STATIC_QUEURY = "static";
+	private final static String RATE_QUEURY = "rate";
 	private final static String QUEUE_QUERY = "queue";
 	private final static String AGENT_QUERY = "agent";
 	private final static String SUBSCRIPTION_QUERY = "subscription";
@@ -66,7 +66,7 @@ public class DataQueryAction extends HttpAction
 			sqlQuery = qr.getSqlQuery();
 		}
 
-		else if (queryType.equals(STATIC_QUEURY) || queryType.equals(QUEUE_QUERY) || queryType.equals(AGENT_QUERY) || queryType.equals(SUBSCRIPTION_QUERY) || queryType.equals(FAULTS_QUERY))
+		else if (queryType.equals(RATE_QUEURY) || queryType.equals(QUEUE_QUERY) || queryType.equals(AGENT_QUERY) || queryType.equals(SUBSCRIPTION_QUERY) || queryType.equals(FAULTS_QUERY))
 		{
 
 		}
@@ -84,10 +84,10 @@ public class DataQueryAction extends HttpAction
 
 		sb.append("[");
 
-		if (queryType.equals(STATIC_QUEURY))
+		if (queryType.equals(RATE_QUEURY))
 		{
 			String queuryId = path.substring(index + 1);
-			sb.append(StaticQueries.getData(queuryId, params));
+			sb.append(RateQueries.getData(queuryId, params));
 		}
 		else if (queryType.equals(QUEUE_QUERY))
 		{

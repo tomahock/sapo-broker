@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import pt.com.broker.client.BrokerClient;
-import pt.com.broker.monitorization.Utils;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo.AgentInfo;
 import pt.com.broker.monitorization.db.StatisticsDB;
@@ -17,10 +16,8 @@ public class AgentStatusCollector
 
 	public enum AgentStatus
 	{
-		Ok,
-		Down
+		Ok, Down
 	}
-	
 
 	public void start() throws Throwable
 	{
@@ -42,21 +39,21 @@ public class AgentStatusCollector
 					catch (Throwable t)
 					{
 					}
-					processResult( agent.hostname, (checkStatus != null) ? AgentStatus.Ok : AgentStatus.Down);						
-					if(bk != null)
+					processResult(agent.hostname, (checkStatus != null) ? AgentStatus.Ok : AgentStatus.Down);
+					if (bk != null)
 						bk.close();
 				}
 			}
 		};
 
-		Utils.schedule(statusVerifier, 30, 60, TimeUnit.SECONDS);
+		CollectorManager.scheduleWithFixedDelay(statusVerifier, 30, 60, TimeUnit.SECONDS);
 	}
-	
+
 	private void processResult(String agentName, AgentStatus status)
 	{
 		final String SUBJECT = "agent";
 		final String PREDICATE = "status";
-		
+
 		StatisticsDB.add(agentName, new Date(), SUBJECT, PREDICATE, (status == AgentStatus.Ok) ? 1 : 0);
 	}
 

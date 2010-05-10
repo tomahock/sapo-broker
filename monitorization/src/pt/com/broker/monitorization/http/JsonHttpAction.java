@@ -15,16 +15,14 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 
 public abstract class JsonHttpAction extends HttpAction
 {
-
+	private static final String ENCODING = "UTF-8";
+	private static final String CONTENT_TYPE = "application/json";
+	private static final Charset UTF8 = Charset.forName("utf-8");
+	
 	@Override
 	public void writeResponse(ChannelHandlerContext context, HttpRequest request, HttpResponse response)
 	{
 		String path = request.getUri();
-//		int index = path.indexOf('?');
-
-//		String uriBase = (index == -1) ? path : path.substring(0, index);
-//
-//		String lowerUri = uriBase.toLowerCase();
 
 		path = path.substring(getPrefix().length()).toLowerCase();
 
@@ -32,11 +30,11 @@ public abstract class JsonHttpAction extends HttpAction
 
 		String data = getData(path, params);
 
-		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(ChannelBuffers.BIG_ENDIAN, data, Charset.forName("utf-8"));
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(ChannelBuffers.BIG_ENDIAN, data, UTF8);
 
-		response.addHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json");
-		response.addHeader(HttpHeaders.Names.CONTENT_ENCODING, "UTF-8");
-		response.addHeader(HttpHeaders.Names.CONTENT_LENGTH, buffer.writerIndex());
+		response.addHeader(HttpHeaders.Names.CONTENT_TYPE, CONTENT_TYPE);
+		response.addHeader(HttpHeaders.Names.CONTENT_ENCODING, ENCODING);
+		
 
 		response.setContent(buffer);
 	}

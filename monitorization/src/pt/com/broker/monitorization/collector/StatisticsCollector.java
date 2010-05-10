@@ -7,13 +7,10 @@ import java.util.Date;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.xpath.XPathConstants;
 
 import org.caudexorigo.text.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
