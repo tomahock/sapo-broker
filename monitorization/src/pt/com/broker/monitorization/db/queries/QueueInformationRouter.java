@@ -3,7 +3,7 @@ package pt.com.broker.monitorization.db.queries;
 import java.util.List;
 import java.util.Map;
 
-public class QueueInformationRouter
+public class QueueInformationRouter implements QueryDataProvider
 {
 	private static String QUEUENAME_PARAM = "queuename";
 	private static String AGENTNAME_PARAM = "agentname";
@@ -12,7 +12,9 @@ public class QueueInformationRouter
 	private final static AllQueuesGeneralInfoQuery ALL_QUEUE_GENERAL_INFO = new AllQueuesGeneralInfoQuery();
 	private final static QueueAgentQuery QUEUE_AGENT_INFO = new QueueAgentQuery();
 	
-	public static String getQueueData(Map<String,List<String>> params)
+	private static final String TYPE = "queue";
+	
+	public String getData(String queryType, Map<String, List<String>> params)
 	{
 		List<String> list = null;
 		list = params.get(QUEUENAME_PARAM);
@@ -26,5 +28,11 @@ public class QueueInformationRouter
 			return QUEUE_AGENT_INFO.getJsonData(params);
 		}
 		return ALL_QUEUE_GENERAL_INFO.getJsonData(params);
-	}	
+	}
+	
+	@Override
+	public String getType()
+	{
+		return TYPE;
+	}
 }

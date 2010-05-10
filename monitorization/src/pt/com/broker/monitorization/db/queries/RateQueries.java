@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 
-public class RateQueries
+public class RateQueries implements QueryDataProvider
 {
 	private static Map<String, StaticQuery> queries = new HashMap<String, StaticQuery>();
 	private static final String QUERY_TYPE_PARAM = "ratetype";
 
+	private static final String TYPE = "rate"; 
+	
 	static
 	{
 		QueueCountStaticQuery qsq = new QueueCountStaticQuery();
@@ -55,7 +57,7 @@ public class RateQueries
 		queries.put(qerq.getId(), qerq);
 	}
 
-	public static String getData(String queryType, Map<String, List<String>> params)
+	public String getData(String queryType, Map<String, List<String>> params)
 	{
 		List<String> list = params.get(QUERY_TYPE_PARAM);
 		if ((list != null) && (list.size() == 1))
@@ -69,5 +71,10 @@ public class RateQueries
 			return "";
 		}
 		return sq.getJsonData(params);
+	}
+	@Override
+	public String getType()
+	{
+		return TYPE;
 	}
 }

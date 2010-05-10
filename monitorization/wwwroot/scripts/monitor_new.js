@@ -876,17 +876,20 @@ function allAgentInit()
 {
    var panel = s$('agents');
    panel.innerHTML = "<tr><td colspan='10' class='oddrow'>Please wait...</td></tr>";
-   new Ajax.Request('/dataquery/agent',
-   {
-    method:'get',
-    onSuccess: function(transport){
+   var f_allAgentInit = function() {
+    new Ajax.Request('/dataquery/agent',
+    {
+     method:'get',
+     onSuccess: function(transport){
 	var panel = s$('agents');
 	var data = transport.responseJSON;
 	setAllAgentGeneralInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get all agent\'s info...') }
-   });  
-	
+     },
+     onFailure: function(){ alert('Something went wrong while trying to get all agent\'s info...') }
+    }); 
+   }
+   f_allAgentInit();
+   setInterval(f_allAgentInit, 5000);
 }
 
 // queue agent info

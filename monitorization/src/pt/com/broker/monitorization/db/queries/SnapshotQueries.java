@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SnapshotQueries
+public class SnapshotQueries implements QueryDataProvider
 {
 	private static Map<String, ComposedResultQuery> queries = new HashMap<String, ComposedResultQuery>();
 	private static final String QUERY_TYPE_PARAM = "type";
 
+	private static final String TYPE = "snapshot"; 
+	
 	static
 	{
 		QueueCountSnapshotQuery qcsq = new QueueCountSnapshotQuery();
@@ -24,7 +26,7 @@ public class SnapshotQueries
 		queries.put(assq.getId(), assq);
 	}
 
-	public static String getData(String queryType, Map<String, List<String>> params)
+	public String getData(String queryType, Map<String, List<String>> params)
 	{
 		List<String> list = params.get(QUERY_TYPE_PARAM);
 		if ((list != null) && (list.size() == 1))
@@ -38,5 +40,11 @@ public class SnapshotQueries
 			return "";
 		}
 		return sq.getJsonData(params);
+	}
+	
+	@Override
+	public String getType()
+	{
+		return TYPE;
 	}
 }
