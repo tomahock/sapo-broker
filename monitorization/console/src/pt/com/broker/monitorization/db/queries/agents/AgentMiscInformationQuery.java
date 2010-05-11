@@ -15,7 +15,7 @@ public class AgentMiscInformationQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(AgentMiscInformationQuery.class);
 	
-	private static String QUERY = "SELECT last_event_for_subject_predicate_agent('agent', 'status', ?, now(), '00:10') AS status , last_event_for_subject_predicate_agent('tcp', 'connections', ?, now(), '00:10') AS tcp , last_event_for_subject_predicate_agent('tcp-legacy', 'connections', ?, now(), '00:10') AS tcp_legacy , last_event_for_subject_predicate_agent('ssl', 'connections', ?, now(), '00:10') AS ssl , last_event_for_subject_predicate_agent('dropbox', 'count', ?, now(), '00:10') AS dropboxcount , last_event_for_subject_predicate_agent('faults', 'rate', ?, now(), '00:10') AS faulrate , last_event_for_subject_predicate_agent('system-message', 'ack-pending', ?, now(), '00:10') AS pending_sys_msg;";
+	private static String QUERY = "SELECT last_event_for_subject_predicate_agent('agent', 'status', ?, now(), '00:10') AS status , last_event_for_subject_predicate_agent('tcp', 'connections', ?, now(), '00:10') AS tcp , last_event_for_subject_predicate_agent('tcp-legacy', 'connections', ?, now(), '00:10') AS tcp_legacy , last_event_for_subject_predicate_agent('ssl', 'connections', ?, now(), '00:10') AS ssl , last_event_for_subject_predicate_agent('dropbox', 'count', ?, now(), '00:10') AS dropboxcount , last_event_for_subject_predicate_agent('faults', 'rate', ?, now(), '00:10') AS faulrate , last_event_for_subject_predicate_agent('system-message', 'failed-delivery', ?, now(), '00:10') AS pending_sys_msg;";
 
 	public String getId()
 	{
