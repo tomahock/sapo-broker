@@ -550,7 +550,7 @@ function setSysMsgInfo(sysMsgInfo, panel)
 
 	if (sysMsgInfo.length == 0)
 	{
-        	newContent = "<td class=\"oddrow\" colspan=\"3\">No information available.</td>";
+        	newContent = "<td class=\"oddrow\" colspan=\"3\">No failures.</td>";
   	}
 	else
 	{

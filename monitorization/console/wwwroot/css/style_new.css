@@ -129,3 +129,49 @@ a:hover,a:active {
 color:#274FB6;
 text-decoration:underline;
 }
+
+.info-pannel{
+	width:100%;
+	margin:0px;
+	float:center;
+	/*clear:right;*/
+	/*padding: 5px;*/
+	padding-left: 0px:
+	text-align:center;
+	font-weight: bold;
+	font-size: 2.4em;
+	color:#990000;
+}
+.info-pannel-label{
+	width:100%;
+	margin:0px;
+	float:center;
+	/*clear:right;*/
+	/*padding: 5px;*/
+	padding-right: 0px:
+	text-align:center;
+	font-size: 2.4em;
+	color:#990000;
+}
+
+#stacktrace
+{
+margin:auto;
+width:700px;
+
+}
+.faultmessage {
+	text-align:left;
+	font-size:1.5em
+}
+.faultdesc {
+	text-align:left;
+	font-size:1.5em;
+	padding: 5px;
+}
+/*.faultmessage {
+	width:100%;
+	font-size:1.2em;
+	align: center;
+	/*text-align: left;*/
+}*/
