@@ -1095,7 +1095,7 @@ function setMiscAgentInfo(miscInfo, panel)
 		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Fault Rate</td><td style='padding-right:2em'>" + round(parseFloat(miscInfo[0].faultRate), 1) +"</td></tr>";
 
 		rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
-		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Pending Sys Ack</td><td style='padding-right:2em'>" +  round(parseFloat(miscInfo[0].pendingAckSystemMsg), 0) +"</td></tr>";
+		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Failed Sys Msg</td><td style='padding-right:2em'>" +  round(parseFloat(miscInfo[0].pendingAckSystemMsg), 0) +"</td></tr>";
 	}
 	panel.innerHTML = newContent;
 }
