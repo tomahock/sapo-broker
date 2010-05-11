@@ -248,9 +248,9 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append(String.format("\n\t<item subject='access' predicate='denied' value='%s' />", rate));
 
 		// tcp, tcp-legacy, ssl
-		sb.append(String.format("\n\t<item subject='tcp' predicate='connections' value='%s' />", MiscStats.getTcpConnectionsAndReset()));
-		sb.append(String.format("\n\t<item subject='tcp-legacy' predicate='connections' value='%s' />", MiscStats.getTcpLegacyConnectionsAndReset()));
-		sb.append(String.format("\n\t<item subject='ssl' predicate='connections' value='%s' />", MiscStats.getSslConnectionsAndReset()));
+		sb.append(String.format("\n\t<item subject='tcp' predicate='connections' value='%s' />", MiscStats.getTcpConnections()));
+		sb.append(String.format("\n\t<item subject='tcp-legacy' predicate='connections' value='%s' />", MiscStats.getTcpLegacyConnections()));
+		sb.append(String.format("\n\t<item subject='ssl' predicate='connections' value='%s' />", MiscStats.getSslConnections()));
 
 		long f_sys_msgs = MiscStats.getSystemMessagesFailuresAndReset();
 

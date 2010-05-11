@@ -10,6 +10,8 @@ public class MiscStats
 	public static void newTcpConnection()
 	{
 		tcpConnections.incrementAndGet();
+		
+		System.out.println(String.format("New TCP connection. Total: " + tcpConnections.get()));
 	}
 
 	public static void tcpConnectionClosed()
@@ -17,7 +19,7 @@ public class MiscStats
 		tcpConnections.decrementAndGet();
 	}
 
-	public static long getTcpConnectionsAndReset()
+	public static long getTcpConnections()
 	{
 		return tcpConnections.getAndSet(0);
 	}
@@ -35,7 +37,7 @@ public class MiscStats
 		tcpLegacyConnections.decrementAndGet();
 	}
 
-	public static long getTcpLegacyConnectionsAndReset()
+	public static long getTcpLegacyConnections()
 	{
 		return tcpLegacyConnections.getAndSet(0);
 	}
@@ -53,7 +55,7 @@ public class MiscStats
 		sslConnections.decrementAndGet();
 	}
 
-	public static long getSslConnectionsAndReset()
+	public static long getSslConnections()
 	{
 		return sslConnections.getAndSet(0);
 	}
