@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ClientLib"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommonLibs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommTypes"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ProtoBufCodec"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ThriftCodec"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-XmlCodec"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-Monitorization.Libs"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
