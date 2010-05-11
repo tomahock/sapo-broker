@@ -14,7 +14,7 @@ public class QueryStringParameters
 	
 	public final static String AGENTNAME_PARAM = "agentname";
 	
-	private static final String QUEUENAME_PARAM = "queuename";
+	public static final String QUEUENAME_PARAM = "queuename";
 	
 	private static String getParameter(String paramName, Map<String, List<String>> params)
 	{

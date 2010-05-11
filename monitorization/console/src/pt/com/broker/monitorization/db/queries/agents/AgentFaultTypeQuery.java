@@ -9,11 +9,12 @@ import org.caudexorigo.jdbc.DbPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.monitorization.http.QueryStringParameters;
+
 public class AgentFaultTypeQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(AgentFaultTypeQuery.class);
 
-	private static String AGNETNAME_PARAM = "agentname";
 	private static String QUERY = "SELECT short_message, count (id) AS count FROM fault_data WHERE agent_name = ? AND event_time > (now() - '00:15'::time) GROUP BY short_message ORDER BY count DESC";
 
 	public String getId()
@@ -77,12 +78,7 @@ public class AgentFaultTypeQuery
 
 	protected ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
-		List<String> list = params.get(AGNETNAME_PARAM);
-		String agentname = null;
-		if ((list != null) && list.size() == 1)
-		{
-			agentname = list.get(0);
-		}
+		String agentname = QueryStringParameters.getAgentNameParam(params);
 		if (agentname == null)
 		{
 			return null;
