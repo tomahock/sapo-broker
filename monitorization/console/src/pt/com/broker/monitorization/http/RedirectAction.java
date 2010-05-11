@@ -5,6 +5,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 
 public class RedirectAction extends HttpAction
 {
@@ -20,7 +21,8 @@ public class RedirectAction extends HttpAction
 	@Override
 	public void writeResponse(ChannelHandlerContext ctx, HttpRequest req, HttpResponse res)
 	{
-		res.addHeader(HttpHeaders.Names.LOCATION, path);
+		res.setStatus(HttpResponseStatus.TEMPORARY_REDIRECT);
+		res.addHeader(HttpHeaders.Names.LOCATION, path);		
 
 	}
 
