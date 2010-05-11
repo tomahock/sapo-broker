@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="org.caudexorigo.jdbc.v2.jar"/>
 	<classpathentry exported="true" kind="lib" path="postgresql-8.4-701.jdbc4.jar"/>
