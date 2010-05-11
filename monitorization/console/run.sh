@@ -2,7 +2,7 @@
 
 cd `dirname $0`
 
-classpath="./conf:./lib/*:./dist/*:../common-libs/*:../comm-types/dist/*:../bindings/protobuf/java/dist/*:../bindings/thrift/java/dist/*:../clients/java-component/dist/*"
+classpath="./conf:../lib/*:./dist/*:../../common-libs/*:../../comm-types/dist/*:../../bindings/protobuf/java/dist/*:../../bindings/thrift/java/dist/*:../../clients/java-component/dist/*"
 
 
 java -server \
@@ -15,7 +15,7 @@ java -server \
 -Dcom.sun.management.jmxremote.port=3333 \
 -Dcom.sun.management.jmxremote.ssl=false \
 -Dcom.sun.management.jmxremote.authenticate=false \
-pt.com.broker.monitorization.http.HttpMonitorizationServer
+pt.com.broker.monitorization.http.HttpMonitorizationServer -p 8878 -r ./wwwroot
 
 echo ""
 echo "Please, run ant (ant package) first."
