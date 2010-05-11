@@ -1,7 +1,6 @@
 package pt.com.broker.monitorization.db;
 
 import java.io.ByteArrayInputStream;
-import java.sql.NClob;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +27,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import pt.com.broker.monitorization.AgentHostname;
-import pt.com.broker.monitorization.collector.AgentName;
 
 public class FaultsDB
 {

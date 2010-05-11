@@ -13,7 +13,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 
-import pt.com.broker.monitorization.collector.AgentName;
+import pt.com.broker.monitorization.AgentHostname;
 
 public class HostnameAction extends HttpAction
 {
@@ -41,7 +41,7 @@ public class HostnameAction extends HttpAction
 		if( (result != null) &&  (result.size() == 1))
 		{
 			String name = result.get(0);
-			hostname = AgentName.findHostname(name);
+			hostname = AgentHostname.get(name);
 		}
 		
 		StringBuffer sb = new StringBuffer();

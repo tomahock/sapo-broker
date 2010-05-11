@@ -9,8 +9,6 @@ import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 
 public class ActionRouter implements RequestRouter
 {
-	private static final String ACTION_PREFIX = "/action/";
-	
 	private static final String DATAQUERY_PREFIX = "/dataquery/";
 	
 	private static final String AGENT_NAME = "/hostname";
@@ -18,7 +16,6 @@ public class ActionRouter implements RequestRouter
 	// These HttpAction are stateless
 	//private static final DataAction dataAction = new DataAction();
 	private static final DataQueryAction dataQueryAction = new DataQueryAction(DATAQUERY_PREFIX);
-	private static final ActionExecuterAction actionExecuter = new ActionExecuterAction();
 	private static final HostnameAction hostnameAction= new HostnameAction(AGENT_NAME);
 	
 	@Override
@@ -34,10 +31,6 @@ public class ActionRouter implements RequestRouter
 		if (lowerUri.startsWith(DATAQUERY_PREFIX))
 		{
 			return dataQueryAction;
-		}
-		else if(lowerUri.startsWith(ACTION_PREFIX))
-		{
-			return actionExecuter;
 		}
 		else if(lowerUri.startsWith(AGENT_NAME))
 		{

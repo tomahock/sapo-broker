@@ -10,7 +10,6 @@ import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.monitorization.collector.CollectorManager;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 
 public class HttpMonitorizationServer
@@ -35,7 +34,6 @@ public class HttpMonitorizationServer
 		log.info("Starting Sapo-Broker HTTP Monitorization Server...");
 
 		ConfigurationInfo.init();
-		CollectorManager.init();
 
 		NettyHttpServer server = new NettyHttpServer(cargs.getRootDirectory());
 		server.setPort(cargs.getPort());

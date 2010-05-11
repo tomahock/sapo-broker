@@ -1,16 +1,19 @@
 package pt.com.broker.monitorization;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.monitorization.collector.AgentName;
 
 public class AgentHostname
 {
 	private static Logger log = LoggerFactory.getLogger(AgentHostname.class);
+	public static String FAIL = "Failed to get hostname";
 
 	private static Cache<String, String> hostnames = new Cache<String, String>();
 	private static CacheFiller<String, String> CF_HOSTS = new CacheFiller<String, String>()
@@ -18,8 +21,8 @@ public class AgentHostname
 		@Override
 		public String populate(String agentName)
 		{
-			String hostname = AgentName.findHostname(agentName);
-			return ((agentName == null) || (agentName.equals(AgentName.FAIL))) ? agentName : hostname;
+			String hostname = findHostname(agentName);
+			return ((agentName == null) || (agentName.equals(FAIL))) ? agentName : hostname;
 		}
 	};
 
@@ -39,5 +42,27 @@ public class AgentHostname
 			log.error("Failed to get hostname");
 		}
 		return hostname;
+	}
+	
+	public static String findHostname(String agentName)
+	{
+		String ip = StringUtils.substringBefore(agentName, ":");
+
+		InetAddress[] addresses = null;
+		try
+		{
+			addresses = InetAddress.getAllByName(ip);
+		}
+		catch (UnknownHostException e)
+		{
+			log.error("Failed to get host name", e);
+			return FAIL;
+		}
+		if ((addresses != null) && (addresses.length > 0))
+		{
+			String hostname = addresses[0].getHostName();
+			return hostname;
+		}
+		return null;
 	}
 }
