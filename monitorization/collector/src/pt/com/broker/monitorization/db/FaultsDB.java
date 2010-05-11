@@ -1,11 +1,7 @@
 package pt.com.broker.monitorization.db;
 
 import java.io.ByteArrayInputStream;
-import java.sql.NClob;
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -16,19 +12,13 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbExecutor;
-import org.caudexorigo.jdbc.DbPool;
-import org.caudexorigo.text.DateUtil;
 import org.caudexorigo.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import pt.com.broker.monitorization.AgentHostname;
-import pt.com.broker.monitorization.collector.AgentName;
 
 public class FaultsDB
 {

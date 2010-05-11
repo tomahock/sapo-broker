@@ -1,9 +1,9 @@
-<project basedir="." default="build" name="broker-monitorization">
+<project basedir="." default="build" name="monitorization-collector">
 	<property name="project.location" value="." />
 	<property name="dist" value="./dist" />
 	<property name="src" value="./src" />
 	<property name="bin" value="./bin" />
-	<property name="broker-public-repo" value="../" />
+	<property name="broker-public-repo" value="../../" />
 
 	<loadfile srcfile="${broker-public-repo}/agent/${src}/VERSION.txt" property="version">
 		<filterchain>
@@ -15,29 +15,29 @@
 		</filterchain>		
 	</loadfile>
 
-	<property name="package" value="broker-monitorization-${version}.jar" />
+	<property name="package" value="monitorization-collector-${version}.jar" />
 
 	<path id="project.classpath">
-		<fileset dir="../common-libs/">
+		<fileset dir="../../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="../comm-types/dist/">
+		<fileset dir="../../comm-types/dist/">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="../bindings/protobuf/java/dist/">
+		<fileset dir="../../bindings/protobuf/java/dist/">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="../bindings/thrift/java/dist/">
+		<fileset dir="../../bindings/thrift/java/dist/">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="../bindings/xml/java/dist/">
+		<fileset dir="../../bindings/xml/java/dist/">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="../clients/java-component/dist/">
+		<fileset dir="../../clients/java-component/dist/">
 			<include name="**/*.jar" />
 		</fileset>
 		
-		<fileset dir="./lib/">
+		<fileset dir="../lib/">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
