@@ -2,7 +2,7 @@
 
 # start agents
 ./broker1.sh  >> broker1.log &
-./broker2.sh >> broker2.log &
+ ./broker2.sh >> broker2.log &
 
 cd `dirname $0`
 

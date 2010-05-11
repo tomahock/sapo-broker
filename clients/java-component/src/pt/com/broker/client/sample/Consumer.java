@@ -51,6 +51,7 @@ public class Consumer implements BrokerListener
 		bk.addAsyncConsumer(subscribe, consumer);
 
 		System.out.println("listening...");
+		
 	}
 
 	@Override
