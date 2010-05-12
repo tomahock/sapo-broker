@@ -27,6 +27,7 @@ public class Producer
 	private int port;
 	private DestinationType dtype;
 	private String dname;
+	private long delay;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -37,6 +38,7 @@ public class Producer
 		producer.port = cargs.getPort();
 		producer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		producer.dname = cargs.getDestination();
+		producer.delay = cargs.getDelay();
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
@@ -50,11 +52,13 @@ public class Producer
 	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
 	{
 
-		for (int i = 0; i < 500000; i++)
+//		final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
+//		NetBrokerMessage brokerMessage = new NetBrokerMessage(msg);
+		for (int i = 0; i < 500000; ++i)
 		{
 			final String msg = i + " - " + RandomStringUtils.randomAlphanumeric(messageLength);
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg);
-
+			
 			if (dtype == DestinationType.QUEUE)
 			{
 				bk.enqueueMessage(brokerMessage, dname);
@@ -66,7 +70,9 @@ public class Producer
 
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-			Sleep.time(1000);
+			Sleep.time(delay);
+			
+			System.out.print('.');
 		}
 	}
 }
