@@ -96,7 +96,7 @@ public class StatisticsDB
 
 		try
 		{
-			db = DbPool.obtain();
+			db = DbPool.pick();
 
 			ResultSet queryResult = db.runRetrievalStatement(sqlQuery);
 

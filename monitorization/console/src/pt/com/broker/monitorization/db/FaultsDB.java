@@ -147,7 +147,7 @@ public class FaultsDB
 
 		try
 		{
-			db = DbPool.obtain();
+			db = DbPool.pick();
 
 			ResultSet queryResult = db.runRetrievalStatement(sqlQuery);
 			while (queryResult.next())
@@ -177,7 +177,7 @@ public class FaultsDB
 
 		try
 		{
-			db = DbPool.obtain();
+			db = DbPool.pick();
 
 			ResultSet queryResult = db.runRetrievalStatement(sqlQuery);
 			while (queryResult.next())
