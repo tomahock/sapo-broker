@@ -30,7 +30,7 @@ public class AgentMiscInformationQuery
 
 		try
 		{
-			db = DbPool.obtain();
+			db = DbPool.pick();
 
 			ResultSet queryResult = getResultSet(db, params);
 			if (queryResult == null)
