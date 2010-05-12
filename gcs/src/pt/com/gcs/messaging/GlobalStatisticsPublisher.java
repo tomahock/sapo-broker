@@ -270,6 +270,6 @@ public class GlobalStatisticsPublisher implements Runnable
 
 		Gcs.publish(np);
 
-		log.info("Failled system messages: '{}'.", f_sys_msgs);
+		log.info("Failed system messages: '{}'.", f_sys_msgs);
 	}
 }
