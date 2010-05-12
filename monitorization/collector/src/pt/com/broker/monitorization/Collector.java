@@ -1,13 +1,13 @@
 package pt.com.broker.monitorization;
 
 import org.caudexorigo.concurrent.Sleep;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.monitorization.collector.CollectorManager;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
+
+
 
 public class Collector
 {
@@ -16,7 +16,7 @@ public class Collector
 
 	public static void main(String[] args)
 	{
-		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+
 
 		ConfigurationInfo.init();
 		CollectorManager.init();
