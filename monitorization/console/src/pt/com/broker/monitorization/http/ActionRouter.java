@@ -5,12 +5,9 @@ import org.caudexorigo.http.netty.RequestRouter;
 import org.caudexorigo.http.netty.StaticFileAction;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 
-import pt.com.broker.monitorization.configuration.ConfigurationInfo;
-
 public class ActionRouter implements RequestRouter
 {
 	private static final String DATAQUERY_PREFIX = "/dataquery/";
-
 	private static final String AGENT_NAME = "/hostname";
 
 	// These HttpAction are stateless
@@ -18,6 +15,13 @@ public class ActionRouter implements RequestRouter
 	private static final DataQueryAction dataQueryAction = new DataQueryAction(DATAQUERY_PREFIX);
 	private static final HostnameAction hostnameAction = new HostnameAction(AGENT_NAME);
 	private static final RedirectAction redirect = new RedirectAction("/main.html");
+
+	private final String rootDirectory;
+
+	public ActionRouter(String rootDirectory)
+	{
+		this.rootDirectory = rootDirectory;
+	}
 
 	@Override
 	public HttpAction map(HttpRequest request)
@@ -37,12 +41,15 @@ public class ActionRouter implements RequestRouter
 		{
 			return hostnameAction;
 		}
+		else if (path.endsWith(".gz.js"))
+		{
+			return new GzipEncodingAction(rootDirectory);
+		}
 		else if (path.equals("/"))
 		{
 			return redirect;
 		}
 
-		return new StaticFileAction(ConfigurationInfo.getWwwrootPath());
+		return new StaticFileAction(rootDirectory);
 	}
-
 }

@@ -39,7 +39,7 @@ public class HttpMonitorizationServer
 		server.setPort(cargs.getPort());
 		server.setHost(cargs.getHost());
 
-		server.setRouter(new ActionRouter());
+		server.setRouter(new ActionRouter(cargs.getRootDirectory()));
 
 		server.start();
 		log.info("Monitorization Console is accessible at 'http://localhost:{}/main.html'", cargs.getPort() + "");
