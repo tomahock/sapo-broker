@@ -9,6 +9,24 @@ var TOPIC_PREFIX = "topic://";
 
 var imagesMetadataMapX = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
 
+/*
+
+window.location.href
+
+function getParameterByName( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+}
+
+*/
+
 function mainMonitorizationInit() 
 {
   // queues
@@ -17,7 +35,7 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('queue_size');
+      var panel = jQuery('#queue_size');
       var data = transport.responseJSON;      
       setQueueInfo(data, panel);
     },
@@ -31,7 +49,7 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('pending_ack');
+      var panel = jQuery('#pending_ack');
       var data = transport.responseJSON;      
       setSysMsgInfo(data, panel);
     },
@@ -46,7 +64,7 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('dropbox_files');
+      var panel = jQuery('#dropbox_files');
       var data = transport.responseJSON;      
       setDropboxInfo(data, panel);
     },
@@ -60,7 +78,7 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('errors');
+      var panel = jQuery('#errors');
       var data = transport.responseJSON;      
       setErrorInfo(data, panel);
     },
@@ -74,7 +92,7 @@ function mainMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('agentsDownInformationPanel');
+      var panel = jQuery('#agentsDownInformationPanel');
       var data = transport.responseJSON;      
       setAgentsInfo(data, panel);
     },
@@ -135,7 +153,7 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 		}
 	}
 
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
   var f_rates_all = function() {
 	processGraphAll("/dataquery/rate?ratetype=queuecount&window=all", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
@@ -177,198 +195,44 @@ function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	{
 		return;
 	}
-
 	var data = transport.responseJSON;
 
 	if(data.length != 1)
 		return;
+
+	var img = jQuery('#'+imgId);
+	var legend = jQuery('#'+legendId);
+
 
 	var newSample = parseFloat(data[0].value);
 
-	var img = s$(imgId);
-	var data = transport.responseJSON;
-
-	
 	var circularQueue = imgMetadata.getCircularQueue();
 	circularQueue.add(newSample);
 	
 	var circularQueueSize = circularQueue.size();
 
-	var norm_min = circularQueue.get(0);
-	var norm_max = circularQueue.get(0);
+	var min = circularQueue.get(0);
+	var max = circularQueue.get(0);
+
+	var values = new Array(); 
 	
-	for(var i = 1; i < circularQueueSize;++i)
+	for(var i = 0; i < circularQueueSize;++i)
 	{
 		var curValue = circularQueue.get(i);
-		if(curValue < norm_min)
-			norm_min = curValue;
-		if(curValue > norm_max)
-			norm_max = curValue;
+		if(curValue < min)
+			min = curValue;
+		if(curValue > max)
+			max = curValue;
+
+		values[i] = curValue;
 	}
 
-
-	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
-
-	for(var i = 0; i < circularQueueSize; ++i)
-	{
-		var curValue = circularQueue.get(i);
-		var sample = normalizeValue(curValue, norm_min, norm_max);
-		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
-	}
-
-	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (circularQueueSize-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
-
-	min = round(norm_min,2);
-	max = round(norm_max,2);
-
-	var s_unit = "";
-	if(typeof(unit)!=undefined && unit!=null)
-	{
-		s_unit="&nbsp;" + unit;
-	}
-	
-
-	var legend = s$(legendId);
-	legend.innerHTML = "<p><span class='mvalue-latest'>" + round(newSample) + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
-
-
-	img.src = url;
+	drawGraph(values, img, legend, min, max, values[values.length-1], unit);
     },
-    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
+    onFailure: function(){ alert('Something went wrong while trying to get one sample...'); }
    });
 }
 
-function processGraphLatestTest(queryStr, imgId, legendId, unit, imagesMetadataMap)
-{
-  new Ajax.Request(queryStr,
-   {
-    method:'get',
-    onSuccess: function(transport){
-
-	var imgMetadata = imagesMetadataMap[imgId];
-	if( (imgMetadata == undefined) || (imgMetadata == null) )
-	{
-		return;
-	}
-
-	var data = transport.responseJSON;
-
-	if(data.length != 1)
-		return;
-
-	var img = s$(imgId);
-	var data = transport.responseJSON;
-	var min = imgMetadata.getMin();
-	var max = imgMetadata.getMax();
-	var originalMin = min;
-	var originalMax = max;
-
-//	console.log(imgId + ' Min: '+min + ' Max: ' + max);
-	
-	//get sample
-	var newSample  = parseFloat(data[0].value);
-	//console.log('new sample: ' + newSample);
-	//var newSample  = 100;
-	if(newSample < min)
-	{
-		//console.log(imgId + ' replacing min. Was '+min+ ' Now is: ' + newSample);
-		min = newSample;
-		imgMetadata.setMin(newSample);
-
-	}
-	if(newSample > max)
-	{
-		//console.log( imgId + ' replacing Max. Was '+max+ ' Now is: ' + newSample);
-
-		max = newSample;
-		imgMetadata.setMax(newSample);
-	}
-	
-	var circularQueue = imgMetadata.getCircularQueue();
-	circularQueue.add(newSample);
-	
-	var circularQueueSize = circularQueue.size();
-/*
-	for(var i = 0; i < circularQueueSize; ++i)
-	{
-		var x = circularQueue.get(i);
-		if(x < min)
-			alert('MIN alert. Sample: ' + sample + 'Min: ' + min );
-		if(x > max)
-			alert('MAX alert. Sample: ' + sample + 'Max: ' + max );
-
-	}
-	console.log(imgId);
-*/
-
-	//console.log('min '+min+ ' max: ' + max);
-
-	var norm_min = circularQueue.get(0);
-	var norm_max = circularQueue.get(0);
-	
-	for(var i = 1; i < data.length;++i)
-	{
-		var curValue = circularQueue.get(i);
-		if(curValue < norm_min) norm_min = curValue;
-		if(curValue > norm_max) norm_max = curValue;
-	}
-
-
-	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
-
-
-//	test_min = circularQueue.get(0);
-//	test_max = circularQueue.get(0);
-
-	for(var i = 0; i < circularQueueSize; ++i)
-	{
-		var curValue = circularQueue.get(i);
-		var sample = normalizeValue(curValue, norm_min, norm_max);
-		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
-/*
-		if(curValue < test_min)
-		{
-			test_min = curValue;
-			console.log('Last min: ' + curValue);
-		}
-		if(curValue > test_max)
-		{
-			test_max = curValue;
-			console.log('Last max: ' + curValue);
-		}
-*/
-	}
-/*
-	if(test_min != min)
-	{
-		console.error('MIN error. Min is: ' + test_min + ' Used for normalization: ' + min + ' Original Min: ' + originalMin);
-	}
-	if(test_max != max)
-	{
-		console.error('MAX error. Max is: ' + test_max + ' Used for normalization: ' + max + ' Original Max: ' + originalMax);
-	}
-*/
-	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (circularQueueSize-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
-
-	min = round(norm_min,2);
-	max = round(norm_max,2);
-
-	var s_unit = "";
-	if(typeof(unit)!=undefined && unit!=null)
-	{
-		s_unit="&nbsp;" + unit;
-	}
-	
-
-	var legend = s$(legendId);
-	legend.innerHTML = "<p><span class='mvalue-latest'>" + round(newSample) + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
-
-
-	img.src = url;
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
-   });
-}
 
 function processGraphAll(queryStr, imgId, legendId, unit, imagesMetadataMap)
 {
@@ -376,128 +240,64 @@ function processGraphAll(queryStr, imgId, legendId, unit, imagesMetadataMap)
    {
     method:'get',
     onSuccess: function(transport){
-	var img = s$(imgId);
-	var data = transport.responseJSON;
-	var min = 0;
-	var max = 0;
-	
+	var data = transport.responseJSON;	
 	if(data.length == 0)
 		return;
+
+	var img = jQuery('#'+imgId);
+	var legend = jQuery('#'+legendId);
 
 	// determine max ans min	
 	// first sample
 	var min = parseFloat(data[0].value);
 	var max = parseFloat(data[0].value);
 	
-	for(var i = 1; i < data.length;++i)
-	{
-		var curValue = parseFloat(data[i].value);
-		if(curValue < min) min = curValue;
-		if(curValue > max) max = curValue;
-	}
-
-	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
-
+	var values = new Array(); 
 
 	var imgMetadata = new ImageMetadata();
-	imgMetadata.init(min, max);
-	
+	imgMetadata.init(min, max);	
 	
 	var circularQueue = new CircularQueue();
 	circularQueue.init(data.length);
 	imgMetadata.setCircularQueue(circularQueue); 
 
-	
-	for(var i = 0; i < data.length; ++i)
-	{
-		var parsedValue = parseFloat(data[i].value);
-		circularQueue.add(parsedValue);
-		
-		var sample = normalizeValue(parsedValue, min, max);
-			
-		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
-	}
-
-	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (data.length-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
-
-	min = round(min,2);
-	max = round(max,2);
-	var latest = round(parseFloat(data[data.length-1].value));
-
-	var s_unit = "";
-	if(typeof(unit)!=undefined && unit!=null)
-	{
-		s_unit="&nbsp;" + unit;
-	}
-	
-
-	var legend = s$(legendId);
-	legend.innerHTML = "<p><span class='mvalue-latest'>" + latest + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
-	
-	imagesMetadataMap[imgId] = imgMetadata;
-
-	img.src = url;
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
-   });
-}
-
-function processGraph(queryStr, imgId, legendId, unit)
-{
-  new Ajax.Request(queryStr,
-   {
-    method:'get',
-    onSuccess: function(transport){
-	var img = s$(imgId);
-	var data = transport.responseJSON;
-	var min = 0;
-	var max = 0;
-	
-	if(data.length == 0)
-		return;
-
-	// determine max ans min	
-	// first sample
-	var min = parseFloat(data[0].value);
-	var max = parseFloat(data[0].value);
-	
-	for(var i = 1; i < data.length;++i)
+	for(var i = 0; i < data.length;++i)
 	{
 		var curValue = parseFloat(data[i].value);
 		if(curValue < min) min = curValue;
 		if(curValue > max) max = curValue;
-	}
 
-	var url="http://chart.apis.google.com/chart?cht=ls&chs=200x90&chd=t:"
-	
-	// process remaining samples
-	for(var i = 0; i < data.length; ++i)
-	{
-		var sample = normalizeValue(parseFloat(data[i].value), min, max);
+		circularQueue.add(curValue);
 		
-		url = url + "" + ( (i != 0) ? ("," + sample) : sample );
+		values[i] = curValue;
 	}
 
-	url = url + "&chco=336699&chls=3,1,0&chm=o,990000,0," + (data.length-1) + ",4&chxt=r,x,y&chxs=0,990000,40,0,_|1,990000,1,0,_|2,990000,1,0,_&chxl=0:||1:||2:||&chxp=0,42.3&chf=bg,s,cecece";
+	imagesMetadataMap[imgId] = imgMetadata;
+	
+	drawGraph(values, img, legend, min, max, parseFloat(data[data.length-1].value), unit);
 
-	min = round(min);
-	max = round(max);
-	var latest = round(parseFloat(data[data.length-1].value));
+    },
+    onFailure: function(){ alert('Something went wrong while trying to get all samples...'); }
+   });
+}
 
+function drawGraph(values, graphPlaceHolder, legendPlaceHolder, min, max, latest, unit)
+{
 	var s_unit = "";
 	if(typeof(unit)!=undefined && unit!=null)
 	{
 		s_unit="&nbsp;" + unit;
 	}
 	
+	latest = round(latest);
+	min = round(min,2);
+	max = round(max,2);
 
-	var legend = s$(legendId);
-	legend.innerHTML = "<p><span class='mvalue-latest'>" + latest + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>";
 	
-	img.src = url;
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
-   });
+	legendPlaceHolder.html("<p><span class='mvalue-latest'>" + latest + s_unit+ "</span></p><p><span class='mlabel'>Min: </span><span class='mvalue'>" + min + "</span>;<span class='mlabel'> Max: </span><span class='mvalue'>" + max + "</span></p>");
+
+	graphPlaceHolder.sparkline(values, {width:'200px', height:'90px', lineColor:'#336699', fillColor:'', lineWidth:'3', spotColor:'#990000', minSpotColor:'#990000', maxSpotColor:'#990000'});
+	
 }
 
 function normalizeValue(curValue, minValue, maxValue)
@@ -539,7 +339,7 @@ function setQueueInfo(queueInfo, panel)
 
 		newContent = content;
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 var previousSysMsgInfo = new Object();
@@ -572,7 +372,7 @@ function setSysMsgInfo(sysMsgInfo, panel)
 		}
 		newContent = content;
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 var previousDropboxInfo = new Object();
@@ -602,7 +402,7 @@ function setDropboxInfo(dropboxInfo, panel)
 			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+agentname+"'>"+ agentHostname+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 var previousFaultInfo = new Object();
@@ -629,7 +429,7 @@ function setErrorInfo(errorInfo, panel)
 			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faulttype.html?type="+shortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 // general agents info
@@ -651,7 +451,7 @@ function setAgentsInfo(agentInfo, panel)
 			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentHostname + "</a> : Status : " +  +"</p>";
 		}
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 
@@ -662,16 +462,16 @@ function queueMonitorizationInit()
 {
   var params = SAPO.Utility.Url.getQueryString();
   var queueName = params.queuename;
-  var qnPanel =  s$('queue_name'); 
+  var qnPanel =  jQuery('#queue_name'); 
   
-  var countPanel = s$('queue_msg_count');
+  var countPanel = jQuery('#queue_msg_count');
 
   if (queueName == null)
   {
-        qnPanel.innerHTML = "<b>Queue name not specified</b>";
+        qnPanel.html("<b>Queue name not specified</b>");
 	return;
   }
- qnPanel.innerHTML = queueName;
+ qnPanel.html(queueName);
 
   var f_rates_all = function() {
 	processGraphAll("/dataquery/rate?ratetype=queuecountrate&window=all&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
@@ -692,7 +492,7 @@ function queueMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('general_queue_information');
+      var panel = jQuery('#general_queue_information');
       var data = transport.responseJSON;      
       setGeneralQueueInfo(data, panel);
     },
@@ -760,12 +560,12 @@ function setGeneralQueueInfo(queueGeneralInfo,  panel)
 		}
 	}
 
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 // Delete queue confirmation
 function confirmDelete()
 {
-	var qnPanel =  s$('queue_name'); 
+	var qnPanel =  jQuery('#queue_name'); 
 	var queueName = qnPanel.innerHTML;
 	var res = confirm('Are you sure you want to delete queue: ' + queueName);
 	if(res)
@@ -783,17 +583,17 @@ function confirmDelete()
 function queueDeleteInit()
 {
 	var params = SAPO.Utility.Url.getQueryString();
-	var qnPanel =  s$('queue_name'); 
+	var qnPanel =  jQuery('#queue_name'); 
 	var queueName = params.queuename;
 
 	if (queueName == null)
 	{
-		qnPanel.innerHTML = "<b>Queue name not specified</b>";
+		qnPanel.html("<b>Queue name not specified</b>");
 		return;
 	}
-	qnPanel.innerHTML = queueName;
-	var msgPanel =  s$('msg_pannel'); 
-	msgPanel.innerHTML = "Deleting queue. This may take some time...";
+	qnPanel.html(queueName);
+	var msgPanel =  jQuery('#msg_pannel'); 
+	msgPanel.html("Deleting queue. This may take some time...");
 	new Ajax.Request('/action/deletequeue?queuename='+queueName,
 	{
 	    method:'get',
@@ -826,7 +626,7 @@ function queueDeleteInit()
 			
 	      }
 	      
-	      msgPanel.innerHTML = newContent;
+	      msgPanel.html(newContent);
 	    },
 	    onFailure: function(){ alert('Something went wrong...') }
 	 });
@@ -839,31 +639,31 @@ function faultInformationInit()
 {
   var params = SAPO.Utility.Url.getQueryString();
   var params = SAPO.Utility.Url.getQueryString();
-  var idPanel = s$('shortmsg');
+  var idPanel = jQuery('#shortmsg');
   var faultId = params.id;
   if (faultId == null)
   {
-        idPanel.innerHTML = "Fault id not specified";
+        idPanel.html("Fault id not specified");
 	return;
   }
-  idPanel.innerHTML = faultId;
+  idPanel.html(faultId);
   new Ajax.Request('/dataquery/faults?id='+faultId,
    {
     method:'get',
     onSuccess: function(transport){
       var data = transport.responseJSON; 
 
-      var shortMsgPanel = s$('shortmsg');
-      shortMsgPanel.innerHTML =  "<a href='./faulttype.html?type=" + data[0].shortMessage + "'>"+ data[0].shortMessage + "</a>"; data[0].shortMessage;
+      var shortMsgPanel = jQuery('#shortmsg');
+      shortMsgPanel.html("<a href='./faulttype.html?type=" + data[0].shortMessage + "'>"+ data[0].shortMessage + "</a>");
 
-      var datePanel = s$('fault_date');
-      datePanel.innerHTML =  getHumanTextDiff(parseISO8601(data[0].time)) + " ago";
+      var datePanel = jQuery('#fault_date');
+      datePanel.html(getHumanTextDiff(parseISO8601(data[0].time)) + " ago");
 
-      var agentPanel = s$('agent_name');
-      agentPanel.innerHTML = "<a href='./agent.html?agentname=" + data[0].agentName + "'>"+ data[0].agentHostname + "</a>";
+      var agentPanel = jQuery('#agent_name');
+      agentPanel.html("<a href='./agent.html?agentname=" + data[0].agentName + "'>"+ data[0].agentHostname + "</a>");
 
-      var msgPanel = s$('message');
-      msgPanel.innerHTML = data[0].message;
+      var msgPanel = jQuery('#message');
+      msgPanel.html(data[0].message);
     },
     onFailure: function(){ alert('Something went wrong while trying to get fault message...') }
    });
@@ -874,14 +674,14 @@ function faultInformationInit()
 
 function allAgentInit()
 {
-   var panel = s$('agents');
-   panel.innerHTML = "<tr><td colspan='10' class='oddrow'>Please wait...</td></tr>";
+   var panel = jQuery('#agents');
+   panel.html("<tr><td colspan='10' class='oddrow'>Please wait...</td></tr>");
    var f_allAgentInit = function() {
     new Ajax.Request('/dataquery/agent',
     {
      method:'get',
      onSuccess: function(transport){
-	var panel = s$('agents');
+	var panel = jQuery('#agents');
 	var data = transport.responseJSON;
 	setAllAgentGeneralInfo(data, panel);
      },
@@ -928,7 +728,7 @@ function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 		}
 	}
 
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 
@@ -938,21 +738,21 @@ function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 function agentMonitorizationInit() 
 {
   var params = SAPO.Utility.Url.getQueryString();
-  var idPanel = s$('host_name');
+  var idPanel = jQuery('#host_name');
   var agentname = params.agentname;
   if (agentname == null)
   {
-        idPanel.innerHTML = "<b>Agent name not specified</b>";
+        idPanel.html("<b>Agent name not specified</b>");
 	return;
   }
-  idPanel.innerHTML = agentname;
+  idPanel.html(agentname);
   // queues
   var f_queues = function() {
    new Ajax.Request('/dataquery/queue?agentname='+agentname,
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('queue_size');
+      var panel = jQuery('#queue_size');
       var data = transport.responseJSON;      
       setAgentQueueInfo(data, panel);
     },
@@ -966,7 +766,7 @@ function agentMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('errors');
+      var panel = jQuery('#errors');
       var data = transport.responseJSON;      
       setAgentFaultInfo(data, panel);
     },
@@ -979,7 +779,7 @@ function agentMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('subscriptions');
+      var panel = jQuery('#subscriptions');
       var data = transport.responseJSON;      
       setAgentSubscriptionInfo(data, panel);
     },
@@ -993,12 +793,12 @@ function agentMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('agent_dropbox');
+      var panel = jQuery('#agent_dropbox');
       var data = transport.responseJSON;      
       var content = "Agent dropbox information not available.";
       if(data.length != 0)
 	content = data[0].dropboxLocation +" : " + data[0].messages +" : " + data[0].goodMessages;
-      panel.innerHTML = content;     
+      panel.html(content);     
     },
     onFailure: function(){ alert('Something went wrong while trying to get agent\'s dropbox info...'); }
    });
@@ -1011,13 +811,13 @@ function agentMonitorizationInit()
     method:'get',
     onSuccess: function(transport){
       var response = transport.responseText;
-      var panel = s$('host_name');
+      var panel = jQuery('#host_name');
       var data = response.evalJSON();
       var content = "";
       content = data.hostname;
-      panel.innerHTML = content;     
+      panel.html(content);     
     },
-    onFailure: function(){ var panel = s$('host_name'); panel.innerHTML = "";}
+    onFailure: function(){ var panel = jQuery('#host_name'); panel.html("");}
    });  
   }
   // misc
@@ -1027,7 +827,7 @@ function agentMonitorizationInit()
     method:'get',
     onSuccess: function(transport){
       var response = transport.responseText;
-      var panel = s$('misc_info');
+      var panel = jQuery('#misc_info');
       var data = response.evalJSON();
       setMiscAgentInfo(data, panel);
     },
@@ -1097,7 +897,7 @@ function setMiscAgentInfo(miscInfo, panel)
 		rowClass =  ( ((i++)%2) == 0) ? "evenrow" : "oddrow";
 		newContent = newContent + "<tr class=\"" + rowClass +"\"><td>Failed Sys Msg</td><td style='padding-right:2em'>" +  round(parseFloat(miscInfo[0].pendingAckSystemMsg), 0) +"</td></tr>";
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 
@@ -1126,7 +926,7 @@ function setAgentQueueInfo(queueInfo, panel)
 			newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td style='padding-right:2em'>" + queueCount +"</td><td style='padding-right:2em'><img src='" + pic + "' /></td></tr>";
 		}
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 // agent subscription info
@@ -1163,7 +963,7 @@ function setAgentSubscriptionInfo(subscriptionsInfo, panel)
 			}
 		}
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 // agent's fault info
@@ -1188,7 +988,7 @@ function setAgentFaultInfo(errorInfo, panel)
 			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faulttype.html?type="+shortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 // go to agent's subscription page
 
@@ -1220,14 +1020,14 @@ function goToAgentPage(page)
 //
 function allQueuesInformationInit()
 {
-  var infoPanel = s$('queues_info');
-  infoPanel.innerHTML = "<tr><td colspan='9' class='oddrow'>Please wait...</td></tr>";
+  var infoPanel = jQuery('#queues_info');
+  infoPanel.html("<tr><td colspan='9' class='oddrow'>Please wait...</td></tr>");
   var f_allQueues = function(){
 	  new Ajax.Request('/dataquery/queue',
 	   {
 	    method:'get',
 	    onSuccess: function(transport){
-	      var infoPanel = s$('queues_info');
+	      var infoPanel = jQuery('#queues_info');
 	      var response = transport.responseText;
 	      var data = transport.responseJSON;
 	      setAllQueueGeneralInfo(data, infoPanel);
@@ -1295,7 +1095,7 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 		}
 	}
 
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 //
@@ -1303,14 +1103,14 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 //
 function allTopicsMonitorizationInit()
 {
-  var infoPanel = s$('topics');
-  infoPanel.innerHTML = "<tr><td colspan='3' class='oddrow'>Please wait...</td></tr>";
+  var infoPanel = jQuery('#topics');
+  infoPanel.html("<tr><td colspan='3' class='oddrow'>Please wait...</td></tr>");
   var f_topicInfo = function(){
 	  new Ajax.Request('/dataquery/subscription',
 	   {
 	    method:'get',
 	    onSuccess: function(transport){
-	      var infoPanel = s$('topics');
+	      var infoPanel = jQuery('#topics');
 	      var response = transport.responseText;
 	      var data = transport.responseJSON;
 	      setTopicGeneralInfo(data, infoPanel);
@@ -1348,7 +1148,7 @@ function setTopicGeneralInfo(topicsInfo, panel)
 		    	}
 		}
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 
@@ -1359,16 +1159,16 @@ function topicMonitorizationInit()
 {
   var params = SAPO.Utility.Url.getQueryString();
   var subscriptionname = params.subscriptionname;
-  var tnPanel =  s$('topic_name'); 
+  var tnPanel =  jQuery('#topic_name'); 
 
   if (subscriptionname == null)
   {
-        tnPanel.innerHTML = "<b>Queue name not specified</b>";
+        tnPanel.html("<b>Queue name not specified</b>");
 	return;
   }
- tnPanel.innerHTML = subscriptionname;
- var panel = s$('general_topic_information');
- panel.innerHTML = "<tr><td colspan='5' class='oddrow'>Please wait...</td></tr>";
+ tnPanel.html(subscriptionname);
+ var panel = jQuery('#general_topic_information');
+ panel.html("<tr><td colspan='5' class='oddrow'>Please wait...</td></tr>");
 
   var f_rates_all = function() {
 	processGraphAll("/dataquery/rate?ratetype=subscriptionoutputrate&window=all&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
@@ -1384,7 +1184,7 @@ function topicMonitorizationInit()
    {
     method:'get',
     onSuccess: function(transport){
-      var panel = s$('general_topic_information');
+      var panel = jQuery('#general_topic_information');
       var data = transport.responseJSON;      
       setGeneralTopicInfo(data, panel);
     },
@@ -1426,7 +1226,7 @@ function setGeneralTopicInfo(topicGeneralInfo,  panel)
 		}
 	}
 
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 //
@@ -1436,15 +1236,15 @@ function faultTypeMonitorizationInit()
 {
   var params = SAPO.Utility.Url.getQueryString();
   var faultType = params.type;  
-  var ftPanel = s$('fault_type');
-  ftPanel.innerHTML = faultType;
+  var ftPanel = jQuery('#fault_type');
+  ftPanel.html(faultType);
   
   var f_faultTypes = function(){
 	  new Ajax.Request('dataquery/faults?type='+faultType,
 	   {
 	    method:'get',
 	    onSuccess: function(transport){
-	      var infoPanel = s$('agents_messages');
+	      var infoPanel = jQuery('#agents_messages');
 	      var response = transport.responseText;
 	      var data = transport.responseJSON;
 	      setFaultTypeInfo(data, infoPanel);
@@ -1473,7 +1273,7 @@ function setFaultTypeInfo(faultInfo, panel)
 			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./agent.html?agentname="+faultInfo[i].agentName+"'>"+ faultInfo[i].agentHostname + "</a></td><td style='padding-right:2em'>" + getHumanTextDiff( parseISO8601(faultInfo[i].time) ) +" ago. </td><td style='padding-right:2em'><a href='./fault.html?id=" + faultInfo[i].id +  "'>detail...</a></td></tr>";			
 		}
 	}
-	panel.innerHTML = newContent;
+	panel.html(newContent);
 }
 
 

@@ -4,11 +4,13 @@
     <head>
 		<title>Sapo-Broker Monitorization Console</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script type="text/javascript" src="scripts/sapolib.js" ></script>
 		<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+		<script type="text/javascript" src="scripts/jQuery.js"></script>
+		<script type="text/javascript" src="scripts/jquery.sparkline.min.js" ></script>
 		<script type="text/javascript" src="scripts/monitor_new.js"></script>
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
+			jQuery.noConflict();
 			window.onload = mainMonitorizationInit;
 		</script>
     </head>
@@ -35,22 +37,22 @@
 			    </div-->
 		            <div class="stat-widget">
 						<h1>Queued Messages</h1>
-						<p><img title="Queued Messages" alt="Queued Messages" id="img_queue_size_rate" src="#" border="0" /></p>
+						<p><span title="Queued Messages" id="img_queue_size_rate" src="#" border="0" /></p>
 						<p><span id="queue_size_rate"></span></p>
 			    </div>
 		            <div class="stat-widget">
 						<h1>Input Rate</h1>
-						<p><img title="Input Rate" alt="Input Rate" id="img_input_rate" src="#"  border="0" /></p>
+						<p><span title="Input Rate" id="img_input_rate" src="#"  border="0" /></p>
 						<p><span id="count_input_rate"></span></p>
 					</div>
 		            <div class="stat-widget">
 						<h1>Output Rate</h1>
-						<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" src="#" /></p>
+						<p><span title="Output Rate" id="img_output_rate" src="#" /></p>
 						<p><span id="count_output_rate"></span></p>
 		            </div>
 		            <div class="stat-widget">
 						<h1>Error Rate</h1>
-						<p><img title="Error Rate" alt="Error Rate" id="img_error_rate" src="#" /></p>
+						<p><span title="Error Rate" alt="Error Rate" id="img_error_rate" src="#" /></p>
 						<p><span id="count_error_rate"></span></p>
 			    </div>
 		</div>
