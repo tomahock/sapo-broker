@@ -15,7 +15,7 @@ public class AllSubscriptionInfoQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(GeneralQueueInfoQuery.class);
 	
-	private static String QUERY = "SELECT \n	topics.subject AS subscription\n	, COALESCE(last_event_for_subject_and_predicate(topics.subject,'output-rate', now(), '00:05'), 0) as outputrate\n	, last_event_for_subject_and_predicate(topics.subject, 'subscriptions', now(), '00:05') AS subscription_count\n	FROM \n	(SELECT DISTINCT subject FROM raw_data WHERE predicate = 'subscriptions' AND subject ~ '^topic://.*' AND event_time > (now() - '00:05'::time)) AS topics\nORDER BY 2 DESC;";
+	private static String QUERY = "SELECT \n	topics.subject AS subscription\n	, COALESCE(last_event_for_subject_and_predicate(topics.subject,'output-rate', now(), '00:05'), 0) as outputrate\n	, last_event_for_subject_and_predicate(topics.subject, 'subscriptions', now(), '00:05') AS subscription_count\n	FROM \n	(SELECT DISTINCT subject FROM raw_data WHERE predicate = 'subscriptions' AND subject ~ '^topic://.*' AND event_time > (now() - '00:05'::time)) AS topics\nORDER BY 2 DESC NULLS LAST;";
 
 	public String getId()
 	{

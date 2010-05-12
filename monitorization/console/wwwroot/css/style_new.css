@@ -117,17 +117,27 @@ text-align:right;
 }
 
 a {
-font-weight:700;
-text-decoration:none;
+  font-weight:700;
+  text-decoration:none;
 }
 
 a:link,a:visited {
-color:#C6550A;
+  color:#C6550A;
 }
 
 a:hover,a:active {
-color:#274FB6;
-text-decoration:underline;
+  color:#274FB6;
+  text-decoration:underline;
+}
+
+.jsLink
+{
+  color:#C6550A;
+  cursor:pointer;
+}
+.jsLink:hover,.jsLink:active {
+  color:#274FB6;
+  text-decoration:underline;
 }
 
 .info-pannel{
@@ -169,9 +179,4 @@ width:700px;
 	font-size:1.5em;
 	padding: 5px;
 }
-/*.faultmessage {
-	width:100%;
-	font-size:1.2em;
-	align: center;
-	/*text-align: left;*/
-}*/
+

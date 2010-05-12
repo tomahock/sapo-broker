@@ -139,14 +139,14 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 }
   var f_rates_all = function() {
 	processGraphAll("/dataquery/rate?ratetype=queuecount&window=all", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphAll("/dataquery/rate?ratetype=faultrate&window=all", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=faultrate&window=all", "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=inputrate&window=all", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=outputrate&window=all", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
 
   var f_rates_latest = function() {
 	processGraphLatest("/dataquery/rate?ratetype=queuecount&window=last", "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphLatest("/dataquery/rate?ratetype=faultrate&window=last", "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=faultrate&window=last", "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=inputrate&window=last", "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=outputrate&window=last", "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
@@ -677,14 +677,14 @@ function queueMonitorizationInit()
 	processGraphAll("/dataquery/rate?ratetype=queuecountrate&window=all&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=queueinputrate&window=all&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=queueoutputrate&window=all&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/rate?ratetype=queueerrorrate&window=all&queuename=" + queueName, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=queueerrorrate&window=all&queuename=" + queueName, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
   }
 
   var f_rates_latest = function() {
 	processGraphLatest("/dataquery/rate?ratetype=queuecountrate&window=last&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=queueinputrate&window=last&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=queueoutputrate&window=last&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/rate?ratetype=queueerrorrate&window=last&queuename=" + queueName, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=queueerrorrate&window=last&queuename=" + queueName, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
   }
 
   var f_generalInfo = function() {
@@ -1037,13 +1037,13 @@ function agentMonitorizationInit()
 
   var f_rates_all = function() {
 	processGraphAll("/dataquery/rate?ratetype=agentqueuecount&window=all&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphAll("/dataquery/rate?ratetype=agentfaultrate&window=all&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=agentfaultrate&window=all&agentname=" + agentname, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=agentinputrate&window=all&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=agentoutputrate&window=all&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
   var f_rates_latest = function() {
 	processGraphLatest("/dataquery/rate?ratetype=agentqueuecount&window=last&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphLatest("/dataquery/rate?ratetype=agentfaultrate&window=last&agentname=" + agentname, "img_error_rate", "count_error_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=agentfaultrate&window=last&agentname=" + agentname, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=agentinputrate&window=last&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=agentoutputrate&window=last&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
@@ -1206,9 +1206,9 @@ function miscInfoPage()
 
 function goToAgentPage(page)
 {
-	var anPanel =  s$('agent_name'); 
-	var agentName = anPanel.innerHTML;
-	var agentIp = agentName.split(":")[0];
+	var params = SAPO.Utility.Url.getQueryString();
+	var agentname = params.agentname;
+	var agentIp = agentname.split(":")[0];
 
 	window.location = "http://"+ agentIp + ":3380" + page; 
 	
