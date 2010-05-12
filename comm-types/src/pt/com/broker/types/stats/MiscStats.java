@@ -10,8 +10,6 @@ public class MiscStats
 	public static void newTcpConnection()
 	{
 		tcpConnections.incrementAndGet();
-		
-		System.out.println(String.format("New TCP connection. Total: " + tcpConnections.get()));
 	}
 
 	public static void tcpConnectionClosed()
