@@ -460,8 +460,7 @@ function setAgentsInfo(agentInfo, panel)
 //
 function queueMonitorizationInit() 
 {
-  var params = SAPO.Utility.Url.getQueryString();
-  var queueName = params.queuename;
+  var queueName = jQuery.query.get('queuename');
   var qnPanel =  jQuery('#queue_name'); 
   
   var countPanel = jQuery('#queue_msg_count');
@@ -471,7 +470,7 @@ function queueMonitorizationInit()
         qnPanel.html("<b>Queue name not specified</b>");
 	return;
   }
- qnPanel.html(queueName);
+ qnPanel.text(queueName);
 
   var f_rates_all = function() {
 	processGraphAll("/dataquery/rate?ratetype=queuecountrate&window=all&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
@@ -582,16 +581,15 @@ function confirmDelete()
 //
 function queueDeleteInit()
 {
-	var params = SAPO.Utility.Url.getQueryString();
-	var qnPanel =  jQuery('#queue_name'); 
-	var queueName = params.queuename;
+	var qnPanel =  jQuery('#queue_name');
+	var queueName = jQuery.query.get('queuename');
 
 	if (queueName == null)
 	{
 		qnPanel.html("<b>Queue name not specified</b>");
 		return;
 	}
-	qnPanel.html(queueName);
+	qnPanel.text(queueName);
 	var msgPanel =  jQuery('#msg_pannel'); 
 	msgPanel.html("Deleting queue. This may take some time...");
 	new Ajax.Request('/action/deletequeue?queuename='+queueName,
@@ -637,16 +635,14 @@ function queueDeleteInit()
 //
 function faultInformationInit()
 {
-  var params = SAPO.Utility.Url.getQueryString();
-  var params = SAPO.Utility.Url.getQueryString();
   var idPanel = jQuery('#shortmsg');
-  var faultId = params.id;
+  var faultId = jQuery.query.get('id');
   if (faultId == null)
   {
         idPanel.html("Fault id not specified");
 	return;
   }
-  idPanel.html(faultId);
+  idPanel.text(faultId);
   new Ajax.Request('/dataquery/faults?id='+faultId,
    {
     method:'get',
@@ -737,15 +733,14 @@ function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 //
 function agentMonitorizationInit() 
 {
-  var params = SAPO.Utility.Url.getQueryString();
   var idPanel = jQuery('#host_name');
-  var agentname = params.agentname;
+  var agentname = jQuery.query.get('agentname');
   if (agentname == null)
   {
         idPanel.html("<b>Agent name not specified</b>");
 	return;
   }
-  idPanel.html(agentname);
+  idPanel.text(agentname);
   // queues
   var f_queues = function() {
    new Ajax.Request('/dataquery/queue?agentname='+agentname,
@@ -1006,8 +1001,7 @@ function miscInfoPage()
 
 function goToAgentPage(page)
 {
-	var params = SAPO.Utility.Url.getQueryString();
-	var agentname = params.agentname;
+	var agentname = jQuery.query.get('agentname');
 	var agentIp = agentname.split(":")[0];
 
 	window.location = "http://"+ agentIp + ":3380" + page; 
@@ -1157,8 +1151,7 @@ function setTopicGeneralInfo(topicsInfo, panel)
 //
 function topicMonitorizationInit() 
 {
-  var params = SAPO.Utility.Url.getQueryString();
-  var subscriptionname = params.subscriptionname;
+  var subscriptionname = jQuery.query.get('subscriptionname');
   var tnPanel =  jQuery('#topic_name'); 
 
   if (subscriptionname == null)
@@ -1166,7 +1159,7 @@ function topicMonitorizationInit()
         tnPanel.html("<b>Queue name not specified</b>");
 	return;
   }
- tnPanel.html(subscriptionname);
+ tnPanel.text(subscriptionname);
  var panel = jQuery('#general_topic_information');
  panel.html("<tr><td colspan='5' class='oddrow'>Please wait...</td></tr>");
 
@@ -1234,10 +1227,9 @@ function setGeneralTopicInfo(topicGeneralInfo,  panel)
 //
 function faultTypeMonitorizationInit()
 {
-  var params = SAPO.Utility.Url.getQueryString();
-  var faultType = params.type;  
+  var faultType = jQuery.query.get('type');
   var ftPanel = jQuery('#fault_type');
-  ftPanel.html(faultType);
+  ftPanel.text(faultType);
   
   var f_faultTypes = function(){
 	  new Ajax.Request('dataquery/faults?type='+faultType,
