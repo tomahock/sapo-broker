@@ -73,10 +73,10 @@ public class DataQueryAction extends HttpAction
 
 		if (queryDataProvider == null)
 		{
-			throw new IllegalArgumentException("Ivalid query string...");
+			throw new IllegalArgumentException("Invalid query string...");
 		}
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		sb.append("[");
 		sb.append(queryDataProvider.getData(queryType, params));
