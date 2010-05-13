@@ -9,7 +9,6 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class AgentHostname
 {
 	private static Logger log = LoggerFactory.getLogger(AgentHostname.class);
@@ -21,8 +20,7 @@ public class AgentHostname
 		@Override
 		public String populate(String agentName)
 		{
-			String hostname = findHostname(agentName);
-			return ((agentName == null) || (agentName.equals(FAIL))) ? agentName : hostname;
+			return findHostname(agentName);
 		}
 	};
 
@@ -43,10 +41,12 @@ public class AgentHostname
 		}
 		return hostname;
 	}
-	
+
 	public static String findHostname(String agentName)
 	{
 		String ip = StringUtils.substringBefore(agentName, ":");
+
+		log.info("Reverse DNS lookup for: {}", ip);
 
 		InetAddress[] addresses = null;
 		try
@@ -56,13 +56,12 @@ public class AgentHostname
 		catch (UnknownHostException e)
 		{
 			log.error("Failed to get host name", e);
-			return FAIL;
 		}
 		if ((addresses != null) && (addresses.length > 0))
 		{
 			String hostname = addresses[0].getHostName();
 			return hostname;
 		}
-		return null;
+		return agentName;
 	}
 }
