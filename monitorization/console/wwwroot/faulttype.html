@@ -4,12 +4,15 @@
     <head>
 		<title>Sapo-Broker Monitorization Console</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script type="text/javascript" src="scripts/sapolib.js" ></script>
 		<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+		<script type="text/javascript" src="scripts/sapolib.js" ></script>
 		<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
+		<script type="text/javascript" src="scripts/jQuery.js"></script>
+		<script type="text/javascript" src="scripts/jquery.sparkline.min.js" ></script>
 		<script type="text/javascript" src="scripts/monitor_new.js"></script>
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
+			jQuery.noConflict();
 			window.onload = faultTypeMonitorizationInit;
 		</script>
     </head>

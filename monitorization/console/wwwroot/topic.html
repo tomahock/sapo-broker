@@ -4,12 +4,15 @@
     <head>
 		<title>Sapo-Broker Monitorization Console</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script type="text/javascript" src="scripts/sapolib.js" ></script>
 		<script type="text/javascript" src="http://js.sapo.pt/Prototype/" ></script>
+		<script type="text/javascript" src="scripts/sapolib.js" ></script>
 		<script type="text/javascript" src="http://js.sapo.pt/SAPO/Utility/Url/" ></script>
+		<script type="text/javascript" src="scripts/jQuery.js"></script>
+		<script type="text/javascript" src="scripts/jquery.sparkline.min.js" ></script>
 		<script type="text/javascript" src="scripts/monitor_new.js"></script>
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
+			jQuery.noConflict();
 			window.onload = topicMonitorizationInit;
 		</script>
     </head>
@@ -34,12 +37,12 @@
 			<div id="status-box">
 			        <div class="stat-widget">
 					<h1>Output Rate</h1>
-					<p><img title="Output Rate" alt="Output Rate" id="img_output_rate" src="#" /></p>
+					<p><span title="Output Rate" id="img_output_rate" /></p>
 					<p><span id="count_output_rate"></span></p>
 				</div>
 		           	<div class="stat-widget">
 					<h1>Dicarded Rate</h1>
-					<p><img title="Discarded Rate" alt="Discarded Rate" id="img_discarded_rate" src="#" /></p>
+					<p><span title="Discarded Rate" id="img_discarded_rate" /></p>
 					<p><span id="discarded_size_rate"></span></p>
 				</div>
 			</div>
