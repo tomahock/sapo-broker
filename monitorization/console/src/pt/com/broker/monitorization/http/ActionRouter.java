@@ -27,6 +27,7 @@ public class ActionRouter implements RequestRouter
 	public HttpAction map(HttpRequest request)
 	{
 		String path = request.getUri();
+
 		int index = path.indexOf('?');
 
 		String uriBase = (index == -1) ? path : path.substring(0, index);
