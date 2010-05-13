@@ -31,32 +31,30 @@ function mainMonitorizationInit()
 {
   // queues
   var f_queues = function() {
-   new Ajax.Request('/dataquery/snapshot?type=queuecountsnapshot',
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
+    type: 'GET',
+    url: '/dataquery/snapshot?type=queuecountsnapshot',
+    success: function(data){
       var panel = jQuery('#queue_size');
-      var data = transport.responseJSON;      
       setQueueInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get queue info...'); }
+    }
    });  
   }
  
   // sys message failed delivery
    var f_pendingAck = function() {
-   new Ajax.Request('/dataquery/snapshot?type=sysmsgfailsnapshot',
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
+    type: 'GET',
+    url: '/dataquery/snapshot?type=sysmsgfailsnapshot',
+    success: function(data){
       var panel = jQuery('#pending_ack');
-      var data = transport.responseJSON;      
       setSysMsgInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get pending ack info...'); }
-   });  
+    }
+   });
   }
- 
+
   // dropbox
 /*
   var f_dropboxes = function() {
@@ -74,30 +72,28 @@ function mainMonitorizationInit()
 */
   // errors
   var f_errors = function() {
-   new Ajax.Request('/dataquery/faults',
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = jQuery('#errors');
-      var data = transport.responseJSON;      
+    type: 'GET',
+    url: '/dataquery/faults',
+    success: function(data){
+      var panel = jQuery('#errors');   
       setErrorInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get faults info...'); }
-   });  
+    }
+   });
   }
 
   // agents
   var f_agents = function() {
-   new Ajax.Request('/dataquery/snapshot?type=agentstatussnapshot',
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = jQuery('#agentsDownInformationPanel');
-      var data = transport.responseJSON;      
+    type: 'GET',
+    url: '/dataquery/snapshot?type=agentstatussnapshot',
+    success: function(data){
+      var panel = jQuery('#agentsDownInformationPanel');  
       setAgentsInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get agent status info...'); }
-   });  
+    }
+   });
   }
 
   // rate// queue agent info
@@ -185,18 +181,16 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 
 function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 {
-  new Ajax.Request(queryStr,
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-
+    type: 'GET',
+    url: queryStr,
+    success: function(data){
 	var imgMetadata = imagesMetadataMap[imgId];
 	if( (imgMetadata == undefined) || (imgMetadata == null) )
 	{
 		return;
 	}
-	var data = transport.responseJSON;
-
 	if(data.length != 1)
 		return;
 
@@ -228,19 +222,18 @@ function processGraphLatest(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	}
 
 	drawGraph(values, img, legend, min, max, values[values.length-1], unit);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get one sample...'); }
+    }
    });
 }
 
 
 function processGraphAll(queryStr, imgId, legendId, unit, imagesMetadataMap)
 {
-  new Ajax.Request(queryStr,
+  jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-	var data = transport.responseJSON;	
+    type: 'GET',
+    url: queryStr,
+    success: function(data){
 	if(data.length == 0)
 		return;
 
@@ -275,9 +268,7 @@ function processGraphAll(queryStr, imgId, legendId, unit, imagesMetadataMap)
 	imagesMetadataMap[imgId] = imgMetadata;
 	
 	drawGraph(values, img, legend, min, max, parseFloat(data[data.length-1].value), unit);
-
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get all samples...'); }
+    }
    });
 }
 
@@ -487,16 +478,16 @@ function queueMonitorizationInit()
   }
 
   var f_generalInfo = function() {
-   new Ajax.Request("/dataquery/queue?queuename=" + queueName,
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
+    type: 'GET',
+    url: '/dataquery/queue?queuename=' + queueName,
+    success: function(data){
       var panel = jQuery('#general_queue_information');
-      var data = transport.responseJSON;      
+  
       setGeneralQueueInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong...') }
-   });  
+    }
+   });
   }
 
   f_rates_all();
@@ -592,11 +583,11 @@ function queueDeleteInit()
 	qnPanel.text(queueName);
 	var msgPanel =  jQuery('#msg_pannel'); 
 	msgPanel.html("Deleting queue. This may take some time...");
-	new Ajax.Request('/action/deletequeue?queuename='+queueName,
+	jQuery.ajax(
 	{
-	    method:'get',
-	    onSuccess: function(transport){
-	      var data = transport.responseJSON;
+	    type: 'GET',
+	    url: '/action/deletequeue?queuename='+queueName,
+	    success: function(data){
 	      var newContent = "";
 
 	      if (data.length == 0)
@@ -604,7 +595,8 @@ function queueDeleteInit()
 	      	newContent = "There is no queue info";
 	      }
 	      else
-	      {	      var fail = false;
+	      {	      
+		      var fail = false;
 		      for(var i = 0; i != data.length; ++i)
 		      {
 				if(data[i].sucess == "true")
@@ -621,14 +613,15 @@ function queueDeleteInit()
 		      {
 				newContent = newContent + "\n\n Message delete failures caused by connection failure or the existence of active subscribers will be retried later."
 		      }
-			
 	      }
-	      
 	      msgPanel.html(newContent);
-	    },
-	    onFailure: function(){ alert('Something went wrong...') }
-	 });
+	    }
+	});
 }
+
+  var f_pendingAck = function() {
+   
+  }
 
 //
 // FAULT PAGE
@@ -643,12 +636,12 @@ function faultInformationInit()
 	return;
   }
   idPanel.text(faultId);
-  new Ajax.Request('/dataquery/faults?id='+faultId,
+  
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-      var data = transport.responseJSON; 
-
+    type: 'GET',
+    url: '/dataquery/faults?id='+faultId,
+    success: function(data){
       var shortMsgPanel = jQuery('#shortmsg');
       shortMsgPanel.html("<a href='./faulttype.html?type=" + data[0].shortMessage + "'>"+ data[0].shortMessage + "</a>");
 
@@ -660,10 +653,23 @@ function faultInformationInit()
 
       var msgPanel = jQuery('#message');
       msgPanel.html(data[0].message);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get fault message...') }
+    }
    });
 }
+
+/*
+  var f_pendingAck = function() {
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '',
+    success: function(data){
+
+    }
+   });
+  }
+*/
+
 //
 // ALL AGENT PAGE
 //
@@ -673,17 +679,17 @@ function allAgentInit()
    var panel = jQuery('#agents');
    panel.html("<tr><td colspan='10' class='oddrow'>Please wait...</td></tr>");
    var f_allAgentInit = function() {
-    new Ajax.Request('/dataquery/agent',
-    {
-     method:'get',
-     onSuccess: function(transport){
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '/dataquery/agent',
+    success: function(data){
 	var panel = jQuery('#agents');
-	var data = transport.responseJSON;
 	setAllAgentGeneralInfo(data, panel);
-     },
-     onFailure: function(){ alert('Something went wrong while trying to get all agent\'s info...') }
-    }); 
-   }
+    }
+   });
+  }
+
    f_allAgentInit();
    setInterval(f_allAgentInit, 5000);
 }
@@ -741,95 +747,85 @@ function agentMonitorizationInit()
 	return;
   }
   idPanel.text(agentname);
+
   // queues
   var f_queues = function() {
-   new Ajax.Request('/dataquery/queue?agentname='+agentname,
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = jQuery('#queue_size');
-      var data = transport.responseJSON;      
+    type: 'GET',
+    url: '/dataquery/queue?agentname='+agentname,
+    success: function(data){
+      var panel = jQuery('#queue_size');    
       setAgentQueueInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get agent\'s queue info...') }
-   });  
-  }
-  // faults
-  var f_faults = function() {
-   new Ajax.Request('/dataquery/faults?agentname='+agentname,
-   //new Ajax.Request('/dataquery/groupfault?groupby=shortmessage&agent='+agentname,
-   {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = jQuery('#errors');
-      var data = transport.responseJSON;      
-      setAgentFaultInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get agent\'s faults info...') }
-   });  
-  }
-  // subscriptions
-  var f_subscriptions = function() {
-   new Ajax.Request('/dataquery/subscription?agentname='+agentname,
-   {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = jQuery('#subscriptions');
-      var data = transport.responseJSON;      
-      setAgentSubscriptionInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get agent\'s subscriptions info...') }
-   });  
-  }
-
-  // dropbox
-  var f_dropbox = function() {
-   new Ajax.Request('/data/dropbox/agent?agentname='+agentname,
-   {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = jQuery('#agent_dropbox');
-      var data = transport.responseJSON;      
-      var content = "Agent dropbox information not available.";
-      if(data.length != 0)
-	content = data[0].dropboxLocation +" : " + data[0].messages +" : " + data[0].goodMessages;
-      panel.html(content);     
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get agent\'s dropbox info...'); }
+    }
    });
   }
 
+  // faults
+  var f_faults = function() {
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '/dataquery/faults?agentname='+agentname,
+    success: function(data){
+      var panel = jQuery('#errors');   
+      setAgentFaultInfo(data, panel);
+    }
+   });
+  }
+  // subscriptions
+  var f_subscriptions = function() {
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '/dataquery/subscription?agentname='+agentname,
+    success: function(data){
+      var panel = jQuery('#subscriptions');
+      setAgentSubscriptionInfo(data, panel);
+    }
+   });
+  }
+  // dropbox
+  var f_dropbox = function() {
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '/data/dropbox/agent?agentname='+agentname,
+    success: function(data){
+      var panel = jQuery('#agent_dropbox');
+      var content = "Agent dropbox information not available.";
+      if(data.length != 0)
+	content = data[0].dropboxLocation +" : " + data[0].messages +" : " + data[0].goodMessages;
+      panel.html(content);
+    }
+   });
+  }
   // hostname
   var f_hostname = function() {
-   new Ajax.Request('/hostname?name='+agentname,
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-      var response = transport.responseText;
+    type: 'GET',
+    url: '/hostname?name='+agentname,
+    success: function(data){
       var panel = jQuery('#host_name');
-      var data = response.evalJSON();
       var content = "";
       content = data.hostname;
-      panel.html(content);     
-    },
-    onFailure: function(){ var panel = jQuery('#host_name'); panel.html("");}
-   });  
+      panel.html(content);    
+    }
+   });
   }
   // misc
   var f_misc = function() {
-   new Ajax.Request('/dataquery/agent?agentname='+agentname,
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-      var response = transport.responseText;
+    type: 'GET',
+    url: '/dataquery/agent?agentname='+agentname,
+    success: function(data){
       var panel = jQuery('#misc_info');
-      var data = response.evalJSON();
       setMiscAgentInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong while trying to get agent\'s misc info...');}
-   });  
+    }
+   });
   }
-
   var f_rates_all = function() {
 	processGraphAll("/dataquery/rate?ratetype=agentqueuecount&window=all&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=agentfaultrate&window=all&agentname=" + agentname, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
@@ -1016,24 +1012,20 @@ function allQueuesInformationInit()
 {
   var infoPanel = jQuery('#queues_info');
   infoPanel.html("<tr><td colspan='9' class='oddrow'>Please wait...</td></tr>");
-  var f_allQueues = function(){
-	  new Ajax.Request('/dataquery/queue',
-	   {
-	    method:'get',
-	    onSuccess: function(transport){
-	      var infoPanel = jQuery('#queues_info');
-	      var response = transport.responseText;
-	      var data = transport.responseJSON;
-	      setAllQueueGeneralInfo(data, infoPanel);
-	    },
-	    onFailure: function(){ alert('Something went wrong while trying to get all queues general info...') }
-	   });
-	}
+  var f_allQueues = function() {
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '/dataquery/queue',
+    success: function(data){
+      var infoPanel = jQuery('#queues_info');
+      setAllQueueGeneralInfo(data, infoPanel);
+    }
+   });
+  }
   f_allQueues();
   setInterval(f_allQueues, 5000);
 }
-
-
 
 var previousAllQueuesGeneralInfo = new Object();
 // queue agent info
@@ -1099,19 +1091,17 @@ function allTopicsMonitorizationInit()
 {
   var infoPanel = jQuery('#topics');
   infoPanel.html("<tr><td colspan='3' class='oddrow'>Please wait...</td></tr>");
-  var f_topicInfo = function(){
-	  new Ajax.Request('/dataquery/subscription',
-	   {
-	    method:'get',
-	    onSuccess: function(transport){
-	      var infoPanel = jQuery('#topics');
-	      var response = transport.responseText;
-	      var data = transport.responseJSON;
-	      setTopicGeneralInfo(data, infoPanel);
-	    },
-	    onFailure: function(){ alert('Something went wrong while trying to get all subscriptions general info...') }
-	   });
-	}
+  var f_topicInfo = function() {
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '/dataquery/subscription',
+    success: function(data){
+      var infoPanel = jQuery('#topics');
+      setTopicGeneralInfo(data, infoPanel);
+    }
+   });
+  }
   f_topicInfo();
   setInterval(f_topicInfo, 5000);
 }
@@ -1173,18 +1163,16 @@ function topicMonitorizationInit()
   }
 
   var f_generalInfo = function() {
-   new Ajax.Request("/dataquery/subscription?subscriptionname=" + subscriptionname,
+   jQuery.ajax(
    {
-    method:'get',
-    onSuccess: function(transport){
-      var panel = jQuery('#general_topic_information');
-      var data = transport.responseJSON;      
+    type: 'GET',
+    url: '/dataquery/subscription?subscriptionname=' + subscriptionname,
+    success: function(data){
+      var panel = jQuery('#general_topic_information');   
       setGeneralTopicInfo(data, panel);
-    },
-    onFailure: function(){ alert('Something went wrong...') }
-   });  
+    }
+   }); 
   }
-
   f_rates_all();
   setInterval(f_rates_latest, 5200);
   f_generalInfo();
@@ -1231,19 +1219,17 @@ function faultTypeMonitorizationInit()
   var ftPanel = jQuery('#fault_type');
   ftPanel.text(faultType);
   
-  var f_faultTypes = function(){
-	  new Ajax.Request('dataquery/faults?type='+faultType,
-	   {
-	    method:'get',
-	    onSuccess: function(transport){
-	      var infoPanel = jQuery('#agents_messages');
-	      var response = transport.responseText;
-	      var data = transport.responseJSON;
-	      setFaultTypeInfo(data, infoPanel);
-	    },
-	    onFailure: function(){ alert('Something went wrong while trying to get all subscriptions general info...') }
-	   });
-	}
+  var f_faultTypes = function() {
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '/dataquery/faults?type='+faultType,
+    success: function(data){
+      var infoPanel = jQuery('#agents_messages');
+      setFaultTypeInfo(data, infoPanel);
+    }
+   });
+  }
   f_faultTypes();
   setInterval(f_faultTypes, 5000);
 }
@@ -1345,12 +1331,67 @@ function parseISO8601(str) {
  // by using setUTC methods the date has already been converted to local time(?)
  return _date;
 }
+
+function getHumanTextDiff2(date)
+{
+	var res = jQuery.timeFormat(date.getTime());
+
+	return res;
+}
+
+function getHumanTextDiff(date)
+{
+	var nowMillis = new Date().getTime();
+	var dateMillis = date.getTime();
+
+	var str = "";
+
+	var tDif = nowMillis - dateMillis;
+
+	var tDifMillis = tDif % 1000;
+
+	var tDifSec = Math.floor(tDif / (1000)) % 60;
+
+	var tDifMin = Math.floor(tDif / (1000 * 60)) % (60 * 60);
+
+	var tDifHours = Math.floor(tDif / (1000 * 60 * 60 )) % (60 * 60 * 60);
+
+	if( (tDifHours % 24) != 0 )
+	{
+		str += (tDifHours % 24) +  " hours";
+	}
+	if( tDifMin != 0 )
+	{
+		str = (str == "") ? str : str + " and "; 
+		str += " " + tDifMin +  " minutes";
+	}
+	
+	if( tDifSec != 0 )
+	{
+		str = (str == "") ? str : str + " and "; 
+		str += " " + tDifSec + " seconds";
+	}
+
+	if( str === "" && tDifMillis != 0 )
+	{
+		//str = (str == "") ? str : str + " and "; 
+		str += tDifMillis + " milliseconds";
+	}
+
+	if(str === "")
+	{
+		return date.toString();
+	}
+	
+	return str;
+}
+/*
 function getHumanTextDiff(date)
 {
 	var now = new Date();
 	var dDif = new Date( now - date);
 
-	var tzOffsetHours = (now.getTimezoneOffset() != 0) ? (now.getTimezoneOffset() / 60) : 0;
+	var tzOffsetHours = 0; //(now.getTimezoneOffset() != 0) ? (now.getTimezoneOffset() / 60) : 0;
 
 	var str = "";
 
@@ -1383,6 +1424,7 @@ function getHumanTextDiff(date)
 	
 	return str;
 }
+*/
 
 /*
 	Circular queue
