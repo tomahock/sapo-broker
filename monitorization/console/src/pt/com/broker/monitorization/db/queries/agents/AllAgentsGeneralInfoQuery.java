@@ -88,7 +88,7 @@ public class AllAgentsGeneralInfoQuery
 		}
 		catch (Throwable t)
 		{
-			log.error("Failed to get all queue genral info", t);
+			log.error("Failed to get agents general information", t);
 		}
 		finally
 		{
