@@ -12,7 +12,7 @@
 				<trim />
 				<ignoreblank />
 			</tokenfilter>
-		</filterchain>		
+		</filterchain>
 	</loadfile>
 
 	<property name="package" value="monitorization-collector-${version}.jar" />
@@ -36,7 +36,7 @@
 		<fileset dir="../../clients/java-component/dist/">
 			<include name="**/*.jar" />
 		</fileset>
-		
+
 		<fileset dir="../lib/">
 			<include name="**/*.jar" />
 		</fileset>
@@ -56,7 +56,7 @@
 		<echo message="${ant.project.name}: ${ant.file}" />
 
 
-		<javac destdir="${bin}" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
+		<javac destdir="${bin}" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.6" target="1.6" includeAntRuntime="false">
 			<src path="${src}" />
 			<classpath refid="project.classpath" />
 		</javac>

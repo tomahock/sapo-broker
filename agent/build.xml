@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="build" name="sapo-broker-agent">
-	<tstamp />
-	<property name="dist" value="dist" />
-	<property name="src" value="src" />
-	<property name="bin" value="bin" />
+
 	<property name="target-dir" value="../sapo-broker" />
-	
-	<loadfile srcfile="${src}/VERSION.txt" property="version">
+
+	<loadfile srcfile="src/VERSION.txt" property="version">
 		<filterchain>
 			<striplinebreaks />
 			<tokenfilter>
 				<trim />
 				<ignoreblank />
 			</tokenfilter>
-		</filterchain>		
+		</filterchain>
 	</loadfile>
 
 	<property name="package" value="sapo-broker-agent-${version}.jar" />
 
-	<echo message="Building version: '${version}'" />	
+	<echo message="Building version: '${version}'" />
 
 	<path id="project.classpath">
 		<pathelement location="../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
@@ -30,15 +27,15 @@
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
-	
+
 	<target name="init" depends="clean">
-		<mkdir dir="${bin}" />
-		<mkdir dir="${dist}" />
+		<mkdir dir="bin" />
+		<mkdir dir="dist" />
 	</target>
 
 	<target name="clean">
-		<delete dir="${bin}" />
-		<delete dir="${dist}" />
+		<delete dir="bin" />
+		<delete dir="dist" />
 		<delete dir="${target-dir}" />
 		<delete dir="./doc/docbook/gen" />
 	</target>
@@ -53,13 +50,13 @@
 		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="clean" />
 	</target>
 
-	<target name="build" depends="init, package-all">
+	<target name="build" depends="init, build-depends">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<tstamp />
 
 		<!--<copy file="src/pt/com/broker/core/BrokerInfo.java" tofile="src/pt/com/broker/core/BrokerInfo.bak" overwrite="true" />
 		<replace file="src/pt/com/broker/core/BrokerInfo.java" token="@brokerVersion@" value="${version}" /> -->
-		<javac destdir="bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
+		<javac destdir="bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.6" target="1.6" includeAntRuntime="false">
 			<src path="src" />
 			<classpath refid="project.classpath" />
 		</javac>
@@ -67,12 +64,9 @@
 		<copy todir="bin">
 			<fileset dir="src" excludes="**/*.java" />
 		</copy>
-	</target>
-
-	<target name="package" depends="build">
-		<jar destfile="${dist}/${package}">
-			<fileset dir="${bin}" />
-			<!-- <fileset file="${src}/VERSION.txt"/> -->
+		<jar destfile="dist/${package}">
+			<fileset dir="bin" />
+			<!-- <fileset file="src/VERSION.txt"/> -->
 		</jar>
 	</target>
 
@@ -95,49 +89,40 @@
 		<copy file="./doc/docbook/brokerdoc.css" todir="./doc/docbook/gen" />
 	</target>
 
-	<target name="package-all">
-		<ant antfile="../comm-types/build.xml" inheritAll="false" target="package">
+	<target name="build-depends">
+
+		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="build">
 			<property name="version" value="${version}" />
 		</ant>
 
-		<ant antfile="../bindings/xml/java/build.xml" inheritAll="false" target="package">
-			<property name="project.location" value="../bindings/xml/java" />
+		<ant antfile="../clients/java-component/build.xml" inheritAll="false" target="build">
+			<property name="version" value="${version}" />
+			<property name="project.location" value="../clients/java-component" />
+		</ant>
+
+		<ant antfile="../gcs/build.xml" inheritAll="false" target="build">
 			<property name="version" value="${version}" />
 		</ant>
-		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" />
-		</ant>
-		<ant antfile="../bindings/protobuf/java/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" />
-		</ant>
-		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" />
-		</ant>
-		<ant antfile="../gcs/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" />
-		</ant>
-		<ant antfile="../clients/java-component/build.xml" inheritAll="false" target="package">
-			<property name="version" value="${version}" />
-		</ant>
+
 	</target>
 
-	<target name="build-dist" depends="package, package-all, docs">
+
+
+	<target name="package-agent">
+
 		<mkdir dir="${target-dir}/lib" />
+
 		<copy todir="${target-dir}/lib">
 			<fileset dir="../common-libs/">
 				<include name="*.jar" />
 			</fileset>
 		</copy>
-		<copy file="${dist}/${package}" todir="${target-dir}/lib" />
+		<copy file="dist/${package}" todir="${target-dir}/lib" />
 		<copy file="../comm-types/dist/sapo-broker-commtypes-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../gcs/dist/sapo-gcs-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../bindings/xml/java/dist/sapo-broker-xmlbinding-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" todir="${target-dir}/lib" />
 		<copy file="../bindings/thrift/java/dist/sapo-broker-thriftbinding-${version}.jar" todir="${target-dir}/lib" />
-		<copy file="../clients/java-component/dist/java-component-${version}.jar" todir="${target-dir}/lib" />
-		<copy todir="${target-dir}/lib" overwrite="true">
-			<fileset dir="../acl/jdbc/dist" />
-		</copy>
 
 		<copy todir="${target-dir}/doc">
 			<fileset dir="doc/docbook/gen" />
@@ -155,24 +140,38 @@
 			<fileset dir="../license" />
 		</copy>
 
-		<copy todir="${target-dir}/jvm15">
-			<fileset dir="../bindings/xml/java/jvm15" />
-		</copy>
-
-		<copy todir="${target-dir}/clients">
-			<fileset dir="../clients" excludes="**/.*" />
-		</copy>
-
-		<delete dir="${target-dir}/clients/java-component/bin" />
-
-		<!-- copy todir="${target-dir}">
-			<fileset dir="bin">
-				<include name="*.sh"/>
-				<include name="*.bat"/>
-			</fileset>
-		</copy -->
-
 		<chmod dir="${target-dir}/bin" perm="+x" includes="*.sh" />
+
+	</target>
+
+	<target name="package-java-client">
+
+		<mkdir dir="${target-dir}/clients/java/lib" />
+		<mkdir dir="${target-dir}/clients/java/conf" />
+
+		<copy file="../clients/java-component/dist/java-component-${version}.jar" todir="${target-dir}/clients/java/lib" />
+		<copy file="../comm-types/dist/sapo-broker-commtypes-${version}.jar" todir="${target-dir}/clients/java/lib" />
+		<copy file="../bindings/protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" todir="${target-dir}/clients/java/lib" />
+
+		<copy todir="${target-dir}/clients/java/lib">
+			<fileset dir="../common-libs/">
+				<include name="logback*.jar" />
+				<include name="slf4j*.jar" />
+				<include name="protobuf-java*.jar" />
+				<include name="org.caudexorigo.jar" />
+			</fileset>
+		</copy>
+
+	</target>
+
+
+	<!-- target name="build-dist" depends="build-depends, docs" -->
+	<target name="build-dist" depends="build, docs">
+
+		<antcall target="package-agent" />
+		<antcall target="package-java-client" />
+
+
 	</target>
 
 	<target name="tarball" depends="build-dist">

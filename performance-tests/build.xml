@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="build" name="sapo-broker-performance-tests">
 	<property name="project.location" value="." />
-	<property name="dist" value="dist" />
-	<property name="src" value="src" />
-	<property name="bin" value="bin" />
 	
 	<property name="private.repo" value="../../BrokerSapoRepo" />
 	
