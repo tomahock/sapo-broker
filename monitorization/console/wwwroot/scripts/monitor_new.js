@@ -9,26 +9,12 @@ var TOPIC_PREFIX = "topic://";
 
 var imagesMetadataMapX = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
 
-/*
-
-window.location.href
-
-function getParameterByName( name )
-{
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec( window.location.href );
-  if( results == null )
-    return "";
-  else
-    return results[1];
-}
-
-*/
-
 function mainMonitorizationInit() 
 {
+
+  var statusPannel = jQuery('#status-box');
+  statusPannel.hide();
+
   // queues
   var f_queues = function() {
    jQuery.ajax(
@@ -90,8 +76,9 @@ function mainMonitorizationInit()
     type: 'GET',
     url: '/dataquery/snapshot?type=agentstatussnapshot',
     success: function(data){
-      var panel = jQuery('#agentsDownInformationPanel');  
-      setAgentsInfo(data, panel);
+      var pannel = jQuery('#status-box');
+      var agentsInfo = jQuery('#alertAgentsDown');
+      setAgentsInfo(data, pannel, agentsInfo);
     }
    });
   }
@@ -424,27 +411,27 @@ function setErrorInfo(errorInfo, panel)
 }
 
 // general agents info
-function setAgentsInfo(agentInfo, panel)
+function setAgentsInfo(agentInfo, pannel, messageLabel)
 {
-	var newContent = "";
-
-	if (agentInfo.length == 0)
+	var count = 0;
+	
+	for(var i = 0; i != agentInfo.length; ++i)
 	{
-        	newContent = "<p>All agents are online</P>";
-  	}
+		if(agentInfo[i].status == "Down")
+			++count;
+	}
+
+	if(count == 0)
+	{
+		pannel.hide();
+	}
 	else
 	{
-		for(var i = 0; i != agentInfo.length; ++i)
-		{
-			var agentname = agentInfo[i].agentName;
-			var agentHostname = agentInfo[i].agentHostname;
-			var status = agentInfo[i].status;
-			newContent = newContent + "<p><a href='./agent.html?agentname="+ agentname+ "'>" + agentHostname + "</a> : Status : " +  +"</p>";
-		}
+		var msg = count + ( ((count == 1) ? " agent" : " agents") + " down!");
+		messageLabel.text(msg);
+		pannel.show();
 	}
-	panel.html(newContent);
 }
-
 
 //
 // QUEUE PAGE
