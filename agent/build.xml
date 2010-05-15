@@ -144,10 +144,25 @@
 
 	</target>
 
+
+	<target name="package-dotnet-client">
+		<exec dir="../clients/dotnet-component" executable="./build.sh" />
+
+		<mkdir dir="${target-dir}/clients/dotnet/Lib" />
+		<copy todir="${target-dir}/clients/dotnet/Lib">
+			<fileset dir="../clients/dotnet-component/BrokerClient/bin/Release/">
+				<include name="*.dll" />
+			</fileset>
+		</copy>
+
+		<copy todir="${target-dir}/clients/dotnet/Samples">
+			<fileset dir="../clients/dotnet-component/Samples" />
+		</copy>
+	</target>
+
 	<target name="package-java-client">
 
 		<mkdir dir="${target-dir}/clients/java/lib" />
-		<mkdir dir="${target-dir}/clients/java/conf" />
 
 		<copy file="../clients/java-component/dist/java-component-${version}.jar" todir="${target-dir}/clients/java/lib" />
 		<copy file="../comm-types/dist/sapo-broker-commtypes-${version}.jar" todir="${target-dir}/clients/java/lib" />
@@ -162,15 +177,63 @@
 			</fileset>
 		</copy>
 
+		<copy todir="${target-dir}/clients/java">
+			<fileset dir="../clients/java-component/samples" />
+		</copy>
+
+		<mkdir dir="${target-dir}/clients/java/src/pt/com/broker/client/sample" />
+		<copy todir="${target-dir}/clients/java/src/pt/com/broker/client/sample">
+			<fileset dir="../clients/java-component/src/pt/com/broker/client/sample" />
+		</copy>
+
+		<chmod dir="${target-dir}/clients/java/bin" perm="+x" includes="*.sh" />
+
 	</target>
 
+
+	<target name="package-c-client">
+		<mkdir dir="${target-dir}/clients/c" />
+		<copy todir="${target-dir}/clients/c">
+			<fileset dir="../clients/c-component/libsapo-broker2" />
+		</copy>
+	</target>
+
+	<target name="package-python-client">
+		<mkdir dir="${target-dir}/clients/python" />
+		<copy todir="${target-dir}/clients/python">
+			<fileset dir="../clients/python-component">
+				<exclude name="**/old_python-Component-BrokerTCP/**" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="package-php-client">
+		<mkdir dir="${target-dir}/clients/php" />
+		<copy todir="${target-dir}/clients/php">
+			<fileset dir="../clients/php-ext-component" />
+		</copy>
+	</target>
+
+	<target name="package-perl-client">
+		<mkdir dir="${target-dir}/clients/perl" />
+		<copy todir="${target-dir}/clients/perl">
+			<fileset dir="../clients/perl-component">
+				<exclude name="**/old/**" />
+			</fileset>
+		</copy>
+	</target>
 
 	<!-- target name="build-dist" depends="build-depends, docs" -->
 	<target name="build-dist" depends="build, docs">
 
 		<antcall target="package-agent" />
 		<antcall target="package-java-client" />
-
+		<antcall target="package-dotnet-client" />
+		<antcall target="package-c-client" />
+		<antcall target="package-python-client" />
+		<antcall target="package-php-client" />
+		<antcall target="package-perl-client" />
 
 	</target>
 
