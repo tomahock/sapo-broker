@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="build" name="java-samples">
+	<property name="project.location" value="." />
+
+	<path id="project.classpath">
+		<fileset dir="./lib/">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="classes" />
+		<mkdir dir="output" />
+	</target>
+
+	<target name="clean">
+		<delete dir="classes" />
+		<delete dir="output" />
+	</target>
+
+	<target name="build" depends="init">
+		<echo message="${ant.project.name}: ${ant.file}" />
+
+
+		<javac destdir="classes" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.6" target="1.6" includeAntRuntime="false">
+			<src path="src" />
+			<classpath refid="project.classpath" />
+		</javac>
+
+		<copy todir="classes">
+			<fileset dir="src" excludes="**/*.java" />
+		</copy>
+
+		<jar destfile="output/${package}">
+			<fileset dir="classes" />
+		</jar>
+	</target>
+
+</project>
