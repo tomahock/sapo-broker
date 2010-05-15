@@ -125,7 +125,6 @@ namespace SapoBrokerClient.Networking
 
         virtual protected Stream GetCommunicationStream()
         {
-            NetworkStream ns = new NetworkStream(socket, true);
             return new NetworkStream(socket, true);
         }
 
