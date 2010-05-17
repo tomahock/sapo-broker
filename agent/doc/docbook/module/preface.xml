@@ -1,93 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <preface id="preface">
-  <title>Preface</title>
-  <para>
- 	This guide provides an introduction to Sapo-Broker and what it is about.
-1 	</para>
-  <section>
-    <title>Introduction</title>
-    <para>Sapo-Broker is a high performance distributed messaging framework. It can either work as a local daemon or embedded within your application. Among other features, it provides minimal administration overhead, Publish-Subscribe and Point-to-Point messaging, guaranteed delivery and wildcard subscriptions.</para>
-    <para>Sapo-Broker is written in Java and has client libraries for Java, Perl, Python, PHP, Ruby, .NET, C and Erlang.</para>
-    <section>
-      <title>Messaging</title>
-      <para>When talking about messaging we are really talking about asynchronous, distributed and reliable operations. This means that broker clients can register interest in "Destinations" and return immediately, also a client can be notified in an event-driven fashion when something has happened. This allows for a loosely coupled exchange of messages between producers and consumers since they know nothing of each other, they only know about destinations (queues and topics). Immediate benefits of using messaging are:</para>
-      <itemizedlist>
-        <listitem>Fire and Forget: Producers don't wait for consumers, as soon as the broker receives the message they may return immediately.</listitem>
-        <listitem>Clients Independence:  Consumers don't know about producers and producers don't know about consumers. Don't know who they are, where they are located and what technology they use.</listitem>
-        <listitem>Scalability: Messages in a single stream can be handled in parallel by many client threads or systems.</listitem>
-        <listitem>Robustness to Change: Applications on heterogeneous platforms communicate and interoperate transparently yet each application operates independently of, and asynchronously with, others. Communicating programs remain separately maintained and individually replaceable.</listitem>
-        <listitem>Time Independence: Neither the message sender nor the message recipient needs to be online at the same time. The Broker queues messages when their recipients are not available.</listitem>
-      </itemizedlist>
-    </section>
-    <section>
-      <title>Main features overview</title>
-      <itemizedlist>
-        <listitem>Sapo-Broker supports publish-subscribe and point-to-point communication, as well durable topic subscription.</listitem>
-        <listitem>Subscriptions may be defined as regular expressions (also know as wildcard subscriptions).</listitem>
-	<listitem>Clients libraries are available in several languages and platforms such as Java, Perl, Python, PHP, Ruby, .NET, C and Erlang.</listitem>        
-	<listitem>Several message encoding protocols are supported (XML, Thrift and Google Protocol Buffers) and more can be easily added.</listitem>
-        <listitem>The number of agents constituting a communicating cloud is easily scalable thus providing system scalability and availability.</listitem>
-	<listitem>Access control policies can be defined to constrain message production or consumption based in several criteria including role-based authorization.</listitem>
-        <listitem>Agents support SSL connections to clients.</listitem>
-        <listitem>Message dropbox (a directory where files containing messages are saved by clients and forward by agents) is available.</listitem>
-        <listitem>Minimum overall configuration.</listitem>
-      </itemizedlist>
-    </section>
-  </section>
-  <section>
-    <title>Sapo-Broker features</title>
-    <section>
-      <title>Supported broker topologies</title>
-      <para>Message brokers, depending on specific products, can be configured to implement different topologies, such as hierarchical, network, single broker or a mixture of the previous.</para>
-      <para>Sapo-Broker can be used as a single instance or in network topology. Although a single agent instance could be used in small working sets, a multiple agent (network) design would better take advantage of Sapo-Broker, namely in system availability and throughput, with client failover and distributed workload, respectively. In networking topologies all agents are interconnected in what is known as agent cloud. Is is not yet possible to communicate between different agent clouds.</para>
-    </section>
-    <section>
-      <title>Message publication and subscription</title>
-      <para>When designing and implementing messaging-based solutions two main paradigms exist: Point-to-Point and Publish-Subscribe. Just like Java Message Service (<ulink url="http://java.sun.com/products/jms/">JMS</ulink>) we use the terms "TOPIC" to refer Publish-Subscribe Destinations and "QUEUE" to designate Point-to-Point Destinations. Sapo-Broker supports  both of these patterns and adds special purpose Destination Type named "VIRTUAL_QUEUE" witch stands somewhere in between.</para>
-      <para>A publication, in general terms, contains a Destination Type (TOPIC or QUEUE) which determines the pattern intended is, and a Destination Name witch may be a Topic or Queue name. Subscriptions, on the other hand, include a Destination Type (TOPIC, QUEUE or VIRTUAL_QUEUE) and a Destination witch is a subscription name, meaning that can be a Topic or Queue name or a regular expression (wildcard subscription) agglomerating several Topics.</para>
-      <para>A use case regarding topic, queues and virtual queues is <link linkend="TOPICS_QUEUES_USE_CASE">available</link>.</para>
-      <section>
-        <title id="INTRO_PUBSUB">Publish-Subscribe</title>
-        <para>Messages published to the Destination Type "TOPIC" adhere to the Publish-Subscribe pattern, that is, they are delivered to any consumer subscribed in the published Destination Name. That is, they can be delivered to zero or many consumers, regardless if they are connected to the same agent as the producer or a remote one. If there are no remote clients, the local agent doesn't forward the message.</para>
-        <para>Message producers, using this pattern, don't have no know what applications are interested in a particular type of message. Producers just publish events notifying of some notable occurrence and applications subscribed to it based on their needs.</para>
-      </section>
-      <section>
-        <title id="INTRO_POINT2POINT">Point-to-Point</title>
-        <para>When using Point-to-Point messaging, delivery is load balanced across many consumers, meaning each message goes to exactly one consumer. Consumers compete for messages and must send an acknowledgement after successfully processing the message. This pattern is useful when one wants to distribute jobs across many workers.</para>
-      </section>
-      <section>
-        <title id="INTRO_VIRTUAL_QUEUES">Virtual Queues</title>
-        <para>Events published as TOPIC messages lack the ability to be persisted and QUEUE messages, once consumed by a client, can not be consumed by another. This means that if there are two systems interested in the same type of information published to queues, the two systems wouldn't received the same messages.</para>
-        <para>To overcome these handicaps Sapo-Broker supports VIRTUAL_QUEUE Destination Type. When clients subscribe to a topic as a Virtual Queue an ordinary queue is created and all topic messages whose Destination Name match the subscription are stored in the created queue. Virtual Queues are also known as durable subscriptions.</para>
-        <para>Destination Name subscription of Virtual Queues has the form:</para>
-        <code>[private name]@[topic name subscription pattern]</code>
-        <para>An example could be: <code>myVirtualQueue@/topic/.*</code></para>
-        <para>Please note that the private names must be unique so that the problems with Point-to-Point pattern don't arise. Also note that can exist several Virtual Queues for the same topic or subscription pattern.</para>
-      </section>
-      <section>
-        <title id="INTRO_QUEUES">Message Queues</title>
-        <para>Queues implement reliable load balancing with persistence. Messages are only removed from the Queue after the broker receives an acknowledge, so if a consumer crashes during the processing of a message it is redelivered to another consumer. Clients have a limited time to acknowledge message processing during witch the message is guaranteed not be delivered to other client, the message is <emphasis>reserved</emphasis>. The first time the message is delivered local consumers have priority.</para>
-      </section>
-    </section>
-  </section>
-  <section>
-    <title>Future developments</title>
-    <para>Sapo-Broker is an on going project at Sapo. As such several new features and improvements are to come. Here are some examples of planned developments:</para>
-    <itemizedlist>
-      <listitem>Improve Sapo-Broker documentation (this document is already a step towards that goal)</listitem>
-      <listitem>Update client libraries to support binary encoding, as well all other missing features in client compatibility matrix</listitem>
-      <listitem>Develop a Javascript client</listitem>
-      <listitem>Create a monitoring dashboard</listitem>
-      <listitem>Improve Broker's performance</listitem>
-      <listitem>Evaluate alternatives to MINA</listitem>
-      <listitem>Define and implement a mechanism for bridging agent "clouds"</listitem>
-      <listitem>Other developments are likely to be defined be implemented. <ulink url="http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker">Stay tunned</ulink></listitem>
-    </itemizedlist>
-  </section>
-  <section>
-    <title><anchor id="License"/>License</title>
-    <para>Sapo-Broker is distributed under the <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/license/LICENSE.txt">BSD license</ulink>.</para>
-  </section>
+	<title>Preface</title>
+
+	<section>
+		<title>Introduction</title>
+		<para>Sapo-Broker is a distributed messaging framework.	Among other features, it provides minimal administration overhead, Publish-Subscribe, Request-Reply and Point-to-Point messaging, guaranteed delivery and wildcard subscriptions.</para>
+		<para>Sapo-Broker is written in Java and has client libraries for Java, Perl, Python, PHP, .NET and C.</para>
+	</section>
+	<section>
+		<title>Sapo-Broker features</title>
+		<section>
+			<title>Supported broker topologies</title>
+			<para>
+				Sapo-Broker can be used as a single instance or in a multi-node cluster.
+				Although a single agent instance could be used in small working sets, a multiple agent (network) design would better take advantage of Sapo-Broker, namely in system availability and throughput, with client failover and distributed workload, respectively.
+				In a multi-node scenario all agents are interconnected in what is known as agent cloud. It is not yet possible to communicate between different clouds.
+			</para>
+		</section>
+		<section>
+			<title>Message publication and subscription</title>
+			<para>
+				Like Java Message Service (<ulink url="http://java.sun.com/products/jms/">JMS</ulink>) we use the terms "TOPIC" to refer Publish-Subscribe messaging and "QUEUE" to designate Point-to-Point messaging.
+			</para>
+			<section>
+				<title id="INTRO_PUBSUB">Topics</title>
+				<para>
+					Messages published to "TOPIC"s are delivered to any consumer which has a subscription name that matches the Destination name (topic subscriptions can have regular expressions).
+					There are no provisions for message persistence when using Topics and slow consumer will force the broker to discard messages.
+				</para>
+			</section>
+			<section>
+				<title id="INTRO_POINT2POINT">Queues</title>
+				<para>
+					Queues implement reliable load balancing (a message is delivered to only one consumer).
+					Messages are persisted to disk and are only removed from the Queue after the broker receives an acknowledgement, unacknowledged messages are redelivered after 2 minutes.
+				</para>
+			
+				<section>
+					<title id="INTRO_VIRTUAL_QUEUES">Virtual Queues</title>
+					<para>
+						Events published as TOPIC messages are not persisted and QUEUE messages once consumed by a client can not be consumed by another, this means that if there are two systems interested in the same messages they can not subscribe to the same Queue.
+					</para>
+					<para>
+						To overcome these handicaps Sapo-Broker supports a VIRTUAL_QUEUE Destination Type.
+						When clients subscribe to a topic as a Virtual Queue an ordinary queue is created and all topic messages whose Destination Name match the subscription are stored in the created queue.
+					</para>
+					<para>The subscription for a Virtual Queues has the form:</para>
+					<code>[private name]@[topic subscription pattern]</code>
+					<para>
+						An example could be: <code>myVirtualQueue@/topic/.*</code>
+					</para>
+					<para>Please note that the private names must be unique. Also note that can exist several Virtual Queues for the same topic or subscription pattern.</para>
+				</section>
+			</section>
+		</section>
+	</section>
+	<section>
+		<title>
+			<anchor id="License" />
+			License
+		</title>
+		<para>
+			Sapo-Broker is distributed under the <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/license/LICENSE.txt">BSD license</ulink>.
+		</para>
+	</section>
 </preface>
 
