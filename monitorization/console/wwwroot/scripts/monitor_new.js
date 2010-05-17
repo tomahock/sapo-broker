@@ -132,7 +132,6 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 
 			var subscriptions = round(parseFloat(queueGeneralInfo[i].subscriptions));
 			newContent = newContent + "<td style='padding-left:2em'>" + subscriptions + "</td></tr>";
-
 		}
 	}
 
@@ -458,10 +457,12 @@ function queueMonitorizationInit()
   }
 
   var f_rates_latest = function() {
-	processGraphLatest("/dataquery/rate?ratetype=queuecountrate&window=last&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=queueinputrate&window=last&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=queueoutputrate&window=last&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=queueerrorrate&window=last&queuename=" + queueName, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
+  }
+  var f_queues_latest = function() {
+	processGraphLatest("/dataquery/rate?ratetype=queuecountrate&window=last&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
   }
 
   var f_generalInfo = function() {
@@ -478,7 +479,8 @@ function queueMonitorizationInit()
   }
 
   f_rates_all();
-  setInterval(f_rates_latest, 5200);
+  setInterval(f_rates_latest, 30000);
+  setInterval(f_queues_latest, 5200);
 
 //  f_rates();
 //  setInterval(f_rates, 5200);
@@ -813,6 +815,7 @@ function agentMonitorizationInit()
     }
    });
   }
+
   var f_rates_all = function() {
 	processGraphAll("/dataquery/rate?ratetype=agentqueuecount&window=all&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=agentfaultrate&window=all&agentname=" + agentname, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
@@ -820,16 +823,19 @@ function agentMonitorizationInit()
 	processGraphAll("/dataquery/rate?ratetype=agentoutputrate&window=all&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
   var f_rates_latest = function() {
-	processGraphLatest("/dataquery/rate?ratetype=agentqueuecount&window=last&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=agentfaultrate&window=last&agentname=" + agentname, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=agentinputrate&window=last&agentname=" + agentname, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=agentoutputrate&window=last&agentname=" + agentname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+  }
+  var f_queues_latest = function() {
+	processGraphLatest("/dataquery/rate?ratetype=agentqueuecount&window=last&agentname=" + agentname, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
   }
 
   f_hostname();
 
   f_rates_all();
-  setInterval(f_rates_latest, 5000);
+  setInterval(f_rates_latest, 30000);
+  setInterval(f_queues_latest, 10000);
 
   f_queues();
   setInterval(f_queues, 5100);
@@ -1161,7 +1167,7 @@ function topicMonitorizationInit()
    }); 
   }
   f_rates_all();
-  setInterval(f_rates_latest, 5200);
+  setInterval(f_rates_latest, 30000);
   f_generalInfo();
   setInterval(f_generalInfo, 5000);
 }
