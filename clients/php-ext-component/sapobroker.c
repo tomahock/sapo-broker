@@ -7,7 +7,7 @@
 #include "ext/standard/info.h"
 #include "php_sapobroker.h"
 
-#include <libsapo-broker2.h>
+#include "libsapo-broker2.h"
 
 #define PHP_BROKER_SERVER_T_RES_NAME "Broker Server"
 #define PHP_SAPO_BROKER_T_RES_NAME "Sapo Broker"
@@ -133,7 +133,7 @@ PHP_FUNCTION(broker_enqueue) {
     int retval;
     sapo_broker_t *sapo_broker;
 
-    if (zend_parse_parameters(argc TSRMLS_CC, "rssl", &zsapo_broker, &queue, &queue_len, &message, &message_len) == FAILURE) 
+    if (zend_parse_parameters(argc TSRMLS_CC, "rss", &zsapo_broker, &queue, &queue_len, &message, &message_len) == FAILURE) 
         RETURN_FALSE;
 
     if (zsapo_broker == NULL)
