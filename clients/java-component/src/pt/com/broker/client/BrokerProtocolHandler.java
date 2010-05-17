@@ -155,6 +155,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 					this.brokerClient.setState(BrokerClientState.CONNECT);
 					long newConnectionVersion = ++this.connectionVersion;
 					this.connector.connect(getHostInfo(), newConnectionVersion);
+					log.info("Connection re-established with " + getHostInfo().getHostname() + ":" + getHostInfo().getPort());
 
 					this.brokerClient.setState(BrokerClientState.OK);
 
