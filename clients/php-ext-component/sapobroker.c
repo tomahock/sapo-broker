@@ -58,7 +58,16 @@ zend_module_entry sapobroker_module_entry = {
 #endif
 
 PHP_MINIT_FUNCTION(sapobroker) {
-    le_broker_server_t = zend_register_list_destructors_ex(NULL, NULL, PHP_BROKER_SERVER_T_RES_NAME, module_number);
+	// defined in sapobroker2.h
+	REGISTER_LONG_CONSTANT("TCP", TCP, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("UDP", UDP, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("SB_QUEUE", SB_QUEUE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("SB_TOPIC", SB_TOPIC, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("SOAP", SOAP, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("PROTOBUF", PROTOBUF, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("THRIFT", THRIFT, CONST_CS | CONST_PERSISTENT);
+	    
+	le_broker_server_t = zend_register_list_destructors_ex(NULL, NULL, PHP_BROKER_SERVER_T_RES_NAME, module_number);
     le_sapo_broker_t = zend_register_list_destructors_ex(NULL, NULL, PHP_SAPO_BROKER_T_RES_NAME, module_number);
     le_broker_msg_t = zend_register_list_destructors_ex(NULL, NULL, PHP_BROKER_MSG_T_RES_NAME, module_number);
     return SUCCESS;

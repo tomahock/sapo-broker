@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$broker = broker_init("127.0.0.1", 3323, 0, 1);
+$broker = broker_init("127.0.0.1", 3323, TCP, PROTOBUF);
 $msg = "Hello, world!";
 broker_publish($broker, "/test/foo", $msg);
 broker_destroy($broker);
