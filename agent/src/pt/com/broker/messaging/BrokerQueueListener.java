@@ -1,11 +1,16 @@
 package pt.com.broker.messaging;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.AccessControl;
+import pt.com.broker.auth.Session;
+import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.net.BrokerProtocolHandler;
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
@@ -59,7 +64,7 @@ public class BrokerQueueListener extends BrokerListener
 	{
 		return DestinationType.QUEUE;
 	}
-
+	
 	@Override
 	protected ForwardResult doOnMessage(NetMessage response)
 	{

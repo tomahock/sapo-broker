@@ -8,6 +8,7 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetPublish;
@@ -328,8 +329,16 @@ public class AccessControl
 			break;
 		case SUBSCRIBE:
 			NetSubscribe subs = message.getAction().getSubscribeMessage();
-			dest = subs.getDestinationType();
-			destinationName = subs.getDestination();
+			if(subs.getDestinationType().equals(NetAction.DestinationType.VIRTUAL_QUEUE) )
+			{
+				dest = NetAction.DestinationType.TOPIC;
+				destinationName = StringUtils.substringAfter(subs.getDestination(), "@");
+			}
+			else
+			{
+				dest = subs.getDestinationType();
+				destinationName = subs.getDestination();
+			}
 			priv = Privilege.READ;
 			break;
 		default:
@@ -364,7 +373,7 @@ public class AccessControl
 		{
 			if (destinationType.equals(entry.getDestinationType()))
 			{
-				if (match(entry.getDestination(), destinationName))
+				if (match(entry.getDestination(), destinationName) || match(destinationName, entry.getDestination()))
 				{
 					for (AclPredicate pred : entry.getConditions())
 					{

@@ -55,7 +55,7 @@ public class BrokerTopicListener extends BrokerListener
 	{
 		return DestinationType.TOPIC;
 	}
-
+	
 	@Override
 	protected ForwardResult doOnMessage(NetMessage response)
 	{
@@ -69,7 +69,6 @@ public class BrokerTopicListener extends BrokerListener
 
 			try
 			{
-				
 				if (lchannel.isWritable())
 				{
 					if (showResumedDeliveryMessage)
@@ -87,6 +86,8 @@ public class BrokerTopicListener extends BrokerListener
 				{
 					if (isReady())
 					{
+						
+						
 						ChannelFuture future = lchannel.write(response);
 						final long writeStartTime = System.nanoTime();
 						startDeliverAfter = writeStartTime + 10000;
