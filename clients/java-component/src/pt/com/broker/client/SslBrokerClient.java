@@ -170,11 +170,13 @@ public final class SslBrokerClient extends BaseBrokerClient
 		{
 			log.error("Authentication failed.", acceptedListener.getFault().getMessage());
 			setState(BrokerClientState.OK);
+			PendingAcceptRequestsManager.removeRequest(actionId);
 			return false;
 		}
 		else if (acceptedListener.wasTimeout())
 		{
 			log.warn("Authentication failed by timeout.");
+			PendingAcceptRequestsManager.removeRequest(actionId);
 			setState(BrokerClientState.OK);
 			return false;
 		}

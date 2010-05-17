@@ -108,7 +108,7 @@ public class PendingAcceptRequestsManager
 		return true;
 	}
 
-	private static void removeRequest(String actionId)
+	public static void removeRequest(String actionId)
 	{
 		synchronized (requests)
 		{
