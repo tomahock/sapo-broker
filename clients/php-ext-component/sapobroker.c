@@ -129,12 +129,11 @@ PHP_FUNCTION(broker_enqueue) {
     int argc = ZEND_NUM_ARGS();
     int queue_len;
     int message_len;
-    long message_size;
     zval *zsapo_broker = NULL;
     int retval;
     sapo_broker_t *sapo_broker;
 
-    if (zend_parse_parameters(argc TSRMLS_CC, "rssl", &zsapo_broker, &queue, &queue_len, &message, &message_len, &message_size) == FAILURE) 
+    if (zend_parse_parameters(argc TSRMLS_CC, "rssl", &zsapo_broker, &queue, &queue_len, &message, &message_len) == FAILURE) 
         RETURN_FALSE;
 
     if (zsapo_broker == NULL)
@@ -203,7 +202,7 @@ PHP_FUNCTION(broker_msg_ack) {
     ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
     ZEND_FETCH_RESOURCE(broker_msg, broker_msg_t*, &zbroker_msg, -1, PHP_BROKER_MSG_T_RES_NAME, le_broker_msg_t);
     
-    // call msg ack
+    // call msg ack (libsapobroker frees the message after sending the ACK)
     int result = broker_msg_ack(sapo_broker, broker_msg);
     RETURN_LONG(result);
 }
@@ -230,12 +229,11 @@ PHP_FUNCTION(broker_publish) {
     int argc = ZEND_NUM_ARGS();
     int topic_len;
     int message_len;
-    long message_size;
     zval *zsapo_broker = NULL;
     int retval;
     sapo_broker_t *sapo_broker;
 
-    if (zend_parse_parameters(argc TSRMLS_CC, "rssl", &zsapo_broker, &topic, &topic_len, &message, &message_len, &message_size) == FAILURE) 
+    if (zend_parse_parameters(argc TSRMLS_CC, "rss", &zsapo_broker, &topic, &topic_len, &message, &message_len) == FAILURE) 
         RETURN_FALSE;
 
     if (zsapo_broker == NULL)
@@ -324,11 +322,10 @@ PHP_FUNCTION(broker_send) {
     int sapo_broker_id = -1;
     int broker_destination_id = -1;
     int message_len;
-    long message_size;
     zval *sapo_broker = NULL;
     zval *broker_destination = NULL;
 
-    if (zend_parse_parameters(argc TSRMLS_CC, "rrsl", &sapo_broker, &broker_destination, &message, &message_len, &message_size) == FAILURE) 
+    if (zend_parse_parameters(argc TSRMLS_CC, "rrs", &sapo_broker, &broker_destination, &message, &message_len) == FAILURE) 
         RETURN_FALSE;
 
     if (sapo_broker == NULL)
