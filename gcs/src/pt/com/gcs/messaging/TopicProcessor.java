@@ -11,6 +11,7 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction;
@@ -231,7 +232,7 @@ public class TopicProcessor
 			}
 		}
 	}
-
+	
 	public void remove(MessageListener listener)
 	{
 		if (listener != null)

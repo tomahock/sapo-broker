@@ -1,8 +1,10 @@
 package pt.com.gcs.messaging;
 
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
