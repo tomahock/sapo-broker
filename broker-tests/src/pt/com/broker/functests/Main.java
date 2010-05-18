@@ -1,13 +1,15 @@
 package pt.com.broker.functests;
 
+import org.caudexorigo.Shutdown;
 import org.caudexorigo.cli.CliFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.MultipleGenericVirtualQueuePubSubTest;
 import pt.com.broker.functests.negative.AcceptedTest;
 import pt.com.broker.functests.negative.AccessDeniedTest;
-import pt.com.broker.functests.negative.AuthenticationFailedTest;
 import pt.com.broker.functests.negative.BadEncodingTypeTest;
 import pt.com.broker.functests.negative.BadEncodingVersionTest;
 import pt.com.broker.functests.negative.EmptyDestinationNameInAck;
@@ -61,8 +63,11 @@ import pt.com.broker.types.NetProtocolType;
 
 public class Main
 {
+	private static final Logger log = LoggerFactory.getLogger(Main.class);
+
 	public static void main(String[] args)
 	{
+		
 		// Positive Tests
 
 		NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT};
@@ -89,10 +94,10 @@ public class Main
 		boolean runSSLandAuth = cargs.getSslAndAuthentication() == 1;
 		boolean runUdp = cargs.getUdp() == 1;
 		
-		ConfigurationInfo.init();
-
 		int numberOfTests = cargs.getNumberOfRuns();
 		
+		ConfigurationInfo.init();
+	
 		for (NetProtocolType protoType : protoTypes)
 		{
 			System.out.println(String.format(" ---> Using %s encoding protocol", protoType));
@@ -106,13 +111,6 @@ public class Main
 			if (runAll || runPositive)
 			{
 				new PingTest().run(numberOfTests, testResults);
-			}
-
-			if (runAll || runSSLandAuth)
-			{
-				//new DBRolesAuthenticationTest().run(numberOfTests, testResults);
-				//new SslTopicNameSpeficied().run(numberOfTests, testResults);
-				//new AuthenticationTopicSslTopicNameSpecified().run(numberOfTests, testResults);
 			}
 
 			if (runAll || runPositive || runTopic)
@@ -189,10 +187,13 @@ public class Main
 				new InvalidDestinationType().run(numberOfTests, testResults);
 				new InvalidDestinationNameInPublishTest().run(numberOfTests, testResults);
 				new AccessDeniedTest().run(numberOfTests, testResults);
-//				new AuthenticationFailedTest().run(numberOfTests, testResults);
-//				new UnknownAuthTypeFailedTest().run(numberOfTests, testResults);
 				new InvalidAuthChannelTypeTest().run(numberOfTests, testResults);
 				new TimeoutPollTest().run(numberOfTests, testResults);
+			}
+			for(Class testClass : ConfigurationInfo.getTestClasses())
+			{
+				Test t = createInstance(testClass);
+				t.run(numberOfTests, testResults);
 			}
 		}
 
@@ -207,6 +208,21 @@ public class Main
 		for(String testName : testResults.getSkippedTests())
 			System.out.println( "		- " + testName);
 		System.exit(0);
+	}
+
+	private static Test createInstance(Class testClass)
+	{
+		try
+		{
+			Object newInstance = testClass.newInstance();
+			return (Test) newInstance;
+		}
+		catch (Exception e)
+		{
+			log.error(String.format("Failed to create a instance of type: %s", testClass.getName()), e );
+			Shutdown.now();
+		}
+		return null;
 	}
 
 }

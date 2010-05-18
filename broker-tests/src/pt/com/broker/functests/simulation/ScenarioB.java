@@ -20,7 +20,7 @@ public class ScenarioB
 	public static void run(TestMachines testMachines)
 	{
 		/*
-		 * 2 topic producers (connected to different agents) produce 10k messages, sleep for 5 seconds, and produce messages again. Messages expire after 18 seconds 2 virtual queue assync consumers (connected to different agents) connected for 30s, disconnect for 10s and connect again 2 virtual queue sync consumers (connected to different agents). Clients sleep for 2 seconds before ack.
+		 * 2 topic producers (connected to different agents) produce 10k messages, sleep for 5 seconds, and produce messages again. Messages expire after 18 seconds 2 virtual queue async consumers (connected to different agents) connected for 30s, disconnect for 10s and connect again 2 virtual queue sync consumers (connected to different agents). Clients sleep for 2 seconds before ack.
 		 */
 
 		final String bTopic = "/topic/bbb";

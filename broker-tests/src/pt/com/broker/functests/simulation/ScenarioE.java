@@ -20,7 +20,7 @@ public class ScenarioE
 		/***** Scenario E *****/
 
 		/*
-		 * 2 queue producers (connected to different agents) produce 1k messages, sleep for 5 seconds, and produce messages again. 1 assync consumers.
+		 * 2 queue producers (connected to different agents) produce 1k messages, sleep for 5 seconds, and produce messages again. 1 async consumers.
 		 */
 
 		final String eeeQueue = "/queue/ddd";

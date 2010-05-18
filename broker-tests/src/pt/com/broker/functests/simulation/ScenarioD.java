@@ -19,7 +19,7 @@ public class ScenarioD
 	public static void run(TestMachines testMachines)
 	{
 		/*
-		 * 4 queue producers (connected to different agents) producers 100msg/s, sleep for 5 seconds, and produce messages again 2 assync consumers (connected to different agents).
+		 * 4 queue producers (connected to different agents) producers 100msg/s, sleep for 5 seconds, and produce messages again 2 async consumers (connected to different agents).
 		 */
 
 		final String dddQueue = "/queue/ddd";

@@ -27,10 +27,12 @@ public class PingTest extends BrokerTest
 				try
 				{
 					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-								Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
+							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 					NetPong pong = bk.checkStatus();
 
+					System.out.println("Pong: " + pong.getActionId());
+					
 					bk.close();
 
 					setDone(true);
@@ -38,7 +40,7 @@ public class PingTest extends BrokerTest
 				}
 				catch (Throwable t)
 				{
-					throw new Exception(t);
+					setFailure(t);
 				}
 				return this;
 			}

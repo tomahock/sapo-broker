@@ -21,54 +21,58 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
 
-		String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
-		String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
-
-		SslBrokerClient bk = null;
-		try
+		if(!skipTest())
 		{
-			bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
+			String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
+			String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
+			SslBrokerClient bk = null;
+			try
+			{
+				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
 						Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
+			}
+			catch (Throwable e)
+			{
+				super.setFailure(e);
+			}
+			setInfoConsumer(bk);
 		}
-		catch (Throwable e)
-		{
-			super.setFailure(e);
-			return;
-		}
-		setInfoConsumer(bk);
 	}
 
 	@Override
 	protected void addPrerequisites()
 	{
-		String username = ConfigurationInfo.getParameter("jdbcTest", "username");
-		String password = ConfigurationInfo.getParameter("jdbcTest", "password");
-
-		try
+		if(!skipTest())
 		{
-			SslBrokerClient bk = (SslBrokerClient) getInfoConsumer();
-
-			AuthInfo clientAuthInfo = new AuthInfo(username, password);
-			clientAuthInfo.setUserAuthenticationType("BrokerRolesDB");
-
-			bk.setAuthenticationCredentials(clientAuthInfo);
-
-			bk.authenticateClient();
-
-			Sleep.time(1000);
+			String username = ConfigurationInfo.getParameter("jdbcTest", "username");
+			String password = ConfigurationInfo.getParameter("jdbcTest", "password");
+	
+			try
+			{
+				SslBrokerClient bk = (SslBrokerClient) getInfoConsumer();
+	
+				AuthInfo clientAuthInfo = new AuthInfo(username, password);
+				clientAuthInfo.setUserAuthenticationType("BrokerRolesDB");
+	
+				bk.setAuthenticationCredentials(clientAuthInfo);
+	
+				bk.authenticateClient();
+	
+				Sleep.time(1000);
+			}
+			catch (Throwable e)
+			{
+				super.setFailure(e);
+				return;
+			}
+	
+			super.addPrerequisites();
 		}
-		catch (Throwable e)
-		{
-			super.setFailure(e);
-			return;
-		}
-
-		super.addPrerequisites();
 	}
 
 	@Override
 	public boolean skipTest()
 	{
-		return getEncodingProtocolType() == NetProtocolType.SOAP;
+		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0);
 	}
 }

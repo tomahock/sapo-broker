@@ -118,8 +118,6 @@ public abstract class Test
 		}
 		catch (Throwable t)
 		{
-			System.out.println(String.format(">>>> Test %s got an exception of type '%s' with message: ", getName(), t.getClass().getCanonicalName(), t.getMessage()));
-
 			if (!okToTimeOut())
 			{
 				if (!getAction().isSucess())

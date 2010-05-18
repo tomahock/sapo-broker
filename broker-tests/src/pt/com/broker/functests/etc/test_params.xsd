@@ -24,6 +24,17 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="dynamically-loaded-tests">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="test-class">
+              	<xs:complexType>
+              		<xs:attribute name="class-name" type="xs:string" use="required" />
+              	</xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

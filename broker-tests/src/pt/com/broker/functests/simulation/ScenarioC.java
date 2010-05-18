@@ -18,7 +18,7 @@ public class ScenarioC
 	public static void run(TestMachines testMachines)
 	{
 		/*
-		 * 5 topic producers + 10 topic producers (connected to different agents) produce 100msg/s, sleep for 5 seconds, and produce messages again 2 assync consumers (connected to different agents).
+		 * 5 topic producers + 10 topic producers (connected to different agents) produce 100msg/s, sleep for 5 seconds, and produce messages again 2 async consumers (connected to different agents).
 		 */
 
 		final String cTopic = "/topic/ccc";

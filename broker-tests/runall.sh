@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # start agents
-./broker1.sh  >> broker1.log &
-./broker2.sh >> broker2.log &
+#./broker1.sh  >> broker1.log &
+#./broker2.sh >> broker2.log &
 
 cd `dirname $0`
 
@@ -25,8 +25,8 @@ else # we assume 1.6 here
 fi
 
 #wait for 5 seconds
-echo "Giving time (5s) for the agents to start..."
-sleep 5s
+#echo "Giving time (5s) for the agents to start..."
+#sleep 5s
 
 
 #init tests

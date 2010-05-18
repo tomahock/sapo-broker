@@ -14,16 +14,17 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.functests.conf.TestParams.Tests.Test;
+import pt.com.broker.functests.conf.TestParams.DynamicallyLoadedTests.TestClass;
 
 
 public class ConfigurationInfo
 {
-private static final Logger log = LoggerFactory.getLogger(ConfigurationInfo.class);
+	private static final Logger log = LoggerFactory.getLogger(ConfigurationInfo.class);
 	
 	private static TestParams testParams = null;
 	
 	private static Map<String, Map<String, String> > parameters = new HashMap<String, Map<String,String>>();
+	private static List<Class> testClasses = new ArrayList<Class>();
 	
 	static{
 		JAXBContext jc;
@@ -66,6 +67,20 @@ private static final Logger log = LoggerFactory.getLogger(ConfigurationInfo.clas
 			addParams(test.getTestName(), test.getParam());
 		}
 		
+		for( TestClass testClass : testParams.getDynamicallyLoadedTests().getTestClass())
+		{
+			try
+			{
+				Class clazz = Class.forName(testClass.getClassName());
+				testClasses.add(clazz);
+			}
+			catch (ClassNotFoundException e)
+			{
+				log.error("Failed to load a test class.", e);
+				Shutdown.now();
+			}
+		}
+		
 		testParams = null;
 	}
 	
@@ -100,6 +115,11 @@ private static final Logger log = LoggerFactory.getLogger(ConfigurationInfo.clas
 		String paramValue = test.get(paramName);
 		
 		return paramValue; // may be null
+	}
+	
+	public static List<Class> getTestClasses()
+	{
+		return testClasses;
 	}
 		
 }
