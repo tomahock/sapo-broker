@@ -19,7 +19,7 @@ public class MiscStats
 
 	public static long getTcpConnections()
 	{
-		return tcpConnections.getAndSet(0);
+		return tcpConnections.get();
 	}
 
 	// TCP legacy connections
@@ -37,7 +37,7 @@ public class MiscStats
 
 	public static long getTcpLegacyConnections()
 	{
-		return tcpLegacyConnections.getAndSet(0);
+		return tcpLegacyConnections.get();
 	}
 
 	// SSL connections
@@ -55,7 +55,7 @@ public class MiscStats
 
 	public static long getSslConnections()
 	{
-		return sslConnections.getAndSet(0);
+		return sslConnections.get();
 	}
 
 	// Access denied
