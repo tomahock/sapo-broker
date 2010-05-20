@@ -269,7 +269,6 @@ public class QueueProcessor
 
 		if (result.result == Result.FAILED)
 		{
-			queueStatistics.newQueueFailedMessage();
 			if (!hasActiveListeners(localQueueListeners))
 			{
 				result = notify(remoteQueueListeners, nmsg);
