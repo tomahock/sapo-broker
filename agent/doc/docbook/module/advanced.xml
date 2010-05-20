@@ -116,11 +116,13 @@
 			flow in clear? Moreover, the most significant burden of secure communication occurs during handshaking.</para>
 		<section>
 			<title>Configuration</title>
-			<para>Authentication modules, also called validation providers, are configured at the global configuration file.  There are defined the full name of type implementing pt.com.broker.auth.AuthInfoValidator (more on this later) in the element class and some provider specific provider parameters, under provider-params. The class must be in agent's classpath in order to be loaded.</para>
 			<para>
-				To each validation parameter must be attributed a globally known name, since it's used by clients to indicate the type of credentials used in
-				<link linkend="AUTHENTICATION_MESSAGE">Authentication message</link>
-				. For now there are two authentication types defined.
+				Authentication modules, also called validation providers, are configured at the global configuration file.
+				There are defined the full name of type implementing pt.com.broker.auth.AuthInfoValidator (more on this later) in the element class and some provider specific provider parameters, under provider-params.
+				The class must be in agent's classpath in order to be loaded.
+			</para>
+			<para>
+				Each "provider-name" must be unique and known by both the broker agent and the client.
 			</para>
 			<table frame="all" id="Table3">
 				<title>Authentication types</title>
@@ -172,9 +174,10 @@
 			<para>At the heart of an authorization provider lies an implementation of the interface  pt.com.broker.auth.AuthInfoValidator. This interface and reaming relevant types are presented at Figure 5.</para>
 			<para>The initialization method of AuthInfoValidator gives the provider an opportunity to realize any actions  required to properly validate client's authorization information and translate that information in client roles. The ProviderInfo is used to inform the provider what is the name of the authentication type it will be performing, the class name (redundant) and the parameter specified in the configuration file. These arguments are supplied as an XML representation object.</para>
 			<para>
-				Validation operation is invoked as a consequence of an
-				<link linkend="AUTHENTICATION_MESSAGE">authentication message</link>
-				which includes information about the user synthesized as an AuthInfo object. This information may contain an user identifier, user roles (which should be validated), an authentication token (such as password or a third party supplied token) and the type of authentication being used. The authentication token is a binary value, so, in case of representing a string such as a password is UTF-8 encoded. In response to an authentication request a result is produced (AuthValidationResult) indicating whether the credentials are valid (a reason for failure should be supplied in case their not) or not, and the list of roles associated with the user in case of valid credentials.
+				The AuthInfoValidator.validate() method is invoked after the reception of an AuthInfo message.
+				Depending on the authentication type the AuthInfo object contains a combination of a user identifier, an authentication token and list of user roles.
+				The authentication token is a binary value, so, in case of representing a string such as a password must be UTF-8 encoded.
+				In response to an authentication request a result is produced (AuthValidationResult) indicating whether the credentials are valid (a reason for failure should be supplied in case their not), and the list of roles associated with the user in case of valid credentials.
 			</para>
 			<figure id="Figure-AuthorizationProvider">
 				<title>Authorization Provider relevant types</title>
@@ -207,15 +210,15 @@
 <![CDATA[
 CREATE TABLE users
 (
-  username varchar(50),
-  password varchar(50)
+ username varchar(50),
+ password varchar(50)
 );
 ALTER TABLE users ADD PRIMARY KEY (username);
 
 CREATE TABLE roles
 (
-  username varchar(50),
-  role varchar(50)
+ username varchar(50),
+ role varchar(50)
 );
 ALTER TABLE roles ADD PRIMARY KEY (username, role);
 ALTER TABLE roles ADD FOREIGN KEY (username) REFERENCES users(username);
