@@ -354,39 +354,39 @@ while (1) {
 		</para>
 		<section>
 			<title>Statistics</title>
-			<para>Agents publish statistics regathering the number of consumers subscribed in each topic and queue.</para>
+			<para>Agents publish statistics regarding the number of consumers subscribed in each topic and queue.</para>
 			<section>
 				<title>Topic consumers</title>
 				<para>Topic consumers are published in topic:</para>
 				<code>/system/stats/topic-consumer-count/#[topic subscription]#</code>
-				<para>The content of the published message, encoded using UTF-8, is:</para>
+				<para>The format of the published message, encoded using UTF-8, is:</para>
 				<computeroutput>[agent name]#[subscription]#[number of subscriptions]</computeroutput>
 			</section>
 			<section>
 				<title>Queue consumers</title>
 				<para>Queue consumers are published in topic:</para>
 				<code>/system/stats/queue-consumer-count/#[queue name]#</code>
-				<para>The content of the published message, encoded using UTF-8, is:</para>
+				<para>The format of the published message, encoded using UTF-8, is:</para>
 				<computeroutput>[agent name]#[queue name]#[number of subscriptions]</computeroutput>
 			</section>
 			<section>
 				<title>Queue Size</title>
-				<para>The number of messages by queue are published in topic:</para>
+				<para>The number of messages by queue is published in topic:</para>
 				<code>/system/stats/queue-size/#[queue name]#</code>
-				<para>The content of the published message, encoded using UTF-8, is:</para>
+				<para>The format of the published message, encoded using UTF-8, is:</para>
 				<computeroutput>[agent name]#[queue name]#[number of messages]</computeroutput>
 			</section>
 			<section>
 				<title>Dropbox messages</title>
-				<para>The number of messages by the dropbox are published in topic:</para>
+				<para>The number of messages in the dropbox are published in topic:</para>
 				<code>/system/stats/dropbox/#[agent name]#</code>
-				<para>The content of the published message, encoded using UTF-8, is:</para>
+				<para>The format of the published message, encoded using UTF-8, is:</para>
 				<computeroutput>[agent name]#[dropbox location]#[number of messages]#[number of good messages]</computeroutput>
 			</section>
 		</section>
 		<section>
 			<title>Faults</title>
-			<para>When an unhanded exception occurs, and it's not I/O related, agents publish an fault error. The message content conforms to SOAP Fault message format.</para>
+			<para>When an unhandled exception occurs, and it's not I/O related, agents publish a fault error. The message content conforms to SOAP Fault message format.</para>
 			<para>Fault messages are published to topic:</para>
 			<para>
 				<computeroutput>/system/faults/[agent name]</computeroutput>
@@ -407,12 +407,24 @@ while (1) {
 			<title>Global configuration</title>
 			<para>
 				There are three main configuration sections in global configuration file: Domain, Messages and Access Control. 
-				The later is divided in two parts and is discussed in <link linkend="ACCESS_CONTROL">Access control</link> section.
+				The later is divided in two parts as discussed in <link linkend="ACCESS_CONTROL">Access control</link> section.
 			</para>
 			<para>The "domain" element contains all agentes that are part of the broker cloud. For each agent an IP:PORT must be defined.</para>
-			<para>In the "messages" section it is possible to define the maximum message size, the maximum number of queues/subscriptions and default message TTL</para>
+			<para>This would be the Domain section of a configuration used to setup a cloud with two nodes:</para>
+			<screen><![CDATA[<domain>
+	<peer>
+		<ip>192.168.0.10</ip>
+		<port>3315</port>
+	</peer>
+	<peer>
+		<ip>192.168.0.11</ip>
+		<port>3315</port>
+	</peer>
+</domain>]]></screen>
+			<para>Keep in mind that the configuration must be the same for all cloud agents.</para>
+			<para>In the "messages" section it is possible to define the maximum message size, the maximum number of queues/subscriptions and default message TTL.</para>
 			<para>
-				See the <link linkend="SSL_CONFIGURATION">SSL Configuration</link> guide for help on how to setup an SSL transport.
+				See the <link linkend="SSL_CONFIGURATION">SSL Configuration</link> guide for help on how to setup the SSL transport.
 			</para>
 		</section>
 	</section>

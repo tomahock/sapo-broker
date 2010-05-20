@@ -23,6 +23,9 @@
 			<para>
 				Like Java Message Service (<ulink url="http://java.sun.com/products/jms/">JMS</ulink>) we use the terms "TOPIC" to refer Publish-Subscribe messaging and "QUEUE" to designate Point-to-Point messaging.
 			</para>
+			<para>
+				There is no way, nor need, to create a "QUEUE" or "TOPIC" before any client can consume or produce messages. The "QUEUE" or "TOPIC" is created on the fly, as clients subscribe to it. Note that a typo in the "QUEUE" name, in the subscription operation, can lead to two different queues, in a way that the consumer will try to read from a forever empty queue, and the producer will write to a never read queue.
+			</para>
 			<section>
 				<title id="INTRO_PUBSUB">Topics</title>
 				<para>
