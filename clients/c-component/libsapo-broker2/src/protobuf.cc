@@ -5,7 +5,7 @@ extern "C" {
 #include <assert.h>
 #include <time.h>
 
-#include "libsapo-broker2.h"
+#include "sapo-broker2.h"
 #include "broker_internals.h"
 #include "net.h"
 #include "protobuf.h"

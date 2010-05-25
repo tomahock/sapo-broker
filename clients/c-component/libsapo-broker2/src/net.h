@@ -5,7 +5,7 @@
 #include <sys/types.h>  // NOSIGPIPE
 #include <sys/socket.h> // NOSIGPIPE
 
-#include "libsapo-broker2.h"
+#include "sapo-broker2.h"
 
 
 /* NO SIGPIPE on net write error please */

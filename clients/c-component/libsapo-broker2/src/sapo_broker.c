@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-#include "libsapo-broker2.h"
+#include "sapo-broker2.h"
 #include "broker_internals.h"
 #include "protocol.h"
 #include "net.h"

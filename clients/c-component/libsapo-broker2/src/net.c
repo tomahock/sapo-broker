@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 
-#include "libsapo-broker2.h"
+#include "sapo-broker2.h"
 #include "broker_internals.h"
 #include "net.h"
 

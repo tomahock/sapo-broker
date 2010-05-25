@@ -3,8 +3,8 @@
 #
 # Compiler settings (gcc, icc, win32)
 
-REL_NAME := libsapo-broker
-REL_VER	 := 2.0.2
+REL_NAME := sapo-broker2
+REL_VER	 := 2.1.0
 
 # Targets
 RELEASE_TARGET = $(REL_NAME).$(SO_LIB).$(REL_VER)
@@ -91,8 +91,8 @@ install: release Makefile
 	chmod 644 $(PREFIX)/lib/$(RELEASE_TARGET)
 	ln -s $(RELEASE_TARGET) $(PREFIX)/lib/$(REL_NAME).so.2
 # FIXME: this is ugly
-	cp $(SOURCE_DIR)/libsapo-broker2.h $(PREFIX)/include/libsapo-broker2.h
-	chmod 644 $(PREFIX)/include/libsapo-broker2.h
+	cp $(SOURCE_DIR)/sapo-broker2.h $(PREFIX)/include/sapo-broker2.h
+	chmod 644 $(PREFIX)/include/sapo-broker2.h
 
 # RELEASE RULES
 release: base_deps $(RELEASE_TARGET)
