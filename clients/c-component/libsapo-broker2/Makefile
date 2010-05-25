@@ -7,8 +7,8 @@ REL_NAME := sapo-broker2
 REL_VER	 := 2.1.0
 
 # Targets
-RELEASE_TARGET = $(REL_NAME).$(SO_LIB).$(REL_VER)
-DEBUG_TARGET = $(REL_NAME)d.$(SO_LIB).$(REL_VER)
+RELEASE_TARGET = lib$(REL_NAME).$(SO_LIB).$(REL_VER)
+DEBUG_TARGET = lib$(REL_NAME)d.$(SO_LIB).$(REL_VER)
 
 TEST_TARGETS := test_consume test_publish test_enqueue
 TEST_CXX := test_protobuf
@@ -89,7 +89,8 @@ install: release Makefile
 	chmod 755 $(PREFIX)/include
 	cp $(RELEASE_TARGET) $(PREFIX)/lib/$(RELEASE_TARGET)
 	chmod 644 $(PREFIX)/lib/$(RELEASE_TARGET)
-	ln -s $(RELEASE_TARGET) $(PREFIX)/lib/$(REL_NAME).so.2
+	ln -s $(RELEASE_TARGET) $(PREFIX)/lib/lib$(REL_NAME).so.2
+	ln -s $(RELEASE_TARGET) $(PREFIX)/lib/lib$(REL_NAME).so
 # FIXME: this is ugly
 	cp $(SOURCE_DIR)/sapo-broker2.h $(PREFIX)/include/sapo-broker2.h
 	chmod 644 $(PREFIX)/include/sapo-broker2.h
