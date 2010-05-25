@@ -1,18 +1,4 @@
 <monitorization-configuration>
 	<console http-port="8878" />
 	<root-paths filesystem-path="." wwwroot-path="wwwroot" />
-	<agents>
-		<agent hostname="broker.bk.sapo.pt" port="3323"/>
-		<!-- agent hostname="172.17.1.102" port="3323" /-->
-	</agents>
-	<tcp-port-exceptions>
-<!--
-		<agent agent-name="127.0.0.1:3315" port="3323" />
-		<agent agent-name="127.0.0.1:3415" port="3423" />
--->
-	</tcp-port-exceptions>
-	<http-port-exceptions>
-<!-- <agent agent-name="127.0.0.1:3415" port="3480" />  -->	
-	</http-port-exceptions>
-	<global-config-file location="./conf/global.config" />
 </monitorization-configuration>

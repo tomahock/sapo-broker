@@ -77,9 +77,9 @@ public class ConfigurationInfo
 
 	public static void init()
 	{
-		getGlobalConfig();
-		extractConnectionExceptions();
-		extractCloudAgents();
+//		getGlobalConfig();
+//		extractConnectionExceptions();
+//		extractCloudAgents();
 		extractConsoleHttpPort();
 		extractPaths();
 	}
@@ -107,12 +107,12 @@ public class ConfigurationInfo
 		return agents;
 	}
 
-	private static void getGlobalConfig()
-	{
-		if (configuration == null)
-			return;
-		globalConfigFile = configuration.getGlobalConfigFile().getLocation();
-	}
+//	private static void getGlobalConfig()
+//	{
+//		if (configuration == null)
+//			return;
+//		globalConfigFile = configuration.getGlobalConfigFile().getLocation();
+//	}
 
 	private static void extractConsoleHttpPort()
 	{
@@ -130,32 +130,32 @@ public class ConfigurationInfo
 		wwwrootPath = configuration.getRootPaths().getWwwrootPath();		
 	}
 	
-	private static void extractCloudAgents()
-	{
-		if (configuration == null)
-			return;
-		List<HostInfo> allAgents = getAgentsFromGlobalConfFile();
+//	private static void extractCloudAgents()
+//	{
+//		if (configuration == null)
+//			return;
+//		List<HostInfo> allAgents = getAgentsFromGlobalConfFile();
+//
+//		for (HostInfo agent : allAgents)
+//		{
+//			int tcpPort = getTcpPortForAgent(agent.getHostname() + ":" + agent.getPort());
+//			int httpPort = getHttpPortForAgent(agent.getHostname() + ":" + agent.getPort());
+//			
+//			cloudAgents.add( new AgentInfo( agent.getHostname() + ":" + agent.getPort(), new HostInfo(agent.getHostname(), tcpPort), new HostInfo(agent.getHostname(), httpPort) ) );
+//		}
+//	}
 
-		for (HostInfo agent : allAgents)
-		{
-			int tcpPort = getTcpPortForAgent(agent.getHostname() + ":" + agent.getPort());
-			int httpPort = getHttpPortForAgent(agent.getHostname() + ":" + agent.getPort());
-			
-			cloudAgents.add( new AgentInfo( agent.getHostname() + ":" + agent.getPort(), new HostInfo(agent.getHostname(), tcpPort), new HostInfo(agent.getHostname(), httpPort) ) );
-		}
-	}
-
-	private static int getTcpPortForAgent(String agentHostname)
-	{
-		int DEFAULT_PORT = 3323;
-		return getPortForAgent(agentHostname, configuration.getTcpPortExceptions(), DEFAULT_PORT);
-	}
+//	private static int getTcpPortForAgent(String agentHostname)
+//	{
+//		int DEFAULT_PORT = 3323;
+//		return getPortForAgent(agentHostname, configuration.getTcpPortExceptions(), DEFAULT_PORT);
+//	}
 	
-	private static int getHttpPortForAgent(String agentHostname)
-	{
-		int DEFAULT_PORT = 3380;
-		return getPortForAgent(agentHostname, configuration.getHttpPortExceptions(), DEFAULT_PORT);
-	}
+//	private static int getHttpPortForAgent(String agentHostname)
+//	{
+//		int DEFAULT_PORT = 3380;
+//		return getPortForAgent(agentHostname, configuration.getHttpPortExceptions(), DEFAULT_PORT);
+//	}
 
 	private static int getPortForAgent(String agentHostname, ExceptionAgents exceptionAgetns, int defaultVaule)
 	{
@@ -173,13 +173,13 @@ public class ConfigurationInfo
 	}
 	
 	
-	private static void extractConnectionExceptions()
-	{
-		for (Agent agent : configuration.getAgents().getAgent())
-		{
-			agents.add(new HostInfo(agent.getHostname(), agent.getPort().intValue()));
-		}
-	}
+//	private static void extractConnectionExceptions()
+//	{
+//		for (Agent agent : configuration.getAgents().getAgent())
+//		{
+//			agents.add(new HostInfo(agent.getHostname(), agent.getPort().intValue()));
+//		}
+//	}
 
 	private static List<HostInfo> getAgentsFromGlobalConfFile()
 	{
