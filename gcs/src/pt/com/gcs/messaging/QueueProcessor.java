@@ -101,19 +101,13 @@ public class QueueProcessor
 	{
 		if (listener != null)
 		{
-			boolean is_new_listener = false;
 			if (listener.getType() == MessageListener.Type.LOCAL)
 			{
-				is_new_listener = addLocal(listener);
+				addLocal(listener);
 			}
 			else if (listener.getType() == MessageListener.Type.REMOTE)
 			{
-				is_new_listener = addRemote(listener);
-			}
-
-			if (is_new_listener)
-			{
-				wakeup();
+				addRemote(listener);
 			}
 		}
 		else

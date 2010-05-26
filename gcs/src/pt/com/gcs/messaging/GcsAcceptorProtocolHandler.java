@@ -8,7 +8,9 @@ import java.util.List;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -145,6 +147,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				log.info(lmsg);
 			}
 
+			acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
 
 			if (mtype.equals("SYSTEM_TOPIC"))
 			{
@@ -188,7 +191,6 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 					qp.remove(remoteListener);
 				}
 			}
-			acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
 		}
 		else
 		{
@@ -220,7 +222,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		else
 		{
 			log.warn(String.format("Can ack system message because the channel is not writable. Message id '%s' could not be sent to '%s'. Closing connection.", messageId, channel.getRemoteAddress().toString()));
-			channel.close();
+			channel.write(ChannelBuffers.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 
