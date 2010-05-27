@@ -222,7 +222,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		else
 		{
 			log.warn(String.format("Can ack system message because the channel is not writable. Message id '%s' could not be sent to '%s'. Closing connection.", messageId, channel.getRemoteAddress().toString()));
-			channel.write(ChannelBuffers.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+			channel.close();
 		}
 	}
 
