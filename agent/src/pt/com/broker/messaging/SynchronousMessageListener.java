@@ -120,7 +120,6 @@ public class SynchronousMessageListener extends BrokerListener
 		if (timeout == 0)
 		{
 			// wait for ever
-
 			this.setExpires(Long.MAX_VALUE);
 
 			ready.set(true);

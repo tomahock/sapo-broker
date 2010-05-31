@@ -1,5 +1,7 @@
 package pt.com.gcs.messaging;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
@@ -171,7 +173,7 @@ public class RemoteListener implements MessageListener
 
 				if (isReady())
 				{
-					ChannelFuture future = lchannel.write(nmsg);
+					ChannelFuture future = lchannel.write(ChannelBuffers.EMPTY_BUFFER);
 					final long writeStartTime = System.nanoTime();
 					startDeliverAfter = writeStartTime + 1000000; // 1 millisecond
 					
