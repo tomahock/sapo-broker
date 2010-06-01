@@ -477,8 +477,6 @@ public class Gcs
 	{
 		String topic = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
 
-		// InternalMessage internalMsg = new InternalMessage(topic, new NetBrokerMessage(message));
-
 		NetPublish np = new NetPublish(topic, DestinationType.TOPIC, new NetBrokerMessage(message));
 
 		Gcs.publish(np);

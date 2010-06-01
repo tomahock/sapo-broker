@@ -32,7 +32,6 @@ public class QueueProcessor
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	protected final AtomicBoolean emptyQueueInfoDisplay = new AtomicBoolean(false);
 
-
 	protected final AtomicLong counter = new AtomicLong(0);
 
 	private final AtomicBoolean isWorking = new AtomicBoolean(false);
@@ -50,7 +49,7 @@ public class QueueProcessor
 	private TopicToQueueDispatcher topicFwd;
 
 	private final QueueStatistics queueStatistics = new QueueStatistics();
-	
+
 	private int current_idx = 0;
 	private AtomicLong wakeupAfter = new AtomicLong(System.currentTimeMillis() + 500);
 
@@ -498,27 +497,30 @@ public class QueueProcessor
 		if (cnt > 0)
 		{
 			emptyQueueInfoDisplay.set(false);
-			
-			if (hasReadyListeners(localQueueListeners) || hasReadyListeners(remoteQueueListeners))
-			{
-				try
+
+//			while (getQueuedMessagesCount() > 0)
+//			{
+				if (hasReadyListeners(localQueueListeners) || hasReadyListeners(remoteQueueListeners))
 				{
-					if (log.isDebugEnabled())
+					try
 					{
-						log.debug("Wakeup queue '{}'", queueName);
+						if (log.isDebugEnabled())
+						{
+							log.debug("Wakeup queue '{}'", queueName);
+						}
+						storage.recoverMessages();
 					}
-					storage.recoverMessages();
+					catch (Throwable t)
+					{
+						log.error(t.getMessage(), t);
+						throw new RuntimeException(t);
+					}
+					finally
+					{
+						isWorking.set(false);
+					}
 				}
-				catch (Throwable t)
-				{
-					log.error(t.getMessage(), t);
-					throw new RuntimeException(t);
-				}
-				finally
-				{
-					isWorking.set(false);
-				}
-			}
+			//}
 		}
 		isWorking.set(false);
 	}

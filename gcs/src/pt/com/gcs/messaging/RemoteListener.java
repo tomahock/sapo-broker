@@ -1,7 +1,7 @@
 package pt.com.gcs.messaging;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
@@ -36,9 +36,8 @@ public class RemoteListener implements MessageListener
 
 	private final long max_write_time;
 
-	private boolean showResumedDeliveryMessage;
 	private boolean showSuspendedDeliveryMessage;
-	volatile private long startDeliverAfter;
+	private AtomicBoolean isReady = new AtomicBoolean(true);
 	
 	private long droppedMessages;
 
@@ -49,9 +48,7 @@ public class RemoteListener implements MessageListener
 		this.sourceType = sourceType;
 		this.targetType = targetType;
 
-		this.showResumedDeliveryMessage = false;
-		this.showSuspendedDeliveryMessage = false;
-		this.startDeliverAfter = System.nanoTime();
+		this.showSuspendedDeliveryMessage = true;
 
 		if (targetType == DestinationType.QUEUE)
 		{
@@ -112,7 +109,7 @@ public class RemoteListener implements MessageListener
 	@Override
 	public boolean isReady()
 	{
-		return System.nanoTime() > startDeliverAfter;
+		return isReady.get();
 	}
 
 	@Override
@@ -149,66 +146,41 @@ public class RemoteListener implements MessageListener
 
 			if (lchannel.isWritable())
 			{
-				if (showResumedDeliveryMessage)
-				{
-					if (targetType == DestinationType.TOPIC)
-					{
-						String msg = String.format("Stopped discarding messages for topic '%s' and session '%s'. Dropped messages: %s", getsubscriptionKey(), lchannel.getRemoteAddressAsString(), droppedMessages);
-						log.info(msg);
-						droppedMessages = 0;
-					}
-					else if (targetType == DestinationType.QUEUE)
-					{
-						log.info(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-					}
-
-					showResumedDeliveryMessage = false;
-				}
-
 				lchannel.write(nmsg);
-				showSuspendedDeliveryMessage = true;
+				isReady.set(true);
 			}
 			else
 			{
-
 				if (isReady())
 				{
-					ChannelFuture future = lchannel.write(ChannelBuffers.EMPTY_BUFFER);
-					final long writeStartTime = System.nanoTime();
-					startDeliverAfter = writeStartTime + 1000000; // 1 millisecond
-					
+					ChannelFuture future = lchannel.write(nmsg);
+					isReady.set(false);
+					if (showSuspendedDeliveryMessage && log.isDebugEnabled())
+					{
+						log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+					}
+
 					future.addListener(new ChannelFutureListener()
 					{
 						@Override
 						public void operationComplete(ChannelFuture future) throws Exception
 						{
-							final long writeTime = System.nanoTime() - writeStartTime;
-
-							if (writeTime >= max_write_time)
+							isReady.set(true);
+							if(lchannel.isWritable())
 							{
-								startDeliverAfter = System.nanoTime() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.;
+								if (log.isDebugEnabled())
+								{
+									log.debug(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+								}								
+								showSuspendedDeliveryMessage = true;
+							}
+							else
+							{
+								showSuspendedDeliveryMessage = false;
 							}
 						}
 					});
-					
-					if (showSuspendedDeliveryMessage)
-					{
-						if (targetType == DestinationType.TOPIC)
-						{
-							log.info("Started discarding messages for topic '{}' and session '{}'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString());
-						}
-						else if (targetType == DestinationType.QUEUE)
-						{
-							log.info(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-						}
 
-						showSuspendedDeliveryMessage = false;
-					}
-
-					if (targetType == DestinationType.TOPIC)
-					{
-						droppedMessages++;
-					}
 				}
 				else
 				{

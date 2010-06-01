@@ -1,6 +1,7 @@
 package pt.com.broker.messaging;
 
-import org.jboss.netty.buffer.ChannelBuffers;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
@@ -21,7 +22,6 @@ public class BrokerQueueListener extends BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerQueueListener.class);
 
-	private static final long MAX_WRITE_TIME = 250 * 1000 * 1000;
 	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
 	private static final String ACK_REQUIRED = "ACK_REQUIRED";
 
@@ -29,18 +29,15 @@ public class BrokerQueueListener extends BrokerListener
 	private static final ForwardResult ackNotRequired = new ForwardResult(Result.NOT_ACKNOWLEDGE);
 	private final boolean ackRequired;
 
-	private boolean showResumedDeliveryMessage;
 	private boolean showSuspendedDeliveryMessage;
 
-	private volatile long startDeliverAfter;
-
+	private AtomicBoolean isReady = new AtomicBoolean(true);	
+	
 	public BrokerQueueListener(ListenerChannel lchannel, String destinationName, boolean ackRequired)
 	{
 		super(lchannel, destinationName);
 		this.ackRequired = ackRequired;
-		this.showResumedDeliveryMessage = false;
-		this.showSuspendedDeliveryMessage = false;
-		this.startDeliverAfter = System.nanoTime();
+		this.showSuspendedDeliveryMessage = true;
 	}
 
 	@Override
@@ -70,29 +67,18 @@ public class BrokerQueueListener extends BrokerListener
 		{
 			if (lchannel.isWritable())
 			{
-				if (showResumedDeliveryMessage)
-				{
-					log.info(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-					showResumedDeliveryMessage = false;
-				}
-
 				lchannel.write(response);
-				showSuspendedDeliveryMessage = true;
+				isReady.set(true);
 			}
 			else
 			{
 				if (isReady())
 				{
-					ChannelFuture future = lchannel.write(ChannelBuffers.EMPTY_BUFFER);
-					final long writeStartTime = System.nanoTime();
-					startDeliverAfter = writeStartTime + 1000000; // 1 millisecond
-
-					showResumedDeliveryMessage = true;
-
-					if (showSuspendedDeliveryMessage)
+					ChannelFuture future = lchannel.write(response);
+					isReady.set(false);
+					if (showSuspendedDeliveryMessage && log.isDebugEnabled())
 					{
-						log.info(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-						showSuspendedDeliveryMessage = false;
+						log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
 					}
 
 					future.addListener(new ChannelFutureListener()
@@ -100,11 +86,18 @@ public class BrokerQueueListener extends BrokerListener
 						@Override
 						public void operationComplete(ChannelFuture future) throws Exception
 						{
-							final long writeTime = System.nanoTime() - writeStartTime;
-
-							if (writeTime >= MAX_WRITE_TIME)
+							isReady.set(true);
+							if(lchannel.isWritable())
 							{
-								startDeliverAfter = System.nanoTime() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.;
+								if (log.isDebugEnabled())
+								{
+									log.debug(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+								}								
+								showSuspendedDeliveryMessage = true;
+							}
+							else
+							{
+								showSuspendedDeliveryMessage = false;
 							}
 						}
 					});
@@ -151,7 +144,7 @@ public class BrokerQueueListener extends BrokerListener
 	@Override
 	public boolean isReady()
 	{
-		return System.nanoTime() > startDeliverAfter;
+		return isReady.get();
 	}
 
 	@Override

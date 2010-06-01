@@ -415,7 +415,7 @@ public class BDBStorage
 								// log.info("Could not deliver message. Queue: '{}',  Id: '{}'.",
 								// msg.getDestination(), msg.getMessageId());
 								dumpMessage(nmsg);
-								
+
 								queueProcessor.getQueueStatistics().newQueueFailedMessage();
 								++j0;
 

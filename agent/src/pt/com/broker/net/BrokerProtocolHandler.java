@@ -2,6 +2,7 @@ package pt.com.broker.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
@@ -71,7 +72,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	private static final BrokerConsumer _brokerConsumer = BrokerConsumer.getInstance();
 
 	private static final BrokerProtocolHandler instance;
-
+	
 	static
 	{
 		instance = new BrokerProtocolHandler();
