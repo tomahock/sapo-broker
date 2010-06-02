@@ -7,14 +7,22 @@
  * to build consumers and producers.
  *
  * @package Broker
- * @version 0.6
+ * @version 0.6.1
  * @author Celso Martinho <celso@co.sapo.pt>
  * @author Bruno Pedro <bpedro@co.sapo.pt>
  * @author Pedro Eugenio <peugenio@co.sapo.pt>
+ * @author Pedro Fonseca <pedro.fonseca@co.sapo.pt>
  */
  
 /* 
   [CHANGELOG]
+  
+  0.6.1
+    . FIXED (matamouros 2010.05.31): Weird design flaw in the constructor, probably
+      not serious in more relaxed PHP default settings. Check the comment within it.
+    
+    . FIXED (matamouros 2010.05.28): More PHP 5.3 compatibility fixes to avoid
+      Strict and Notice level warnings.
   
   0.6
     . ADDED (matamouros 2010.05.20): Option for bypassing the default local
@@ -51,6 +59,18 @@ class SAPO_Broker
 
     setlocale(LC_TIME, $this->args['locale']);
     $this->debug = $this->args['debug'];
+
+    // instanciate network handler
+    //
+    // matamouros 2010.05.28: This used to be inside the initNetwork() call, but
+    // by a weird design option it got attributed to something inside initParser(),
+    // before it had the chance to exist, on some very specific scenario (we've
+    // seen it happening when running our Task_ImageGenerator workers). It
+    // probably only is a problem on some very remote scenarios, but it also
+    // probably gets triggered more on the more restrictive Notice and Strict
+    // reality of PHP 5.3 setups, hence the fix.
+    //
+    $this->net = new SAPO_Broker_Net($this->debug);
     
     // checks for minimum requirements
     $this->checkRequirements();
@@ -63,10 +83,7 @@ class SAPO_Broker
   }
 
   function initNetwork()
-  {
-    // instanciate network handler
-    $this->net = new SAPO_Broker_Net($this->debug);
-    
+  { 
     // inerith timer from parent class
     $this->net->timer=$this->timer;
 
@@ -564,7 +581,7 @@ class SAPO_Broker_Net
     }
     
     $tmp = $this->netread(4);
-    $len = (double)(ord($tmp[3]) + (ord($tmp[2]) << 8) + (ord($tmp[1]) << 16) + (ord($tmp[0]) << 24)); // unpack("N");
+    $len = (double)(ord((isset($tmp[3])?$tmp[3]:'')) + (ord((isset($tmp[2])?$tmp[2]:'')) << 8) + (ord((isset($tmp[1])?$tmp[1]:'')) << 16) + (ord((isset($tmp[0])?$tmp[0]:'')) << 24)); // unpack("N");
     //$len = unpack('N', $tmp); //returns array
     //$len = $len[1];
     
@@ -615,7 +632,7 @@ class SAPO_Broker_Net
     while ($i<$len) { // read just about enough. do i hate sockets...
       $start=$this->timer->utime();
       $tmp=fread($this->socket, 1024); // read socket with timeout from stream-set-timeout. safer with fread.
-      ob_flush;
+      @ob_flush();
       flush(); 
       $end=$this->timer->utime(); // there's a problem with php's microtime function and the tcp timeout. This 0.1 offset fixes this.
       // Execute callbacks on subscribed topics
@@ -836,9 +853,10 @@ class SAPO_Broker_Parser_DOM extends SAPO_Broker_Parser
     //
     // Obtain the elements.
     //
+    $elements = array();
     foreach ($nodeLists as $tagName => $nodeList) {
       $node = $nodeList->item(0);
-      $elements[$tagName] = $node->nodeValue;
+      $elements[$tagName] = (isset($node->nodeValue)?$node->nodeValue:null);
     }
     return $elements;        
   }
