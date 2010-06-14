@@ -7,7 +7,7 @@
 #include "ext/standard/info.h"
 #include "php_sapobroker.h"
 
-#include "libsapo-broker2.h"
+#include "../c-component/libsapo-broker2/src/sapo-broker2.h"
 
 #define PHP_BROKER_SERVER_T_RES_NAME "Broker Server"
 #define PHP_SAPO_BROKER_T_RES_NAME "Sapo Broker"
