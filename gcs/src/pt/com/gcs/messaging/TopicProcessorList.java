@@ -2,7 +2,9 @@ package pt.com.gcs.messaging;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -180,9 +182,10 @@ public class TopicProcessorList
 		try
 		{
 			newTopicMessageReceived();
+			Set<ListenerChannel> remoteListenersTouched = new HashSet<ListenerChannel>();
 			for (TopicProcessor tp : tpCache.values())
 			{
-				tp.notify(np, localOnly);
+				tp.notify(np, localOnly, remoteListenersTouched);
 			}
 		}
 		catch (InterruptedException e)

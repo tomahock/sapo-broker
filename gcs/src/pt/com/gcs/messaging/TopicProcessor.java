@@ -11,25 +11,26 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.MessageListener.Type;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 
 public class TopicProcessor
 {
 	private static Logger log = LoggerFactory.getLogger(TopicProcessor.class);
-	
+
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	private final TopicStatistics topicStatistics = new TopicStatistics();
-	
+
 	private final String subscriptionName;
 
 	private final Set<MessageListener> topicListeners = new CopyOnWriteArraySet<MessageListener>();
@@ -192,7 +193,7 @@ public class TopicProcessor
 		return topicListeners;
 	}
 
-	protected void notify(NetPublish np, boolean localOnly)
+	protected void notify(NetPublish np, boolean localOnly, Set<ListenerChannel> remoteListenersTouched)
 	{
 		if (size() > 0)
 		{
@@ -211,28 +212,45 @@ public class TopicProcessor
 						}
 						else
 						{
-							if( ml.onMessage(nmsg).result == ForwardResult.Result.SUCCESS)
+							if (ml.getType() == Type.REMOTE)
 							{
-								if( ml.getTargetDestinationType() == DestinationType.TOPIC)
+								if (!remoteListenersTouched.contains(ml.getChannel()))
 								{
-									topicStatistics.newTopicMessageDelivered();
-								}
-								else
-								{
-									topicStatistics.newTopicDispatchedToQueueMessage();
+									doNotify(nmsg, ml);
+									remoteListenersTouched.add(ml.getChannel());
 								}
 							}
 							else
 							{
-								topicStatistics.newTopicDiscardedMessage();
+								doNotify(nmsg, ml);
 							}
+
 						}
 					}
 				}
 			}
 		}
 	}
-	
+
+	private void doNotify(NetMessage nmsg, MessageListener ml)
+	{
+		if (ml.onMessage(nmsg).result == ForwardResult.Result.SUCCESS)
+		{
+			if (ml.getTargetDestinationType() == DestinationType.TOPIC)
+			{
+				topicStatistics.newTopicMessageDelivered();
+			}
+			else
+			{
+				topicStatistics.newTopicDispatchedToQueueMessage();
+			}
+		}
+		else
+		{
+			topicStatistics.newTopicDiscardedMessage();
+		}
+	}
+
 	public void remove(MessageListener listener)
 	{
 		if (listener != null)
