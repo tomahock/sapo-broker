@@ -17,6 +17,11 @@
 /* 
   [CHANGELOG]
   
+  0.6.2
+    . FIXED (matamouros 2010.06.15): PHP 4 incompatibility regression, invoking
+      SAPO_Broker_Tools::xmlentities() on SAPO_Broker::xmlentities(). See the
+      later for more details.
+  
   0.6.1
     . FIXED (matamouros 2010.05.31): Weird design flaw in the constructor, probably
       not serious in more relaxed PHP default settings. Check the comment within it.
@@ -179,7 +184,17 @@ class SAPO_Broker
    **/
   function xmlentities($string, $quote_style = ENT_QUOTES, $charset = 'UTF-8')
   {
-    return SAPO_Broker_Tools::xmlentities($string, $quote_style, $charset);
+    //
+    // return SAPO_Broker_Tools::xmlentities($string, $quote_style, $charset);
+    //
+    // This static call isn't possible in PHP 5 without the static qualifier in
+    // the SAPO_Broker_Tools::xmlentities method. Since that is not allowed in
+    // PHP 4, the lesser evil should be to create the object and invoke its
+    // instance. Beats doing a version check here, or repeating the xmlentities
+    // definition.
+    //
+    $tools = new SAPO_Broker_Tools();
+    return $tools->xmlentities($string, $quote_style, $charset);
   }
 
   /**
@@ -887,7 +902,7 @@ class SAPO_Broker_Tools_Timer_PHP5
 
 class SAPO_Broker_Tools
 {
-  public static function xmlentities($string, $quote_style = ENT_QUOTES, $charset = 'UTF-8')
+  function xmlentities($string, $quote_style = ENT_QUOTES, $charset = 'UTF-8')
   {
     static $trans;
     if (!isset($trans)) {
