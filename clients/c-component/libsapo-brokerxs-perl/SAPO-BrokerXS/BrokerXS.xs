@@ -126,7 +126,7 @@ CODE:
         // the methods "publish" and "subscribe" will refer
         // to that. For "Topic as a queue", the suffix "_queue"
         // will be used in both methods.
-        int r = sb_publish(self->handle, EQUEUE_TOPIC, topic, payload);
+        int r = sb_publish(self->handle, EQUEUE_PUBLISH, topic, payload);
         if (r == 0) {
                 RETVAL = 1;
         } else {
