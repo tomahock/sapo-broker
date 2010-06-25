@@ -216,15 +216,13 @@ public abstract class BaseBrokerClient
 		{
 			NetBrokerMessage brkMsg = notification.getMessage();
 
-			String ackDestination = null;
-			if (notification.getDestinationType() != DestinationType.TOPIC)
+			
+			if (notification.getDestinationType() == DestinationType.TOPIC)
 			{
-				ackDestination = notification.getSubscription();
+				return;
 			}
-			else
-			{
-				ackDestination = notification.getDestination();
-			}
+
+			String ackDestination = notification.getSubscription();
 
 			NetAcknowledge ackMsg = new NetAcknowledge(ackDestination, brkMsg.getMessageId());
 			if (acceptRequest != null)
