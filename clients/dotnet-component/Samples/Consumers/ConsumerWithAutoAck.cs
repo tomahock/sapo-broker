@@ -38,8 +38,6 @@ namespace Samples.Consumers
             int i = 0;
             subscription.OnMessage += delegate(NetNotification notification)
             {
-                if (notification.DestinationType != NetAction.DestinationType.TOPIC)
-                    brokerClient.Acknowledge(notification.Subscription, notification.Message.MessageId);
                 System.Console.WriteLine("Message received: {0}, Total: {1}",
                                          System.Text.Encoding.UTF8.GetString(notification.Message.Payload), (++i).ToString());
                 /*

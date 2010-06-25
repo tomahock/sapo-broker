@@ -52,7 +52,7 @@ namespace Samples.Consumers
                             NetNotification notification = brokerClient.Poll(cliArgs.DestinationName, -1);
                             if (notification != null)
                             {
-                                brokerClient.Acknowledge(notification.Destination, notification.Message.MessageId);
+                                brokerClient.Acknowledge(notification);
                                 int count = ++messagesReceived;
                                 if (count == MESSAGES_TO_RECEIVE)
                                 {
