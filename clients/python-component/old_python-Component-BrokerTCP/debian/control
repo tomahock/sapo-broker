@@ -1,0 +1,16 @@
+Source: libsapo-broker-python
+Section: python
+Priority: optional
+Maintainer: Cláudio Valente <c.valente@co.sapo.pt>
+Standards-Version: 3.6.2
+Build-Depends: debhelper (>= 5.0.37.1), cdbs (>= 0.4.41), python-all-dev, python-support (>= 0.6.4)
+Build-Depends-Indep: python-setuptools (>= 0.6a9)
+
+Package: libsapo-broker-python
+Suggests: python-lxml
+Architecture: all
+Depends: ${python:Depends}
+Provides: ${python:Provides}
+Description: python client libraries to acess SAPO's broker
+ These libraries install python code to use SAPO broker as a client.
+ They should work without lxml installed but its installation boosts processing speed a lot.
