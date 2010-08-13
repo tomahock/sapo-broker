@@ -4,7 +4,12 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 my @PMLIBDIRS = ('lib');
-my %PREREQ_PM = ( 'Thrift' => '0.1', 'IO::Socket::INET' => 0, 'Time::HiRes' => 0);
+my %PREREQ_PM = (
+    'Thrift'           => '0.1',
+    'IO::Socket::INET' => 0,
+    'Time::HiRes'      => 0,
+    'Readonly'         => 0,
+);
 
 =cut
 eval {
