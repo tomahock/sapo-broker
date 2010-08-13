@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from .autogen import protobuf_2
 from ..Transport import Message as TransportMessage
-from ..Messages import Message as BrokerMessage, Publish, Poll, Accepted, Acknowledge, Subscribe, Unsubscribe, Notification, Fault, Ping, Pong
+from ..Messages import Message as BrokerMessage, Publish, Poll, Accepted, Acknowledge, Subscribe, Unsubscribe, Notification, Fault, Ping, Pong, Authentication
 
 from calendar import timegm
 
@@ -122,7 +122,24 @@ def parse_pong(action):
 
     return Pong(action_id=pong.action_id)
 
-#TODO Authentication. No idea how this works.
+def serialize_authentication(message, action):
+    action.action_type = action.AUTH
+    auth = action.auth
+
+    auth.token = message.token
+    auth.role.extend(message.role)
+
+    user_id = message.user_id
+    if user_id is not None:
+        auth.user_id = message.user_id
+
+    authentication_type = message.authentication_type
+    if authentication_type is not None:
+        auth.authentication_type = authentication_type
+
+    action_id = message.action_id
+    if action_id is not None:
+        auth.action_id = action_id
 
 class Codec:
     __all__ = ['__init__', 'serialize', 'deserialize']
@@ -137,6 +154,7 @@ class Codec:
         Subscribe : serialize_subscribe,
         Unsubscribe : serialize_unsubscribe,
         Ping : serialize_ping,
+        Authentication : serialize_authentication,
     }
 
     __dispatch_deserialize = {
