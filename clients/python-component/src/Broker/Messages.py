@@ -1,4 +1,6 @@
 from datetime import datetime
+from urllib import urlopen, urlencode
+from xml.dom.minidom import parseString
 
 def todate(date):
     if date is None:
@@ -122,9 +124,33 @@ class Pong:
         self.action_id = action_id
 
 class Authentication:
+    __auth_url = r'https://services.sapo.pt/STS/GetToken?'
+
     def __init__(self, role, token, authentication_type=None, user_id=None, action_id=None):
         self.user_id = user_id
         self.role = role
         self.token = token
         self.authentication_type = authentication_type
         self.action_id = None
+
+    @classmethod
+    def from_credentials(cls, username, password, role, authentication_type=None, user_id=None, action_id=None):
+        data = urlencode((('ESBUsername', username), ('ESBPassword', password)))
+        url = cls.__auth_url+'?JSON=False&'+data
+        xml = urlopen(url).read()
+
+        dom = parseString(xml)
+
+        top = dom.firstChild
+        topname = top.nodeName
+        if 'ESBToken' == topname:
+            #xml OK
+            token = top.firstChild.nodeValue.encode('ascii')
+            return cls(role, token, authentication_type, user_id, action_id)
+
+        elif 'fault' == topname:
+            #try to get the faultstring
+            for node in top.childNodes:
+                if 'faultstring' == node.nodeName:
+                    faultstring = node.firstChild.nodeValue
+                    raise RuntimeError(u'Authentication error: %s' % faultstring)
