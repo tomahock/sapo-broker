@@ -122,8 +122,8 @@ class Pong:
         self.action_id = action_id
 
 class Authentication:
-    def __init__(self, user_id, role, token, authentication_type=None, action_id=None):
-        self.user_id = userp_id
+    def __init__(self, role, token, authentication_type=None, user_id=None, action_id=None):
+        self.user_id = user_id
         self.role = role
         self.token = token
         self.authentication_type = authentication_type
