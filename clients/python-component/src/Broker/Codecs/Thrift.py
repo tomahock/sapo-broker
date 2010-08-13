@@ -103,7 +103,7 @@ def serialize_subscribe(message, action):
     action.subscribe = subscribe
 
 def serialize_unsubscribe(message, action):
-    action.action_type = ttypes.ActionType.SUBSCRIBE
+    action.action_type = ttypes.ActionType.UNSUBSCRIBE
 
     unsubscribe.destination = message.destination
     unsubscribe.destination_type = string2kind(message.destination_type)
