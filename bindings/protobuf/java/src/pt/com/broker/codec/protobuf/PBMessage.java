@@ -4886,7 +4886,7 @@ final class PBMessage {
       public boolean hasActionId() { return hasActionId; }
       public java.lang.String getActionId() { return actionId_; }
       
-      // optional string authentication_type = 2;
+      // required string authentication_type = 2;
       public static final int AUTHENTICATION_TYPE_FIELD_NUMBER = 2;
       private boolean hasAuthenticationType;
       private java.lang.String authenticationType_ = "";
@@ -4922,6 +4922,7 @@ final class PBMessage {
       private void initFields() {
       }
       public final boolean isInitialized() {
+        if (!hasAuthenticationType) return false;
         if (!hasToken) return false;
         return true;
       }
@@ -5229,7 +5230,7 @@ final class PBMessage {
           return this;
         }
         
-        // optional string authentication_type = 2;
+        // required string authentication_type = 2;
         public boolean hasAuthenticationType() {
           return result.hasAuthenticationType();
         }
@@ -6932,7 +6933,7 @@ final class PBMessage {
       "\030\003 \002(\t\022\024\n\014fault_detail\030\004 \001(\t\032\031\n\004Ping\022\021\n\t" +
       "action_id\030\001 \002(\t\032\031\n\004Pong\022\021\n\taction_id\030\001 \002",
       "(\t\032n\n\016Authentication\022\021\n\taction_id\030\001 \001(\t\022" +
-      "\033\n\023authentication_type\030\002 \001(\t\022\r\n\005token\030\003 " +
+      "\033\n\023authentication_type\030\002 \002(\t\022\r\n\005token\030\003 " +
       "\002(\014\022\017\n\007user_id\030\004 \001(\t\022\014\n\004role\030\005 \003(\t\032\343\005\n\006A" +
       "ction\022*\n\007publish\030\001 \001(\0132\031.sapo_broker.Ato" +
       "m.Publish\022$\n\004poll\030\002 \001(\0132\026.sapo_broker.At" +
