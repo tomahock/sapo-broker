@@ -102,7 +102,7 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
   public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
     put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(_Fields.AUTHENTICATION_TYPE, new FieldMetaData("authentication_type", TFieldRequirementType.OPTIONAL, 
+    put(_Fields.AUTHENTICATION_TYPE, new FieldMetaData("authentication_type", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
     put(_Fields.TOKEN, new FieldMetaData("token", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
@@ -121,9 +121,11 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
   }
 
   public Authentication(
+    String authentication_type,
     byte[] token)
   {
     this();
+    this.authentication_type = authentication_type;
     this.token = token;
   }
 
@@ -590,11 +592,9 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
       }
     }
     if (this.authentication_type != null) {
-      if (isSetAuthentication_type()) {
-        oprot.writeFieldBegin(AUTHENTICATION_TYPE_FIELD_DESC);
-        oprot.writeString(this.authentication_type);
-        oprot.writeFieldEnd();
-      }
+      oprot.writeFieldBegin(AUTHENTICATION_TYPE_FIELD_DESC);
+      oprot.writeString(this.authentication_type);
+      oprot.writeFieldEnd();
     }
     if (this.token != null) {
       oprot.writeFieldBegin(TOKEN_FIELD_DESC);
@@ -640,16 +640,14 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
       }
       first = false;
     }
-    if (isSetAuthentication_type()) {
-      if (!first) sb.append(", ");
-      sb.append("authentication_type:");
-      if (this.authentication_type == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.authentication_type);
-      }
-      first = false;
+    if (!first) sb.append(", ");
+    sb.append("authentication_type:");
+    if (this.authentication_type == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.authentication_type);
     }
+    first = false;
     if (!first) sb.append(", ");
     sb.append("token:");
     if (this.token == null) {

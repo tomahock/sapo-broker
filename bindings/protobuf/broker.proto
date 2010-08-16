@@ -103,7 +103,7 @@ message Atom
 	message Authentication
 	{
 		optional string action_id = 1;
-		optional string authentication_type = 2;
+		required string authentication_type = 2;
 		required bytes token = 3;
 		optional string user_id = 4;
 		repeated string role = 5;
