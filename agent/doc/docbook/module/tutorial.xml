@@ -265,8 +265,7 @@ broker.join()]]></screen>
 				<title>Perl samples</title>
 				<example>
 					<title>Sample Perl producer</title>
-					<screen><![CDATA[use lib ('../lib');
-
+					<screen><![CDATA[
 use SAPO::Broker::Clients::Simple;
 
 use strict;
@@ -279,10 +278,9 @@ my %options = (
 );
 
 my $N = $ARGV[0] || 100;
-my $prefix = $ARGV[1] || ("time=".time);
 
 for my $n (1..$N){
-	$broker->publish(%options, 'payload' => "$prefix\tpayload $n");
+	$broker->publish(%options, 'payload' => "payload $n");
 }]]></screen>
 				</example>
 				<example>
@@ -305,7 +303,6 @@ my %options = (
 $broker->subscribe(%options);
 
 my $N = $ARGV[0] || 100;
-my $prefix = $ARGV[1] || ("time=".time);
 
 for my $n (1..$N){
 	my $message = $broker->receive();
