@@ -221,7 +221,7 @@ brokerClient.Subscribe(subscription);]]></screen>
 
 from Broker.Messages import Message, Publish
 from Broker.Transport import TCP, UDP
-from Broker.Codecs import Codec #auto codec selection (thrift or protobuf if thrift isn't installed)
+from Broker.Codecs import Codec
 from Broker.Clients import Minimal
 
 server='localhost'
@@ -240,25 +240,24 @@ for n in xrange(N):
 					<title>Sample Python producer</title>
 					<screen><![CDATA[#!/usr/bin/env python
 
-from Broker.Clients import Async as Client
-from Broker.Transport import TCP, UDP
 
-import logging
-logging.basicConfig(level=logging.WARN)
+from Broker.Messages import Message, Subscribe, Acknowledge
+from Broker.Transport import TCP, UDP
+from Broker.Codecs import Codec
+from Broker.Clients import Minimal
 
 server='localhost'
 destination = '/python/tests'
 destination_type = 'QUEUE'
 
-broker = Client(TCP(host=server))
+broker = Minimal(codec=Codec(), transport=TCP(host=server))
 
-def callback(msg):
-    print "%r\t%r" % (msg.destination, msg.message.payload)
-
-broker.subscribe(destination, callback, destination_type)
-
-broker.start()
-broker.join()]]></screen>
+broker.send(Subscribe(destination=destination, destination_type=destination_type))
+for n in xrange(N):
+    message = broker.receive()
+    broker.send(Acknowledge(message_id=message.message.id, destination=message.destination))
+    print message.message.payload
+]]></screen>
 				</example>
 			</section>
 			<section id="CODESAMPLE_PERL">
