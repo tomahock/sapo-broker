@@ -12,9 +12,11 @@ my $perltidy = catfile( $Bin, 'perltidy' );
 sub tidy_dir {
     my ( $dir, $rx ) = @_;
 
-    system "find $dir -iname '$rx' -print0 | xargs -0 $perltidy 2>/dev/null";
-    system "$perltidy Makefile.PL 2>/dev/null";
+    system "find $dir -iname '$rx' | grep -v Autogen | xargs -d '\n' $perltidy 2>/dev/null";
 }
 
+system "$perltidy " . catfile( $Bin, '..', 'Makefile.PL' ) . ' 2>/dev/null';
+
 tidy_dir( catfile( $Bin, '..', 'lib' ), '*.pm' );
-tidy_dir( catfile( $Bin, '..', 'QA' ), '*.pl' );
+tidy_dir( $Bin, 'perltidy_all' );
+tidy_dir( $Bin, 'perlcritic' );
