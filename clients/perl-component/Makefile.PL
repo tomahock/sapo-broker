@@ -11,21 +11,27 @@ my %PREREQ_PM = (
     'Readonly'         => 0,
 );
 
-=cut
-eval {
+sub has_module($) {
+    my ($module) = @_;
 
-    #try to find Thrift
-    require Thrift;
-};
-if ($@) {
+    eval "use $module;";
 
-    #Thrift not installed so to make this easier we ship and install a Thrift version
-    push @PMLIBDIRS, 'thrift_lib';
-}else{
-    #Thrift found, add as dependency
-    $PREREQ_PM{'Thrift'} = '0.1';
+    return not $@;
 }
-=cut
+
+unless ( has_module 'LWP' and has_module 'Crypt::SSLeay' and has_module 'JSON::Any' ) {
+    if ( prompt( 'Do you want to use the HTTP interface to authenticate with SAPO STS?', 'yes' ) =~ /^yes/i ) {
+        $PREREQ_PM{'Crypt::SSLeay'} = 0;
+        $PREREQ_PM{'LWP'}           = 0;
+        $PREREQ_PM{'JSON::Any'}     = 0;
+    }
+}
+
+unless ( has_module "IO::Socket::SSL" ) {
+    if ( prompt( 'Do you want to use the SSL transport', 'yes' ) =~ /^yes/i ) {
+        $PREREQ_PM{'IO::Socket:SSL'} = 0;
+    }
+}
 
 WriteMakefile(
     NAME          => 'SAPO::Broker',
