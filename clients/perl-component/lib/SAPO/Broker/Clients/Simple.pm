@@ -79,10 +79,10 @@ sub poll {
 }
 
 sub acknowlede {
-    my ( $self, $message ) = @_;
+    my ( $self, $notification ) = @_;
 
-    my $id          = $message->message->id;
-    my $destination = $message->destination;
+    my $id          = $notification->message->id;
+    my $destination = $notification->destination;
     my $ack         = SAPO::Broker::Messages::Acknowledge->new(
         'message_id'  => $id,
         'destination' => $destination
@@ -126,6 +126,9 @@ sub receive {
     my $msg_type = ref($message);
 
     if ( $msg_type eq 'SAPO::Broker::Messages::Fault' ) {
+        use Data::Dumper;
+        warn Dumper($message);
+        warn __PACKAGE__ . " " . $message->fault_message;
         die $message;
 
         #otherwise return the message with no modification
