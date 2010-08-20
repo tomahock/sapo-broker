@@ -126,7 +126,7 @@ class Pong:
 class Authentication:
     __auth_url = r'https://services.sapo.pt/STS/GetToken?'
 
-    def __init__(self, role, token, authentication_type=None, user_id=None, action_id=None):
+    def __init__(self, role, token, authentication_type, user_id=None, action_id=None):
         self.user_id = user_id
         self.role = role
         self.token = token
@@ -134,7 +134,7 @@ class Authentication:
         self.action_id = None
 
     @classmethod
-    def from_credentials(cls, username, password, role, authentication_type=None, user_id=None, action_id=None):
+    def from_sts_credentials(cls, username, password, role=[], authentication_type='SapoSTS', action_id=None):
         data = urlencode((('ESBUsername', username), ('ESBPassword', password)))
         url = cls.__auth_url+'?JSON=False&'+data
         xml = urlopen(url).read()
@@ -146,7 +146,7 @@ class Authentication:
         if 'ESBToken' == topname:
             #xml OK
             token = top.firstChild.nodeValue.encode('ascii')
-            return cls(role, token, authentication_type, user_id, action_id)
+            return cls(role, token, authentication_type, None, action_id)
 
         elif 'fault' == topname:
             #try to get the faultstring
