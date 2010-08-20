@@ -152,13 +152,24 @@ sub parse_pong($) {
     return SAPO::Broker::Messages::Pong->new( $action->pong() );
 }
 
+sub serialize_authentication($$) {
+    my ( $message, $action ) = @_;
+
+    my $auth = SAPO::Broker::Codecs::Autogen::Thrift::Authentication->new($message);
+
+    $action->action_type(SAPO::Broker::Codecs::Autogen::Thrift::ActionType::AUTH);
+    $action->auth($auth);
+    return $action;
+}
+
 my %__dispatch_serialize = (
-    'SAPO::Broker::Messages::Publish'     => \&serialize_publish,
-    'SAPO::Broker::Messages::Poll'        => \&serialize_poll,
-    'SAPO::Broker::Messages::Acknowledge' => \&serialize_acknowledge,
-    'SAPO::Broker::Messages::Subscribe'   => \&serialize_subscribe,
-    'SAPO::Broker::Messages::Unsubscribe' => \&serialize_unsubscribe,
-    'SAPO::Broker::Messages::Ping'        => \&serialize_ping,
+    'SAPO::Broker::Messages::Publish'        => \&serialize_publish,
+    'SAPO::Broker::Messages::Poll'           => \&serialize_poll,
+    'SAPO::Broker::Messages::Acknowledge'    => \&serialize_acknowledge,
+    'SAPO::Broker::Messages::Subscribe'      => \&serialize_subscribe,
+    'SAPO::Broker::Messages::Unsubscribe'    => \&serialize_unsubscribe,
+    'SAPO::Broker::Messages::Ping'           => \&serialize_ping,
+    'SAPO::Broker::Messages::Authentication' => \&serialize_authentication,
 );
 
 my %__dispatch_deserialize = (
@@ -200,8 +211,8 @@ sub serialize {
                 version => 1,
                 payload => $payload
             );
-        } ## end if ( $message->isa($class...))
-    } ## end while ( my ( $class, $serializer...))
+        } ## end if ( $message->isa($class...
+    } ## end while ( my ( $class, $serializer...
 
     croak("Can't serialize $message");
     return;
