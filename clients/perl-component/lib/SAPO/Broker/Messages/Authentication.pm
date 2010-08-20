@@ -6,8 +6,8 @@ use Readonly;
 use strict;
 use warnings;
 
-Readonly::Array my @mandatory => qw(role token);
-Readonly::Array my @optional  => qw(authentication_type user_id action_id);
+Readonly::Array my @mandatory => qw(token authentication_type);
+Readonly::Array my @optional  => qw(user_id role action_id);
 
 class(
     'mandatory' => \@mandatory,
