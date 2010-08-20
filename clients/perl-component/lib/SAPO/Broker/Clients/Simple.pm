@@ -74,11 +74,14 @@ sub subscribe {
 
 sub poll {
     my ( $self, %options ) = @_;
-    my $poll = SAPO::Broker::Messages::Poll->new('timeout' => 0, %options);
+    my $poll = SAPO::Broker::Messages::Poll->new(
+        'timeout' => 0,
+        %options
+    );
     return $self->send($poll);
 }
 
-sub acknowlede {
+sub acknowledge {
     my ( $self, $notification ) = @_;
 
     my $id          = $notification->message->id;
@@ -104,12 +107,15 @@ sub publish {
 }
 
 sub authenticate {
-    my ($self, $username, $password) = @_;
+    my ( $self, $username, $password ) = @_;
 
-    if( defined($username) and defined($password)){
-        my $auth = SAPO::Broker::Messages::Authentication::from_sts_credentials('username' => $username, 'password'=> $password);
+    if ( defined($username) and defined($password) ) {
+        my $auth = SAPO::Broker::Messages::Authentication::from_sts_credentials(
+            'username' => $username,
+            'password' => $password
+        );
         return $self->send($auth);
-    }else{
+    } else {
         croak "username and password mandatory";
     }
 }
@@ -134,9 +140,9 @@ sub receive {
         #otherwise return the message with no modification
     } elsif ( $msg_type eq 'SAPO::Broker::Messages::Notification' ) {
 
-        #try to find whether we need to acknowlede
+        #try to find whether we need to acknowledge
         if ( $message->destination_type eq 'QUEUE' and $self->{'auto_ack'}->{ $message->destination } ) {
-            $self->acknowlede($message);
+            $self->acknowledge($message);
         }
         return $message;
     } else {
@@ -144,6 +150,5 @@ sub receive {
     }
 
 } ## end sub receive
-
 
 1;
