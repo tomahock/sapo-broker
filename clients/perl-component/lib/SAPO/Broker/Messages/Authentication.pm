@@ -6,13 +6,12 @@ use Carp qw(croak);
 
 #dynamic use of modules so that if not installed nothing breaks
 #there jus is a loss of functionality
-eval{
+eval {
     require JSON::Any;
     require LWP::UserAgent;
     JSON::Any::import();
     LWP::UserAgent::import();
 };
-
 
 use strict;
 use warnings;
@@ -27,17 +26,17 @@ class(
 
 my $sts_url = 'https://services.sapo.pt/STS/GetToken?';
 
-sub from_sts_credentials{
+sub from_sts_credentials {
     my %params = @_;
-    my $url = $sts_url;
+    my $url    = $sts_url;
 
-    for my $param (qw(username password)){
+    for my $param (qw(username password)) {
         my $value = $params{$param};
-        if (defined $value){
-            $value =~ s/(\W)/sprintf"%%%x", ord($1)/ge; #standalone urlescape
-            $url.="&ESB\u$param=$value";
+        if ( defined $value ) {
+            $value =~ s/(\W)/sprintf"%%%x", ord($1)/ge;    #standalone urlescape
+            $url .= "&ESB\u$param=$value";
             delete $params{$param};
-        }else{
+        } else {
             croak "$param mandatory";
         }
     }
@@ -45,32 +44,34 @@ sub from_sts_credentials{
     $url .= '&JSON=True';
 
     my $ua = LWP::UserAgent->new(
-        'agent' => 'SAPO::Broker perl client',
+        'agent'             => 'SAPO::Broker perl client',
         'protocols_allowed' => ['https'],
     );
 
     my $res = $ua->get($url);
 
-    if ($res->is_success){
+    if ( $res->is_success ) {
 
-        my $json = $res->content;
+        my $json   = $res->content;
         my $struct = JSON::Any->new->decode($json);
-        my $token = $struct->{'ESBToken'};
-        if($token and ref($token) eq 'HASH'){
+        my $token  = $struct->{'ESBToken'};
+        if ( $token and ref($token) eq 'HASH' ) {
             my $ns = $token->{'xmlns'};
 
-            if($ns and $ns eq 'http://services.sapo.pt/definitions'){
-                return __PACKAGE__->new('authentication_type' => 'SapoSTS', %params, 'token' => $token->{'value'});
-            }else{
+            if ( $ns and $ns eq 'http://services.sapo.pt/definitions' ) {
+                return __PACKAGE__->new(
+                    'authentication_type' => 'SapoSTS',
+                    %params, 'token' => $token->{'value'} );
+            } else {
                 die "JSON with invalid namespace $ns [$json]";
             }
-        }else{
+        } else {
             die "Invalid STS JSON [$json]";
         }
-    }else{
+    } else {
         croak $res->status_line;
     }
 
-}
+} ## end sub from_sts_credentials
 
 1;
