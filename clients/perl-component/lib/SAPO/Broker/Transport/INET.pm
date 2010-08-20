@@ -59,32 +59,32 @@ sub __write {
     use bytes;
 
     my $select     = $self->{'__select'};
-    my $tot_writen = 0;
+    my $tot_written = 0;
     my $tot_write  = length($payload);
 
-    while ( ( not defined($timeout) or $timeout > 0 ) and $tot_writen < $tot_write ) {
+    while ( ( not defined($timeout) or $timeout > 0 ) and $tot_written < $tot_write ) {
         my $start = time();
         my ($sock) = $select->can_write($timeout);
         if ($sock) {
-            my $writen;
+            my $written;
             {
                 local $SIG{'PIPE'} = 'IGNORE';
-                $writen = $sock->syswrite( $payload, $tot_write - $tot_writen, $tot_writen );
+                $written = $sock->syswrite( $payload, $tot_write - $tot_written, $tot_written );
             }
             my $delta = time() - $start;
-            if ( not defined $writen ) {
+            if ( not defined $written ) {
 
                 #ERROR
                 #TODO: What about EINTR?
                 die "Error writing socket. $!";
-            } elsif ( 0 == $writen ) {
+            } elsif ( 0 == $written ) {
 
                 #EOF
                 die "Unexpected EOF while writing";
             } else {
 
                 #OK
-                $tot_writen += $writen;
+                $tot_written += $written;
                 if ( defined $timeout ) {
                     $timeout -= $delta;
                 }
@@ -94,9 +94,9 @@ sub __write {
             #timeout, raise exception
             die "Write timeout. $!";
         }
-    } ## end while ( ( not defined($timeout...)))
-    if ( $tot_writen == $tot_write ) {
-        return $tot_writen;
+    } ## end while ( ( not defined($timeout...
+    if ( $tot_written == $tot_write ) {
+        return $tot_written;
     } else {
         die "Error writing to socket";
     }
@@ -138,7 +138,7 @@ sub __read {
             #timeout, raise exception
             die "Read timeout. $!";
         }
-    } ## end while ( ( not defined($timeout...)))
+    } ## end while ( ( not defined($timeout...
     if ( 0 == $len ) {
         return $buf;
     } else {
