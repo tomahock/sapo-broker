@@ -15,5 +15,6 @@ use SAPO::Broker::Messages::Pong;
 use SAPO::Broker::Messages::Publish;
 use SAPO::Broker::Messages::Subscribe;
 use SAPO::Broker::Messages::Unsubscribe;
+use SAPO::Broker::Messages::Authentication;
 
 1;
