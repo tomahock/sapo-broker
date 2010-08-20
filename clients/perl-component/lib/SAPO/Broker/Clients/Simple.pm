@@ -2,6 +2,7 @@ package SAPO::Broker::Clients::Simple;
 
 use Carp qw(carp croak);
 
+use SAPO::Broker::Messages;
 use SAPO::Broker::Clients::Minimal;
 use SAPO::Broker::Transport::INET;
 use SAPO::Broker::Codecs::Thrift;
@@ -71,7 +72,7 @@ sub subscribe {
 
 sub poll {
     my ( $self, %options ) = @_;
-    my $poll = SAPO::Broker::Messages::Poll->new(%options);
+    my $poll = SAPO::Broker::Messages::Poll->new('timeout' => 0, %options);
     return $self->send($poll);
 }
 
@@ -97,6 +98,17 @@ sub publish {
     } else {
         carp("no payload to publish");
         return $self;
+    }
+}
+
+sub authenticate {
+    my ($self, $username, $password) = @_;
+
+    if( defined($username) and defined($password)){
+        my $auth = SAPO::Broker::Messages::Authentication::from_sts_credentials('username' => $username, 'password'=> $password);
+        return $self->send($auth);
+    }else{
+        croak "username and password mandatory";
     }
 }
 
