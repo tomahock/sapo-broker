@@ -47,3 +47,6 @@ lib/SAPO/Broker/Messages.pm
 lib/SAPO/Broker.pm
 
 t/01-use.t
+t/00-setup-name.t
+t/02-queue.t
+t/99-cleanup.t
