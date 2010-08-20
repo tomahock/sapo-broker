@@ -5,13 +5,14 @@ use Socket qw(MSG_NOSIGNAL);
 use Time::HiRes qw(time);
 use IO::Select ();
 use Carp qw(croak);
+use Readonly;
 
 use strict;
 use warnings;
 
 use base qw(SAPO::Broker::Transport);
 
-my %parameters_map = (
+Readonly::Hash my %parameters_map => (
     'host'  => 'PeerAddr',
     'port'  => 'PeerPort',
     'proto' => 'Proto',
@@ -58,9 +59,9 @@ sub __write {
 
     use bytes;
 
-    my $select     = $self->{'__select'};
+    my $select      = $self->{'__select'};
     my $tot_written = 0;
-    my $tot_write  = length($payload);
+    my $tot_write   = length($payload);
 
     while ( ( not defined($timeout) or $timeout > 0 ) and $tot_written < $tot_write ) {
         my $start = time();

@@ -4,11 +4,13 @@ use Carp qw(carp croak);
 
 use SAPO::Broker::Messages;
 use SAPO::Broker::Clients::Minimal;
-use SAPO::Broker::Transport::INET;
+use SAPO::Broker::Transport::TCP;
+use SAPO::Broker::Transport::UDP;
 use SAPO::Broker::Codecs::Thrift;
 
 #don't fail if SSL is not a viable transport (please install IO::Socket::SSL)
 eval { require SAPO::Broker::Transport::SSL; };
+my $has_ssl = not $@;
 
 use strict;
 use warnings;
@@ -45,7 +47,7 @@ sub __get_transport_class {
         return $prefix . 'TCP';
     } elsif ( $proto eq 'udp' ) {
         return $prefix . 'UDP';
-    } elsif ( $proto eq 'ssl' ) {
+    } elsif ( $has_ssl and $proto eq 'ssl' ) {
         return $prefix . 'SSL';
     } else {
         croak("Unknown protocol '$proto'");
@@ -139,5 +141,6 @@ sub receive {
     }
 
 } ## end sub receive
+
 
 1;
