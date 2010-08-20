@@ -6,6 +6,9 @@ use SAPO::Broker::Clients::Minimal;
 use SAPO::Broker::Transport::INET;
 use SAPO::Broker::Codecs::Thrift;
 
+#don't fail if SSL is not a viable transport (please install IO::Socket::SSL)
+eval { require SAPO::Broker::Transport::SSL; };
+
 use strict;
 use warnings;
 
@@ -41,6 +44,8 @@ sub __get_transport_class {
         return $prefix . 'TCP';
     } elsif ( $proto eq 'udp' ) {
         return $prefix . 'UDP';
+    } elsif ( $proto eq 'ssl' ) {
+        return $prefix . 'SSL';
     } else {
         croak("Unknown protocol '$proto'");
         return;
