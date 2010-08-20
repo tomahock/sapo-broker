@@ -146,38 +146,4 @@ sub __read {
     }
 } ## end sub __read
 
-package SAPO::Broker::Transport::TCP;
-
-our $DEFAULT_PORT = 3323;
-our $DEFAULT_HOST = 'localhost';
-
-use base qw(SAPO::Broker::Transport::INET);
-
-sub new {
-    my $self = shift @_;
-
-    return $self->SUPER::new(
-        'host' => $DEFAULT_HOST,
-        'port' => $DEFAULT_PORT,
-        @_, 'proto' => 'tcp'
-    );
-}
-
-package SAPO::Broker::Transport::UDP;
-
-use base qw(SAPO::Broker::Transport::INET);
-
-our $DEFAULT_PORT = 3323;
-our $DEFAULT_HOST = 'localhost';
-
-sub new {
-    my $self = shift @_;
-
-    return $self->SUPER::new(
-        'host' => $DEFAULT_HOST,
-        'port' => $DEFAULT_PORT,
-        @_, 'proto' => 'udp'
-    );
-}
-
 1;
