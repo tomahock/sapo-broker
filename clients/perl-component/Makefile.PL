@@ -34,10 +34,11 @@ unless ( has_module "IO::Socket::SSL" ) {
 }
 
 WriteMakefile(
-    NAME          => 'SAPO::Broker',
-    AUTHOR        => 'Cláudio Valente <c.valente@co.sapo.pt>',
-    VERSION_FROM  => 'lib/SAPO/Broker.pm',
-    ABSTRACT_FROM => 'lib/SAPO/Broker.pm',
-    PMLIBDIRS     => [@PMLIBDIRS],
-    PREREQ_PM     => {%PREREQ_PM},
+    'NAME'          => 'SAPO::Broker',
+    'AUTHOR'        => 'Cláudio Valente <c.valente@co.sapo.pt>',
+    'VERSION_FROM'  => 'lib/SAPO/Broker.pm',
+    'ABSTRACT_FROM' => 'lib/SAPO/Broker.pm',
+    'PMLIBDIRS'     => [@PMLIBDIRS],
+    'PREREQ_PM'     => {%PREREQ_PM},
+    'test'          => { 'TESTS' => 't/*.t' },
 );
