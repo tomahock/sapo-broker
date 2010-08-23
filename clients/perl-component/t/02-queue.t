@@ -1,59 +1,60 @@
 use Test::More;
 
-BEGIN { use_ok('SAPO::Broker::Clients::Simple') }
+BEGIN { use_ok('SAPO::Broker'); use_ok('SAPO::Broker::Clients::Simple') }
 
 use strict;
 use warnings;
 
-my $N    = $ENV{'BROKER_N_TESTS'} || 100;
-my $host = $ENV{'BROKER_HOST'}    || 'broker.labs.sapo.pt';
+my $name;
+my $host;
+my $N;
+my @payloads;
+my $broker;
 
-sub read_name {
-    my $rand_name;
+sub read_info {
     eval {
-        open my $f, '<', '.broker_name' or die $!;
-        $rand_name = <$f>;
+        open my $f, '<:raw', '.broker_info' or die $!;
+        local $/ = "\n";
+        $name = <$f>;
+        $host = <$f>;
+        $N    = <$f>;
+        chomp $name;
+        chomp $host;
+        chomp $N;
         close($f) or die !$;;
     };
     if ($@) {
         warn $@;
         return 0;
+    } else {
+        return 1;
     }
-
-    return $rand_name;
-
 }
 
-sub rand_string($) {
-    my ($n) = @_;
-
-    my $ret = '';
-    for ( 1 .. $n ) {
-        $ret .= chr( int( rand(256) ) );
+sub read_data {
+    eval {
+        open my $f, '<:raw', '.broker_data' or die $!;
+        while ( my $length = <$f> ) {
+            my $payload;
+            read $f, $payload, $length;
+            push @payloads, $payload;
+        }
+        close($f) or die !$;;
+    };
+    if ($@) {
+        warn $@;
+        return;
+    } else {
+        return 1;
     }
-    return $ret;
 }
 
-ok( my $name = read_name(), 'Read queue name' );
-ok(
-    my $broker = SAPO::Broker::Clients::Simple->new(
-        'host'  => $host,
-        'proto' => 'tcp'
-    ),
-    'Instantiate broker'
-  );
+ok( read_info(), 'Read broker info' );
+ok( read_data(), 'Read broker data' );
 
-my @payloads;
-
-for my $n ( 1 .. $N ) {
-    my $payload = rand_string( rand( $N / 2 ) );
-    ok( defined $payload, 'Generate random payload' );
-    push @payloads, $payload;
-}
-
-sub fill {
-    my ($qname) = @_;
-    $qname ||= $name;
+sub fill ($$) {
+    my ( $queue_name, $proto ) = @_;
+    my $qname = "$queue_name/$proto";
 
     my %options = (
         'destination_type' => 'QUEUE',
@@ -63,44 +64,67 @@ sub fill {
     my $n = 0;
     for my $payload (@payloads) {
         ++$n;
-        ok( $broker->publish( %options, 'payload' => $payload ), "Published message $n" );
+        ok( $broker->publish( %options, 'payload' => $payload ), "Published message $n ($proto)" );
     }
 }
 
-fill();
+sub test_queue($) {
+    my $proto = shift;
 
-ok(
-    $broker->subscribe( (
-            'destination_type' => 'QUEUE',
-            'destination'      => $name,
-            'auto_acknowledge' => 1
-        )
-    ),
-    'Subscribe queue'
-  );
+    ok(
+        $broker = SAPO::Broker::Clients::Simple->new(
+            'host'  => $host,
+            'proto' => lc($proto),
+        ),
+        'Instantiate broker'
+      );
 
-my $n = 0;
-for my $payload (@payloads) {
-    ++$n;
-    ok( my $message = $broker->receive(), "Receive subscribed message $n" );
-    ok( $message->message->payload eq $payload, "Check paylod for message $n" );
+    my $qname = "$name/subscribe";
+    fill( $qname, $proto );
+
+    ok(
+        $broker->subscribe( (
+                'destination_type' => 'QUEUE',
+                'destination'      => "$qname/$proto",
+                'auto_acknowledge' => 1
+            )
+        ),
+        "Subscribe queue ($proto)"
+      );
+
+    my $n = 0;
+    for my $payload (@payloads) {
+        ++$n;
+        ok( my $message = $broker->receive(), "Receive subscribed message $n ($proto)" );
+        ok( $message->message->payload eq $payload, "Check paylod for message $n ($proto)" );
+    }
+
+    my $pname = "$name/poll";
+    fill( $pname, $proto );
+
+    my %poptions = (
+        'destination_type' => 'QUEUE',
+        'destination'      => "$pname/$proto",
+    );
+    $n = 0;
+    for my $payload (@payloads) {
+        ++$n;
+        ok( $broker->poll(%poptions), "Poll message $n ($proto)" );
+        ok( my $message = $broker->receive(), "Receive poll message $n ($proto)" );
+        ok( $broker->acknowledge($message), "Acknowledge poll message $n ($proto)" );
+        ok( $message->message->payload eq $payload, "Check paylod for message $n ($proto)" );
+    }
+} ## end sub test_queue($)
+
+test_queue('TCP');
+
+#ssl stuff
+SKIP: {
+    if (SAPO::Broker::has_ssl) {
+        test_queue('SSL');
+    } else {
+        skip "no SSL support", 6 + 8 * $N;
+    }
 }
 
-my $pname = $name . "_poll";
-fill($pname);
-
-my %poptions = (
-    'destination_type' => 'QUEUE',
-    'destination'      => $pname,
-);
-$n = 0;
-for my $payload (@payloads) {
-    ++$n;
-    ok( $broker->poll(%poptions), "Poll message $n" );
-    ok( my $message = $broker->receive(), "Receive poll message $n" );
-    ok( $broker->acknowledge($message), "Acknowledge poll message $n" );
-    ok( $message->message->payload eq $payload, "Check paylod for message $n" );
-}
-
-done_testing( 4 + 9 * $N );
-
+done_testing( 4 + 2 * ( 2 + 8 * $N ) );
