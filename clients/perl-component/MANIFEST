@@ -49,5 +49,5 @@ lib/SAPO/Broker.pm
 
 t/99-cleanup.t
 t/01-setup_data.t
-t/02-queue.t
+t/02-basic.t
 t/00-use.t
