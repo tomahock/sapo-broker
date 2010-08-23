@@ -160,7 +160,11 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 					this.brokerClient.setState(BrokerClientState.OK);
 
 					// READ THREADS
-					start();
+					if(readerStarded)
+					{
+						// initialize only if reader thread has been previously initialized
+						start();
+					}
 
 					// AUTH
 					if (this.brokerClient instanceof SslBrokerClient)
@@ -295,7 +299,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public NetMessage decode(DataInputStream in) throws IOException
 	{
-
 		if (serializer == null)
 		{
 			throw new RuntimeException("Received message uses an unknown encoding");
