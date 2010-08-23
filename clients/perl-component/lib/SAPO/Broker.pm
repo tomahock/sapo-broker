@@ -13,12 +13,12 @@ sub has_module($) {
     return not $@;
 }
 
-sub has_ssl(){
+sub has_ssl() {
     return has_module('IO::Socket::SSL');
 }
 
-sub has_sapo_sts(){
-    return has_module('LWP') and has_module ('Crypt::SSLeay') and has_module ('JSON::Any');
+sub has_sapo_sts() {
+    return has_module('LWP') and has_module('Crypt::SSLeay') and has_module('JSON::Any');
 }
 
 1;
