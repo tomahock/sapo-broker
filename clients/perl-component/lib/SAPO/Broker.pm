@@ -5,6 +5,22 @@ use warnings;
 
 our $VERSION = '0.1';
 
+sub has_module($) {
+    my ($module) = @_;
+
+    eval "use $module;";
+
+    return not $@;
+}
+
+sub has_ssl(){
+    return has_module('IO::Socket::SSL');
+}
+
+sub has_sapo_sts(){
+    return has_module('LWP') and has_module ('Crypt::SSLeay') and has_module ('JSON::Any');
+}
+
 1;
 __END__
 
@@ -14,7 +30,7 @@ SAPO::Broker - Perl extension for using SAPO Broker
 
 =head1 SYNOPSIS
 
-  #see SAPO::Broker::Client::* for usage examples
+  #see SAPO::Broker::Client::* and the eg directory for usage examples
 
 =head1 DESCRIPTION
 
