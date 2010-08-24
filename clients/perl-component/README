@@ -22,6 +22,11 @@ This module depends on Thrift perl bindings.
 
 You can get them at http://incubator.apache.org/thrift/download/
 
+
+USAGE
+
+See examples in the examples directory
+
 COPYRIGHT AND LICENCE
 
 Put the correct copyright and licence information here.
