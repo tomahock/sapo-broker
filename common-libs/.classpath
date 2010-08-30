@@ -12,6 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="slf4j-api-1.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="logback-classic-0.9.22.jar"/>
 	<classpathentry exported="true" kind="lib" path="logback-core-0.9.22.jar"/>
-	<classpathentry exported="true" kind="lib" path="netty-3.2.1.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="netty-3.2.2.Final.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
