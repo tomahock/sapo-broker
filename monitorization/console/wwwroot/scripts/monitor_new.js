@@ -935,11 +935,7 @@ function setAgentSubscriptionInfo(subscriptionsInfo, panel)
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 			if(isTopic)
 			{
-//<a href='./topic.html?subscriptionname=" + subscriptionName + "'>" + subscriptionName + "
-				
 				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./topic.html?subscriptionname=" + subscriptionName + "'>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td><td style='padding-right:2em'>" +  count + "</td></tr>";
-
-				//newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td><td style='padding-right:2em'>" +  count + "</td></tr>";
 			}
 			else
 			{
