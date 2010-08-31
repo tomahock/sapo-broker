@@ -104,9 +104,10 @@ public class Gcs
 		{
 			log.info("Connecting to '{}'.", address.toString());
 
-			ChannelFuture cf = instance.connector.connect(address).awaitUninterruptibly();
+			ChannelFuture cf = instance.connector.connect(address);
+			boolean sucess = cf.awaitUninterruptibly(5, TimeUnit.SECONDS);
 
-			if (!cf.isSuccess())
+			if (!sucess)
 			{
 				GcsExecutor.schedule(new Connect(address), RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
 			}
