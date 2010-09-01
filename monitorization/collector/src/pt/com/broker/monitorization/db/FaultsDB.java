@@ -105,7 +105,7 @@ public class FaultsDB
 	{
 
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		String shortMessage = "[failed to extract data from Fault message]";
+		String shortMessage = "";
 		String content = message;
 
 		try
@@ -138,7 +138,7 @@ public class FaultsDB
 		{
 			Throwable r = ErrorAnalyser.findRootCause(t);
 			log.error(r.getMessage(), r);
-			return new ErrorInfo(r.getMessage(), message);
+			shortMessage = String.format("Unknown - (failed to extract data from Fault message. Reason: %s)", r.getMessage() );
 		}
 
 		return new ErrorInfo(shortMessage, content);
