@@ -21,13 +21,9 @@ public class NetAuthentication
 	 * @param token
 	 *            Can represent a password or some binary token. If the original value is text then it should be encoded in UTF-8.
 	 */
-	public NetAuthentication(byte[] token)
+	public NetAuthentication(byte[] token, String authenticationType)
 	{
 		this.token = token;
-	}
-
-	public void setAuthenticationType(String authenticationType)
-	{
 		this.authenticationType = authenticationType;
 	}
 

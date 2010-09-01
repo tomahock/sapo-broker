@@ -180,12 +180,10 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 	{
 		Atom.Authentication clientAuth = action.getAuth();
 
-		NetAuthentication netClientAuth = new NetAuthentication(clientAuth.getToken().toByteArray());
+		NetAuthentication netClientAuth = new NetAuthentication(clientAuth.getToken().toByteArray(), clientAuth.getAuthenticationType());
 
 		if (clientAuth.hasActionId())
 			netClientAuth.setActionId(clientAuth.getActionId());
-		if (clientAuth.hasAuthenticationType())
-			netClientAuth.setAuthenticationType(clientAuth.getAuthenticationType());
 		if (clientAuth.hasUserId())
 			netClientAuth.setUserId(clientAuth.getUserId());
 		if (clientAuth.getRoleCount() != 0)
