@@ -60,6 +60,8 @@ class TopicToQueueDispatcher implements MessageListener
 			action_fwd.setNotificationMessage(nnot_fwd);
 
 			NetMessage nmsg_fwd = new NetMessage(action_fwd);
+			nmsg_fwd.getHeaders().putAll(nmsg.getHeaders());
+			
 
 			if (!isFromRemotePeer(nmsg))
 			{
