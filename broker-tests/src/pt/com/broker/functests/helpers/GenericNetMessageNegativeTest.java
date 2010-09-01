@@ -28,6 +28,7 @@ public class GenericNetMessageNegativeTest extends GenericNegativeTest
 
 	private byte[] buildMessage()
 	{
+
 		BindingSerializer encoder = null;
 
 		switch (getEncodingProtocolType())
@@ -61,7 +62,12 @@ public class GenericNetMessageNegativeTest extends GenericNegativeTest
 			System.err.println(e);
 			setFailure(e);
 		}
-
+		catch (Exception ex)
+		{
+			System.err.println(ex);
+			setFailure(ex);
+		}
+		
 		byte[] byteArray = byteArrayOutputStream.toByteArray();
 
 		return byteArray;
