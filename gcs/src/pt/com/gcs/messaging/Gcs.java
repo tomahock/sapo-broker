@@ -105,14 +105,18 @@ public class Gcs
 			log.info("Connecting to '{}'.", address.toString());
 
 			ChannelFuture cf = instance.connector.connect(address);
-			boolean sucess = cf.awaitUninterruptibly(5, TimeUnit.SECONDS);
-
+			cf.awaitUninterruptibly(5, TimeUnit.SECONDS);
+			
+			boolean sucess = cf.isSuccess();
+			
 			if (!sucess)
 			{
+				log.info("Connection fail to '{}'.", address.toString());
 				GcsExecutor.schedule(new Connect(address), RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
 			}
 			else
 			{
+				log.info("Connection established to '{}'.", address.toString());
 				synchronized (instance.agentsConnection)
 				{
 					instance.agentsConnection.add(cf.getChannel());
