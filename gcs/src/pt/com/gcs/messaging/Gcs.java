@@ -474,11 +474,17 @@ public class Gcs
 		broadcastMaxSizeFault(String.format("The maximum number of distinct subscriptions (%s) has been reached.", GcsInfo.getMaxDistinctSubscriptions()));
 	}
 
+	
 	private static void broadcastMaxSizeFault(String message)
 	{
 		String topic = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
 
-		NetPublish np = new NetPublish(topic, DestinationType.TOPIC, new NetBrokerMessage(message));
+		//Soap fault message
+		final String soapMessageTemplate = "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope' xmlns:wsa='http://www.w3.org/2005/08/addressing' xmlns:mq='http://services.sapo.pt/broker'><soap:Header><wsa:From><wsa:Address>%s</wsa:Address></wsa:From></soap:Header><soap:Body><soap:Fault><soap:Code><soap:Value>soap:Receiver</soap:Value></soap:Code><soap:Reason><soap:Text>%s</soap:Text></soap:Reason><soap:Detail>%s</soap:Detail></soap:Fault></soap:Body></soap:Envelope>";
+		
+		String faultMessage = String.format(soapMessageTemplate, GcsInfo.getAgentName(), "Limit reached", message);
+		
+		NetPublish np = new NetPublish(topic, DestinationType.TOPIC, new NetBrokerMessage(faultMessage));
 
 		Gcs.publish(np);
 	}
