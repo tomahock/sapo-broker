@@ -58,7 +58,6 @@ public class GenericNegativeTest extends BrokerTest
 	protected void build() throws Throwable
 	{
 		addAction();
-
 		addConsequece();
 	}
 

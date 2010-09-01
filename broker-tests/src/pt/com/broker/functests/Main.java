@@ -190,11 +190,11 @@ public class Main
 				new InvalidAuthChannelTypeTest().run(numberOfTests, testResults);
 				new TimeoutPollTest().run(numberOfTests, testResults);
 			}
-			for(Class testClass : ConfigurationInfo.getTestClasses())
-			{
-				Test t = createInstance(testClass);
-				t.run(numberOfTests, testResults);
-			}
+//			for(Class testClass : ConfigurationInfo.getTestClasses())
+//			{
+//				Test t = createInstance(testClass);
+//				t.run(numberOfTests, testResults);
+//			}
 		}
 
 		System.out.println();

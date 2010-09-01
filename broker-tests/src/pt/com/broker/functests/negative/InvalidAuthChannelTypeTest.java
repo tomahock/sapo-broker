@@ -13,7 +13,7 @@ public class InvalidAuthChannelTypeTest extends GenericNetMessageNegativeTest
 	{
 		super("Invalid Authentication Channel Type Failed");
 
-		NetAuthentication clientAuth = new NetAuthentication("ThisIsAnInvalidTokenNotThatItMatters".getBytes());
+		NetAuthentication clientAuth = new NetAuthentication("ThisIsAnInvalidTokenNotThatItMatters".getBytes(), "AuthType");
 
 		NetAction action = new NetAction(ActionType.AUTH);
 		action.setAuthenticationMessage(clientAuth);
