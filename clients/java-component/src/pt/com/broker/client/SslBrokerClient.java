@@ -151,10 +151,10 @@ public final class SslBrokerClient extends BaseBrokerClient
 
 		Object syncObj = new Object();
 		BlockingMessageAcceptedListener acceptedListener = new BlockingMessageAcceptedListener(syncObj);
-		String actionId = RandomStringUtils.random(25);
+		String actionId = RandomStringUtils.randomAlphabetic(25);
 		clientAuth.setActionId(actionId);
 
-		AcceptRequest acceptRequest = new AcceptRequest(actionId, acceptedListener, 5000);
+		AcceptRequest acceptRequest = new AcceptRequest(actionId, acceptedListener, 10000);
 		PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 
 		getNetHandler().sendMessage(msg);

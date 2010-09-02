@@ -127,6 +127,7 @@ public class PendingAcceptRequestsManager
 	public static void acceptedMessageReceived(String actionId)
 	{
 		AcceptRequest request = null;
+	
 		synchronized (requests)
 		{
 			request = requests.get(actionId);

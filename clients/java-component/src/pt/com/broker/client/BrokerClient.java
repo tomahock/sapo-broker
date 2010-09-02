@@ -134,5 +134,4 @@ public class BrokerClient extends BaseBrokerClient
 			throw new RuntimeException(t);
 		}
 	}
-
 }
