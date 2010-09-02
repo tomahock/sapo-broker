@@ -137,12 +137,9 @@ public final class SslBrokerClient extends BaseBrokerClient
 
 		setState(BrokerClientState.AUTH);
 
-		NetAuthentication clientAuth = new NetAuthentication(userCredentials.getToken());
+		NetAuthentication clientAuth = new NetAuthentication(userCredentials.getToken(), userCredentials.getUserAuthenticationType());
 		if (userCredentials.getRoles() != null && userCredentials.getRoles().size() != 0)
 			clientAuth.setRoles(userCredentials.getRoles());
-
-		if (userCredentials.getUserAuthenticationType() != null)
-			clientAuth.setAuthenticationType(userCredentials.getUserAuthenticationType());
 
 		if (userCredentials.getUserId() != null)
 			clientAuth.setUserId(userCredentials.getUserId());
