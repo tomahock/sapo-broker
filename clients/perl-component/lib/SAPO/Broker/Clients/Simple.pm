@@ -55,6 +55,11 @@ sub __get_transport_class {
     }
 }
 
+sub __can_acknowledge($) {
+    my ($kind) = @_;
+    return $kind eq 'QUEUE' or $kind eq 'VIRTUAL_QUEUE';
+}
+
 sub subscribe {
     my ( $self, %options ) = @_;
 
@@ -63,7 +68,7 @@ sub subscribe {
     my $subscribe = SAPO::Broker::Messages::Subscribe->new(%options);
     my $ret       = $self->send($subscribe);
 
-    if ( 'QUEUE' eq $options{'destination_type'} and $auto_ack ) {
+    if ( __can_acknowledge( $options{'destination_type'} ) and $auto_ack ) {
 
         #add the queue name to the auto_ack queue
         $self->{'auto_ack'}->{ $options{'destination'} } = 1;
@@ -141,7 +146,7 @@ sub receive {
     } elsif ( $msg_type eq 'SAPO::Broker::Messages::Notification' ) {
 
         #try to find whether we need to acknowledge
-        if ( $message->destination_type eq 'QUEUE' and $self->{'auto_ack'}->{ $message->destination } ) {
+        if ( __can_acknowledge( $message->destination_type ) and $self->{'auto_ack'}->{ $message->destination } ) {
             $self->acknowledge($message);
         }
         return $message;
