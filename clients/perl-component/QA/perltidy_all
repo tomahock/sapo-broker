@@ -17,7 +17,8 @@ sub tidy_dir {
 
 system "$perltidy " . catfile( $Bin, '..', 'Makefile.PL' ) . ' 2>/dev/null';
 
-tidy_dir( catfile( $Bin, '..', 'lib' ), '*.pm' );
-tidy_dir( catfile( $Bin, '..', 't' ),   '*.t' );
+tidy_dir( catfile( $Bin, '..', 'lib' ),      '*.pm' );
+tidy_dir( catfile( $Bin, '..', 'examples' ), '*.pm' );
+tidy_dir( catfile( $Bin, '..', 't' ),        '*.t' );
 tidy_dir( $Bin, 'perltidy_all' );
 tidy_dir( $Bin, 'perlcritic' );
