@@ -5,10 +5,13 @@ use ExtUtils::MakeMaker;
 
 my @PMLIBDIRS = ('lib');
 my %PREREQ_PM = (
-    'Thrift'           => '0.1',
-    'IO::Socket::INET' => 0,
-    'Time::HiRes'      => 0,
-    'Readonly'         => 0,
+    'Thrift'                    => '0.1',
+    'IO::Socket::INET'          => 0,
+    'Time::HiRes'               => 0,
+    'Readonly'                  => 0,
+    'XML::LibXML'               => 0,
+    'XML::LibXML::XPathContext' => 0,
+    'Test::More'                => 0,
 );
 
 sub has_module($) {
@@ -41,4 +44,8 @@ WriteMakefile(
     'PMLIBDIRS'     => [@PMLIBDIRS],
     'PREREQ_PM'     => {%PREREQ_PM},
     'test'          => { 'TESTS' => 't/*.t' },
+    dist            => {
+        COMPRESS => 'gzip -9f',
+        SUFFIX   => 'gz',
+    },
 );
