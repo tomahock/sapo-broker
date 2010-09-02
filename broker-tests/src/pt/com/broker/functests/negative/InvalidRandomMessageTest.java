@@ -17,6 +17,7 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 		byte[] randomData = new byte[msgSize];
 		new Random().nextBytes(randomData);
 
+		setTimeout(10 * 1000);
 		byte[] header = new byte[] { 0, (byte) getEncodingProtocolType().ordinal(), 0, 0, (byte) 0, (byte) 0, (byte) 0, (byte) msgSize };
 
 		byte[] binMsg = Arrays.copyOf(header, header.length + msgSize);
@@ -27,6 +28,7 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 		}
 		setDataToSend(binMsg);
 
+		
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
 		
