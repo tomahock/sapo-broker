@@ -75,8 +75,9 @@ sub test_queue($;$) {
 
     ok(
         my $broker = SAPO::Broker::Clients::Simple->new(
-            'host'  => $host,
-            'proto' => lc($pproto),
+            'host'    => $host,
+            'proto'   => lc($pproto),
+            'timeout' => 10,
         ),
         "Instantiate broker ($pproto)"
       );
@@ -87,8 +88,9 @@ sub test_queue($;$) {
     if ( $pproto ne $proto ) {
         ok(
             $broker = SAPO::Broker::Clients::Simple->new(
-                'host'  => $host,
-                'proto' => lc($proto),
+                'host'    => $host,
+                'proto'   => lc($proto),
+                'timeout' => 10,
             ),
             "Instantiate broker ($proto)"
           );
@@ -129,17 +131,17 @@ sub test_queue($;$) {
     }
 } ## end sub test_queue($;$)
 
-test_queue('TCP');
+test_queue( 'TCP', 'TCP' );
 test_queue( 'TCP', 'UDP' );
 
 #ssl stuff
 SKIP: {
-    if (SAPO::Broker::has_ssl) {
-        test_queue('SSL');
+    if ( not $ENV{'BROKER_DISABLE_SSL'} and SAPO::Broker::has_ssl ) {
+        test_queue( 'SSL', 'TCP' );
         test_queue( 'SSL', 'UDP' );
     } else {
-        skip "no SSL support", 5 + 16 * $N;
+        skip( $ENV{'BROKER_DISABLE_SSL'} ? "SSL tests disabled by env var" : "no SSL support", 6 + 16 * $N );
     }
 }
 
-done_testing( 14 + 32 * $N );
+done_testing( 15 + 32 * $N );
