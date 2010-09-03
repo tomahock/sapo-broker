@@ -1,14 +1,21 @@
 package pt.com.broker.messaging;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.AccessControl;
+import pt.com.broker.auth.Session;
+import pt.com.broker.auth.AccessControl.Privilege;
+import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.net.BrokerProtocolHandler;
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -79,6 +86,11 @@ public class BrokerTopicListener extends BrokerListener
 						showResumedDeliveryMessage = false;
 					}
 
+					
+					if(!deliveryAllowed(response))
+					{
+						return failed;
+					}
 					lchannel.write(response);
 					showSuspendedDeliveryMessage = true;
 				}
@@ -86,7 +98,10 @@ public class BrokerTopicListener extends BrokerListener
 				{
 					if (isReady())
 					{
-						
+						if(!deliveryAllowed(response))
+						{
+							return failed;
+						}
 						
 						ChannelFuture future = lchannel.write(response);
 						final long writeStartTime = System.nanoTime();
@@ -138,6 +153,15 @@ public class BrokerTopicListener extends BrokerListener
 			log.error("Error on message listener for '{}': {}", e.getMessage(), getsubscriptionKey());
 		}
 		return result;
+	}
+
+	private boolean deliveryAllowed(NetMessage response)
+	{
+		NetNotification notificationMessage = response.getAction().getNotificationMessage();
+		Channel channel = this.getChannel().getChannel();
+		
+		DestinationType destinationType = DestinationType.TOPIC;
+		return AccessControl.deliveryAllowed(response, destinationType, channel, this.getsubscriptionKey(), notificationMessage.getDestination());
 	}
 
 	@Override

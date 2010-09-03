@@ -2,15 +2,22 @@ package pt.com.broker.messaging;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.AccessControl;
+import pt.com.broker.auth.Session;
+import pt.com.broker.auth.AccessControl.Privilege;
+import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.net.BrokerProtocolHandler;
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.Gcs;
@@ -67,6 +74,12 @@ public class BrokerQueueListener extends BrokerListener
 		{
 			if (lchannel.isWritable())
 			{
+				
+				if(!deliveryAllowed(response, lchannel.getChannel()))
+				{
+					return failed;
+				}
+				
 				lchannel.write(response);
 				isReady.set(true);
 			}
@@ -74,6 +87,10 @@ public class BrokerQueueListener extends BrokerListener
 			{
 				if (isReady())
 				{
+					if(!deliveryAllowed(response, lchannel.getChannel()))
+					{
+						return failed;
+					}
 					ChannelFuture future = lchannel.write(response);
 					isReady.set(false);
 					if (showSuspendedDeliveryMessage && log.isDebugEnabled())
@@ -151,5 +168,21 @@ public class BrokerQueueListener extends BrokerListener
 	public boolean isActive()
 	{
 		return true;
+	}
+	
+	/**
+	 * If the message was original sent to a topic validate delivery. 
+	 */
+	private boolean deliveryAllowed(NetMessage response, Channel channel)
+	{
+		String originalDestination = response.getHeaders().get("ORIGINAL_DESTINATION");
+		if(originalDestination == null)
+		{
+			return true;
+		}
+		
+		// This is a Virtual Queue
+		DestinationType destinationType = DestinationType.TOPIC;
+		return AccessControl.deliveryAllowed(response, destinationType, channel, this.getsubscriptionKey(), originalDestination);
 	}
 }

@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.caudexorigo.text.StringUtils;
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
@@ -202,6 +205,7 @@ public class AccessControl
 
 	private static void addPolicyEntries(List<Entry> entries)
 	{
+		List<AclEntry> newAgentAcl = new ArrayList<AclEntry>();
 		for (Entry entry : entries)
 		{
 			List<pt.com.gcs.conf.global.Privilege> privileges = entry.getPrivilege();
@@ -214,9 +218,14 @@ public class AccessControl
 			{
 				for (pt.com.gcs.conf.global.DestinationType destType : destinationTypes)
 				{
-					agentAcl.add(new AclEntry(Autorization.fromValue(action), Privilege.fromValue(priv), destination, translateDestinationType(destType), predicates));
+					newAgentAcl.add(new AclEntry(Autorization.fromValue(action), Privilege.fromValue(priv), destination, translateDestinationType(destType), predicates));
 				}
 			}
+		}
+		synchronized (agentAcl)
+		{
+			agentAcl.clear();
+			agentAcl.addAll(newAgentAcl);
 		}
 	}
 
@@ -329,7 +338,7 @@ public class AccessControl
 			break;
 		case SUBSCRIBE:
 			NetSubscribe subs = message.getAction().getSubscribeMessage();
-			if(subs.getDestinationType().equals(NetAction.DestinationType.VIRTUAL_QUEUE) )
+			if (subs.getDestinationType().equals(NetAction.DestinationType.VIRTUAL_QUEUE))
 			{
 				dest = NetAction.DestinationType.TOPIC;
 				destinationName = StringUtils.substringAfter(subs.getDestination(), "@");
@@ -373,7 +382,7 @@ public class AccessControl
 		{
 			if (destinationType.equals(entry.getDestinationType()))
 			{
-				if (match(entry.getDestination(), destinationName) || match(destinationName, entry.getDestination()))
+				if (match(entry.getDestination(), destinationName) /* || match(destinationName, entry.getDestination()) */)
 				{
 					for (AclPredicate pred : entry.getConditions())
 					{
@@ -391,7 +400,6 @@ public class AccessControl
 							res.reasonForRejection = String.format("Access denied! Destination type: %s, Destination name: %s, Privilege: %s", destinationType, destinationName, privilege);
 							return res;
 						}
-
 					}
 				}
 			}
@@ -399,11 +407,32 @@ public class AccessControl
 
 		return granted;
 	}
+	
+	public static boolean deliveryAllowed(NetMessage response, DestinationType destinationType, Channel channel, String subscription, String destination)
+	{
+		Object _session = ChannelAttributes.get(ChannelAttributes.getChannelId(channel), "BROKER_SESSION_PROPERTIES");
+		Session sessionProps = null;
+		if(_session == null)
+		{
+			_session = new Session();
+		}
+		if (_session != null)
+		{
+			sessionProps = (Session) _session;
+		}		
+		
+		ValidationResult validationResult = validate(destinationType, destination, Privilege.READ, sessionProps);
+		if(!validationResult.accessGranted)
+		{
+			log.info(String.format("Message delivery refused to '%s'. Subscription: '%s', Destination: '%s'", channel.toString(), subscription, destination));
+		}
+			
+		return validationResult.accessGranted;
+	}
 
 	private static boolean match(String destinationName, String destination)
 	{
 		boolean result = DestinationMatcher.match(destinationName, destination);
 		return result;
 	}
-
 }
