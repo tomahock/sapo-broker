@@ -26,8 +26,8 @@ public class GenericPubSubTest extends BrokerTest
 	private BaseBrokerClient infoConsumer;
 	private BaseBrokerClient infoProducer;
 
-	private boolean constructionFailed = false;
-	private Throwable reasonForFailure;
+	protected boolean constructionFailed = false;
+	protected Throwable reasonForFailure;
 
 	public GenericPubSubTest()
 	{
@@ -58,7 +58,10 @@ public class GenericPubSubTest extends BrokerTest
 		if (constructionFailed)
 			throw reasonForFailure;
 
-		brokerListener = new GenericBrokerListener(getDestinationType());
+		if( getBrokerListener() == null)
+		{
+			brokerListener = new GenericBrokerListener(getDestinationType());
+		}
 
 		addPrerequisites();
 
@@ -73,7 +76,6 @@ public class GenericPubSubTest extends BrokerTest
 	{
 		constructionFailed = true;
 		reasonForFailure = throwable;
-
 	}
 
 	protected void addPrerequisites()

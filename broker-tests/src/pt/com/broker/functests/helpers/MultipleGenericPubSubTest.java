@@ -6,6 +6,7 @@ import java.util.List;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 
+import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
@@ -21,7 +22,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 {
 	public static class TestClientInfo
 	{
-		public BrokerClient brokerClient;
+		public BaseBrokerClient brokerClient;
 		public MultipleNotificationsBrokerListener brokerListenter;
 		public int numberOfExecutions;
 	}
@@ -51,6 +52,8 @@ public class MultipleGenericPubSubTest extends BrokerTest
 	@Override
 	public void build() throws Throwable
 	{
+		System.out.println("MultipleGenericPubSubTest.build()");
+		
 		addProducers();
 
 		addConsumers();
