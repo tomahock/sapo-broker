@@ -118,7 +118,7 @@ public abstract class Test
 		}
 		catch (Throwable t)
 		{
-			if (!okToTimeOut())
+			if (!okToTimeOut() && (getAction() != null))
 			{
 				if (!getAction().isSucess())
 				{
