@@ -46,15 +46,13 @@ public class CollectorManager
 		{
 			public void run()
 			{
-				int del_counter = 0;
+				log.info("Running Database cleaner. Delete old entries (events and faults)");
 
-				log.info("Running Database cleaner. Delete old entries");
+				int del_events_counter = DbExecutor.runActionPreparedStatement("DELETE FROM raw_data WHERE (event_time < (now()-'00:30'::time));");
+				
+				int del_faults_counter = DbExecutor.runActionPreparedStatement("DELETE FROM fault_data WHERE (event_time < (now()-'00:30'::time));");
 
-				// del_counter += DbExecutor.runActionPreparedStatement("DELETE FROM raw_data WHERE (predicate='output-rate' OR predicate='input-rate') AND (object_value=0) AND (event_time < (now()-'00:10'::time));");
-
-				del_counter += DbExecutor.runActionPreparedStatement("DELETE FROM raw_data WHERE (event_time < (now()-'00:30'::time));");
-
-				log.info("Database cleaner deleted {} entries", del_counter);
+				log.info("Database cleaner deleted {} event entries and  fault entries.", del_events_counter, del_faults_counter);
 			}
 		};
 
