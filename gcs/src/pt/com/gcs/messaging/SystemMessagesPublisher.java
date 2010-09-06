@@ -32,6 +32,12 @@ public class SystemMessagesPublisher
 	{
 		final String messageId = message.getAction().getNotificationMessage().getMessage().getMessageId();
 
+		if(log.isDebugEnabled())
+		{
+			String debMsg = String.format("Sending system message. Destination Channel: '%s'. Message payload: '%s'. MsgId: '%s'", channel.toString(), new String(message.getAction().getNotificationMessage().getMessage().getPayload()), messageId);
+			log.debug(debMsg);
+		}
+		
 		if (channel.isWritable())
 		{
 			pending_messages.add(messageId);
@@ -43,6 +49,8 @@ public class SystemMessagesPublisher
 				{
 					if (pending_messages.contains(messageId))
 					{
+						log.info(String.format("Message with id '%s' wasn't acknoledge. Closing channel.", messageId));
+						
 						pending_messages.remove(messageId);
 						MiscStats.newSystemMessageFailed();
 						closeChannel(channel);
@@ -54,6 +62,7 @@ public class SystemMessagesPublisher
 		}
 		else
 		{
+			log.info("Closing channel. Channel was not writable.");
 			closeChannel(channel);
 		}
 	}

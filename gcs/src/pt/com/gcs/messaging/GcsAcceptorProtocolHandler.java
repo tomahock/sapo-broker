@@ -98,7 +98,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("Message Received from: '{}', Type: '{}'", ctx.getChannel().getRemoteAddress(), nnot.getDestination());
+			log.debug(String.format("Message Received from: '%s', Destination: '%s', Type: '%s', MsgId: '%s'", ctx.getChannel().getRemoteAddress(), nnot.getDestination(), mtype, brkMsg.getMessageId()));
 		}
 
 		if (mtype.equals("ACK"))
@@ -113,7 +113,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			if (!isValid)
 			{
 				String paddr = String.valueOf(ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.PEER_ADDRESS"));
-				log.warn("A peer from \"{}\" tried to connect but it does not appear in the world map.", paddr);
+				log.error("A peer from \"{}\" tried to connect but it does not appear in the world map.", paddr);
 				ctx.getChannel().close();
 			}
 			else
@@ -134,7 +134,14 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			if (StringUtils.isBlank(subscriptionKey))
 			{
 				String errorMessage = String.format("Sytem Queue or Topic message has a blank destination field. Message content: %s", msgContent);
-				log.error("Sytem Queue or Topic message has a blank destination field");
+				log.error(errorMessage);
+				throw new RuntimeException(errorMessage);
+			}
+			
+			if (StringUtils.isBlank(action))
+			{
+				String errorMessage = String.format("Sytem Queue or Topic message has a blank action field. Message content: %s", msgContent);
+				log.error(errorMessage);
 				throw new RuntimeException(errorMessage);
 			}
 
@@ -199,7 +206,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 	{
 		Channel channel = ctx.getChannel();
 
-		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><message-id>%s</message-id></sysmessage>";
+		final String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><message-id>%s</message-id></sysmessage>";
 		String payload = String.format(ptemplate, "SYSTEM_ACKNOWLEDGE", GcsInfo.getAgentName(), channel.getLocalAddress().toString(), messageId);
 
 		NetBrokerMessage brkMsg = new NetBrokerMessage(payload.getBytes(UTF8));
@@ -212,6 +219,13 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		NetMessage nmsg = new NetMessage(naction);
 		nmsg.getHeaders().put("TYPE", "SYSTEM_ACK");
 
+		
+		if(log.isDebugEnabled())
+		{
+			log.debug(String.format("Acknowledging System Message. Payload: %s", payload));
+			
+		}
+		
 		if(channel.isWritable())
 		{
 			channel.write(nmsg);
