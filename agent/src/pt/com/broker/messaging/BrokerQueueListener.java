@@ -9,15 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AccessControl;
-import pt.com.broker.auth.Session;
-import pt.com.broker.auth.AccessControl.Privilege;
-import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.net.BrokerProtocolHandler;
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.Gcs;
@@ -30,7 +25,7 @@ public class BrokerQueueListener extends BrokerListener
 	private static final Logger log = LoggerFactory.getLogger(BrokerQueueListener.class);
 
 	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
-	private static final String ACK_REQUIRED = "ACK_REQUIRED";
+	//private static final String ACK_REQUIRED = "ACK_REQUIRED";
 
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
 	private static final ForwardResult ackNotRequired = new ForwardResult(Result.NOT_ACKNOWLEDGE);
@@ -74,50 +69,54 @@ public class BrokerQueueListener extends BrokerListener
 		{
 			if (lchannel.isWritable())
 			{
-				
-				if(!deliveryAllowed(response, lchannel.getChannel()))
+				if(deliveryAllowed(response, lchannel.getChannel()))
+				{
+					lchannel.write(response);
+					isReady.set(true);
+				}
+				else
 				{
 					return failed;
 				}
-				
-				lchannel.write(response);
-				isReady.set(true);
 			}
 			else
 			{
 				if (isReady())
 				{
-					if(!deliveryAllowed(response, lchannel.getChannel()))
+					if(deliveryAllowed(response, lchannel.getChannel()))
+					{
+						ChannelFuture future = lchannel.write(response);
+						isReady.set(false);
+						if (showSuspendedDeliveryMessage && log.isDebugEnabled())
+						{
+							log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+						}
+
+						future.addListener(new ChannelFutureListener()
+						{
+							@Override
+							public void operationComplete(ChannelFuture future) throws Exception
+							{
+								isReady.set(true);
+								if(lchannel.isWritable())
+								{
+									if (log.isDebugEnabled())
+									{
+										log.debug(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+									}								
+									showSuspendedDeliveryMessage = true;
+								}
+								else
+								{
+									showSuspendedDeliveryMessage = false;
+								}
+							}
+						});
+					}
+					else
 					{
 						return failed;
 					}
-					ChannelFuture future = lchannel.write(response);
-					isReady.set(false);
-					if (showSuspendedDeliveryMessage && log.isDebugEnabled())
-					{
-						log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-					}
-
-					future.addListener(new ChannelFutureListener()
-					{
-						@Override
-						public void operationComplete(ChannelFuture future) throws Exception
-						{
-							isReady.set(true);
-							if(lchannel.isWritable())
-							{
-								if (log.isDebugEnabled())
-								{
-									log.debug(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-								}								
-								showSuspendedDeliveryMessage = true;
-							}
-							else
-							{
-								showSuspendedDeliveryMessage = false;
-							}
-						}
-					});
 				}
 				else
 				{

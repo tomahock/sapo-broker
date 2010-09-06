@@ -7,11 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AccessControl;
-import pt.com.broker.auth.Session;
-import pt.com.broker.auth.AccessControl.Privilege;
-import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.net.BrokerProtocolHandler;
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
@@ -62,14 +58,14 @@ public class BrokerTopicListener extends BrokerListener
 	{
 		return DestinationType.TOPIC;
 	}
-	
+
 	@Override
 	protected ForwardResult doOnMessage(NetMessage response)
 	{
 		final ListenerChannel lchannel = getChannel();
 
 		ForwardResult result = success;
-		
+
 		try
 		{
 			// final NetMessage response = BrokerListener.buildNotification(amsg, getsubscriptionKey(), DestinationType.TOPIC);
@@ -86,40 +82,45 @@ public class BrokerTopicListener extends BrokerListener
 						showResumedDeliveryMessage = false;
 					}
 
-					
-					if(!deliveryAllowed(response))
+					if (deliveryAllowed(response))
+					{
+						lchannel.write(response);
+						showSuspendedDeliveryMessage = true;
+					}
+					else
 					{
 						return failed;
 					}
-					lchannel.write(response);
-					showSuspendedDeliveryMessage = true;
 				}
 				else
 				{
 					if (isReady())
 					{
-						if(!deliveryAllowed(response))
+						if (deliveryAllowed(response))
+						{
+							ChannelFuture future = lchannel.write(response);
+							final long writeStartTime = System.nanoTime();
+							startDeliverAfter = writeStartTime + 10000;
+
+							future.addListener(new ChannelFutureListener()
+							{
+								@Override
+								public void operationComplete(ChannelFuture future) throws Exception
+								{
+									final long writeTime = System.nanoTime() - writeStartTime;
+
+									if (writeTime >= MAX_WRITE_TIME)
+									{
+										startDeliverAfter = System.nanoTime() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.;
+									}
+								}
+							});
+						}
+						else
 						{
 							return failed;
 						}
-						
-						ChannelFuture future = lchannel.write(response);
-						final long writeStartTime = System.nanoTime();
-						startDeliverAfter = writeStartTime + 10000;
 
-						future.addListener(new ChannelFutureListener()
-						{
-							@Override
-							public void operationComplete(ChannelFuture future) throws Exception
-							{
-								final long writeTime = System.nanoTime() - writeStartTime;
-
-								if (writeTime >= MAX_WRITE_TIME)
-								{
-									startDeliverAfter = System.nanoTime() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.;
-								}
-							}
-						});
 					}
 					else
 					{
@@ -159,7 +160,7 @@ public class BrokerTopicListener extends BrokerListener
 	{
 		NetNotification notificationMessage = response.getAction().getNotificationMessage();
 		Channel channel = this.getChannel().getChannel();
-		
+
 		DestinationType destinationType = DestinationType.TOPIC;
 		return AccessControl.deliveryAllowed(response, destinationType, channel, this.getsubscriptionKey(), notificationMessage.getDestination());
 	}

@@ -4,9 +4,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.AccessControl;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
@@ -87,9 +89,16 @@ public class SynchronousMessageListener extends BrokerListener
 		if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 		{
 			// final NetMessage response = BrokerListener.buildNotification(message, queueName, getSourceDestinationType());
-			lchannel.write(response);
-
-			lastDeliveredMessage.set(System.currentTimeMillis());
+			
+			if(deliveryAllowed(response, lchannel.getChannel()))
+			{
+				lchannel.write(response);
+				lastDeliveredMessage.set(System.currentTimeMillis());
+			}
+			else
+			{
+				return failed;
+			}
 		}
 		else
 		{
@@ -272,5 +281,21 @@ public class SynchronousMessageListener extends BrokerListener
 	public void setReserveTime(long reserveTime)
 	{
 		this.sucess.time = reserveTime;
+	}
+	
+	/**
+	 * If the message was original sent to a topic validate delivery. 
+	 */
+	private boolean deliveryAllowed(NetMessage response, Channel channel)
+	{
+		String originalDestination = response.getHeaders().get("ORIGINAL_DESTINATION");
+		if(originalDestination == null)
+		{
+			return true;
+		}
+		
+		// This is a Virtual Queue
+		DestinationType destinationType = DestinationType.TOPIC;
+		return AccessControl.deliveryAllowed(response, destinationType, channel, this.getsubscriptionKey(), originalDestination);
 	}
 }
