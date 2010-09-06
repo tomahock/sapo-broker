@@ -1,8 +1,5 @@
 package pt.com.broker.messaging;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.Headers;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;
@@ -14,7 +11,7 @@ import pt.com.gcs.messaging.Gcs;
  */
 public class BrokerProducer
 {
-	private static final Logger log = LoggerFactory.getLogger(BrokerProducer.class);
+	//Oprivate static final Logger log = LoggerFactory.getLogger(BrokerProducer.class);
 
 	private static final BrokerProducer instance = new BrokerProducer();
 
