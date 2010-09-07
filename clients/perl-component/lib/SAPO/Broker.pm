@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 sub has_module($) {
     my ($module) = @_;
