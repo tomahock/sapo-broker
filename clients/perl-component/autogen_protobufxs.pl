@@ -8,8 +8,7 @@ use File::Copy qw(copy);
 
 my $proto_dir = catfile($Bin, '..', '..', 'bindings', 'protobuf');
 my $orig_proto_file = catfile($proto_dir, 'broker.proto');
-#my $gendir = catfile($Bin, 'protoxs');
-my $gendir = $Bin;
+my $gendir = catfile($Bin, 'protobufxs');
 my $pmdir = catfile($Bin, 'lib', 'SAPO', 'Broker', 'Codecs', 'Autogen', 'ProtobufXS') ;
 my $proto_file = catfile($gendir, 'broker.proto');
 mkdir ($gendir);

@@ -14,6 +14,8 @@ my %PREREQ_PM = (
     'Test::More'                => 0,
 );
 
+my @subdirs;
+
 sub has_module($) {
     my ($module) = @_;
 
@@ -36,7 +38,12 @@ unless ( has_module "IO::Socket::SSL" ) {
     }
 }
 
+if ( prompt( 'Do you want to install support for protobufs(XS)', 'yes' ) =~ /yes/i ) {
+    push( @subdirs, 'protobufxs' );
+}
+
 WriteMakefile(
+    'DIR'           => \@subdirs,
     'NAME'          => 'SAPO::Broker',
     'AUTHOR'        => 'Cláudio Valente <c.valente@co.sapo.pt>',
     'VERSION_FROM'  => 'lib/SAPO/Broker.pm',

@@ -31,8 +31,6 @@ lib/SAPO/Broker/Codecs/Autogen/Thrift
 lib/SAPO/Broker/Codecs/Autogen/Thrift/Constants.pm
 lib/SAPO/Broker/Codecs/Autogen/Thrift/Types.pm
 lib/SAPO/Broker/Codecs/Thrift.pm
-lib/SAPO/Broker/Codecs/Autogen/ProtobufXS/Atom.pod
-lib/SAPO/Broker/Codecs/Autogen/ProtobufXS/Atom.pm
 lib/SAPO/Broker/Utils.pm
 lib/SAPO/Broker/Transport
 lib/SAPO/Broker/Transport/TCP.pm
@@ -54,6 +52,10 @@ examples/consume_virtual.pl
 examples/consume_auth.pl
 examples/produce_auth.pl
 
-broker.pb.h
-broker.pb.cc
-Atom.xs
+protobufxs/
+protobufxs/broker.pb.cc
+protobufxs/Atom.pod
+protobufxs/Atom.pm
+protobufxs/broker.pb.h
+protobufxs/Atom.xs
+protobufxs/Makefile.PL
