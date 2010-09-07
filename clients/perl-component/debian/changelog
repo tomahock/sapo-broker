@@ -1,3 +1,9 @@
+libsapo-broker-perl (0.2-1) unstable; urgency=low
+
+  * Protobuf XS support
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Tue, 7 Sep 2010 12:28:12 +0100
+
 libsapo-broker-perl (0.1-1) unstable; urgency=low
 
   * Initial Release.
