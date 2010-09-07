@@ -5,7 +5,7 @@ use strict;
 use FindBin qw($Bin);
 use File::Spec::Functions qw(catfile);
 
-my $proto_file = catfile($Bin, '..','..', 'bindings/thrift/broker.thrift');
+my $proto_file = catfile($Bin, '..','..', 'bindings', 'thrift', 'broker.thrift');
 
 system('thrift', '-v', '-debug', '-perl', '-o', $Bin, $proto_file);
 if(0==$?){
