@@ -58,3 +58,7 @@ examples/consume.pl
 examples/consume_virtual.pl
 examples/consume_auth.pl
 examples/produce_auth.pl
+
+broker.pb.h
+broker.pb.cc
+Atom.xs
