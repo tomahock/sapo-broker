@@ -49,13 +49,4 @@ WriteMakefile(
         SUFFIX   => 'gz',
     },
 
-    #ProtobufXS stuff
-    'OPTIMIZE' => '-O2 -Wall',
-    'CC'       => 'g++',
-    'LD'       => '$(CC)',
-    'CCFLAGS'  => '-fno-strict-aliasing',
-    'OBJECT'   => 'broker.pb.o Atom.o',
-    'LIBS'     => [" -L/usr/local/lib -lprotobuf"],
-    'INC'      => " -I/usr/local/include",
-    'XSOPT'    => '-C++',
 );
