@@ -61,7 +61,9 @@ sub class {
 
         #copy optional parameters
         for my $param (@optional) {
-            $self->{$param} = $params{$param};
+            if ( exists( $params{$param} ) ) {
+                $self->{$param} = $params{$param};
+            }
         }
 
         return bless $self, $class;
