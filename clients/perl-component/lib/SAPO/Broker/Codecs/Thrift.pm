@@ -26,6 +26,10 @@ sub new {
     return bless {}, $class;
 }
 
+sub name {
+    return 'Thrift';
+}
+
 sub _string2kind($) {
     my ($kind) = @_;
 

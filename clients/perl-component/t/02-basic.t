@@ -1,6 +1,19 @@
 use Test::More;
 
-BEGIN { use_ok('SAPO::Broker'); use_ok('SAPO::Broker::Clients::Simple') }
+BEGIN { use_ok('SAPO::Broker'); use_ok('SAPO::Broker::Clients::Simple'); use_ok('SAPO::Broker::Codecs::Thrift'); }
+
+ok( my $thrift = SAPO::Broker::Codecs::Thrift->new(), 'Thrift codec' );
+
+my $protobuf;
+
+SKIP: {
+    if ( SAPO::Broker::has_protobufxs() ) {
+        use_ok('SAPO::Broker::Codecs::ProtobufXS');
+        ok( $protobuf = SAPO::Broker::Codecs::ProtobufXS->new(), 'ProtobufXS codec' );
+    } else {
+        skip( 'no protobufxs support', 2 );
+    }
+}
 
 use strict;
 use warnings;
@@ -67,14 +80,16 @@ sub fill ($$$;$) {
     }
 }
 
-sub test_queue($;$) {
-    ;
-    my ( $proto, $pproto ) = @_;
+sub test_queue($;$$) {
+    my ( $proto, $pproto, $codec ) = @_;
 
     $pproto ||= $proto;
+    $codec  ||= $thrift;
+    my $codec_name = $codec->name();
 
     ok(
         my $broker = SAPO::Broker::Clients::Simple->new(
+            'codec'   => $codec,
             'host'    => $host,
             'proto'   => lc($pproto),
             'timeout' => 10,
@@ -88,6 +103,7 @@ sub test_queue($;$) {
     if ( $pproto ne $proto ) {
         ok(
             $broker = SAPO::Broker::Clients::Simple->new(
+                'codec'   => $codec,
                 'host'    => $host,
                 'proto'   => lc($proto),
                 'timeout' => 10,
@@ -110,8 +126,8 @@ sub test_queue($;$) {
     my $n = 0;
     for my $payload (@payloads) {
         ++$n;
-        ok( my $message = $broker->receive(), "Receive subscribed message $n ($proto)" );
-        ok( $message->message->payload eq $payload, "Check paylod for message $n ($proto)" );
+        ok( my $message = $broker->receive(), "Receive subscribed message $n ($proto) [$codec_name]" );
+        ok( $message->message->payload eq $payload, "Check paylod for message $n ($proto) [$codec_name]" );
     }
 
     my $pname = "$name/poll";
@@ -124,24 +140,37 @@ sub test_queue($;$) {
     $n = 0;
     for my $payload (@payloads) {
         ++$n;
-        ok( $broker->poll(%poptions), "Poll message $n ($proto)" );
-        ok( my $message = $broker->receive(), "Receive poll message $n ($proto)" );
-        ok( $broker->acknowledge($message), "Acknowledge poll message $n ($proto)" );
-        ok( $message->message->payload eq $payload, "Check paylod for message $n ($proto)" );
+        ok( $broker->poll(%poptions), "Poll message $n ($proto) [$codec_name]" );
+        ok( my $message = $broker->receive(), "Receive poll message $n ($proto) [$codec_name]" );
+        ok( $broker->acknowledge($message), "Acknowledge poll message $n ($proto) [$codec_name]" );
+        ok( $message->message->payload eq $payload, "Check paylod for message $n ($proto) [$codec_name]" );
     }
-} ## end sub test_queue($;$)
+} ## end sub test_queue($;$$)
 
-test_queue( 'TCP', 'TCP' );
-test_queue( 'TCP', 'UDP' );
+sub test_codec($) {
+    my $codec = shift;
+    test_queue( 'TCP', 'TCP', $codec );
+    test_queue( 'TCP', 'UDP', $codec );
 
-#ssl stuff
+    #ssl stuff
 SKIP: {
-    if ( not $ENV{'BROKER_DISABLE_SSL'} and SAPO::Broker::has_ssl ) {
-        test_queue( 'SSL', 'TCP' );
-        test_queue( 'SSL', 'UDP' );
-    } else {
-        skip( $ENV{'BROKER_DISABLE_SSL'} ? "SSL tests disabled by env var" : "no SSL support", 6 + 16 * $N );
+        if ( not $ENV{'BROKER_DISABLE_SSL'} and SAPO::Broker::has_ssl ) {
+            test_queue( 'SSL', 'TCP', $codec );
+            test_queue( 'SSL', 'UDP', $codec );
+        } else {
+            skip( $ENV{'BROKER_DISABLE_SSL'} ? "SSL tests disabled by env var" : "no SSL support", 6 + 16 * $N );
+        }
     }
 }
 
-done_testing( 15 + 32 * $N );
+SKIP: {
+    if ($protobuf) {
+        test_codec($protobuf);
+    } else {
+        skip( 'No protobuf support', 2 * ( 5 + 16 * $N ) + 1 );
+    }
+}
+
+test_codec($thrift);
+
+done_testing( 30 + 64 * $N );
