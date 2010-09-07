@@ -46,8 +46,13 @@ lib/SAPO/Broker/Transport/UDP.pm
 lib/SAPO/Broker/Messages.pm
 lib/SAPO/Broker.pm
 
-
 t/99-cleanup.t
 t/01-setup_data.t
 t/02-basic.t
 t/00-use.t
+
+examples/produce.pl
+examples/consume.pl
+examples/consume_virtual.pl
+examples/consume_auth.pl
+examples/produce_auth.pl
