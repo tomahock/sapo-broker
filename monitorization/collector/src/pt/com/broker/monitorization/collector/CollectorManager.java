@@ -52,7 +52,7 @@ public class CollectorManager
 				
 				int del_faults_counter = DbExecutor.runActionPreparedStatement("DELETE FROM fault_data WHERE (event_time < (now()-'00:30'::time));");
 
-				log.info("Database cleaner deleted {} event entries and  fault entries.", del_events_counter, del_faults_counter);
+				log.info("Database cleaner deleted {} event entries and {} fault entries.", del_events_counter, del_faults_counter);
 			}
 		};
 
