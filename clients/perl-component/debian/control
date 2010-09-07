@@ -1,0 +1,16 @@
+Source: libsapo-broker-perl
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 5)
+Build-Depends-Indep: perl (>= 5.6.10-12)
+Maintainer: Claudio Valente <c.valente@co.sapo.pt>
+Standards-Version: 3.8.0
+Homepage: http://search.cpan.org/dist/SAPO-Broker/
+
+Package: libsapo-broker-perl
+Architecture: all
+Depends: ${perl:Depends}, ${misc:Depends}, libxml-libxml-perl, libxml-libxml-perl, libreadonly-perl
+Description: SAPO Broker perl bindings
+ This is SAPO Broker's perl API.
+ .
+ This description was automagically extracted from the module by dh-make-perl.
