@@ -145,7 +145,7 @@ sub serialize_ping($$) {
     my $ping = SAPO::Broker::Codecs::Autogen::Thrift::Ping->new($message);
 
     $action->action_type(SAPO::Broker::Codecs::Autogen::Thrift::ActionType::PING);
-    $action->acknowledge($ping);
+    $action->ping($ping);
     return $action;
 }
 
