@@ -22,6 +22,10 @@ sub has_sapo_sts() {
     return has_module('LWP') and has_module('Crypt::SSLeay') and has_module('JSON::Any');
 }
 
+sub has_protobufxs() {
+    return has_module('SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom');
+}
+
 # old module follows for retrocompatibility purposes
 
 use bytes;
