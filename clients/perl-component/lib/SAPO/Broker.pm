@@ -598,8 +598,8 @@ SAPO::Broker - Perl extension for using SAPO Broker
 
 =head1 SYNOPSIS
 
-  see SAPO::Broker::Clients::* and the eg directory for usage examples
-  SAPO::Broker::Clients::Simple should be your entry point
+  see SAPO::Broker::Clients::* and the examples directory for usage examples.
+  SAPO::Broker::Clients::Simple should be your entry point.
 
 
 =head1 DESCRIPTION
@@ -614,7 +614,7 @@ Cláudio Valente, E<lt>c.valente@co.sapo.ptE<gt>
 
 Copyright (C) 2010 by SAPO
 
-=head 1 OLDER VERSION (retrocompatibility)
+=head1 OLDER VERSION (retrocompatibility)
 
 =head1 NAME
 
