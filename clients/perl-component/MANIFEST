@@ -25,12 +25,12 @@ lib/SAPO/Broker/Clients
 lib/SAPO/Broker/Clients/Minimal.pm
 lib/SAPO/Broker/Clients/Simple.pm
 lib/SAPO/Broker/Codecs
-lib/SAPO/Broker/Codecs/Thrift.pm.orig
 lib/SAPO/Broker/Codecs/Autogen
 lib/SAPO/Broker/Codecs/Autogen/Thrift
 lib/SAPO/Broker/Codecs/Autogen/Thrift/Constants.pm
 lib/SAPO/Broker/Codecs/Autogen/Thrift/Types.pm
 lib/SAPO/Broker/Codecs/Thrift.pm
+lib/SAPO/Broker/Codecs/ProtobufXS.pm
 lib/SAPO/Broker/Utils.pm
 lib/SAPO/Broker/Transport
 lib/SAPO/Broker/Transport/TCP.pm
@@ -44,6 +44,7 @@ lib/SAPO/Broker.pm
 t/99-cleanup.t
 t/01-setup_data.t
 t/02-basic.t
+t/03-protobufxs.t
 t/00-use.t
 
 examples/produce.pl
