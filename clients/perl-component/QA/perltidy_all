@@ -22,3 +22,5 @@ tidy_dir( catfile( $Bin, '..', 'examples' ), '*.pm' );
 tidy_dir( catfile( $Bin, '..', 't' ),        '*.t' );
 tidy_dir( $Bin, 'perltidy_all' );
 tidy_dir( $Bin, 'perlcritic' );
+tidy_dir( $Bin, 'Makefile.PL' );
+tidy_dir( catfile( $Bin, '..', 'protobufxs' ), 'Makefile.PL' );
