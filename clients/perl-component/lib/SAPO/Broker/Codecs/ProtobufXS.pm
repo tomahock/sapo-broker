@@ -132,8 +132,9 @@ sub parse_notification($) {
 
     my $notification = SAPO::Broker::Messages::Notification->new( $action->notification()->to_hashref() );
     my $message      = $notification->message();
-    $message->{'id'}           = $message->{'message_id'};
-    $notification->{'message'} = SAPO::Broker::Messages::Message->new($message);
+    $message->{'id'}                    = $message->{'message_id'};
+    $notification->{'destination_type'} = _kind2string( $notification->{'destination_type'} );
+    $notification->{'message'}          = SAPO::Broker::Messages::Message->new($message);
 
     #now cast the actual message containing the payload
     $notification->message( SAPO::Broker::Messages::Message->new($message) );

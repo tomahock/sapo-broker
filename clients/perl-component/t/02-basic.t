@@ -1,6 +1,8 @@
 use Test::More qw(no_plan);
 
-use_ok('SAPO::Broker'); use_ok('SAPO::Broker::Clients::Simple'); use_ok('SAPO::Broker::Codecs::Thrift');
+use_ok('SAPO::Broker');
+use_ok('SAPO::Broker::Clients::Simple');
+use_ok('SAPO::Broker::Codecs::Thrift');
 
 ok( my $thrift = SAPO::Broker::Codecs::Thrift->new(), 'Thrift codec' );
 
