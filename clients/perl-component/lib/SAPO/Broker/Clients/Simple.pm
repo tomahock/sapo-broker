@@ -2,6 +2,7 @@ package SAPO::Broker::Clients::Simple;
 
 use Carp qw(carp croak);
 
+use SAPO::Broker;
 use SAPO::Broker::Messages;
 use SAPO::Broker::Clients::Minimal;
 use SAPO::Broker::Transport::TCP;
@@ -9,8 +10,11 @@ use SAPO::Broker::Transport::UDP;
 use SAPO::Broker::Codecs::Thrift;
 
 #don't fail if SSL is not a viable transport (please install IO::Socket::SSL)
-eval { require SAPO::Broker::Transport::SSL; };
-my $has_ssl = not $@;
+my $has_ssl = SAPO::Broker::has_ssl();
+
+if ($has_ssl) {
+    use SAPO::Broker::Transport::SSL;
+}
 
 use strict;
 use warnings;
@@ -63,15 +67,13 @@ sub __can_acknowledge($) {
 sub subscribe {
     my ( $self, %options ) = @_;
 
-    my $auto_ack = $options{'auto_acknowledge'};
-
     my $subscribe = SAPO::Broker::Messages::Subscribe->new(%options);
     my $ret       = $self->send($subscribe);
 
-    if ( __can_acknowledge( $options{'destination_type'} ) and $auto_ack ) {
+    if ( __can_acknowledge( $options{'destination_type'} ) and $options{'auto_acknowledge'} ) {
 
         #add the queue name to the auto_ack queue
-        $self->{'auto_ack'}->{ $options{'destination'} } = 1;
+        $self->{'auto_ack'}->{ $options{'destination'} } = '+inf';    #acknowledge all messages
     }
 
     return $ret;
@@ -83,7 +85,12 @@ sub poll {
         'timeout' => 0,
         %options
     );
-    return $self->send($poll);
+    my $ret = $self->send($poll);
+
+    if ( $options{'auto_acknowledge'} ) {
+        $self->{'auto_ack'}->{ $options{'destination'} } += 1;
+    }
+    return $ret;
 }
 
 sub acknowledge {
@@ -146,8 +153,10 @@ sub receive {
     } elsif ( $msg_type eq 'SAPO::Broker::Messages::Notification' ) {
 
         #try to find whether we need to acknowledge
-        if ( __can_acknowledge( $message->destination_type ) and $self->{'auto_ack'}->{ $message->destination } ) {
+        my $auto_ack_count = \$self->{'auto_ack'}->{ $message->destination };
+        if ( __can_acknowledge( $message->destination_type ) and defined($$auto_ack_count) and $$auto_ack_count > 0 ) {
             $self->acknowledge($message);
+            --$$auto_ack_count;
         }
         return $message;
     } else {
