@@ -1,5 +1,8 @@
 Revision history for Perl extension SAPO::Broker.
 
+0.02  Wed Sep  8 12:21:27 2010
+   - ProtobufXS support
+
 0.01  Wed Mar 10 15:21:08 2010
 	- original version; created by h2xs 1.23 with options
 		-A -X SAPO::Broker
