@@ -13,8 +13,6 @@ my %options = (
 	'auto_acknowledge' => 1
 );
 
-$broker->subscribe(%options);
-
 my $N = $ARGV[0] || 100;
 
 for my $n (1..$N){
