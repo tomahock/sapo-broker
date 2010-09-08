@@ -1,6 +1,6 @@
-use Test::More;
+use Test::More qw(no_plan);
 
-BEGIN { use_ok('SAPO::Broker'); use_ok('SAPO::Broker::Clients::Simple'); use_ok('SAPO::Broker::Codecs::Thrift'); }
+use_ok('SAPO::Broker'); use_ok('SAPO::Broker::Clients::Simple'); use_ok('SAPO::Broker::Codecs::Thrift');
 
 ok( my $thrift = SAPO::Broker::Codecs::Thrift->new(), 'Thrift codec' );
 
@@ -62,6 +62,9 @@ sub read_data {
 }
 
 ok( read_info(), 'Read broker info' );
+
+#plan tests => 30 + 64 * $N;
+
 ok( read_data(), 'Read broker data' );
 
 sub fill ($$$;$) {
@@ -154,7 +157,7 @@ sub test_codec($) {
 
     #ssl stuff
 SKIP: {
-        if ( not $ENV{'BROKER_DISABLE_SSL'} and SAPO::Broker::has_ssl ) {
+        if ( not $ENV{'BROKER_DISABLE_SSL'} and SAPO::Broker::has_ssl() ) {
             test_queue( 'SSL', 'TCP', $codec );
             test_queue( 'SSL', 'UDP', $codec );
         } else {
@@ -173,4 +176,3 @@ SKIP: {
 
 test_codec($thrift);
 
-done_testing( 30 + 64 * $N );
