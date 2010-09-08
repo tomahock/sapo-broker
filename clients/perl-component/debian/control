@@ -9,6 +9,7 @@ Homepage: http://search.cpan.org/dist/SAPO-Broker/
 Package: libsapo-broker-perl
 Architecture: any
 Depends: ${perl:Depends}, ${shlibs:Depends}, ${misc:Depends}, libxml-libxml-perl, libxml-libxml-perl, libreadonly-perl, libthrift-perl, libprotobuf6
+Recommends: libwww-perl, libio-socket-ssl-perl, libjson-any-perl 
 Description: SAPO Broker perl bindings (XS version)
  This is SAPO Broker's perl API.
  .
