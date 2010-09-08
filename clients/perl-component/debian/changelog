@@ -1,4 +1,4 @@
-libsapo-broker-perl (0.2-23 unstable; urgency=low
+libsapo-broker-perl (0.2-3) unstable; urgency=low
 
   * deb now recommends several usefull optional runtime dependencies
 
