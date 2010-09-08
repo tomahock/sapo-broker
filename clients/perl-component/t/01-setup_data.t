@@ -1,7 +1,7 @@
 use Time::HiRes qw(time);
 use Net::Domain qw(hostfqdn);
 
-use Test::More;
+use Test::More qw(no_plan);
 
 use strict;
 use warnings;
@@ -11,6 +11,8 @@ my $rand_name = '/perl/tests/' . hostfqdn() . "_" . time();
 my $N         = $ENV{'BROKER_N_TESTS'} || 100;
 my $L         = $ENV{'BROKER_SIZE_TESTS'} || 1000;
 my $host      = $ENV{'BROKER_HOST'} || 'broker.labs.sapo.pt';
+
+#plan tests => 3 + 2 * $N;
 
 sub write_broker_data {
     eval {
@@ -54,5 +56,3 @@ sub write_rand_data() {
 ok( $rand_name,          'Generate topic name' );
 ok( write_broker_data(), 'Save broker info file' );
 ok( write_rand_data(),   'Save broker random data' );
-
-done_testing( 3 + 2 * $N );
