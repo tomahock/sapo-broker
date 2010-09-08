@@ -5,7 +5,6 @@ use ExtUtils::MakeMaker;
 
 my @PMLIBDIRS = ('lib');
 my %PREREQ_PM = (
-    'Thrift'                    => '0.1',
     'IO::Socket::INET'          => 0,
     'Time::HiRes'               => 0,
     'Readonly'                  => 0,
@@ -38,8 +37,23 @@ unless ( has_module "IO::Socket::SSL" ) {
     }
 }
 
+my $use_protobuf = 0;
 if ( prompt( 'Do you want to install support for protobufs(XS)', 'yes' ) =~ /yes/i ) {
     push( @subdirs, 'protobufxs' );
+    $use_protobuf = 1;
+}
+
+my $use_thrift = 1;
+if ( prompt( 'Do you want to install support for Thrift', 'yes' ) !~ /yes/i ) {
+    $use_thrift = 0;
+}
+
+if ( not( $use_thrift or $use_protobuf ) ) {
+    die "Thrift or protobuf codecs are mandatory. Please choose one.";
+}
+
+if ($use_thrift) {
+    $PREREQ_PM{'Thrift'} = '0.1';
 }
 
 WriteMakefile(
