@@ -60,11 +60,19 @@ sub serialize_publish($$) {
     my $publish        = SAPO::Broker::Codecs::Autogen::Thrift::Publish->new($message);
 
     #XXX ugly kludge to workaround a broker bug that doesn't check whether the field is sent over the wire
-    for my $field (qw(timestamp expiration)) {
-        if ( not defined $broker_message->$field() ) {
-            $broker_message->$field(-1);
-        }
+    my $expiration = $broker_message->expiration();
+    if ( not defined $expiration ) {
+        $broker_message->expiration(-1);    #infinite since it is casted to unsigned
+    } else {
+        $broker_message->expiration( $expiration * 1000 );    #broker receives timestamps as milliseconds from the epoch
     }
+
+    my $timestamp = $broker_message->timestamp();
+    if ( not defined $timestamp ) {
+        $timestamp = time;    #must be sent on the wire due to stupid constraints in the java thrift implementation
+    }
+
+    $broker_message->timestamp( $timestamp * 1000 );    #milliseconds
 
     $publish->message($broker_message);
     $publish->destination_type( _string2kind( $message->destination_type() ) );
@@ -129,14 +137,24 @@ sub parse_notification($) {
     my ($action)     = @_;
     my $notification = SAPO::Broker::Messages::Notification->new( $action->notification() );
     my $message      = $notification->{'message'};
-    $message->{'id'}                    = $message->{'message_id'};
+    $message->{'id'} = $message->{'message_id'};
+
+    #take care of the milliseconds
+
+    for my $field (qw(expiration timestamp)) {
+        my $val = $message->$field();
+        if ( defined $val ) {
+            $message->$field( $val / 1000. );
+        }
+    }
+
     $notification->{'destination_type'} = _kind2string( $notification->{'destination_type'} );
     $notification->{'message'}          = SAPO::Broker::Messages::Message->new($message);
 
     #now cast the actual message containing the payload
     $notification->message( SAPO::Broker::Messages::Message->new($message) );
     return $notification;
-}
+} ## end sub parse_notification($)
 
 sub parse_fault($) {
     my ($action) = @_;
