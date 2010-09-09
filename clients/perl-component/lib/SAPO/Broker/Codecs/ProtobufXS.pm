@@ -57,19 +57,31 @@ sub serialize_publish($) {
     local $message->{'destination_type'} = _string2kind( $message->{'destination_type'} );
     my $broker_message = $message->message();
 
-    #XXX ugly kludge (is this needed in the protobuf codec?)
-    if ( not defined $broker_message->expiration() ) {
-        $broker_message->expiration(-1);
-    }
-
-    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
+    my $ret = SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
             'action' => {
                 'publish'     => $message,
                 'action_type' => SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Action::ActionType::PUBLISH()
             },
         } );
 
-}
+    #XXX ugly kludge (is this needed in the protobuf codec?)
+    my $expiration = $broker_message->expiration();
+    if ( defined $expiration ) {
+        $expiration = $expiration * 1000;
+    } else {
+        $expiration = -1;
+    }
+
+    $ret->action->publish->message->set_timestamp($expiration);
+
+    #broker expects milliseconds
+    my $timestamp = $broker_message->timestamp();
+    if ( defined $timestamp ) {
+        $ret->action->publish->message->set_timestamp( $timestamp * 1000 );
+    }
+
+    return $ret;
+} ## end sub serialize_publish($)
 
 sub serialize_poll($) {
     my ($message) = @_;
@@ -136,10 +148,17 @@ sub parse_notification($) {
     $notification->{'destination_type'} = _kind2string( $notification->{'destination_type'} );
     $notification->{'message'}          = SAPO::Broker::Messages::Message->new($message);
 
+    for my $field (qw(expiration timestamp)) {
+        my $val = $message->$field();
+        if ( defined $val ) {
+            $message->$field( $val / 1000. );
+        }
+    }
+
     #now cast the actual message containing the payload
     $notification->message( SAPO::Broker::Messages::Message->new($message) );
     return $notification;
-}
+} ## end sub parse_notification($)
 
 sub parse_fault($) {
     my ($action) = @_;
