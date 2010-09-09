@@ -1,3 +1,9 @@
+libsapo-broker-perl (0.2-4) unstable; urgency=low
+
+  * fix milliseconds bug in expiration and timestamps
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Wed, 8 Sep 2010 18:27:34 +0100
+
 libsapo-broker-perl (0.2-3) unstable; urgency=low
 
   * deb now recommends several usefull optional runtime dependencies
