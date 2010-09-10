@@ -26,6 +26,10 @@ sub has_protobufxs() {
     return has_module('SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom');
 }
 
+sub has_thrift() {
+    return has_module('SAPO::Broker::Codecs::Autogen::Thrift::Types');
+}
+
 # old module follows for retrocompatibility purposes
 
 use bytes;
