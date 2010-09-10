@@ -58,14 +58,21 @@ sub new {
 
 sub __get_codec {
     my (%options) = @_;
-
     my $codec_name = lc( $options{'codec'} );
-    my $codec      = $codecs{$codec_name};
 
-    if ($codec) {
-        return $codec;
+    if ( ref($codec_name) and $codec_name->can('serialize') and $codec_name->can('deserialize') ) {
+
+        #codec is an objext
+        return $codec_name;
     } else {
-        die "Codec $codec not available.";
+
+        my $codec = $codecs{$codec_name};
+
+        if ($codec) {
+            return $codec;
+        } else {
+            die "Codec $codec not available.";
+        }
     }
 }
 
