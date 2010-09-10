@@ -2,9 +2,17 @@ use Test::More qw(no_plan);
 
 use_ok('SAPO::Broker');
 use_ok('SAPO::Broker::Clients::Simple');
-use_ok('SAPO::Broker::Codecs::Thrift');
 
-ok( my $thrift = SAPO::Broker::Codecs::Thrift->new(), 'Thrift codec' );
+my $thrift;
+
+SKIP: {
+    if ( SAPO::Broker::has_thrift() ) {
+        use_ok('SAPO::Broker::Codecs::Thrift');
+        ok( $thrift = SAPO::Broker::Codecs::ProtobufXS->new(), 'Thrift codec' );
+    } else {
+        skip( 'no thrift support', 2 );
+    }
+}
 
 my $protobuf;
 
@@ -90,7 +98,7 @@ sub test_queue($;$$) {
 
     $pproto ||= $proto;
     $codec  ||= $thrift;
-    my $codec_name = $codec->name();
+    my $codec_name = ref($codec) ? $codec->name : $codec;
 
     ok(
         my $broker = SAPO::Broker::Clients::Simple->new(
@@ -170,11 +178,17 @@ SKIP: {
 
 SKIP: {
     if ($protobuf) {
-        test_codec($protobuf);
+        test_codec('protobufxs');
     } else {
         skip( 'No protobuf support', 2 * ( 5 + 16 * $N ) + 1 );
     }
 }
 
-test_codec($thrift);
+SKIP: {
+    if ($thrift) {
+        test_codec('thrift');
+    } else {
+        skip( 'No thrift support', 2 * ( 5 + 16 * $N ) + 1 );
+    }
+}
 
