@@ -36,7 +36,7 @@ def serialize_publish(message, action):
         publish.message.message_id = message.message.id
 
     def datetime2epoch(datetime):
-        return timegm(datetime.timetuple())
+        return int(timegm(datetime.timetuple())*1000) #broker expects milliseconds
 
     # XXX does it make sense to specify the timestamp at message production?
     if message.message.timestamp is not None:
@@ -98,7 +98,7 @@ def serialize_unsubscribe(message, action):
 def parse_notification(action):
     notification = action.notification
     msg = notification.message
-    message = BrokerMessage(payload=msg.payload, id=msg.message_id, timestamp=msg.timestamp, expiration=msg.expiration)
+    message = BrokerMessage(payload=msg.payload, id=msg.message_id, timestamp=msg.timestamp/1000., expiration=msg.expiration/1000.)
     return Notification(destination=notification.destination, destination_type=kind2string(notification.destination_type), subscription=notification.subscription, message=message)
 
 def parse_fault(action):
