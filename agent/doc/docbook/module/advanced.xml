@@ -284,11 +284,11 @@ ALTER TABLE roles ADD FOREIGN KEY (username) REFERENCES users(username);
 			The persistence and delivery model of queued messages, as discussed <link linkend="INTRO_POINT2POINT">previously</link>, protects the system against client failure but not against broker failure.
 			If an agent crashes before receiving the client's Acknowledge the message will be delivered again.
 			This violates the "once and only once" promisse but in real world scenarios is near impossible to guarantee 100% robustness.
-			This is of course anomalous behaviour and should not happen in common operation, but if it does, and your application semantics dissalow for duplicate messages there a couple solutions to try.
+			This is, of course, anomalous behaviour and should not happen in common operation. But if it does, and your application semantics dosen't allow for duplicate messages there are a couple of solutions to try.
 		</para>
 		<section>
 			<title>Solution 1 – Client persistence</title>
-			<para>Clients, once they receive the message may persist it and send the respective Acknowledge with an Action Identifier. If the connection with the agent is lost or an Accept message is not received the message should not be processed and eventually will be delivered again, otherwise the client can process the message. If meanwhile client fails its responsible for, when reactivated, process the locally persisted message.</para>
+			<para>Clients, once they receive the message may persist it and send the respective Acknowledge with an Action Identifier. If the connection with the agent is lost or the Accept message is not received the message should not be processed, but if this not the case the client can process the message. Furthermore, the client is responsible for process locally persisted messages, and this behaviour should be ensured whenever a client restarts.</para>
 		</section>
 		<section>
 			<title>Solution 2 – Global acknowledge record</title>
