@@ -9,6 +9,9 @@ use SAPO::Broker::Transport::TCP;
 use SAPO::Broker::Transport::UDP;
 use SAPO::Broker::Codecs::Thrift;
 
+use strict;
+use warnings;
+
 #don't fail if SSL is not a viable transport (please install IO::Socket::SSL)
 my $has_ssl = SAPO::Broker::has_ssl();
 
@@ -16,18 +19,30 @@ if ($has_ssl) {
     use SAPO::Broker::Transport::SSL;
 }
 
-use strict;
-use warnings;
-
-our %DEFAULT_OPTIONS = ( 'proto' => 'tcp' );
+my %DEFAULT_OPTIONS = ( 'proto' => 'tcp' );
 our @ISA = qw(SAPO::Broker::Clients::Minimal);
+my %codecs;
+
+if ( SAPO::Broker::has_thrift() ) {
+    use SAPO::Broker::Codecs::Thrift;
+    my $name = 'thrift';
+    $codecs{$name} = SAPO::Broker::Codecs::Thrift->new();
+    $DEFAULT_OPTIONS{'codec'} = $name;
+}
+
+if ( SAPO::Broker::has_protobufxs() ) {
+    use SAPO::Broker::Codecs::ProtobufXS;
+    my $name = 'protobufxs';
+    $codecs{$name} = SAPO::Broker::Codecs::ProtobufXS->new();
+    $DEFAULT_OPTIONS{'codec'} = $name;
+}
 
 sub new {
     my ( $pack, %options ) = @_;
 
     %options = ( %DEFAULT_OPTIONS, %options );
 
-    my $codec     = SAPO::Broker::Codecs::Thrift->new();
+    my $codec     = __get_codec(%options);
     my $transport = __get_transport_class(%options)->new(%options);
 
     my $self = $pack->SUPER::new(
@@ -39,6 +54,19 @@ sub new {
 
     return $self;
 
+}
+
+sub __get_codec {
+    my (%options) = @_;
+
+    my $codec_name = lc( $options{'codec'} );
+    my $codec      = $codecs{$codec_name};
+
+    if ($codec) {
+        return $codec;
+    } else {
+        die "Codec $codec not available.";
+    }
 }
 
 sub __get_transport_class {
