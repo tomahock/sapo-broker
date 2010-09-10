@@ -19,7 +19,6 @@ import pt.com.gcs.conf.GcsInfo;
  */
 public class SystemMessagesPublisher
 {
-
 	private static Logger log = LoggerFactory.getLogger(SystemMessagesPublisher.class);
 
 	private static Set<String> pending_messages = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
