@@ -88,7 +88,7 @@ sub serialize_poll($) {
 
     return SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
             'action' => {
-                'publish'     => $message,
+                'poll'        => $message,
                 'action_type' => SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Action::ActionType::POLL()
             },
         } );
@@ -144,9 +144,10 @@ sub parse_notification($) {
 
     my $notification = SAPO::Broker::Messages::Notification->new( $action->notification()->to_hashref() );
     my $message      = $notification->message();
-    $message->{'id'}                    = $message->{'message_id'};
+    $message->{'id'} = $message->{'message_id'};
+    $message = SAPO::Broker::Messages::Message->new($message);
+    $notification->message($message);
     $notification->{'destination_type'} = _kind2string( $notification->{'destination_type'} );
-    $notification->{'message'}          = SAPO::Broker::Messages::Message->new($message);
 
     for my $field (qw(expiration timestamp)) {
         my $val = $message->$field();
