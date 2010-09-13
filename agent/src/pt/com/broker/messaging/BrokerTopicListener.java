@@ -1,5 +1,7 @@
 package pt.com.broker.messaging;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -25,12 +27,13 @@ public class BrokerTopicListener extends BrokerListener
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
 
 	private static final long MAX_WRITE_TIME = 125 * 1000 * 1000;
-	private long droppedMessages;
+	volatile private long droppedMessages;
 
-	private boolean showSuspendedDeliveryMessage;
-	private boolean showResumedDeliveryMessage;
+	volatile private boolean showSuspendedDeliveryMessage;
+	volatile private boolean showResumedDeliveryMessage;
 
-	private long startDeliverAfter;
+	private AtomicLong startDeliverAfter;
+	
 
 	public BrokerTopicListener(ListenerChannel lchannel, String destinationName)
 	{
@@ -38,7 +41,7 @@ public class BrokerTopicListener extends BrokerListener
 		droppedMessages = 0L;
 		this.showSuspendedDeliveryMessage = false;
 		this.showResumedDeliveryMessage = false;
-		this.startDeliverAfter = System.nanoTime();
+		this.startDeliverAfter = new AtomicLong( System.nanoTime() );
 	}
 
 	@Override
@@ -100,7 +103,7 @@ public class BrokerTopicListener extends BrokerListener
 						{
 							ChannelFuture future = lchannel.write(response);
 							final long writeStartTime = System.nanoTime();
-							startDeliverAfter = writeStartTime + 10000;
+							startDeliverAfter.set( writeStartTime + 10000);
 
 							future.addListener(new ChannelFutureListener()
 							{
@@ -110,8 +113,8 @@ public class BrokerTopicListener extends BrokerListener
 									final long writeTime = System.nanoTime() - writeStartTime;
 
 									if (writeTime >= MAX_WRITE_TIME)
-									{
-										startDeliverAfter = System.nanoTime() + (writeTime / 2); // suspend delivery for the same amount of time that the previous write took.;
+									{									
+										startDeliverAfter.set( System.nanoTime() + (writeTime / 2) ); // suspend delivery for the same amount of time that the previous write took.;
 									}
 								}
 							});
@@ -168,7 +171,7 @@ public class BrokerTopicListener extends BrokerListener
 	@Override
 	public boolean isReady()
 	{
-		return System.nanoTime() > startDeliverAfter;
+		return System.nanoTime() > startDeliverAfter.get();
 	}
 
 	@Override

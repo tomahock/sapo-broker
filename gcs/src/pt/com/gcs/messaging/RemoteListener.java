@@ -157,7 +157,7 @@ public class RemoteListener implements MessageListener
 					isReady.set(false);
 					if (showSuspendedDeliveryMessage && log.isDebugEnabled())
 					{
-						log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+						log.debug(String.format("Suspending message delivery for %s '%s' to session '%s'.", getSourceDestinationType(), getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
 					}
 
 					future.addListener(new ChannelFutureListener()
@@ -170,7 +170,7 @@ public class RemoteListener implements MessageListener
 							{
 								if (log.isDebugEnabled())
 								{
-									log.debug(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+									log.debug(String.format("Resume message delivery for %s '%s' to session '%s'.", getSourceDestinationType(), getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
 								}								
 								showSuspendedDeliveryMessage = true;
 							}
