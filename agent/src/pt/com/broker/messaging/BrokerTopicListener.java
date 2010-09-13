@@ -35,9 +35,7 @@ public class BrokerTopicListener extends BrokerListener
 	volatile private boolean showResumedDeliveryMessage;
 
 	private AtomicLong startDeliverAfter;
-	private AtomicLong tries = new AtomicLong(0);
 	
-
 	public BrokerTopicListener(ListenerChannel lchannel, String destinationName)
 	{
 		super(lchannel, destinationName);
@@ -80,7 +78,7 @@ public class BrokerTopicListener extends BrokerListener
 			{
 				if (lchannel.isWritable())
 				{
-					tries.set(0);
+					getChannel().getTopicMessageDeliveryTries().set(0);
 					if (showResumedDeliveryMessage)
 					{
 						String msg = String.format("Stopped discarding messages for topic '%s' and session '%s'. Dropped messages: %s", getsubscriptionKey(), lchannel.getRemoteAddressAsString(), droppedMessages);
@@ -105,7 +103,7 @@ public class BrokerTopicListener extends BrokerListener
 					{
 						if (deliveryAllowed(response))
 						{
-							if( tries.incrementAndGet() == MAX_WRITE_TRIES)
+							if( getChannel().getTopicMessageDeliveryTries().incrementAndGet() == MAX_WRITE_TRIES)
 							{
 								log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), MAX_WRITE_TRIES ));
 								lchannel.close();
