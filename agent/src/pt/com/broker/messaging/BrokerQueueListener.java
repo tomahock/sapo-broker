@@ -31,7 +31,7 @@ public class BrokerQueueListener extends BrokerListener
 	private static final ForwardResult ackNotRequired = new ForwardResult(Result.NOT_ACKNOWLEDGE);
 	private final boolean ackRequired;
 
-	private boolean showSuspendedDeliveryMessage;
+	volatile private boolean showSuspendedDeliveryMessage;
 
 	private AtomicBoolean isReady = new AtomicBoolean(true);	
 	
