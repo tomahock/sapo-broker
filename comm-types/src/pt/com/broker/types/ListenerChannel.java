@@ -1,5 +1,7 @@
 package pt.com.broker.types;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipeline;
@@ -7,6 +9,8 @@ import org.jboss.netty.channel.ChannelPipeline;
 public class ListenerChannel
 {
 	private final Channel channel;
+	
+	private final AtomicLong messageDeliveryTries = new AtomicLong(0);
 
 	public ListenerChannel(Channel channel)
 	{
@@ -87,5 +91,10 @@ public class ListenerChannel
 		else if (!getRemoteAddressAsString().equals(other.getRemoteAddressAsString()))
 			return false;
 		return true;
+	}
+
+	public AtomicLong getTopicMessageDeliveryTries()
+	{
+		return messageDeliveryTries;
 	}
 }
