@@ -56,29 +56,29 @@
 		</path>
 
 	<target name="init" depends="clean">
-		<mkdir dir="${bin}" />
-		<mkdir dir="${dist}" />
+		<mkdir dir="./bin" />
+		<mkdir dir="./dist" />
 	</target>
 
 	<target name="clean">
-		<delete dir="${bin}" />
-		<delete dir="${dist}" />
+		<delete dir="./bin" />
+		<delete dir="./dist" />
 	</target>
 
 	<target name="build" depends="init">
 		<echo message="${ant.project.name}: ${ant.file}" />
-		<javac destdir="${bin}" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
-			<src path="${src}" />
+		<javac destdir="./bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.5" target="1.5">
+			<src path="./src" />
 			<classpath refid="project.classpath" />
 		</javac>
-		<copy todir="${bin}">
-			<fileset dir="${src}" excludes="**/*.java" />
+		<copy todir="./bin">
+			<fileset dir="./dist" excludes="**/*.java" />
 		</copy>
 	</target>
 
 	<target name="package" depends="build">
-		<jar destfile="${dist}/${package}">
-			<fileset dir="${bin}" />
+		<jar destfile="./dist/${package}">
+			<fileset dir="./bin" />
 		</jar>
 	</target>
 
