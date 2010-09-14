@@ -120,7 +120,6 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 
 		Gcs.remoteSessionClosed(channel);
 		GcsExecutor.schedule(new Connect(channel.getRemoteAddress()), 5000, TimeUnit.MILLISECONDS);
-
 	}
 
 	@Override

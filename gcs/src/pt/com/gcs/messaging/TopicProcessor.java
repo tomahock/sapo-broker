@@ -35,7 +35,7 @@ public class TopicProcessor
 
 	private final Set<MessageListener> topicListeners = new CopyOnWriteArraySet<MessageListener>();
 
-	private boolean broadcastable;
+	volatile private boolean broadcastable;
 
 	protected TopicProcessor(String subscriptionName)
 	{
