@@ -73,6 +73,7 @@ public class BrokerQueueListener extends BrokerListener
 				{
 					lchannel.write(response);
 					isReady.set(true);
+					lchannel.resetDeliveryTries();
 				}
 				else
 				{
@@ -85,6 +86,13 @@ public class BrokerQueueListener extends BrokerListener
 				{
 					if(deliveryAllowed(response, lchannel.getChannel()))
 					{
+						if( getChannel().incrementAndGetDeliveryTries() == ListenerChannel.MAX_WRITE_TRIES)
+						{
+							log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), ListenerChannel.MAX_WRITE_TRIES ));
+							lchannel.close();
+							return failed;
+						}
+						
 						ChannelFuture future = lchannel.write(response);
 						isReady.set(false);
 						if (showSuspendedDeliveryMessage && log.isDebugEnabled())
@@ -98,6 +106,7 @@ public class BrokerQueueListener extends BrokerListener
 							public void operationComplete(ChannelFuture future) throws Exception
 							{
 								isReady.set(true);
+								lchannel.resetDeliveryTries();
 								if(lchannel.isWritable())
 								{
 									if (log.isDebugEnabled())

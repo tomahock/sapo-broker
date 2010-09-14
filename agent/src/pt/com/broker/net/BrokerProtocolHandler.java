@@ -2,7 +2,6 @@ package pt.com.broker.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
