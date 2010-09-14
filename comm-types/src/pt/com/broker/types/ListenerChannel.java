@@ -8,9 +8,11 @@ import org.jboss.netty.channel.ChannelPipeline;
 
 public class ListenerChannel
 {
-	private final Channel channel;
+	public static final long MAX_WRITE_TRIES = 100;
 	
+	private final Channel channel;
 	private final AtomicLong messageDeliveryTries = new AtomicLong(0);
+		
 
 	public ListenerChannel(Channel channel)
 	{
@@ -93,8 +95,13 @@ public class ListenerChannel
 		return true;
 	}
 
-	public AtomicLong getTopicMessageDeliveryTries()
+	public long incrementAndGetDeliveryTries()
 	{
-		return messageDeliveryTries;
+		return messageDeliveryTries.incrementAndGet();
+	}
+	
+	public void resetDeliveryTries()
+	{
+		messageDeliveryTries.set(0);
 	}
 }

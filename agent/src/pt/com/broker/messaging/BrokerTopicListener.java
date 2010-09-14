@@ -27,8 +27,7 @@ public class BrokerTopicListener extends BrokerListener
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
 
 	private static final long MAX_WRITE_TIME = 125 * 1000 * 1000;
-	private static final long MAX_WRITE_TRIES = 100;
-	
+		
 	volatile private long droppedMessages;
 
 	volatile private boolean showSuspendedDeliveryMessage;
@@ -78,7 +77,7 @@ public class BrokerTopicListener extends BrokerListener
 			{
 				if (lchannel.isWritable())
 				{
-					getChannel().getTopicMessageDeliveryTries().set(0);
+					getChannel().resetDeliveryTries();
 					if (showResumedDeliveryMessage)
 					{
 						String msg = String.format("Stopped discarding messages for topic '%s' and session '%s'. Dropped messages: %s", getsubscriptionKey(), lchannel.getRemoteAddressAsString(), droppedMessages);
@@ -103,9 +102,9 @@ public class BrokerTopicListener extends BrokerListener
 					{
 						if (deliveryAllowed(response))
 						{
-							if( getChannel().getTopicMessageDeliveryTries().incrementAndGet() == MAX_WRITE_TRIES)
+							if( getChannel().incrementAndGetDeliveryTries() == ListenerChannel.MAX_WRITE_TRIES)
 							{
-								log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), MAX_WRITE_TRIES ));
+								log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), ListenerChannel.MAX_WRITE_TRIES ));
 								lchannel.close();
 								return failed;
 							}
