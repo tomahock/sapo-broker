@@ -48,11 +48,14 @@ public class SystemMessagesPublisher
 				{
 					if (pending_messages.contains(messageId))
 					{
-						log.info(String.format("Message with id '%s' wasn't acknoledge. Closing channel.", messageId));
-						
-						pending_messages.remove(messageId);
-						MiscStats.newSystemMessageFailed();
-						closeChannel(channel);
+						if(pending_messages.remove(messageId))
+						{
+							// message wasn't removed meanwhile
+							
+							log.info(String.format("Message with id '%s' wasn't acknoledge. Closing channel.", messageId));
+							MiscStats.newSystemMessageFailed();
+							closeChannel(channel);
+						}
 					}
 				}
 			};

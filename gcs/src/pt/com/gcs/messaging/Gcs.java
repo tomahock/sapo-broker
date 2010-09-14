@@ -106,9 +106,9 @@ public class Gcs
 
 			ChannelFuture cf = instance.connector.connect(address);
 			cf.awaitUninterruptibly(5, TimeUnit.SECONDS);
-			
+
 			boolean sucess = cf.isSuccess();
-			
+
 			if (!sucess)
 			{
 				log.info("Connection fail to '{}'.", address.toString());
@@ -177,7 +177,13 @@ public class Gcs
 
 	protected static Set<Channel> getManagedConnectorSessions()
 	{
-		return new LinkedHashSet<Channel>(instance.agentsConnection);
+		LinkedHashSet<Channel> connections = null;
+		synchronized (instance.agentsConnection)
+		{
+			connections = new LinkedHashSet<Channel>(instance.agentsConnection);
+		}
+		
+		return connections;
 	}
 
 	protected static List<Peer> getPeerList()
@@ -314,6 +320,8 @@ public class Gcs
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new GlobalStatisticsPublisher(), 60, 60, TimeUnit.SECONDS);
 
+			// GcsExecutor.scheduleWithFixedDelay(new QueueLister(), 30, 20, TimeUnit.SECONDS);
+
 			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
 		}
 		catch (Throwable t)
@@ -327,7 +335,7 @@ public class Gcs
 
 		log.info("{} initialized.", SERVICE_NAME);
 	}
-
+	
 	private void idestroy()
 	{
 		try
@@ -478,16 +486,15 @@ public class Gcs
 		broadcastMaxSizeFault(String.format("The maximum number of distinct subscriptions (%s) has been reached.", GcsInfo.getMaxDistinctSubscriptions()));
 	}
 
-	
 	private static void broadcastMaxSizeFault(String message)
 	{
 		String topic = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
 
-		//Soap fault message
+		// Soap fault message
 		final String soapMessageTemplate = "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope' xmlns:wsa='http://www.w3.org/2005/08/addressing' xmlns:mq='http://services.sapo.pt/broker'><soap:Header><wsa:From><wsa:Address>%s</wsa:Address></wsa:From></soap:Header><soap:Body><soap:Fault><soap:Code><soap:Value>soap:Receiver</soap:Value></soap:Code><soap:Reason><soap:Text>%s</soap:Text></soap:Reason><soap:Detail>%s</soap:Detail></soap:Fault></soap:Body></soap:Envelope>";
-		
+
 		String faultMessage = String.format(soapMessageTemplate, GcsInfo.getAgentName(), "Limit reached", message);
-		
+
 		NetPublish np = new NetPublish(topic, DestinationType.TOPIC, new NetBrokerMessage(faultMessage));
 
 		Gcs.publish(np);
