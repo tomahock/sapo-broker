@@ -17,7 +17,7 @@ if [ $? = 0 ] ; then # Yup, 1.5 still
   done
 else # we assume 1.6 here
   echo Found Java version 1.6
-  classpath="./conf:../sapo-broker/lib/*:./dist/*"
+  classpath="./conf:../sapo-broker/lib/*:./dist/*:../sapo-broker/clients/java/lib/*"
 fi
 
 java -server \
