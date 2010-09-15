@@ -11,7 +11,7 @@
 		<link rel="stylesheet" href="css/style_new.css" type="text/css" />
 		<script type="text/javascript">
 			jQuery.noConflict();
-			window.onload = allAgentInit;
+			window.onload = inactiveQueuesInformationInit;
 		</script>
     </head>
     <body>
@@ -32,21 +32,14 @@
                 <div id="main-stats">
 
                     <div class="dashboard-widget">
-                        <table cellspacing="0" cellpadding="5" border="0">
-                            <caption><h1>Agents</h1></caption>
+                        <table cellspacing="0" cellpadding="7" border="0">
+                            <caption><h1>Inactive Queues</h1></caption>
                             <thead>
                                 <tr style="text-align:center">
-                                    <td>Agent</td>
-                                    <td>Status</td>
-                                    <td colspan="2">Input Rate</td>
-                                    <td colspan="2">Output Rate</td>
-                                    <td colspan="2">Error Rate</td>
-                                    <td>Failed Sys Msg</td>
-                                    <td>Dropbox</td>
-                                    <td>Queues</td>
+                                    <td>Queue Name</td>
                                 </tr>
                             </thead>
-                            <tbody id="agents">
+                            <tbody id="queues_info">
                             </tbody>
                         </table>
                     </div>

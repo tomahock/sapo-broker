@@ -17,7 +17,7 @@ public class AllQueuesGeneralInfoQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(GeneralQueueInfoQuery.class);
 
-	private static String QUERY = "SELECT raw_data.subject, last_events.predicate, \nCOALESCE(SUM(raw_data.object_value), 0) FROM\n	raw_data\n	,(\n		SELECT max(event_time) as m_time, predicate, agent_name\n		FROM raw_data\n		WHERE\n		subject ~ 'queue://.*'\n		AND event_time > (now() - '00:10'::time)\n		GROUP BY predicate, agent_name\n	) last_events\nWHERE\n	raw_data.event_time = last_events.m_time\n	AND raw_data.agent_name = last_events.agent_name\n	AND raw_data.predicate = last_events.predicate\n	AND raw_data.subject ~ 'queue://.*'\nGROUP BY raw_data.subject, last_events.predicate\nORDER BY raw_data.subject, last_events.predicate";
+	private static String QUERY = "SELECT raw_data.subject, last_events.predicate, \nCOALESCE(SUM(raw_data.object_value), 0) FROM\n	raw_data\n	,(\n		SELECT max(event_time) as m_time, predicate, agent_name\n		FROM raw_data\n		WHERE\n		subject ~ 'queue://.*'\n		AND event_time > (now() - '00:10'::time)\n		GROUP BY predicate, agent_name\n	) last_events\nWHERE\n	raw_data.event_time = last_events.m_time\n	AND raw_data.agent_name = last_events.agent_name\n	AND raw_data.predicate = last_events.predicate\n	AND raw_data.subject ~ 'queue://.*'\n	AND raw_data.predicate <> 'queue-listing'\nGROUP BY raw_data.subject, last_events.predicate\nORDER BY raw_data.subject, last_events.predicate";
 
 	public String getId()
 	{

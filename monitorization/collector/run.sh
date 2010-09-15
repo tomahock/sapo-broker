@@ -12,7 +12,6 @@ java -server \
 -Djava.net.preferIPv6Addresses=false \
 -Dfile.encoding=UTF-8 \
 -cp $classpath \
--Dcom.sun.management.jmxremote.port=3333 \
 -Dcom.sun.management.jmxremote.ssl=false \
 -Dcom.sun.management.jmxremote.authenticate=false \
 pt.com.broker.monitorization.Collector

@@ -21,6 +21,7 @@ import pt.com.broker.monitorization.db.queries.RateQueries;
 import pt.com.broker.monitorization.db.queries.SnapshotQueries;
 import pt.com.broker.monitorization.db.queries.agents.AgentInformationRouter;
 import pt.com.broker.monitorization.db.queries.faults.FaultsInformationRouter;
+import pt.com.broker.monitorization.db.queries.queues.InactiveQueueInformationRouter;
 import pt.com.broker.monitorization.db.queries.queues.QueueInformationRouter;
 import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionsInformationRouter;
 
@@ -50,6 +51,8 @@ public class DataQueryAction extends HttpAction
 		data_providers.put(qir.getType(), qir);
 		AgentInformationRouter air = new AgentInformationRouter();
 		data_providers.put(air.getType(), air);
+		InactiveQueueInformationRouter iqir = new InactiveQueueInformationRouter();
+		data_providers.put(iqir.getType(), iqir);
 	}
 
 	public DataQueryAction(String queryPrefix)
