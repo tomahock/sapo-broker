@@ -727,7 +727,8 @@ function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 			
 			newContent = newContent + "<td>" + agentGeneralInfo[i].dropboxCount + "</td>";
 
-			newContent = newContent + "<td>" + agentGeneralInfo[i].queueCount + "</td></tr>";
+			var tatalQueueCount = round(parseFloat(agentGeneralInfo[i].queueCount));
+			newContent = newContent + "<td>" + tatalQueueCount + "</td></tr>";
 		}
 	}
 
