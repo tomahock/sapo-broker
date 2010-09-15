@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
- * QueueCounter is responsible for counting and publishing the total number number of messages per queue.
+ * QueueLister is responsible for listing all existing queues in an agent.
  * 
  */
 
@@ -25,20 +25,17 @@ class QueueLister implements Runnable
 
 		log.debug("Number of registered Queues: {}", qpl.size());
 
-		// New format
-
 		StringBuilder sb = new StringBuilder();
 		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
 
 		for (QueueProcessor qp : QueueProcessorList.values())
 		{
-			sb.append(String.format("\n\t<item subject='queue' predicate='listing' value='%s' />", qp.getQueueName()));
+			sb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"queue-listing\" value=\"0\" />", qp.getQueueName()));
 		}
 
 		sb.append("\n</mqinfo>");
-
+		
 		String result = sb.toString();
-
 		final String sys_topic = String.format("/system/stats/queues/#%s#", GcsInfo.getAgentName());
 		InternalPublisher.send(sys_topic, result);
 	}

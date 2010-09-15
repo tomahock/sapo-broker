@@ -102,10 +102,13 @@ public class GlobalStatisticsPublisher implements Runnable
 			}
 		}
 
+		// queue count (number of queues in this agent)
+		sb.append(String.format("\n	<item subject=\"queue\" predicate=\"count\" value=\"%s\" />", QueueProcessorList.values().size()));
+		
 		sb.append("\n</mqinfo>");
 
 		String result = sb.toString();
-
+		
 		final String sys_topic = String.format("/system/stats/queues/#%s#", GcsInfo.getAgentName());
 
 		NetPublish np = new NetPublish(sys_topic, DestinationType.TOPIC, new NetBrokerMessage(result));
