@@ -9,7 +9,7 @@ public class AgentStatusSnapshotQuery extends ComposedResultQuery
 {
 	//private static final Logger log = LoggerFactory.getLogger(QueueCountSnapshotQuery.class);
 
-	private static String QUERY = "select raw_data.agent_name, raw_data.object_value as state from raw_data, \n(select agent_name, subject,  max(event_time)  as mtime from raw_data where event_time > (now() - '00:05'::time) AND predicate = 'status' group by agent_name , subject) AS t0\n where raw_data.agent_name= t0.agent_name and raw_data.event_time=t0.mtime and  raw_data.subject=t0.subject and raw_data.predicate='status' order by raw_data.object_value DESC";
+	private static String QUERY = "SELECT agents.agent_name, \nlast_event_for_subject_predicate_agent('agent', 'status', agents.agent_name, now(), '00:10') AS state,\nlast_event_for_subject_predicate_agent('queue', 'count', agents.agent_name, now(), '00:10') AS queues\nFROM (SELECT DISTINCT agent_name FROM raw_data WHERE event_time > (now() - '00:10'::time) ) AS agents ORDER BY 3 DESC";
 
 	public AgentStatusSnapshotQuery()
 	{
@@ -35,7 +35,11 @@ public class AgentStatusSnapshotQuery extends ComposedResultQuery
 		
 		stringBuilder.append("\"status\":\"");
 		stringBuilder.append( (queryResult.getDouble(idx++) == 0) ? "Down" : "Ok");
-		stringBuilder.append("\"}");		
+		stringBuilder.append("\",");
+		
+		stringBuilder.append("\"queueCount\":\"");
+		stringBuilder.append(queryResult.getDouble(idx++));
+		stringBuilder.append("\"}");
 	}
 }
 

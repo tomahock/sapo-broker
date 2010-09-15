@@ -412,21 +412,31 @@ function setErrorInfo(errorInfo, panel)
 // general agents info
 function setAgentsInfo(agentInfo, pannel, messageLabel)
 {
-	var count = 0;
-	
+	var MAX_QUEUES_ALARM = 5;
+
+	var countDown = 0;
+	var alarmQueues = 0;
 	for(var i = 0; i != agentInfo.length; ++i)
 	{
 		if(agentInfo[i].status == "Down")
-			++count;
+			++countDown;
+			
+		if(agentInfo[i].queueCount >= MAX_QUEUES_ALARM)
+			++alarmQueues;
 	}
 
-	if(count == 0)
+	if( (countDown == 0) && (alarmQueues == 0) ) 
 	{
 		pannel.hide();
 	}
 	else
 	{
-		var msg = count + ( ((count == 1) ? " agent" : " agents") + " down!");
+		var msg = "";
+		if(countDown != 0)
+			msg += countDown + ( ((countDown == 1) ? " agent" : " agents") + " down!\n");
+		if(alarmQueues != 0)
+			msg += alarmQueues + ( ((alarmQueues == 1) ? " agent" : " agents") + " with more than " + (MAX_QUEUES_ALARM-1) + " queues!" );
+			
 		messageLabel.text(msg);
 		pannel.show();
 	}
@@ -714,8 +724,10 @@ function setAllAgentGeneralInfo(agentGeneralInfo,  panel)
 			newContent = newContent + "<td style='padding-left:2em'>" + faultRate + "</td><td style='padding-right:2em'></td>";
 
 			newContent = newContent + "<td>" + agentGeneralInfo[i].pendingAckSystemMsg + "</td>";
+			
+			newContent = newContent + "<td>" + agentGeneralInfo[i].dropboxCount + "</td>";
 
-			newContent = newContent + "<td>" + agentGeneralInfo[i].dropboxCount + "</td></tr>";
+			newContent = newContent + "<td>" + agentGeneralInfo[i].queueCount + "</td></tr>";
 		}
 	}
 
@@ -992,6 +1004,51 @@ function goToAgentPage(page)
 	window.location = "http://"+ agentIp + ":3380" + page; 
 	
 	return false;
+}
+
+
+//
+// INACTIVE QUEUES
+//
+function inactiveQueuesInformationInit()
+{
+  var infoPanel = jQuery('#queues_info');
+  infoPanel.html("<tr><td colspan='1' class='oddrow'>Please wait...</td></tr>");
+  var f_inactiveQueues = function() {
+   jQuery.ajax(
+   {
+    type: 'GET',
+    url: '/dataquery/inactivequeue',
+    success: function(data){
+      var infoPanel = jQuery('#queues_info');
+      setInactiveQueuesInfo(data, infoPanel);
+    }
+   });
+  }
+  f_inactiveQueues();
+  setInterval(f_inactiveQueues, 5000);
+}
+
+function setInactiveQueuesInfo(inactiveQueuesInfo,  panel)
+{
+	var count = 0;
+	var newContent = "";
+	if (inactiveQueuesInfo.length == 0)
+	{
+        	newContent = "<tr><td colspan='1' class='oddrow'>No inactive queues.</td></tr><p>No information available.</P>";
+  	}
+	else
+	{
+		for(var i = 0; i != inactiveQueuesInfo.length; ++i)
+		{
+			var queueName = removePrefix(inactiveQueuesInfo[i].queueName, QUEUE_PREFIX);
+			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
+
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ queueName+ "'>" + queueName + "</a></td></tr>";
+		}
+	}
+
+	panel.html(newContent);
 }
 
 //
