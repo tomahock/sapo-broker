@@ -88,8 +88,6 @@ public class AllAgentsGeneralInfoQuery
 				sb.append("\"");
 				
 				sb.append("}");
-				
-				System.out.println(sb.toString());
 			}
 		}
 		catch (Throwable t)

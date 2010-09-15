@@ -412,7 +412,7 @@ function setErrorInfo(errorInfo, panel)
 // general agents info
 function setAgentsInfo(agentInfo, pannel, messageLabel)
 {
-	var MAX_QUEUES_ALARM = 5;
+	var MAX_QUEUES_ALARM = 300;
 
 	var countDown = 0;
 	var alarmQueues = 0;
