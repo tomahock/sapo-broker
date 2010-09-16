@@ -327,19 +327,24 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	@Override
 	public void encode(NetMessage message, DataOutputStream out) throws IOException
 	{
-		short protocolType = proto_type;
-		short protocolVersion = (short) 0;
-
-		byte[] encodedMsg = serializer.marshal(message);
+		byte[] marshaledMsg = marshalMessage(message);
 
 		if (usingNewFramming)
 		{
+			short protocolType = proto_type;
+			short protocolVersion = (short) 0;
 			out.writeShort(protocolType);
 			out.writeShort(protocolVersion);
-			out.writeInt(encodedMsg.length);
 		}
+		out.writeInt(marshaledMsg.length);
 
-		out.write(encodedMsg);
+		out.write(marshaledMsg);
+	}
+	
+	public byte[] marshalMessage(NetMessage message) throws IOException
+	{
+		byte[] marshaledMsg = serializer.marshal(message);
+		return marshaledMsg;
 	}
 
 	@Override

@@ -113,7 +113,15 @@ public class BrokerClient extends BaseBrokerClient
 
 		try
 		{
-			super._netHandler.encode(netMessage, out);
+			if(this.isOldFramming())
+			{
+				byte[] marshaledMessage = super._netHandler.marshalMessage(netMessage);
+				out.write(marshaledMessage);
+			}
+			else
+			{
+				super._netHandler.encode(netMessage, out);
+			}
 
 			out.flush();
 			out.close();
