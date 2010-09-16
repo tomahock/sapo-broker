@@ -25,7 +25,7 @@ public class BrokerQueueListener extends BrokerListener
 	private static final Logger log = LoggerFactory.getLogger(BrokerQueueListener.class);
 
 	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
-	//private static final String ACK_REQUIRED = "ACK_REQUIRED";
+	// private static final String ACK_REQUIRED = "ACK_REQUIRED";
 
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
 	private static final ForwardResult ackNotRequired = new ForwardResult(Result.NOT_ACKNOWLEDGE);
@@ -33,8 +33,8 @@ public class BrokerQueueListener extends BrokerListener
 
 	volatile private boolean showSuspendedDeliveryMessage;
 
-	private AtomicBoolean isReady = new AtomicBoolean(true);	
-	
+	private AtomicBoolean isReady = new AtomicBoolean(true);
+
 	public BrokerQueueListener(ListenerChannel lchannel, String destinationName, boolean ackRequired)
 	{
 		super(lchannel, destinationName);
@@ -59,7 +59,7 @@ public class BrokerQueueListener extends BrokerListener
 	{
 		return DestinationType.QUEUE;
 	}
-	
+
 	@Override
 	protected ForwardResult doOnMessage(NetMessage response)
 	{
@@ -69,7 +69,7 @@ public class BrokerQueueListener extends BrokerListener
 		{
 			if (lchannel.isWritable())
 			{
-				if(deliveryAllowed(response, lchannel.getChannel()))
+				if (deliveryAllowed(response, lchannel.getChannel()))
 				{
 					lchannel.write(response);
 					isReady.set(true);
@@ -84,43 +84,54 @@ public class BrokerQueueListener extends BrokerListener
 			{
 				if (isReady())
 				{
-					if(deliveryAllowed(response, lchannel.getChannel()))
+					if (deliveryAllowed(response, lchannel.getChannel()))
 					{
-						if( getChannel().incrementAndGetDeliveryTries() == ListenerChannel.MAX_WRITE_TRIES)
+						if (lchannel.getDeliveryTries() >= ListenerChannel.MAX_WRITE_TRIES)
 						{
-							log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), ListenerChannel.MAX_WRITE_TRIES ));
-							lchannel.close();
+							// log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), ListenerChannel.MAX_WRITE_TRIES));
+							// try
+							// {
+							// lchannel.close();
+							// }
+							// catch (Throwable t)
+							// {
+							// }
 							return failed;
 						}
-						
-						ChannelFuture future = lchannel.write(response);
-						isReady.set(false);
-						if (showSuspendedDeliveryMessage && log.isDebugEnabled())
+						else
 						{
-							log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-						}
-
-						future.addListener(new ChannelFutureListener()
-						{
-							@Override
-							public void operationComplete(ChannelFuture future) throws Exception
+							lchannel.incrementAndGetDeliveryTries();
+							
+							ChannelFuture future = lchannel.write(response);
+							isReady.set(false);
+							if (showSuspendedDeliveryMessage && log.isDebugEnabled())
 							{
-								isReady.set(true);
-								lchannel.resetDeliveryTries();
-								if(lchannel.isWritable())
-								{
-									if (log.isDebugEnabled())
-									{
-										log.debug(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-									}								
-									showSuspendedDeliveryMessage = true;
-								}
-								else
-								{
-									showSuspendedDeliveryMessage = false;
-								}
+								log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
 							}
-						});
+
+							future.addListener(new ChannelFutureListener()
+							{
+								@Override
+								public void operationComplete(ChannelFuture future) throws Exception
+								{
+									isReady.set(true);
+									lchannel.decrementAndGetDeliveryTries();
+									
+									if (lchannel.isWritable())
+									{
+										if (log.isDebugEnabled())
+										{
+											log.debug(String.format("Resume message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+										}
+										showSuspendedDeliveryMessage = true;
+									}
+									else
+									{
+										showSuspendedDeliveryMessage = false;
+									}
+								}
+							});
+						}
 					}
 					else
 					{
@@ -177,18 +188,18 @@ public class BrokerQueueListener extends BrokerListener
 	{
 		return true;
 	}
-	
+
 	/**
-	 * If the message was original sent to a topic validate delivery. 
+	 * If the message was original sent to a topic validate delivery.
 	 */
 	private boolean deliveryAllowed(NetMessage response, Channel channel)
 	{
 		String originalDestination = response.getHeaders().get("ORIGINAL_DESTINATION");
-		if(originalDestination == null)
+		if (originalDestination == null)
 		{
 			return true;
 		}
-		
+
 		// This is a Virtual Queue
 		DestinationType destinationType = DestinationType.TOPIC;
 		return AccessControl.deliveryAllowed(response, destinationType, channel, this.getsubscriptionKey(), originalDestination);
