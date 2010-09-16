@@ -27,21 +27,21 @@ public class BrokerTopicListener extends BrokerListener
 	private static final ForwardResult success = new ForwardResult(Result.SUCCESS);
 
 	private static final long MAX_WRITE_TIME = 125 * 1000 * 1000;
-		
+
 	volatile private long droppedMessages;
 
 	volatile private boolean showSuspendedDeliveryMessage;
 	volatile private boolean showResumedDeliveryMessage;
 
 	private AtomicLong startDeliverAfter;
-	
+
 	public BrokerTopicListener(ListenerChannel lchannel, String destinationName)
 	{
 		super(lchannel, destinationName);
 		droppedMessages = 0L;
 		this.showSuspendedDeliveryMessage = false;
 		this.showResumedDeliveryMessage = false;
-		this.startDeliverAfter = new AtomicLong( System.nanoTime() );
+		this.startDeliverAfter = new AtomicLong(System.nanoTime());
 	}
 
 	@Override
@@ -102,38 +102,55 @@ public class BrokerTopicListener extends BrokerListener
 					{
 						if (deliveryAllowed(response))
 						{
-							if( getChannel().incrementAndGetDeliveryTries() == ListenerChannel.MAX_WRITE_TRIES)
+							final ListenerChannel channel = getChannel();
+
+							if (channel.getDeliveryTries() >= ListenerChannel.MAX_WRITE_TRIES)
 							{
-								log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), ListenerChannel.MAX_WRITE_TRIES ));
-								lchannel.close();
+								++droppedMessages;
+								// log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), ListenerChannel.MAX_WRITE_TRIES));
+								// try
+								// {
+								// lchannel.close();
+								// }
+								// catch (Throwable t)
+								// {
+								// }
 								return failed;
 							}
-							
-							ChannelFuture future = lchannel.write(response);
-							final long writeStartTime = System.nanoTime();
-							startDeliverAfter.set( writeStartTime + 10000);
-	
-							future.addListener(new ChannelFutureListener()
+							else
 							{
-								@Override
-								public void operationComplete(ChannelFuture future) throws Exception
-								{
-									final long writeTime = System.nanoTime() - writeStartTime;
+								channel.incrementAndGetDeliveryTries();
+								ChannelFuture future = lchannel.write(response);
+								final long writeStartTime = System.nanoTime();
+								startDeliverAfter.set(writeStartTime + 10000);
 
-									if (writeTime >= MAX_WRITE_TIME)
-									{									
-										startDeliverAfter.set( System.nanoTime() + (writeTime / 2) ); // suspend delivery for the same amount of time that the previous write took.;
+								future.addListener(new ChannelFutureListener()
+								{
+									@Override
+									public void operationComplete(ChannelFuture future) throws Exception
+									{
+										channel.decrementAndGetDeliveryTries();
+
+										final long writeTime = System.nanoTime() - writeStartTime;
+
+										if (writeTime >= MAX_WRITE_TIME)
+										{
+											startDeliverAfter.set(System.nanoTime() + (writeTime / 2)); // suspend delivery for the same amount of time that the previous write took.;
+										}
 									}
-								}
-							});
+								});
+							}
 						}
 						else
 						{
+							// delivery not allowed
 							return failed;
 						}
 					}
 					else
 					{
+						// not writable and not ready - drop messages
+						
 						showResumedDeliveryMessage = true;
 
 						if (showSuspendedDeliveryMessage)
@@ -141,7 +158,7 @@ public class BrokerTopicListener extends BrokerListener
 							log.info("Started discarding messages for topic '{}' and session '{}'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString());
 							showSuspendedDeliveryMessage = false;
 						}
-						droppedMessages++;
+						++droppedMessages;
 						result = failed;
 					}
 				}

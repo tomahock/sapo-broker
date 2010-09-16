@@ -100,6 +100,16 @@ public class ListenerChannel
 		return messageDeliveryTries.incrementAndGet();
 	}
 	
+	public long decrementAndGetDeliveryTries()
+	{
+		return messageDeliveryTries.decrementAndGet();
+	}
+	
+	public long getDeliveryTries()
+	{
+		return messageDeliveryTries.get();
+	}
+	
 	public void resetDeliveryTries()
 	{
 		messageDeliveryTries.set(0);
