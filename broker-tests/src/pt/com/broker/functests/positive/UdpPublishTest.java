@@ -9,36 +9,37 @@ import pt.com.broker.client.HostInfo;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
+import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class UdpPublishTest extends GenericPubSubTest
 {
 	private BrokerClient client;
-	
+
 	public UdpPublishTest(String testName)
 	{
 		super(testName);
-		HostInfo hostInfo = new HostInfo(ConfigurationInfo.getParameter("agent1-host"),
-				Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")),
-				Integer.parseInt(ConfigurationInfo.getParameter("agent1-udp-port")));
+		HostInfo hostInfo = new HostInfo(
+				ConfigurationInfo.getParameter("agent1-host"), 
+				BrokerTest.getAgent1Port(),
+				BrokerTest.getAgent1UdpPort());
 		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
 		hosts.add(hostInfo);
 		try
 		{
-			client =  new BrokerClient(hosts, "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			client = new BrokerClient(hosts, "tcp://mycompany.com/test", this.getEncodingProtocolType());
 		}
 		catch (Throwable e)
 		{
 			setFailure(e);
 		}
-		
+
 		super.dataLenght = 250;
-		
+
 	}
-	
+
 	@Override
 	public Action getAction()
 	{
@@ -51,10 +52,10 @@ public class UdpPublishTest extends GenericPubSubTest
 
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					NetPublish netPublish = new NetPublish(getDestinationName(),getDestinationType(), brokerMessage);
-					
-					((BrokerClient)getInfoProducer()).publishMessageOverUdp(netPublish);
-					
+					NetPublish netPublish = new NetPublish(getDestinationName(), getDestinationType(), brokerMessage);
+
+					((BrokerClient) getInfoProducer()).publishMessageOverUdp(netPublish);
+
 					getInfoProducer().close();
 
 					setDone(true);
@@ -68,7 +69,7 @@ public class UdpPublishTest extends GenericPubSubTest
 			}
 		};
 	}
-	
+
 	@Override
 	public BaseBrokerClient getInfoProducer()
 	{

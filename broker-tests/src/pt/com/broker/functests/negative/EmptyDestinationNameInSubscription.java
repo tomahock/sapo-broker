@@ -13,7 +13,7 @@ public class EmptyDestinationNameInSubscription extends GenericNetMessageNegativ
 	{
 		super("Empty destination name in subscription");
 
-		NetSubscribe subscribe = new NetSubscribe("", DestinationType.VIRTUAL_QUEUE);
+		NetSubscribe subscribe = new NetSubscribe("", DestinationType.TOPIC);
 		NetAction action = new NetAction(ActionType.SUBSCRIBE);
 		action.setSubscribeMessage(subscribe);
 		NetMessage message = new NetMessage(action);

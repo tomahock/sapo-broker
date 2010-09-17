@@ -40,9 +40,9 @@ public class GenericPubSubTest extends BrokerTest
 		try
 		{
 			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 		}
 		catch (Throwable t)
 		{
@@ -88,7 +88,7 @@ public class GenericPubSubTest extends BrokerTest
 				{
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getDestinationType());
 					getInfoConsumer().addAsyncConsumer(subscribe, getBrokerListener());
-
+					
 					Sleep.time(250);
 					setDone(true);
 					setSucess(true);

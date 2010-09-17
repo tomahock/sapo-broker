@@ -144,4 +144,32 @@ public abstract class BrokerTest extends Test
 		}
 		return port;
 	}
+	public static int getAgent1UdpPort()
+	{
+		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
+		int port = 0;
+		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
+		{
+			port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-udp-port"));
+		}
+		else
+		{
+			port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-udp-port"));
+		}
+		return port;
+	}
+	public static int getAgent2UdpPort()
+	{
+		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
+		int port = 0;
+		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
+		{
+			port = Integer.parseInt(ConfigurationInfo.getParameter("agent2-legacy-udp-port"));
+		}
+		else
+		{
+			port = Integer.parseInt(ConfigurationInfo.getParameter("agent2-udp-port"));
+		}
+		return port;
+	}
 }

@@ -27,8 +27,6 @@ public class EmptyDestinationNameInPoll extends GenericNetMessageNegativeTest
 	@Override
 	public boolean skipTest()
 	{
-		System.out.println(String.format("\n### Protocol type: %s Skiping: %s\n", getEncodingProtocolType(),(getEncodingProtocolType() != NetProtocolType.SOAP) && (getEncodingProtocolType() != NetProtocolType.SOAP_v0)));
-		
 		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0); 
 	}
 }

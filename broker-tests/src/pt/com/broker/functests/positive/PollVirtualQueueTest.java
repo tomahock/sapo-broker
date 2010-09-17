@@ -43,21 +43,22 @@ public class PollVirtualQueueTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
-					
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+
 					NetSubscribe subscribe = new NetSubscribe(queueName, DestinationType.VIRTUAL_QUEUE);
-					bk.addAsyncConsumer(subscribe, new BrokerListener(){
+					bk.addAsyncConsumer(subscribe, new BrokerListener()
+					{
 						@Override
 						public boolean isAutoAck()
 						{
 							return false;
 						}
+
 						@Override
 						public void onMessage(NetNotification message)
-						{	
+						{
 						}
-						
+
 					});
 					Sleep.time(150);
 
@@ -88,12 +89,10 @@ public class PollVirtualQueueTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-							Integer.parseInt(ConfigurationInfo.getParameter("agent1-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 
-					
 					NetNotification msg = bk.poll(queueName);
-					
+
 					bk.acknowledge(msg);
 
 					bk.close();
