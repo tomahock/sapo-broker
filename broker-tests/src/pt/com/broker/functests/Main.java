@@ -29,8 +29,6 @@ import pt.com.broker.functests.negative.NotificationTest;
 import pt.com.broker.functests.negative.PongTest;
 import pt.com.broker.functests.negative.TimeoutPollTest;
 import pt.com.broker.functests.negative.TotallyInvalidRandomMessageTest;
-import pt.com.broker.functests.negative.UnknownAuthTypeFailedTest;
-import pt.com.broker.functests.positive.DBRolesAuthenticationTest;
 import pt.com.broker.functests.positive.Multiple1NTopic;
 import pt.com.broker.functests.positive.Multiple1NTopicRemote;
 import pt.com.broker.functests.positive.MultipleN1Queue;
@@ -47,7 +45,6 @@ import pt.com.broker.functests.positive.PollTest;
 import pt.com.broker.functests.positive.PollVirtualQueueTest;
 import pt.com.broker.functests.positive.QueueTest;
 import pt.com.broker.functests.positive.QueueTestDist;
-import pt.com.broker.functests.positive.SslTopicNameSpeficied;
 import pt.com.broker.functests.positive.TopicNameSpecified;
 import pt.com.broker.functests.positive.TopicNameSpecifiedDist;
 import pt.com.broker.functests.positive.TopicNameWildcard;
@@ -67,10 +64,9 @@ public class Main
 
 	public static void main(String[] args)
 	{
-		
 		// Positive Tests
 
-		NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT};
+		NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT, NetProtocolType.SOAP_v0};
 
 		TestsResults testResults = new TestsResults();
 

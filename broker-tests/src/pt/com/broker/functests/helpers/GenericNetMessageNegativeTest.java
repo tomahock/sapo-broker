@@ -9,6 +9,7 @@ import pt.com.broker.codec.thrift.ThriftBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetProtocolType;
 
 public class GenericNetMessageNegativeTest extends GenericNegativeTest
 {
@@ -33,6 +34,7 @@ public class GenericNetMessageNegativeTest extends GenericNegativeTest
 
 		switch (getEncodingProtocolType())
 		{
+		case SOAP_v0:
 		case SOAP:
 			encoder = new SoapBindingSerializer();
 			break;
@@ -53,7 +55,10 @@ public class GenericNetMessageNegativeTest extends GenericNegativeTest
 
 			byte[] rawData = encoder.marshal(getMessage());
 
-			dataOutputStream.write(headerWithoutSize);
+			if (!getEncodingProtocolType().equals(NetProtocolType.SOAP_v0))
+			{
+				dataOutputStream.write(headerWithoutSize);
+			}
 			dataOutputStream.writeInt(rawData.length);
 			dataOutputStream.write(rawData);
 		}
@@ -67,7 +72,7 @@ public class GenericNetMessageNegativeTest extends GenericNegativeTest
 			System.err.println(ex);
 			setFailure(ex);
 		}
-		
+
 		byte[] byteArray = byteArrayOutputStream.toByteArray();
 
 		return byteArray;

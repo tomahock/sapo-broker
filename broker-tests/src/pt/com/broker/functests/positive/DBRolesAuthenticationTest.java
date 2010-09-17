@@ -5,6 +5,7 @@ import org.caudexorigo.concurrent.Sleep;
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;
+import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetProtocolType;
 
@@ -29,7 +30,7 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 			try
 			{
 				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-						Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
+						BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
 			}
 			catch (Throwable e)
 			{
