@@ -8,7 +8,6 @@ lib/SAPO/Broker/Messages/Fault.pm
 lib/SAPO/Broker/Messages/Subscribe.pm
 lib/SAPO/Broker/Messages/Acknowledge.pm
 lib/SAPO/Broker/Messages/Notification.pm
-lib/SAPO/Broker/Messages/create_class.pl
 lib/SAPO/Broker/Messages/Authentication.pm
 lib/SAPO/Broker/Messages/Message.pm
 lib/SAPO/Broker/Messages/Publish.pm
