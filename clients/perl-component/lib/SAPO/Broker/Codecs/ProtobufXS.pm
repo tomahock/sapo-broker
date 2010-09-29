@@ -64,12 +64,9 @@ sub serialize_publish($) {
             },
         } );
 
-    #XXX ugly kludge (is this needed in the protobuf codec?)
     my $expiration = $broker_message->expiration();
     if ( defined $expiration ) {
         $expiration = $expiration * 1000;
-    } else {
-        $expiration = -1;
     }
 
     $ret->action->publish->message->set_timestamp($expiration);
