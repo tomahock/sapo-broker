@@ -62,14 +62,14 @@ sub serialize_publish($$) {
     #XXX ugly kludge to workaround a broker bug that doesn't check whether the field is sent over the wire
     my $expiration = $broker_message->expiration();
     if ( not defined $expiration ) {
-        $broker_message->expiration(-1);    #infinite since it is casted to unsigned
+        $broker_message->expiration( ( time + 7 * 24 * 60 * 60 ) * 1000 );    #by default messages expire in 7 days
     } else {
         $broker_message->expiration( $expiration * 1000 );    #broker receives timestamps as milliseconds from the epoch
     }
 
     my $timestamp = $broker_message->timestamp();
     if ( not defined $timestamp ) {
-        $timestamp = time;    #must be sent on the wire due to stupid constraints in the java thrift implementation
+        $timestamp = time * 1000;  #must be sent on the wire due to stupid constraints in the java thrift implementation
     }
 
     $broker_message->timestamp( $timestamp * 1000 );    #milliseconds
