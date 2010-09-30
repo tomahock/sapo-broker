@@ -5,7 +5,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ClientLib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommonLibs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommTypes"/>
-	<classpathentry kind="lib" path="lib/jackson-core-asl-1.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-asl-1.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.6.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

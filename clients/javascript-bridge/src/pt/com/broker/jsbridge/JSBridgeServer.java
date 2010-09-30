@@ -25,7 +25,8 @@ public class JSBridgeServer
 		NettyHttpServer server = new NettyHttpServer(root_directory, true);
 		server.setPort(port);
 		server.setRouter(new JSBridgeRouter(root_directory));
-		server.setWebSocketHandler(new JSBridgeHandler());
+		server.addWebSocketHandler("/websocket", new JSBridgeHandler());
 		server.start();
+		
 	}
 }
