@@ -167,14 +167,10 @@ public class BridgeChannel implements BrokerListener
 		if (allowSubscription)
 		{
 			byte[] payload = new byte[0];
-			
-			//System.out.println("BridgeChannel.onMessage.payload: " + new String(notification.getMessage().getPayload()));
 
 			if (downstreamFilter != null)
 			{
 				payload = downstreamFilter.transform(notification.getMessage()).getPayload();
-				
-				System.out.println("BridgeChannel.onMessage.transformed.payload: " + new String(payload));
 			}
 			else
 			{
