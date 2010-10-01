@@ -67,9 +67,8 @@ sub serialize_publish($) {
     my $expiration = $broker_message->expiration();
     if ( defined $expiration ) {
         $expiration = $expiration * 1000;
+        $ret->action->publish->message->set_expiration($expiration);
     }
-
-    $ret->action->publish->message->set_timestamp($expiration);
 
     #broker expects milliseconds
     my $timestamp = $broker_message->timestamp();
