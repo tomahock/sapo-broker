@@ -160,7 +160,7 @@ sub parse_notification($) {
 sub parse_fault($) {
     my ($action) = @_;
 
-    return SAPO::Broker::Messages::Fault( $action->fault()->to_hashref );
+    return SAPO::Broker::Messages::Fault->new( $action->fault()->to_hashref );
 }
 
 sub serialize_ping($) {
@@ -183,7 +183,7 @@ sub parse_pong($) {
 sub serialize_authentication($) {
     my ($message) = @_;
 
-    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Authentication->new( {
+    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
             'action' => {
                 'auth'        => $message,
                 'action_type' => SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Action::ActionType::AUTH()
