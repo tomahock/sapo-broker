@@ -90,7 +90,6 @@ sub __get_transport_class {
         return $prefix . 'SSL';
     } else {
         croak("Unknown protocol '$proto'");
-        return;
     }
 }
 
@@ -112,6 +111,13 @@ sub subscribe {
     }
 
     return $ret;
+}
+
+sub unsubscribe {
+    my ( $self, %options ) = @_;
+
+    my $unsubscribe = SAPO::Broker::Messages::Unsubscribe->new(%options);
+    return $self->send($unsubscribe);
 }
 
 sub poll {
