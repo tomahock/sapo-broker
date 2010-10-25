@@ -284,7 +284,7 @@ public class Gcs
 		QueueProcessor qp = QueueProcessorList.get(queueName);
 		if (qp != null)
 		{
-
+			qp.getQueueStatistics().newQueueMessageReceived();
 			qp.store(nmsg, true);
 			return true;
 		}

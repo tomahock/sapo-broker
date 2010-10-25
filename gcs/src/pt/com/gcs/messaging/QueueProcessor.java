@@ -469,8 +469,6 @@ public class QueueProcessor
 	{
 		try
 		{
-			queueStatistics.newQueueMessageReceived();
-
 			long seq_nr = sequence.incrementAndGet();
 			String mid = storage.insert(nmsg, seq_nr, preferLocalConsumer);
 			counter.incrementAndGet();
