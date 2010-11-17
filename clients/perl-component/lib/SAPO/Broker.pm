@@ -27,7 +27,7 @@ sub has_protobufxs() {
 }
 
 sub has_thrift() {
-    return has_module('SAPO::Broker::Codecs::Autogen::Thrift::Types');
+    return has_module('Thrift') and has_module('SAPO::Broker::Codecs::Autogen::Thrift::Types');
 }
 
 # old module follows for retrocompatibility purposes
