@@ -7,7 +7,6 @@ use SAPO::Broker::Messages;
 use SAPO::Broker::Clients::Minimal;
 use SAPO::Broker::Transport::TCP;
 use SAPO::Broker::Transport::UDP;
-use SAPO::Broker::Codecs::Thrift;
 
 use strict;
 use warnings;
@@ -24,14 +23,14 @@ our @ISA = qw(SAPO::Broker::Clients::Minimal);
 my %codecs;
 
 if ( SAPO::Broker::has_thrift() ) {
-    use SAPO::Broker::Codecs::Thrift;
+    require SAPO::Broker::Codecs::Thrift;
     my $name = 'thrift';
     $codecs{$name} = SAPO::Broker::Codecs::Thrift->new();
     $DEFAULT_OPTIONS{'codec'} = $name;
 }
 
 if ( SAPO::Broker::has_protobufxs() ) {
-    use SAPO::Broker::Codecs::ProtobufXS;
+    require SAPO::Broker::Codecs::ProtobufXS;
     my $name = 'protobufxs';
     $codecs{$name} = SAPO::Broker::Codecs::ProtobufXS->new();
     $DEFAULT_OPTIONS{'codec'} = $name;
