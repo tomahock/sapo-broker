@@ -6,3 +6,7 @@ TODO, TO THINK
 2) TTL in Virtual Queues 
    - Set a TTL in subscriptions. TTL is uptaded in each subscription.
 
+3) Rethink delivery strategy for message from queues
+   - More event-driven
+   - Less thread-driven
+   - Or some
