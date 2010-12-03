@@ -533,6 +533,7 @@ public class BDBStorage
 					{
 						cursorDelete(msg_cursor);
 						e0++;
+						queueProcessor.getQueueStatistics().newQueueExpiredMessage();
 						dumpMessage(msg);
 					}
 				}
