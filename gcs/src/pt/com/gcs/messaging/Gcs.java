@@ -247,6 +247,12 @@ public class Gcs
 
 	private void iackMessage(String queueName, final String msgId)
 	{
+		if(!QueueProcessorList.hasQueue(queueName))
+		{
+			log.warn(String.format("Trying to acknowledge a message whose queue dosen't existe. Queue: '%s', MsgId: '%s' ", queueName, msgId));
+			return;
+		}
+		
 		QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
 		if (queueProcessor != null)
 		{
