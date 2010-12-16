@@ -38,7 +38,7 @@
 		</bind>
 	</target>
 
-	<target name="init">
+	<target name="init" depends="clean">
 		<mkdir dir="bin" />
 		<mkdir dir="dist" />
 	</target>
