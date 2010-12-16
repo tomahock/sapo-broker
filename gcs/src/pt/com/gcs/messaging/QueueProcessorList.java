@@ -69,6 +69,19 @@ public class QueueProcessorList
 	{
 		return instance.i_get(destinationName);
 	}
+	
+	public static boolean hasQueue(String queueName)
+	{
+		try
+		{
+			return instance.qpCache.containsKey(queueName);
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		}
+	}
 
 	protected static void remove(String queueName)
 	{
