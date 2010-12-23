@@ -22,7 +22,6 @@
 @property(assign) NSString* inputPort;
 @property(assign) NSString* inputTopic;
 @property(assign) NSString* outputString;
-@property(assign) BOOL outputTrigger;
 
 
 /*

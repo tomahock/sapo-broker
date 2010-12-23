@@ -18,7 +18,7 @@
 
 @implementation QCBrokerPlugIn
 
-@dynamic inputServer, inputPort, inputTopic, outputString, outputTrigger;
+@dynamic inputServer, inputPort, inputTopic, outputString;
 
 + (NSDictionary*) attributes
 {
@@ -46,10 +46,6 @@
   if([key isEqualToString:@"outputString"])
     return [NSDictionary dictionaryWithObjectsAndKeys:
             @"String", QCPortAttributeNameKey,
-            nil];
-  if([key isEqualToString:@"outputTrigger"])
-    return [NSDictionary dictionaryWithObjectsAndKeys:
-            @"Trigger", QCPortAttributeNameKey,
             nil];
 	return nil;
 }
@@ -95,10 +91,8 @@
 			/* if buffer is too full, ignore */
 			if([lineBuffer count]<100) {
 				strcpy(buffer,m->payload);
-				[lineBuffer addObject:[NSString stringWithCString:buffer
-												 encoding:NSUTF8StringEncoding]];
+				[lineBuffer addObject:[NSString stringWithCString:buffer encoding:NSUTF8StringEncoding]];
 				}
-		
 			sb_free_message(m);
 			}
 		}
@@ -180,16 +174,10 @@
   
 	if (isAlive==YES && [lineBuffer count]>0) {
 		// NSLog([NSString stringWithFormat:@"%d",[lineBuffer count]]);
-		self.outputTrigger=YES;
 		self.outputString= [lineBuffer objectAtIndex:0];
 		[lineBuffer removeObjectAtIndex:0];
 	}
-	else {
-		if (NO) {
-			self.outputString= [NSString stringWithString:@""];
-		}
-	}
-  self.outputTrigger=NO;
+  
   return YES;
 }
 
