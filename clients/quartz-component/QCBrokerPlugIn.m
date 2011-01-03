@@ -15,6 +15,7 @@
 
 #define	kQCPlugIn_Name				@"SAPOBroker"
 #define	kQCPlugIn_Description		@"This patch will connect Quartz Composer with a SAPO Broker instance and output the subscribed topic as normal events"
+#define	BUFFER_SIZE	1024
 
 @implementation QCBrokerPlugIn
 
@@ -65,7 +66,6 @@
 -(void)listen
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	char *buffer= (char *)malloc(512);
 	int err=FALSE;
 
 	SAPO_BROKER_T *sb;
@@ -90,11 +90,14 @@
 			// NSLog(@"%s\n", m->payload);	
 			/* if buffer is too full, ignore */
 			if([lineBuffer count]<100) {
-				strcpy(buffer,m->payload);
-				[lineBuffer addObject:[NSString stringWithCString:buffer encoding:NSUTF8StringEncoding]];
+			//	NSLog(@"addObject\n");
+				[lineBuffer addObject:[NSString stringWithCString:m->payload encoding:NSUTF8StringEncoding]];
 				}
+			//NSLog(@"sb_free_message %d %@\n",[lineBuffer count],[NSThread currentThread]);
 			sb_free_message(m);
 			}
+		// NSLog(@"While ended\n");
+
 		}
 		else {
 			NSLog(@"%s\n", sb_error());
@@ -104,7 +107,6 @@
 	if(sb) sb_disconnect(sb);
 	isAlive=NO;
 	isReady=NO;
-	free(buffer);
 	[pool release];
 	return;
 }
@@ -173,8 +175,11 @@
   }
   
 	if (isAlive==YES && [lineBuffer count]>0) {
-		// NSLog([NSString stringWithFormat:@"%d",[lineBuffer count]]);
-		self.outputString= [lineBuffer objectAtIndex:0];
+	//	NSLog([NSString stringWithFormat:@"%d",[lineBuffer count]]);
+	//	self.outputString= [NSString stringWithFormat:@"%d",[lineBuffer count]];
+		if([lineBuffer objectAtIndex:0]) {
+			self.outputString= [[NSString stringWithString:[lineBuffer objectAtIndex:0]] retain];
+		}
 		[lineBuffer removeObjectAtIndex:0];
 	}
   
