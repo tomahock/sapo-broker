@@ -10,7 +10,7 @@ cp package.xml build/
 cp config.m4 build/$EXT_VERSION
 cp *.c build/$EXT_VERSION
 cp *.h build/$EXT_VERSION
-cp -r tests build/$EXT_VERSION
+cp -r test-scripts build/$EXT_VERSION
 
 # clean
 find build/ | grep svn | xargs rm -rf
