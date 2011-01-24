@@ -1,7 +1,5 @@
 package pt.com.gcs.messaging;
 
-import java.util.Collections;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +19,7 @@ public class SystemMessagesPublisher
 {
 	private static Logger log = LoggerFactory.getLogger(SystemMessagesPublisher.class);
 
-	private static Set<String> pending_messages = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+	private static ConcurrentHashMap<String, NetMessage> pending_messages = new ConcurrentHashMap<String, NetMessage>();
 
 	private static final String fault_destination = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
 
@@ -31,32 +29,31 @@ public class SystemMessagesPublisher
 	{
 		final String messageId = message.getAction().getNotificationMessage().getMessage().getMessageId();
 
-		if(log.isDebugEnabled())
+		if (log.isDebugEnabled())
 		{
 			String debMsg = String.format("Sending system message. Destination Channel: '%s'. Message payload: '%s'. MsgId: '%s'", channel.toString(), new String(message.getAction().getNotificationMessage().getMessage().getPayload()), messageId);
 			log.debug(debMsg);
 		}
-		
+
 		if (channel.isWritable())
 		{
-			pending_messages.add(messageId);
+			pending_messages.put(messageId, message);
 			channel.write(message);
 
 			Runnable r = new Runnable()
 			{
 				public void run()
 				{
-					if (pending_messages.contains(messageId))
+					NetMessage netMessage = pending_messages.remove(messageId);
+					if (netMessage != null)
 					{
-						if(pending_messages.remove(messageId))
-						{
-							// message wasn't removed meanwhile
-							
-							log.info(String.format("Message with id '%s' wasn't acknoledge. Closing channel.", messageId));
-							MiscStats.newSystemMessageFailed();
-							closeChannel(channel);
-						}
+						// message wasn't removed meanwhile (not acknowledged) 
+
+						log.info(String.format("Message with id '%s' wasn't acknowledged. Closing channel '%s'. Message: '%s'", messageId, channel.toString(), new String(netMessage.getAction().getNotificationMessage().getMessage().getPayload())));
+						MiscStats.newSystemMessageFailed();
+						closeChannel(channel);
 					}
+
 				}
 			};
 
@@ -64,7 +61,7 @@ public class SystemMessagesPublisher
 		}
 		else
 		{
-			log.info("Closing channel. Channel was not writable.");
+			log.info(String.format("Closing channel '%s'. Channel was not writable.", channel.toString()));
 			closeChannel(channel);
 		}
 	}
@@ -73,6 +70,12 @@ public class SystemMessagesPublisher
 	{
 		try
 		{
+			if (!channel.isConnected())
+			{
+				// Channel already closed
+				return;
+			}
+
 			ChannelFuture f = channel.close();
 
 			f.awaitUninterruptibly(250, TimeUnit.MILLISECONDS);
