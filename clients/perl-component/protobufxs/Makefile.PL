@@ -16,7 +16,7 @@ WriteMakefile(
     'ABSTRACT_FROM' => 'Atom.pm',
     'PREREQ_PM'     => {%PREREQ_PM},
 
-    'OPTIMIZE' => '-O2 -Wall',
+    'OPTIMIZE' => '-O3 -Wall',
     'CC'       => 'g++',
     'LD'       => '$(CC)',
     'CCFLAGS'  => '-fno-strict-aliasing -Wall',
