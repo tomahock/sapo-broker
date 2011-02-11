@@ -1,0 +1,5 @@
+libsapo-broker-python2 (0.0.1) unstable; urgency=low
+
+  * First debianization
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Fri, 11 Feb 2011 20:02:49 +0000
