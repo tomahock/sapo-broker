@@ -1,3 +1,4 @@
+from __future__ import with_statement #for python 2.5
 import dummy_threading
 
 class Client:
