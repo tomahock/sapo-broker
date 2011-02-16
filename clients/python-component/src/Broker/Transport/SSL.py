@@ -1,7 +1,11 @@
 from TCP import Transport as TCP
 
 import logging
-import ssl
+try:
+    from ssl import wrap_socket
+except ImportError:
+    #try old socket.ssl interface
+    from socket import ssl as wrap_socket
 
 LOG = logging.getLogger('Broker.Transports.TCP')
 DEFAULT_PORT = 3390
@@ -13,6 +17,6 @@ class Transport(TCP):
         TCP.__init__(self, host, port)
 
         #now try to warp the socket into SSL stuf
-        self.__socket = ssl.wrap_socket(self.__socket)
+        self.__socket = wrap_socket(self.__socket)
         #ssl doesn't have a recv method so emulate it
         self.__socket.recv = self.__socket.read
