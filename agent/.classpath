@@ -9,5 +9,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ThriftCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommonLibs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommTypes"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-Auth-Jdbc"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ClientSapoSTS"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-AgentSapoSTS"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
