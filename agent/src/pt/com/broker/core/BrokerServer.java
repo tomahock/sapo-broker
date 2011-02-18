@@ -113,7 +113,7 @@ public class BrokerServer
 
 					pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
 
-					pipeline.addLast("broker-decoder", new BrokerDecoderRouter());
+					pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
 
 					if (GcsInfo.useAccessControl())
 					{

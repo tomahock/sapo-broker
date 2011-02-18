@@ -26,6 +26,8 @@ public class BrokerUdpServer
 {
 	private static Logger log = LoggerFactory.getLogger(BrokerUdpServer.class);
 
+	private static final int MAX_UDP_MESSAGE_SIZE = 65 * 1024;	
+	
 	private int _legacyPort;
 	private int _binProtoPort;
 	private final Executor tpeIo;
@@ -57,7 +59,7 @@ public class BrokerUdpServer
 
 					pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
 
-					pipeline.addLast("broker-decoder", new BrokerDecoderRouter());
+					pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
 
 					if (GcsInfo.useAccessControl())
 					{
@@ -72,7 +74,7 @@ public class BrokerUdpServer
 
 			bootstrap0.setPipelineFactory(serverPipelineFactory0);
 			// bootstrap0.setOption("broadcast", "false");
-			bootstrap0.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(BrokerDecoderRouter.MAX_MESSAGE_SIZE));
+			bootstrap0.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(MAX_UDP_MESSAGE_SIZE));
 
 			InetSocketAddress inet0 = new InetSocketAddress("0.0.0.0", _binProtoPort);
 			bootstrap0.bind(inet0);
@@ -116,7 +118,7 @@ public class BrokerUdpServer
 
 			bootstrap1.setPipelineFactory(serverPipelineFactory1);
 			// bootstrap1.setOption("broadcast", "false");
-			bootstrap1.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(NoFramingDecoder.MAX_MESSAGE_SIZE));
+			bootstrap1.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(MAX_UDP_MESSAGE_SIZE));
 
 			InetSocketAddress inet1 = new InetSocketAddress("0.0.0.0", _legacyPort);
 			bootstrap1.bind(inet1);
