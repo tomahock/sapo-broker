@@ -84,9 +84,10 @@ public class AdminAction extends HttpAction
 				else if (action.startsWith("QUEUE:"))
 				{
 					String from = channel.getRemoteAddress().toString();
+					String local = channel.getLocalAddress().toString();
 					String queueName = StringUtils.substringAfter(action, "QUEUE:");
 					Gcs.deleteQueue(queueName);
-					String message = String.format("Queue '%s' was deleted. Request from: '%s'%n", queueName, from);
+					String message = String.format("[%s] Queue '%s' was deleted. Request from: '%s'%n", local, queueName, from);
 					log.info(message);
 					ChannelBuffer bbo = ChannelBuffers.wrappedBuffer(message.getBytes("UTF-8"));
 					response.setContent(bbo);
@@ -106,7 +107,7 @@ public class AdminAction extends HttpAction
 			fault(e, response);
 			if (log.isErrorEnabled())
 			{
-				log.error("HTTP Service error, cause:" + e.getMessage() + ". Client address:" + channel.getRemoteAddress());
+				log.error(String.format("[%s] HTTP Service error, cause: %s. Client address: %s", channel.getLocalAddress().toString(), e.getMessage(), channel.getRemoteAddress()));
 			}
 		}
 	}
