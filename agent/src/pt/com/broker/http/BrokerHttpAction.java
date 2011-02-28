@@ -75,7 +75,6 @@ public class BrokerHttpAction extends HttpAction
 	@Override
 	public void writeResponse(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response)
 	{
-
 		Channel channel = ctx.getChannel();
 		try
 		{
@@ -86,7 +85,7 @@ public class BrokerHttpAction extends HttpAction
 				byte[] buf = bb.array();
 
 				NetMessage message = (NetMessage) bindingSerializer.unmarshal(buf);
-
+				
 				ChannelStats.newHttpMessageReceived();
 				
 				ValidationResult validationResult = AccessControl.validate(message, new Session(channel));
