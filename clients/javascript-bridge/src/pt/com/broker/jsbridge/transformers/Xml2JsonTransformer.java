@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +58,9 @@ public class Xml2JsonTransformer implements MessageTransformer
 		}
 		catch (Throwable t)
 		{
+			
 			log.error("Error while transforming XML \"" + xmlMessage + "\" to JSON", t);
-			return message;
+			jsonMessage = "{\"transform-error\":\"" + StringEscapeUtils.escapeJavaScript(ErrorAnalyser.findRootCause(t).getMessage()) + "\"}";
 		}
 
 		return new NetBrokerMessage(jsonMessage.getBytes());

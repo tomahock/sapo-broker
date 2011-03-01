@@ -1,12 +1,14 @@
 package pt.com.broker.monitorization.http;
 
+import java.net.URI;
+
 import org.caudexorigo.http.netty.StaticFileAction;
 
 public class GzipEncodingAction extends StaticFileAction
 {
-	public GzipEncodingAction(String rootPath)
+	public GzipEncodingAction(URI root_uri)
 	{
-		super(rootPath);
+		super(root_uri);
 	}
 
 	@Override

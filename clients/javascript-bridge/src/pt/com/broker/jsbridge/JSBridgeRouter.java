@@ -1,5 +1,7 @@
 package pt.com.broker.jsbridge;
 
+import java.net.URI;
+
 import org.caudexorigo.http.netty.HttpAction;
 import org.caudexorigo.http.netty.RequestRouter;
 import org.caudexorigo.http.netty.StaticFileAction;
@@ -10,14 +12,14 @@ public class JSBridgeRouter implements RequestRouter
 
 	private final HttpAction static_file;
 
-	public JSBridgeRouter(String root_path)
+	public JSBridgeRouter(URI root_uri)
 	{
 		super();
-		static_file = new StaticFileAction(root_path);
+		static_file = new StaticFileAction(root_uri);
 	}
 
 	@Override
-	public HttpAction map(HttpRequest arg0)
+	public HttpAction map(HttpRequest req)
 	{
 		return static_file;
 	}

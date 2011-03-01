@@ -1,5 +1,7 @@
 package pt.com.broker.monitorization.http;
 
+import java.net.URI;
+
 import org.caudexorigo.http.netty.HttpAction;
 import org.caudexorigo.http.netty.RequestRouter;
 import org.caudexorigo.http.netty.StaticFileAction;
@@ -16,11 +18,11 @@ public class ActionRouter implements RequestRouter
 	private static final HostnameAction hostnameAction = new HostnameAction(AGENT_NAME);
 	private static final RedirectAction redirect = new RedirectAction("/main.html");
 
-	private final String rootDirectory;
+	private final URI root_uri;
 
-	public ActionRouter(String rootDirectory)
+	public ActionRouter(URI root_uri)
 	{
-		this.rootDirectory = rootDirectory;
+		this.root_uri = root_uri;
 	}
 
 	@Override
@@ -44,13 +46,13 @@ public class ActionRouter implements RequestRouter
 		}
 		else if (path.endsWith(".gz.js"))
 		{
-			return new GzipEncodingAction(rootDirectory);
+			return new GzipEncodingAction(root_uri);
 		}
 		else if (path.equals("/"))
 		{
 			return redirect;
 		}
 
-		return new StaticFileAction(rootDirectory);
+		return new StaticFileAction(root_uri);
 	}
 }
