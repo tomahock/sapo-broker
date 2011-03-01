@@ -1,5 +1,8 @@
 package pt.com.broker.monitorization.http;
 
+import java.io.File;
+import java.net.URI;
+
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.cli.ArgumentValidationException;
 import org.caudexorigo.cli.CliFactory;
@@ -17,7 +20,7 @@ public class HttpMonitorizationServer
 
 	private static final Logger log = LoggerFactory.getLogger(HttpMonitorizationServer.class);
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws Throwable
 	{
 		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
 
@@ -35,11 +38,15 @@ public class HttpMonitorizationServer
 
 		ConfigurationInfo.init();
 
-		NettyHttpServer server = new NettyHttpServer(cargs.getRootDirectory());
+		String root_directory = cargs.getRootDirectory();
+		File r = new File(root_directory);
+		URI root_uri = r.getCanonicalFile().toURI();
+
+		NettyHttpServer server = new NettyHttpServer(root_uri);
 		server.setPort(cargs.getPort());
 		server.setHost(cargs.getHost());
 
-		server.setRouter(new ActionRouter(cargs.getRootDirectory()));
+		server.setRouter(new ActionRouter(root_uri));
 
 		server.start();
 		log.info("Monitorization Console is accessible at 'http://localhost:{}/main.html'", cargs.getPort() + "");
