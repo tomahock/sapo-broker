@@ -3,7 +3,10 @@ import struct   #for pack/unpack
 
 __all__ = ['Transport', 'Message']
 
-
+try:
+    bytes = bytes
+except NameError:
+    bytes = str
 
 class Transport:
     """Basic class that abstracts a Transport.
