@@ -3,6 +3,11 @@ import socket
 import logging
 LOG = logging.getLogger('Broker.Transport.INET')
 
+try:
+    bytes = bytes
+except NameError:
+    bytes = str
+
 class DisconnectedError(EOFError):
     """
     Class to indicate that the Server disconnected while the client was waiting for a response.

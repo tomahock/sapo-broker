@@ -1,3 +1,9 @@
+libsapo-broker-python2 (0.0.4) unstable; urgency=low
+
+  * fixed no bytes in python 2.5
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Thu, 17 Feb 2011 18:47:00 +0000
+
 libsapo-broker-python2 (0.0.3) unstable; urgency=low
 
   * works without ssl installed and recommends it
