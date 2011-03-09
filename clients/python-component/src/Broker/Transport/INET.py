@@ -60,3 +60,6 @@ class Transport(BaseTransport):
 
     def endpoint(self):
         return "%s://%s:%d" % (self.name(), self.__host, self.__port)
+
+    def close(self):
+        return self.__socket.close()
