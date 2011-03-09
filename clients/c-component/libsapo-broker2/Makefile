@@ -45,7 +45,9 @@ endif
 ifeq ($(OS), Darwin)
 	SO_LIB = dylib
 	LDFLAGS += -Wl,-dylib_install_name,$(RELEASE_TARGET)
-	OPTS += -march=core2
+	ifneq ($(OSTYPE), darwin11)
+		OPTS += -march=core2
+	endif
 	CFLAGS += -I/opt/local/include
 	LDFLAGS += -L/opt/local/lib
 	TEST_LDFLAGS += -L/opt/local/lib
