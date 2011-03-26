@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="build" name="sapo-broker-jsonbinding">
+	<property name="project.location" value="." />
+
+	<loadfile srcfile="../../../agent/src/VERSION.txt" property="version">
+		<filterchain>
+			<striplinebreaks />
+			<tokenfilter>
+				<trim />
+				<ignoreblank />
+			</tokenfilter>
+		</filterchain>		
+	</loadfile>
+
+	<property name="package" value="sapo-broker-jsonbinding-${version}.jar" />
+
+	<path id="project.classpath">
+		<pathelement location="../../../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
+		<pathelement location="../../protobuf/java/dist/sapo-broker-protobufbinding-${version}.jar" />
+		<fileset dir="../../../common-libs/">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="./lib/">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init" depends="clean">
+		<mkdir dir="bin" />
+		<mkdir dir="dist" />
+	</target>
+
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="dist" />
+	</target>
+
+
+	<target name="build" depends="init">
+		<echo message="${ant.project.name}: ${ant.file}" />
+
+		<!-- ant antfile="../../../comm-types/build.xml" inheritAll="false" target="build" / -->
+
+		<javac destdir="bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.6" target="1.6" includeAntRuntime="false">
+			<src path="src" />
+			<classpath refid="project.classpath" />
+		</javac>
+
+		<jar destfile="dist/${package}">
+			<fileset dir="bin" />
+		</jar>
+
+		<copy todir="dist">
+			<fileset dir="lib/">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+</project>
