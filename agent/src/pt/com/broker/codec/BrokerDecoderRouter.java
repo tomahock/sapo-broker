@@ -13,6 +13,7 @@ import org.jboss.netty.handler.codec.frame.FrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
@@ -56,6 +57,7 @@ public class BrokerDecoderRouter extends FrameDecoder
 		decoders.put(new Short((short) 0), new SoapBindingSerializer());
 		decoders.put(new Short((short) 1), new ProtoBufBindingSerializer());
 		decoders.put(new Short((short) 2), new ThriftBindingSerializer());
+		decoders.put(new Short((short) 3), new JsonCodecForProtoBuf());
 	}
 
 	public BrokerDecoderRouter()

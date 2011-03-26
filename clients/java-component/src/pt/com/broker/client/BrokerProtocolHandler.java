@@ -91,6 +91,10 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 				proto_type = 2;
 				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.thrift.ThriftBindingSerializer").newInstance();
 				break;
+			case JSON:
+				proto_type = 3;
+				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.protobuf.JsonCodecForProtoBuf").newInstance();
+				break;				
 			case SOAP_v0:
 				proto_type = 0;
 				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.xml.SoapBindingSerializer").newInstance();

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,6 @@ import com.google.protobuf.ByteString;
 
 public class ProtoBufBindingSerializer implements BindingSerializer
 {
-
 	private static final Logger log = LoggerFactory.getLogger(ProtoBufBindingSerializer.class);
 
 	static private NetAction.ActionType translate(PBMessage.Atom.Action.ActionType actionType)
@@ -101,7 +101,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		throw new IllegalArgumentException("Unexpected destination type (PBMessage.Atom.DestinationType): " + destinationType);
 	}
 
-	private NetMessage constructMessage(PBMessage.Atom atom)
+	protected NetMessage constructMessage(PBMessage.Atom atom)
 	{
 		Map<String, String> parameters = null;
 		if (atom.hasHeader())
@@ -480,9 +480,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 	{
 		NetNotification net = netMessage.getAction().getNotificationMessage();
 
-		String subs = net.getSubscription();
-		if (subs == null)
-			subs = "";
+		String subs = StringUtils.trimToEmpty(net.getSubscription());
 
 		PBMessage.Atom.Notification.Builder builder = PBMessage.Atom.Notification.newBuilder();
 		builder.setDestination(net.getDestination()).setMessage(getMessageBroker(net.getMessage())).setDestinationType(translate(net.getDestinationType())).setSubscription(subs);
@@ -562,6 +560,18 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		return builder.build();
 	}
 
+	protected Atom buildAtom(NetMessage message)
+	{
+		Header header = getHeaders(message);
+
+		PBMessage.Atom.Builder atomBuilder = PBMessage.Atom.newBuilder().setAction(getAction(message));
+		if (header != null)
+			atomBuilder.setHeader(header);
+
+		Atom build = atomBuilder.build();
+		return build;
+	}
+
 	@Override
 	public byte[] marshal(NetMessage message)
 	{
@@ -569,22 +579,16 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 		try
 		{
-			Header header = getHeaders(message);
-
-			PBMessage.Atom.Builder atomBuilder = PBMessage.Atom.newBuilder().setAction(getAction(message));
-			if (header != null)
-				atomBuilder.setHeader(header);
-
-			Atom build = atomBuilder.build();
+			Atom build = buildAtom(message);
 			result = build.toByteArray();
 		}
 		catch (Throwable e)
 		{
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
-		
+
 		EncodingStats.newProtoEncodedMessage();
-		
+
 		return result;
 	}
 
@@ -594,14 +598,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		Atom build = null;
 		try
 		{
-			Header header = getHeaders(message);
-
-			PBMessage.Atom.Builder atomBuilder = PBMessage.Atom.newBuilder().setAction(getAction(message));
-			if (header != null)
-				atomBuilder.setHeader(header);
-
-			// Atom build = atomBuilder.build();
-			build = atomBuilder.build();
+			build = buildAtom(message);
 			build.writeTo(out);
 			EncodingStats.newProtoEncodedMessage();
 		}
@@ -650,7 +647,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		{
 			PBMessage.Atom atom = PBMessage.Atom.parseFrom(packet);
 			message = constructMessage(atom);
-			
+
 			EncodingStats.newProtoDecodedMessage();
 		}
 		catch (Throwable e)
@@ -668,7 +665,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		{
 			PBMessage.Atom atom = PBMessage.Atom.parseFrom(in);
 			message = constructMessage(atom);
-			
+
 			EncodingStats.newProtoDecodedMessage();
 		}
 		catch (Throwable e)
@@ -677,7 +674,7 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		}
 		return message;
 	}
-	
+
 	@Override
 	public NetProtocolType getProtocolType()
 	{
