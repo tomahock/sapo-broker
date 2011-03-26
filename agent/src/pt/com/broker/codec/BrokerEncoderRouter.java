@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.caudexorigo.ErrorAnalyser;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -13,6 +14,7 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
@@ -49,6 +51,7 @@ public class BrokerEncoderRouter extends OneToOneEncoder
 		encoders.put(new Short((short) 0), new SoapBindingSerializer());
 		encoders.put(new Short((short) 1), new ProtoBufBindingSerializer());
 		encoders.put(new Short((short) 2), new ThriftBindingSerializer());
+		encoders.put(new Short((short) 3), new JsonCodecForProtoBuf());
 	}
 
 	@Override
@@ -85,8 +88,8 @@ public class BrokerEncoderRouter extends OneToOneEncoder
 		}
 		catch (Throwable t)
 		{
-			throw new IOException( "Failed to encode message. Reason: " + t.getMessage());
+			Throwable r = ErrorAnalyser.findRootCause(t);
+			throw new IOException( "Failed to encode message. Reason: " + r.getMessage());
 		}
 	}
-
 }
