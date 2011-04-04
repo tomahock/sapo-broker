@@ -18,7 +18,7 @@ public class GlobalStatisticsPublisher implements Runnable
 {
 	private static Logger log = LoggerFactory.getLogger(GlobalStatisticsPublisher.class);
 
-	private static Date date = new Date();
+	private static volatile Date date = new Date();
 
 	@Override
 	public void run()
