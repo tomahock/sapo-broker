@@ -26,7 +26,6 @@ public class AgentStatusCollector
 			public void run()
 			{
 				List<AgentInfo> cloudAgents = ConfigurationInfo.getCloudAgents();
-
 				for (AgentInfo agent : cloudAgents)
 				{
 					BrokerClient bk = null;
@@ -56,5 +55,4 @@ public class AgentStatusCollector
 
 		StatisticsDB.add(agentName, new Date(), SUBJECT, PREDICATE, (status == AgentStatus.Ok) ? 1 : 0);
 	}
-
 }
