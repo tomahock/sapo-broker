@@ -10,11 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerExecutor;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.InternalPublisher;
@@ -131,7 +132,7 @@ public class BrokerConsumer
 	{
 		try
 		{
-			ListenerChannel lchannel = new ListenerChannel(channel);
+			ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(channel);
 			BrokerQueueListener subscriber = new BrokerQueueListener(lchannel, sb.getDestination(), ackRequired);
 
 			Gcs.addAsyncConsumer(sb.getDestination(), subscriber);
@@ -146,7 +147,7 @@ public class BrokerConsumer
 	{
 		try
 		{
-			ListenerChannel lchannel = new ListenerChannel(channel);
+			ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(channel);
 
 			BrokerTopicListener subscriber = new BrokerTopicListener(lchannel, sb.getDestination());
 
@@ -169,7 +170,7 @@ public class BrokerConsumer
 		String dname = unsubs.getDestination();
 		DestinationType dtype = unsubs.getDestinationType();
 
-		ListenerChannel lchannel = new ListenerChannel(channel);
+		ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(channel);
 		if (dtype == DestinationType.TOPIC)
 		{
 			BrokerTopicListener subscriber = new BrokerTopicListener(lchannel, dname);

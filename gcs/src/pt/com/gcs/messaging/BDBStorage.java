@@ -323,25 +323,32 @@ public class BDBStorage
 		return MessageId.getBaseMessageId() + "0";
 	}
 
-	private volatile boolean recoveryRunning = false;
+	private AtomicBoolean recoveryRunning = new AtomicBoolean(false);
 
-	protected void recoverMessages()
+	protected long recoverMessages()
 	{
 		if (isMarkedForDeletion.get())
-			return;
+			return 0l;
+
+		boolean wasRunning = recoveryRunning.getAndSet(true);
+		if (wasRunning)
+		{
+			// We shouldn't be here
+			return 0l;
+		}
 
 		long now = System.currentTimeMillis();
 
+		long nextCycle = Long.MAX_VALUE;
+
 		int i0 = 0; // delivered
-		int j0 = 0; // failed deliver
+		int j0 = 0; // failed delivery
 		int k0 = 0; // redelivered messages
 		int e0 = 0; // expired messages
 		int a0 = 0; // delivered messages that don't require ACK
 
-		recoveryRunning = true;
-
 		Cursor msg_cursor = null;
-
+		
 		try
 		{
 			msg_cursor = messageDb.openCursor(null, null);
@@ -385,6 +392,20 @@ public class BDBStorage
 
 				if (!isReserved)
 				{
+					long deferredDelivery = nmsg.getAction().getNotificationMessage().getMessage().getDeferredDelivery();
+					
+					if( deferredDelivery > now)
+					{
+						long diff = deferredDelivery - now;
+						
+						if(diff < nextCycle)
+						{
+							nextCycle = diff;
+						}
+						
+						continue;
+					}
+															
 					if (now > nmsg.getAction().getNotificationMessage().getMessage().getExpiration())
 					{
 						cursorDelete(msg_cursor);
@@ -431,13 +452,19 @@ public class BDBStorage
 
 								if (result.result == Result.SUCCESS)
 								{
+									long time = result.time;
 									bdbm.setReserveTimeout(now + result.time);
 									msg_cursor.put(key, buildDatabaseEntry(bdbm));
 									++i0;
+
+									if (time < nextCycle)
+									{
+										nextCycle = time;
+									}
 								}
 								else
-								// result is Result.NOT_ACKNOWLEDGE
 								{
+									// result is Result.NOT_ACKNOWLEDGE
 									cursorDelete(msg_cursor);
 									++a0;
 								}
@@ -473,15 +500,21 @@ public class BDBStorage
 		finally
 		{
 			closeDbCursor(msg_cursor);
-			recoveryRunning = false;
 		}
+		recoveryRunning.set(false);
+		return (nextCycle != Long.MAX_VALUE) ? nextCycle : 0l;
 	}
 
 	public void deleteExpiredMessages()
 	{
-
 		if (isMarkedForDeletion.get())
 			return;
+
+		if (recoveryRunning.get())
+		{
+			// try later
+			return;
+		}
 
 		log.info("Deleting expired messages for queue '{}'.", queueProcessor.getQueueName());
 
@@ -498,7 +531,7 @@ public class BDBStorage
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
 
-			while (!recoveryRunning && (msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
 			{
 				if (isMarkedForDeletion.get())
 					break;

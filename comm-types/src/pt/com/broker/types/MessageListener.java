@@ -1,6 +1,7 @@
 package pt.com.broker.types;
 
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.channels.ListenerChannel;
 
 /**
  * A MessageListener object is used to receive asynchronously delivered messages. 
@@ -13,7 +14,8 @@ public interface MessageListener
 	 * @param message the message passed to the listener
 	 */
 	
-	public enum Type{LOCAL, INTERNAL, REMOTE};
+	public enum Type {LOCAL, INTERNAL, REMOTE};
+	public enum MessageListenerState {Active, NotActive, Ready, NotReady, Writable, NotWritable};
 	
 	public ForwardResult onMessage(DeliverableMessage message);	
 	
@@ -32,4 +34,8 @@ public interface MessageListener
 	public boolean isAckRequired();
 	
 	public Type getType();
+	
+	public void addStateChangeListener(MessageListenerEventChangeHandler handler);
+	
+	public void removeStateChangeListener(MessageListenerEventChangeHandler handler);
 }

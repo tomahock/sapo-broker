@@ -10,12 +10,14 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.types.ForwardResult;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.broker.types.channels.ListenerChannelEventHandler;
+import pt.com.broker.types.channels.ListenerChannel.ChannelState;
 import pt.com.gcs.messaging.GcsExecutor;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
@@ -32,7 +34,7 @@ public class SynchronousMessageListener extends BrokerListener
 
 	private static final ForwardResult FAILED = new ForwardResult(Result.FAILED);
 
-	private AtomicBoolean ready;
+	private AtomicBoolean isReady;
 	private final String queueName;
 
 	private volatile long expires;
@@ -51,7 +53,32 @@ public class SynchronousMessageListener extends BrokerListener
 		
 		this.queueName = queueName;
 		this.setInNoWaitMode(false);
-		this.ready = new AtomicBoolean(false);
+		this.isReady = new AtomicBoolean(false);
+		
+		lchannel.addStateChangeListener(new ListenerChannelEventHandler()
+		{
+			@Override
+			public void stateChanged(ListenerChannel listenerChannel, ChannelState state)
+			{
+				MessageListenerState newState = null;
+				switch (state)
+				{
+					case READY:
+						newState = MessageListenerState.Writable;
+						break;
+					case NOT_READY:
+						newState = MessageListenerState.NotWritable;
+						break;
+					default:
+						break;
+				}
+				
+				if(newState != null)
+				{
+					onEventChange(newState);
+				}
+			}
+		});
 	}
 
 	@Override
@@ -76,13 +103,13 @@ public class SynchronousMessageListener extends BrokerListener
 	@Override
 	protected ForwardResult doOnMessage(NetMessage response)
 	{
-		if (!ready.get())
+		if (!isReady.get())
 		{
 			log.error("We shouldn't be here. A SynchronousMessageListener should not be called when in a 'not ready' state.");
 			return FAILED;
 		}
 
-		ready.set(false);
+		setReady(false);
 
 		final ListenerChannel lchannel = getChannel();
 
@@ -112,10 +139,16 @@ public class SynchronousMessageListener extends BrokerListener
 		return sucess;
 	}
 
+	private void setReady(boolean ready)
+	{
+		isReady.set(ready);
+		onEventChange(ready ? MessageListenerState.Ready : MessageListenerState.NotReady);
+	}
+	
 	@Override
 	public boolean isReady()
 	{
-		return ready.get();
+		return isReady.get();
 	}
 
 	public void activate(long timeout, String actionId)
@@ -131,7 +164,7 @@ public class SynchronousMessageListener extends BrokerListener
 			// wait for ever
 			this.setExpires(Long.MAX_VALUE);
 
-			ready.set(true);
+			setReady(true);
 			return;
 		}
 
@@ -167,7 +200,7 @@ public class SynchronousMessageListener extends BrokerListener
 					lchannel.write(faultMsg);
 				}
 
-				ready.set(false);
+				setReady(false);
 				setInNoWaitMode(false);
 				return;
 			}
@@ -177,7 +210,7 @@ public class SynchronousMessageListener extends BrokerListener
 		}
 
 		this.setExpires(System.currentTimeMillis() + timeout);
-		ready.set(true);
+		setReady(true);
 
 		GcsExecutor.schedule(new Runnable()
 		{
@@ -192,9 +225,9 @@ public class SynchronousMessageListener extends BrokerListener
 
 	public void notifyTimeout()
 	{
-		if ((System.currentTimeMillis() >= getExpires()) && ready.get())
+		if ((System.currentTimeMillis() >= getExpires()) && isReady.get())
 		{
-			ready.set(false);
+			setReady(false);
 
 			NetMessage faultMsg = null;
 

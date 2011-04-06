@@ -28,7 +28,7 @@ public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 		oout.writeBoolean(bdbMessage.getPreferLocalConsumer());
 		oout.writeLong(bdbMessage.getReserveTimeout());
 		serializer.marshal(bdbMessage.getMessage(), oout);
-		
+
 		oout.flush();
 
 		return bout.toByteArray();
@@ -46,7 +46,6 @@ public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 		if (version != 2)
 		{
 			String errorMessage = "Incorrect serialization version: " + version;
-			// log.error(errorMessage);
 			throw new RuntimeException(errorMessage);
 		}
 
@@ -54,12 +53,11 @@ public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 		message.setSequence(oIn.readLong());
 		message.setPreferLocalConsumer(oIn.readBoolean());
 		message.setReserveTimeout(oIn.readLong());
-		
+
 		NetMessage nmsg = serializer.unmarshal(oIn);
 
 		message.setMessage(nmsg);
 
 		return message;
 	}
-
 }

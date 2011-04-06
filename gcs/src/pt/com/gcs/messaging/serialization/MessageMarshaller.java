@@ -6,6 +6,7 @@ import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetAction;
 import pt.com.gcs.messaging.BDBMessage;
 import pt.com.gcs.messaging.InternalMessage;
 
@@ -23,19 +24,27 @@ public class MessageMarshaller
 
 		short version = oIn.readShort();
 
+		BDBMessage result = null;
+		
 		if (version == 2)
 		{
-			return marshallerV2.unmarshall(data);
+			result = marshallerV2.unmarshall(data); 
 		}
 		else if (version == 1)
 		{
-			return new BDBMessageMarshallerV1().unmarshall(data);
+			result = new BDBMessageMarshallerV1().unmarshall(data);
 		}
 		else
 		{
 			throw new RuntimeException("Can't deserialize version: " + version);
 		}
-
+		
+		if( (result != null) && (result.getMessage().getHeaders() != null) && result.getMessage().getAction().getActionType().equals(NetAction.ActionType.NOTIFICATION) )
+		{
+			result.getMessage().getAction().getNotificationMessage().getMessage().setHeaders(result.getMessage().getHeaders());
+		}
+		
+		return result;
 	}
 
 	public static byte[] marshallBDBMessage(BDBMessage message) throws Throwable

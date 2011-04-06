@@ -10,6 +10,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelLocal;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -33,7 +34,6 @@ import pt.com.broker.messaging.BrokerConsumer;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.Headers;
 import pt.com.broker.types.NetAccepted;
@@ -50,6 +50,8 @@ import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.NetAction.ActionType;
+import pt.com.broker.types.channels.ChannelAttributes;
+import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
@@ -151,6 +153,8 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			QueueProcessorList.removeSession(channel);
 			TopicProcessorList.removeSession(channel);
 			BrokerSyncConsumer.removeSession(ctx);
+			
+			ListenerChannelFactory.channelClosed(channel);
 
 			final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
 			if (sslHandler == null)

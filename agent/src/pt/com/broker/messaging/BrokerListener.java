@@ -6,15 +6,16 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.MessageListenerBase;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
+import pt.com.broker.types.channels.ListenerChannel;
 
 /**
  * BrokerListener is a base class for types representing local message consumers.
  */
-public abstract class BrokerListener implements MessageListener
+public abstract class BrokerListener extends MessageListenerBase
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerListener.class);
 

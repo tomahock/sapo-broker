@@ -18,15 +18,15 @@ import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.CriticalErrors;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.channels.ChannelAttributes;
+import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
@@ -155,7 +155,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 
 			if (mtype.equals("SYSTEM_TOPIC"))
 			{
-				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
+				MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
 
 				TopicProcessor tp = TopicProcessorList.get(subscriptionKey);
 
@@ -177,7 +177,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			}
 			else if (mtype.equals("SYSTEM_QUEUE"))
 			{
-				MessageListener remoteListener = new RemoteListener(new ListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
+				MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
 
 				QueueProcessor qp = QueueProcessorList.get(subscriptionKey);
 				if (qp == null)
@@ -247,6 +247,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		QueueProcessorList.removeSession(ctx.getChannel());
 
 		ChannelAttributes.remove(ChannelAttributes.getChannelId(ctx));
+		ListenerChannelFactory.channelClosed(ctx.getChannel());
 	}
 
 	private boolean validPeerAddress(ChannelHandlerContext ctx)

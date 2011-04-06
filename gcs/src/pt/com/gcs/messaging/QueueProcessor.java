@@ -3,6 +3,7 @@ package pt.com.gcs.messaging;
 import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -13,11 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.MessageListenerEventChangeHandler;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.ForwardResult.Result;
+import pt.com.broker.types.MessageListener.MessageListenerState;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 
@@ -50,8 +53,13 @@ public class QueueProcessor
 
 	private final QueueStatistics queueStatistics = new QueueStatistics();
 
+	private final AtomicBoolean deliveringMessages = new AtomicBoolean(false);
+
+	private final AtomicLong nextRun = new AtomicLong(Long.MAX_VALUE);
+
+	private final AtomicLong lastCycle = new AtomicLong(Long.MAX_VALUE);
+
 	private int current_idx = 0;
-	private AtomicLong wakeupAfter = new AtomicLong(System.currentTimeMillis() + 500);
 
 	protected QueueProcessor(String queueName)
 	{
@@ -100,13 +108,21 @@ public class QueueProcessor
 	{
 		if (listener != null)
 		{
+			boolean success = false;
 			if (listener.getType() == MessageListener.Type.LOCAL)
 			{
-				addLocal(listener);
+				success = addLocal(listener);
 			}
 			else if (listener.getType() == MessageListener.Type.REMOTE)
 			{
-				addRemote(listener);
+				success = addRemote(listener);
+
+			}
+			if (success)
+			{
+				listener.addStateChangeListener(getMessageListenerEventChangeHandler());
+
+				deliverMessages();
 			}
 		}
 		else
@@ -127,6 +143,7 @@ public class QueueProcessor
 				}
 
 				log.info("Add listener -> '{}'", listener.toString());
+
 				return true;
 			}
 
@@ -402,6 +419,7 @@ public class QueueProcessor
 	{
 		if (listener != null)
 		{
+			boolean removed = false;
 			if (listener.getType() == MessageListener.Type.LOCAL)
 			{
 				synchronized (localQueueListeners)
@@ -414,6 +432,7 @@ public class QueueProcessor
 						{
 							broadCastRemovedQueueConsumer(listener);
 						}
+						removed = true;
 					}
 				}
 			}
@@ -424,8 +443,14 @@ public class QueueProcessor
 					if (remoteQueueListeners.remove(listener))
 					{
 						log.info("Removed listener -> '{}'", listener.toString());
+						removed = true;
 					}
 				}
+			}
+			if (removed)
+			{
+
+				listener.removeStateChangeListener(getMessageListenerEventChangeHandler());
 			}
 		}
 		else
@@ -460,6 +485,11 @@ public class QueueProcessor
 		return localQueueListeners.size() + remoteQueueListeners.size();
 	}
 
+	public long getLastCycle()
+	{
+		return lastCycle.get();
+	}
+
 	public void store(final NetMessage nmsg)
 	{
 		store(nmsg, false);
@@ -471,7 +501,15 @@ public class QueueProcessor
 		{
 			long seq_nr = sequence.incrementAndGet();
 			String mid = storage.insert(nmsg, seq_nr, preferLocalConsumer);
+
+			if (log.isDebugEnabled())
+			{
+				log.debug(String.format("Stored message with id '%s'.", mid));
+			}
+
 			counter.incrementAndGet();
+
+			deliverMessages();
 		}
 		catch (Throwable t)
 		{
@@ -487,38 +525,56 @@ public class QueueProcessor
 			{
 				log.debug("Queue '{}' is running, skip wakeup", queueName);
 			}
-
 			return;
 		}
 
 		long cnt = getQueuedMessagesCount();
+
 		if (cnt > 0)
 		{
 			emptyQueueInfoDisplay.set(false);
 
-//			while (getQueuedMessagesCount() > 0)
-//			{
-				if (hasReadyListeners(localQueueListeners) || hasReadyListeners(remoteQueueListeners))
+			if (hasReadyListeners(localQueueListeners) || hasReadyListeners(remoteQueueListeners))
+			{
+				try
 				{
-					try
+					if (log.isDebugEnabled())
 					{
-						if (log.isDebugEnabled())
+						log.debug("Wakeup queue '{}'", queueName);
+					}
+
+					long nextCycleDelay = storage.recoverMessages();
+
+					long now = System.currentTimeMillis();
+					long nextCycleTime = now + nextCycleDelay;
+
+					if (((nextCycleDelay != 0) && (nextCycleTime < nextRun.get())) || ((nextCycleDelay != 0) && (nextRun.get() < now)))
+					{
+						/*
+						 * Schedule a new delivery if: - the nextCycleTime is earlier than a previous scheduled delivery, or - the nextRun is previous to 'now'
+						 */
+
+						nextRun.set(nextCycleTime);
+						GcsExecutor.schedule(new Runnable()
 						{
-							log.debug("Wakeup queue '{}'", queueName);
-						}
-						storage.recoverMessages();
-					}
-					catch (Throwable t)
-					{
-						log.error(t.getMessage(), t);
-						throw new RuntimeException(t);
-					}
-					finally
-					{
-						isWorking.set(false);
+							@Override
+							public void run()
+							{
+								deliverMessages();
+							}
+						}, nextCycleDelay, TimeUnit.MILLISECONDS);
 					}
 				}
-			//}
+				catch (Throwable t)
+				{
+					log.error(t.getMessage(), t);
+					throw new RuntimeException(t);
+				}
+				finally
+				{
+					isWorking.set(false);
+				}
+			}
 		}
 		isWorking.set(false);
 	}
@@ -526,5 +582,47 @@ public class QueueProcessor
 	public QueueStatistics getQueueStatistics()
 	{
 		return queueStatistics;
+	}
+
+	/***
+	 * Events
+	 */
+
+	// Calling methods have to ensure that deliveringMessages was set to true;
+	protected void deliverMessages()
+	{
+		boolean set = deliveringMessages.compareAndSet(false, true);
+		if (set)
+		{
+			// Messages were not being delivered (deliveringMessages was 'false'). deliveringMessages was set to 'true' and let the delivery begin.
+			GcsExecutor.execute(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					wakeup();
+					deliveringMessages.set(false);
+					lastCycle.set(System.currentTimeMillis());
+				}
+			});
+
+		}
+	}
+
+	private MessageListenerEventChangeHandler msgListenterEventHandler = new MessageListenerEventChangeHandler()
+	{
+		@Override
+		public void stateChanged(MessageListener messageListener, MessageListenerState state)
+		{
+			if (messageListener.isReady() && messageListener.isActive())
+			{
+				deliverMessages();
+			}
+		}
+	};
+
+	private MessageListenerEventChangeHandler getMessageListenerEventChangeHandler()
+	{
+		return msgListenterEventHandler;
 	}
 }

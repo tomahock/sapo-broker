@@ -11,10 +11,12 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.ForwardResult;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.broker.types.channels.ListenerChannelEventHandler;
+import pt.com.broker.types.channels.ListenerChannel.ChannelState;
 import pt.com.gcs.messaging.Gcs;
 
 /**
@@ -40,6 +42,31 @@ public class BrokerQueueListener extends BrokerListener
 		super(lchannel, destinationName);
 		this.ackRequired = ackRequired;
 		this.showSuspendedDeliveryMessage = true;
+
+		lchannel.addStateChangeListener(new ListenerChannelEventHandler()
+		{
+			@Override
+			public void stateChanged(ListenerChannel listenerChannel, ChannelState state)
+			{
+				MessageListenerState newState = null;
+				switch (state)
+				{
+				case READY:
+					newState = MessageListenerState.Writable;
+					break;
+				case NOT_READY:
+					newState = MessageListenerState.NotWritable;
+					break;
+				default:
+					break;
+				}
+
+				if (newState != null)
+				{
+					onEventChange(newState);
+				}
+			}
+		});
 	}
 
 	@Override
@@ -72,7 +99,7 @@ public class BrokerQueueListener extends BrokerListener
 				if (deliveryAllowed(response, lchannel.getChannel()))
 				{
 					lchannel.write(response);
-					isReady.set(true);
+					setReady(true);
 					lchannel.resetDeliveryTries();
 				}
 				else
@@ -82,6 +109,21 @@ public class BrokerQueueListener extends BrokerListener
 			}
 			else
 			{
+
+				// --
+				lchannel.write(response).addListener(new ChannelFutureListener()
+				{
+					@Override
+					public void operationComplete(ChannelFuture chFuture) throws Exception
+					{
+
+						boolean writable = lchannel.getChannel().isWritable();
+						//
+					}
+				});
+
+				// --------------
+
 				if (isReady())
 				{
 					if (deliveryAllowed(response, lchannel.getChannel()))
@@ -101,9 +143,10 @@ public class BrokerQueueListener extends BrokerListener
 						else
 						{
 							lchannel.incrementAndGetDeliveryTries();
-							
+
 							ChannelFuture future = lchannel.write(response);
-							isReady.set(false);
+							setReady(false);
+
 							if (showSuspendedDeliveryMessage && log.isDebugEnabled())
 							{
 								log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
@@ -114,9 +157,9 @@ public class BrokerQueueListener extends BrokerListener
 								@Override
 								public void operationComplete(ChannelFuture future) throws Exception
 								{
-									isReady.set(true);
+									setReady(true);
 									lchannel.decrementAndGetDeliveryTries();
-									
+
 									if (lchannel.isWritable())
 									{
 										if (log.isDebugEnabled())
@@ -175,6 +218,15 @@ public class BrokerQueueListener extends BrokerListener
 		}
 
 		return failed;
+	}
+
+	private void setReady(boolean ready)
+	{
+		boolean previous = isReady.getAndSet(ready);
+		if(ready != previous)
+		{
+			onEventChange(ready ? MessageListenerState.Ready : MessageListenerState.NotReady);
+		}
 	}
 
 	@Override

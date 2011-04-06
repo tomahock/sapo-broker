@@ -9,14 +9,13 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.channels.ChannelAttributes;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.global.Agents;
 import pt.com.gcs.conf.global.Authorization;
