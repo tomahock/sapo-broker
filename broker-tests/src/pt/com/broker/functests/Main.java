@@ -29,6 +29,7 @@ import pt.com.broker.functests.negative.NotificationTest;
 import pt.com.broker.functests.negative.PongTest;
 import pt.com.broker.functests.negative.TimeoutPollTest;
 import pt.com.broker.functests.negative.TotallyInvalidRandomMessageTest;
+import pt.com.broker.functests.positive.DeferredDeliveryQueueTest;
 import pt.com.broker.functests.positive.Multiple1NTopic;
 import pt.com.broker.functests.positive.Multiple1NTopicRemote;
 import pt.com.broker.functests.positive.MultipleN1Queue;
@@ -66,7 +67,9 @@ public class Main
 	{
 		// Positive Tests
 
-		NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT, NetProtocolType.JSON, NetProtocolType.SOAP_v0};
+		// NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER , NetProtocolType.THRIFT, NetProtocolType.SOAP_v0};
+
+		NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT,/* NetProtocolType.JSON, */NetProtocolType.SOAP_v0 };
 
 		TestsResults testResults = new TestsResults();
 
@@ -89,24 +92,25 @@ public class Main
 		boolean runVirtualQueue = cargs.getVirtualQueue() == 1;
 		boolean runSSLandAuth = cargs.getSslAndAuthentication() == 1;
 		boolean runUdp = cargs.getUdp() == 1;
-		
+
 		int numberOfTests = cargs.getNumberOfRuns();
-		
+
 		ConfigurationInfo.init();
-	
+
 		for (NetProtocolType protoType : protoTypes)
 		{
 			System.out.println(String.format(" ---> Using %s encoding protocol", protoType));
-			
+
 			testResults.addProperty("Encoding", protoType.toString());
 
 			BrokerTest.setDefaultimeout(12 * 1000);
 			BrokerTest.setDefaultEncodingProtocolType(protoType);
 			BrokerTest.setDefaultDataLenght(512);
-			
+
 			if (runAll || runPositive)
 			{
 				new PingTest().run(numberOfTests, testResults);
+				new DeferredDeliveryQueueTest().run(numberOfTests, testResults);
 			}
 
 			if (runAll || runPositive || runTopic)
@@ -151,8 +155,8 @@ public class Main
 				new VirtualQueueNameSpecifiedRemote().run(numberOfTests, testResults);
 				new VirtualQueueTopicNameWildcardRemote().run(numberOfTests, testResults);
 			}
-			
-			if(runAll || runPositive || runUdp)
+
+			if (runAll || runPositive || runUdp)
 			{
 				new UdpTopicPublishTest().run(numberOfTests, testResults);
 				new UdpQueuePublishTest().run(numberOfTests, testResults);
@@ -165,7 +169,7 @@ public class Main
 				new MessegeOversizedTest().run(numberOfTests, testResults);
 				new BadEncodingTypeTest().run(numberOfTests, testResults);
 				new BadEncodingVersionTest().run(numberOfTests, testResults);
-				
+
 				new EmptyDestinationNameInSubscription().run(numberOfTests, testResults);
 				new EmptyDestinationNameInPublication().run(numberOfTests, testResults);
 				new EmptyDestinationNameInPoll().run(numberOfTests, testResults);
@@ -186,23 +190,23 @@ public class Main
 				new InvalidAuthChannelTypeTest().run(numberOfTests, testResults);
 				new TimeoutPollTest().run(numberOfTests, testResults);
 			}
-//			for(Class testClass : ConfigurationInfo.getTestClasses())
-//			{
-//				Test t = createInstance(testClass);
-//				t.run(numberOfTests, testResults);
-//			}
+			// for(Class testClass : ConfigurationInfo.getTestClasses())
+			// {
+			// Test t = createInstance(testClass);
+			// t.run(numberOfTests, testResults);
+			// }
 		}
 
 		System.out.println();
 		System.out.println("Functional tests ended!");
-		System.out.println( "	Total tests: " + testResults.getTotalTests() );
-		System.out.println( "	Successful tests: " + testResults.getPositiveTestsCount()); 
-		System.out.println( "	Failed tests: " + testResults.getFailedTestsCount());
-		for(String testName : testResults.getFailedTests())
-			System.out.println( "		- " + testName);
-		System.out.println( "	Skipped tests: " + testResults.getSkippedTestsCount());
-		for(String testName : testResults.getSkippedTests())
-			System.out.println( "		- " + testName);
+		System.out.println("	Total tests: " + testResults.getTotalTests());
+		System.out.println("	Successful tests: " + testResults.getPositiveTestsCount());
+		System.out.println("	Failed tests: " + testResults.getFailedTestsCount());
+		for (String testName : testResults.getFailedTests())
+			System.out.println("		- " + testName);
+		System.out.println("	Skipped tests: " + testResults.getSkippedTestsCount());
+		for (String testName : testResults.getSkippedTests())
+			System.out.println("		- " + testName);
 		System.exit(0);
 	}
 
@@ -215,10 +219,9 @@ public class Main
 		}
 		catch (Exception e)
 		{
-			log.error(String.format("Failed to create a instance of type: %s", testClass.getName()), e );
+			log.error(String.format("Failed to create a instance of type: %s", testClass.getName()), e);
 			Shutdown.now();
 		}
 		return null;
 	}
-
 }

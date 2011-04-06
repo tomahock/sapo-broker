@@ -27,6 +27,6 @@ public class EmptyDestinationNameInPoll extends GenericNetMessageNegativeTest
 	@Override
 	public boolean skipTest()
 	{
-		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0); 
+		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0) || (getEncodingProtocolType() == NetProtocolType.JSON); 
 	}
 }
