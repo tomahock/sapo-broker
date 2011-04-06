@@ -2,7 +2,7 @@
 
 cd `dirname $0`
 
-classpath="./conf:./lib/*:./bin"
+classpath="./conf:./lib/*:./bin:../common-libs"
 
 
 java -server \
