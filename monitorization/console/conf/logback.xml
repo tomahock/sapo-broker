@@ -10,7 +10,7 @@
   </appender>
 
   <logger additivity="false" name="org.caudexorigo.jdbc.DbPool">
-    <level value="debug"/>
+    <level value="info"/>
     <appender-ref ref="ConsoleAppender"/>
   </logger>
 
