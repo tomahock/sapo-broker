@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
@@ -69,6 +70,8 @@ public class InvalidMessageTest extends GenericNegativeTest
 		case THRIFT:
 			encoder = new ThriftBindingSerializer();
 			break;
+		case JSON:
+			encoder = new JsonCodecForProtoBuf();
 		}
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -111,5 +114,11 @@ public class InvalidMessageTest extends GenericNegativeTest
 			array[start++] ^= (byte) 0xff;
 		}
 		while (start != end);
+	}
+	
+	@Override
+	public boolean skipTest()
+	{
+		return (getEncodingProtocolType() == NetProtocolType.JSON);
 	}
 }

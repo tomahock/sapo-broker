@@ -30,6 +30,9 @@
 		<pathelement location="../bindings/xml/java/dist/sapo-broker-xmlbinding-${version}.jar" />
 		<pathelement location="../clients/java-Component-BrokerTCP/dist/java-Component-BrokerTCP-${version}.jar" />
 		<pathelement location="${private.repo}/sapo-sts/client/java/dist/sapo-broker-clientauth-saposts-${version}.jar" />
+		<fileset dir="../bindings/json/java/dist/">
+			<include name="**/*.jar" />
+		</fileset>
 		<fileset dir="../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>
@@ -59,6 +62,9 @@
 			</fileset>
 			<fileset dir="../clients/java-component/dist/">
 					<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="../bindings/json/java/dist/">
+				<include name="**/*.jar" />
 			</fileset>
 		</path>
 

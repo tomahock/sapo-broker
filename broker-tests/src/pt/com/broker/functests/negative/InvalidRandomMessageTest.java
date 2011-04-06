@@ -62,4 +62,9 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 			}
 		});
 	}
+	@Override
+	public boolean skipTest()
+	{
+		return (getEncodingProtocolType() == NetProtocolType.JSON);
+	}
 }

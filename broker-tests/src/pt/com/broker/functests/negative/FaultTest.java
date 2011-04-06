@@ -4,6 +4,7 @@ import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.ActionType;
 
 public class FaultTest extends GenericNetMessageNegativeTest
@@ -20,5 +21,11 @@ public class FaultTest extends GenericNetMessageNegativeTest
 
 		setFaultCode("1202");
 		setFaultMessage("Unexpected message type");
+	}
+	
+	@Override
+	public boolean skipTest()
+	{
+		return (getEncodingProtocolType() == NetProtocolType.JSON);
 	}
 }

@@ -2,9 +2,8 @@ package pt.com.broker.functests.negative;
 
 import java.util.Random;
 
-import javax.print.attribute.SetOfIntegerSyntax;
-
 import pt.com.broker.functests.helpers.GenericNegativeTest;
+import pt.com.broker.types.NetProtocolType;
 
 public class TotallyInvalidRandomMessageTest extends GenericNegativeTest
 {
@@ -18,5 +17,11 @@ public class TotallyInvalidRandomMessageTest extends GenericNegativeTest
 
 		setDataToSend(randomData);
 		setOkToTimeOut(true);
+	}
+	
+	@Override
+	public boolean skipTest()
+	{
+		return (getEncodingProtocolType() == NetProtocolType.JSON);
 	}
 }

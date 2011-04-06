@@ -3,6 +3,7 @@ package pt.com.broker.functests.negative;
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -21,5 +22,11 @@ public class InvalidDestinationName extends GenericNetMessageNegativeTest
 
 		setFaultCode("2001");
 		setFaultMessage("Invalid destination name");
+	}
+	
+	@Override
+	public boolean skipTest()
+	{
+		return (getEncodingProtocolType() == NetProtocolType.JSON);
 	}
 }
