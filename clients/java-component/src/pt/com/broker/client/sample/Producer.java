@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.DestinationType;
 
 /**
@@ -39,8 +40,10 @@ public class Producer
 		producer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		producer.dname = cargs.getDestination();
 		producer.delay = cargs.getDelay();
-
-		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
+		
+		NetProtocolType protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
+		
+		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher", protocolType);
 
 		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 1 seconds to " + producer.dname + "...");
 
@@ -54,10 +57,12 @@ public class Producer
 
 //		final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
 //		NetBrokerMessage brokerMessage = new NetBrokerMessage(msg);
-		for (int i = 0; i < 500000; ++i)
+		for (int i = 0; i < 50000; ++i)
 		{
 			final String msg = i + " - " + RandomStringUtils.randomAlphanumeric(messageLength);
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg);
+			
+//			brokerMessage.setExpiration(System.currentTimeMillis() +  1000);
 			
 			if (dtype == DestinationType.QUEUE)
 			{
@@ -71,8 +76,6 @@ public class Producer
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
 			Sleep.time(delay);
-			
-			System.out.print('.');
 		}
 	}
 }
