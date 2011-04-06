@@ -8,11 +8,25 @@ final class PBMessage {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public interface AtomOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional .sapo_broker.Atom.Header header = 1;
+    boolean hasHeader();
+    pt.com.broker.codec.protobuf.PBMessage.Atom.Header getHeader();
+    pt.com.broker.codec.protobuf.PBMessage.Atom.HeaderOrBuilder getHeaderOrBuilder();
+    
+    // required .sapo_broker.Atom.Action action = 2;
+    boolean hasAction();
+    pt.com.broker.codec.protobuf.PBMessage.Atom.Action getAction();
+    pt.com.broker.codec.protobuf.PBMessage.Atom.ActionOrBuilder getActionOrBuilder();
+  }
   public static final class Atom extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements AtomOrBuilder {
     // Use Atom.newBuilder() to construct.
-    private Atom() {
-      initFields();
+    private Atom(Builder builder) {
+      super(builder);
     }
     private Atom(boolean noInit) {}
     
@@ -42,6 +56,10 @@ final class PBMessage {
       VIRTUAL_QUEUE(2, 2),
       ;
       
+      public static final int TOPIC_VALUE = 0;
+      public static final int QUEUE_VALUE = 1;
+      public static final int VIRTUAL_QUEUE_VALUE = 2;
+      
       
       public final int getNumber() { return value; }
       
@@ -62,8 +80,8 @@ final class PBMessage {
           internalValueMap =
             new com.google.protobuf.Internal.EnumLiteMap<DestinationType>() {
               public DestinationType findValueByNumber(int number) {
-                return DestinationType.valueOf(number)
-      ;        }
+                return DestinationType.valueOf(number);
+              }
             };
       
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
@@ -82,6 +100,7 @@ final class PBMessage {
       private static final DestinationType[] VALUES = {
         TOPIC, QUEUE, VIRTUAL_QUEUE, 
       };
+      
       public static DestinationType valueOf(
           com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
         if (desc.getType() != getDescriptor()) {
@@ -90,25 +109,35 @@ final class PBMessage {
         }
         return VALUES[desc.getIndex()];
       }
+      
       private final int index;
       private final int value;
+      
       private DestinationType(int index, int value) {
         this.index = index;
         this.value = value;
       }
       
-      static {
-        pt.com.broker.codec.protobuf.PBMessage.getDescriptor();
-      }
-      
       // @@protoc_insertion_point(enum_scope:sapo_broker.Atom.DestinationType)
     }
     
+    public interface ParameterOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string name = 1;
+      boolean hasName();
+      String getName();
+      
+      // required string value = 2;
+      boolean hasValue();
+      String getValue();
+    }
     public static final class Parameter extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements ParameterOrBuilder {
       // Use Parameter.newBuilder() to construct.
-      private Parameter() {
-        initFields();
+      private Parameter(Builder builder) {
+        super(builder);
       }
       private Parameter(boolean noInit) {}
       
@@ -131,36 +160,100 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Parameter_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // required string name = 1;
       public static final int NAME_FIELD_NUMBER = 1;
-      private boolean hasName;
-      private java.lang.String name_ = "";
-      public boolean hasName() { return hasName; }
-      public java.lang.String getName() { return name_; }
+      private Object name_;
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getName() {
+        Object ref = name_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getNameBytes() {
+        Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string value = 2;
       public static final int VALUE_FIELD_NUMBER = 2;
-      private boolean hasValue;
-      private java.lang.String value_ = "";
-      public boolean hasValue() { return hasValue; }
-      public java.lang.String getValue() { return value_; }
+      private Object value_;
+      public boolean hasValue() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getValue() {
+        Object ref = value_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            value_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getValueBytes() {
+        Object ref = value_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          value_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       private void initFields() {
+        name_ = "";
+        value_ = "";
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasName) return false;
-        if (!hasValue) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasName()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasValue()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasName()) {
-          output.writeString(1, getName());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getNameBytes());
         }
-        if (hasValue()) {
-          output.writeString(2, getValue());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getValueBytes());
         }
         getUnknownFields().writeTo(output);
       }
@@ -171,17 +264,22 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasName()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getName());
+            .computeBytesSize(1, getNameBytes());
         }
-        if (hasValue()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(2, getValue());
+            .computeBytesSize(2, getValueBytes());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter parseFrom(
@@ -258,34 +356,53 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Parameter_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Parameter_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter();
+          super.clear();
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          value_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -297,33 +414,39 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter returnMe = result;
-          result = null;
-          return returnMe;
+          result.name_ = name_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.value_ = value_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -347,6 +470,18 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasName()) {
+            
+            return false;
+          }
+          if (!hasValue()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -359,68 +494,103 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setName(input.readString());
+                bitField0_ |= 0x00000001;
+                name_ = input.readBytes();
                 break;
               }
               case 18: {
-                setValue(input.readString());
+                bitField0_ |= 0x00000002;
+                value_ = input.readBytes();
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // required string name = 1;
+        private Object name_ = "";
         public boolean hasName() {
-          return result.hasName();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getName() {
-          return result.getName();
+        public String getName() {
+          Object ref = name_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            name_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setName(java.lang.String value) {
+        public Builder setName(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasName = true;
-          result.name_ = value;
+  bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
           return this;
         }
         public Builder clearName() {
-          result.hasName = false;
-          result.name_ = getDefaultInstance().getName();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = getDefaultInstance().getName();
+          onChanged();
           return this;
+        }
+        void setName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
         }
         
         // required string value = 2;
+        private Object value_ = "";
         public boolean hasValue() {
-          return result.hasValue();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
-        public java.lang.String getValue() {
-          return result.getValue();
+        public String getValue() {
+          Object ref = value_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            value_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setValue(java.lang.String value) {
+        public Builder setValue(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasValue = true;
-          result.value_ = value;
+  bitField0_ |= 0x00000002;
+          value_ = value;
+          onChanged();
           return this;
         }
         public Builder clearValue() {
-          result.hasValue = false;
-          result.value_ = getDefaultInstance().getValue();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          value_ = getDefaultInstance().getValue();
+          onChanged();
           return this;
+        }
+        void setValue(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          value_ = value;
+          onChanged();
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Parameter)
@@ -428,18 +598,31 @@ final class PBMessage {
       
       static {
         defaultInstance = new Parameter(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Parameter)
     }
     
+    public interface HeaderOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // repeated .sapo_broker.Atom.Parameter parameter = 1;
+      java.util.List<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter> 
+          getParameterList();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter getParameter(int index);
+      int getParameterCount();
+      java.util.List<? extends pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder> 
+          getParameterOrBuilderList();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder getParameterOrBuilder(
+          int index);
+    }
     public static final class Header extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements HeaderOrBuilder {
       // Use Header.newBuilder() to construct.
-      private Header() {
-        initFields();
+      private Header(Builder builder) {
+        super(builder);
       }
       private Header(boolean noInit) {}
       
@@ -464,30 +647,48 @@ final class PBMessage {
       
       // repeated .sapo_broker.Atom.Parameter parameter = 1;
       public static final int PARAMETER_FIELD_NUMBER = 1;
-      private java.util.List<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter> parameter_ =
-        java.util.Collections.emptyList();
+      private java.util.List<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter> parameter_;
       public java.util.List<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter> getParameterList() {
         return parameter_;
       }
-      public int getParameterCount() { return parameter_.size(); }
+      public java.util.List<? extends pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder> 
+          getParameterOrBuilderList() {
+        return parameter_;
+      }
+      public int getParameterCount() {
+        return parameter_.size();
+      }
       public pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter getParameter(int index) {
+        return parameter_.get(index);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder getParameterOrBuilder(
+          int index) {
         return parameter_.get(index);
       }
       
       private void initFields() {
+        parameter_ = java.util.Collections.emptyList();
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        for (pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter element : getParameterList()) {
-          if (!element.isInitialized()) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        for (int i = 0; i < getParameterCount(); i++) {
+          if (!getParameter(i).isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        for (pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter element : getParameterList()) {
-          output.writeMessage(1, element);
+        for (int i = 0; i < parameter_.size(); i++) {
+          output.writeMessage(1, parameter_.get(i));
         }
         getUnknownFields().writeTo(output);
       }
@@ -498,13 +699,18 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        for (pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter element : getParameterList()) {
+        for (int i = 0; i < parameter_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(1, element);
+            .computeMessageSize(1, parameter_.get(i));
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Header parseFrom(
@@ -581,34 +787,56 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Header result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Header.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Header();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.HeaderOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Header_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Header internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Header_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Header.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            getParameterFieldBuilder();
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
+          super.clear();
+          if (parameterBuilder_ == null) {
+            parameter_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            parameterBuilder_.clear();
           }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Header();
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -620,37 +848,38 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Header build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Header result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Header buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Header result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Header buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Header result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Header(this);
+          int from_bitField0_ = bitField0_;
+          if (parameterBuilder_ == null) {
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+              parameter_ = java.util.Collections.unmodifiableList(parameter_);
+              bitField0_ = (bitField0_ & ~0x00000001);
+            }
+            result.parameter_ = parameter_;
+          } else {
+            result.parameter_ = parameterBuilder_.build();
           }
-          if (result.parameter_ != java.util.Collections.EMPTY_LIST) {
-            result.parameter_ =
-              java.util.Collections.unmodifiableList(result.parameter_);
-          }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Header returnMe = result;
-          result = null;
-          return returnMe;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -664,14 +893,44 @@ final class PBMessage {
         
         public Builder mergeFrom(pt.com.broker.codec.protobuf.PBMessage.Atom.Header other) {
           if (other == pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance()) return this;
-          if (!other.parameter_.isEmpty()) {
-            if (result.parameter_.isEmpty()) {
-              result.parameter_ = new java.util.ArrayList<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter>();
+          if (parameterBuilder_ == null) {
+            if (!other.parameter_.isEmpty()) {
+              if (parameter_.isEmpty()) {
+                parameter_ = other.parameter_;
+                bitField0_ = (bitField0_ & ~0x00000001);
+              } else {
+                ensureParameterIsMutable();
+                parameter_.addAll(other.parameter_);
+              }
+              onChanged();
             }
-            result.parameter_.addAll(other.parameter_);
+          } else {
+            if (!other.parameter_.isEmpty()) {
+              if (parameterBuilder_.isEmpty()) {
+                parameterBuilder_.dispose();
+                parameterBuilder_ = null;
+                parameter_ = other.parameter_;
+                bitField0_ = (bitField0_ & ~0x00000001);
+                parameterBuilder_ = 
+                  com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                     getParameterFieldBuilder() : null;
+              } else {
+                parameterBuilder_.addAllMessages(other.parameter_);
+              }
+            }
           }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
+        }
+        
+        public final boolean isInitialized() {
+          for (int i = 0; i < getParameterCount(); i++) {
+            if (!getParameter(i).isInitialized()) {
+              
+              return false;
+            }
+          }
+          return true;
         }
         
         public Builder mergeFrom(
@@ -686,11 +945,13 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
@@ -705,56 +966,192 @@ final class PBMessage {
           }
         }
         
+        private int bitField0_;
         
         // repeated .sapo_broker.Atom.Parameter parameter = 1;
+        private java.util.List<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter> parameter_ =
+          java.util.Collections.emptyList();
+        private void ensureParameterIsMutable() {
+          if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+            parameter_ = new java.util.ArrayList<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter>(parameter_);
+            bitField0_ |= 0x00000001;
+           }
+        }
+        
+        private com.google.protobuf.RepeatedFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder> parameterBuilder_;
+        
         public java.util.List<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter> getParameterList() {
-          return java.util.Collections.unmodifiableList(result.parameter_);
+          if (parameterBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(parameter_);
+          } else {
+            return parameterBuilder_.getMessageList();
+          }
         }
         public int getParameterCount() {
-          return result.getParameterCount();
+          if (parameterBuilder_ == null) {
+            return parameter_.size();
+          } else {
+            return parameterBuilder_.getCount();
+          }
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter getParameter(int index) {
-          return result.getParameter(index);
-        }
-        public Builder setParameter(int index, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (parameterBuilder_ == null) {
+            return parameter_.get(index);
+          } else {
+            return parameterBuilder_.getMessage(index);
           }
-          result.parameter_.set(index, value);
+        }
+        public Builder setParameter(
+            int index, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter value) {
+          if (parameterBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureParameterIsMutable();
+            parameter_.set(index, value);
+            onChanged();
+          } else {
+            parameterBuilder_.setMessage(index, value);
+          }
           return this;
         }
-        public Builder setParameter(int index, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder builderForValue) {
-          result.parameter_.set(index, builderForValue.build());
+        public Builder setParameter(
+            int index, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder builderForValue) {
+          if (parameterBuilder_ == null) {
+            ensureParameterIsMutable();
+            parameter_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            parameterBuilder_.setMessage(index, builderForValue.build());
+          }
           return this;
         }
         public Builder addParameter(pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (parameterBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureParameterIsMutable();
+            parameter_.add(value);
+            onChanged();
+          } else {
+            parameterBuilder_.addMessage(value);
           }
-          if (result.parameter_.isEmpty()) {
-            result.parameter_ = new java.util.ArrayList<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter>();
-          }
-          result.parameter_.add(value);
           return this;
         }
-        public Builder addParameter(pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder builderForValue) {
-          if (result.parameter_.isEmpty()) {
-            result.parameter_ = new java.util.ArrayList<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter>();
+        public Builder addParameter(
+            int index, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter value) {
+          if (parameterBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureParameterIsMutable();
+            parameter_.add(index, value);
+            onChanged();
+          } else {
+            parameterBuilder_.addMessage(index, value);
           }
-          result.parameter_.add(builderForValue.build());
+          return this;
+        }
+        public Builder addParameter(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder builderForValue) {
+          if (parameterBuilder_ == null) {
+            ensureParameterIsMutable();
+            parameter_.add(builderForValue.build());
+            onChanged();
+          } else {
+            parameterBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addParameter(
+            int index, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder builderForValue) {
+          if (parameterBuilder_ == null) {
+            ensureParameterIsMutable();
+            parameter_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            parameterBuilder_.addMessage(index, builderForValue.build());
+          }
           return this;
         }
         public Builder addAllParameter(
             java.lang.Iterable<? extends pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter> values) {
-          if (result.parameter_.isEmpty()) {
-            result.parameter_ = new java.util.ArrayList<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter>();
+          if (parameterBuilder_ == null) {
+            ensureParameterIsMutable();
+            super.addAll(values, parameter_);
+            onChanged();
+          } else {
+            parameterBuilder_.addAllMessages(values);
           }
-          super.addAll(values, result.parameter_);
           return this;
         }
         public Builder clearParameter() {
-          result.parameter_ = java.util.Collections.emptyList();
+          if (parameterBuilder_ == null) {
+            parameter_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000001);
+            onChanged();
+          } else {
+            parameterBuilder_.clear();
+          }
           return this;
+        }
+        public Builder removeParameter(int index) {
+          if (parameterBuilder_ == null) {
+            ensureParameterIsMutable();
+            parameter_.remove(index);
+            onChanged();
+          } else {
+            parameterBuilder_.remove(index);
+          }
+          return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder getParameterBuilder(
+            int index) {
+          return getParameterFieldBuilder().getBuilder(index);
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder getParameterOrBuilder(
+            int index) {
+          if (parameterBuilder_ == null) {
+            return parameter_.get(index);  } else {
+            return parameterBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        public java.util.List<? extends pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder> 
+             getParameterOrBuilderList() {
+          if (parameterBuilder_ != null) {
+            return parameterBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(parameter_);
+          }
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder addParameterBuilder() {
+          return getParameterFieldBuilder().addBuilder(
+              pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.getDefaultInstance());
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder addParameterBuilder(
+            int index) {
+          return getParameterFieldBuilder().addBuilder(
+              index, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.getDefaultInstance());
+        }
+        public java.util.List<pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder> 
+             getParameterBuilderList() {
+          return getParameterFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder> 
+            getParameterFieldBuilder() {
+          if (parameterBuilder_ == null) {
+            parameterBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter, pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.ParameterOrBuilder>(
+                    parameter_,
+                    ((bitField0_ & 0x00000001) == 0x00000001),
+                    getParentForChildren(),
+                    isClean());
+            parameter_ = null;
+          }
+          return parameterBuilder_;
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Header)
@@ -762,18 +1159,37 @@ final class PBMessage {
       
       static {
         defaultInstance = new Header(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Header)
     }
     
+    public interface BrokerMessageOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string message_id = 1;
+      boolean hasMessageId();
+      String getMessageId();
+      
+      // required bytes payload = 2;
+      boolean hasPayload();
+      com.google.protobuf.ByteString getPayload();
+      
+      // optional int64 expiration = 3;
+      boolean hasExpiration();
+      long getExpiration();
+      
+      // optional int64 timestamp = 4;
+      boolean hasTimestamp();
+      long getTimestamp();
+    }
     public static final class BrokerMessage extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements BrokerMessageOrBuilder {
       // Use BrokerMessage.newBuilder() to construct.
-      private BrokerMessage() {
-        initFields();
+      private BrokerMessage(Builder builder) {
+        super(builder);
       }
       private BrokerMessage(boolean noInit) {}
       
@@ -796,55 +1212,102 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_BrokerMessage_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // optional string message_id = 1;
       public static final int MESSAGE_ID_FIELD_NUMBER = 1;
-      private boolean hasMessageId;
-      private java.lang.String messageId_ = "";
-      public boolean hasMessageId() { return hasMessageId; }
-      public java.lang.String getMessageId() { return messageId_; }
+      private Object messageId_;
+      public boolean hasMessageId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getMessageId() {
+        Object ref = messageId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            messageId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getMessageIdBytes() {
+        Object ref = messageId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          messageId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required bytes payload = 2;
       public static final int PAYLOAD_FIELD_NUMBER = 2;
-      private boolean hasPayload;
-      private com.google.protobuf.ByteString payload_ = com.google.protobuf.ByteString.EMPTY;
-      public boolean hasPayload() { return hasPayload; }
-      public com.google.protobuf.ByteString getPayload() { return payload_; }
+      private com.google.protobuf.ByteString payload_;
+      public boolean hasPayload() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public com.google.protobuf.ByteString getPayload() {
+        return payload_;
+      }
       
       // optional int64 expiration = 3;
       public static final int EXPIRATION_FIELD_NUMBER = 3;
-      private boolean hasExpiration;
-      private long expiration_ = 0L;
-      public boolean hasExpiration() { return hasExpiration; }
-      public long getExpiration() { return expiration_; }
+      private long expiration_;
+      public boolean hasExpiration() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public long getExpiration() {
+        return expiration_;
+      }
       
       // optional int64 timestamp = 4;
       public static final int TIMESTAMP_FIELD_NUMBER = 4;
-      private boolean hasTimestamp;
-      private long timestamp_ = 0L;
-      public boolean hasTimestamp() { return hasTimestamp; }
-      public long getTimestamp() { return timestamp_; }
+      private long timestamp_;
+      public boolean hasTimestamp() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public long getTimestamp() {
+        return timestamp_;
+      }
       
       private void initFields() {
+        messageId_ = "";
+        payload_ = com.google.protobuf.ByteString.EMPTY;
+        expiration_ = 0L;
+        timestamp_ = 0L;
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasPayload) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasPayload()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasMessageId()) {
-          output.writeString(1, getMessageId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getMessageIdBytes());
         }
-        if (hasPayload()) {
-          output.writeBytes(2, getPayload());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, payload_);
         }
-        if (hasExpiration()) {
-          output.writeInt64(3, getExpiration());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeInt64(3, expiration_);
         }
-        if (hasTimestamp()) {
-          output.writeInt64(4, getTimestamp());
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeInt64(4, timestamp_);
         }
         getUnknownFields().writeTo(output);
       }
@@ -855,25 +1318,30 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasMessageId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getMessageId());
+            .computeBytesSize(1, getMessageIdBytes());
         }
-        if (hasPayload()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(2, getPayload());
+            .computeBytesSize(2, payload_);
         }
-        if (hasExpiration()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(3, getExpiration());
+            .computeInt64Size(3, expiration_);
         }
-        if (hasTimestamp()) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(4, getTimestamp());
+            .computeInt64Size(4, timestamp_);
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage parseFrom(
@@ -950,34 +1418,57 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_BrokerMessage_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_BrokerMessage_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage();
+          super.clear();
+          messageId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          payload_ = com.google.protobuf.ByteString.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          expiration_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          timestamp_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -989,33 +1480,47 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage result = new pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage returnMe = result;
-          result = null;
-          return returnMe;
+          result.messageId_ = messageId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.payload_ = payload_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.expiration_ = expiration_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.timestamp_ = timestamp_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1045,6 +1550,14 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasPayload()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1057,111 +1570,142 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setMessageId(input.readString());
+                bitField0_ |= 0x00000001;
+                messageId_ = input.readBytes();
                 break;
               }
               case 18: {
-                setPayload(input.readBytes());
+                bitField0_ |= 0x00000002;
+                payload_ = input.readBytes();
                 break;
               }
               case 24: {
-                setExpiration(input.readInt64());
+                bitField0_ |= 0x00000004;
+                expiration_ = input.readInt64();
                 break;
               }
               case 32: {
-                setTimestamp(input.readInt64());
+                bitField0_ |= 0x00000008;
+                timestamp_ = input.readInt64();
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // optional string message_id = 1;
+        private Object messageId_ = "";
         public boolean hasMessageId() {
-          return result.hasMessageId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getMessageId() {
-          return result.getMessageId();
+        public String getMessageId() {
+          Object ref = messageId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            messageId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setMessageId(java.lang.String value) {
+        public Builder setMessageId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasMessageId = true;
-          result.messageId_ = value;
+  bitField0_ |= 0x00000001;
+          messageId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearMessageId() {
-          result.hasMessageId = false;
-          result.messageId_ = getDefaultInstance().getMessageId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          messageId_ = getDefaultInstance().getMessageId();
+          onChanged();
           return this;
+        }
+        void setMessageId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          messageId_ = value;
+          onChanged();
         }
         
         // required bytes payload = 2;
+        private com.google.protobuf.ByteString payload_ = com.google.protobuf.ByteString.EMPTY;
         public boolean hasPayload() {
-          return result.hasPayload();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         public com.google.protobuf.ByteString getPayload() {
-          return result.getPayload();
+          return payload_;
         }
         public Builder setPayload(com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasPayload = true;
-          result.payload_ = value;
+  bitField0_ |= 0x00000002;
+          payload_ = value;
+          onChanged();
           return this;
         }
         public Builder clearPayload() {
-          result.hasPayload = false;
-          result.payload_ = getDefaultInstance().getPayload();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          payload_ = getDefaultInstance().getPayload();
+          onChanged();
           return this;
         }
         
         // optional int64 expiration = 3;
+        private long expiration_ ;
         public boolean hasExpiration() {
-          return result.hasExpiration();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         public long getExpiration() {
-          return result.getExpiration();
+          return expiration_;
         }
         public Builder setExpiration(long value) {
-          result.hasExpiration = true;
-          result.expiration_ = value;
+          bitField0_ |= 0x00000004;
+          expiration_ = value;
+          onChanged();
           return this;
         }
         public Builder clearExpiration() {
-          result.hasExpiration = false;
-          result.expiration_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          expiration_ = 0L;
+          onChanged();
           return this;
         }
         
         // optional int64 timestamp = 4;
+        private long timestamp_ ;
         public boolean hasTimestamp() {
-          return result.hasTimestamp();
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         public long getTimestamp() {
-          return result.getTimestamp();
+          return timestamp_;
         }
         public Builder setTimestamp(long value) {
-          result.hasTimestamp = true;
-          result.timestamp_ = value;
+          bitField0_ |= 0x00000008;
+          timestamp_ = value;
+          onChanged();
           return this;
         }
         public Builder clearTimestamp() {
-          result.hasTimestamp = false;
-          result.timestamp_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000008);
+          timestamp_ = 0L;
+          onChanged();
           return this;
         }
         
@@ -1170,18 +1714,38 @@ final class PBMessage {
       
       static {
         defaultInstance = new BrokerMessage(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.BrokerMessage)
     }
     
+    public interface PublishOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+      
+      // required .sapo_broker.Atom.DestinationType destination_type = 2;
+      boolean hasDestinationType();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType();
+      
+      // required string destination = 3;
+      boolean hasDestination();
+      String getDestination();
+      
+      // required .sapo_broker.Atom.BrokerMessage message = 4;
+      boolean hasMessage();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage getMessage();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder getMessageOrBuilder();
+    }
     public static final class Publish extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements PublishOrBuilder {
       // Use Publish.newBuilder() to construct.
-      private Publish() {
-        initFields();
+      private Publish(Builder builder) {
+        super(builder);
       }
       private Publish(boolean noInit) {}
       
@@ -1204,60 +1768,139 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Publish_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // optional string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required .sapo_broker.Atom.DestinationType destination_type = 2;
       public static final int DESTINATION_TYPE_FIELD_NUMBER = 2;
-      private boolean hasDestinationType;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType destinationType_;
-      public boolean hasDestinationType() { return hasDestinationType; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() { return destinationType_; }
+      public boolean hasDestinationType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() {
+        return destinationType_;
+      }
       
       // required string destination = 3;
       public static final int DESTINATION_FIELD_NUMBER = 3;
-      private boolean hasDestination;
-      private java.lang.String destination_ = "";
-      public boolean hasDestination() { return hasDestination; }
-      public java.lang.String getDestination() { return destination_; }
+      private Object destination_;
+      public boolean hasDestination() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public String getDestination() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            destination_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getDestinationBytes() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          destination_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required .sapo_broker.Atom.BrokerMessage message = 4;
       public static final int MESSAGE_FIELD_NUMBER = 4;
-      private boolean hasMessage;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage message_;
-      public boolean hasMessage() { return hasMessage; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage getMessage() { return message_; }
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage getMessage() {
+        return message_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder getMessageOrBuilder() {
+        return message_;
+      }
       
       private void initFields() {
+        actionId_ = "";
         destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+        destination_ = "";
         message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasDestinationType) return false;
-        if (!hasDestination) return false;
-        if (!hasMessage) return false;
-        if (!getMessage().isInitialized()) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasDestinationType()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasDestination()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasMessage()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!getMessage().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
-        if (hasDestinationType()) {
-          output.writeEnum(2, getDestinationType().getNumber());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeEnum(2, destinationType_.getNumber());
         }
-        if (hasDestination()) {
-          output.writeString(3, getDestination());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeBytes(3, getDestinationBytes());
         }
-        if (hasMessage()) {
-          output.writeMessage(4, getMessage());
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeMessage(4, message_);
         }
         getUnknownFields().writeTo(output);
       }
@@ -1268,25 +1911,30 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
-        if (hasDestinationType()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(2, getDestinationType().getNumber());
+            .computeEnumSize(2, destinationType_.getNumber());
         }
-        if (hasDestination()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(3, getDestination());
+            .computeBytesSize(3, getDestinationBytes());
         }
-        if (hasMessage()) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(4, getMessage());
+            .computeMessageSize(4, message_);
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Publish parseFrom(
@@ -1363,34 +2011,62 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Publish result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Publish();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.PublishOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Publish_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Publish internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Publish_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            getMessageFieldBuilder();
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destination_ = "";
+          bitField0_ = (bitField0_ & ~0x00000004);
+          if (messageBuilder_ == null) {
+            message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
+          } else {
+            messageBuilder_.clear();
           }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Publish();
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -1402,33 +2078,51 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Publish build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Publish result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Publish buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Publish result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Publish buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Publish result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Publish(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Publish returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.destinationType_ = destinationType_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.destination_ = destination_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          if (messageBuilder_ == null) {
+            result.message_ = message_;
+          } else {
+            result.message_ = messageBuilder_.build();
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1458,6 +2152,26 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasDestinationType()) {
+            
+            return false;
+          }
+          if (!hasDestination()) {
+            
+            return false;
+          }
+          if (!hasMessage()) {
+            
+            return false;
+          }
+          if (!getMessage().isInitialized()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1470,17 +2184,20 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
               case 16: {
@@ -1489,12 +2206,14 @@ final class PBMessage {
                 if (value == null) {
                   unknownFields.mergeVarintField(2, rawValue);
                 } else {
-                  setDestinationType(value);
+                  bitField0_ |= 0x00000002;
+                  destinationType_ = value;
                 }
                 break;
               }
               case 26: {
-                setDestination(input.readString());
+                bitField0_ |= 0x00000004;
+                destination_ = input.readBytes();
                 break;
               }
               case 34: {
@@ -1510,105 +2229,192 @@ final class PBMessage {
           }
         }
         
+        private int bitField0_;
         
         // optional string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // required .sapo_broker.Atom.DestinationType destination_type = 2;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
         public boolean hasDestinationType() {
-          return result.hasDestinationType();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() {
-          return result.getDestinationType();
+          return destinationType_;
         }
         public Builder setDestinationType(pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType value) {
           if (value == null) {
             throw new NullPointerException();
           }
-          result.hasDestinationType = true;
-          result.destinationType_ = value;
+          bitField0_ |= 0x00000002;
+          destinationType_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestinationType() {
-          result.hasDestinationType = false;
-          result.destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          onChanged();
           return this;
         }
         
         // required string destination = 3;
+        private Object destination_ = "";
         public boolean hasDestination() {
-          return result.hasDestination();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
-        public java.lang.String getDestination() {
-          return result.getDestination();
+        public String getDestination() {
+          Object ref = destination_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            destination_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setDestination(java.lang.String value) {
+        public Builder setDestination(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasDestination = true;
-          result.destination_ = value;
+  bitField0_ |= 0x00000004;
+          destination_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestination() {
-          result.hasDestination = false;
-          result.destination_ = getDefaultInstance().getDestination();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          destination_ = getDefaultInstance().getDestination();
+          onChanged();
           return this;
+        }
+        void setDestination(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000004;
+          destination_ = value;
+          onChanged();
         }
         
         // required .sapo_broker.Atom.BrokerMessage message = 4;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder> messageBuilder_;
         public boolean hasMessage() {
-          return result.hasMessage();
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage getMessage() {
-          return result.getMessage();
+          if (messageBuilder_ == null) {
+            return message_;
+          } else {
+            return messageBuilder_.getMessage();
+          }
         }
         public Builder setMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (messageBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            message_ = value;
+            onChanged();
+          } else {
+            messageBuilder_.setMessage(value);
           }
-          result.hasMessage = true;
-          result.message_ = value;
+          bitField0_ |= 0x00000008;
           return this;
         }
-        public Builder setMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder builderForValue) {
-          result.hasMessage = true;
-          result.message_ = builderForValue.build();
+        public Builder setMessage(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder builderForValue) {
+          if (messageBuilder_ == null) {
+            message_ = builderForValue.build();
+            onChanged();
+          } else {
+            messageBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000008;
           return this;
         }
         public Builder mergeMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage value) {
-          if (result.hasMessage() &&
-              result.message_ != pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance()) {
-            result.message_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.newBuilder(result.message_).mergeFrom(value).buildPartial();
+          if (messageBuilder_ == null) {
+            if (((bitField0_ & 0x00000008) == 0x00000008) &&
+                message_ != pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance()) {
+              message_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.newBuilder(message_).mergeFrom(value).buildPartial();
+            } else {
+              message_ = value;
+            }
+            onChanged();
           } else {
-            result.message_ = value;
+            messageBuilder_.mergeFrom(value);
           }
-          result.hasMessage = true;
+          bitField0_ |= 0x00000008;
           return this;
         }
         public Builder clearMessage() {
-          result.hasMessage = false;
-          result.message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
+          if (messageBuilder_ == null) {
+            message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
+            onChanged();
+          } else {
+            messageBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder getMessageBuilder() {
+          bitField0_ |= 0x00000008;
+          onChanged();
+          return getMessageFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder getMessageOrBuilder() {
+          if (messageBuilder_ != null) {
+            return messageBuilder_.getMessageOrBuilder();
+          } else {
+            return message_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder> 
+            getMessageFieldBuilder() {
+          if (messageBuilder_ == null) {
+            messageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder>(
+                    message_,
+                    getParentForChildren(),
+                    isClean());
+            message_ = null;
+          }
+          return messageBuilder_;
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Publish)
@@ -1616,18 +2422,33 @@ final class PBMessage {
       
       static {
         defaultInstance = new Publish(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Publish)
     }
     
+    public interface PollOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+      
+      // required string destination = 2;
+      boolean hasDestination();
+      String getDestination();
+      
+      // required int64 timeout = 3;
+      boolean hasTimeout();
+      long getTimeout();
+    }
     public static final class Poll extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements PollOrBuilder {
       // Use Poll.newBuilder() to construct.
-      private Poll() {
-        initFields();
+      private Poll(Builder builder) {
+        super(builder);
       }
       private Poll(boolean noInit) {}
       
@@ -1650,46 +2471,114 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Poll_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // optional string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string destination = 2;
       public static final int DESTINATION_FIELD_NUMBER = 2;
-      private boolean hasDestination;
-      private java.lang.String destination_ = "";
-      public boolean hasDestination() { return hasDestination; }
-      public java.lang.String getDestination() { return destination_; }
+      private Object destination_;
+      public boolean hasDestination() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getDestination() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            destination_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getDestinationBytes() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          destination_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required int64 timeout = 3;
       public static final int TIMEOUT_FIELD_NUMBER = 3;
-      private boolean hasTimeout;
-      private long timeout_ = 0L;
-      public boolean hasTimeout() { return hasTimeout; }
-      public long getTimeout() { return timeout_; }
+      private long timeout_;
+      public boolean hasTimeout() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public long getTimeout() {
+        return timeout_;
+      }
       
       private void initFields() {
+        actionId_ = "";
+        destination_ = "";
+        timeout_ = 0L;
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasDestination) return false;
-        if (!hasTimeout) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasDestination()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasTimeout()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
-        if (hasDestination()) {
-          output.writeString(2, getDestination());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getDestinationBytes());
         }
-        if (hasTimeout()) {
-          output.writeInt64(3, getTimeout());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeInt64(3, timeout_);
         }
         getUnknownFields().writeTo(output);
       }
@@ -1700,21 +2589,26 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
-        if (hasDestination()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(2, getDestination());
+            .computeBytesSize(2, getDestinationBytes());
         }
-        if (hasTimeout()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(3, getTimeout());
+            .computeInt64Size(3, timeout_);
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Poll parseFrom(
@@ -1791,34 +2685,55 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Poll result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Poll();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.PollOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Poll_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Poll internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Poll_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Poll();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          destination_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          timeout_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000004);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -1830,33 +2745,43 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Poll build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Poll result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Poll buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Poll result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Poll buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Poll result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Poll(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Poll returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.destination_ = destination_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.timeout_ = timeout_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1883,6 +2808,18 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasDestination()) {
+            
+            return false;
+          }
+          if (!hasTimeout()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1895,89 +2832,128 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
               case 18: {
-                setDestination(input.readString());
+                bitField0_ |= 0x00000002;
+                destination_ = input.readBytes();
                 break;
               }
               case 24: {
-                setTimeout(input.readInt64());
+                bitField0_ |= 0x00000004;
+                timeout_ = input.readInt64();
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // optional string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // required string destination = 2;
+        private Object destination_ = "";
         public boolean hasDestination() {
-          return result.hasDestination();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
-        public java.lang.String getDestination() {
-          return result.getDestination();
+        public String getDestination() {
+          Object ref = destination_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            destination_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setDestination(java.lang.String value) {
+        public Builder setDestination(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasDestination = true;
-          result.destination_ = value;
+  bitField0_ |= 0x00000002;
+          destination_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestination() {
-          result.hasDestination = false;
-          result.destination_ = getDefaultInstance().getDestination();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destination_ = getDefaultInstance().getDestination();
+          onChanged();
           return this;
+        }
+        void setDestination(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          destination_ = value;
+          onChanged();
         }
         
         // required int64 timeout = 3;
+        private long timeout_ ;
         public boolean hasTimeout() {
-          return result.hasTimeout();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         public long getTimeout() {
-          return result.getTimeout();
+          return timeout_;
         }
         public Builder setTimeout(long value) {
-          result.hasTimeout = true;
-          result.timeout_ = value;
+          bitField0_ |= 0x00000004;
+          timeout_ = value;
+          onChanged();
           return this;
         }
         public Builder clearTimeout() {
-          result.hasTimeout = false;
-          result.timeout_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          timeout_ = 0L;
+          onChanged();
           return this;
         }
         
@@ -1986,18 +2962,25 @@ final class PBMessage {
       
       static {
         defaultInstance = new Poll(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Poll)
     }
     
+    public interface AcceptedOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+    }
     public static final class Accepted extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements AcceptedOrBuilder {
       // Use Accepted.newBuilder() to construct.
-      private Accepted() {
-        initFields();
+      private Accepted(Builder builder) {
+        super(builder);
       }
       private Accepted(boolean noInit) {}
       
@@ -2020,25 +3003,60 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Accepted_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // required string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       private void initFields() {
+        actionId_ = "";
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasActionId) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasActionId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
         getUnknownFields().writeTo(output);
       }
@@ -2049,13 +3067,18 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted parseFrom(
@@ -2132,34 +3155,51 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.AcceptedOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Accepted_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Accepted_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -2171,33 +3211,35 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2218,6 +3260,14 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasActionId()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2230,43 +3280,62 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // required string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Accepted)
@@ -2274,18 +3343,33 @@ final class PBMessage {
       
       static {
         defaultInstance = new Accepted(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Accepted)
     }
     
+    public interface AcknowledgeMessageOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+      
+      // required string message_id = 2;
+      boolean hasMessageId();
+      String getMessageId();
+      
+      // required string destination = 3;
+      boolean hasDestination();
+      String getDestination();
+    }
     public static final class AcknowledgeMessage extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements AcknowledgeMessageOrBuilder {
       // Use AcknowledgeMessage.newBuilder() to construct.
-      private AcknowledgeMessage() {
-        initFields();
+      private AcknowledgeMessage(Builder builder) {
+        super(builder);
       }
       private AcknowledgeMessage(boolean noInit) {}
       
@@ -2308,46 +3392,136 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_AcknowledgeMessage_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // optional string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string message_id = 2;
       public static final int MESSAGE_ID_FIELD_NUMBER = 2;
-      private boolean hasMessageId;
-      private java.lang.String messageId_ = "";
-      public boolean hasMessageId() { return hasMessageId; }
-      public java.lang.String getMessageId() { return messageId_; }
+      private Object messageId_;
+      public boolean hasMessageId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getMessageId() {
+        Object ref = messageId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            messageId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getMessageIdBytes() {
+        Object ref = messageId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          messageId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string destination = 3;
       public static final int DESTINATION_FIELD_NUMBER = 3;
-      private boolean hasDestination;
-      private java.lang.String destination_ = "";
-      public boolean hasDestination() { return hasDestination; }
-      public java.lang.String getDestination() { return destination_; }
+      private Object destination_;
+      public boolean hasDestination() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public String getDestination() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            destination_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getDestinationBytes() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          destination_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       private void initFields() {
+        actionId_ = "";
+        messageId_ = "";
+        destination_ = "";
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasMessageId) return false;
-        if (!hasDestination) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasMessageId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasDestination()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
-        if (hasMessageId()) {
-          output.writeString(2, getMessageId());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getMessageIdBytes());
         }
-        if (hasDestination()) {
-          output.writeString(3, getDestination());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeBytes(3, getDestinationBytes());
         }
         getUnknownFields().writeTo(output);
       }
@@ -2358,21 +3532,26 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
-        if (hasMessageId()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(2, getMessageId());
+            .computeBytesSize(2, getMessageIdBytes());
         }
-        if (hasDestination()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(3, getDestination());
+            .computeBytesSize(3, getDestinationBytes());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage parseFrom(
@@ -2449,34 +3628,55 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessageOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_AcknowledgeMessage_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_AcknowledgeMessage_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          messageId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destination_ = "";
+          bitField0_ = (bitField0_ & ~0x00000004);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -2488,33 +3688,43 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage result = new pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.messageId_ = messageId_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.destination_ = destination_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2541,6 +3751,18 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasMessageId()) {
+            
+            return false;
+          }
+          if (!hasDestination()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2553,93 +3775,144 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
               case 18: {
-                setMessageId(input.readString());
+                bitField0_ |= 0x00000002;
+                messageId_ = input.readBytes();
                 break;
               }
               case 26: {
-                setDestination(input.readString());
+                bitField0_ |= 0x00000004;
+                destination_ = input.readBytes();
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // optional string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // required string message_id = 2;
+        private Object messageId_ = "";
         public boolean hasMessageId() {
-          return result.hasMessageId();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
-        public java.lang.String getMessageId() {
-          return result.getMessageId();
+        public String getMessageId() {
+          Object ref = messageId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            messageId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setMessageId(java.lang.String value) {
+        public Builder setMessageId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasMessageId = true;
-          result.messageId_ = value;
+  bitField0_ |= 0x00000002;
+          messageId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearMessageId() {
-          result.hasMessageId = false;
-          result.messageId_ = getDefaultInstance().getMessageId();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          messageId_ = getDefaultInstance().getMessageId();
+          onChanged();
           return this;
+        }
+        void setMessageId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          messageId_ = value;
+          onChanged();
         }
         
         // required string destination = 3;
+        private Object destination_ = "";
         public boolean hasDestination() {
-          return result.hasDestination();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
-        public java.lang.String getDestination() {
-          return result.getDestination();
+        public String getDestination() {
+          Object ref = destination_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            destination_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setDestination(java.lang.String value) {
+        public Builder setDestination(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasDestination = true;
-          result.destination_ = value;
+  bitField0_ |= 0x00000004;
+          destination_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestination() {
-          result.hasDestination = false;
-          result.destination_ = getDefaultInstance().getDestination();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          destination_ = getDefaultInstance().getDestination();
+          onChanged();
           return this;
+        }
+        void setDestination(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000004;
+          destination_ = value;
+          onChanged();
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.AcknowledgeMessage)
@@ -2647,18 +3920,33 @@ final class PBMessage {
       
       static {
         defaultInstance = new AcknowledgeMessage(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.AcknowledgeMessage)
     }
     
+    public interface SubscribeOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+      
+      // required string destination = 2;
+      boolean hasDestination();
+      String getDestination();
+      
+      // required .sapo_broker.Atom.DestinationType destination_type = 3;
+      boolean hasDestinationType();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType();
+    }
     public static final class Subscribe extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements SubscribeOrBuilder {
       // Use Subscribe.newBuilder() to construct.
-      private Subscribe() {
-        initFields();
+      private Subscribe(Builder builder) {
+        super(builder);
       }
       private Subscribe(boolean noInit) {}
       
@@ -2681,47 +3969,114 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Subscribe_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // optional string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string destination = 2;
       public static final int DESTINATION_FIELD_NUMBER = 2;
-      private boolean hasDestination;
-      private java.lang.String destination_ = "";
-      public boolean hasDestination() { return hasDestination; }
-      public java.lang.String getDestination() { return destination_; }
+      private Object destination_;
+      public boolean hasDestination() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getDestination() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            destination_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getDestinationBytes() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          destination_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required .sapo_broker.Atom.DestinationType destination_type = 3;
       public static final int DESTINATION_TYPE_FIELD_NUMBER = 3;
-      private boolean hasDestinationType;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType destinationType_;
-      public boolean hasDestinationType() { return hasDestinationType; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() { return destinationType_; }
+      public boolean hasDestinationType() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() {
+        return destinationType_;
+      }
       
       private void initFields() {
+        actionId_ = "";
+        destination_ = "";
         destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasDestination) return false;
-        if (!hasDestinationType) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasDestination()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasDestinationType()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
-        if (hasDestination()) {
-          output.writeString(2, getDestination());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getDestinationBytes());
         }
-        if (hasDestinationType()) {
-          output.writeEnum(3, getDestinationType().getNumber());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeEnum(3, destinationType_.getNumber());
         }
         getUnknownFields().writeTo(output);
       }
@@ -2732,21 +4087,26 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
-        if (hasDestination()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(2, getDestination());
+            .computeBytesSize(2, getDestinationBytes());
         }
-        if (hasDestinationType()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(3, getDestinationType().getNumber());
+            .computeEnumSize(3, destinationType_.getNumber());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe parseFrom(
@@ -2823,34 +4183,55 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.SubscribeOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Subscribe_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Subscribe_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          destination_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          bitField0_ = (bitField0_ & ~0x00000004);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -2862,33 +4243,43 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.destination_ = destination_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.destinationType_ = destinationType_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2915,6 +4306,18 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasDestination()) {
+            
+            return false;
+          }
+          if (!hasDestinationType()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2927,21 +4330,25 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
               case 18: {
-                setDestination(input.readString());
+                bitField0_ |= 0x00000002;
+                destination_ = input.readBytes();
                 break;
               }
               case 24: {
@@ -2950,7 +4357,8 @@ final class PBMessage {
                 if (value == null) {
                   unknownFields.mergeVarintField(3, rawValue);
                 } else {
-                  setDestinationType(value);
+                  bitField0_ |= 0x00000004;
+                  destinationType_ = value;
                 }
                 break;
               }
@@ -2958,67 +4366,101 @@ final class PBMessage {
           }
         }
         
+        private int bitField0_;
         
         // optional string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // required string destination = 2;
+        private Object destination_ = "";
         public boolean hasDestination() {
-          return result.hasDestination();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
-        public java.lang.String getDestination() {
-          return result.getDestination();
+        public String getDestination() {
+          Object ref = destination_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            destination_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setDestination(java.lang.String value) {
+        public Builder setDestination(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasDestination = true;
-          result.destination_ = value;
+  bitField0_ |= 0x00000002;
+          destination_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestination() {
-          result.hasDestination = false;
-          result.destination_ = getDefaultInstance().getDestination();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destination_ = getDefaultInstance().getDestination();
+          onChanged();
           return this;
+        }
+        void setDestination(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          destination_ = value;
+          onChanged();
         }
         
         // required .sapo_broker.Atom.DestinationType destination_type = 3;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
         public boolean hasDestinationType() {
-          return result.hasDestinationType();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() {
-          return result.getDestinationType();
+          return destinationType_;
         }
         public Builder setDestinationType(pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType value) {
           if (value == null) {
             throw new NullPointerException();
           }
-          result.hasDestinationType = true;
-          result.destinationType_ = value;
+          bitField0_ |= 0x00000004;
+          destinationType_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestinationType() {
-          result.hasDestinationType = false;
-          result.destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          onChanged();
           return this;
         }
         
@@ -3027,18 +4469,33 @@ final class PBMessage {
       
       static {
         defaultInstance = new Subscribe(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Subscribe)
     }
     
+    public interface UnsubscribeOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+      
+      // required string destination = 2;
+      boolean hasDestination();
+      String getDestination();
+      
+      // required .sapo_broker.Atom.DestinationType destination_type = 3;
+      boolean hasDestinationType();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType();
+    }
     public static final class Unsubscribe extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements UnsubscribeOrBuilder {
       // Use Unsubscribe.newBuilder() to construct.
-      private Unsubscribe() {
-        initFields();
+      private Unsubscribe(Builder builder) {
+        super(builder);
       }
       private Unsubscribe(boolean noInit) {}
       
@@ -3061,47 +4518,114 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Unsubscribe_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // optional string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string destination = 2;
       public static final int DESTINATION_FIELD_NUMBER = 2;
-      private boolean hasDestination;
-      private java.lang.String destination_ = "";
-      public boolean hasDestination() { return hasDestination; }
-      public java.lang.String getDestination() { return destination_; }
+      private Object destination_;
+      public boolean hasDestination() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getDestination() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            destination_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getDestinationBytes() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          destination_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required .sapo_broker.Atom.DestinationType destination_type = 3;
       public static final int DESTINATION_TYPE_FIELD_NUMBER = 3;
-      private boolean hasDestinationType;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType destinationType_;
-      public boolean hasDestinationType() { return hasDestinationType; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() { return destinationType_; }
+      public boolean hasDestinationType() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() {
+        return destinationType_;
+      }
       
       private void initFields() {
+        actionId_ = "";
+        destination_ = "";
         destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasDestination) return false;
-        if (!hasDestinationType) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasDestination()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasDestinationType()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
-        if (hasDestination()) {
-          output.writeString(2, getDestination());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getDestinationBytes());
         }
-        if (hasDestinationType()) {
-          output.writeEnum(3, getDestinationType().getNumber());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeEnum(3, destinationType_.getNumber());
         }
         getUnknownFields().writeTo(output);
       }
@@ -3112,21 +4636,26 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
-        if (hasDestination()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(2, getDestination());
+            .computeBytesSize(2, getDestinationBytes());
         }
-        if (hasDestinationType()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(3, getDestinationType().getNumber());
+            .computeEnumSize(3, destinationType_.getNumber());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe parseFrom(
@@ -3203,34 +4732,55 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.UnsubscribeOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Unsubscribe_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Unsubscribe_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          destination_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          bitField0_ = (bitField0_ & ~0x00000004);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -3242,33 +4792,43 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.destination_ = destination_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.destinationType_ = destinationType_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3295,6 +4855,18 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasDestination()) {
+            
+            return false;
+          }
+          if (!hasDestinationType()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3307,21 +4879,25 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
               case 18: {
-                setDestination(input.readString());
+                bitField0_ |= 0x00000002;
+                destination_ = input.readBytes();
                 break;
               }
               case 24: {
@@ -3330,7 +4906,8 @@ final class PBMessage {
                 if (value == null) {
                   unknownFields.mergeVarintField(3, rawValue);
                 } else {
-                  setDestinationType(value);
+                  bitField0_ |= 0x00000004;
+                  destinationType_ = value;
                 }
                 break;
               }
@@ -3338,67 +4915,101 @@ final class PBMessage {
           }
         }
         
+        private int bitField0_;
         
         // optional string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // required string destination = 2;
+        private Object destination_ = "";
         public boolean hasDestination() {
-          return result.hasDestination();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
-        public java.lang.String getDestination() {
-          return result.getDestination();
+        public String getDestination() {
+          Object ref = destination_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            destination_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setDestination(java.lang.String value) {
+        public Builder setDestination(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasDestination = true;
-          result.destination_ = value;
+  bitField0_ |= 0x00000002;
+          destination_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestination() {
-          result.hasDestination = false;
-          result.destination_ = getDefaultInstance().getDestination();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destination_ = getDefaultInstance().getDestination();
+          onChanged();
           return this;
+        }
+        void setDestination(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          destination_ = value;
+          onChanged();
         }
         
         // required .sapo_broker.Atom.DestinationType destination_type = 3;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
         public boolean hasDestinationType() {
-          return result.hasDestinationType();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() {
-          return result.getDestinationType();
+          return destinationType_;
         }
         public Builder setDestinationType(pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType value) {
           if (value == null) {
             throw new NullPointerException();
           }
-          result.hasDestinationType = true;
-          result.destinationType_ = value;
+          bitField0_ |= 0x00000004;
+          destinationType_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestinationType() {
-          result.hasDestinationType = false;
-          result.destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          onChanged();
           return this;
         }
         
@@ -3407,18 +5018,38 @@ final class PBMessage {
       
       static {
         defaultInstance = new Unsubscribe(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Unsubscribe)
     }
     
+    public interface NotificationOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string destination = 1;
+      boolean hasDestination();
+      String getDestination();
+      
+      // required string subscription = 2;
+      boolean hasSubscription();
+      String getSubscription();
+      
+      // required .sapo_broker.Atom.DestinationType destination_type = 3;
+      boolean hasDestinationType();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType();
+      
+      // required .sapo_broker.Atom.BrokerMessage message = 4;
+      boolean hasMessage();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage getMessage();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder getMessageOrBuilder();
+    }
     public static final class Notification extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements NotificationOrBuilder {
       // Use Notification.newBuilder() to construct.
-      private Notification() {
-        initFields();
+      private Notification(Builder builder) {
+        super(builder);
       }
       private Notification(boolean noInit) {}
       
@@ -3441,61 +5072,143 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Notification_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // required string destination = 1;
       public static final int DESTINATION_FIELD_NUMBER = 1;
-      private boolean hasDestination;
-      private java.lang.String destination_ = "";
-      public boolean hasDestination() { return hasDestination; }
-      public java.lang.String getDestination() { return destination_; }
+      private Object destination_;
+      public boolean hasDestination() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getDestination() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            destination_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getDestinationBytes() {
+        Object ref = destination_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          destination_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string subscription = 2;
       public static final int SUBSCRIPTION_FIELD_NUMBER = 2;
-      private boolean hasSubscription;
-      private java.lang.String subscription_ = "";
-      public boolean hasSubscription() { return hasSubscription; }
-      public java.lang.String getSubscription() { return subscription_; }
+      private Object subscription_;
+      public boolean hasSubscription() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getSubscription() {
+        Object ref = subscription_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            subscription_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getSubscriptionBytes() {
+        Object ref = subscription_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          subscription_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required .sapo_broker.Atom.DestinationType destination_type = 3;
       public static final int DESTINATION_TYPE_FIELD_NUMBER = 3;
-      private boolean hasDestinationType;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType destinationType_;
-      public boolean hasDestinationType() { return hasDestinationType; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() { return destinationType_; }
+      public boolean hasDestinationType() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() {
+        return destinationType_;
+      }
       
       // required .sapo_broker.Atom.BrokerMessage message = 4;
       public static final int MESSAGE_FIELD_NUMBER = 4;
-      private boolean hasMessage;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage message_;
-      public boolean hasMessage() { return hasMessage; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage getMessage() { return message_; }
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage getMessage() {
+        return message_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder getMessageOrBuilder() {
+        return message_;
+      }
       
       private void initFields() {
+        destination_ = "";
+        subscription_ = "";
         destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
         message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasDestination) return false;
-        if (!hasSubscription) return false;
-        if (!hasDestinationType) return false;
-        if (!hasMessage) return false;
-        if (!getMessage().isInitialized()) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasDestination()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasSubscription()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasDestinationType()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasMessage()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!getMessage().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasDestination()) {
-          output.writeString(1, getDestination());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getDestinationBytes());
         }
-        if (hasSubscription()) {
-          output.writeString(2, getSubscription());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getSubscriptionBytes());
         }
-        if (hasDestinationType()) {
-          output.writeEnum(3, getDestinationType().getNumber());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeEnum(3, destinationType_.getNumber());
         }
-        if (hasMessage()) {
-          output.writeMessage(4, getMessage());
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeMessage(4, message_);
         }
         getUnknownFields().writeTo(output);
       }
@@ -3506,25 +5219,30 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasDestination()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getDestination());
+            .computeBytesSize(1, getDestinationBytes());
         }
-        if (hasSubscription()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(2, getSubscription());
+            .computeBytesSize(2, getSubscriptionBytes());
         }
-        if (hasDestinationType()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(3, getDestinationType().getNumber());
+            .computeEnumSize(3, destinationType_.getNumber());
         }
-        if (hasMessage()) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(4, getMessage());
+            .computeMessageSize(4, message_);
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Notification parseFrom(
@@ -3601,34 +5319,62 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Notification result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Notification();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.NotificationOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Notification_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Notification internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Notification_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            getMessageFieldBuilder();
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
+          super.clear();
+          destination_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          subscription_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          if (messageBuilder_ == null) {
+            message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
+          } else {
+            messageBuilder_.clear();
           }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Notification();
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -3640,33 +5386,51 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Notification build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Notification result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Notification buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Notification result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Notification buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Notification result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Notification(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Notification returnMe = result;
-          result = null;
-          return returnMe;
+          result.destination_ = destination_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.subscription_ = subscription_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.destinationType_ = destinationType_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          if (messageBuilder_ == null) {
+            result.message_ = message_;
+          } else {
+            result.message_ = messageBuilder_.build();
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3696,6 +5460,30 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasDestination()) {
+            
+            return false;
+          }
+          if (!hasSubscription()) {
+            
+            return false;
+          }
+          if (!hasDestinationType()) {
+            
+            return false;
+          }
+          if (!hasMessage()) {
+            
+            return false;
+          }
+          if (!getMessage().isInitialized()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3708,21 +5496,25 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setDestination(input.readString());
+                bitField0_ |= 0x00000001;
+                destination_ = input.readBytes();
                 break;
               }
               case 18: {
-                setSubscription(input.readString());
+                bitField0_ |= 0x00000002;
+                subscription_ = input.readBytes();
                 break;
               }
               case 24: {
@@ -3731,7 +5523,8 @@ final class PBMessage {
                 if (value == null) {
                   unknownFields.mergeVarintField(3, rawValue);
                 } else {
-                  setDestinationType(value);
+                  bitField0_ |= 0x00000004;
+                  destinationType_ = value;
                 }
                 break;
               }
@@ -3748,105 +5541,192 @@ final class PBMessage {
           }
         }
         
+        private int bitField0_;
         
         // required string destination = 1;
+        private Object destination_ = "";
         public boolean hasDestination() {
-          return result.hasDestination();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getDestination() {
-          return result.getDestination();
+        public String getDestination() {
+          Object ref = destination_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            destination_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setDestination(java.lang.String value) {
+        public Builder setDestination(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasDestination = true;
-          result.destination_ = value;
+  bitField0_ |= 0x00000001;
+          destination_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestination() {
-          result.hasDestination = false;
-          result.destination_ = getDefaultInstance().getDestination();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          destination_ = getDefaultInstance().getDestination();
+          onChanged();
           return this;
+        }
+        void setDestination(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          destination_ = value;
+          onChanged();
         }
         
         // required string subscription = 2;
+        private Object subscription_ = "";
         public boolean hasSubscription() {
-          return result.hasSubscription();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
-        public java.lang.String getSubscription() {
-          return result.getSubscription();
+        public String getSubscription() {
+          Object ref = subscription_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            subscription_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setSubscription(java.lang.String value) {
+        public Builder setSubscription(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasSubscription = true;
-          result.subscription_ = value;
+  bitField0_ |= 0x00000002;
+          subscription_ = value;
+          onChanged();
           return this;
         }
         public Builder clearSubscription() {
-          result.hasSubscription = false;
-          result.subscription_ = getDefaultInstance().getSubscription();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          subscription_ = getDefaultInstance().getSubscription();
+          onChanged();
           return this;
+        }
+        void setSubscription(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          subscription_ = value;
+          onChanged();
         }
         
         // required .sapo_broker.Atom.DestinationType destination_type = 3;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
         public boolean hasDestinationType() {
-          return result.hasDestinationType();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType getDestinationType() {
-          return result.getDestinationType();
+          return destinationType_;
         }
         public Builder setDestinationType(pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType value) {
           if (value == null) {
             throw new NullPointerException();
           }
-          result.hasDestinationType = true;
-          result.destinationType_ = value;
+          bitField0_ |= 0x00000004;
+          destinationType_ = value;
+          onChanged();
           return this;
         }
         public Builder clearDestinationType() {
-          result.hasDestinationType = false;
-          result.destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          destinationType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.DestinationType.TOPIC;
+          onChanged();
           return this;
         }
         
         // required .sapo_broker.Atom.BrokerMessage message = 4;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder> messageBuilder_;
         public boolean hasMessage() {
-          return result.hasMessage();
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage getMessage() {
-          return result.getMessage();
+          if (messageBuilder_ == null) {
+            return message_;
+          } else {
+            return messageBuilder_.getMessage();
+          }
         }
         public Builder setMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (messageBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            message_ = value;
+            onChanged();
+          } else {
+            messageBuilder_.setMessage(value);
           }
-          result.hasMessage = true;
-          result.message_ = value;
+          bitField0_ |= 0x00000008;
           return this;
         }
-        public Builder setMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder builderForValue) {
-          result.hasMessage = true;
-          result.message_ = builderForValue.build();
+        public Builder setMessage(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder builderForValue) {
+          if (messageBuilder_ == null) {
+            message_ = builderForValue.build();
+            onChanged();
+          } else {
+            messageBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000008;
           return this;
         }
         public Builder mergeMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage value) {
-          if (result.hasMessage() &&
-              result.message_ != pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance()) {
-            result.message_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.newBuilder(result.message_).mergeFrom(value).buildPartial();
+          if (messageBuilder_ == null) {
+            if (((bitField0_ & 0x00000008) == 0x00000008) &&
+                message_ != pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance()) {
+              message_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.newBuilder(message_).mergeFrom(value).buildPartial();
+            } else {
+              message_ = value;
+            }
+            onChanged();
           } else {
-            result.message_ = value;
+            messageBuilder_.mergeFrom(value);
           }
-          result.hasMessage = true;
+          bitField0_ |= 0x00000008;
           return this;
         }
         public Builder clearMessage() {
-          result.hasMessage = false;
-          result.message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
+          if (messageBuilder_ == null) {
+            message_ = pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.getDefaultInstance();
+            onChanged();
+          } else {
+            messageBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder getMessageBuilder() {
+          bitField0_ |= 0x00000008;
+          onChanged();
+          return getMessageFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder getMessageOrBuilder() {
+          if (messageBuilder_ != null) {
+            return messageBuilder_.getMessageOrBuilder();
+          } else {
+            return message_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder> 
+            getMessageFieldBuilder() {
+          if (messageBuilder_ == null) {
+            messageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessageOrBuilder>(
+                    message_,
+                    getParentForChildren(),
+                    isClean());
+            message_ = null;
+          }
+          return messageBuilder_;
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Notification)
@@ -3854,18 +5734,37 @@ final class PBMessage {
       
       static {
         defaultInstance = new Notification(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Notification)
     }
     
+    public interface FaultOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+      
+      // required string fault_code = 2;
+      boolean hasFaultCode();
+      String getFaultCode();
+      
+      // required string fault_message = 3;
+      boolean hasFaultMessage();
+      String getFaultMessage();
+      
+      // optional string fault_detail = 4;
+      boolean hasFaultDetail();
+      String getFaultDetail();
+    }
     public static final class Fault extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements FaultOrBuilder {
       // Use Fault.newBuilder() to construct.
-      private Fault() {
-        initFields();
+      private Fault(Builder builder) {
+        super(builder);
       }
       private Fault(boolean noInit) {}
       
@@ -3888,56 +5787,172 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Fault_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // optional string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string fault_code = 2;
       public static final int FAULT_CODE_FIELD_NUMBER = 2;
-      private boolean hasFaultCode;
-      private java.lang.String faultCode_ = "";
-      public boolean hasFaultCode() { return hasFaultCode; }
-      public java.lang.String getFaultCode() { return faultCode_; }
+      private Object faultCode_;
+      public boolean hasFaultCode() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getFaultCode() {
+        Object ref = faultCode_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            faultCode_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getFaultCodeBytes() {
+        Object ref = faultCode_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          faultCode_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string fault_message = 3;
       public static final int FAULT_MESSAGE_FIELD_NUMBER = 3;
-      private boolean hasFaultMessage;
-      private java.lang.String faultMessage_ = "";
-      public boolean hasFaultMessage() { return hasFaultMessage; }
-      public java.lang.String getFaultMessage() { return faultMessage_; }
+      private Object faultMessage_;
+      public boolean hasFaultMessage() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public String getFaultMessage() {
+        Object ref = faultMessage_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            faultMessage_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getFaultMessageBytes() {
+        Object ref = faultMessage_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          faultMessage_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // optional string fault_detail = 4;
       public static final int FAULT_DETAIL_FIELD_NUMBER = 4;
-      private boolean hasFaultDetail;
-      private java.lang.String faultDetail_ = "";
-      public boolean hasFaultDetail() { return hasFaultDetail; }
-      public java.lang.String getFaultDetail() { return faultDetail_; }
+      private Object faultDetail_;
+      public boolean hasFaultDetail() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public String getFaultDetail() {
+        Object ref = faultDetail_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            faultDetail_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getFaultDetailBytes() {
+        Object ref = faultDetail_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          faultDetail_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       private void initFields() {
+        actionId_ = "";
+        faultCode_ = "";
+        faultMessage_ = "";
+        faultDetail_ = "";
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasFaultCode) return false;
-        if (!hasFaultMessage) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasFaultCode()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasFaultMessage()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
-        if (hasFaultCode()) {
-          output.writeString(2, getFaultCode());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getFaultCodeBytes());
         }
-        if (hasFaultMessage()) {
-          output.writeString(3, getFaultMessage());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeBytes(3, getFaultMessageBytes());
         }
-        if (hasFaultDetail()) {
-          output.writeString(4, getFaultDetail());
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeBytes(4, getFaultDetailBytes());
         }
         getUnknownFields().writeTo(output);
       }
@@ -3948,25 +5963,30 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
-        if (hasFaultCode()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(2, getFaultCode());
+            .computeBytesSize(2, getFaultCodeBytes());
         }
-        if (hasFaultMessage()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(3, getFaultMessage());
+            .computeBytesSize(3, getFaultMessageBytes());
         }
-        if (hasFaultDetail()) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(4, getFaultDetail());
+            .computeBytesSize(4, getFaultDetailBytes());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Fault parseFrom(
@@ -4043,34 +6063,57 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Fault result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Fault();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.FaultOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Fault_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Fault internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Fault_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Fault();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          faultCode_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          faultMessage_ = "";
+          bitField0_ = (bitField0_ & ~0x00000004);
+          faultDetail_ = "";
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -4082,33 +6125,47 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Fault build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Fault result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Fault buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Fault result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Fault buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Fault result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Fault(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Fault returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.faultCode_ = faultCode_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.faultMessage_ = faultMessage_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.faultDetail_ = faultDetail_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4138,6 +6195,18 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasFaultCode()) {
+            
+            return false;
+          }
+          if (!hasFaultMessage()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4150,118 +6219,185 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
               case 18: {
-                setFaultCode(input.readString());
+                bitField0_ |= 0x00000002;
+                faultCode_ = input.readBytes();
                 break;
               }
               case 26: {
-                setFaultMessage(input.readString());
+                bitField0_ |= 0x00000004;
+                faultMessage_ = input.readBytes();
                 break;
               }
               case 34: {
-                setFaultDetail(input.readString());
+                bitField0_ |= 0x00000008;
+                faultDetail_ = input.readBytes();
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // optional string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // required string fault_code = 2;
+        private Object faultCode_ = "";
         public boolean hasFaultCode() {
-          return result.hasFaultCode();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
-        public java.lang.String getFaultCode() {
-          return result.getFaultCode();
+        public String getFaultCode() {
+          Object ref = faultCode_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            faultCode_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setFaultCode(java.lang.String value) {
+        public Builder setFaultCode(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasFaultCode = true;
-          result.faultCode_ = value;
+  bitField0_ |= 0x00000002;
+          faultCode_ = value;
+          onChanged();
           return this;
         }
         public Builder clearFaultCode() {
-          result.hasFaultCode = false;
-          result.faultCode_ = getDefaultInstance().getFaultCode();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          faultCode_ = getDefaultInstance().getFaultCode();
+          onChanged();
           return this;
+        }
+        void setFaultCode(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          faultCode_ = value;
+          onChanged();
         }
         
         // required string fault_message = 3;
+        private Object faultMessage_ = "";
         public boolean hasFaultMessage() {
-          return result.hasFaultMessage();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
-        public java.lang.String getFaultMessage() {
-          return result.getFaultMessage();
+        public String getFaultMessage() {
+          Object ref = faultMessage_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            faultMessage_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setFaultMessage(java.lang.String value) {
+        public Builder setFaultMessage(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasFaultMessage = true;
-          result.faultMessage_ = value;
+  bitField0_ |= 0x00000004;
+          faultMessage_ = value;
+          onChanged();
           return this;
         }
         public Builder clearFaultMessage() {
-          result.hasFaultMessage = false;
-          result.faultMessage_ = getDefaultInstance().getFaultMessage();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          faultMessage_ = getDefaultInstance().getFaultMessage();
+          onChanged();
           return this;
+        }
+        void setFaultMessage(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000004;
+          faultMessage_ = value;
+          onChanged();
         }
         
         // optional string fault_detail = 4;
+        private Object faultDetail_ = "";
         public boolean hasFaultDetail() {
-          return result.hasFaultDetail();
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
-        public java.lang.String getFaultDetail() {
-          return result.getFaultDetail();
+        public String getFaultDetail() {
+          Object ref = faultDetail_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            faultDetail_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setFaultDetail(java.lang.String value) {
+        public Builder setFaultDetail(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasFaultDetail = true;
-          result.faultDetail_ = value;
+  bitField0_ |= 0x00000008;
+          faultDetail_ = value;
+          onChanged();
           return this;
         }
         public Builder clearFaultDetail() {
-          result.hasFaultDetail = false;
-          result.faultDetail_ = getDefaultInstance().getFaultDetail();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          faultDetail_ = getDefaultInstance().getFaultDetail();
+          onChanged();
           return this;
+        }
+        void setFaultDetail(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000008;
+          faultDetail_ = value;
+          onChanged();
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Fault)
@@ -4269,18 +6405,25 @@ final class PBMessage {
       
       static {
         defaultInstance = new Fault(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Fault)
     }
     
+    public interface PingOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+    }
     public static final class Ping extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements PingOrBuilder {
       // Use Ping.newBuilder() to construct.
-      private Ping() {
-        initFields();
+      private Ping(Builder builder) {
+        super(builder);
       }
       private Ping(boolean noInit) {}
       
@@ -4303,25 +6446,60 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Ping_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // required string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       private void initFields() {
+        actionId_ = "";
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasActionId) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasActionId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
         getUnknownFields().writeTo(output);
       }
@@ -4332,13 +6510,18 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Ping parseFrom(
@@ -4415,34 +6598,51 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Ping result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Ping();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.PingOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Ping_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Ping internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Ping_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Ping();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -4454,33 +6654,35 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Ping build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Ping result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Ping buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Ping result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Ping buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Ping result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Ping(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Ping returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4501,6 +6703,14 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasActionId()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4513,43 +6723,62 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // required string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Ping)
@@ -4557,18 +6786,25 @@ final class PBMessage {
       
       static {
         defaultInstance = new Ping(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Ping)
     }
     
+    public interface PongOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+    }
     public static final class Pong extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements PongOrBuilder {
       // Use Pong.newBuilder() to construct.
-      private Pong() {
-        initFields();
+      private Pong(Builder builder) {
+        super(builder);
       }
       private Pong(boolean noInit) {}
       
@@ -4591,25 +6827,60 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Pong_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // required string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       private void initFields() {
+        actionId_ = "";
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasActionId) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasActionId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
         getUnknownFields().writeTo(output);
       }
@@ -4620,13 +6891,18 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Pong parseFrom(
@@ -4703,34 +6979,51 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Pong result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Pong();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.PongOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Pong_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Pong internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Pong_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Pong();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -4742,33 +7035,35 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Pong build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Pong result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Pong buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Pong result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Pong buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Pong result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Pong(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Pong returnMe = result;
-          result = null;
-          return returnMe;
+          result.actionId_ = actionId_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4789,6 +7084,14 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasActionId()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4801,43 +7104,62 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // required string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Pong)
@@ -4845,18 +7167,42 @@ final class PBMessage {
       
       static {
         defaultInstance = new Pong(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Pong)
     }
     
+    public interface AuthenticationOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string action_id = 1;
+      boolean hasActionId();
+      String getActionId();
+      
+      // required string authentication_type = 2;
+      boolean hasAuthenticationType();
+      String getAuthenticationType();
+      
+      // required bytes token = 3;
+      boolean hasToken();
+      com.google.protobuf.ByteString getToken();
+      
+      // optional string user_id = 4;
+      boolean hasUserId();
+      String getUserId();
+      
+      // repeated string role = 5;
+      java.util.List<String> getRoleList();
+      int getRoleCount();
+      String getRole(int index);
+    }
     public static final class Authentication extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements AuthenticationOrBuilder {
       // Use Authentication.newBuilder() to construct.
-      private Authentication() {
-        initFields();
+      private Authentication(Builder builder) {
+        super(builder);
       }
       private Authentication(boolean noInit) {}
       
@@ -4879,71 +7225,168 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Authentication_fieldAccessorTable;
       }
       
+      private int bitField0_;
       // optional string action_id = 1;
       public static final int ACTION_ID_FIELD_NUMBER = 1;
-      private boolean hasActionId;
-      private java.lang.String actionId_ = "";
-      public boolean hasActionId() { return hasActionId; }
-      public java.lang.String getActionId() { return actionId_; }
+      private Object actionId_;
+      public boolean hasActionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getActionId() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            actionId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getActionIdBytes() {
+        Object ref = actionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          actionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required string authentication_type = 2;
       public static final int AUTHENTICATION_TYPE_FIELD_NUMBER = 2;
-      private boolean hasAuthenticationType;
-      private java.lang.String authenticationType_ = "";
-      public boolean hasAuthenticationType() { return hasAuthenticationType; }
-      public java.lang.String getAuthenticationType() { return authenticationType_; }
+      private Object authenticationType_;
+      public boolean hasAuthenticationType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getAuthenticationType() {
+        Object ref = authenticationType_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            authenticationType_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getAuthenticationTypeBytes() {
+        Object ref = authenticationType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          authenticationType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // required bytes token = 3;
       public static final int TOKEN_FIELD_NUMBER = 3;
-      private boolean hasToken;
-      private com.google.protobuf.ByteString token_ = com.google.protobuf.ByteString.EMPTY;
-      public boolean hasToken() { return hasToken; }
-      public com.google.protobuf.ByteString getToken() { return token_; }
+      private com.google.protobuf.ByteString token_;
+      public boolean hasToken() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public com.google.protobuf.ByteString getToken() {
+        return token_;
+      }
       
       // optional string user_id = 4;
       public static final int USER_ID_FIELD_NUMBER = 4;
-      private boolean hasUserId;
-      private java.lang.String userId_ = "";
-      public boolean hasUserId() { return hasUserId; }
-      public java.lang.String getUserId() { return userId_; }
+      private Object userId_;
+      public boolean hasUserId() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public String getUserId() {
+        Object ref = userId_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            userId_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getUserIdBytes() {
+        Object ref = userId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          userId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
       
       // repeated string role = 5;
       public static final int ROLE_FIELD_NUMBER = 5;
-      private java.util.List<java.lang.String> role_ =
-        java.util.Collections.emptyList();
-      public java.util.List<java.lang.String> getRoleList() {
+      private com.google.protobuf.LazyStringList role_;
+      public java.util.List<String>
+          getRoleList() {
         return role_;
       }
-      public int getRoleCount() { return role_.size(); }
-      public java.lang.String getRole(int index) {
+      public int getRoleCount() {
+        return role_.size();
+      }
+      public String getRole(int index) {
         return role_.get(index);
       }
       
       private void initFields() {
+        actionId_ = "";
+        authenticationType_ = "";
+        token_ = com.google.protobuf.ByteString.EMPTY;
+        userId_ = "";
+        role_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasAuthenticationType) return false;
-        if (!hasToken) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasAuthenticationType()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasToken()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasActionId()) {
-          output.writeString(1, getActionId());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getActionIdBytes());
         }
-        if (hasAuthenticationType()) {
-          output.writeString(2, getAuthenticationType());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getAuthenticationTypeBytes());
         }
-        if (hasToken()) {
-          output.writeBytes(3, getToken());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeBytes(3, token_);
         }
-        if (hasUserId()) {
-          output.writeString(4, getUserId());
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeBytes(4, getUserIdBytes());
         }
-        for (java.lang.String element : getRoleList()) {
-          output.writeString(5, element);
+        for (int i = 0; i < role_.size(); i++) {
+          output.writeBytes(5, role_.getByteString(i));
         }
         getUnknownFields().writeTo(output);
       }
@@ -4954,27 +7397,27 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasActionId()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(1, getActionId());
+            .computeBytesSize(1, getActionIdBytes());
         }
-        if (hasAuthenticationType()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(2, getAuthenticationType());
+            .computeBytesSize(2, getAuthenticationTypeBytes());
         }
-        if (hasToken()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(3, getToken());
+            .computeBytesSize(3, token_);
         }
-        if (hasUserId()) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeStringSize(4, getUserId());
+            .computeBytesSize(4, getUserIdBytes());
         }
         {
           int dataSize = 0;
-          for (java.lang.String element : getRoleList()) {
+          for (int i = 0; i < role_.size(); i++) {
             dataSize += com.google.protobuf.CodedOutputStream
-              .computeStringSizeNoTag(element);
+              .computeBytesSizeNoTag(role_.getByteString(i));
           }
           size += dataSize;
           size += 1 * getRoleList().size();
@@ -4982,6 +7425,11 @@ final class PBMessage {
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication parseFrom(
@@ -5058,34 +7506,59 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.AuthenticationOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Authentication_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Authentication_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
-          }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication();
+          super.clear();
+          actionId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          authenticationType_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          token_ = com.google.protobuf.ByteString.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          userId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000008);
+          role_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000010);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -5097,37 +7570,53 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          if (result.role_ != java.util.Collections.EMPTY_LIST) {
-            result.role_ =
-              java.util.Collections.unmodifiableList(result.role_);
+          result.actionId_ = actionId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication returnMe = result;
-          result = null;
-          return returnMe;
+          result.authenticationType_ = authenticationType_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.token_ = token_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.userId_ = userId_;
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            role_ = new com.google.protobuf.UnmodifiableLazyStringList(
+                role_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.role_ = role_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5154,13 +7643,29 @@ final class PBMessage {
             setUserId(other.getUserId());
           }
           if (!other.role_.isEmpty()) {
-            if (result.role_.isEmpty()) {
-              result.role_ = new java.util.ArrayList<java.lang.String>();
+            if (role_.isEmpty()) {
+              role_ = other.role_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureRoleIsMutable();
+              role_.addAll(other.role_);
             }
-            result.role_.addAll(other.role_);
+            onChanged();
           }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasAuthenticationType()) {
+            
+            return false;
+          }
+          if (!hasToken()) {
+            
+            return false;
+          }
+          return true;
         }
         
         public Builder mergeFrom(
@@ -5175,162 +7680,234 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
               }
               case 10: {
-                setActionId(input.readString());
+                bitField0_ |= 0x00000001;
+                actionId_ = input.readBytes();
                 break;
               }
               case 18: {
-                setAuthenticationType(input.readString());
+                bitField0_ |= 0x00000002;
+                authenticationType_ = input.readBytes();
                 break;
               }
               case 26: {
-                setToken(input.readBytes());
+                bitField0_ |= 0x00000004;
+                token_ = input.readBytes();
                 break;
               }
               case 34: {
-                setUserId(input.readString());
+                bitField0_ |= 0x00000008;
+                userId_ = input.readBytes();
                 break;
               }
               case 42: {
-                addRole(input.readString());
+                ensureRoleIsMutable();
+                role_.add(input.readBytes());
                 break;
               }
             }
           }
         }
         
+        private int bitField0_;
         
         // optional string action_id = 1;
+        private Object actionId_ = "";
         public boolean hasActionId() {
-          return result.hasActionId();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        public java.lang.String getActionId() {
-          return result.getActionId();
+        public String getActionId() {
+          Object ref = actionId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            actionId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setActionId(java.lang.String value) {
+        public Builder setActionId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasActionId = true;
-          result.actionId_ = value;
+  bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionId() {
-          result.hasActionId = false;
-          result.actionId_ = getDefaultInstance().getActionId();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          actionId_ = getDefaultInstance().getActionId();
+          onChanged();
           return this;
+        }
+        void setActionId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          actionId_ = value;
+          onChanged();
         }
         
         // required string authentication_type = 2;
+        private Object authenticationType_ = "";
         public boolean hasAuthenticationType() {
-          return result.hasAuthenticationType();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
-        public java.lang.String getAuthenticationType() {
-          return result.getAuthenticationType();
+        public String getAuthenticationType() {
+          Object ref = authenticationType_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            authenticationType_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setAuthenticationType(java.lang.String value) {
+        public Builder setAuthenticationType(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasAuthenticationType = true;
-          result.authenticationType_ = value;
+  bitField0_ |= 0x00000002;
+          authenticationType_ = value;
+          onChanged();
           return this;
         }
         public Builder clearAuthenticationType() {
-          result.hasAuthenticationType = false;
-          result.authenticationType_ = getDefaultInstance().getAuthenticationType();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          authenticationType_ = getDefaultInstance().getAuthenticationType();
+          onChanged();
           return this;
+        }
+        void setAuthenticationType(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          authenticationType_ = value;
+          onChanged();
         }
         
         // required bytes token = 3;
+        private com.google.protobuf.ByteString token_ = com.google.protobuf.ByteString.EMPTY;
         public boolean hasToken() {
-          return result.hasToken();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         public com.google.protobuf.ByteString getToken() {
-          return result.getToken();
+          return token_;
         }
         public Builder setToken(com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasToken = true;
-          result.token_ = value;
+  bitField0_ |= 0x00000004;
+          token_ = value;
+          onChanged();
           return this;
         }
         public Builder clearToken() {
-          result.hasToken = false;
-          result.token_ = getDefaultInstance().getToken();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          token_ = getDefaultInstance().getToken();
+          onChanged();
           return this;
         }
         
         // optional string user_id = 4;
+        private Object userId_ = "";
         public boolean hasUserId() {
-          return result.hasUserId();
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
-        public java.lang.String getUserId() {
-          return result.getUserId();
+        public String getUserId() {
+          Object ref = userId_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            userId_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
         }
-        public Builder setUserId(java.lang.String value) {
+        public Builder setUserId(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.hasUserId = true;
-          result.userId_ = value;
+  bitField0_ |= 0x00000008;
+          userId_ = value;
+          onChanged();
           return this;
         }
         public Builder clearUserId() {
-          result.hasUserId = false;
-          result.userId_ = getDefaultInstance().getUserId();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          userId_ = getDefaultInstance().getUserId();
+          onChanged();
           return this;
+        }
+        void setUserId(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000008;
+          userId_ = value;
+          onChanged();
         }
         
         // repeated string role = 5;
-        public java.util.List<java.lang.String> getRoleList() {
-          return java.util.Collections.unmodifiableList(result.role_);
+        private com.google.protobuf.LazyStringList role_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        private void ensureRoleIsMutable() {
+          if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+            role_ = new com.google.protobuf.LazyStringArrayList(role_);
+            bitField0_ |= 0x00000010;
+           }
+        }
+        public java.util.List<String>
+            getRoleList() {
+          return java.util.Collections.unmodifiableList(role_);
         }
         public int getRoleCount() {
-          return result.getRoleCount();
+          return role_.size();
         }
-        public java.lang.String getRole(int index) {
-          return result.getRole(index);
+        public String getRole(int index) {
+          return role_.get(index);
         }
-        public Builder setRole(int index, java.lang.String value) {
+        public Builder setRole(
+            int index, String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  result.role_.set(index, value);
+  ensureRoleIsMutable();
+          role_.set(index, value);
+          onChanged();
           return this;
         }
-        public Builder addRole(java.lang.String value) {
+        public Builder addRole(String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  if (result.role_.isEmpty()) {
-            result.role_ = new java.util.ArrayList<java.lang.String>();
-          }
-          result.role_.add(value);
+  ensureRoleIsMutable();
+          role_.add(value);
+          onChanged();
           return this;
         }
         public Builder addAllRole(
-            java.lang.Iterable<? extends java.lang.String> values) {
-          if (result.role_.isEmpty()) {
-            result.role_ = new java.util.ArrayList<java.lang.String>();
-          }
-          super.addAll(values, result.role_);
+            java.lang.Iterable<String> values) {
+          ensureRoleIsMutable();
+          super.addAll(values, role_);
+          onChanged();
           return this;
         }
         public Builder clearRole() {
-          result.role_ = java.util.Collections.emptyList();
+          role_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
           return this;
+        }
+        void addRole(com.google.protobuf.ByteString value) {
+          ensureRoleIsMutable();
+          role_.add(value);
+          onChanged();
         }
         
         // @@protoc_insertion_point(builder_scope:sapo_broker.Atom.Authentication)
@@ -5338,18 +7915,80 @@ final class PBMessage {
       
       static {
         defaultInstance = new Authentication(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Authentication)
     }
     
+    public interface ActionOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional .sapo_broker.Atom.Publish publish = 1;
+      boolean hasPublish();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Publish getPublish();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.PublishOrBuilder getPublishOrBuilder();
+      
+      // optional .sapo_broker.Atom.Poll poll = 2;
+      boolean hasPoll();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Poll getPoll();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.PollOrBuilder getPollOrBuilder();
+      
+      // optional .sapo_broker.Atom.Accepted accepted = 3;
+      boolean hasAccepted();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted getAccepted();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.AcceptedOrBuilder getAcceptedOrBuilder();
+      
+      // optional .sapo_broker.Atom.AcknowledgeMessage ack_message = 4;
+      boolean hasAckMessage();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage getAckMessage();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessageOrBuilder getAckMessageOrBuilder();
+      
+      // optional .sapo_broker.Atom.Subscribe subscribe = 5;
+      boolean hasSubscribe();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe getSubscribe();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.SubscribeOrBuilder getSubscribeOrBuilder();
+      
+      // optional .sapo_broker.Atom.Unsubscribe unsubscribe = 6;
+      boolean hasUnsubscribe();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe getUnsubscribe();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.UnsubscribeOrBuilder getUnsubscribeOrBuilder();
+      
+      // optional .sapo_broker.Atom.Notification notification = 7;
+      boolean hasNotification();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Notification getNotification();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.NotificationOrBuilder getNotificationOrBuilder();
+      
+      // optional .sapo_broker.Atom.Fault fault = 8;
+      boolean hasFault();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Fault getFault();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.FaultOrBuilder getFaultOrBuilder();
+      
+      // optional .sapo_broker.Atom.Ping ping = 9;
+      boolean hasPing();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Ping getPing();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.PingOrBuilder getPingOrBuilder();
+      
+      // optional .sapo_broker.Atom.Pong pong = 10;
+      boolean hasPong();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Pong getPong();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.PongOrBuilder getPongOrBuilder();
+      
+      // optional .sapo_broker.Atom.Authentication auth = 11;
+      boolean hasAuth();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication getAuth();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.AuthenticationOrBuilder getAuthOrBuilder();
+      
+      // required .sapo_broker.Atom.Action.ActionType action_type = 12;
+      boolean hasActionType();
+      pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType getActionType();
+    }
     public static final class Action extends
-        com.google.protobuf.GeneratedMessage {
+        com.google.protobuf.GeneratedMessage
+        implements ActionOrBuilder {
       // Use Action.newBuilder() to construct.
-      private Action() {
-        initFields();
+      private Action(Builder builder) {
+        super(builder);
       }
       private Action(boolean noInit) {}
       
@@ -5387,6 +8026,18 @@ final class PBMessage {
         AUTH(10, 10),
         ;
         
+        public static final int PUBLISH_VALUE = 0;
+        public static final int POLL_VALUE = 1;
+        public static final int ACCEPTED_VALUE = 2;
+        public static final int ACKNOWLEDGE_MESSAGE_VALUE = 3;
+        public static final int SUBSCRIBE_VALUE = 4;
+        public static final int UNSUBSCRIBE_VALUE = 5;
+        public static final int NOTIFICATION_VALUE = 6;
+        public static final int FAULT_VALUE = 7;
+        public static final int PING_VALUE = 8;
+        public static final int PONG_VALUE = 9;
+        public static final int AUTH_VALUE = 10;
+        
         
         public final int getNumber() { return value; }
         
@@ -5415,8 +8066,8 @@ final class PBMessage {
             internalValueMap =
               new com.google.protobuf.Internal.EnumLiteMap<ActionType>() {
                 public ActionType findValueByNumber(int number) {
-                  return ActionType.valueOf(number)
-        ;        }
+                  return ActionType.valueOf(number);
+                }
               };
         
         public final com.google.protobuf.Descriptors.EnumValueDescriptor
@@ -5435,6 +8086,7 @@ final class PBMessage {
         private static final ActionType[] VALUES = {
           PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE_MESSAGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH, 
         };
+        
         public static ActionType valueOf(
             com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
           if (desc.getType() != getDescriptor()) {
@@ -5443,103 +8095,171 @@ final class PBMessage {
           }
           return VALUES[desc.getIndex()];
         }
+        
         private final int index;
         private final int value;
+        
         private ActionType(int index, int value) {
           this.index = index;
           this.value = value;
         }
         
-        static {
-          pt.com.broker.codec.protobuf.PBMessage.getDescriptor();
-        }
-        
         // @@protoc_insertion_point(enum_scope:sapo_broker.Atom.Action.ActionType)
       }
       
+      private int bitField0_;
       // optional .sapo_broker.Atom.Publish publish = 1;
       public static final int PUBLISH_FIELD_NUMBER = 1;
-      private boolean hasPublish;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Publish publish_;
-      public boolean hasPublish() { return hasPublish; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Publish getPublish() { return publish_; }
+      public boolean hasPublish() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Publish getPublish() {
+        return publish_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.PublishOrBuilder getPublishOrBuilder() {
+        return publish_;
+      }
       
       // optional .sapo_broker.Atom.Poll poll = 2;
       public static final int POLL_FIELD_NUMBER = 2;
-      private boolean hasPoll;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Poll poll_;
-      public boolean hasPoll() { return hasPoll; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Poll getPoll() { return poll_; }
+      public boolean hasPoll() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Poll getPoll() {
+        return poll_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.PollOrBuilder getPollOrBuilder() {
+        return poll_;
+      }
       
       // optional .sapo_broker.Atom.Accepted accepted = 3;
       public static final int ACCEPTED_FIELD_NUMBER = 3;
-      private boolean hasAccepted;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted accepted_;
-      public boolean hasAccepted() { return hasAccepted; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted getAccepted() { return accepted_; }
+      public boolean hasAccepted() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted getAccepted() {
+        return accepted_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.AcceptedOrBuilder getAcceptedOrBuilder() {
+        return accepted_;
+      }
       
       // optional .sapo_broker.Atom.AcknowledgeMessage ack_message = 4;
       public static final int ACK_MESSAGE_FIELD_NUMBER = 4;
-      private boolean hasAckMessage;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage ackMessage_;
-      public boolean hasAckMessage() { return hasAckMessage; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage getAckMessage() { return ackMessage_; }
+      public boolean hasAckMessage() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage getAckMessage() {
+        return ackMessage_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessageOrBuilder getAckMessageOrBuilder() {
+        return ackMessage_;
+      }
       
       // optional .sapo_broker.Atom.Subscribe subscribe = 5;
       public static final int SUBSCRIBE_FIELD_NUMBER = 5;
-      private boolean hasSubscribe;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe subscribe_;
-      public boolean hasSubscribe() { return hasSubscribe; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe getSubscribe() { return subscribe_; }
+      public boolean hasSubscribe() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe getSubscribe() {
+        return subscribe_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.SubscribeOrBuilder getSubscribeOrBuilder() {
+        return subscribe_;
+      }
       
       // optional .sapo_broker.Atom.Unsubscribe unsubscribe = 6;
       public static final int UNSUBSCRIBE_FIELD_NUMBER = 6;
-      private boolean hasUnsubscribe;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe unsubscribe_;
-      public boolean hasUnsubscribe() { return hasUnsubscribe; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe getUnsubscribe() { return unsubscribe_; }
+      public boolean hasUnsubscribe() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe getUnsubscribe() {
+        return unsubscribe_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.UnsubscribeOrBuilder getUnsubscribeOrBuilder() {
+        return unsubscribe_;
+      }
       
       // optional .sapo_broker.Atom.Notification notification = 7;
       public static final int NOTIFICATION_FIELD_NUMBER = 7;
-      private boolean hasNotification;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Notification notification_;
-      public boolean hasNotification() { return hasNotification; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Notification getNotification() { return notification_; }
+      public boolean hasNotification() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Notification getNotification() {
+        return notification_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.NotificationOrBuilder getNotificationOrBuilder() {
+        return notification_;
+      }
       
       // optional .sapo_broker.Atom.Fault fault = 8;
       public static final int FAULT_FIELD_NUMBER = 8;
-      private boolean hasFault;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Fault fault_;
-      public boolean hasFault() { return hasFault; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Fault getFault() { return fault_; }
+      public boolean hasFault() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Fault getFault() {
+        return fault_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.FaultOrBuilder getFaultOrBuilder() {
+        return fault_;
+      }
       
       // optional .sapo_broker.Atom.Ping ping = 9;
       public static final int PING_FIELD_NUMBER = 9;
-      private boolean hasPing;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Ping ping_;
-      public boolean hasPing() { return hasPing; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Ping getPing() { return ping_; }
+      public boolean hasPing() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Ping getPing() {
+        return ping_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.PingOrBuilder getPingOrBuilder() {
+        return ping_;
+      }
       
       // optional .sapo_broker.Atom.Pong pong = 10;
       public static final int PONG_FIELD_NUMBER = 10;
-      private boolean hasPong;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Pong pong_;
-      public boolean hasPong() { return hasPong; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Pong getPong() { return pong_; }
+      public boolean hasPong() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Pong getPong() {
+        return pong_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.PongOrBuilder getPongOrBuilder() {
+        return pong_;
+      }
       
       // optional .sapo_broker.Atom.Authentication auth = 11;
       public static final int AUTH_FIELD_NUMBER = 11;
-      private boolean hasAuth;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication auth_;
-      public boolean hasAuth() { return hasAuth; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication getAuth() { return auth_; }
+      public boolean hasAuth() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication getAuth() {
+        return auth_;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.AuthenticationOrBuilder getAuthOrBuilder() {
+        return auth_;
+      }
       
       // required .sapo_broker.Atom.Action.ActionType action_type = 12;
       public static final int ACTION_TYPE_FIELD_NUMBER = 12;
-      private boolean hasActionType;
       private pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType actionType_;
-      public boolean hasActionType() { return hasActionType; }
-      public pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType getActionType() { return actionType_; }
+      public boolean hasActionType() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType getActionType() {
+        return actionType_;
+      }
       
       private void initFields() {
         publish_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.getDefaultInstance();
@@ -5555,82 +8275,123 @@ final class PBMessage {
         auth_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.getDefaultInstance();
         actionType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType.PUBLISH;
       }
+      private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
-        if (!hasActionType) return false;
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasActionType()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
         if (hasPublish()) {
-          if (!getPublish().isInitialized()) return false;
+          if (!getPublish().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasPoll()) {
-          if (!getPoll().isInitialized()) return false;
+          if (!getPoll().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasAccepted()) {
-          if (!getAccepted().isInitialized()) return false;
+          if (!getAccepted().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasAckMessage()) {
-          if (!getAckMessage().isInitialized()) return false;
+          if (!getAckMessage().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasSubscribe()) {
-          if (!getSubscribe().isInitialized()) return false;
+          if (!getSubscribe().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasUnsubscribe()) {
-          if (!getUnsubscribe().isInitialized()) return false;
+          if (!getUnsubscribe().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasNotification()) {
-          if (!getNotification().isInitialized()) return false;
+          if (!getNotification().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasFault()) {
-          if (!getFault().isInitialized()) return false;
+          if (!getFault().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasPing()) {
-          if (!getPing().isInitialized()) return false;
+          if (!getPing().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasPong()) {
-          if (!getPong().isInitialized()) return false;
+          if (!getPong().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         if (hasAuth()) {
-          if (!getAuth().isInitialized()) return false;
+          if (!getAuth().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
+        memoizedIsInitialized = 1;
         return true;
       }
       
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         getSerializedSize();
-        if (hasPublish()) {
-          output.writeMessage(1, getPublish());
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeMessage(1, publish_);
         }
-        if (hasPoll()) {
-          output.writeMessage(2, getPoll());
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeMessage(2, poll_);
         }
-        if (hasAccepted()) {
-          output.writeMessage(3, getAccepted());
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeMessage(3, accepted_);
         }
-        if (hasAckMessage()) {
-          output.writeMessage(4, getAckMessage());
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeMessage(4, ackMessage_);
         }
-        if (hasSubscribe()) {
-          output.writeMessage(5, getSubscribe());
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          output.writeMessage(5, subscribe_);
         }
-        if (hasUnsubscribe()) {
-          output.writeMessage(6, getUnsubscribe());
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          output.writeMessage(6, unsubscribe_);
         }
-        if (hasNotification()) {
-          output.writeMessage(7, getNotification());
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          output.writeMessage(7, notification_);
         }
-        if (hasFault()) {
-          output.writeMessage(8, getFault());
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          output.writeMessage(8, fault_);
         }
-        if (hasPing()) {
-          output.writeMessage(9, getPing());
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          output.writeMessage(9, ping_);
         }
-        if (hasPong()) {
-          output.writeMessage(10, getPong());
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+          output.writeMessage(10, pong_);
         }
-        if (hasAuth()) {
-          output.writeMessage(11, getAuth());
+        if (((bitField0_ & 0x00000400) == 0x00000400)) {
+          output.writeMessage(11, auth_);
         }
-        if (hasActionType()) {
-          output.writeEnum(12, getActionType().getNumber());
+        if (((bitField0_ & 0x00000800) == 0x00000800)) {
+          output.writeEnum(12, actionType_.getNumber());
         }
         getUnknownFields().writeTo(output);
       }
@@ -5641,57 +8402,62 @@ final class PBMessage {
         if (size != -1) return size;
       
         size = 0;
-        if (hasPublish()) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(1, getPublish());
+            .computeMessageSize(1, publish_);
         }
-        if (hasPoll()) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(2, getPoll());
+            .computeMessageSize(2, poll_);
         }
-        if (hasAccepted()) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(3, getAccepted());
+            .computeMessageSize(3, accepted_);
         }
-        if (hasAckMessage()) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(4, getAckMessage());
+            .computeMessageSize(4, ackMessage_);
         }
-        if (hasSubscribe()) {
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(5, getSubscribe());
+            .computeMessageSize(5, subscribe_);
         }
-        if (hasUnsubscribe()) {
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(6, getUnsubscribe());
+            .computeMessageSize(6, unsubscribe_);
         }
-        if (hasNotification()) {
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(7, getNotification());
+            .computeMessageSize(7, notification_);
         }
-        if (hasFault()) {
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(8, getFault());
+            .computeMessageSize(8, fault_);
         }
-        if (hasPing()) {
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(9, getPing());
+            .computeMessageSize(9, ping_);
         }
-        if (hasPong()) {
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(10, getPong());
+            .computeMessageSize(10, pong_);
         }
-        if (hasAuth()) {
+        if (((bitField0_ & 0x00000400) == 0x00000400)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(11, getAuth());
+            .computeMessageSize(11, auth_);
         }
-        if (hasActionType()) {
+        if (((bitField0_ & 0x00000800) == 0x00000800)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(12, getActionType().getNumber());
+            .computeEnumSize(12, actionType_.getNumber());
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
         return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
       }
       
       public static pt.com.broker.codec.protobuf.PBMessage.Atom.Action parseFrom(
@@ -5768,34 +8534,128 @@ final class PBMessage {
       }
       public Builder toBuilder() { return newBuilder(this); }
       
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> {
-        private pt.com.broker.codec.protobuf.PBMessage.Atom.Action result;
-        
-        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Action.newBuilder()
-        private Builder() {}
-        
-        private static Builder create() {
-          Builder builder = new Builder();
-          builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Action();
-          return builder;
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements pt.com.broker.codec.protobuf.PBMessage.Atom.ActionOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Action_descriptor;
         }
         
-        protected pt.com.broker.codec.protobuf.PBMessage.Atom.Action internalGetResult() {
-          return result;
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_Action_fieldAccessorTable;
+        }
+        
+        // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.Action.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            getPublishFieldBuilder();
+            getPollFieldBuilder();
+            getAcceptedFieldBuilder();
+            getAckMessageFieldBuilder();
+            getSubscribeFieldBuilder();
+            getUnsubscribeFieldBuilder();
+            getNotificationFieldBuilder();
+            getFaultFieldBuilder();
+            getPingFieldBuilder();
+            getPongFieldBuilder();
+            getAuthFieldBuilder();
+          }
+        }
+        private static Builder create() {
+          return new Builder();
         }
         
         public Builder clear() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "Cannot call clear() after build().");
+          super.clear();
+          if (publishBuilder_ == null) {
+            publish_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.getDefaultInstance();
+          } else {
+            publishBuilder_.clear();
           }
-          result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Action();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          if (pollBuilder_ == null) {
+            poll_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.getDefaultInstance();
+          } else {
+            pollBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000002);
+          if (acceptedBuilder_ == null) {
+            accepted_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.getDefaultInstance();
+          } else {
+            acceptedBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000004);
+          if (ackMessageBuilder_ == null) {
+            ackMessage_ = pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.getDefaultInstance();
+          } else {
+            ackMessageBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000008);
+          if (subscribeBuilder_ == null) {
+            subscribe_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.getDefaultInstance();
+          } else {
+            subscribeBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000010);
+          if (unsubscribeBuilder_ == null) {
+            unsubscribe_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.getDefaultInstance();
+          } else {
+            unsubscribeBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000020);
+          if (notificationBuilder_ == null) {
+            notification_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.getDefaultInstance();
+          } else {
+            notificationBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000040);
+          if (faultBuilder_ == null) {
+            fault_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.getDefaultInstance();
+          } else {
+            faultBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000080);
+          if (pingBuilder_ == null) {
+            ping_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.getDefaultInstance();
+          } else {
+            pingBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000100);
+          if (pongBuilder_ == null) {
+            pong_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.getDefaultInstance();
+          } else {
+            pongBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000200);
+          if (authBuilder_ == null) {
+            auth_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.getDefaultInstance();
+          } else {
+            authBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000400);
+          actionType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType.PUBLISH;
+          bitField0_ = (bitField0_ & ~0x00000800);
           return this;
         }
         
         public Builder clone() {
-          return create().mergeFrom(result);
+          return create().mergeFrom(buildPartial());
         }
         
         public com.google.protobuf.Descriptors.Descriptor
@@ -5807,33 +8667,123 @@ final class PBMessage {
           return pt.com.broker.codec.protobuf.PBMessage.Atom.Action.getDefaultInstance();
         }
         
-        public boolean isInitialized() {
-          return result.isInitialized();
-        }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Action build() {
-          if (result != null && !isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Action result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
-          return buildPartial();
+          return result;
         }
         
         private pt.com.broker.codec.protobuf.PBMessage.Atom.Action buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          if (!isInitialized()) {
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Action result = buildPartial();
+          if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
           }
-          return buildPartial();
+          return result;
         }
         
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Action buildPartial() {
-          if (result == null) {
-            throw new IllegalStateException(
-              "build() has already been called on this Builder.");
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Action result = new pt.com.broker.codec.protobuf.PBMessage.Atom.Action(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
           }
-          pt.com.broker.codec.protobuf.PBMessage.Atom.Action returnMe = result;
-          result = null;
-          return returnMe;
+          if (publishBuilder_ == null) {
+            result.publish_ = publish_;
+          } else {
+            result.publish_ = publishBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          if (pollBuilder_ == null) {
+            result.poll_ = poll_;
+          } else {
+            result.poll_ = pollBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          if (acceptedBuilder_ == null) {
+            result.accepted_ = accepted_;
+          } else {
+            result.accepted_ = acceptedBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          if (ackMessageBuilder_ == null) {
+            result.ackMessage_ = ackMessage_;
+          } else {
+            result.ackMessage_ = ackMessageBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+            to_bitField0_ |= 0x00000010;
+          }
+          if (subscribeBuilder_ == null) {
+            result.subscribe_ = subscribe_;
+          } else {
+            result.subscribe_ = subscribeBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+            to_bitField0_ |= 0x00000020;
+          }
+          if (unsubscribeBuilder_ == null) {
+            result.unsubscribe_ = unsubscribe_;
+          } else {
+            result.unsubscribe_ = unsubscribeBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+            to_bitField0_ |= 0x00000040;
+          }
+          if (notificationBuilder_ == null) {
+            result.notification_ = notification_;
+          } else {
+            result.notification_ = notificationBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+            to_bitField0_ |= 0x00000080;
+          }
+          if (faultBuilder_ == null) {
+            result.fault_ = fault_;
+          } else {
+            result.fault_ = faultBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+            to_bitField0_ |= 0x00000100;
+          }
+          if (pingBuilder_ == null) {
+            result.ping_ = ping_;
+          } else {
+            result.ping_ = pingBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+            to_bitField0_ |= 0x00000200;
+          }
+          if (pongBuilder_ == null) {
+            result.pong_ = pong_;
+          } else {
+            result.pong_ = pongBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+            to_bitField0_ |= 0x00000400;
+          }
+          if (authBuilder_ == null) {
+            result.auth_ = auth_;
+          } else {
+            result.auth_ = authBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+            to_bitField0_ |= 0x00000800;
+          }
+          result.actionType_ = actionType_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5887,6 +8837,80 @@ final class PBMessage {
           return this;
         }
         
+        public final boolean isInitialized() {
+          if (!hasActionType()) {
+            
+            return false;
+          }
+          if (hasPublish()) {
+            if (!getPublish().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasPoll()) {
+            if (!getPoll().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasAccepted()) {
+            if (!getAccepted().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasAckMessage()) {
+            if (!getAckMessage().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasSubscribe()) {
+            if (!getSubscribe().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasUnsubscribe()) {
+            if (!getUnsubscribe().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasNotification()) {
+            if (!getNotification().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasFault()) {
+            if (!getFault().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasPing()) {
+            if (!getPing().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasPong()) {
+            if (!getPong().isInitialized()) {
+              
+              return false;
+            }
+          }
+          if (hasAuth()) {
+            if (!getAuth().isInitialized()) {
+              
+              return false;
+            }
+          }
+          return true;
+        }
+        
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5899,11 +8923,13 @@ final class PBMessage {
             switch (tag) {
               case 0:
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               default: {
                 if (!parseUnknownField(input, unknownFields,
                                        extensionRegistry, tag)) {
                   this.setUnknownFields(unknownFields.build());
+                  onChanged();
                   return this;
                 }
                 break;
@@ -6013,7 +9039,8 @@ final class PBMessage {
                 if (value == null) {
                   unknownFields.mergeVarintField(12, rawValue);
                 } else {
-                  setActionType(value);
+                  bitField0_ |= 0x00000800;
+                  actionType_ = value;
                 }
                 break;
               }
@@ -6021,432 +9048,1019 @@ final class PBMessage {
           }
         }
         
+        private int bitField0_;
         
         // optional .sapo_broker.Atom.Publish publish = 1;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Publish publish_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Publish, pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PublishOrBuilder> publishBuilder_;
         public boolean hasPublish() {
-          return result.hasPublish();
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Publish getPublish() {
-          return result.getPublish();
+          if (publishBuilder_ == null) {
+            return publish_;
+          } else {
+            return publishBuilder_.getMessage();
+          }
         }
         public Builder setPublish(pt.com.broker.codec.protobuf.PBMessage.Atom.Publish value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (publishBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            publish_ = value;
+            onChanged();
+          } else {
+            publishBuilder_.setMessage(value);
           }
-          result.hasPublish = true;
-          result.publish_ = value;
+          bitField0_ |= 0x00000001;
           return this;
         }
-        public Builder setPublish(pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.Builder builderForValue) {
-          result.hasPublish = true;
-          result.publish_ = builderForValue.build();
+        public Builder setPublish(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.Builder builderForValue) {
+          if (publishBuilder_ == null) {
+            publish_ = builderForValue.build();
+            onChanged();
+          } else {
+            publishBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000001;
           return this;
         }
         public Builder mergePublish(pt.com.broker.codec.protobuf.PBMessage.Atom.Publish value) {
-          if (result.hasPublish() &&
-              result.publish_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.getDefaultInstance()) {
-            result.publish_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.newBuilder(result.publish_).mergeFrom(value).buildPartial();
+          if (publishBuilder_ == null) {
+            if (((bitField0_ & 0x00000001) == 0x00000001) &&
+                publish_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.getDefaultInstance()) {
+              publish_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.newBuilder(publish_).mergeFrom(value).buildPartial();
+            } else {
+              publish_ = value;
+            }
+            onChanged();
           } else {
-            result.publish_ = value;
+            publishBuilder_.mergeFrom(value);
           }
-          result.hasPublish = true;
+          bitField0_ |= 0x00000001;
           return this;
         }
         public Builder clearPublish() {
-          result.hasPublish = false;
-          result.publish_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.getDefaultInstance();
+          if (publishBuilder_ == null) {
+            publish_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.getDefaultInstance();
+            onChanged();
+          } else {
+            publishBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000001);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.Builder getPublishBuilder() {
+          bitField0_ |= 0x00000001;
+          onChanged();
+          return getPublishFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.PublishOrBuilder getPublishOrBuilder() {
+          if (publishBuilder_ != null) {
+            return publishBuilder_.getMessageOrBuilder();
+          } else {
+            return publish_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Publish, pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PublishOrBuilder> 
+            getPublishFieldBuilder() {
+          if (publishBuilder_ == null) {
+            publishBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Publish, pt.com.broker.codec.protobuf.PBMessage.Atom.Publish.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PublishOrBuilder>(
+                    publish_,
+                    getParentForChildren(),
+                    isClean());
+            publish_ = null;
+          }
+          return publishBuilder_;
         }
         
         // optional .sapo_broker.Atom.Poll poll = 2;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Poll poll_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Poll, pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PollOrBuilder> pollBuilder_;
         public boolean hasPoll() {
-          return result.hasPoll();
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Poll getPoll() {
-          return result.getPoll();
+          if (pollBuilder_ == null) {
+            return poll_;
+          } else {
+            return pollBuilder_.getMessage();
+          }
         }
         public Builder setPoll(pt.com.broker.codec.protobuf.PBMessage.Atom.Poll value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (pollBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            poll_ = value;
+            onChanged();
+          } else {
+            pollBuilder_.setMessage(value);
           }
-          result.hasPoll = true;
-          result.poll_ = value;
+          bitField0_ |= 0x00000002;
           return this;
         }
-        public Builder setPoll(pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.Builder builderForValue) {
-          result.hasPoll = true;
-          result.poll_ = builderForValue.build();
+        public Builder setPoll(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.Builder builderForValue) {
+          if (pollBuilder_ == null) {
+            poll_ = builderForValue.build();
+            onChanged();
+          } else {
+            pollBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000002;
           return this;
         }
         public Builder mergePoll(pt.com.broker.codec.protobuf.PBMessage.Atom.Poll value) {
-          if (result.hasPoll() &&
-              result.poll_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.getDefaultInstance()) {
-            result.poll_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.newBuilder(result.poll_).mergeFrom(value).buildPartial();
+          if (pollBuilder_ == null) {
+            if (((bitField0_ & 0x00000002) == 0x00000002) &&
+                poll_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.getDefaultInstance()) {
+              poll_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.newBuilder(poll_).mergeFrom(value).buildPartial();
+            } else {
+              poll_ = value;
+            }
+            onChanged();
           } else {
-            result.poll_ = value;
+            pollBuilder_.mergeFrom(value);
           }
-          result.hasPoll = true;
+          bitField0_ |= 0x00000002;
           return this;
         }
         public Builder clearPoll() {
-          result.hasPoll = false;
-          result.poll_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.getDefaultInstance();
+          if (pollBuilder_ == null) {
+            poll_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.getDefaultInstance();
+            onChanged();
+          } else {
+            pollBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000002);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.Builder getPollBuilder() {
+          bitField0_ |= 0x00000002;
+          onChanged();
+          return getPollFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.PollOrBuilder getPollOrBuilder() {
+          if (pollBuilder_ != null) {
+            return pollBuilder_.getMessageOrBuilder();
+          } else {
+            return poll_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Poll, pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PollOrBuilder> 
+            getPollFieldBuilder() {
+          if (pollBuilder_ == null) {
+            pollBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Poll, pt.com.broker.codec.protobuf.PBMessage.Atom.Poll.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PollOrBuilder>(
+                    poll_,
+                    getParentForChildren(),
+                    isClean());
+            poll_ = null;
+          }
+          return pollBuilder_;
         }
         
         // optional .sapo_broker.Atom.Accepted accepted = 3;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted accepted_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted, pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AcceptedOrBuilder> acceptedBuilder_;
         public boolean hasAccepted() {
-          return result.hasAccepted();
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted getAccepted() {
-          return result.getAccepted();
+          if (acceptedBuilder_ == null) {
+            return accepted_;
+          } else {
+            return acceptedBuilder_.getMessage();
+          }
         }
         public Builder setAccepted(pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (acceptedBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            accepted_ = value;
+            onChanged();
+          } else {
+            acceptedBuilder_.setMessage(value);
           }
-          result.hasAccepted = true;
-          result.accepted_ = value;
+          bitField0_ |= 0x00000004;
           return this;
         }
-        public Builder setAccepted(pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.Builder builderForValue) {
-          result.hasAccepted = true;
-          result.accepted_ = builderForValue.build();
+        public Builder setAccepted(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.Builder builderForValue) {
+          if (acceptedBuilder_ == null) {
+            accepted_ = builderForValue.build();
+            onChanged();
+          } else {
+            acceptedBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000004;
           return this;
         }
         public Builder mergeAccepted(pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted value) {
-          if (result.hasAccepted() &&
-              result.accepted_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.getDefaultInstance()) {
-            result.accepted_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.newBuilder(result.accepted_).mergeFrom(value).buildPartial();
+          if (acceptedBuilder_ == null) {
+            if (((bitField0_ & 0x00000004) == 0x00000004) &&
+                accepted_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.getDefaultInstance()) {
+              accepted_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.newBuilder(accepted_).mergeFrom(value).buildPartial();
+            } else {
+              accepted_ = value;
+            }
+            onChanged();
           } else {
-            result.accepted_ = value;
+            acceptedBuilder_.mergeFrom(value);
           }
-          result.hasAccepted = true;
+          bitField0_ |= 0x00000004;
           return this;
         }
         public Builder clearAccepted() {
-          result.hasAccepted = false;
-          result.accepted_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.getDefaultInstance();
+          if (acceptedBuilder_ == null) {
+            accepted_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.getDefaultInstance();
+            onChanged();
+          } else {
+            acceptedBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000004);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.Builder getAcceptedBuilder() {
+          bitField0_ |= 0x00000004;
+          onChanged();
+          return getAcceptedFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.AcceptedOrBuilder getAcceptedOrBuilder() {
+          if (acceptedBuilder_ != null) {
+            return acceptedBuilder_.getMessageOrBuilder();
+          } else {
+            return accepted_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted, pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AcceptedOrBuilder> 
+            getAcceptedFieldBuilder() {
+          if (acceptedBuilder_ == null) {
+            acceptedBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted, pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AcceptedOrBuilder>(
+                    accepted_,
+                    getParentForChildren(),
+                    isClean());
+            accepted_ = null;
+          }
+          return acceptedBuilder_;
         }
         
         // optional .sapo_broker.Atom.AcknowledgeMessage ack_message = 4;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage ackMessage_ = pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessageOrBuilder> ackMessageBuilder_;
         public boolean hasAckMessage() {
-          return result.hasAckMessage();
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage getAckMessage() {
-          return result.getAckMessage();
+          if (ackMessageBuilder_ == null) {
+            return ackMessage_;
+          } else {
+            return ackMessageBuilder_.getMessage();
+          }
         }
         public Builder setAckMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (ackMessageBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ackMessage_ = value;
+            onChanged();
+          } else {
+            ackMessageBuilder_.setMessage(value);
           }
-          result.hasAckMessage = true;
-          result.ackMessage_ = value;
+          bitField0_ |= 0x00000008;
           return this;
         }
-        public Builder setAckMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.Builder builderForValue) {
-          result.hasAckMessage = true;
-          result.ackMessage_ = builderForValue.build();
+        public Builder setAckMessage(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.Builder builderForValue) {
+          if (ackMessageBuilder_ == null) {
+            ackMessage_ = builderForValue.build();
+            onChanged();
+          } else {
+            ackMessageBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000008;
           return this;
         }
         public Builder mergeAckMessage(pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage value) {
-          if (result.hasAckMessage() &&
-              result.ackMessage_ != pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.getDefaultInstance()) {
-            result.ackMessage_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.newBuilder(result.ackMessage_).mergeFrom(value).buildPartial();
+          if (ackMessageBuilder_ == null) {
+            if (((bitField0_ & 0x00000008) == 0x00000008) &&
+                ackMessage_ != pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.getDefaultInstance()) {
+              ackMessage_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.newBuilder(ackMessage_).mergeFrom(value).buildPartial();
+            } else {
+              ackMessage_ = value;
+            }
+            onChanged();
           } else {
-            result.ackMessage_ = value;
+            ackMessageBuilder_.mergeFrom(value);
           }
-          result.hasAckMessage = true;
+          bitField0_ |= 0x00000008;
           return this;
         }
         public Builder clearAckMessage() {
-          result.hasAckMessage = false;
-          result.ackMessage_ = pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.getDefaultInstance();
+          if (ackMessageBuilder_ == null) {
+            ackMessage_ = pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.getDefaultInstance();
+            onChanged();
+          } else {
+            ackMessageBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.Builder getAckMessageBuilder() {
+          bitField0_ |= 0x00000008;
+          onChanged();
+          return getAckMessageFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessageOrBuilder getAckMessageOrBuilder() {
+          if (ackMessageBuilder_ != null) {
+            return ackMessageBuilder_.getMessageOrBuilder();
+          } else {
+            return ackMessage_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessageOrBuilder> 
+            getAckMessageFieldBuilder() {
+          if (ackMessageBuilder_ == null) {
+            ackMessageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage, pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessageOrBuilder>(
+                    ackMessage_,
+                    getParentForChildren(),
+                    isClean());
+            ackMessage_ = null;
+          }
+          return ackMessageBuilder_;
         }
         
         // optional .sapo_broker.Atom.Subscribe subscribe = 5;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe subscribe_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe, pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.SubscribeOrBuilder> subscribeBuilder_;
         public boolean hasSubscribe() {
-          return result.hasSubscribe();
+          return ((bitField0_ & 0x00000010) == 0x00000010);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe getSubscribe() {
-          return result.getSubscribe();
+          if (subscribeBuilder_ == null) {
+            return subscribe_;
+          } else {
+            return subscribeBuilder_.getMessage();
+          }
         }
         public Builder setSubscribe(pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (subscribeBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            subscribe_ = value;
+            onChanged();
+          } else {
+            subscribeBuilder_.setMessage(value);
           }
-          result.hasSubscribe = true;
-          result.subscribe_ = value;
+          bitField0_ |= 0x00000010;
           return this;
         }
-        public Builder setSubscribe(pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.Builder builderForValue) {
-          result.hasSubscribe = true;
-          result.subscribe_ = builderForValue.build();
+        public Builder setSubscribe(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.Builder builderForValue) {
+          if (subscribeBuilder_ == null) {
+            subscribe_ = builderForValue.build();
+            onChanged();
+          } else {
+            subscribeBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000010;
           return this;
         }
         public Builder mergeSubscribe(pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe value) {
-          if (result.hasSubscribe() &&
-              result.subscribe_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.getDefaultInstance()) {
-            result.subscribe_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.newBuilder(result.subscribe_).mergeFrom(value).buildPartial();
+          if (subscribeBuilder_ == null) {
+            if (((bitField0_ & 0x00000010) == 0x00000010) &&
+                subscribe_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.getDefaultInstance()) {
+              subscribe_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.newBuilder(subscribe_).mergeFrom(value).buildPartial();
+            } else {
+              subscribe_ = value;
+            }
+            onChanged();
           } else {
-            result.subscribe_ = value;
+            subscribeBuilder_.mergeFrom(value);
           }
-          result.hasSubscribe = true;
+          bitField0_ |= 0x00000010;
           return this;
         }
         public Builder clearSubscribe() {
-          result.hasSubscribe = false;
-          result.subscribe_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.getDefaultInstance();
+          if (subscribeBuilder_ == null) {
+            subscribe_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.getDefaultInstance();
+            onChanged();
+          } else {
+            subscribeBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000010);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.Builder getSubscribeBuilder() {
+          bitField0_ |= 0x00000010;
+          onChanged();
+          return getSubscribeFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.SubscribeOrBuilder getSubscribeOrBuilder() {
+          if (subscribeBuilder_ != null) {
+            return subscribeBuilder_.getMessageOrBuilder();
+          } else {
+            return subscribe_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe, pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.SubscribeOrBuilder> 
+            getSubscribeFieldBuilder() {
+          if (subscribeBuilder_ == null) {
+            subscribeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe, pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.SubscribeOrBuilder>(
+                    subscribe_,
+                    getParentForChildren(),
+                    isClean());
+            subscribe_ = null;
+          }
+          return subscribeBuilder_;
         }
         
         // optional .sapo_broker.Atom.Unsubscribe unsubscribe = 6;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe unsubscribe_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe, pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.UnsubscribeOrBuilder> unsubscribeBuilder_;
         public boolean hasUnsubscribe() {
-          return result.hasUnsubscribe();
+          return ((bitField0_ & 0x00000020) == 0x00000020);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe getUnsubscribe() {
-          return result.getUnsubscribe();
+          if (unsubscribeBuilder_ == null) {
+            return unsubscribe_;
+          } else {
+            return unsubscribeBuilder_.getMessage();
+          }
         }
         public Builder setUnsubscribe(pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (unsubscribeBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            unsubscribe_ = value;
+            onChanged();
+          } else {
+            unsubscribeBuilder_.setMessage(value);
           }
-          result.hasUnsubscribe = true;
-          result.unsubscribe_ = value;
+          bitField0_ |= 0x00000020;
           return this;
         }
-        public Builder setUnsubscribe(pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.Builder builderForValue) {
-          result.hasUnsubscribe = true;
-          result.unsubscribe_ = builderForValue.build();
+        public Builder setUnsubscribe(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.Builder builderForValue) {
+          if (unsubscribeBuilder_ == null) {
+            unsubscribe_ = builderForValue.build();
+            onChanged();
+          } else {
+            unsubscribeBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000020;
           return this;
         }
         public Builder mergeUnsubscribe(pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe value) {
-          if (result.hasUnsubscribe() &&
-              result.unsubscribe_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.getDefaultInstance()) {
-            result.unsubscribe_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.newBuilder(result.unsubscribe_).mergeFrom(value).buildPartial();
+          if (unsubscribeBuilder_ == null) {
+            if (((bitField0_ & 0x00000020) == 0x00000020) &&
+                unsubscribe_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.getDefaultInstance()) {
+              unsubscribe_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.newBuilder(unsubscribe_).mergeFrom(value).buildPartial();
+            } else {
+              unsubscribe_ = value;
+            }
+            onChanged();
           } else {
-            result.unsubscribe_ = value;
+            unsubscribeBuilder_.mergeFrom(value);
           }
-          result.hasUnsubscribe = true;
+          bitField0_ |= 0x00000020;
           return this;
         }
         public Builder clearUnsubscribe() {
-          result.hasUnsubscribe = false;
-          result.unsubscribe_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.getDefaultInstance();
+          if (unsubscribeBuilder_ == null) {
+            unsubscribe_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.getDefaultInstance();
+            onChanged();
+          } else {
+            unsubscribeBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000020);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.Builder getUnsubscribeBuilder() {
+          bitField0_ |= 0x00000020;
+          onChanged();
+          return getUnsubscribeFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.UnsubscribeOrBuilder getUnsubscribeOrBuilder() {
+          if (unsubscribeBuilder_ != null) {
+            return unsubscribeBuilder_.getMessageOrBuilder();
+          } else {
+            return unsubscribe_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe, pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.UnsubscribeOrBuilder> 
+            getUnsubscribeFieldBuilder() {
+          if (unsubscribeBuilder_ == null) {
+            unsubscribeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe, pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.UnsubscribeOrBuilder>(
+                    unsubscribe_,
+                    getParentForChildren(),
+                    isClean());
+            unsubscribe_ = null;
+          }
+          return unsubscribeBuilder_;
         }
         
         // optional .sapo_broker.Atom.Notification notification = 7;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Notification notification_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Notification, pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.NotificationOrBuilder> notificationBuilder_;
         public boolean hasNotification() {
-          return result.hasNotification();
+          return ((bitField0_ & 0x00000040) == 0x00000040);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Notification getNotification() {
-          return result.getNotification();
+          if (notificationBuilder_ == null) {
+            return notification_;
+          } else {
+            return notificationBuilder_.getMessage();
+          }
         }
         public Builder setNotification(pt.com.broker.codec.protobuf.PBMessage.Atom.Notification value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (notificationBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            notification_ = value;
+            onChanged();
+          } else {
+            notificationBuilder_.setMessage(value);
           }
-          result.hasNotification = true;
-          result.notification_ = value;
+          bitField0_ |= 0x00000040;
           return this;
         }
-        public Builder setNotification(pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.Builder builderForValue) {
-          result.hasNotification = true;
-          result.notification_ = builderForValue.build();
+        public Builder setNotification(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.Builder builderForValue) {
+          if (notificationBuilder_ == null) {
+            notification_ = builderForValue.build();
+            onChanged();
+          } else {
+            notificationBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000040;
           return this;
         }
         public Builder mergeNotification(pt.com.broker.codec.protobuf.PBMessage.Atom.Notification value) {
-          if (result.hasNotification() &&
-              result.notification_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.getDefaultInstance()) {
-            result.notification_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.newBuilder(result.notification_).mergeFrom(value).buildPartial();
+          if (notificationBuilder_ == null) {
+            if (((bitField0_ & 0x00000040) == 0x00000040) &&
+                notification_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.getDefaultInstance()) {
+              notification_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.newBuilder(notification_).mergeFrom(value).buildPartial();
+            } else {
+              notification_ = value;
+            }
+            onChanged();
           } else {
-            result.notification_ = value;
+            notificationBuilder_.mergeFrom(value);
           }
-          result.hasNotification = true;
+          bitField0_ |= 0x00000040;
           return this;
         }
         public Builder clearNotification() {
-          result.hasNotification = false;
-          result.notification_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.getDefaultInstance();
+          if (notificationBuilder_ == null) {
+            notification_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.getDefaultInstance();
+            onChanged();
+          } else {
+            notificationBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000040);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.Builder getNotificationBuilder() {
+          bitField0_ |= 0x00000040;
+          onChanged();
+          return getNotificationFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.NotificationOrBuilder getNotificationOrBuilder() {
+          if (notificationBuilder_ != null) {
+            return notificationBuilder_.getMessageOrBuilder();
+          } else {
+            return notification_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Notification, pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.NotificationOrBuilder> 
+            getNotificationFieldBuilder() {
+          if (notificationBuilder_ == null) {
+            notificationBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Notification, pt.com.broker.codec.protobuf.PBMessage.Atom.Notification.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.NotificationOrBuilder>(
+                    notification_,
+                    getParentForChildren(),
+                    isClean());
+            notification_ = null;
+          }
+          return notificationBuilder_;
         }
         
         // optional .sapo_broker.Atom.Fault fault = 8;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Fault fault_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Fault, pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.FaultOrBuilder> faultBuilder_;
         public boolean hasFault() {
-          return result.hasFault();
+          return ((bitField0_ & 0x00000080) == 0x00000080);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Fault getFault() {
-          return result.getFault();
+          if (faultBuilder_ == null) {
+            return fault_;
+          } else {
+            return faultBuilder_.getMessage();
+          }
         }
         public Builder setFault(pt.com.broker.codec.protobuf.PBMessage.Atom.Fault value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (faultBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            fault_ = value;
+            onChanged();
+          } else {
+            faultBuilder_.setMessage(value);
           }
-          result.hasFault = true;
-          result.fault_ = value;
+          bitField0_ |= 0x00000080;
           return this;
         }
-        public Builder setFault(pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.Builder builderForValue) {
-          result.hasFault = true;
-          result.fault_ = builderForValue.build();
+        public Builder setFault(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.Builder builderForValue) {
+          if (faultBuilder_ == null) {
+            fault_ = builderForValue.build();
+            onChanged();
+          } else {
+            faultBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000080;
           return this;
         }
         public Builder mergeFault(pt.com.broker.codec.protobuf.PBMessage.Atom.Fault value) {
-          if (result.hasFault() &&
-              result.fault_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.getDefaultInstance()) {
-            result.fault_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.newBuilder(result.fault_).mergeFrom(value).buildPartial();
+          if (faultBuilder_ == null) {
+            if (((bitField0_ & 0x00000080) == 0x00000080) &&
+                fault_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.getDefaultInstance()) {
+              fault_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.newBuilder(fault_).mergeFrom(value).buildPartial();
+            } else {
+              fault_ = value;
+            }
+            onChanged();
           } else {
-            result.fault_ = value;
+            faultBuilder_.mergeFrom(value);
           }
-          result.hasFault = true;
+          bitField0_ |= 0x00000080;
           return this;
         }
         public Builder clearFault() {
-          result.hasFault = false;
-          result.fault_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.getDefaultInstance();
+          if (faultBuilder_ == null) {
+            fault_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.getDefaultInstance();
+            onChanged();
+          } else {
+            faultBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000080);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.Builder getFaultBuilder() {
+          bitField0_ |= 0x00000080;
+          onChanged();
+          return getFaultFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.FaultOrBuilder getFaultOrBuilder() {
+          if (faultBuilder_ != null) {
+            return faultBuilder_.getMessageOrBuilder();
+          } else {
+            return fault_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Fault, pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.FaultOrBuilder> 
+            getFaultFieldBuilder() {
+          if (faultBuilder_ == null) {
+            faultBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Fault, pt.com.broker.codec.protobuf.PBMessage.Atom.Fault.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.FaultOrBuilder>(
+                    fault_,
+                    getParentForChildren(),
+                    isClean());
+            fault_ = null;
+          }
+          return faultBuilder_;
         }
         
         // optional .sapo_broker.Atom.Ping ping = 9;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Ping ping_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Ping, pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PingOrBuilder> pingBuilder_;
         public boolean hasPing() {
-          return result.hasPing();
+          return ((bitField0_ & 0x00000100) == 0x00000100);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Ping getPing() {
-          return result.getPing();
+          if (pingBuilder_ == null) {
+            return ping_;
+          } else {
+            return pingBuilder_.getMessage();
+          }
         }
         public Builder setPing(pt.com.broker.codec.protobuf.PBMessage.Atom.Ping value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (pingBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ping_ = value;
+            onChanged();
+          } else {
+            pingBuilder_.setMessage(value);
           }
-          result.hasPing = true;
-          result.ping_ = value;
+          bitField0_ |= 0x00000100;
           return this;
         }
-        public Builder setPing(pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.Builder builderForValue) {
-          result.hasPing = true;
-          result.ping_ = builderForValue.build();
+        public Builder setPing(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.Builder builderForValue) {
+          if (pingBuilder_ == null) {
+            ping_ = builderForValue.build();
+            onChanged();
+          } else {
+            pingBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000100;
           return this;
         }
         public Builder mergePing(pt.com.broker.codec.protobuf.PBMessage.Atom.Ping value) {
-          if (result.hasPing() &&
-              result.ping_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.getDefaultInstance()) {
-            result.ping_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.newBuilder(result.ping_).mergeFrom(value).buildPartial();
+          if (pingBuilder_ == null) {
+            if (((bitField0_ & 0x00000100) == 0x00000100) &&
+                ping_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.getDefaultInstance()) {
+              ping_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.newBuilder(ping_).mergeFrom(value).buildPartial();
+            } else {
+              ping_ = value;
+            }
+            onChanged();
           } else {
-            result.ping_ = value;
+            pingBuilder_.mergeFrom(value);
           }
-          result.hasPing = true;
+          bitField0_ |= 0x00000100;
           return this;
         }
         public Builder clearPing() {
-          result.hasPing = false;
-          result.ping_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.getDefaultInstance();
+          if (pingBuilder_ == null) {
+            ping_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.getDefaultInstance();
+            onChanged();
+          } else {
+            pingBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000100);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.Builder getPingBuilder() {
+          bitField0_ |= 0x00000100;
+          onChanged();
+          return getPingFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.PingOrBuilder getPingOrBuilder() {
+          if (pingBuilder_ != null) {
+            return pingBuilder_.getMessageOrBuilder();
+          } else {
+            return ping_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Ping, pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PingOrBuilder> 
+            getPingFieldBuilder() {
+          if (pingBuilder_ == null) {
+            pingBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Ping, pt.com.broker.codec.protobuf.PBMessage.Atom.Ping.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PingOrBuilder>(
+                    ping_,
+                    getParentForChildren(),
+                    isClean());
+            ping_ = null;
+          }
+          return pingBuilder_;
         }
         
         // optional .sapo_broker.Atom.Pong pong = 10;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Pong pong_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Pong, pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PongOrBuilder> pongBuilder_;
         public boolean hasPong() {
-          return result.hasPong();
+          return ((bitField0_ & 0x00000200) == 0x00000200);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Pong getPong() {
-          return result.getPong();
+          if (pongBuilder_ == null) {
+            return pong_;
+          } else {
+            return pongBuilder_.getMessage();
+          }
         }
         public Builder setPong(pt.com.broker.codec.protobuf.PBMessage.Atom.Pong value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (pongBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            pong_ = value;
+            onChanged();
+          } else {
+            pongBuilder_.setMessage(value);
           }
-          result.hasPong = true;
-          result.pong_ = value;
+          bitField0_ |= 0x00000200;
           return this;
         }
-        public Builder setPong(pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.Builder builderForValue) {
-          result.hasPong = true;
-          result.pong_ = builderForValue.build();
+        public Builder setPong(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.Builder builderForValue) {
+          if (pongBuilder_ == null) {
+            pong_ = builderForValue.build();
+            onChanged();
+          } else {
+            pongBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000200;
           return this;
         }
         public Builder mergePong(pt.com.broker.codec.protobuf.PBMessage.Atom.Pong value) {
-          if (result.hasPong() &&
-              result.pong_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.getDefaultInstance()) {
-            result.pong_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.newBuilder(result.pong_).mergeFrom(value).buildPartial();
+          if (pongBuilder_ == null) {
+            if (((bitField0_ & 0x00000200) == 0x00000200) &&
+                pong_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.getDefaultInstance()) {
+              pong_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.newBuilder(pong_).mergeFrom(value).buildPartial();
+            } else {
+              pong_ = value;
+            }
+            onChanged();
           } else {
-            result.pong_ = value;
+            pongBuilder_.mergeFrom(value);
           }
-          result.hasPong = true;
+          bitField0_ |= 0x00000200;
           return this;
         }
         public Builder clearPong() {
-          result.hasPong = false;
-          result.pong_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.getDefaultInstance();
+          if (pongBuilder_ == null) {
+            pong_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.getDefaultInstance();
+            onChanged();
+          } else {
+            pongBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000200);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.Builder getPongBuilder() {
+          bitField0_ |= 0x00000200;
+          onChanged();
+          return getPongFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.PongOrBuilder getPongOrBuilder() {
+          if (pongBuilder_ != null) {
+            return pongBuilder_.getMessageOrBuilder();
+          } else {
+            return pong_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Pong, pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PongOrBuilder> 
+            getPongFieldBuilder() {
+          if (pongBuilder_ == null) {
+            pongBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Pong, pt.com.broker.codec.protobuf.PBMessage.Atom.Pong.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.PongOrBuilder>(
+                    pong_,
+                    getParentForChildren(),
+                    isClean());
+            pong_ = null;
+          }
+          return pongBuilder_;
         }
         
         // optional .sapo_broker.Atom.Authentication auth = 11;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication auth_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.getDefaultInstance();
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication, pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AuthenticationOrBuilder> authBuilder_;
         public boolean hasAuth() {
-          return result.hasAuth();
+          return ((bitField0_ & 0x00000400) == 0x00000400);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication getAuth() {
-          return result.getAuth();
+          if (authBuilder_ == null) {
+            return auth_;
+          } else {
+            return authBuilder_.getMessage();
+          }
         }
         public Builder setAuth(pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication value) {
-          if (value == null) {
-            throw new NullPointerException();
+          if (authBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            auth_ = value;
+            onChanged();
+          } else {
+            authBuilder_.setMessage(value);
           }
-          result.hasAuth = true;
-          result.auth_ = value;
+          bitField0_ |= 0x00000400;
           return this;
         }
-        public Builder setAuth(pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.Builder builderForValue) {
-          result.hasAuth = true;
-          result.auth_ = builderForValue.build();
+        public Builder setAuth(
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.Builder builderForValue) {
+          if (authBuilder_ == null) {
+            auth_ = builderForValue.build();
+            onChanged();
+          } else {
+            authBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000400;
           return this;
         }
         public Builder mergeAuth(pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication value) {
-          if (result.hasAuth() &&
-              result.auth_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.getDefaultInstance()) {
-            result.auth_ =
-              pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.newBuilder(result.auth_).mergeFrom(value).buildPartial();
+          if (authBuilder_ == null) {
+            if (((bitField0_ & 0x00000400) == 0x00000400) &&
+                auth_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.getDefaultInstance()) {
+              auth_ =
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.newBuilder(auth_).mergeFrom(value).buildPartial();
+            } else {
+              auth_ = value;
+            }
+            onChanged();
           } else {
-            result.auth_ = value;
+            authBuilder_.mergeFrom(value);
           }
-          result.hasAuth = true;
+          bitField0_ |= 0x00000400;
           return this;
         }
         public Builder clearAuth() {
-          result.hasAuth = false;
-          result.auth_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.getDefaultInstance();
+          if (authBuilder_ == null) {
+            auth_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.getDefaultInstance();
+            onChanged();
+          } else {
+            authBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000400);
           return this;
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.Builder getAuthBuilder() {
+          bitField0_ |= 0x00000400;
+          onChanged();
+          return getAuthFieldBuilder().getBuilder();
+        }
+        public pt.com.broker.codec.protobuf.PBMessage.Atom.AuthenticationOrBuilder getAuthOrBuilder() {
+          if (authBuilder_ != null) {
+            return authBuilder_.getMessageOrBuilder();
+          } else {
+            return auth_;
+          }
+        }
+        private com.google.protobuf.SingleFieldBuilder<
+            pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication, pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AuthenticationOrBuilder> 
+            getAuthFieldBuilder() {
+          if (authBuilder_ == null) {
+            authBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+                pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication, pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.AuthenticationOrBuilder>(
+                    auth_,
+                    getParentForChildren(),
+                    isClean());
+            auth_ = null;
+          }
+          return authBuilder_;
         }
         
         // required .sapo_broker.Atom.Action.ActionType action_type = 12;
+        private pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType actionType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType.PUBLISH;
         public boolean hasActionType() {
-          return result.hasActionType();
+          return ((bitField0_ & 0x00000800) == 0x00000800);
         }
         public pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType getActionType() {
-          return result.getActionType();
+          return actionType_;
         }
         public Builder setActionType(pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType value) {
           if (value == null) {
             throw new NullPointerException();
           }
-          result.hasActionType = true;
-          result.actionType_ = value;
+          bitField0_ |= 0x00000800;
+          actionType_ = value;
+          onChanged();
           return this;
         }
         public Builder clearActionType() {
-          result.hasActionType = false;
-          result.actionType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType.PUBLISH;
+          bitField0_ = (bitField0_ & ~0x00000800);
+          actionType_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.ActionType.PUBLISH;
+          onChanged();
           return this;
         }
         
@@ -6455,48 +10069,74 @@ final class PBMessage {
       
       static {
         defaultInstance = new Action(true);
-        pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
         defaultInstance.initFields();
       }
       
       // @@protoc_insertion_point(class_scope:sapo_broker.Atom.Action)
     }
     
+    private int bitField0_;
     // optional .sapo_broker.Atom.Header header = 1;
     public static final int HEADER_FIELD_NUMBER = 1;
-    private boolean hasHeader;
     private pt.com.broker.codec.protobuf.PBMessage.Atom.Header header_;
-    public boolean hasHeader() { return hasHeader; }
-    public pt.com.broker.codec.protobuf.PBMessage.Atom.Header getHeader() { return header_; }
+    public boolean hasHeader() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public pt.com.broker.codec.protobuf.PBMessage.Atom.Header getHeader() {
+      return header_;
+    }
+    public pt.com.broker.codec.protobuf.PBMessage.Atom.HeaderOrBuilder getHeaderOrBuilder() {
+      return header_;
+    }
     
     // required .sapo_broker.Atom.Action action = 2;
     public static final int ACTION_FIELD_NUMBER = 2;
-    private boolean hasAction;
     private pt.com.broker.codec.protobuf.PBMessage.Atom.Action action_;
-    public boolean hasAction() { return hasAction; }
-    public pt.com.broker.codec.protobuf.PBMessage.Atom.Action getAction() { return action_; }
+    public boolean hasAction() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public pt.com.broker.codec.protobuf.PBMessage.Atom.Action getAction() {
+      return action_;
+    }
+    public pt.com.broker.codec.protobuf.PBMessage.Atom.ActionOrBuilder getActionOrBuilder() {
+      return action_;
+    }
     
     private void initFields() {
       header_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance();
       action_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.getDefaultInstance();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasAction) return false;
-      if (hasHeader()) {
-        if (!getHeader().isInitialized()) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasAction()) {
+        memoizedIsInitialized = 0;
+        return false;
       }
-      if (!getAction().isInitialized()) return false;
+      if (hasHeader()) {
+        if (!getHeader().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (!getAction().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasHeader()) {
-        output.writeMessage(1, getHeader());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, header_);
       }
-      if (hasAction()) {
-        output.writeMessage(2, getAction());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, action_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -6507,17 +10147,22 @@ final class PBMessage {
       if (size != -1) return size;
     
       size = 0;
-      if (hasHeader()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, getHeader());
+          .computeMessageSize(1, header_);
       }
-      if (hasAction()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getAction());
+          .computeMessageSize(2, action_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    @java.lang.Override
+    protected Object writeReplace() throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static pt.com.broker.codec.protobuf.PBMessage.Atom parseFrom(
@@ -6594,34 +10239,63 @@ final class PBMessage {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private pt.com.broker.codec.protobuf.PBMessage.Atom result;
-      
-      // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new pt.com.broker.codec.protobuf.PBMessage.Atom();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements pt.com.broker.codec.protobuf.PBMessage.AtomOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_descriptor;
       }
       
-      protected pt.com.broker.codec.protobuf.PBMessage.Atom internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pt.com.broker.codec.protobuf.PBMessage.internal_static_sapo_broker_Atom_fieldAccessorTable;
+      }
+      
+      // Construct using pt.com.broker.codec.protobuf.PBMessage.Atom.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getHeaderFieldBuilder();
+          getActionFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        if (headerBuilder_ == null) {
+          header_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance();
+        } else {
+          headerBuilder_.clear();
         }
-        result = new pt.com.broker.codec.protobuf.PBMessage.Atom();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (actionBuilder_ == null) {
+          action_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.getDefaultInstance();
+        } else {
+          actionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -6633,33 +10307,47 @@ final class PBMessage {
         return pt.com.broker.codec.protobuf.PBMessage.Atom.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public pt.com.broker.codec.protobuf.PBMessage.Atom build() {
-        if (result != null && !isInitialized()) {
+        pt.com.broker.codec.protobuf.PBMessage.Atom result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private pt.com.broker.codec.protobuf.PBMessage.Atom buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        pt.com.broker.codec.protobuf.PBMessage.Atom result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public pt.com.broker.codec.protobuf.PBMessage.Atom buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        pt.com.broker.codec.protobuf.PBMessage.Atom result = new pt.com.broker.codec.protobuf.PBMessage.Atom(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        pt.com.broker.codec.protobuf.PBMessage.Atom returnMe = result;
-        result = null;
-        return returnMe;
+        if (headerBuilder_ == null) {
+          result.header_ = header_;
+        } else {
+          result.header_ = headerBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (actionBuilder_ == null) {
+          result.action_ = action_;
+        } else {
+          result.action_ = actionBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -6683,6 +10371,24 @@ final class PBMessage {
         return this;
       }
       
+      public final boolean isInitialized() {
+        if (!hasAction()) {
+          
+          return false;
+        }
+        if (hasHeader()) {
+          if (!getHeader().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (!getAction().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6695,11 +10401,13 @@ final class PBMessage {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
@@ -6726,79 +10434,186 @@ final class PBMessage {
         }
       }
       
+      private int bitField0_;
       
       // optional .sapo_broker.Atom.Header header = 1;
+      private pt.com.broker.codec.protobuf.PBMessage.Atom.Header header_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Header, pt.com.broker.codec.protobuf.PBMessage.Atom.Header.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.HeaderOrBuilder> headerBuilder_;
       public boolean hasHeader() {
-        return result.hasHeader();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public pt.com.broker.codec.protobuf.PBMessage.Atom.Header getHeader() {
-        return result.getHeader();
+        if (headerBuilder_ == null) {
+          return header_;
+        } else {
+          return headerBuilder_.getMessage();
+        }
       }
       public Builder setHeader(pt.com.broker.codec.protobuf.PBMessage.Atom.Header value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (headerBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          header_ = value;
+          onChanged();
+        } else {
+          headerBuilder_.setMessage(value);
         }
-        result.hasHeader = true;
-        result.header_ = value;
+        bitField0_ |= 0x00000001;
         return this;
       }
-      public Builder setHeader(pt.com.broker.codec.protobuf.PBMessage.Atom.Header.Builder builderForValue) {
-        result.hasHeader = true;
-        result.header_ = builderForValue.build();
+      public Builder setHeader(
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Header.Builder builderForValue) {
+        if (headerBuilder_ == null) {
+          header_ = builderForValue.build();
+          onChanged();
+        } else {
+          headerBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       public Builder mergeHeader(pt.com.broker.codec.protobuf.PBMessage.Atom.Header value) {
-        if (result.hasHeader() &&
-            result.header_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance()) {
-          result.header_ =
-            pt.com.broker.codec.protobuf.PBMessage.Atom.Header.newBuilder(result.header_).mergeFrom(value).buildPartial();
+        if (headerBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              header_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance()) {
+            header_ =
+              pt.com.broker.codec.protobuf.PBMessage.Atom.Header.newBuilder(header_).mergeFrom(value).buildPartial();
+          } else {
+            header_ = value;
+          }
+          onChanged();
         } else {
-          result.header_ = value;
+          headerBuilder_.mergeFrom(value);
         }
-        result.hasHeader = true;
+        bitField0_ |= 0x00000001;
         return this;
       }
       public Builder clearHeader() {
-        result.hasHeader = false;
-        result.header_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance();
+        if (headerBuilder_ == null) {
+          header_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Header.getDefaultInstance();
+          onChanged();
+        } else {
+          headerBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Header.Builder getHeaderBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getHeaderFieldBuilder().getBuilder();
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.HeaderOrBuilder getHeaderOrBuilder() {
+        if (headerBuilder_ != null) {
+          return headerBuilder_.getMessageOrBuilder();
+        } else {
+          return header_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Header, pt.com.broker.codec.protobuf.PBMessage.Atom.Header.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.HeaderOrBuilder> 
+          getHeaderFieldBuilder() {
+        if (headerBuilder_ == null) {
+          headerBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              pt.com.broker.codec.protobuf.PBMessage.Atom.Header, pt.com.broker.codec.protobuf.PBMessage.Atom.Header.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.HeaderOrBuilder>(
+                  header_,
+                  getParentForChildren(),
+                  isClean());
+          header_ = null;
+        }
+        return headerBuilder_;
       }
       
       // required .sapo_broker.Atom.Action action = 2;
+      private pt.com.broker.codec.protobuf.PBMessage.Atom.Action action_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Action, pt.com.broker.codec.protobuf.PBMessage.Atom.Action.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.ActionOrBuilder> actionBuilder_;
       public boolean hasAction() {
-        return result.hasAction();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public pt.com.broker.codec.protobuf.PBMessage.Atom.Action getAction() {
-        return result.getAction();
+        if (actionBuilder_ == null) {
+          return action_;
+        } else {
+          return actionBuilder_.getMessage();
+        }
       }
       public Builder setAction(pt.com.broker.codec.protobuf.PBMessage.Atom.Action value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (actionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          action_ = value;
+          onChanged();
+        } else {
+          actionBuilder_.setMessage(value);
         }
-        result.hasAction = true;
-        result.action_ = value;
+        bitField0_ |= 0x00000002;
         return this;
       }
-      public Builder setAction(pt.com.broker.codec.protobuf.PBMessage.Atom.Action.Builder builderForValue) {
-        result.hasAction = true;
-        result.action_ = builderForValue.build();
+      public Builder setAction(
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Action.Builder builderForValue) {
+        if (actionBuilder_ == null) {
+          action_ = builderForValue.build();
+          onChanged();
+        } else {
+          actionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder mergeAction(pt.com.broker.codec.protobuf.PBMessage.Atom.Action value) {
-        if (result.hasAction() &&
-            result.action_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Action.getDefaultInstance()) {
-          result.action_ =
-            pt.com.broker.codec.protobuf.PBMessage.Atom.Action.newBuilder(result.action_).mergeFrom(value).buildPartial();
+        if (actionBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              action_ != pt.com.broker.codec.protobuf.PBMessage.Atom.Action.getDefaultInstance()) {
+            action_ =
+              pt.com.broker.codec.protobuf.PBMessage.Atom.Action.newBuilder(action_).mergeFrom(value).buildPartial();
+          } else {
+            action_ = value;
+          }
+          onChanged();
         } else {
-          result.action_ = value;
+          actionBuilder_.mergeFrom(value);
         }
-        result.hasAction = true;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder clearAction() {
-        result.hasAction = false;
-        result.action_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.getDefaultInstance();
+        if (actionBuilder_ == null) {
+          action_ = pt.com.broker.codec.protobuf.PBMessage.Atom.Action.getDefaultInstance();
+          onChanged();
+        } else {
+          actionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.Action.Builder getActionBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getActionFieldBuilder().getBuilder();
+      }
+      public pt.com.broker.codec.protobuf.PBMessage.Atom.ActionOrBuilder getActionOrBuilder() {
+        if (actionBuilder_ != null) {
+          return actionBuilder_.getMessageOrBuilder();
+        } else {
+          return action_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          pt.com.broker.codec.protobuf.PBMessage.Atom.Action, pt.com.broker.codec.protobuf.PBMessage.Atom.Action.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.ActionOrBuilder> 
+          getActionFieldBuilder() {
+        if (actionBuilder_ == null) {
+          actionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              pt.com.broker.codec.protobuf.PBMessage.Atom.Action, pt.com.broker.codec.protobuf.PBMessage.Atom.Action.Builder, pt.com.broker.codec.protobuf.PBMessage.Atom.ActionOrBuilder>(
+                  action_,
+                  getParentForChildren(),
+                  isClean());
+          action_ = null;
+        }
+        return actionBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:sapo_broker.Atom)
@@ -6806,7 +10621,6 @@ final class PBMessage {
     
     static {
       defaultInstance = new Atom(true);
-      pt.com.broker.codec.protobuf.PBMessage.internalForceInit();
       defaultInstance.initFields();
     }
     
@@ -7099,8 +10913,6 @@ final class PBMessage {
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
   }
-  
-  public static void internalForceInit() {}
   
   // @@protoc_insertion_point(outer_class_scope)
 }

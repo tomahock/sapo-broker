@@ -15,15 +15,18 @@ import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.thrift.*;
+import org.apache.thrift.async.*;
 import org.apache.thrift.meta_data.*;
+import org.apache.thrift.transport.*;
 import org.apache.thrift.protocol.*;
 
-class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Cloneable, Comparable<Subscribe> {
+class Subscribe implements TBase<Subscribe, Subscribe._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Subscribe");
 
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
@@ -48,12 +51,10 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
      */
     DESTINATION_TYPE((short)3, "destination_type");
 
-    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
       for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byId.put((int)field._thriftId, field);
         byName.put(field.getFieldName(), field);
       }
     }
@@ -62,7 +63,16 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
      * Find the _Fields constant that matches fieldId, or null if its not found.
      */
     public static _Fields findByThriftId(int fieldId) {
-      return byId.get(fieldId);
+      switch(fieldId) {
+        case 1: // ACTION_ID
+          return ACTION_ID;
+        case 2: // DESTINATION
+          return DESTINATION;
+        case 3: // DESTINATION_TYPE
+          return DESTINATION_TYPE;
+        default:
+          return null;
+      }
     }
 
     /**
@@ -101,16 +111,16 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
-    put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.DESTINATION_TYPE, new FieldMetaData("destination_type", TFieldRequirementType.DEFAULT, 
-        new EnumMetaData(TType.ENUM, DestinationType.class)));
-  }});
-
+  public static final Map<_Fields, FieldMetaData> metaDataMap;
   static {
+    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.DESTINATION_TYPE, new FieldMetaData("destination_type", TFieldRequirementType.DEFAULT, 
+        new EnumMetaData(TType.ENUM, DestinationType.class)));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
     FieldMetaData.addStructMetaDataMap(Subscribe.class, metaDataMap);
   }
 
@@ -145,9 +155,11 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
     return new Subscribe(this);
   }
 
-  @Deprecated
-  public Subscribe clone() {
-    return new Subscribe(this);
+  @Override
+  public void clear() {
+    this.action_id = null;
+    this.destination = null;
+    this.destination_type = null;
   }
 
   public String getAction_id() {
@@ -259,10 +271,6 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
-  }
-
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case ACTION_ID:
@@ -278,12 +286,12 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
     throw new IllegalStateException();
   }
 
-  public Object getFieldValue(int fieldId) {
-    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
-  }
-
   /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
+    }
+
     switch (field) {
     case ACTION_ID:
       return isSetAction_id();
@@ -293,10 +301,6 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
       return isSetDestination_type();
     }
     throw new IllegalStateException();
-  }
-
-  public boolean isSet(int fieldID) {
-    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -355,31 +359,41 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
     int lastComparison = 0;
     Subscribe typedOther = (Subscribe)other;
 
-    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(typedOther.isSetAction_id());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (isSetAction_id()) {
+      lastComparison = TBaseHelper.compareTo(this.action_id, typedOther.action_id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(typedOther.isSetDestination());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(isSetDestination());
+    if (isSetDestination()) {
+      lastComparison = TBaseHelper.compareTo(this.destination, typedOther.destination);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDestination_type()).compareTo(typedOther.isSetDestination_type());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(destination, typedOther.destination);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetDestination_type()).compareTo(isSetDestination_type());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(destination_type, typedOther.destination_type);
-    if (lastComparison != 0) {
-      return lastComparison;
+    if (isSetDestination_type()) {
+      lastComparison = TBaseHelper.compareTo(this.destination_type, typedOther.destination_type);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
     }
     return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
   }
 
   public void read(TProtocol iprot) throws TException {
@@ -391,35 +405,32 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
       if (field.type == TType.STOP) { 
         break;
       }
-      _Fields fieldId = _Fields.findByThriftId(field.id);
-      if (fieldId == null) {
-        TProtocolUtil.skip(iprot, field.type);
-      } else {
-        switch (fieldId) {
-          case ACTION_ID:
-            if (field.type == TType.STRING) {
-              this.action_id = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case DESTINATION:
-            if (field.type == TType.STRING) {
-              this.destination = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case DESTINATION_TYPE:
-            if (field.type == TType.I32) {
-              this.destination_type = DestinationType.findByValue(iprot.readI32());
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-        }
-        iprot.readFieldEnd();
+      switch (field.id) {
+        case 1: // ACTION_ID
+          if (field.type == TType.STRING) {
+            this.action_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 2: // DESTINATION
+          if (field.type == TType.STRING) {
+            this.destination = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 3: // DESTINATION_TYPE
+          if (field.type == TType.I32) {
+            this.destination_type = DestinationType.findByValue(iprot.readI32());
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
       }
+      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 
@@ -479,15 +490,7 @@ class Subscribe implements TBase<Subscribe._Fields>, java.io.Serializable, Clone
     if (this.destination_type == null) {
       sb.append("null");
     } else {
-      String destination_type_name = destination_type.name();
-      if (destination_type_name != null) {
-        sb.append(destination_type_name);
-        sb.append(" (");
-      }
       sb.append(this.destination_type);
-      if (destination_type_name != null) {
-        sb.append(")");
-      }
     }
     first = false;
     sb.append(")");

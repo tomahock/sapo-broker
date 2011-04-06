@@ -15,15 +15,18 @@ import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.thrift.*;
+import org.apache.thrift.async.*;
 import org.apache.thrift.meta_data.*;
+import org.apache.thrift.transport.*;
 import org.apache.thrift.protocol.*;
 
-class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializable, Cloneable, Comparable<BrokerMessage> {
+class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("BrokerMessage");
 
   private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)1);
@@ -32,7 +35,7 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
   private static final TField TIMESTAMP_FIELD_DESC = new TField("timestamp", TType.I64, (short)4);
 
   public String message_id;
-  public byte[] payload;
+  public ByteBuffer payload;
   public long expiration;
   public long timestamp;
 
@@ -43,12 +46,10 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
     EXPIRATION((short)3, "expiration"),
     TIMESTAMP((short)4, "timestamp");
 
-    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
       for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byId.put((int)field._thriftId, field);
         byName.put(field.getFieldName(), field);
       }
     }
@@ -57,7 +58,18 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
      * Find the _Fields constant that matches fieldId, or null if its not found.
      */
     public static _Fields findByThriftId(int fieldId) {
-      return byId.get(fieldId);
+      switch(fieldId) {
+        case 1: // MESSAGE_ID
+          return MESSAGE_ID;
+        case 2: // PAYLOAD
+          return PAYLOAD;
+        case 3: // EXPIRATION
+          return EXPIRATION;
+        case 4: // TIMESTAMP
+          return TIMESTAMP;
+        default:
+          return null;
+      }
     }
 
     /**
@@ -99,18 +111,18 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
   private static final int __TIMESTAMP_ISSET_ID = 1;
   private BitSet __isset_bit_vector = new BitSet(2);
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
-    put(_Fields.MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.PAYLOAD, new FieldMetaData("payload", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.EXPIRATION, new FieldMetaData("expiration", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.I64)));
-    put(_Fields.TIMESTAMP, new FieldMetaData("timestamp", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.I64)));
-  }});
-
+  public static final Map<_Fields, FieldMetaData> metaDataMap;
   static {
+    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.PAYLOAD, new FieldMetaData("payload", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.EXPIRATION, new FieldMetaData("expiration", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.I64)));
+    tmpMap.put(_Fields.TIMESTAMP, new FieldMetaData("timestamp", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.I64)));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
     FieldMetaData.addStructMetaDataMap(BrokerMessage.class, metaDataMap);
   }
 
@@ -118,7 +130,7 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
   }
 
   public BrokerMessage(
-    byte[] payload)
+    ByteBuffer payload)
   {
     this();
     this.payload = payload;
@@ -134,8 +146,8 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
       this.message_id = other.message_id;
     }
     if (other.isSetPayload()) {
-      this.payload = new byte[other.payload.length];
-      System.arraycopy(other.payload, 0, payload, 0, other.payload.length);
+      this.payload = TBaseHelper.copyBinary(other.payload);
+;
     }
     this.expiration = other.expiration;
     this.timestamp = other.timestamp;
@@ -145,9 +157,14 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
     return new BrokerMessage(this);
   }
 
-  @Deprecated
-  public BrokerMessage clone() {
-    return new BrokerMessage(this);
+  @Override
+  public void clear() {
+    this.message_id = null;
+    this.payload = null;
+    setExpirationIsSet(false);
+    this.expiration = 0;
+    setTimestampIsSet(false);
+    this.timestamp = 0;
   }
 
   public String getMessage_id() {
@@ -175,10 +192,20 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
   }
 
   public byte[] getPayload() {
-    return this.payload;
+    setPayload(TBaseHelper.rightSize(payload));
+    return payload.array();
+  }
+
+  public ByteBuffer BufferForPayload() {
+    return payload;
   }
 
   public BrokerMessage setPayload(byte[] payload) {
+    setPayload(ByteBuffer.wrap(payload));
+    return this;
+  }
+
+  public BrokerMessage setPayload(ByteBuffer payload) {
     this.payload = payload;
     return this;
   }
@@ -258,7 +285,7 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
       if (value == null) {
         unsetPayload();
       } else {
-        setPayload((byte[])value);
+        setPayload((ByteBuffer)value);
       }
       break;
 
@@ -281,10 +308,6 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
-  }
-
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case MESSAGE_ID:
@@ -303,12 +326,12 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
     throw new IllegalStateException();
   }
 
-  public Object getFieldValue(int fieldId) {
-    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
-  }
-
   /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
+    }
+
     switch (field) {
     case MESSAGE_ID:
       return isSetMessage_id();
@@ -320,10 +343,6 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
       return isSetTimestamp();
     }
     throw new IllegalStateException();
-  }
-
-  public boolean isSet(int fieldID) {
-    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -353,7 +372,7 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
     if (this_present_payload || that_present_payload) {
       if (!(this_present_payload && that_present_payload))
         return false;
-      if (!java.util.Arrays.equals(this.payload, that.payload))
+      if (!this.payload.equals(that.payload))
         return false;
     }
 
@@ -391,39 +410,51 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
     int lastComparison = 0;
     BrokerMessage typedOther = (BrokerMessage)other;
 
-    lastComparison = Boolean.valueOf(isSetMessage_id()).compareTo(isSetMessage_id());
+    lastComparison = Boolean.valueOf(isSetMessage_id()).compareTo(typedOther.isSetMessage_id());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(message_id, typedOther.message_id);
+    if (isSetMessage_id()) {
+      lastComparison = TBaseHelper.compareTo(this.message_id, typedOther.message_id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPayload()).compareTo(typedOther.isSetPayload());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetPayload()).compareTo(isSetPayload());
+    if (isSetPayload()) {
+      lastComparison = TBaseHelper.compareTo(this.payload, typedOther.payload);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetExpiration()).compareTo(typedOther.isSetExpiration());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(payload, typedOther.payload);
+    if (isSetExpiration()) {
+      lastComparison = TBaseHelper.compareTo(this.expiration, typedOther.expiration);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetTimestamp()).compareTo(typedOther.isSetTimestamp());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetExpiration()).compareTo(isSetExpiration());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(expiration, typedOther.expiration);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetTimestamp()).compareTo(isSetTimestamp());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(timestamp, typedOther.timestamp);
-    if (lastComparison != 0) {
-      return lastComparison;
+    if (isSetTimestamp()) {
+      lastComparison = TBaseHelper.compareTo(this.timestamp, typedOther.timestamp);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
     }
     return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
   }
 
   public void read(TProtocol iprot) throws TException {
@@ -435,44 +466,41 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
       if (field.type == TType.STOP) { 
         break;
       }
-      _Fields fieldId = _Fields.findByThriftId(field.id);
-      if (fieldId == null) {
-        TProtocolUtil.skip(iprot, field.type);
-      } else {
-        switch (fieldId) {
-          case MESSAGE_ID:
-            if (field.type == TType.STRING) {
-              this.message_id = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case PAYLOAD:
-            if (field.type == TType.STRING) {
-              this.payload = iprot.readBinary();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case EXPIRATION:
-            if (field.type == TType.I64) {
-              this.expiration = iprot.readI64();
-              setExpirationIsSet(true);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case TIMESTAMP:
-            if (field.type == TType.I64) {
-              this.timestamp = iprot.readI64();
-              setTimestampIsSet(true);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-        }
-        iprot.readFieldEnd();
+      switch (field.id) {
+        case 1: // MESSAGE_ID
+          if (field.type == TType.STRING) {
+            this.message_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 2: // PAYLOAD
+          if (field.type == TType.STRING) {
+            this.payload = iprot.readBinary();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 3: // EXPIRATION
+          if (field.type == TType.I64) {
+            this.expiration = iprot.readI64();
+            setExpirationIsSet(true);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 4: // TIMESTAMP
+          if (field.type == TType.I64) {
+            this.timestamp = iprot.readI64();
+            setTimestampIsSet(true);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
       }
+      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 
@@ -529,12 +557,7 @@ class BrokerMessage implements TBase<BrokerMessage._Fields>, java.io.Serializabl
     if (this.payload == null) {
       sb.append("null");
     } else {
-        int __payload_size = Math.min(this.payload.length, 128);
-        for (int i = 0; i < __payload_size; i++) {
-          if (i != 0) sb.append(" ");
-          sb.append(Integer.toHexString(this.payload[i]).length() > 1 ? Integer.toHexString(this.payload[i]).substring(Integer.toHexString(this.payload[i]).length() - 2).toUpperCase() : "0" + Integer.toHexString(this.payload[i]).toUpperCase());
-        }
-        if (this.payload.length > 128) sb.append(" ...");
+      TBaseHelper.toString(this.payload, sb);
     }
     first = false;
     if (isSetExpiration()) {

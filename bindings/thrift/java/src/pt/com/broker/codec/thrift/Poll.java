@@ -15,15 +15,18 @@ import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.thrift.*;
+import org.apache.thrift.async.*;
 import org.apache.thrift.meta_data.*;
+import org.apache.thrift.transport.*;
 import org.apache.thrift.protocol.*;
 
-class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comparable<Poll> {
+class Poll implements TBase<Poll, Poll._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Poll");
 
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
@@ -40,12 +43,10 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
     DESTINATION((short)2, "destination"),
     TIMEOUT((short)3, "timeout");
 
-    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
       for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byId.put((int)field._thriftId, field);
         byName.put(field.getFieldName(), field);
       }
     }
@@ -54,7 +55,16 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
      * Find the _Fields constant that matches fieldId, or null if its not found.
      */
     public static _Fields findByThriftId(int fieldId) {
-      return byId.get(fieldId);
+      switch(fieldId) {
+        case 1: // ACTION_ID
+          return ACTION_ID;
+        case 2: // DESTINATION
+          return DESTINATION;
+        case 3: // TIMEOUT
+          return TIMEOUT;
+        default:
+          return null;
+      }
     }
 
     /**
@@ -95,16 +105,16 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
   private static final int __TIMEOUT_ISSET_ID = 0;
   private BitSet __isset_bit_vector = new BitSet(1);
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
-    put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.TIMEOUT, new FieldMetaData("timeout", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.I64)));
-  }});
-
+  public static final Map<_Fields, FieldMetaData> metaDataMap;
   static {
+    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.TIMEOUT, new FieldMetaData("timeout", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.I64)));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
     FieldMetaData.addStructMetaDataMap(Poll.class, metaDataMap);
   }
 
@@ -140,9 +150,12 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
     return new Poll(this);
   }
 
-  @Deprecated
-  public Poll clone() {
-    return new Poll(this);
+  @Override
+  public void clear() {
+    this.action_id = null;
+    this.destination = null;
+    setTimeoutIsSet(false);
+    this.timeout = 0;
   }
 
   public String getAction_id() {
@@ -245,10 +258,6 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
-  }
-
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case ACTION_ID:
@@ -264,12 +273,12 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
     throw new IllegalStateException();
   }
 
-  public Object getFieldValue(int fieldId) {
-    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
-  }
-
   /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
+    }
+
     switch (field) {
     case ACTION_ID:
       return isSetAction_id();
@@ -279,10 +288,6 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
       return isSetTimeout();
     }
     throw new IllegalStateException();
-  }
-
-  public boolean isSet(int fieldID) {
-    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -341,31 +346,41 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
     int lastComparison = 0;
     Poll typedOther = (Poll)other;
 
-    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(typedOther.isSetAction_id());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (isSetAction_id()) {
+      lastComparison = TBaseHelper.compareTo(this.action_id, typedOther.action_id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(typedOther.isSetDestination());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(isSetDestination());
+    if (isSetDestination()) {
+      lastComparison = TBaseHelper.compareTo(this.destination, typedOther.destination);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetTimeout()).compareTo(typedOther.isSetTimeout());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(destination, typedOther.destination);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetTimeout()).compareTo(isSetTimeout());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(timeout, typedOther.timeout);
-    if (lastComparison != 0) {
-      return lastComparison;
+    if (isSetTimeout()) {
+      lastComparison = TBaseHelper.compareTo(this.timeout, typedOther.timeout);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
     }
     return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
   }
 
   public void read(TProtocol iprot) throws TException {
@@ -377,36 +392,33 @@ class Poll implements TBase<Poll._Fields>, java.io.Serializable, Cloneable, Comp
       if (field.type == TType.STOP) { 
         break;
       }
-      _Fields fieldId = _Fields.findByThriftId(field.id);
-      if (fieldId == null) {
-        TProtocolUtil.skip(iprot, field.type);
-      } else {
-        switch (fieldId) {
-          case ACTION_ID:
-            if (field.type == TType.STRING) {
-              this.action_id = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case DESTINATION:
-            if (field.type == TType.STRING) {
-              this.destination = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case TIMEOUT:
-            if (field.type == TType.I64) {
-              this.timeout = iprot.readI64();
-              setTimeoutIsSet(true);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-        }
-        iprot.readFieldEnd();
+      switch (field.id) {
+        case 1: // ACTION_ID
+          if (field.type == TType.STRING) {
+            this.action_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 2: // DESTINATION
+          if (field.type == TType.STRING) {
+            this.destination = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 3: // TIMEOUT
+          if (field.type == TType.I64) {
+            this.timeout = iprot.readI64();
+            setTimeoutIsSet(true);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
       }
+      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 
