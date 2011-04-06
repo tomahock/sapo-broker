@@ -7,6 +7,7 @@
 					<xs:complexType>
 						<xs:attribute name="hostname" type="xs:string" use="required" />
 						<xs:attribute name="port" type="xs:decimal" use="required" />
+						<xs:attribute name="world-map" type="xs:string" use="required" />
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
@@ -31,11 +32,6 @@
 			<xs:element minOccurs="1" maxOccurs="1" name="agents" type="Agents" />
 			<xs:element minOccurs="0" maxOccurs="1" name="tcp-port-exceptions" type="ExceptionAgents" />
 			<xs:element minOccurs="0" maxOccurs="1" name="http-port-exceptions" type="ExceptionAgents" />
-			<xs:element minOccurs="1" maxOccurs="1" name="global-config-file">
-				<xs:complexType>
-					<xs:attribute name="location" type="xs:string" use="required" />
-				</xs:complexType>
-			</xs:element>
 		  </xs:sequence>
 		</xs:complexType>
 	</xs:element>

@@ -64,7 +64,7 @@ public class ConfigurationInfo
 		}
 	}
 
-	private static String globalConfigFile = null;
+	private static List<String> globalConfigFiles = new ArrayList<String>();
 	// Agents through which the monitorization console connects to a agent cloud
 	private static List<HostInfo> agents = new ArrayList<HostInfo>();
 	// Agent in the cloud
@@ -77,7 +77,6 @@ public class ConfigurationInfo
 
 	public static void init()
 	{
-		getGlobalConfig();
 		extractConnectionExceptions();
 		extractCloudAgents();
 	}
@@ -85,11 +84,6 @@ public class ConfigurationInfo
 	public static int getConsoleHttpPort()
 	{
 		return httpPort;
-	}
-
-	public static String getGlobalConfigFile()
-	{
-		return globalConfigFile;
 	}
 
 	public static List<AgentInfo> getCloudAgents()
@@ -100,13 +94,6 @@ public class ConfigurationInfo
 	public static List<HostInfo> getAgents()
 	{
 		return agents;
-	}
-
-	private static void getGlobalConfig()
-	{
-		if (configuration == null)
-			return;
-		globalConfigFile = configuration.getGlobalConfigFile().getLocation();
 	}
 
 	private static void extractCloudAgents()
@@ -156,66 +143,67 @@ public class ConfigurationInfo
 		for (Agent agent : configuration.getAgents().getAgent())
 		{
 			agents.add(new HostInfo(agent.getHostname(), agent.getPort().intValue()));
+			globalConfigFiles.add(agent.getWorldMap());
 		}
 	}
 
 	private static List<HostInfo> getAgentsFromGlobalConfFile()
 	{
-		if (globalConfigFile == null)
-			return new ArrayList<HostInfo>();
-
 		ArrayList<HostInfo> agents = new ArrayList<HostInfo>();
 
 		try
 		{
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			File xmlFile = new File(globalConfigFile);
-
-			// Create the builder and parse the file
-			Document doc = factory.newDocumentBuilder().parse(xmlFile);
-
-			XPath xpath = XPathFactory.newInstance().newXPath();
-
-			NodeList list = (NodeList) xpath.evaluate("/global-config/domain/peer", doc, XPathConstants.NODESET);
-
-			for (int i = 0; i != list.getLength(); ++i)
+			for (String globalConfigFile : globalConfigFiles)
 			{
-				Node item = list.item(i);
-				String localhost = null;
-				int port = 0;
 
-				for (int j = 0; j != item.getChildNodes().getLength(); ++j)
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				File xmlFile = new File(globalConfigFile);
+
+				// Create the builder and parse the file
+				Document doc = factory.newDocumentBuilder().parse(xmlFile);
+
+				XPath xpath = XPathFactory.newInstance().newXPath();
+
+				NodeList list = (NodeList) xpath.evaluate("/global-config/domain/peer", doc, XPathConstants.NODESET);
+
+				for (int i = 0; i != list.getLength(); ++i)
 				{
-					Node peerInfoBit = item.getChildNodes().item(j);
-					if (peerInfoBit.getNodeType() != Node.ELEMENT_NODE)
-						continue;
+					Node item = list.item(i);
+					String localhost = null;
+					int port = 0;
 
-					String nodeName = peerInfoBit.getNodeName();
-
-					NodeList childNodes = peerInfoBit.getChildNodes();
-					for (int k = 0; k != childNodes.getLength(); ++k)
+					for (int j = 0; j != item.getChildNodes().getLength(); ++j)
 					{
-						Node node = childNodes.item(k);
+						Node peerInfoBit = item.getChildNodes().item(j);
+						if (peerInfoBit.getNodeType() != Node.ELEMENT_NODE)
+							continue;
 
-						String textContent = node.getTextContent();
+						String nodeName = peerInfoBit.getNodeName();
 
-						if (nodeName.equals("ip"))
+						NodeList childNodes = peerInfoBit.getChildNodes();
+						for (int k = 0; k != childNodes.getLength(); ++k)
 						{
-							localhost = textContent;
-						}
-						else if (nodeName.equals("port"))
-						{
-							port = Integer.parseInt(textContent);
-						}
-						else
-						{
-							log.error("Unexpected element: " + peerInfoBit.getNodeName());
-						}
+							Node node = childNodes.item(k);
 
+							String textContent = node.getTextContent();
+
+							if (nodeName.equals("ip"))
+							{
+								localhost = textContent;
+							}
+							else if (nodeName.equals("port"))
+							{
+								port = Integer.parseInt(textContent);
+							}
+							else
+							{
+								log.error("Unexpected element: " + peerInfoBit.getNodeName());
+							}
+
+						}
 					}
+					agents.add(new HostInfo(localhost, port));
 				}
-				agents.add(new HostInfo(localhost, port));
-
 			}
 
 		}
