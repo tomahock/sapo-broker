@@ -20,27 +20,21 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.thrift.*;
-import org.apache.thrift.async.*;
-import org.apache.thrift.meta_data.*;
-import org.apache.thrift.transport.*;
-import org.apache.thrift.protocol.*;
+class Action implements org.apache.thrift.TBase<Action, Action._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Action");
 
-class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Cloneable {
-  private static final TStruct STRUCT_DESC = new TStruct("Action");
-
-  private static final TField PUBLISH_FIELD_DESC = new TField("publish", TType.STRUCT, (short)1);
-  private static final TField POLL_FIELD_DESC = new TField("poll", TType.STRUCT, (short)2);
-  private static final TField ACCEPTED_FIELD_DESC = new TField("accepted", TType.STRUCT, (short)3);
-  private static final TField ACK_MESSAGE_FIELD_DESC = new TField("ack_message", TType.STRUCT, (short)4);
-  private static final TField SUBSCRIBE_FIELD_DESC = new TField("subscribe", TType.STRUCT, (short)5);
-  private static final TField UNSUBSCRIBE_FIELD_DESC = new TField("unsubscribe", TType.STRUCT, (short)6);
-  private static final TField NOTIFICATION_FIELD_DESC = new TField("notification", TType.STRUCT, (short)7);
-  private static final TField FAULT_FIELD_DESC = new TField("fault", TType.STRUCT, (short)8);
-  private static final TField PING_FIELD_DESC = new TField("ping", TType.STRUCT, (short)9);
-  private static final TField PONG_FIELD_DESC = new TField("pong", TType.STRUCT, (short)10);
-  private static final TField AUTH_FIELD_DESC = new TField("auth", TType.STRUCT, (short)11);
-  private static final TField ACTION_TYPE_FIELD_DESC = new TField("action_type", TType.I32, (short)12);
+  private static final org.apache.thrift.protocol.TField PUBLISH_FIELD_DESC = new org.apache.thrift.protocol.TField("publish", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField POLL_FIELD_DESC = new org.apache.thrift.protocol.TField("poll", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+  private static final org.apache.thrift.protocol.TField ACCEPTED_FIELD_DESC = new org.apache.thrift.protocol.TField("accepted", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+  private static final org.apache.thrift.protocol.TField ACK_MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("ack_message", org.apache.thrift.protocol.TType.STRUCT, (short)4);
+  private static final org.apache.thrift.protocol.TField SUBSCRIBE_FIELD_DESC = new org.apache.thrift.protocol.TField("subscribe", org.apache.thrift.protocol.TType.STRUCT, (short)5);
+  private static final org.apache.thrift.protocol.TField UNSUBSCRIBE_FIELD_DESC = new org.apache.thrift.protocol.TField("unsubscribe", org.apache.thrift.protocol.TType.STRUCT, (short)6);
+  private static final org.apache.thrift.protocol.TField NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("notification", org.apache.thrift.protocol.TType.STRUCT, (short)7);
+  private static final org.apache.thrift.protocol.TField FAULT_FIELD_DESC = new org.apache.thrift.protocol.TField("fault", org.apache.thrift.protocol.TType.STRUCT, (short)8);
+  private static final org.apache.thrift.protocol.TField PING_FIELD_DESC = new org.apache.thrift.protocol.TField("ping", org.apache.thrift.protocol.TType.STRUCT, (short)9);
+  private static final org.apache.thrift.protocol.TField PONG_FIELD_DESC = new org.apache.thrift.protocol.TField("pong", org.apache.thrift.protocol.TType.STRUCT, (short)10);
+  private static final org.apache.thrift.protocol.TField AUTH_FIELD_DESC = new org.apache.thrift.protocol.TField("auth", org.apache.thrift.protocol.TType.STRUCT, (short)11);
+  private static final org.apache.thrift.protocol.TField ACTION_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("action_type", org.apache.thrift.protocol.TType.I32, (short)12);
 
   public Publish publish;
   public Poll poll;
@@ -60,7 +54,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
   public ActionType action_type;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-  public enum _Fields implements TFieldIdEnum {
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PUBLISH((short)1, "publish"),
     POLL((short)2, "poll"),
     ACCEPTED((short)3, "accepted"),
@@ -156,35 +150,35 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
-    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.PUBLISH, new FieldMetaData("publish", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Publish.class)));
-    tmpMap.put(_Fields.POLL, new FieldMetaData("poll", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Poll.class)));
-    tmpMap.put(_Fields.ACCEPTED, new FieldMetaData("accepted", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Accepted.class)));
-    tmpMap.put(_Fields.ACK_MESSAGE, new FieldMetaData("ack_message", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Acknowledge.class)));
-    tmpMap.put(_Fields.SUBSCRIBE, new FieldMetaData("subscribe", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Subscribe.class)));
-    tmpMap.put(_Fields.UNSUBSCRIBE, new FieldMetaData("unsubscribe", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Unsubscribe.class)));
-    tmpMap.put(_Fields.NOTIFICATION, new FieldMetaData("notification", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Notification.class)));
-    tmpMap.put(_Fields.FAULT, new FieldMetaData("fault", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Fault.class)));
-    tmpMap.put(_Fields.PING, new FieldMetaData("ping", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Ping.class)));
-    tmpMap.put(_Fields.PONG, new FieldMetaData("pong", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Pong.class)));
-    tmpMap.put(_Fields.AUTH, new FieldMetaData("auth", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Authentication.class)));
-    tmpMap.put(_Fields.ACTION_TYPE, new FieldMetaData("action_type", TFieldRequirementType.DEFAULT, 
-        new EnumMetaData(TType.ENUM, ActionType.class)));
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.PUBLISH, new org.apache.thrift.meta_data.FieldMetaData("publish", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Publish.class)));
+    tmpMap.put(_Fields.POLL, new org.apache.thrift.meta_data.FieldMetaData("poll", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Poll.class)));
+    tmpMap.put(_Fields.ACCEPTED, new org.apache.thrift.meta_data.FieldMetaData("accepted", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Accepted.class)));
+    tmpMap.put(_Fields.ACK_MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("ack_message", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Acknowledge.class)));
+    tmpMap.put(_Fields.SUBSCRIBE, new org.apache.thrift.meta_data.FieldMetaData("subscribe", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Subscribe.class)));
+    tmpMap.put(_Fields.UNSUBSCRIBE, new org.apache.thrift.meta_data.FieldMetaData("unsubscribe", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Unsubscribe.class)));
+    tmpMap.put(_Fields.NOTIFICATION, new org.apache.thrift.meta_data.FieldMetaData("notification", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Notification.class)));
+    tmpMap.put(_Fields.FAULT, new org.apache.thrift.meta_data.FieldMetaData("fault", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Fault.class)));
+    tmpMap.put(_Fields.PING, new org.apache.thrift.meta_data.FieldMetaData("ping", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Ping.class)));
+    tmpMap.put(_Fields.PONG, new org.apache.thrift.meta_data.FieldMetaData("pong", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Pong.class)));
+    tmpMap.put(_Fields.AUTH, new org.apache.thrift.meta_data.FieldMetaData("auth", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Authentication.class)));
+    tmpMap.put(_Fields.ACTION_TYPE, new org.apache.thrift.meta_data.FieldMetaData("action_type", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ActionType.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    FieldMetaData.addStructMetaDataMap(Action.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Action.class, metaDataMap);
   }
 
   public Action() {
@@ -272,7 +266,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.publish = null;
   }
 
-  /** Returns true if field publish is set (has been asigned a value) and false otherwise */
+  /** Returns true if field publish is set (has been assigned a value) and false otherwise */
   public boolean isSetPublish() {
     return this.publish != null;
   }
@@ -296,7 +290,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.poll = null;
   }
 
-  /** Returns true if field poll is set (has been asigned a value) and false otherwise */
+  /** Returns true if field poll is set (has been assigned a value) and false otherwise */
   public boolean isSetPoll() {
     return this.poll != null;
   }
@@ -320,7 +314,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.accepted = null;
   }
 
-  /** Returns true if field accepted is set (has been asigned a value) and false otherwise */
+  /** Returns true if field accepted is set (has been assigned a value) and false otherwise */
   public boolean isSetAccepted() {
     return this.accepted != null;
   }
@@ -344,7 +338,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.ack_message = null;
   }
 
-  /** Returns true if field ack_message is set (has been asigned a value) and false otherwise */
+  /** Returns true if field ack_message is set (has been assigned a value) and false otherwise */
   public boolean isSetAck_message() {
     return this.ack_message != null;
   }
@@ -368,7 +362,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.subscribe = null;
   }
 
-  /** Returns true if field subscribe is set (has been asigned a value) and false otherwise */
+  /** Returns true if field subscribe is set (has been assigned a value) and false otherwise */
   public boolean isSetSubscribe() {
     return this.subscribe != null;
   }
@@ -392,7 +386,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.unsubscribe = null;
   }
 
-  /** Returns true if field unsubscribe is set (has been asigned a value) and false otherwise */
+  /** Returns true if field unsubscribe is set (has been assigned a value) and false otherwise */
   public boolean isSetUnsubscribe() {
     return this.unsubscribe != null;
   }
@@ -416,7 +410,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.notification = null;
   }
 
-  /** Returns true if field notification is set (has been asigned a value) and false otherwise */
+  /** Returns true if field notification is set (has been assigned a value) and false otherwise */
   public boolean isSetNotification() {
     return this.notification != null;
   }
@@ -440,7 +434,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.fault = null;
   }
 
-  /** Returns true if field fault is set (has been asigned a value) and false otherwise */
+  /** Returns true if field fault is set (has been assigned a value) and false otherwise */
   public boolean isSetFault() {
     return this.fault != null;
   }
@@ -464,7 +458,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.ping = null;
   }
 
-  /** Returns true if field ping is set (has been asigned a value) and false otherwise */
+  /** Returns true if field ping is set (has been assigned a value) and false otherwise */
   public boolean isSetPing() {
     return this.ping != null;
   }
@@ -488,7 +482,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.pong = null;
   }
 
-  /** Returns true if field pong is set (has been asigned a value) and false otherwise */
+  /** Returns true if field pong is set (has been assigned a value) and false otherwise */
   public boolean isSetPong() {
     return this.pong != null;
   }
@@ -512,7 +506,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.auth = null;
   }
 
-  /** Returns true if field auth is set (has been asigned a value) and false otherwise */
+  /** Returns true if field auth is set (has been assigned a value) and false otherwise */
   public boolean isSetAuth() {
     return this.auth != null;
   }
@@ -544,7 +538,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     this.action_type = null;
   }
 
-  /** Returns true if field action_type is set (has been asigned a value) and false otherwise */
+  /** Returns true if field action_type is set (has been assigned a value) and false otherwise */
   public boolean isSetAction_type() {
     return this.action_type != null;
   }
@@ -698,7 +692,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     throw new IllegalStateException();
   }
 
-  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
       throw new IllegalArgumentException();
@@ -875,7 +869,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetPublish()) {
-      lastComparison = TBaseHelper.compareTo(this.publish, typedOther.publish);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.publish, typedOther.publish);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -885,7 +879,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetPoll()) {
-      lastComparison = TBaseHelper.compareTo(this.poll, typedOther.poll);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.poll, typedOther.poll);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -895,7 +889,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetAccepted()) {
-      lastComparison = TBaseHelper.compareTo(this.accepted, typedOther.accepted);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.accepted, typedOther.accepted);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -905,7 +899,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetAck_message()) {
-      lastComparison = TBaseHelper.compareTo(this.ack_message, typedOther.ack_message);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ack_message, typedOther.ack_message);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -915,7 +909,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetSubscribe()) {
-      lastComparison = TBaseHelper.compareTo(this.subscribe, typedOther.subscribe);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.subscribe, typedOther.subscribe);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -925,7 +919,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetUnsubscribe()) {
-      lastComparison = TBaseHelper.compareTo(this.unsubscribe, typedOther.unsubscribe);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.unsubscribe, typedOther.unsubscribe);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -935,7 +929,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetNotification()) {
-      lastComparison = TBaseHelper.compareTo(this.notification, typedOther.notification);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.notification, typedOther.notification);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -945,7 +939,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetFault()) {
-      lastComparison = TBaseHelper.compareTo(this.fault, typedOther.fault);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fault, typedOther.fault);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -955,7 +949,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetPing()) {
-      lastComparison = TBaseHelper.compareTo(this.ping, typedOther.ping);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ping, typedOther.ping);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -965,7 +959,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetPong()) {
-      lastComparison = TBaseHelper.compareTo(this.pong, typedOther.pong);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.pong, typedOther.pong);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -975,7 +969,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetAuth()) {
-      lastComparison = TBaseHelper.compareTo(this.auth, typedOther.auth);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.auth, typedOther.auth);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -985,7 +979,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetAction_type()) {
-      lastComparison = TBaseHelper.compareTo(this.action_type, typedOther.action_type);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.action_type, typedOther.action_type);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -997,113 +991,113 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     return _Fields.findByThriftId(fieldId);
   }
 
-  public void read(TProtocol iprot) throws TException {
-    TField field;
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    org.apache.thrift.protocol.TField field;
     iprot.readStructBegin();
     while (true)
     {
       field = iprot.readFieldBegin();
-      if (field.type == TType.STOP) { 
+      if (field.type == org.apache.thrift.protocol.TType.STOP) { 
         break;
       }
       switch (field.id) {
         case 1: // PUBLISH
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.publish = new Publish();
             this.publish.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 2: // POLL
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.poll = new Poll();
             this.poll.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 3: // ACCEPTED
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.accepted = new Accepted();
             this.accepted.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 4: // ACK_MESSAGE
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.ack_message = new Acknowledge();
             this.ack_message.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 5: // SUBSCRIBE
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.subscribe = new Subscribe();
             this.subscribe.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 6: // UNSUBSCRIBE
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.unsubscribe = new Unsubscribe();
             this.unsubscribe.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 7: // NOTIFICATION
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.notification = new Notification();
             this.notification.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 8: // FAULT
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.fault = new Fault();
             this.fault.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 9: // PING
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.ping = new Ping();
             this.ping.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 10: // PONG
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.pong = new Pong();
             this.pong.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 11: // AUTH
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.auth = new Authentication();
             this.auth.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 12: // ACTION_TYPE
-          if (field.type == TType.I32) {
+          if (field.type == org.apache.thrift.protocol.TType.I32) {
             this.action_type = ActionType.findByValue(iprot.readI32());
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         default:
-          TProtocolUtil.skip(iprot, field.type);
+          org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
       }
       iprot.readFieldEnd();
     }
@@ -1113,7 +1107,7 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     validate();
   }
 
-  public void write(TProtocol oprot) throws TException {
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
@@ -1329,8 +1323,24 @@ class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Clo
     return sb.toString();
   }
 
-  public void validate() throws TException {
+  public void validate() throws org.apache.thrift.TException {
     // check for required fields
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
   }
 
 }

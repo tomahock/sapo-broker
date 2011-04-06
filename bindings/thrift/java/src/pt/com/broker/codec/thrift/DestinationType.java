@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum DestinationType implements TEnum {
+public enum DestinationType implements org.apache.thrift.TEnum {
   TOPIC(0),
   QUEUE(1),
   VIRTUAL_QUEUE(2);

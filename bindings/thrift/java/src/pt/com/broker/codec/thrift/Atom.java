@@ -20,23 +20,17 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.thrift.*;
-import org.apache.thrift.async.*;
-import org.apache.thrift.meta_data.*;
-import org.apache.thrift.transport.*;
-import org.apache.thrift.protocol.*;
+class Atom implements org.apache.thrift.TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Atom");
 
-class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable {
-  private static final TStruct STRUCT_DESC = new TStruct("Atom");
-
-  private static final TField HEADER_FIELD_DESC = new TField("header", TType.STRUCT, (short)1);
-  private static final TField ACTION_FIELD_DESC = new TField("action", TType.STRUCT, (short)2);
+  private static final org.apache.thrift.protocol.TField HEADER_FIELD_DESC = new org.apache.thrift.protocol.TField("header", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField ACTION_FIELD_DESC = new org.apache.thrift.protocol.TField("action", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
   public Header header;
   public Action action;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-  public enum _Fields implements TFieldIdEnum {
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     HEADER((short)1, "header"),
     ACTION((short)2, "action");
 
@@ -98,15 +92,15 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
-    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.HEADER, new FieldMetaData("header", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Header.class)));
-    tmpMap.put(_Fields.ACTION, new FieldMetaData("action", TFieldRequirementType.DEFAULT, 
-        new StructMetaData(TType.STRUCT, Action.class)));
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.HEADER, new org.apache.thrift.meta_data.FieldMetaData("header", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Header.class)));
+    tmpMap.put(_Fields.ACTION, new org.apache.thrift.meta_data.FieldMetaData("action", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Action.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    FieldMetaData.addStructMetaDataMap(Atom.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Atom.class, metaDataMap);
   }
 
   public Atom() {
@@ -154,7 +148,7 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
     this.header = null;
   }
 
-  /** Returns true if field header is set (has been asigned a value) and false otherwise */
+  /** Returns true if field header is set (has been assigned a value) and false otherwise */
   public boolean isSetHeader() {
     return this.header != null;
   }
@@ -178,7 +172,7 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
     this.action = null;
   }
 
-  /** Returns true if field action is set (has been asigned a value) and false otherwise */
+  /** Returns true if field action is set (has been assigned a value) and false otherwise */
   public boolean isSetAction() {
     return this.action != null;
   }
@@ -222,7 +216,7 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
     throw new IllegalStateException();
   }
 
-  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
       throw new IllegalArgumentException();
@@ -289,7 +283,7 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
       return lastComparison;
     }
     if (isSetHeader()) {
-      lastComparison = TBaseHelper.compareTo(this.header, typedOther.header);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.header, typedOther.header);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -299,7 +293,7 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
       return lastComparison;
     }
     if (isSetAction()) {
-      lastComparison = TBaseHelper.compareTo(this.action, typedOther.action);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.action, typedOther.action);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -311,34 +305,34 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
     return _Fields.findByThriftId(fieldId);
   }
 
-  public void read(TProtocol iprot) throws TException {
-    TField field;
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    org.apache.thrift.protocol.TField field;
     iprot.readStructBegin();
     while (true)
     {
       field = iprot.readFieldBegin();
-      if (field.type == TType.STOP) { 
+      if (field.type == org.apache.thrift.protocol.TType.STOP) { 
         break;
       }
       switch (field.id) {
         case 1: // HEADER
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.header = new Header();
             this.header.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 2: // ACTION
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.action = new Action();
             this.action.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         default:
-          TProtocolUtil.skip(iprot, field.type);
+          org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
       }
       iprot.readFieldEnd();
     }
@@ -348,7 +342,7 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
     validate();
   }
 
-  public void write(TProtocol oprot) throws TException {
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
@@ -394,8 +388,24 @@ class Atom implements TBase<Atom, Atom._Fields>, java.io.Serializable, Cloneable
     return sb.toString();
   }
 
-  public void validate() throws TException {
+  public void validate() throws org.apache.thrift.TException {
     // check for required fields
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
   }
 
 }
