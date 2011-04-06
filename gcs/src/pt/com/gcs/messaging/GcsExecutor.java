@@ -1,6 +1,7 @@
 package pt.com.gcs.messaging;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -41,8 +42,9 @@ public class GcsExecutor
 		instance.shed_exec_srv.scheduleWithFixedDelay(task, initialDelay, period, unit);
 	}
 
-	public static void schedule(Runnable task, long delay, TimeUnit unit)
+	public static ScheduledFuture<?> schedule(Runnable task, long delay, TimeUnit unit)
 	{
-		instance.shed_exec_srv.schedule(task, delay, unit);
+		ScheduledFuture<?> scheduleFuture = instance.shed_exec_srv.schedule(task, delay, unit);
+		return scheduleFuture;
 	}
 }

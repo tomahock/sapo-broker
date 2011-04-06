@@ -18,9 +18,9 @@ import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.ChannelAttributes;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.channels.ChannelAttributes;
 
 /**
  * The network protocol has the following layout:

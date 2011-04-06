@@ -12,9 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.net.BrokerProtocolHandler;
-import pt.com.broker.types.ChannelAttributes;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetPoll;
+import pt.com.broker.types.channels.ChannelAttributes;
+import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
 
@@ -29,42 +30,6 @@ public class BrokerSyncConsumer
 	private static final AtomicInteger zeroValue = new AtomicInteger(0);
 
 	private static ConcurrentMap<String, AtomicInteger> synConsumersCount = new ConcurrentHashMap<String, AtomicInteger>();
-
-	static
-	{
-		// Runnable counter = new Runnable()
-		// {
-		// public void run()
-		// {
-		// try
-		// {
-		// Collection<String> synConsumersList = synConsumersCount.keySet();
-		//
-		// for (String queueName : synConsumersList)
-		// {
-		// String ctName = String.format("/system/stats/sync-consumer-count/#%s#", queueName);
-		//
-		// int size = 0;
-		// AtomicInteger count = synConsumersCount.get(queueName);
-		// if (count != null)
-		// {
-		// size = count.get();
-		// }
-		//
-		// String content = GcsInfo.getAgentName() + "#" + queueName + "#" + size;
-		//
-		// InternalPublisher.send(ctName, content);
-		// }
-		// }
-		// catch (Throwable t)
-		// {
-		// log.error(t.getMessage(), t);
-		// }
-		//
-		// }
-		// };
-		// BrokerExecutor.scheduleWithFixedDelay(counter, 20, 20, TimeUnit.SECONDS);
-	}
 
 	public static void removeSession(ChannelHandlerContext ctx)
 	{
@@ -112,7 +77,7 @@ public class BrokerSyncConsumer
 			}
 			else
 			{
-				ListenerChannel lchannel = new ListenerChannel(channel);
+				ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(channel);
 
 				msgListener = new SynchronousMessageListener(lchannel, queueName);
 

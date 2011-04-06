@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.ForwardResult;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.channels.ListenerChannel;
 
 /**
  * BrokerTopicListener a represents local topic consumer.

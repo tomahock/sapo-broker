@@ -15,9 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.CriticalErrors;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
 
 public class TopicProcessorList
@@ -219,7 +220,7 @@ public class TopicProcessorList
 	{
 		try
 		{
-			ListenerChannel lc = new ListenerChannel(channel);
+			ListenerChannel lc = ListenerChannelFactory.getListenerChannel(channel);
 			List<TopicProcessor> toDeleteProcessors = new ArrayList<TopicProcessor>();
 
 			for (TopicProcessor tp : tpCache.values())

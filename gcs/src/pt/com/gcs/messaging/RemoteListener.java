@@ -9,13 +9,16 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.MessageListenerBase;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.broker.types.channels.ListenerChannelEventHandler;
+import pt.com.broker.types.channels.ListenerChannel.ChannelState;
 
-public class RemoteListener implements MessageListener
+public class RemoteListener extends MessageListenerBase
 {
 	private static final Logger log = LoggerFactory.getLogger(RemoteListener.class);
 	private final ListenerChannel lchannel;
@@ -54,6 +57,31 @@ public class RemoteListener implements MessageListener
 		{
 			max_write_time = QUEUE_MAX_WRITE_TIME;
 			success = successQueue;
+			
+			lchannel.addStateChangeListener(new ListenerChannelEventHandler()
+			{
+				@Override
+				public void stateChanged(ListenerChannel listenerChannel, ChannelState state)
+				{
+					MessageListenerState newState = null;
+					switch (state)
+					{
+						case READY:
+							newState = MessageListenerState.Writable;
+							break;
+						case NOT_READY:
+							newState = MessageListenerState.NotWritable;
+							break;
+						default:
+							break;
+					}
+					
+					if(newState != null)
+					{
+						onEventChange(newState);
+					}
+				}
+			});
 		}
 		else
 		{
@@ -111,6 +139,12 @@ public class RemoteListener implements MessageListener
 	{
 		return isReady.get();
 	}
+	
+	private void setReady(boolean ready)
+	{
+		isReady.set(ready);
+		onEventChange(ready ? MessageListenerState.Ready : MessageListenerState.NotReady);
+	}
 
 	@Override
 	public ForwardResult onMessage(DeliverableMessage message)
@@ -147,14 +181,14 @@ public class RemoteListener implements MessageListener
 			if (lchannel.isWritable())
 			{
 				lchannel.write(nmsg);
-				isReady.set(true);
+				setReady(true);
 			}
 			else
 			{
 				if (isReady())
 				{
 					ChannelFuture future = lchannel.write(nmsg);
-					isReady.set(false);
+					setReady(false);
 					if (showSuspendedDeliveryMessage && log.isDebugEnabled())
 					{
 						log.debug(String.format("Suspending message delivery for %s '%s' to session '%s'.", getSourceDestinationType(), getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
@@ -165,7 +199,7 @@ public class RemoteListener implements MessageListener
 						@Override
 						public void operationComplete(ChannelFuture future) throws Exception
 						{
-							isReady.set(true);
+							setReady(true);
 							if(lchannel.isWritable())
 							{
 								if (log.isDebugEnabled())

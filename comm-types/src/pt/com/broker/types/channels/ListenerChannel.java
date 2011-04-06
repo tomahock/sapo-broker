@@ -1,25 +1,35 @@
-package pt.com.broker.types;
+package pt.com.broker.types.channels;
 
+
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ListenerChannel
 {
-	public static final long MAX_WRITE_TRIES = 100;
+	private static final Logger log = LoggerFactory.getLogger(ListenerChannel.class);
+
+	public enum ChannelState
+	{
+		NOT_READY, READY
+	};
 	
+	public static final long MAX_WRITE_TRIES = 100;
+
 	private final Channel channel;
 	private final AtomicLong messageDeliveryTries = new AtomicLong(0);
-		
 
-	public ListenerChannel(Channel channel)
+	protected ListenerChannel(Channel channel)
 	{
 		super();
 		this.channel = channel;
 	}
-	
+
 	public ChannelFuture close()
 	{
 		return channel.close();
@@ -29,7 +39,7 @@ public class ListenerChannel
 	{
 		return channel.write(obj);
 	}
-	
+
 	public boolean isConnected()
 	{
 		return channel.isConnected();
@@ -44,7 +54,7 @@ public class ListenerChannel
 	{
 		return channel.isReadable();
 	}
-	
+
 	public Channel getChannel()
 	{
 		return channel;
@@ -99,19 +109,52 @@ public class ListenerChannel
 	{
 		return messageDeliveryTries.incrementAndGet();
 	}
-	
+
 	public long decrementAndGetDeliveryTries()
 	{
 		return messageDeliveryTries.decrementAndGet();
 	}
-	
+
 	public long getDeliveryTries()
 	{
 		return messageDeliveryTries.get();
 	}
-	
+
 	public void resetDeliveryTries()
 	{
 		messageDeliveryTries.set(0);
 	}
+
+	/**
+	 * Event handling
+	 */
+
+	private CopyOnWriteArrayList<ListenerChannelEventHandler> eventHandlers = new CopyOnWriteArrayList<ListenerChannelEventHandler>();
+
+	public void addStateChangeListener(ListenerChannelEventHandler eventHandler)
+	{
+		eventHandlers.add(eventHandler);
+	}
+
+	public void removeStateChangeListener(ListenerChannelEventHandler eventHandler)
+	{
+		eventHandlers.remove(eventHandler);
+	}
+
+	private void onStateChageEvent(ChannelState state)
+	{
+		for (ListenerChannelEventHandler eventHandler : eventHandlers)
+		{
+			try
+			{
+				eventHandler.stateChanged(this, state);
+			}
+			catch (Throwable t)
+			{
+				
+				log.error(String.format("Failed to process event handler. New State: '%s'", state.toString()));
+			}
+		}
+	}
+
 }

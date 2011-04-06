@@ -1,4 +1,4 @@
-package pt.com.broker.types;
+package pt.com.broker.types.channels;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;

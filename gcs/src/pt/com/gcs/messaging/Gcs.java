@@ -28,6 +28,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.Headers;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
@@ -61,7 +62,7 @@ public class Gcs
 
 	private ClientBootstrap connector;
 
-	private static final long expiry;
+	private static final long EXPIRATION_TIME;
 
 	public static void ackMessage(String queueName, final String msgId)
 	{
@@ -182,7 +183,7 @@ public class Gcs
 		{
 			connections = new LinkedHashSet<Channel>(instance.agentsConnection);
 		}
-		
+
 		return connections;
 	}
 
@@ -228,7 +229,7 @@ public class Gcs
 
 	static
 	{
-		expiry = GcsInfo.getMessageStorageTime();
+		EXPIRATION_TIME = GcsInfo.getMessageStorageTime();
 	}
 
 	private Gcs()
@@ -247,12 +248,12 @@ public class Gcs
 
 	private void iackMessage(String queueName, final String msgId)
 	{
-		if(!QueueProcessorList.hasQueue(queueName))
+		if (!QueueProcessorList.hasQueue(queueName))
 		{
 			log.warn(String.format("Trying to acknowledge a message whose queue dosen't existe. Queue: '%s', MsgId: '%s' ", queueName, msgId));
 			return;
 		}
-		
+
 		QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
 		if (queueProcessor != null)
 		{
@@ -321,7 +322,6 @@ public class Gcs
 			startAcceptor(GcsInfo.getAgentPort());
 			startConnector();
 
-			GcsExecutor.scheduleWithFixedDelay(new QueueAwaker(), RECOVER_INTERVAL, RECOVER_INTERVAL, TimeUnit.MILLISECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new GlobalStatisticsPublisher(), 60, 60, TimeUnit.SECONDS);
@@ -329,6 +329,8 @@ public class Gcs
 			GcsExecutor.scheduleWithFixedDelay(new QueueLister(), 5, 5, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
+
+			GcsExecutor.scheduleWithFixedDelay(new QueueWatchDog(), 2, 2, TimeUnit.MINUTES);
 		}
 		catch (Throwable t)
 		{
@@ -341,7 +343,7 @@ public class Gcs
 
 		log.info("{} initialized.", SERVICE_NAME);
 	}
-	
+
 	private void idestroy()
 	{
 		try
@@ -464,7 +466,26 @@ public class Gcs
 
 		if (np.getMessage().getExpiration() == -1)
 		{
-			np.getMessage().setExpiration(now + expiry);
+			String deliveryTime = np.getMessage().getHeaders().get(Headers.DEFERRED_DELIVERY);
+			if (StringUtils.isBlank(deliveryTime))
+			{
+				np.getMessage().setExpiration(now + EXPIRATION_TIME);
+			}
+			else
+			{
+				try
+				{
+					long value = Long.parseLong(deliveryTime);
+					np.getMessage().setExpiration(value + EXPIRATION_TIME);
+				}
+				catch (NumberFormatException nfe)
+				{
+					// This shouldn't happen because deliveryTime has been validated
+					log.error(String.format("'EXPIRATION_TIME' is invalid '%s'", deliveryTime), nfe);
+					throw new RuntimeException(nfe);
+				}
+			}
+
 		}
 
 		NetNotification notification = new NetNotification(np.getDestination(), np.getDestinationType(), np.getMessage(), subscriptionName);

@@ -12,10 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.CriticalErrors;
-import pt.com.broker.types.ListenerChannel;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.TopicProcessorList.MaximumDistinctSubscriptionsReachedException;
 
 /**
  * QueueProcessorList contains references for all active QueueProcessor objects.
@@ -232,7 +232,7 @@ public class QueueProcessorList
 	{
 		try
 		{
-			ListenerChannel lc = new ListenerChannel(channel);
+			ListenerChannel lc = ListenerChannelFactory.getListenerChannel(channel);
 
 			for (QueueProcessor qp : qpCache.values())
 			{
