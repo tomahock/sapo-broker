@@ -41,7 +41,7 @@ public class QueueSyncConsumer
 		qsconsumer.waitTime = cargs.getDelay();
 		qsconsumer.timeout = cargs.getPollTimeout();
 		qsconsumer.reserveTime = cargs.getReserveTime();
-
+		
 		BrokerClient bk = new BrokerClient(qsconsumer.host, qsconsumer.port, "tcp://mycompany.com/mysniffer");
 
 		qsconsumer.receiveLoop(bk);
@@ -51,6 +51,9 @@ public class QueueSyncConsumer
 
 	private void receiveLoop(BrokerClient bk) throws Throwable
 	{
+		System.out.println("reserveTime= " + reserveTime);
+		System.out.println("timeout= " + timeout);
+		
 		while (true)
 		{
 			NetNotification notification = null;
@@ -90,11 +93,11 @@ public class QueueSyncConsumer
 				//notification = bk.poll(dname);
 				if(reserveTime == -1)
 				{
-					notification = bk.poll(dname, 0, null);
+					notification = bk.poll(dname, timeout, null);
 				}
 				else
 				{
-					notification = bk.poll(dname, 0, reserveTime, null);
+					notification = bk.poll(dname, timeout, reserveTime, null);
 				}
 			}
 
