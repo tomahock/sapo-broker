@@ -36,7 +36,7 @@ public class GlobalStatisticsPublisher implements Runnable
 
 		publishChannelInfo(currentDateStr, difSeconds);
 
-		publishEncodingInfo(currentDateStr, difSeconds);
+		//publishEncodingInfo(currentDateStr, difSeconds);
 
 		publishMiscInformation(currentDateStr, difSeconds);
 	}
@@ -187,48 +187,13 @@ public class GlobalStatisticsPublisher implements Runnable
 
 		rate = ((double) ChannelStats.getDropboxReceivedMessagesAndReset() / dSeconds);
 		sb.append(String.format("\n\t<item subject='dropbox' predicate='input-rate' value='%s' />", rate));
-		rate = ((double) ChannelStats.getHttpReceivedMessagesAndReset() / dSeconds);
-		sb.append(String.format("\n\t<item subject='http' predicate='input-rate' value='%s' />", rate));
+//		rate = ((double) ChannelStats.getHttpReceivedMessagesAndReset() / dSeconds);
+//		sb.append(String.format("\n\t<item subject='http' predicate='input-rate' value='%s' />", rate));
 
 		sb.append("\n</mqinfo>");
 		String result = sb.toString();
 
 		final String sys_topic = String.format("/system/stats/channels/#%s#", GcsInfo.getAgentName());
-		NetPublish np = new NetPublish(sys_topic, DestinationType.TOPIC, new NetBrokerMessage(result));
-
-		Gcs.publish(np);
-	}
-
-	private void publishEncodingInfo(String date, long seconds)
-	{
-		double dSeconds = (double) seconds;
-
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", date, GcsInfo.getAgentName()));
-
-		double rate;
-
-		rate = ((double) EncodingStats.getSoapDecodedMessageAndReset() / dSeconds);
-		sb.append(String.format("\n\t<item subject='xml' predicate='input-rate' value='%s' />", rate));
-		rate = ((double) EncodingStats.getSoapEncodedMessageAndReset() / dSeconds);
-		sb.append(String.format("\n\t<item subject='xml' predicate='output-rate' value='%s' />", rate));
-
-		rate = ((double) EncodingStats.getProtoDecodedMessageAndReset() / dSeconds);
-		sb.append(String.format("\n\t<item subject='protobuf' predicate='input-rate' value='%s' />", rate));
-		rate = ((double) EncodingStats.getProtoEncodedMessageAndReset() / dSeconds);
-		sb.append(String.format("\n\t<item subject='protobuf' predicate='output-rate' value='%s' />", rate));
-
-		rate = ((double) EncodingStats.getThriftDecodedMessageAndReset() / dSeconds);
-		sb.append(String.format("\n\t<item subject='thrift' predicate='input-rate' value='%s' />", rate));
-		rate = ((double) EncodingStats.getThriftEncodedMessageAndReset() / dSeconds);
-		sb.append(String.format("\n\t<item subject='thrift' predicate='output-rate' value='%s' />", rate));
-
-		sb.append("\n</mqinfo>");
-
-		String result = sb.toString();
-
-		final String sys_topic = String.format("/system/stats/encoding/#%s#", GcsInfo.getAgentName());
 		NetPublish np = new NetPublish(sys_topic, DestinationType.TOPIC, new NetBrokerMessage(result));
 
 		Gcs.publish(np);
@@ -247,8 +212,11 @@ public class GlobalStatisticsPublisher implements Runnable
 		sb.append(String.format("\n\t<item subject='invalid-messages' predicate='input-rate' value='%s' />", rate));
 
 		// access denied
-		rate = ((double) MiscStats.getAccessesDeniedAndReset() / dSeconds);
-		sb.append(String.format("\n\t<item subject='access' predicate='denied' value='%s' />", rate));
+		rate = ((double) MiscStats.getAccessesDeniedAndReset());
+		if(rate > 0)
+		{
+			sb.append(String.format("\n\t<item subject='access' predicate='denied' value='%s' />", rate));
+		}
 
 		// tcp, tcp-legacy, ssl
 		sb.append(String.format("\n\t<item subject='tcp' predicate='connections' value='%s' />", MiscStats.getTcpConnections()));
