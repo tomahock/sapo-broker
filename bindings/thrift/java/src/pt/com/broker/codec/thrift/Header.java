@@ -15,15 +15,18 @@ import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.thrift.*;
+import org.apache.thrift.async.*;
 import org.apache.thrift.meta_data.*;
+import org.apache.thrift.transport.*;
 import org.apache.thrift.protocol.*;
 
-class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
+class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Header");
 
   private static final TField PARAMETERS_FIELD_DESC = new TField("parameters", TType.MAP, (short)1);
@@ -34,12 +37,10 @@ class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
   public enum _Fields implements TFieldIdEnum {
     PARAMETERS((short)1, "parameters");
 
-    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
       for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byId.put((int)field._thriftId, field);
         byName.put(field.getFieldName(), field);
       }
     }
@@ -48,7 +49,12 @@ class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
      * Find the _Fields constant that matches fieldId, or null if its not found.
      */
     public static _Fields findByThriftId(int fieldId) {
-      return byId.get(fieldId);
+      switch(fieldId) {
+        case 1: // PARAMETERS
+          return PARAMETERS;
+        default:
+          return null;
+      }
     }
 
     /**
@@ -87,14 +93,14 @@ class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
-    put(_Fields.PARAMETERS, new FieldMetaData("parameters", TFieldRequirementType.DEFAULT, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  static {
+    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.PARAMETERS, new FieldMetaData("parameters", TFieldRequirementType.DEFAULT, 
         new MapMetaData(TType.MAP, 
             new FieldValueMetaData(TType.STRING), 
             new FieldValueMetaData(TType.STRING))));
-  }});
-
-  static {
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
     FieldMetaData.addStructMetaDataMap(Header.class, metaDataMap);
   }
 
@@ -133,9 +139,9 @@ class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
     return new Header(this);
   }
 
-  @Deprecated
-  public Header clone() {
-    return new Header(this);
+  @Override
+  public void clear() {
+    this.parameters = null;
   }
 
   public int getParametersSize() {
@@ -186,10 +192,6 @@ class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
-  }
-
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case PARAMETERS:
@@ -199,21 +201,17 @@ class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
     throw new IllegalStateException();
   }
 
-  public Object getFieldValue(int fieldId) {
-    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
-  }
-
   /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
+    }
+
     switch (field) {
     case PARAMETERS:
       return isSetParameters();
     }
     throw new IllegalStateException();
-  }
-
-  public boolean isSet(int fieldID) {
-    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -246,6 +244,31 @@ class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
     return 0;
   }
 
+  public int compareTo(Header other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Header typedOther = (Header)other;
+
+    lastComparison = Boolean.valueOf(isSetParameters()).compareTo(typedOther.isSetParameters());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParameters()) {
+      lastComparison = TBaseHelper.compareTo(this.parameters, typedOther.parameters);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
+  }
+
   public void read(TProtocol iprot) throws TException {
     TField field;
     iprot.readStructBegin();
@@ -255,33 +278,30 @@ class Header implements TBase<Header._Fields>, java.io.Serializable, Cloneable {
       if (field.type == TType.STOP) { 
         break;
       }
-      _Fields fieldId = _Fields.findByThriftId(field.id);
-      if (fieldId == null) {
-        TProtocolUtil.skip(iprot, field.type);
-      } else {
-        switch (fieldId) {
-          case PARAMETERS:
-            if (field.type == TType.MAP) {
+      switch (field.id) {
+        case 1: // PARAMETERS
+          if (field.type == TType.MAP) {
+            {
+              TMap _map0 = iprot.readMapBegin();
+              this.parameters = new HashMap<String,String>(2*_map0.size);
+              for (int _i1 = 0; _i1 < _map0.size; ++_i1)
               {
-                TMap _map0 = iprot.readMapBegin();
-                this.parameters = new HashMap<String,String>(2*_map0.size);
-                for (int _i1 = 0; _i1 < _map0.size; ++_i1)
-                {
-                  String _key2;
-                  String _val3;
-                  _key2 = iprot.readString();
-                  _val3 = iprot.readString();
-                  this.parameters.put(_key2, _val3);
-                }
-                iprot.readMapEnd();
+                String _key2;
+                String _val3;
+                _key2 = iprot.readString();
+                _val3 = iprot.readString();
+                this.parameters.put(_key2, _val3);
               }
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
+              iprot.readMapEnd();
             }
-            break;
-        }
-        iprot.readFieldEnd();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
       }
+      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 

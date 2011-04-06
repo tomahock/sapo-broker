@@ -9,16 +9,11 @@ package pt.com.broker.codec.thrift;
 import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
-public enum DestinationType implements TEnum{
-    TOPIC(0),
-    QUEUE(1),
-    VIRTUAL_QUEUE(2);
 
-  private static final Map<Integer, DestinationType> BY_VALUE = new HashMap<Integer,DestinationType>() {{
-    for(DestinationType val : DestinationType.values()) {
-      put(val.getValue(), val);
-    }
-  }};
+public enum DestinationType implements TEnum {
+  TOPIC(0),
+  QUEUE(1),
+  VIRTUAL_QUEUE(2);
 
   private final int value;
 
@@ -38,6 +33,15 @@ public enum DestinationType implements TEnum{
    * @return null if the value is not found.
    */
   public static DestinationType findByValue(int value) { 
-    return BY_VALUE.get(value);
+    switch (value) {
+      case 0:
+        return TOPIC;
+      case 1:
+        return QUEUE;
+      case 2:
+        return VIRTUAL_QUEUE;
+      default:
+        return null;
+    }
   }
 }

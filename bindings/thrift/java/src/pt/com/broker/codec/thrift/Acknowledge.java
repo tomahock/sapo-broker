@@ -15,15 +15,18 @@ import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.thrift.*;
+import org.apache.thrift.async.*;
 import org.apache.thrift.meta_data.*;
+import org.apache.thrift.transport.*;
 import org.apache.thrift.protocol.*;
 
-class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, Cloneable, Comparable<Acknowledge> {
+class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Acknowledge");
 
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
@@ -40,12 +43,10 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
     MESSAGE_ID((short)2, "message_id"),
     DESTINATION((short)3, "destination");
 
-    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
       for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byId.put((int)field._thriftId, field);
         byName.put(field.getFieldName(), field);
       }
     }
@@ -54,7 +55,16 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
      * Find the _Fields constant that matches fieldId, or null if its not found.
      */
     public static _Fields findByThriftId(int fieldId) {
-      return byId.get(fieldId);
+      switch(fieldId) {
+        case 1: // ACTION_ID
+          return ACTION_ID;
+        case 2: // MESSAGE_ID
+          return MESSAGE_ID;
+        case 3: // DESTINATION
+          return DESTINATION;
+        default:
+          return null;
+      }
     }
 
     /**
@@ -93,16 +103,16 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
-    put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-  }});
-
+  public static final Map<_Fields, FieldMetaData> metaDataMap;
   static {
+    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
     FieldMetaData.addStructMetaDataMap(Acknowledge.class, metaDataMap);
   }
 
@@ -137,9 +147,11 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
     return new Acknowledge(this);
   }
 
-  @Deprecated
-  public Acknowledge clone() {
-    return new Acknowledge(this);
+  @Override
+  public void clear() {
+    this.action_id = null;
+    this.message_id = null;
+    this.destination = null;
   }
 
   public String getAction_id() {
@@ -243,10 +255,6 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
-  }
-
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case ACTION_ID:
@@ -262,12 +270,12 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
     throw new IllegalStateException();
   }
 
-  public Object getFieldValue(int fieldId) {
-    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
-  }
-
   /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
+    }
+
     switch (field) {
     case ACTION_ID:
       return isSetAction_id();
@@ -277,10 +285,6 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
       return isSetDestination();
     }
     throw new IllegalStateException();
-  }
-
-  public boolean isSet(int fieldID) {
-    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -339,31 +343,41 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
     int lastComparison = 0;
     Acknowledge typedOther = (Acknowledge)other;
 
-    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(typedOther.isSetAction_id());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (isSetAction_id()) {
+      lastComparison = TBaseHelper.compareTo(this.action_id, typedOther.action_id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetMessage_id()).compareTo(typedOther.isSetMessage_id());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetMessage_id()).compareTo(isSetMessage_id());
+    if (isSetMessage_id()) {
+      lastComparison = TBaseHelper.compareTo(this.message_id, typedOther.message_id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(typedOther.isSetDestination());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(message_id, typedOther.message_id);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(isSetDestination());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(destination, typedOther.destination);
-    if (lastComparison != 0) {
-      return lastComparison;
+    if (isSetDestination()) {
+      lastComparison = TBaseHelper.compareTo(this.destination, typedOther.destination);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
     }
     return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
   }
 
   public void read(TProtocol iprot) throws TException {
@@ -375,35 +389,32 @@ class Acknowledge implements TBase<Acknowledge._Fields>, java.io.Serializable, C
       if (field.type == TType.STOP) { 
         break;
       }
-      _Fields fieldId = _Fields.findByThriftId(field.id);
-      if (fieldId == null) {
-        TProtocolUtil.skip(iprot, field.type);
-      } else {
-        switch (fieldId) {
-          case ACTION_ID:
-            if (field.type == TType.STRING) {
-              this.action_id = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case MESSAGE_ID:
-            if (field.type == TType.STRING) {
-              this.message_id = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case DESTINATION:
-            if (field.type == TType.STRING) {
-              this.destination = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-        }
-        iprot.readFieldEnd();
+      switch (field.id) {
+        case 1: // ACTION_ID
+          if (field.type == TType.STRING) {
+            this.action_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 2: // MESSAGE_ID
+          if (field.type == TType.STRING) {
+            this.message_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 3: // DESTINATION
+          if (field.type == TType.STRING) {
+            this.destination = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
       }
+      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 

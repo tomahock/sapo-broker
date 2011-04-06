@@ -15,15 +15,18 @@ import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.thrift.*;
+import org.apache.thrift.async.*;
 import org.apache.thrift.meta_data.*;
+import org.apache.thrift.transport.*;
 import org.apache.thrift.protocol.*;
 
-class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, Comparable<Action> {
+class Action implements TBase<Action, Action._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Action");
 
   private static final TField PUBLISH_FIELD_DESC = new TField("publish", TType.STRUCT, (short)1);
@@ -75,12 +78,10 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
      */
     ACTION_TYPE((short)12, "action_type");
 
-    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
       for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byId.put((int)field._thriftId, field);
         byName.put(field.getFieldName(), field);
       }
     }
@@ -89,7 +90,34 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
      * Find the _Fields constant that matches fieldId, or null if its not found.
      */
     public static _Fields findByThriftId(int fieldId) {
-      return byId.get(fieldId);
+      switch(fieldId) {
+        case 1: // PUBLISH
+          return PUBLISH;
+        case 2: // POLL
+          return POLL;
+        case 3: // ACCEPTED
+          return ACCEPTED;
+        case 4: // ACK_MESSAGE
+          return ACK_MESSAGE;
+        case 5: // SUBSCRIBE
+          return SUBSCRIBE;
+        case 6: // UNSUBSCRIBE
+          return UNSUBSCRIBE;
+        case 7: // NOTIFICATION
+          return NOTIFICATION;
+        case 8: // FAULT
+          return FAULT;
+        case 9: // PING
+          return PING;
+        case 10: // PONG
+          return PONG;
+        case 11: // AUTH
+          return AUTH;
+        case 12: // ACTION_TYPE
+          return ACTION_TYPE;
+        default:
+          return null;
+      }
     }
 
     /**
@@ -128,34 +156,34 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
-    put(_Fields.PUBLISH, new FieldMetaData("publish", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Publish.class)));
-    put(_Fields.POLL, new FieldMetaData("poll", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Poll.class)));
-    put(_Fields.ACCEPTED, new FieldMetaData("accepted", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Accepted.class)));
-    put(_Fields.ACK_MESSAGE, new FieldMetaData("ack_message", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Acknowledge.class)));
-    put(_Fields.SUBSCRIBE, new FieldMetaData("subscribe", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Subscribe.class)));
-    put(_Fields.UNSUBSCRIBE, new FieldMetaData("unsubscribe", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Unsubscribe.class)));
-    put(_Fields.NOTIFICATION, new FieldMetaData("notification", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Notification.class)));
-    put(_Fields.FAULT, new FieldMetaData("fault", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Fault.class)));
-    put(_Fields.PING, new FieldMetaData("ping", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Ping.class)));
-    put(_Fields.PONG, new FieldMetaData("pong", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Pong.class)));
-    put(_Fields.AUTH, new FieldMetaData("auth", TFieldRequirementType.OPTIONAL, 
-        new StructMetaData(TType.STRUCT, Authentication.class)));
-    put(_Fields.ACTION_TYPE, new FieldMetaData("action_type", TFieldRequirementType.DEFAULT, 
-        new EnumMetaData(TType.ENUM, ActionType.class)));
-  }});
-
+  public static final Map<_Fields, FieldMetaData> metaDataMap;
   static {
+    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.PUBLISH, new FieldMetaData("publish", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Publish.class)));
+    tmpMap.put(_Fields.POLL, new FieldMetaData("poll", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Poll.class)));
+    tmpMap.put(_Fields.ACCEPTED, new FieldMetaData("accepted", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Accepted.class)));
+    tmpMap.put(_Fields.ACK_MESSAGE, new FieldMetaData("ack_message", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Acknowledge.class)));
+    tmpMap.put(_Fields.SUBSCRIBE, new FieldMetaData("subscribe", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Subscribe.class)));
+    tmpMap.put(_Fields.UNSUBSCRIBE, new FieldMetaData("unsubscribe", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Unsubscribe.class)));
+    tmpMap.put(_Fields.NOTIFICATION, new FieldMetaData("notification", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Notification.class)));
+    tmpMap.put(_Fields.FAULT, new FieldMetaData("fault", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Fault.class)));
+    tmpMap.put(_Fields.PING, new FieldMetaData("ping", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Ping.class)));
+    tmpMap.put(_Fields.PONG, new FieldMetaData("pong", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Pong.class)));
+    tmpMap.put(_Fields.AUTH, new FieldMetaData("auth", TFieldRequirementType.OPTIONAL, 
+        new StructMetaData(TType.STRUCT, Authentication.class)));
+    tmpMap.put(_Fields.ACTION_TYPE, new FieldMetaData("action_type", TFieldRequirementType.DEFAULT, 
+        new EnumMetaData(TType.ENUM, ActionType.class)));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
     FieldMetaData.addStructMetaDataMap(Action.class, metaDataMap);
   }
 
@@ -215,9 +243,20 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
     return new Action(this);
   }
 
-  @Deprecated
-  public Action clone() {
-    return new Action(this);
+  @Override
+  public void clear() {
+    this.publish = null;
+    this.poll = null;
+    this.accepted = null;
+    this.ack_message = null;
+    this.subscribe = null;
+    this.unsubscribe = null;
+    this.notification = null;
+    this.fault = null;
+    this.ping = null;
+    this.pong = null;
+    this.auth = null;
+    this.action_type = null;
   }
 
   public Publish getPublish() {
@@ -617,10 +656,6 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
-  }
-
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case PUBLISH:
@@ -663,12 +698,12 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
     throw new IllegalStateException();
   }
 
-  public Object getFieldValue(int fieldId) {
-    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
-  }
-
   /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
+    }
+
     switch (field) {
     case PUBLISH:
       return isSetPublish();
@@ -696,10 +731,6 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
       return isSetAction_type();
     }
     throw new IllegalStateException();
-  }
-
-  public boolean isSet(int fieldID) {
-    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -839,103 +870,131 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
     int lastComparison = 0;
     Action typedOther = (Action)other;
 
-    lastComparison = Boolean.valueOf(isSetPublish()).compareTo(isSetPublish());
+    lastComparison = Boolean.valueOf(isSetPublish()).compareTo(typedOther.isSetPublish());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(publish, typedOther.publish);
+    if (isSetPublish()) {
+      lastComparison = TBaseHelper.compareTo(this.publish, typedOther.publish);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPoll()).compareTo(typedOther.isSetPoll());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetPoll()).compareTo(isSetPoll());
+    if (isSetPoll()) {
+      lastComparison = TBaseHelper.compareTo(this.poll, typedOther.poll);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAccepted()).compareTo(typedOther.isSetAccepted());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(poll, typedOther.poll);
+    if (isSetAccepted()) {
+      lastComparison = TBaseHelper.compareTo(this.accepted, typedOther.accepted);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAck_message()).compareTo(typedOther.isSetAck_message());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetAccepted()).compareTo(isSetAccepted());
+    if (isSetAck_message()) {
+      lastComparison = TBaseHelper.compareTo(this.ack_message, typedOther.ack_message);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSubscribe()).compareTo(typedOther.isSetSubscribe());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(accepted, typedOther.accepted);
+    if (isSetSubscribe()) {
+      lastComparison = TBaseHelper.compareTo(this.subscribe, typedOther.subscribe);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetUnsubscribe()).compareTo(typedOther.isSetUnsubscribe());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetAck_message()).compareTo(isSetAck_message());
+    if (isSetUnsubscribe()) {
+      lastComparison = TBaseHelper.compareTo(this.unsubscribe, typedOther.unsubscribe);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetNotification()).compareTo(typedOther.isSetNotification());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(ack_message, typedOther.ack_message);
+    if (isSetNotification()) {
+      lastComparison = TBaseHelper.compareTo(this.notification, typedOther.notification);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetFault()).compareTo(typedOther.isSetFault());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetSubscribe()).compareTo(isSetSubscribe());
+    if (isSetFault()) {
+      lastComparison = TBaseHelper.compareTo(this.fault, typedOther.fault);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPing()).compareTo(typedOther.isSetPing());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(subscribe, typedOther.subscribe);
+    if (isSetPing()) {
+      lastComparison = TBaseHelper.compareTo(this.ping, typedOther.ping);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPong()).compareTo(typedOther.isSetPong());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetUnsubscribe()).compareTo(isSetUnsubscribe());
+    if (isSetPong()) {
+      lastComparison = TBaseHelper.compareTo(this.pong, typedOther.pong);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAuth()).compareTo(typedOther.isSetAuth());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(unsubscribe, typedOther.unsubscribe);
+    if (isSetAuth()) {
+      lastComparison = TBaseHelper.compareTo(this.auth, typedOther.auth);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAction_type()).compareTo(typedOther.isSetAction_type());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetNotification()).compareTo(isSetNotification());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(notification, typedOther.notification);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetFault()).compareTo(isSetFault());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(fault, typedOther.fault);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetPing()).compareTo(isSetPing());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(ping, typedOther.ping);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetPong()).compareTo(isSetPong());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(pong, typedOther.pong);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetAuth()).compareTo(isSetAuth());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(auth, typedOther.auth);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetAction_type()).compareTo(isSetAction_type());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(action_type, typedOther.action_type);
-    if (lastComparison != 0) {
-      return lastComparison;
+    if (isSetAction_type()) {
+      lastComparison = TBaseHelper.compareTo(this.action_type, typedOther.action_type);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
     }
     return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
   }
 
   public void read(TProtocol iprot) throws TException {
@@ -947,109 +1006,106 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
       if (field.type == TType.STOP) { 
         break;
       }
-      _Fields fieldId = _Fields.findByThriftId(field.id);
-      if (fieldId == null) {
-        TProtocolUtil.skip(iprot, field.type);
-      } else {
-        switch (fieldId) {
-          case PUBLISH:
-            if (field.type == TType.STRUCT) {
-              this.publish = new Publish();
-              this.publish.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case POLL:
-            if (field.type == TType.STRUCT) {
-              this.poll = new Poll();
-              this.poll.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case ACCEPTED:
-            if (field.type == TType.STRUCT) {
-              this.accepted = new Accepted();
-              this.accepted.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case ACK_MESSAGE:
-            if (field.type == TType.STRUCT) {
-              this.ack_message = new Acknowledge();
-              this.ack_message.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case SUBSCRIBE:
-            if (field.type == TType.STRUCT) {
-              this.subscribe = new Subscribe();
-              this.subscribe.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case UNSUBSCRIBE:
-            if (field.type == TType.STRUCT) {
-              this.unsubscribe = new Unsubscribe();
-              this.unsubscribe.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case NOTIFICATION:
-            if (field.type == TType.STRUCT) {
-              this.notification = new Notification();
-              this.notification.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case FAULT:
-            if (field.type == TType.STRUCT) {
-              this.fault = new Fault();
-              this.fault.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case PING:
-            if (field.type == TType.STRUCT) {
-              this.ping = new Ping();
-              this.ping.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case PONG:
-            if (field.type == TType.STRUCT) {
-              this.pong = new Pong();
-              this.pong.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case AUTH:
-            if (field.type == TType.STRUCT) {
-              this.auth = new Authentication();
-              this.auth.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case ACTION_TYPE:
-            if (field.type == TType.I32) {
-              this.action_type = ActionType.findByValue(iprot.readI32());
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-        }
-        iprot.readFieldEnd();
+      switch (field.id) {
+        case 1: // PUBLISH
+          if (field.type == TType.STRUCT) {
+            this.publish = new Publish();
+            this.publish.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 2: // POLL
+          if (field.type == TType.STRUCT) {
+            this.poll = new Poll();
+            this.poll.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 3: // ACCEPTED
+          if (field.type == TType.STRUCT) {
+            this.accepted = new Accepted();
+            this.accepted.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 4: // ACK_MESSAGE
+          if (field.type == TType.STRUCT) {
+            this.ack_message = new Acknowledge();
+            this.ack_message.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 5: // SUBSCRIBE
+          if (field.type == TType.STRUCT) {
+            this.subscribe = new Subscribe();
+            this.subscribe.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 6: // UNSUBSCRIBE
+          if (field.type == TType.STRUCT) {
+            this.unsubscribe = new Unsubscribe();
+            this.unsubscribe.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 7: // NOTIFICATION
+          if (field.type == TType.STRUCT) {
+            this.notification = new Notification();
+            this.notification.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 8: // FAULT
+          if (field.type == TType.STRUCT) {
+            this.fault = new Fault();
+            this.fault.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 9: // PING
+          if (field.type == TType.STRUCT) {
+            this.ping = new Ping();
+            this.ping.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 10: // PONG
+          if (field.type == TType.STRUCT) {
+            this.pong = new Pong();
+            this.pong.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 11: // AUTH
+          if (field.type == TType.STRUCT) {
+            this.auth = new Authentication();
+            this.auth.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 12: // ACTION_TYPE
+          if (field.type == TType.I32) {
+            this.action_type = ActionType.findByValue(iprot.readI32());
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
       }
+      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 
@@ -1266,15 +1322,7 @@ class Action implements TBase<Action._Fields>, java.io.Serializable, Cloneable, 
     if (this.action_type == null) {
       sb.append("null");
     } else {
-      String action_type_name = action_type.name();
-      if (action_type_name != null) {
-        sb.append(action_type_name);
-        sb.append(" (");
-      }
       sb.append(this.action_type);
-      if (action_type_name != null) {
-        sb.append(")");
-      }
     }
     first = false;
     sb.append(")");

@@ -15,15 +15,18 @@ import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.thrift.*;
+import org.apache.thrift.async.*;
 import org.apache.thrift.meta_data.*;
+import org.apache.thrift.transport.*;
 import org.apache.thrift.protocol.*;
 
-class Authentication implements TBase<Authentication._Fields>, java.io.Serializable, Cloneable, Comparable<Authentication> {
+class Authentication implements TBase<Authentication, Authentication._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Authentication");
 
   private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
@@ -34,7 +37,7 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
 
   public String action_id;
   public String authentication_type;
-  public byte[] token;
+  public ByteBuffer token;
   public String user_id;
   public List<String> roles;
 
@@ -46,12 +49,10 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
     USER_ID((short)4, "user_id"),
     ROLES((short)5, "roles");
 
-    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
       for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byId.put((int)field._thriftId, field);
         byName.put(field.getFieldName(), field);
       }
     }
@@ -60,7 +61,20 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
      * Find the _Fields constant that matches fieldId, or null if its not found.
      */
     public static _Fields findByThriftId(int fieldId) {
-      return byId.get(fieldId);
+      switch(fieldId) {
+        case 1: // ACTION_ID
+          return ACTION_ID;
+        case 2: // AUTHENTICATION_TYPE
+          return AUTHENTICATION_TYPE;
+        case 3: // TOKEN
+          return TOKEN;
+        case 4: // USER_ID
+          return USER_ID;
+        case 5: // ROLES
+          return ROLES;
+        default:
+          return null;
+      }
     }
 
     /**
@@ -99,21 +113,21 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
-    put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
+  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  static {
+    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(_Fields.AUTHENTICATION_TYPE, new FieldMetaData("authentication_type", TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.AUTHENTICATION_TYPE, new FieldMetaData("authentication_type", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
-    put(_Fields.TOKEN, new FieldMetaData("token", TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.TOKEN, new FieldMetaData("token", TFieldRequirementType.DEFAULT, 
         new FieldValueMetaData(TType.STRING)));
-    put(_Fields.USER_ID, new FieldMetaData("user_id", TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.USER_ID, new FieldMetaData("user_id", TFieldRequirementType.OPTIONAL, 
         new FieldValueMetaData(TType.STRING)));
-    put(_Fields.ROLES, new FieldMetaData("roles", TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.ROLES, new FieldMetaData("roles", TFieldRequirementType.OPTIONAL, 
         new ListMetaData(TType.LIST, 
             new FieldValueMetaData(TType.STRING))));
-  }});
-
-  static {
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
     FieldMetaData.addStructMetaDataMap(Authentication.class, metaDataMap);
   }
 
@@ -122,7 +136,7 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
 
   public Authentication(
     String authentication_type,
-    byte[] token)
+    ByteBuffer token)
   {
     this();
     this.authentication_type = authentication_type;
@@ -140,8 +154,8 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
       this.authentication_type = other.authentication_type;
     }
     if (other.isSetToken()) {
-      this.token = new byte[other.token.length];
-      System.arraycopy(other.token, 0, token, 0, other.token.length);
+      this.token = TBaseHelper.copyBinary(other.token);
+;
     }
     if (other.isSetUser_id()) {
       this.user_id = other.user_id;
@@ -159,9 +173,13 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
     return new Authentication(this);
   }
 
-  @Deprecated
-  public Authentication clone() {
-    return new Authentication(this);
+  @Override
+  public void clear() {
+    this.action_id = null;
+    this.authentication_type = null;
+    this.token = null;
+    this.user_id = null;
+    this.roles = null;
   }
 
   public String getAction_id() {
@@ -213,10 +231,20 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
   }
 
   public byte[] getToken() {
-    return this.token;
+    setToken(TBaseHelper.rightSize(token));
+    return token.array();
+  }
+
+  public ByteBuffer BufferForToken() {
+    return token;
   }
 
   public Authentication setToken(byte[] token) {
+    setToken(ByteBuffer.wrap(token));
+    return this;
+  }
+
+  public Authentication setToken(ByteBuffer token) {
     this.token = token;
     return this;
   }
@@ -321,7 +349,7 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
       if (value == null) {
         unsetToken();
       } else {
-        setToken((byte[])value);
+        setToken((ByteBuffer)value);
       }
       break;
 
@@ -342,10 +370,6 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
       break;
 
     }
-  }
-
-  public void setFieldValue(int fieldID, Object value) {
-    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
   }
 
   public Object getFieldValue(_Fields field) {
@@ -369,12 +393,12 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
     throw new IllegalStateException();
   }
 
-  public Object getFieldValue(int fieldId) {
-    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
-  }
-
   /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
+    }
+
     switch (field) {
     case ACTION_ID:
       return isSetAction_id();
@@ -388,10 +412,6 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
       return isSetRoles();
     }
     throw new IllegalStateException();
-  }
-
-  public boolean isSet(int fieldID) {
-    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -430,7 +450,7 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
     if (this_present_token || that_present_token) {
       if (!(this_present_token && that_present_token))
         return false;
-      if (!java.util.Arrays.equals(this.token, that.token))
+      if (!this.token.equals(that.token))
         return false;
     }
 
@@ -468,47 +488,61 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
     int lastComparison = 0;
     Authentication typedOther = (Authentication)other;
 
-    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(isSetAction_id());
+    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(typedOther.isSetAction_id());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(action_id, typedOther.action_id);
+    if (isSetAction_id()) {
+      lastComparison = TBaseHelper.compareTo(this.action_id, typedOther.action_id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAuthentication_type()).compareTo(typedOther.isSetAuthentication_type());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetAuthentication_type()).compareTo(isSetAuthentication_type());
+    if (isSetAuthentication_type()) {
+      lastComparison = TBaseHelper.compareTo(this.authentication_type, typedOther.authentication_type);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetToken()).compareTo(typedOther.isSetToken());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(authentication_type, typedOther.authentication_type);
+    if (isSetToken()) {
+      lastComparison = TBaseHelper.compareTo(this.token, typedOther.token);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetUser_id()).compareTo(typedOther.isSetUser_id());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetToken()).compareTo(isSetToken());
+    if (isSetUser_id()) {
+      lastComparison = TBaseHelper.compareTo(this.user_id, typedOther.user_id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRoles()).compareTo(typedOther.isSetRoles());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(token, typedOther.token);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetUser_id()).compareTo(isSetUser_id());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(user_id, typedOther.user_id);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetRoles()).compareTo(isSetRoles());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(roles, typedOther.roles);
-    if (lastComparison != 0) {
-      return lastComparison;
+    if (isSetRoles()) {
+      lastComparison = TBaseHelper.compareTo(this.roles, typedOther.roles);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
     }
     return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
   }
 
   public void read(TProtocol iprot) throws TException {
@@ -520,59 +554,56 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
       if (field.type == TType.STOP) { 
         break;
       }
-      _Fields fieldId = _Fields.findByThriftId(field.id);
-      if (fieldId == null) {
-        TProtocolUtil.skip(iprot, field.type);
-      } else {
-        switch (fieldId) {
-          case ACTION_ID:
-            if (field.type == TType.STRING) {
-              this.action_id = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case AUTHENTICATION_TYPE:
-            if (field.type == TType.STRING) {
-              this.authentication_type = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case TOKEN:
-            if (field.type == TType.STRING) {
-              this.token = iprot.readBinary();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case USER_ID:
-            if (field.type == TType.STRING) {
-              this.user_id = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case ROLES:
-            if (field.type == TType.LIST) {
+      switch (field.id) {
+        case 1: // ACTION_ID
+          if (field.type == TType.STRING) {
+            this.action_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 2: // AUTHENTICATION_TYPE
+          if (field.type == TType.STRING) {
+            this.authentication_type = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 3: // TOKEN
+          if (field.type == TType.STRING) {
+            this.token = iprot.readBinary();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 4: // USER_ID
+          if (field.type == TType.STRING) {
+            this.user_id = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 5: // ROLES
+          if (field.type == TType.LIST) {
+            {
+              TList _list5 = iprot.readListBegin();
+              this.roles = new ArrayList<String>(_list5.size);
+              for (int _i6 = 0; _i6 < _list5.size; ++_i6)
               {
-                TList _list5 = iprot.readListBegin();
-                this.roles = new ArrayList<String>(_list5.size);
-                for (int _i6 = 0; _i6 < _list5.size; ++_i6)
-                {
-                  String _elem7;
-                  _elem7 = iprot.readString();
-                  this.roles.add(_elem7);
-                }
-                iprot.readListEnd();
+                String _elem7;
+                _elem7 = iprot.readString();
+                this.roles.add(_elem7);
               }
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
+              iprot.readListEnd();
             }
-            break;
-        }
-        iprot.readFieldEnd();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
       }
+      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 
@@ -653,12 +684,7 @@ class Authentication implements TBase<Authentication._Fields>, java.io.Serializa
     if (this.token == null) {
       sb.append("null");
     } else {
-        int __token_size = Math.min(this.token.length, 128);
-        for (int i = 0; i < __token_size; i++) {
-          if (i != 0) sb.append(" ");
-          sb.append(Integer.toHexString(this.token[i]).length() > 1 ? Integer.toHexString(this.token[i]).substring(Integer.toHexString(this.token[i]).length() - 2).toUpperCase() : "0" + Integer.toHexString(this.token[i]).toUpperCase());
-        }
-        if (this.token.length > 128) sb.append(" ...");
+      TBaseHelper.toString(this.token, sb);
     }
     first = false;
     if (isSetUser_id()) {

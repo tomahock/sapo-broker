@@ -15,15 +15,18 @@ import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.thrift.*;
+import org.apache.thrift.async.*;
 import org.apache.thrift.meta_data.*;
+import org.apache.thrift.transport.*;
 import org.apache.thrift.protocol.*;
 
-class Notification implements TBase<Notification._Fields>, java.io.Serializable, Cloneable, Comparable<Notification> {
+class Notification implements TBase<Notification, Notification._Fields>, java.io.Serializable, Cloneable {
   private static final TStruct STRUCT_DESC = new TStruct("Notification");
 
   private static final TField DESTINATION_FIELD_DESC = new TField("destination", TType.STRING, (short)1);
@@ -51,12 +54,10 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
     DESTINATION_TYPE((short)3, "destination_type"),
     MESSAGE((short)4, "message");
 
-    private static final Map<Integer, _Fields> byId = new HashMap<Integer, _Fields>();
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
       for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byId.put((int)field._thriftId, field);
         byName.put(field.getFieldName(), field);
       }
     }
@@ -65,7 +66,18 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
      * Find the _Fields constant that matches fieldId, or null if its not found.
      */
     public static _Fields findByThriftId(int fieldId) {
-      return byId.get(fieldId);
+      switch(fieldId) {
+        case 1: // DESTINATION
+          return DESTINATION;
+        case 2: // SUBSCRIPTION
+          return SUBSCRIPTION;
+        case 3: // DESTINATION_TYPE
+          return DESTINATION_TYPE;
+        case 4: // MESSAGE
+          return MESSAGE;
+        default:
+          return null;
+      }
     }
 
     /**
@@ -104,18 +116,18 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap = Collections.unmodifiableMap(new EnumMap<_Fields, FieldMetaData>(_Fields.class) {{
-    put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.SUBSCRIPTION, new FieldMetaData("subscription", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    put(_Fields.DESTINATION_TYPE, new FieldMetaData("destination_type", TFieldRequirementType.DEFAULT, 
-        new EnumMetaData(TType.ENUM, DestinationType.class)));
-    put(_Fields.MESSAGE, new FieldMetaData("message", TFieldRequirementType.DEFAULT, 
-        new StructMetaData(TType.STRUCT, BrokerMessage.class)));
-  }});
-
+  public static final Map<_Fields, FieldMetaData> metaDataMap;
   static {
+    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.SUBSCRIPTION, new FieldMetaData("subscription", TFieldRequirementType.DEFAULT, 
+        new FieldValueMetaData(TType.STRING)));
+    tmpMap.put(_Fields.DESTINATION_TYPE, new FieldMetaData("destination_type", TFieldRequirementType.DEFAULT, 
+        new EnumMetaData(TType.ENUM, DestinationType.class)));
+    tmpMap.put(_Fields.MESSAGE, new FieldMetaData("message", TFieldRequirementType.DEFAULT, 
+        new StructMetaData(TType.STRUCT, BrokerMessage.class)));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
     FieldMetaData.addStructMetaDataMap(Notification.class, metaDataMap);
   }
 
@@ -157,9 +169,12 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
     return new Notification(this);
   }
 
-  @Deprecated
-  public Notification clone() {
-    return new Notification(this);
+  @Override
+  public void clear() {
+    this.destination = null;
+    this.subscription = null;
+    this.destination_type = null;
+    this.message = null;
   }
 
   public String getDestination() {
@@ -303,10 +318,6 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
     }
   }
 
-  public void setFieldValue(int fieldID, Object value) {
-    setFieldValue(_Fields.findByThriftIdOrThrow(fieldID), value);
-  }
-
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case DESTINATION:
@@ -325,12 +336,12 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
     throw new IllegalStateException();
   }
 
-  public Object getFieldValue(int fieldId) {
-    return getFieldValue(_Fields.findByThriftIdOrThrow(fieldId));
-  }
-
   /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
+    }
+
     switch (field) {
     case DESTINATION:
       return isSetDestination();
@@ -342,10 +353,6 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
       return isSetMessage();
     }
     throw new IllegalStateException();
-  }
-
-  public boolean isSet(int fieldID) {
-    return isSet(_Fields.findByThriftIdOrThrow(fieldID));
   }
 
   @Override
@@ -413,39 +420,51 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
     int lastComparison = 0;
     Notification typedOther = (Notification)other;
 
-    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(isSetDestination());
+    lastComparison = Boolean.valueOf(isSetDestination()).compareTo(typedOther.isSetDestination());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(destination, typedOther.destination);
+    if (isSetDestination()) {
+      lastComparison = TBaseHelper.compareTo(this.destination, typedOther.destination);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSubscription()).compareTo(typedOther.isSetSubscription());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetSubscription()).compareTo(isSetSubscription());
+    if (isSetSubscription()) {
+      lastComparison = TBaseHelper.compareTo(this.subscription, typedOther.subscription);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDestination_type()).compareTo(typedOther.isSetDestination_type());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = TBaseHelper.compareTo(subscription, typedOther.subscription);
+    if (isSetDestination_type()) {
+      lastComparison = TBaseHelper.compareTo(this.destination_type, typedOther.destination_type);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetMessage()).compareTo(typedOther.isSetMessage());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    lastComparison = Boolean.valueOf(isSetDestination_type()).compareTo(isSetDestination_type());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(destination_type, typedOther.destination_type);
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = Boolean.valueOf(isSetMessage()).compareTo(isSetMessage());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    lastComparison = TBaseHelper.compareTo(message, typedOther.message);
-    if (lastComparison != 0) {
-      return lastComparison;
+    if (isSetMessage()) {
+      lastComparison = TBaseHelper.compareTo(this.message, typedOther.message);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
     }
     return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
   }
 
   public void read(TProtocol iprot) throws TException {
@@ -457,43 +476,40 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
       if (field.type == TType.STOP) { 
         break;
       }
-      _Fields fieldId = _Fields.findByThriftId(field.id);
-      if (fieldId == null) {
-        TProtocolUtil.skip(iprot, field.type);
-      } else {
-        switch (fieldId) {
-          case DESTINATION:
-            if (field.type == TType.STRING) {
-              this.destination = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case SUBSCRIPTION:
-            if (field.type == TType.STRING) {
-              this.subscription = iprot.readString();
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case DESTINATION_TYPE:
-            if (field.type == TType.I32) {
-              this.destination_type = DestinationType.findByValue(iprot.readI32());
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-          case MESSAGE:
-            if (field.type == TType.STRUCT) {
-              this.message = new BrokerMessage();
-              this.message.read(iprot);
-            } else { 
-              TProtocolUtil.skip(iprot, field.type);
-            }
-            break;
-        }
-        iprot.readFieldEnd();
+      switch (field.id) {
+        case 1: // DESTINATION
+          if (field.type == TType.STRING) {
+            this.destination = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 2: // SUBSCRIPTION
+          if (field.type == TType.STRING) {
+            this.subscription = iprot.readString();
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 3: // DESTINATION_TYPE
+          if (field.type == TType.I32) {
+            this.destination_type = DestinationType.findByValue(iprot.readI32());
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        case 4: // MESSAGE
+          if (field.type == TType.STRUCT) {
+            this.message = new BrokerMessage();
+            this.message.read(iprot);
+          } else { 
+            TProtocolUtil.skip(iprot, field.type);
+          }
+          break;
+        default:
+          TProtocolUtil.skip(iprot, field.type);
       }
+      iprot.readFieldEnd();
     }
     iprot.readStructEnd();
 
@@ -554,15 +570,7 @@ class Notification implements TBase<Notification._Fields>, java.io.Serializable,
     if (this.destination_type == null) {
       sb.append("null");
     } else {
-      String destination_type_name = destination_type.name();
-      if (destination_type_name != null) {
-        sb.append(destination_type_name);
-        sb.append(" (");
-      }
       sb.append(this.destination_type);
-      if (destination_type_name != null) {
-        sb.append(")");
-      }
     }
     first = false;
     if (!first) sb.append(", ");
