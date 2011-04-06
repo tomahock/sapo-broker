@@ -69,7 +69,8 @@ public class Main
 
 		// NetProtocolType[] protoTypes = new NetProtocolType[] {NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER , NetProtocolType.THRIFT, NetProtocolType.SOAP_v0};
 
-		NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT,/* NetProtocolType.JSON, */NetProtocolType.SOAP_v0 };
+		NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP, NetProtocolType.PROTOCOL_BUFFER, NetProtocolType.THRIFT, NetProtocolType.JSON, NetProtocolType.SOAP_v0 };
+		
 
 		TestsResults testResults = new TestsResults();
 

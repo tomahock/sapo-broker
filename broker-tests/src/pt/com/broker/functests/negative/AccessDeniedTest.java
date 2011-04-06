@@ -4,6 +4,7 @@ import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -23,5 +24,11 @@ public class AccessDeniedTest extends GenericNetMessageNegativeTest
 
 		setFaultCode("3201");
 		setFaultMessage("Access denied");
+	}
+	
+	@Override
+	public boolean skipTest()
+	{
+		return (getEncodingProtocolType() == NetProtocolType.JSON);
 	}
 }
