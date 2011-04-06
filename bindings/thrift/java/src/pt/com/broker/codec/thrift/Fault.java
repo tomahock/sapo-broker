@@ -20,19 +20,13 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.thrift.*;
-import org.apache.thrift.async.*;
-import org.apache.thrift.meta_data.*;
-import org.apache.thrift.transport.*;
-import org.apache.thrift.protocol.*;
+class Fault implements org.apache.thrift.TBase<Fault, Fault._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Fault");
 
-class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Cloneable {
-  private static final TStruct STRUCT_DESC = new TStruct("Fault");
-
-  private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
-  private static final TField FAULT_CODE_FIELD_DESC = new TField("fault_code", TType.STRING, (short)2);
-  private static final TField FAULT_MESSAGE_FIELD_DESC = new TField("fault_message", TType.STRING, (short)3);
-  private static final TField FAULT_DETAIL_FIELD_DESC = new TField("fault_detail", TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField ACTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("action_id", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField FAULT_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("fault_code", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField FAULT_MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("fault_message", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField FAULT_DETAIL_FIELD_DESC = new org.apache.thrift.protocol.TField("fault_detail", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   public String action_id;
   public String fault_code;
@@ -40,7 +34,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
   public String fault_detail;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-  public enum _Fields implements TFieldIdEnum {
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ACTION_ID((short)1, "action_id"),
     FAULT_CODE((short)2, "fault_code"),
     FAULT_MESSAGE((short)3, "fault_message"),
@@ -108,19 +102,19 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
-    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.FAULT_CODE, new FieldMetaData("fault_code", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.FAULT_MESSAGE, new FieldMetaData("fault_message", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.FAULT_DETAIL, new FieldMetaData("fault_detail", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ACTION_ID, new org.apache.thrift.meta_data.FieldMetaData("action_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.FAULT_CODE, new org.apache.thrift.meta_data.FieldMetaData("fault_code", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.FAULT_MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("fault_message", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.FAULT_DETAIL, new org.apache.thrift.meta_data.FieldMetaData("fault_detail", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    FieldMetaData.addStructMetaDataMap(Fault.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Fault.class, metaDataMap);
   }
 
   public Fault() {
@@ -178,7 +172,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
     this.action_id = null;
   }
 
-  /** Returns true if field action_id is set (has been asigned a value) and false otherwise */
+  /** Returns true if field action_id is set (has been assigned a value) and false otherwise */
   public boolean isSetAction_id() {
     return this.action_id != null;
   }
@@ -202,7 +196,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
     this.fault_code = null;
   }
 
-  /** Returns true if field fault_code is set (has been asigned a value) and false otherwise */
+  /** Returns true if field fault_code is set (has been assigned a value) and false otherwise */
   public boolean isSetFault_code() {
     return this.fault_code != null;
   }
@@ -226,7 +220,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
     this.fault_message = null;
   }
 
-  /** Returns true if field fault_message is set (has been asigned a value) and false otherwise */
+  /** Returns true if field fault_message is set (has been assigned a value) and false otherwise */
   public boolean isSetFault_message() {
     return this.fault_message != null;
   }
@@ -250,7 +244,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
     this.fault_detail = null;
   }
 
-  /** Returns true if field fault_detail is set (has been asigned a value) and false otherwise */
+  /** Returns true if field fault_detail is set (has been assigned a value) and false otherwise */
   public boolean isSetFault_detail() {
     return this.fault_detail != null;
   }
@@ -316,7 +310,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
     throw new IllegalStateException();
   }
 
-  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
       throw new IllegalArgumentException();
@@ -405,7 +399,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
       return lastComparison;
     }
     if (isSetAction_id()) {
-      lastComparison = TBaseHelper.compareTo(this.action_id, typedOther.action_id);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.action_id, typedOther.action_id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -415,7 +409,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
       return lastComparison;
     }
     if (isSetFault_code()) {
-      lastComparison = TBaseHelper.compareTo(this.fault_code, typedOther.fault_code);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fault_code, typedOther.fault_code);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -425,7 +419,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
       return lastComparison;
     }
     if (isSetFault_message()) {
-      lastComparison = TBaseHelper.compareTo(this.fault_message, typedOther.fault_message);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fault_message, typedOther.fault_message);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -435,7 +429,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
       return lastComparison;
     }
     if (isSetFault_detail()) {
-      lastComparison = TBaseHelper.compareTo(this.fault_detail, typedOther.fault_detail);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fault_detail, typedOther.fault_detail);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -447,46 +441,46 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
     return _Fields.findByThriftId(fieldId);
   }
 
-  public void read(TProtocol iprot) throws TException {
-    TField field;
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    org.apache.thrift.protocol.TField field;
     iprot.readStructBegin();
     while (true)
     {
       field = iprot.readFieldBegin();
-      if (field.type == TType.STOP) { 
+      if (field.type == org.apache.thrift.protocol.TType.STOP) { 
         break;
       }
       switch (field.id) {
         case 1: // ACTION_ID
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.action_id = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 2: // FAULT_CODE
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.fault_code = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 3: // FAULT_MESSAGE
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.fault_message = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 4: // FAULT_DETAIL
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.fault_detail = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         default:
-          TProtocolUtil.skip(iprot, field.type);
+          org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
       }
       iprot.readFieldEnd();
     }
@@ -496,7 +490,7 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
     validate();
   }
 
-  public void write(TProtocol oprot) throws TException {
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
@@ -572,8 +566,24 @@ class Fault implements TBase<Fault, Fault._Fields>, java.io.Serializable, Clonea
     return sb.toString();
   }
 
-  public void validate() throws TException {
+  public void validate() throws org.apache.thrift.TException {
     // check for required fields
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
   }
 
 }

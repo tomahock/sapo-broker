@@ -20,25 +20,19 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.thrift.*;
-import org.apache.thrift.async.*;
-import org.apache.thrift.meta_data.*;
-import org.apache.thrift.transport.*;
-import org.apache.thrift.protocol.*;
+class Acknowledge implements org.apache.thrift.TBase<Acknowledge, Acknowledge._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Acknowledge");
 
-class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Serializable, Cloneable {
-  private static final TStruct STRUCT_DESC = new TStruct("Acknowledge");
-
-  private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
-  private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)2);
-  private static final TField DESTINATION_FIELD_DESC = new TField("destination", TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField ACTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("action_id", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField MESSAGE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("message_id", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField DESTINATION_FIELD_DESC = new org.apache.thrift.protocol.TField("destination", org.apache.thrift.protocol.TType.STRING, (short)3);
 
   public String action_id;
   public String message_id;
   public String destination;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-  public enum _Fields implements TFieldIdEnum {
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ACTION_ID((short)1, "action_id"),
     MESSAGE_ID((short)2, "message_id"),
     DESTINATION((short)3, "destination");
@@ -103,17 +97,17 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
-    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ACTION_ID, new org.apache.thrift.meta_data.FieldMetaData("action_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.MESSAGE_ID, new org.apache.thrift.meta_data.FieldMetaData("message_id", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DESTINATION, new org.apache.thrift.meta_data.FieldMetaData("destination", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    FieldMetaData.addStructMetaDataMap(Acknowledge.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Acknowledge.class, metaDataMap);
   }
 
   public Acknowledge() {
@@ -167,7 +161,7 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
     this.action_id = null;
   }
 
-  /** Returns true if field action_id is set (has been asigned a value) and false otherwise */
+  /** Returns true if field action_id is set (has been assigned a value) and false otherwise */
   public boolean isSetAction_id() {
     return this.action_id != null;
   }
@@ -191,7 +185,7 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
     this.message_id = null;
   }
 
-  /** Returns true if field message_id is set (has been asigned a value) and false otherwise */
+  /** Returns true if field message_id is set (has been assigned a value) and false otherwise */
   public boolean isSetMessage_id() {
     return this.message_id != null;
   }
@@ -215,7 +209,7 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
     this.destination = null;
   }
 
-  /** Returns true if field destination is set (has been asigned a value) and false otherwise */
+  /** Returns true if field destination is set (has been assigned a value) and false otherwise */
   public boolean isSetDestination() {
     return this.destination != null;
   }
@@ -270,7 +264,7 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
     throw new IllegalStateException();
   }
 
-  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
       throw new IllegalArgumentException();
@@ -348,7 +342,7 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
       return lastComparison;
     }
     if (isSetAction_id()) {
-      lastComparison = TBaseHelper.compareTo(this.action_id, typedOther.action_id);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.action_id, typedOther.action_id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -358,7 +352,7 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
       return lastComparison;
     }
     if (isSetMessage_id()) {
-      lastComparison = TBaseHelper.compareTo(this.message_id, typedOther.message_id);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message_id, typedOther.message_id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -368,7 +362,7 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
       return lastComparison;
     }
     if (isSetDestination()) {
-      lastComparison = TBaseHelper.compareTo(this.destination, typedOther.destination);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.destination, typedOther.destination);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -380,39 +374,39 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
     return _Fields.findByThriftId(fieldId);
   }
 
-  public void read(TProtocol iprot) throws TException {
-    TField field;
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    org.apache.thrift.protocol.TField field;
     iprot.readStructBegin();
     while (true)
     {
       field = iprot.readFieldBegin();
-      if (field.type == TType.STOP) { 
+      if (field.type == org.apache.thrift.protocol.TType.STOP) { 
         break;
       }
       switch (field.id) {
         case 1: // ACTION_ID
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.action_id = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 2: // MESSAGE_ID
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.message_id = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 3: // DESTINATION
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.destination = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         default:
-          TProtocolUtil.skip(iprot, field.type);
+          org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
       }
       iprot.readFieldEnd();
     }
@@ -422,7 +416,7 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
     validate();
   }
 
-  public void write(TProtocol oprot) throws TException {
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
@@ -481,8 +475,24 @@ class Acknowledge implements TBase<Acknowledge, Acknowledge._Fields>, java.io.Se
     return sb.toString();
   }
 
-  public void validate() throws TException {
+  public void validate() throws org.apache.thrift.TException {
     // check for required fields
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
   }
 
 }

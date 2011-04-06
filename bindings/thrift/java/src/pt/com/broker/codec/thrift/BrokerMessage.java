@@ -20,19 +20,13 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.thrift.*;
-import org.apache.thrift.async.*;
-import org.apache.thrift.meta_data.*;
-import org.apache.thrift.transport.*;
-import org.apache.thrift.protocol.*;
+class BrokerMessage implements org.apache.thrift.TBase<BrokerMessage, BrokerMessage._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("BrokerMessage");
 
-class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java.io.Serializable, Cloneable {
-  private static final TStruct STRUCT_DESC = new TStruct("BrokerMessage");
-
-  private static final TField MESSAGE_ID_FIELD_DESC = new TField("message_id", TType.STRING, (short)1);
-  private static final TField PAYLOAD_FIELD_DESC = new TField("payload", TType.STRING, (short)2);
-  private static final TField EXPIRATION_FIELD_DESC = new TField("expiration", TType.I64, (short)3);
-  private static final TField TIMESTAMP_FIELD_DESC = new TField("timestamp", TType.I64, (short)4);
+  private static final org.apache.thrift.protocol.TField MESSAGE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("message_id", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField PAYLOAD_FIELD_DESC = new org.apache.thrift.protocol.TField("payload", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField EXPIRATION_FIELD_DESC = new org.apache.thrift.protocol.TField("expiration", org.apache.thrift.protocol.TType.I64, (short)3);
+  private static final org.apache.thrift.protocol.TField TIMESTAMP_FIELD_DESC = new org.apache.thrift.protocol.TField("timestamp", org.apache.thrift.protocol.TType.I64, (short)4);
 
   public String message_id;
   public ByteBuffer payload;
@@ -40,7 +34,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
   public long timestamp;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-  public enum _Fields implements TFieldIdEnum {
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     MESSAGE_ID((short)1, "message_id"),
     PAYLOAD((short)2, "payload"),
     EXPIRATION((short)3, "expiration"),
@@ -111,19 +105,19 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
   private static final int __TIMESTAMP_ISSET_ID = 1;
   private BitSet __isset_bit_vector = new BitSet(2);
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
-    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.MESSAGE_ID, new FieldMetaData("message_id", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.PAYLOAD, new FieldMetaData("payload", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.EXPIRATION, new FieldMetaData("expiration", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.I64)));
-    tmpMap.put(_Fields.TIMESTAMP, new FieldMetaData("timestamp", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.I64)));
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.MESSAGE_ID, new org.apache.thrift.meta_data.FieldMetaData("message_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PAYLOAD, new org.apache.thrift.meta_data.FieldMetaData("payload", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
+    tmpMap.put(_Fields.EXPIRATION, new org.apache.thrift.meta_data.FieldMetaData("expiration", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.TIMESTAMP, new org.apache.thrift.meta_data.FieldMetaData("timestamp", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    FieldMetaData.addStructMetaDataMap(BrokerMessage.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(BrokerMessage.class, metaDataMap);
   }
 
   public BrokerMessage() {
@@ -146,7 +140,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
       this.message_id = other.message_id;
     }
     if (other.isSetPayload()) {
-      this.payload = TBaseHelper.copyBinary(other.payload);
+      this.payload = org.apache.thrift.TBaseHelper.copyBinary(other.payload);
 ;
     }
     this.expiration = other.expiration;
@@ -180,7 +174,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     this.message_id = null;
   }
 
-  /** Returns true if field message_id is set (has been asigned a value) and false otherwise */
+  /** Returns true if field message_id is set (has been assigned a value) and false otherwise */
   public boolean isSetMessage_id() {
     return this.message_id != null;
   }
@@ -192,16 +186,16 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
   }
 
   public byte[] getPayload() {
-    setPayload(TBaseHelper.rightSize(payload));
-    return payload.array();
+    setPayload(org.apache.thrift.TBaseHelper.rightSize(payload));
+    return payload == null ? null : payload.array();
   }
 
-  public ByteBuffer BufferForPayload() {
+  public ByteBuffer bufferForPayload() {
     return payload;
   }
 
   public BrokerMessage setPayload(byte[] payload) {
-    setPayload(ByteBuffer.wrap(payload));
+    setPayload(payload == null ? (ByteBuffer)null : ByteBuffer.wrap(payload));
     return this;
   }
 
@@ -214,7 +208,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     this.payload = null;
   }
 
-  /** Returns true if field payload is set (has been asigned a value) and false otherwise */
+  /** Returns true if field payload is set (has been assigned a value) and false otherwise */
   public boolean isSetPayload() {
     return this.payload != null;
   }
@@ -239,7 +233,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     __isset_bit_vector.clear(__EXPIRATION_ISSET_ID);
   }
 
-  /** Returns true if field expiration is set (has been asigned a value) and false otherwise */
+  /** Returns true if field expiration is set (has been assigned a value) and false otherwise */
   public boolean isSetExpiration() {
     return __isset_bit_vector.get(__EXPIRATION_ISSET_ID);
   }
@@ -262,7 +256,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     __isset_bit_vector.clear(__TIMESTAMP_ISSET_ID);
   }
 
-  /** Returns true if field timestamp is set (has been asigned a value) and false otherwise */
+  /** Returns true if field timestamp is set (has been assigned a value) and false otherwise */
   public boolean isSetTimestamp() {
     return __isset_bit_vector.get(__TIMESTAMP_ISSET_ID);
   }
@@ -326,7 +320,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     throw new IllegalStateException();
   }
 
-  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
       throw new IllegalArgumentException();
@@ -415,7 +409,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
       return lastComparison;
     }
     if (isSetMessage_id()) {
-      lastComparison = TBaseHelper.compareTo(this.message_id, typedOther.message_id);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message_id, typedOther.message_id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -425,7 +419,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
       return lastComparison;
     }
     if (isSetPayload()) {
-      lastComparison = TBaseHelper.compareTo(this.payload, typedOther.payload);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.payload, typedOther.payload);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -435,7 +429,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
       return lastComparison;
     }
     if (isSetExpiration()) {
-      lastComparison = TBaseHelper.compareTo(this.expiration, typedOther.expiration);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.expiration, typedOther.expiration);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -445,7 +439,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
       return lastComparison;
     }
     if (isSetTimestamp()) {
-      lastComparison = TBaseHelper.compareTo(this.timestamp, typedOther.timestamp);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.timestamp, typedOther.timestamp);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -457,48 +451,48 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     return _Fields.findByThriftId(fieldId);
   }
 
-  public void read(TProtocol iprot) throws TException {
-    TField field;
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    org.apache.thrift.protocol.TField field;
     iprot.readStructBegin();
     while (true)
     {
       field = iprot.readFieldBegin();
-      if (field.type == TType.STOP) { 
+      if (field.type == org.apache.thrift.protocol.TType.STOP) { 
         break;
       }
       switch (field.id) {
         case 1: // MESSAGE_ID
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.message_id = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 2: // PAYLOAD
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.payload = iprot.readBinary();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 3: // EXPIRATION
-          if (field.type == TType.I64) {
+          if (field.type == org.apache.thrift.protocol.TType.I64) {
             this.expiration = iprot.readI64();
             setExpirationIsSet(true);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 4: // TIMESTAMP
-          if (field.type == TType.I64) {
+          if (field.type == org.apache.thrift.protocol.TType.I64) {
             this.timestamp = iprot.readI64();
             setTimestampIsSet(true);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         default:
-          TProtocolUtil.skip(iprot, field.type);
+          org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
       }
       iprot.readFieldEnd();
     }
@@ -508,7 +502,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     validate();
   }
 
-  public void write(TProtocol oprot) throws TException {
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
@@ -557,7 +551,7 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     if (this.payload == null) {
       sb.append("null");
     } else {
-      TBaseHelper.toString(this.payload, sb);
+      org.apache.thrift.TBaseHelper.toString(this.payload, sb);
     }
     first = false;
     if (isSetExpiration()) {
@@ -576,8 +570,26 @@ class BrokerMessage implements TBase<BrokerMessage, BrokerMessage._Fields>, java
     return sb.toString();
   }
 
-  public void validate() throws TException {
+  public void validate() throws org.apache.thrift.TException {
     // check for required fields
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bit_vector = new BitSet(1);
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
   }
 
 }

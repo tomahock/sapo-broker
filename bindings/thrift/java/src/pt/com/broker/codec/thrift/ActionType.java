@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum ActionType implements TEnum {
+public enum ActionType implements org.apache.thrift.TEnum {
   PUBLISH(0),
   POLL(1),
   ACCEPTED(2),

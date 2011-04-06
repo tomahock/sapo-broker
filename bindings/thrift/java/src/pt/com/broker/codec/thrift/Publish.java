@@ -20,19 +20,13 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.thrift.*;
-import org.apache.thrift.async.*;
-import org.apache.thrift.meta_data.*;
-import org.apache.thrift.transport.*;
-import org.apache.thrift.protocol.*;
+class Publish implements org.apache.thrift.TBase<Publish, Publish._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Publish");
 
-class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, Cloneable {
-  private static final TStruct STRUCT_DESC = new TStruct("Publish");
-
-  private static final TField ACTION_ID_FIELD_DESC = new TField("action_id", TType.STRING, (short)1);
-  private static final TField DESTINATION_TYPE_FIELD_DESC = new TField("destination_type", TType.I32, (short)2);
-  private static final TField DESTINATION_FIELD_DESC = new TField("destination", TType.STRING, (short)3);
-  private static final TField MESSAGE_FIELD_DESC = new TField("message", TType.STRUCT, (short)4);
+  private static final org.apache.thrift.protocol.TField ACTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("action_id", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField DESTINATION_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("destination_type", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField DESTINATION_FIELD_DESC = new org.apache.thrift.protocol.TField("destination", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
   public String action_id;
   /**
@@ -44,7 +38,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
   public BrokerMessage message;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-  public enum _Fields implements TFieldIdEnum {
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ACTION_ID((short)1, "action_id"),
     /**
      * 
@@ -116,19 +110,19 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
-    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ACTION_ID, new FieldMetaData("action_id", TFieldRequirementType.OPTIONAL, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.DESTINATION_TYPE, new FieldMetaData("destination_type", TFieldRequirementType.DEFAULT, 
-        new EnumMetaData(TType.ENUM, DestinationType.class)));
-    tmpMap.put(_Fields.DESTINATION, new FieldMetaData("destination", TFieldRequirementType.DEFAULT, 
-        new FieldValueMetaData(TType.STRING)));
-    tmpMap.put(_Fields.MESSAGE, new FieldMetaData("message", TFieldRequirementType.DEFAULT, 
-        new StructMetaData(TType.STRUCT, BrokerMessage.class)));
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ACTION_ID, new org.apache.thrift.meta_data.FieldMetaData("action_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DESTINATION_TYPE, new org.apache.thrift.meta_data.FieldMetaData("destination_type", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DestinationType.class)));
+    tmpMap.put(_Fields.DESTINATION, new org.apache.thrift.meta_data.FieldMetaData("destination", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, BrokerMessage.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    FieldMetaData.addStructMetaDataMap(Publish.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Publish.class, metaDataMap);
   }
 
   public Publish() {
@@ -188,7 +182,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
     this.action_id = null;
   }
 
-  /** Returns true if field action_id is set (has been asigned a value) and false otherwise */
+  /** Returns true if field action_id is set (has been assigned a value) and false otherwise */
   public boolean isSetAction_id() {
     return this.action_id != null;
   }
@@ -220,7 +214,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
     this.destination_type = null;
   }
 
-  /** Returns true if field destination_type is set (has been asigned a value) and false otherwise */
+  /** Returns true if field destination_type is set (has been assigned a value) and false otherwise */
   public boolean isSetDestination_type() {
     return this.destination_type != null;
   }
@@ -244,7 +238,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
     this.destination = null;
   }
 
-  /** Returns true if field destination is set (has been asigned a value) and false otherwise */
+  /** Returns true if field destination is set (has been assigned a value) and false otherwise */
   public boolean isSetDestination() {
     return this.destination != null;
   }
@@ -268,7 +262,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
     this.message = null;
   }
 
-  /** Returns true if field message is set (has been asigned a value) and false otherwise */
+  /** Returns true if field message is set (has been assigned a value) and false otherwise */
   public boolean isSetMessage() {
     return this.message != null;
   }
@@ -334,7 +328,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
     throw new IllegalStateException();
   }
 
-  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
       throw new IllegalArgumentException();
@@ -423,7 +417,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
       return lastComparison;
     }
     if (isSetAction_id()) {
-      lastComparison = TBaseHelper.compareTo(this.action_id, typedOther.action_id);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.action_id, typedOther.action_id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -433,7 +427,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
       return lastComparison;
     }
     if (isSetDestination_type()) {
-      lastComparison = TBaseHelper.compareTo(this.destination_type, typedOther.destination_type);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.destination_type, typedOther.destination_type);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -443,7 +437,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
       return lastComparison;
     }
     if (isSetDestination()) {
-      lastComparison = TBaseHelper.compareTo(this.destination, typedOther.destination);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.destination, typedOther.destination);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -453,7 +447,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
       return lastComparison;
     }
     if (isSetMessage()) {
-      lastComparison = TBaseHelper.compareTo(this.message, typedOther.message);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message, typedOther.message);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -465,47 +459,47 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
     return _Fields.findByThriftId(fieldId);
   }
 
-  public void read(TProtocol iprot) throws TException {
-    TField field;
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    org.apache.thrift.protocol.TField field;
     iprot.readStructBegin();
     while (true)
     {
       field = iprot.readFieldBegin();
-      if (field.type == TType.STOP) { 
+      if (field.type == org.apache.thrift.protocol.TType.STOP) { 
         break;
       }
       switch (field.id) {
         case 1: // ACTION_ID
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.action_id = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 2: // DESTINATION_TYPE
-          if (field.type == TType.I32) {
+          if (field.type == org.apache.thrift.protocol.TType.I32) {
             this.destination_type = DestinationType.findByValue(iprot.readI32());
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 3: // DESTINATION
-          if (field.type == TType.STRING) {
+          if (field.type == org.apache.thrift.protocol.TType.STRING) {
             this.destination = iprot.readString();
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         case 4: // MESSAGE
-          if (field.type == TType.STRUCT) {
+          if (field.type == org.apache.thrift.protocol.TType.STRUCT) {
             this.message = new BrokerMessage();
             this.message.read(iprot);
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         default:
-          TProtocolUtil.skip(iprot, field.type);
+          org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
       }
       iprot.readFieldEnd();
     }
@@ -515,7 +509,7 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
     validate();
   }
 
-  public void write(TProtocol oprot) throws TException {
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
@@ -587,8 +581,24 @@ class Publish implements TBase<Publish, Publish._Fields>, java.io.Serializable, 
     return sb.toString();
   }
 
-  public void validate() throws TException {
+  public void validate() throws org.apache.thrift.TException {
     // check for required fields
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
   }
 
 }

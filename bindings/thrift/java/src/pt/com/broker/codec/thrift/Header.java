@@ -20,21 +20,15 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.thrift.*;
-import org.apache.thrift.async.*;
-import org.apache.thrift.meta_data.*;
-import org.apache.thrift.transport.*;
-import org.apache.thrift.protocol.*;
+class Header implements org.apache.thrift.TBase<Header, Header._Fields>, java.io.Serializable, Cloneable {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Header");
 
-class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Cloneable {
-  private static final TStruct STRUCT_DESC = new TStruct("Header");
-
-  private static final TField PARAMETERS_FIELD_DESC = new TField("parameters", TType.MAP, (short)1);
+  private static final org.apache.thrift.protocol.TField PARAMETERS_FIELD_DESC = new org.apache.thrift.protocol.TField("parameters", org.apache.thrift.protocol.TType.MAP, (short)1);
 
   public Map<String,String> parameters;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-  public enum _Fields implements TFieldIdEnum {
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PARAMETERS((short)1, "parameters");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -93,15 +87,15 @@ class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Clo
 
   // isset id assignments
 
-  public static final Map<_Fields, FieldMetaData> metaDataMap;
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
-    Map<_Fields, FieldMetaData> tmpMap = new EnumMap<_Fields, FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.PARAMETERS, new FieldMetaData("parameters", TFieldRequirementType.DEFAULT, 
-        new MapMetaData(TType.MAP, 
-            new FieldValueMetaData(TType.STRING), 
-            new FieldValueMetaData(TType.STRING))));
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.PARAMETERS, new org.apache.thrift.meta_data.FieldMetaData("parameters", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    FieldMetaData.addStructMetaDataMap(Header.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Header.class, metaDataMap);
   }
 
   public Header() {
@@ -168,7 +162,7 @@ class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Clo
     this.parameters = null;
   }
 
-  /** Returns true if field parameters is set (has been asigned a value) and false otherwise */
+  /** Returns true if field parameters is set (has been assigned a value) and false otherwise */
   public boolean isSetParameters() {
     return this.parameters != null;
   }
@@ -201,7 +195,7 @@ class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Clo
     throw new IllegalStateException();
   }
 
-  /** Returns true if field corresponding to fieldID is set (has been asigned a value) and false otherwise */
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
       throw new IllegalArgumentException();
@@ -257,7 +251,7 @@ class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Clo
       return lastComparison;
     }
     if (isSetParameters()) {
-      lastComparison = TBaseHelper.compareTo(this.parameters, typedOther.parameters);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parameters, typedOther.parameters);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -269,20 +263,20 @@ class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Clo
     return _Fields.findByThriftId(fieldId);
   }
 
-  public void read(TProtocol iprot) throws TException {
-    TField field;
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    org.apache.thrift.protocol.TField field;
     iprot.readStructBegin();
     while (true)
     {
       field = iprot.readFieldBegin();
-      if (field.type == TType.STOP) { 
+      if (field.type == org.apache.thrift.protocol.TType.STOP) { 
         break;
       }
       switch (field.id) {
         case 1: // PARAMETERS
-          if (field.type == TType.MAP) {
+          if (field.type == org.apache.thrift.protocol.TType.MAP) {
             {
-              TMap _map0 = iprot.readMapBegin();
+              org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
               this.parameters = new HashMap<String,String>(2*_map0.size);
               for (int _i1 = 0; _i1 < _map0.size; ++_i1)
               {
@@ -295,11 +289,11 @@ class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Clo
               iprot.readMapEnd();
             }
           } else { 
-            TProtocolUtil.skip(iprot, field.type);
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
           }
           break;
         default:
-          TProtocolUtil.skip(iprot, field.type);
+          org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
       }
       iprot.readFieldEnd();
     }
@@ -309,14 +303,14 @@ class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Clo
     validate();
   }
 
-  public void write(TProtocol oprot) throws TException {
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
     validate();
 
     oprot.writeStructBegin(STRUCT_DESC);
     if (this.parameters != null) {
       oprot.writeFieldBegin(PARAMETERS_FIELD_DESC);
       {
-        oprot.writeMapBegin(new TMap(TType.STRING, TType.STRING, this.parameters.size()));
+        oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, this.parameters.size()));
         for (Map.Entry<String, String> _iter4 : this.parameters.entrySet())
         {
           oprot.writeString(_iter4.getKey());
@@ -346,8 +340,24 @@ class Header implements TBase<Header, Header._Fields>, java.io.Serializable, Clo
     return sb.toString();
   }
 
-  public void validate() throws TException {
+  public void validate() throws org.apache.thrift.TException {
     // check for required fields
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
   }
 
 }
