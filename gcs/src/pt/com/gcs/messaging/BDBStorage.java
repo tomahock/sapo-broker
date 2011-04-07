@@ -437,7 +437,7 @@ public class BDBStorage
 								// msg.getDestination(), msg.getMessageId());
 								dumpMessage(nmsg);
 
-								queueProcessor.getQueueStatistics().newQueueFailedMessage();
+								//queueProcessor.getQueueStatistics().newQueueFailedMessage();
 								++j0;
 
 								break;
