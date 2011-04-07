@@ -1,15 +1,7 @@
 <monitorization-configuration>
 	<agents>
-	<!-- 
-		<agent hostname="broker.bk.sapo.pt" port="3323"/>
-		<agent hostname="127.0.0.1" port="3323" world-map="./conf/global.config"/>
-		<agent hostname="ads.broker.bk.sapo.pt" port="3323" world-map="./conf/ads_global.config" />
-	 -->
-		<agent hostname="127.0.0.1" port="3323" world-map="./conf/global.config" />
-		
-		<agent hostname="broker.bk.sapo.pt" port="3323"/>
-		<!--agent hostname="172.17.1.102" port="3323" /-->
-
+		<agent hostname="127.0.0.1" port="3323" world-map="./conf/local.config" />
+		<agent hostname="broker.bk.sapo.pt" port="3323" world-map="./conf/global.config"/>
 	</agents>
 
 	<!--
@@ -17,15 +9,14 @@
 	-->
 
 	<tcp-port-exceptions>
-
+<!-- 
 		<agent agent-name="127.0.0.1:3315" port="3323" />
 		<agent agent-name="127.0.0.1:3415" port="3423" />
-
+ -->
 	</tcp-port-exceptions>
 	<http-port-exceptions>
-<!-- <agent agent-name="127.0.0.1:3415" port="3480" />  -->	
+<!-- 
+		<agent agent-name="127.0.0.1:3415" port="3480" />		
+ -->		
 	</http-port-exceptions>
-	<!-- 
-	<global-config-file location="./conf/global.config" />
-	 -->
 </monitorization-configuration>

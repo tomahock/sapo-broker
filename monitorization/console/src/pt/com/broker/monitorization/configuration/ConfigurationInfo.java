@@ -18,7 +18,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import pt.com.broker.client.HostInfo;
-import pt.com.broker.monitorization.configuration.Agents.Agent;
 
 public class ConfigurationInfo
 {
@@ -120,12 +119,12 @@ public class ConfigurationInfo
 		wwwrootPath = configuration.getRootPaths().getWwwrootPath();		
 	}
 	
-	private static int getPortForAgent(String agentHostname, ExceptionAgents exceptionAgetns, int defaultVaule)
+	private static int getPortForAgent(String agentHostname, ExceptionAgents exceptionAgents, int defaultVaule)
 	{
 		if (configuration == null)
 			return defaultVaule;
 		
-		for (pt.com.broker.monitorization.configuration.ExceptionAgents.Agent agent : exceptionAgetns.getAgent())
+		for (pt.com.broker.monitorization.configuration.ExceptionAgents.Agent agent : exceptionAgents.getAgent())
 		{
 			if (agent.getAgentName().equals(agentHostname))
 			{
