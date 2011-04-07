@@ -463,13 +463,11 @@ function queueMonitorizationInit()
 	processGraphAll("/dataquery/rate?ratetype=queuecountrate&window=all&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=queueinputrate&window=all&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphAll("/dataquery/rate?ratetype=queueoutputrate&window=all&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/rate?ratetype=queueerrorrate&window=all&queuename=" + queueName, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
   }
 
   var f_rates_latest = function() {
 	processGraphLatest("/dataquery/rate?ratetype=queueinputrate&window=last&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
 	processGraphLatest("/dataquery/rate?ratetype=queueoutputrate&window=last&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/rate?ratetype=queueerrorrate&window=last&queuename=" + queueName, "img_error_rate", "count_error_rate", "e/s", imagesMetadataMapX);
   }
   var f_queues_latest = function() {
 	processGraphLatest("/dataquery/rate?ratetype=queuecountrate&window=last&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
@@ -535,9 +533,6 @@ function setGeneralQueueInfo(queueGeneralInfo,  panel)
 	
 			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
 			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td>";
-
-			var failedRate = round(parseFloat(queueGeneralInfo[i].failedRate));
-			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td>";
 
 			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
 			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td>";
@@ -1082,7 +1077,7 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 	var newContent = "";
 	if (queueGeneralInfo.length == 0)
 	{
-        	newContent = "<tr><td colspan='9' class='oddrow'>No information available.</td></tr><p>No information available.</P>";
+        	newContent = "<tr><td colspan='8' class='oddrow'>No information available.</td></tr><p>No information available.</P>";
   	}
 	else
 	{
@@ -1113,9 +1108,6 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
 			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td>";
 
-			var failedRate = round(parseFloat(queueGeneralInfo[i].failedRate));
-			newContent = newContent + "<td style='padding-left:2em'>" + failedRate + "</td>";
-
 			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
 			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td>";
 
@@ -1124,7 +1116,6 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 
 			var subscriptions = round(parseFloat(queueGeneralInfo[i].subscriptions));
 			newContent = newContent + "<td style='padding-left:2em'>" + subscriptions + "</td></tr>";
-
 		}
 	}
 
