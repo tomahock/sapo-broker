@@ -12,6 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="logback-core-0.9.28.jar"/>
 	<classpathentry exported="true" kind="lib" path="netty-3.2.4.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="protobuf-java-2.4.0a.jar"/>
-	<classpathentry kind="lib" path="libthrift.0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libthrift.0.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
