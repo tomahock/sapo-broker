@@ -13,7 +13,7 @@ public class QueueStatistics
 	}
 	public long getQueueMessagesReceivedAndReset()
 	{
-		return getPublishInformationInformation(qReceivedMessages, qReceivedPublish);
+		return getPublishInformation(qReceivedMessages, qReceivedPublish);
 	}
 	// delivered
 	private final AtomicLong qDeliveredMessages = new AtomicLong(0);
@@ -24,7 +24,7 @@ public class QueueStatistics
 	}
 	public long getQueueMessagesDeliveredAndReset()
 	{
-		return getPublishInformationInformation(qDeliveredMessages, qDeliveredPublish);
+		return getPublishInformation(qDeliveredMessages, qDeliveredPublish);
 	}
 	
 	// redelivered
@@ -36,7 +36,7 @@ public class QueueStatistics
 	}
 	public final long getQueueMessagesRedeliveredAndReset()
 	{
-		return getPublishInformationInformation(qRedeliveredMessages, qRedeliveredPublish);
+		return getPublishInformation(qRedeliveredMessages, qRedeliveredPublish);
 	}
 	// failed
 	private final AtomicLong qFailedMessages = new AtomicLong(0);
@@ -47,7 +47,7 @@ public class QueueStatistics
 	}
 	public final long getQueueMessagesFailedAndReset()
 	{
-		return getPublishInformationInformation(qFailedMessages, qFailedPublish);
+		return getPublishInformation(qFailedMessages, qFailedPublish);
 	}
 	
 	// expired
@@ -59,10 +59,10 @@ public class QueueStatistics
 	}
 	public final long getQueueMessagesExpiredAndReset()
 	{
-		return getPublishInformationInformation(qExpiredMessages, qExpiredPublish);
+		return getPublishInformation(qExpiredMessages, qExpiredPublish);
 	}
 	
-	private long getPublishInformationInformation(AtomicLong value, AtomicBoolean status)
+	private long getPublishInformation(AtomicLong value, AtomicBoolean status)
 	{
 		long retValue = value.getAndSet(0);
 
