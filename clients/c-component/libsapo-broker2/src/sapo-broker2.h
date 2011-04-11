@@ -29,8 +29,8 @@ enum {
  typedef unsigned int uint_t;
 #endif
 
-typedef enum { TCP = 0, UDP } transport_type_t;
-typedef enum { SOAP = 0, PROTOBUF, THRIFT } protocol_type_t;
+typedef enum { SB_TCP = 0, SB_UDP } transport_type_t;
+typedef enum { SB_SOAP = 0, SB_PROTOBUF, SB_THRIFT } protocol_type_t;
 typedef enum { SB_QUEUE = 0, SB_TOPIC } destination_type_t;
 
 typedef struct {
@@ -48,13 +48,13 @@ typedef struct {
 
 
 typedef struct {
-	size_t 	payload_len;
-	char * 	payload;
-    char *  message_id;
-    bool    acked;
+	size_t payload_len;
+	char *payload;
+    char *message_id;
+    bool acked;
 	broker_destination_t origin;
 	broker_destination_t destination;
-	broker_server_t	     server;
+	broker_server_t server;
 } broker_msg_t;
 
 
