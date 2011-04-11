@@ -135,7 +135,7 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
     log_debug(sb, "connect(): trying %s:%d", server->srv.hostname , server->srv.port);
 
     /* FIXME: do this sooner and only once on server_add */
-    if( server->srv.transport == TCP )
+    if( server->srv.transport == SB_TCP )
         server->socket_type = SOCK_STREAM;
     else
         server->socket_type = SOCK_DGRAM;

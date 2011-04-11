@@ -80,12 +80,12 @@ broker_add_server( sapo_broker_t *sb, broker_server_t server)
     }
 
 
-    if( server.protocol > THRIFT ) {
-        server.protocol = PROTOBUF;
+    if (server.protocol > SB_THRIFT) {
+        server.protocol = SB_PROTOBUF;
         log_info( sb, "broker_add_server(): bad protocol, defaulting to PROTOCOL BUFFERS");
     }
-    if( server.transport > UDP ) {
-        server.transport = TCP;
+    if (server.transport > SB_UDP) {
+        server.transport = SB_TCP;
         log_info( sb, "broker_add_server(): bad transport, defaulting to TCP");
     }
 
@@ -107,27 +107,26 @@ broker_add_server( sapo_broker_t *sb, broker_server_t server)
 }
 
 
-int
-broker_send( sapo_broker_t *sb,
-             broker_destination_t dest,
-             broker_sendmsg_t sendmsg)
-{
+int broker_send(sapo_broker_t *sb, broker_destination_t dest, broker_sendmsg_t sendmsg) {
     int rc = 0;
     _broker_server_t *srv = NULL;
 
-    if(!sb)
+    if (!sb)
         return SB_NOT_INITIALIZED;
 
-    for(int i=0; i < 3; i++) {
-        srv = _broker_server_get_active( sb );
+    for (int i=0; i < 3; i++) {
+        srv = _broker_server_get_active(sb);
+        if (srv == NULL)
+            return SB_NOT_INITIALIZED;
+
         switch ( srv->srv.protocol ) {
-            case SOAP:
+            case SB_SOAP:
                 rc = proto_soap_send( sb, srv, &dest, &sendmsg );
                 break;
-            case PROTOBUF:
+            case SB_PROTOBUF:
                 rc = proto_protobuf_send( sb, srv, &dest, &sendmsg );
                 break;
-            case THRIFT:
+            case SB_THRIFT:
                 rc = proto_thrift_send( sb, srv, &dest, &sendmsg );
                 break;
             default:
@@ -191,15 +190,15 @@ server_subscribe( sapo_broker_t *sb,_broker_server_t *srv, broker_destination_t 
         return SB_ERROR;
 
     switch ( srv->srv.protocol ) {
-        case SOAP:
+        case SB_SOAP:
             rc = proto_soap_subscribe( sb, srv, dest );
             break;
 
-        case PROTOBUF:
+        case SB_PROTOBUF:
             rc = proto_protobuf_subscribe( sb, srv, dest );
             break;
 
-        case THRIFT:
+        case SB_THRIFT:
             rc = proto_thrift_subscribe( sb, srv, dest );
             break;
 
@@ -223,6 +222,9 @@ broker_subscribe( sapo_broker_t *sb, broker_destination_t dest)
 
     for(int i=0; i < 3; i++) {
         srv = _broker_server_get_active( sb );
+        if (srv == NULL)
+            return SB_NOT_INITIALIZED;
+
         rc = server_subscribe( sb, srv, &dest);
         if( rc != SB_OK ) {
             log_err(sb, "broker_subscribe: failed, trying again.");
@@ -294,13 +296,13 @@ broker_msg_ack( sapo_broker_t *sb, broker_msg_t *msg)
 
     _broker_server_t *srv = broker_get_server_from_msg(sb, msg);
     switch ( msg->server.protocol ) {
-        case SOAP:
+        case SB_SOAP:
             rc = proto_soap_send_ack( sb, srv, msg->origin.name, msg->message_id);
             break;
-        case PROTOBUF:
+        case SB_PROTOBUF:
             rc = proto_protobuf_send_ack( sb, srv, msg->origin.name, msg->message_id);
             break;
-        case THRIFT:
+        case SB_THRIFT:
             rc = proto_thrift_send_ack( sb, srv, msg->origin.name, msg->message_id);
             break;
         default:
@@ -326,6 +328,8 @@ broker_receive( sapo_broker_t *sb, struct timeval *timeout)
     for(int i = 0; i < 3; i++) {
         /* assure that we are connected to at least one server */
         srv = _broker_server_get_active(sb);
+        if (srv == NULL)
+            return NULL;
 
         srv = net_poll( sb, timeout);
         if( srv == NULL ) {
@@ -336,15 +340,15 @@ broker_receive( sapo_broker_t *sb, struct timeval *timeout)
         log_debug(sb, "receive(): data from: %s:%d",
                 srv->srv.hostname, srv->srv.port);
         switch ( srv->srv.protocol ) {
-            case SOAP:
+            case SB_SOAP:
                 msg = proto_soap_read_msg( sb, srv );
                 break;
 
-            case PROTOBUF:
+            case SB_PROTOBUF:
                 msg = proto_protobuf_read_msg( sb, srv );
                 break;
 
-            case THRIFT:
+            case SB_THRIFT:
                 msg = proto_thrift_read_msg( sb, srv );
                 break;
 
