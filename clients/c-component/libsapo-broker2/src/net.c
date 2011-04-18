@@ -243,16 +243,40 @@ net_send(sapo_broker_t *sb, _broker_server_t *srv, const char *bytes, size_t len
 
     log_debug(sb, "net_send(): sending data (size: %zd)", len);
 
-    pthread_mutex_lock(srv->lock_w);
-    rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), SB_MSG_NOSIGPIPE);
-    if( rc != SB_OK) {
-        log_err(sb, "net_send(): failed to send header");
-        goto err;
+
+    if(srv->socket_type == SB_UDP)
+    {
+	// UDP
+     
+	char*  buffer = malloc( sizeof(header) + len);
+
+	memcpy(buffer, header, sizeof(header));
+
+	memcpy(buffer + sizeof(header), bytes, len);
+	
+ 	pthread_mutex_lock(srv->lock_w);
+	rc = _net_send(sb, srv->fd, (const char *) buffer,  sizeof(header) + len, SB_MSG_NOSIGPIPE);
+	free(buffer);
+	if( rc != SB_OK) {
+		log_err(sb, "net_send(): failed to send header");
+		goto err;
+	}
     }
-    rc = _net_send(sb, srv->fd, bytes, len, SB_MSG_NOSIGPIPE);
-    if( rc != SB_OK){
-        log_err(sb, "net_send(): failed to send message");
-        goto err;
+    else
+    {
+	// TCP
+	    pthread_mutex_lock(srv->lock_w);
+	    rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), SB_MSG_NOSIGPIPE);
+	    if( rc != SB_OK) {
+		log_err(sb, "net_send(): failed to send header");
+		goto err;
+	    }
+	    rc = _net_send(sb, srv->fd, bytes, len, SB_MSG_NOSIGPIPE);
+	    if( rc != SB_OK){
+		log_err(sb, "net_send(): failed to send message");
+		goto err;
+	    }
+        
     }
     pthread_mutex_unlock(srv->lock_w);
     return rc;
