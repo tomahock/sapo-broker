@@ -109,49 +109,22 @@ public class BrokerQueueListener extends BrokerListener
 			}
 			else
 			{
-
-				// --
-				lchannel.write(response).addListener(new ChannelFutureListener()
-				{
-					@Override
-					public void operationComplete(ChannelFuture chFuture) throws Exception
-					{
-
-						boolean writable = lchannel.getChannel().isWritable();
-						//
-					}
-				});
-
-				// --------------
-
 				if (isReady())
 				{
 					if (deliveryAllowed(response, lchannel.getChannel()))
 					{
 						if (lchannel.getDeliveryTries() >= ListenerChannel.MAX_WRITE_TRIES)
 						{
-							// log.info(String.format("Closing client channel '%s', listening on '%s', after trying to write message %s times. ", lchannel.toString(), getsubscriptionKey(), ListenerChannel.MAX_WRITE_TRIES));
-							// try
-							// {
-							// lchannel.close();
-							// }
-							// catch (Throwable t)
-							// {
-							// }
 							return failed;
 						}
 						else
 						{
+							// Not Writable but Ready							
 							lchannel.incrementAndGetDeliveryTries();
 
-							ChannelFuture future = lchannel.write(response);
 							setReady(false);
-
-							if (showSuspendedDeliveryMessage && log.isDebugEnabled())
-							{
-								log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-							}
-
+							
+							ChannelFuture future = lchannel.write(response);
 							future.addListener(new ChannelFutureListener()
 							{
 								@Override
@@ -174,6 +147,13 @@ public class BrokerQueueListener extends BrokerListener
 									}
 								}
 							});
+
+
+							if (showSuspendedDeliveryMessage && log.isDebugEnabled())
+							{
+								log.debug(String.format("Suspending message delivery for queue '%s' to session '%s'.", getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
+							}
+
 						}
 					}
 					else

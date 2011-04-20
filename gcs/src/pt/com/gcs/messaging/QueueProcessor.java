@@ -588,10 +588,13 @@ public class QueueProcessor
 	 * Events
 	 */
 
+	private AtomicBoolean deliveryRequest = new AtomicBoolean(false);
+	
 	// Calling methods have to ensure that deliveringMessages was set to true;
-	protected void deliverMessages()
+	protected boolean deliverMessages()
 	{
 		boolean set = deliveringMessages.compareAndSet(false, true);
+		deliveryRequest.set(true);
 		if (set)
 		{
 			// Messages were not being delivered (deliveringMessages was 'false'). deliveringMessages was set to 'true' and let the delivery begin.
@@ -600,13 +603,16 @@ public class QueueProcessor
 				@Override
 				public void run()
 				{
-					wakeup();
+					while( deliveryRequest.compareAndSet(true, false) )
+					{
+						wakeup();
+					}
 					deliveringMessages.set(false);
 					lastCycle.set(System.currentTimeMillis());
 				}
 			});
-
 		}
+		return set;
 	}
 
 	private MessageListenerEventChangeHandler msgListenterEventHandler = new MessageListenerEventChangeHandler()

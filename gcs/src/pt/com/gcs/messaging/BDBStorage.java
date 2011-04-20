@@ -92,7 +92,6 @@ public class BDBStorage
 			}
 			else
 			{
-
 				throw new Exception("MessageMarshaller.marshallBDBMessage returned null");
 			}
 		}
