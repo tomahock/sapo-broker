@@ -108,7 +108,14 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		}
 		else if (mtype.equals("HELLO"))
 		{
-			validatePeer(ctx, msgContent);
+			Peer peer = Peer.createPeerFromHelloMessage(msgContent);
+			if (peer == null)
+			{
+				log.error("Invalid 'HELLO' message: ", msgContent);
+				return;
+			}
+
+			validatePeer(ctx, peer, msgContent);
 			boolean isValid = ((Boolean) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.ISVALID")).booleanValue();
 			if (!isValid)
 			{
@@ -119,6 +126,15 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			else
 			{
 				log.debug("Peer is valid!");
+
+				Channel previousChannel = RemoteChannels.add(peer.getAddress(), ctx.getChannel());
+				if (previousChannel != null)
+				{
+					log.info(String.format("Peer '%s' connected through channel '%s' was connected through channel '%s'", peer.getAddress(), ctx.getChannel().toString(), previousChannel.toString()));
+
+					handleChannelClosed(ctx);
+				}
+
 				return;
 			}
 			return;
@@ -137,7 +153,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				log.error(errorMessage);
 				throw new RuntimeException(errorMessage);
 			}
-			
+
 			if (StringUtils.isBlank(action))
 			{
 				String errorMessage = String.format("Sytem Queue or Topic message has a blank action field. Message content: %s", msgContent);
@@ -219,14 +235,13 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		NetMessage nmsg = new NetMessage(naction);
 		nmsg.getHeaders().put("TYPE", "SYSTEM_ACK");
 
-		
-		if(log.isDebugEnabled())
+		if (log.isDebugEnabled())
 		{
 			log.debug(String.format("Acknowledging System Message. Payload: %s", payload));
-			
+
 		}
-		
-		if(channel.isWritable())
+
+		if (channel.isWritable())
 		{
 			channel.write(nmsg);
 		}
@@ -241,10 +256,20 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
 		super.channelClosed(ctx, e);
+		handleChannelClosed(ctx);
+	}
+
+	private void handleChannelClosed(ChannelHandlerContext ctx)
+	{
 		log.info("Session Closed: '{}'", ctx.getChannel().getRemoteAddress());
 
 		TopicProcessorList.removeSession(ctx.getChannel());
 		QueueProcessorList.removeSession(ctx.getChannel());
+
+		if (!RemoteChannels.remove(ctx.getChannel()))
+		{
+			log.warn("Failed to remove '{}' from RemoteChannels. It should be there.", ctx.getChannel());
+		}
 
 		ChannelAttributes.remove(ChannelAttributes.getChannelId(ctx));
 		ListenerChannelFactory.channelClosed(ctx.getChannel());
@@ -283,19 +308,12 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		}
 	}
 
-	private void validatePeer(ChannelHandlerContext ctx, String helloMessage)
+	private void validatePeer(ChannelHandlerContext ctx, Peer peer, String helloMessage)
 	{
 		log.debug("\"Hello\" message received: '{}'", helloMessage);
 		try
 		{
-			String peerName = StringUtils.substringBefore(helloMessage, "@");
-			String peerAddr = StringUtils.substringAfter(helloMessage, "@");
-			String peerHost = StringUtils.substringBefore(peerAddr, ":");
-			int peerPort = Integer.parseInt(StringUtils.substringAfter(peerAddr, ":"));
-
-			ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.PEER_ADDRESS", peerAddr);
-
-			Peer peer = new Peer(peerName, peerHost, peerPort);
+			ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.PEER_ADDRESS", peer.getAddress());
 			if (Gcs.getPeerList().contains(peer))
 			{
 				log.debug("Peer '{}' exists in the world map'", peer.toString());
