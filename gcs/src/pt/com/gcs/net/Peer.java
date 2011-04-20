@@ -1,5 +1,7 @@
 package pt.com.gcs.net;
 
+import org.caudexorigo.text.StringUtils;
+
 /**
  * Peer holds information about an agent.
  * 
@@ -7,11 +9,13 @@ package pt.com.gcs.net;
 
 public class Peer
 {
-	private String _name;
+	private final String _name;
 
 	private final String _host;
 
 	private final int _port;
+
+	private final String _address;
 
 	/**
 	 * Creates a Peer instance.
@@ -23,11 +27,18 @@ public class Peer
 	 * @param port
 	 *            Agent's port.
 	 */
+	
 	public Peer(String name, String host, int port)
+	{
+		this(name, host, port, host+":"+port);
+	}
+	
+	public Peer(String name, String host, int port, String address)
 	{
 		_name = name;
 		_host = host;
 		_port = port;
+		this._address = address;
 	}
 
 	public String getName()
@@ -43,6 +54,28 @@ public class Peer
 	public int getPort()
 	{
 		return _port;
+	}
+
+	public String getAddress()
+	{
+		return _address;
+	}
+
+	public static Peer createPeerFromHelloMessage(String helloMessage)
+	{
+		String peerName = StringUtils.substringBefore(helloMessage, "@");
+		String peerAddr = StringUtils.substringAfter(helloMessage, "@");
+		String peerHost = StringUtils.substringBefore(peerAddr, ":");
+		try
+		{
+			int peerPort = Integer.parseInt(StringUtils.substringAfter(peerAddr, ":"));
+			return new Peer(peerName, peerHost, peerPort, peerAddr);
+		}
+		catch (NumberFormatException nfe)
+		{
+
+		}
+		return null;
 	}
 
 	@Override
