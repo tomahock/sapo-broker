@@ -152,5 +152,4 @@ public class BrokerHttpAction extends HttpAction
 			log.error(t.getMessage(), t);
 		}
 	}
-
 }
