@@ -12,6 +12,7 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
 
