@@ -48,7 +48,7 @@ public class ConsumerWithFailover implements BrokerListener
 		hosts.add(new HostInfo("localhost", 3423));
 		hosts.add(new HostInfo("localhost", 3323));
 
-		BrokerClient bk = new BrokerClient(hosts, "tcp://mycompany.com/mysniffer", NetProtocolType.THRIFT);
+		BrokerClient bk = new BrokerClient(hosts, "tcp://mycompany.com/mysniffer");
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 
