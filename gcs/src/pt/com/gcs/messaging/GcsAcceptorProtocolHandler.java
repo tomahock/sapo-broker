@@ -127,10 +127,10 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			{
 				log.debug("Peer is valid!");
 
-				Channel previousChannel = RemoteChannels.add(peer.getAddress(), ctx.getChannel());
+				ChannelHandlerContext previousChannel = RemoteChannels.add(peer.getAddress(), ctx);
 				if (previousChannel != null)
 				{
-					log.info(String.format("Peer '%s' connected through channel '%s' was connected through channel '%s'", peer.getAddress(), ctx.getChannel().toString(), previousChannel.toString()));
+					log.info(String.format("Peer '%s' connected through channel '%s' was connected through channel '%s'", peer.getAddress(), ctx.getChannel().toString(), previousChannel.getChannel().toString()));
 
 					handleChannelClosed(ctx);
 				}
@@ -266,7 +266,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		TopicProcessorList.removeSession(ctx.getChannel());
 		QueueProcessorList.removeSession(ctx.getChannel());
 
-		if (!RemoteChannels.remove(ctx.getChannel()))
+		if (!RemoteChannels.remove(ctx))
 		{
 			log.warn("Failed to remove '{}' from RemoteChannels. It should be there.", ctx.getChannel());
 		}
