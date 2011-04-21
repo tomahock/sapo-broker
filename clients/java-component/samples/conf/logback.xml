@@ -2,20 +2,17 @@
 <configuration>
 
 	<appender class="ch.qos.logback.core.ConsoleAppender" name="ConsoleAppender">
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-		</filter>
-		<layout class="ch.qos.logback.classic.PatternLayout">
+		<encoder>
 			<pattern>%5p #%C# [%t] - %m%n</pattern>
-		</layout>
+		</encoder>
 	</appender>
 
-	<logger additivity="false" name="org.apache">
-		<level value="error" />
+	<logger level="error" additivity="false" name="org.apache">
 		<appender-ref ref="ConsoleAppender" />
 	</logger>
 
-	<root>
-		<level value="info" />
+	<root level="info">
 		<appender-ref ref="ConsoleAppender" />
 	</root>
+
 </configuration>
