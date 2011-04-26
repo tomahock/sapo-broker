@@ -79,10 +79,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		Throwable rootCause = ErrorAnalyser.findRootCause(e.getCause());
 		CriticalErrors.exitIfCritical(rootCause);
 		log.error("Exception Caught:'{}', '{}'", ctx.getChannel().getRemoteAddress().toString(), rootCause.getMessage());
-		if (ctx.getChannel().isWritable())
-		{
-			log.error("STACKTRACE", rootCause);
-		}
+		log.error("STACKTRACE", rootCause);
 	}
 
 	@Override
