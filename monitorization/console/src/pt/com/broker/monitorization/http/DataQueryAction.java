@@ -60,7 +60,7 @@ public class DataQueryAction extends HttpAction
 		pathPrefix = queryPrefix;
 	}
 
-	public void writeResponse(ChannelHandlerContext context, HttpRequest request, HttpResponse response)
+	public void service(ChannelHandlerContext context, HttpRequest request, HttpResponse response)
 	{
 		String path = request.getUri();
 

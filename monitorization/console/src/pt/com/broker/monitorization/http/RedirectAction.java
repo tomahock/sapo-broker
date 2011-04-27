@@ -19,7 +19,7 @@ public class RedirectAction extends HttpAction
 	}
 
 	@Override
-	public void writeResponse(ChannelHandlerContext ctx, HttpRequest req, HttpResponse res)
+	public void service(ChannelHandlerContext ctx, HttpRequest req, HttpResponse res)
 	{
 		res.setStatus(HttpResponseStatus.TEMPORARY_REDIRECT);
 		res.addHeader(HttpHeaders.Names.LOCATION, path);		
