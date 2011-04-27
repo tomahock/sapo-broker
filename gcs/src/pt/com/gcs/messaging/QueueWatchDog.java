@@ -16,7 +16,7 @@ public class QueueWatchDog implements Runnable
 		
 		for (final QueueProcessor qp : QueueProcessorList.values())
 		{
-			if( (qp.getLastCycle() < x) && (qp.hasRecipient()) )
+			if( (qp.getQueuedMessagesCount() > 0) && (qp.getLastCycle() < x) && (qp.hasRecipient()) )
 			{
 				log.info(String.format("Watchdog started message deliver to queue '%s' ", qp.getQueueName()));
 				qp.deliverMessages();
