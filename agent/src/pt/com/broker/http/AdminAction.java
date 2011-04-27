@@ -53,7 +53,7 @@ public class AdminAction extends HttpAction
 	}
 
 	@Override
-	public void writeResponse(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response)
+	public void service(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response)
 	{
 		Channel channel = ctx.getChannel();
 		try

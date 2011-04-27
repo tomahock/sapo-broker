@@ -48,7 +48,9 @@ public class CollectorManager
 			{
 				log.info("Running Database cleaner. Delete old entries (events and faults)");
 
-				int del_events_counter = DbExecutor.runActionPreparedStatement("DELETE FROM raw_data WHERE (event_time < (now()-'00:30'::time));");
+				//int del_events_counter = DbExecutor.runActionPreparedStatement("DELETE FROM raw_data WHERE (event_time < (now()-'00:30'::time));");
+				
+				int del_events_counter = 0;
 				
 				int del_faults_counter = DbExecutor.runActionPreparedStatement("DELETE FROM fault_data WHERE (event_time < (now()-'00:30'::time));");
 

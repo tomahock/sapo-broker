@@ -20,7 +20,7 @@ public abstract class JsonHttpAction extends HttpAction
 	private static final Charset UTF8 = Charset.forName("utf-8");
 	
 	@Override
-	public void writeResponse(ChannelHandlerContext context, HttpRequest request, HttpResponse response)
+	public void service(ChannelHandlerContext context, HttpRequest request, HttpResponse response)
 	{
 		String path = request.getUri();
 
