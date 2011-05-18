@@ -129,7 +129,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 				{
 					log.info(String.format("Peer '%s' connected through channel '%s' was connected through channel '%s'", peer.getAddress(), ctx.getChannel().toString(), previousChannel.getChannel().toString()));
 
-					handleChannelClosed(ctx);
+					handleChannelClosed(previousChannel);
 				}
 
 				return;
