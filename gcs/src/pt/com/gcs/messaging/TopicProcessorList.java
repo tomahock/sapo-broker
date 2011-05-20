@@ -11,6 +11,7 @@ import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,9 +97,10 @@ public class TopicProcessorList
 		instance.i_removeListener(listener);
 	}
 
-	public static void removeSession(Channel channel)
+	public static void removeSession(ChannelHandlerContext context)
 	{
-		instance.i_removeSession(channel);
+		Channel channel = context.getChannel();
+		instance.i_removeSession(context);
 	}
 
 	public static Collection<TopicProcessor> values()
@@ -216,11 +218,12 @@ public class TopicProcessorList
 		}
 	}
 
-	private void i_removeSession(Channel channel)
+	private void i_removeSession(ChannelHandlerContext context)
 	{
+		Channel channel = context.getChannel();
 		try
 		{
-			ListenerChannel lc = ListenerChannelFactory.getListenerChannel(channel);
+			ListenerChannel lc = ListenerChannelFactory.getListenerChannel(context);
 			List<TopicProcessor> toDeleteProcessors = new ArrayList<TopicProcessor>();
 
 			for (TopicProcessor tp : tpCache.values())

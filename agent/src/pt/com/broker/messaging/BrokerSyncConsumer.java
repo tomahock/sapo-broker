@@ -77,7 +77,7 @@ public class BrokerSyncConsumer
 			}
 			else
 			{
-				ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(channel);
+				ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(ctx);
 
 				msgListener = new SynchronousMessageListener(lchannel, queueName);
 
@@ -105,7 +105,7 @@ public class BrokerSyncConsumer
 		{
 			try
 			{
-				((BrokerProtocolHandler) ctx.getHandler()).exceptionCaught(channel, t, null);
+				((BrokerProtocolHandler) ctx.getHandler()).exceptionCaught(ctx, t, null);
 			}
 			catch (Throwable t2)
 			{

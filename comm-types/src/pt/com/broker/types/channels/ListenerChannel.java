@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,13 @@ public class ListenerChannel
 	private final Channel channel;
 	private final AtomicLong messageDeliveryTries = new AtomicLong(0);
 
-	protected ListenerChannel(Channel channel)
+	private final ChannelHandlerContext context;
+
+	protected ListenerChannel(ChannelHandlerContext context)
 	{
 		super();
-		this.channel = channel;
+		this.context = context;
+		this.channel = context.getChannel();
 	}
 
 	public ChannelFuture close()
@@ -60,6 +64,11 @@ public class ListenerChannel
 		return channel;
 	}
 
+	public ChannelHandlerContext getChannelContext()
+	{
+		return context;
+	}
+	
 	public ChannelPipeline getPipeline()
 	{
 		return channel.getPipeline();
