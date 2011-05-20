@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.text.DateUtil;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,11 +129,11 @@ public class BrokerConsumer
 		BrokerExecutor.scheduleWithFixedDelay(queue_consumer_counter, 120, 120, TimeUnit.SECONDS);
 	}
 
-	public void listen(NetSubscribe sb, Channel channel, boolean ackRequired)
+	public void listen(NetSubscribe sb, ChannelHandlerContext context, boolean ackRequired)
 	{
 		try
 		{
-			ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(channel);
+			ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(context);
 			BrokerQueueListener subscriber = new BrokerQueueListener(lchannel, sb.getDestination(), ackRequired);
 
 			Gcs.addAsyncConsumer(sb.getDestination(), subscriber);
@@ -143,11 +144,11 @@ public class BrokerConsumer
 		}
 	}
 
-	public synchronized boolean subscribe(NetSubscribe sb, Channel channel)
+	public synchronized boolean subscribe(NetSubscribe sb, ChannelHandlerContext context)
 	{
 		try
 		{
-			ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(channel);
+			ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(context);
 
 			BrokerTopicListener subscriber = new BrokerTopicListener(lchannel, sb.getDestination());
 
@@ -165,12 +166,12 @@ public class BrokerConsumer
 		return true;
 	}
 
-	public synchronized void unsubscribe(NetUnsubscribe unsubs, Channel channel)
+	public synchronized void unsubscribe(NetUnsubscribe unsubs, ChannelHandlerContext context)
 	{
 		String dname = unsubs.getDestination();
 		DestinationType dtype = unsubs.getDestinationType();
 
-		ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(channel);
+		ListenerChannel lchannel = ListenerChannelFactory.getListenerChannel(context);
 		if (dtype == DestinationType.TOPIC)
 		{
 			BrokerTopicListener subscriber = new BrokerTopicListener(lchannel, dname);

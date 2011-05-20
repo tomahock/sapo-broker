@@ -146,12 +146,17 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
 		super.channelClosed(ctx, e);
+		handleChannelClosed(ctx);
+	}
+	
+	private void handleChannelClosed(ChannelHandlerContext ctx)
+	{
 		Channel channel = ctx.getChannel();
 		try
 		{
 			String remoteClient = channel.getRemoteAddress().toString();
-			QueueProcessorList.removeSession(channel);
-			TopicProcessorList.removeSession(channel);
+			QueueProcessorList.removeSession(ctx);
+			TopicProcessorList.removeSession(ctx);
 			BrokerSyncConsumer.removeSession(ctx);
 			
 			ListenerChannelFactory.channelClosed(channel);
@@ -159,7 +164,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
 			if (sslHandler == null)
 			{
-				int port = ((InetSocketAddress) ctx.getChannel().getLocalAddress()).getPort();
+				int port = ((InetSocketAddress) channel.getLocalAddress()).getPort();
 				if (port == GcsInfo.getBrokerPort())
 				{
 					MiscStats.tcpConnectionClosed();
@@ -180,20 +185,22 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		}
 		catch (Throwable t)
 		{
-			exceptionCaught(channel, t, null);
+			exceptionCaught(ctx, t, null);
 		}
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 	{
-		exceptionCaught(ctx.getChannel(), e.getCause(), null);
+		exceptionCaught(ctx, e.getCause(), null);
 	}
 
-	public void exceptionCaught(Channel channel, Throwable cause, String actionId)
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause, String actionId)
 	{
 		try
 		{
+			Channel channel = ctx.getChannel();
+			
 			Throwable rootCause = ErrorAnalyser.findRootCause(cause);
 
 			String client = channel.getRemoteAddress() != null ? channel.getRemoteAddress().toString() : "Client unknown";
@@ -201,7 +208,13 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			log.error("Exception caught. Client: {} ", client, rootCause);
 
 			CriticalErrors.exitIfCritical(rootCause);
-
+			
+			if(rootCause instanceof java.nio.channels.ClosedChannelException)
+			{
+				handleChannelClosed(ctx);
+			}
+			
+			// Publish fault message
 			NetFault fault = new NetFault("CODE:99999", rootCause.getMessage());
 			fault.setActionId(actionId);
 			fault.setDetail(ErrorHandler.buildStackTrace(rootCause));
@@ -341,7 +354,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		}
 		catch (Throwable t)
 		{
-			exceptionCaught(channel, t, actionId);
+			exceptionCaught(ctx, t, actionId);
 		}
 	}
 
@@ -466,7 +479,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			return;
 		}
 
-		_brokerConsumer.unsubscribe(unsubMsg, channel);
+		_brokerConsumer.unsubscribe(unsubMsg, ctx);
 		sendAccepted(ctx, actionId);
 	}
 
@@ -496,10 +509,10 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		switch (subscritption.getDestinationType())
 		{
 		case QUEUE:
-			_brokerConsumer.listen(subscritption, channel, ackRequired);
+			_brokerConsumer.listen(subscritption, ctx, ackRequired);
 			break;
 		case TOPIC:
-			if (!_brokerConsumer.subscribe(subscritption, channel))
+			if (!_brokerConsumer.subscribe(subscritption, ctx))
 			{
 				if (subscritption.getActionId() == null)
 				{
@@ -515,7 +528,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		case VIRTUAL_QUEUE:
 			if (StringUtils.contains(subscritption.getDestination(), "@"))
 			{
-				_brokerConsumer.listen(subscritption, channel, ackRequired);
+				_brokerConsumer.listen(subscritption, ctx, ackRequired);
 			}
 			else
 			{

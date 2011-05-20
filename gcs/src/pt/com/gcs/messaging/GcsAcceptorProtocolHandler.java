@@ -173,7 +173,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 
 			if (mtype.equals("SYSTEM_TOPIC"))
 			{
-				MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
+				MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
 
 				TopicProcessor tp = TopicProcessorList.get(subscriptionKey);
 
@@ -195,7 +195,7 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			}
 			else if (mtype.equals("SYSTEM_QUEUE"))
 			{
-				MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx.getChannel()), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
+				MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
 
 				QueueProcessor qp = QueueProcessorList.get(subscriptionKey);
 				if (qp == null)
@@ -265,8 +265,8 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 	{
 		log.info("Session Closed: '{}'", ctx.getChannel().getRemoteAddress());
 
-		TopicProcessorList.removeSession(ctx.getChannel());
-		QueueProcessorList.removeSession(ctx.getChannel());
+		TopicProcessorList.removeSession(ctx);
+		QueueProcessorList.removeSession(ctx);
 
 		if (!RemoteChannels.remove(ctx))
 		{

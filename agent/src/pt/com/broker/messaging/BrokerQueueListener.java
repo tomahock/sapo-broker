@@ -130,7 +130,10 @@ public class BrokerQueueListener extends BrokerListener
 								@Override
 								public void operationComplete(ChannelFuture future) throws Exception
 								{
-									setReady(true);
+									if(future.isSuccess())
+									{
+										setReady(true);
+									}
 									lchannel.decrementAndGetDeliveryTries();
 
 									if (lchannel.isWritable())
@@ -189,7 +192,7 @@ public class BrokerQueueListener extends BrokerListener
 			}
 			try
 			{
-				((BrokerProtocolHandler) lchannel.getPipeline().get("broker-handler")).exceptionCaught(lchannel.getChannel(), e, null);
+				((BrokerProtocolHandler) lchannel.getPipeline().get("broker-handler")).exceptionCaught(lchannel.getChannelContext(), e, null);
 			}
 			catch (Throwable t)
 			{

@@ -199,7 +199,10 @@ public class RemoteListener extends MessageListenerBase
 						@Override
 						public void operationComplete(ChannelFuture future) throws Exception
 						{
-							setReady(true);
+							if(future.isSuccess())
+							{
+								setReady(true);
+							}
 							if(lchannel.isWritable())
 							{
 								if (log.isDebugEnabled())
@@ -214,7 +217,6 @@ public class RemoteListener extends MessageListenerBase
 							}
 						}
 					});
-
 				}
 				else
 				{

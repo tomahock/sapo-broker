@@ -3,14 +3,17 @@ package pt.com.broker.types.channels;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
 
 public class ListenerChannelFactory
 {
 	private final static ConcurrentHashMap<Channel, ListenerChannel> channels = new ConcurrentHashMap<Channel, ListenerChannel>(); 
 	
-	public static ListenerChannel getListenerChannel(Channel channel)
+	public static ListenerChannel getListenerChannel(ChannelHandlerContext context)
 	{
-		ListenerChannel listenerChannel = new ListenerChannel(channel); //Inexpensive ctor.
+		Channel channel = context.getChannel();
+		
+		ListenerChannel listenerChannel = new ListenerChannel(context); //Inexpensive ctor.
 		
 		ListenerChannel previous = channels.putIfAbsent(channel, listenerChannel);
 		
