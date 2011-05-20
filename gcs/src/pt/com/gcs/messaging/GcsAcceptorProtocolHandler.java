@@ -79,7 +79,12 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		Throwable rootCause = ErrorAnalyser.findRootCause(e.getCause());
 		CriticalErrors.exitIfCritical(rootCause);
 		log.error("Exception Caught:'{}', '{}'", ctx.getChannel().getRemoteAddress().toString(), rootCause.getMessage());
-		log.error("STACKTRACE", rootCause);
+		log.error(String.format("STACKTRACE:\n%s", rootCause));
+		
+		if(rootCause instanceof java.nio.channels.ClosedChannelException)
+		{
+			handleChannelClosed(ctx);
+		}
 	}
 
 	@Override
