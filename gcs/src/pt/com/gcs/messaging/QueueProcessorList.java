@@ -17,12 +17,10 @@ import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
-import sun.java2d.pipe.hw.ContextCapabilities;
 
 /**
  * QueueProcessorList contains references for all active QueueProcessor objects.
  */
-
 public class QueueProcessorList
 {
 
@@ -71,7 +69,7 @@ public class QueueProcessorList
 	{
 		return instance.i_get(destinationName);
 	}
-	
+
 	public static boolean hasQueue(String queueName)
 	{
 		try
@@ -232,7 +230,6 @@ public class QueueProcessorList
 
 	private void i_removeSession(ChannelHandlerContext context)
 	{
-		Channel channel = context.getChannel();
 		try
 		{
 			ListenerChannel lc = ListenerChannelFactory.getListenerChannel(context);
