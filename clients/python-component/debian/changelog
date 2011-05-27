@@ -1,3 +1,15 @@
+libsapo-broker-python2 (0.0.6) unstable; urgency=low
+
+  * raise DisconnectedError when there is a write error
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Fri, 27 May 2011 11:03:00 +0000
+
+libsapo-broker-python2 (0.0.5) unstable; urgency=low
+
+  * connection close methods
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Mon, 7 Mar 2011 18:55:00 +0000
+
 libsapo-broker-python2 (0.0.4) unstable; urgency=low
 
   * fixed no bytes in python 2.5
