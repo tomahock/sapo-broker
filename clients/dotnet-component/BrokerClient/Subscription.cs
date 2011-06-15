@@ -137,7 +137,7 @@ namespace SapoBrokerClient
             NetSubscribe netSubscribe = new NetSubscribe(this.destinationPattern, this.destinationType);
             NetAction netAction = new NetAction(NetAction.ActionType.SUBSCRIBE);
             netAction.SubscribeMessage = netSubscribe;
-            NetMessage netMessage = new NetMessage(netAction);
+            NetMessage netMessage = new NetMessage(netAction, this.Headers);
 
             return netMessage;
         }
