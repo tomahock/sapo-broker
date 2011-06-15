@@ -2,7 +2,7 @@
 
 cd $(dirname $0)
 
-classpath="../conf:../lib/*"
+classpath="../conf:../output/*:../lib/*"
 
 java -server \
 -Xverify:none -Xms16M -Xmx16M \
