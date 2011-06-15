@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="build" name="java-samples">
 	<property name="project.location" value="." />
+	<property name="package" value="samples" />
+
 
 	<path id="project.classpath">
 		<fileset dir="./lib/">
