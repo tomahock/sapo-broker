@@ -326,7 +326,7 @@ public abstract class BaseBrokerClient
 			NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
 			netAction.setSubscribeMessage(subscription);
 
-			NetMessage msg = buildMessage(netAction);
+			NetMessage msg = buildMessage(netAction, subscription.getHeaders());
 
 			getNetHandler().sendMessage(msg);
 			log.info("Reconnected async consumer for '{}'", subscription.getDestination());
