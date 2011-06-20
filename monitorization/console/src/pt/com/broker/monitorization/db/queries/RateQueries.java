@@ -11,7 +11,6 @@ import pt.com.broker.monitorization.db.queries.agents.AgentQueueCountQuery;
 import pt.com.broker.monitorization.db.queries.faults.FaultRateStaticQuery;
 import pt.com.broker.monitorization.db.queries.queues.QueueCountRateQuery;
 import pt.com.broker.monitorization.db.queries.queues.QueueCountStaticQuery;
-import pt.com.broker.monitorization.db.queries.queues.QueueErrorRateQuery;
 import pt.com.broker.monitorization.db.queries.queues.QueueInputRateQuery;
 import pt.com.broker.monitorization.db.queries.queues.QueueOutputRateQuery;
 import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionDiscardedRateQuery;
@@ -66,9 +65,6 @@ public class RateQueries implements QueryDataProvider
 		
 		QueueOutputRateQuery qorq = new QueueOutputRateQuery();
 		queries.put(qorq.getId(), qorq);
-		
-		QueueErrorRateQuery qerq = new QueueErrorRateQuery();
-		queries.put(qerq.getId(), qerq);
 	}
 
 	public String getData(String queryType, Map<String, List<String>> params)

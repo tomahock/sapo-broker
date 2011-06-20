@@ -109,6 +109,9 @@ public class GeneralSubscriptionInfoQuery
 		{
 			return null;
 		}
+		
+		System.out.println("\n\nGeneralSubscriptionInfoQuery.getResultSet() - " + subscriptionName);
+		
 		return db.runRetrievalPreparedStatement(QUERY, subscriptionName, subscriptionName, subscriptionName, subscriptionName, subscriptionName);
 	}
 }

@@ -9,6 +9,8 @@ var TOPIC_PREFIX = "topic://";
 
 var imagesMetadataMapX = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
 
+var FAULT_SHORT_MESSAGA_MAX_SIZE = 80;
+
 function mainMonitorizationInit() 
 {
 
@@ -97,6 +99,8 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 		for(var i = 0; i != queueGeneralInfo.length; ++i)
 		{
 			var queueName = removePrefix(queueGeneralInfo[i].queueName, QUEUE_PREFIX);
+			
+			var encQueueName = encodeURIComponent(queueName);
 
 			var prevQueueInfo = previousGeneralQueueInfo[queueName];
 
@@ -112,7 +116,7 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 			
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ queueName+ "'>" + queueName + "</a></td><td>" + queueSize + "</td><td><img src='" + pic + "' /></td>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ encQueueName+ "'>" + queueName + "</a></td><td>" + queueSize + "</td><td><img src='" + pic + "' /></td>";
 
 
 			var inputRate = round(parseFloat(queueGeneralInfo[i].inputRate));
@@ -302,6 +306,7 @@ function setQueueInfo(queueInfo, panel)
 		for(var i = 0; i != queueInfo.length; ++i)
 		{
 			var queueName = removePrefix(queueInfo[i].queueName, QUEUE_PREFIX);
+			var encQueueName = encodeURIComponent(queueName);
 			var strCount = queueInfo[i].count;
 			var count = parseFloat(strCount);
 	
@@ -310,7 +315,7 @@ function setQueueInfo(queueInfo, panel)
 			previousQueueInfo[queueName] = count;
 	
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
-			content = content + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
+			content = content + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+encQueueName+"'>"+ queueName+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 
 		}
 
@@ -397,13 +402,14 @@ function setErrorInfo(errorInfo, panel)
 		for(var i = 0; i != errorInfo.length; ++i)
 		{
 			var shortMessage = errorInfo[i].shortMessage;
+			var encShortMessage = encodeURIComponent(shortMessage);
 			var count = errorInfo[i].count;
 			var previousValue = previousSysMsgInfo[shortMessage];
 			var pic = getLocalPic(previousValue, count);
 			previousSysMsgInfo[shortMessage] = count;
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faulttype.html?type="+shortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faulttype.html?type="+encShortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
 	panel.html(newContent);
@@ -450,6 +456,8 @@ function queueMonitorizationInit()
   var queueName = jQuery.query.get('queuename');
   var qnPanel =  jQuery('#queue_name'); 
   
+  var encQueueName = encodeURIComponent(queueName);
+  
   var countPanel = jQuery('#queue_msg_count');
 
   if (queueName == null)
@@ -460,17 +468,17 @@ function queueMonitorizationInit()
  qnPanel.text(queueName);
 
   var f_rates_all = function() {
-	processGraphAll("/dataquery/rate?ratetype=queuecountrate&window=all&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
-	processGraphAll("/dataquery/rate?ratetype=queueinputrate&window=all&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/rate?ratetype=queueoutputrate&window=all&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=queuecountrate&window=all&queuename=" + encQueueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=queueinputrate&window=all&queuename=" + encQueueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=queueoutputrate&window=all&queuename=" + encQueueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
 
   var f_rates_latest = function() {
-	processGraphLatest("/dataquery/rate?ratetype=queueinputrate&window=last&queuename=" + queueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/rate?ratetype=queueoutputrate&window=last&queuename=" + queueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=queueinputrate&window=last&queuename=" + encQueueName, "img_input_rate", "count_input_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=queueoutputrate&window=last&queuename=" + encQueueName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
   }
   var f_queues_latest = function() {
-	processGraphLatest("/dataquery/rate?ratetype=queuecountrate&window=last&queuename=" + queueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=queuecountrate&window=last&queuename=" + encQueueName, "img_queue_size_rate", "queue_size_rate", undefined, imagesMetadataMapX);
   }
 
   var f_generalInfo = function() {
@@ -637,7 +645,10 @@ function faultInformationInit()
     url: '/dataquery/faults?id='+faultId,
     success: function(data){
       var shortMsgPanel = jQuery('#shortmsg');
-      shortMsgPanel.html("<a href='./faulttype.html?type=" + data[0].shortMessage + "'>"+ data[0].shortMessage + "</a>");
+      
+      var encShortMessage = encodeURIComponent(data[0].shortMessage);
+      
+      shortMsgPanel.html("<a href='./faulttype.html?type=" + encShortMessage + "'>"+ data[0].shortMessage + "</a>");
 
       var datePanel = jQuery('#fault_date');
       datePanel.html(getHumanTextDiff(parseISO8601(data[0].time)) + " ago");
@@ -908,6 +919,8 @@ function setAgentQueueInfo(queueInfo, panel)
 		for(var i = 0; i != queueInfo.length; ++i)
 		{
 			var queueName = removePrefix(queueInfo[i].queueName, QUEUE_PREFIX);
+			var encQueueName = encodeURIComponent(queueName);
+			
 			var queueCount = parseFloat(queueInfo[i].queueSize);
 			
 			var previous = previousAgentQueueCount[queueName];
@@ -915,7 +928,7 @@ function setAgentQueueInfo(queueInfo, panel)
 			previousAgentQueueCount[queueName] = queueCount;	
 
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+queueName+"'>"+ queueName+ "</a></td><td style='padding-right:2em'>" + queueCount +"</td><td style='padding-right:2em'><img src='" + pic + "' /></td></tr>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+encQueueName+"'>"+ queueName+ "</a></td><td style='padding-right:2em'>" + queueCount +"</td><td style='padding-right:2em'><img src='" + pic + "' /></td></tr>";
 		}
 	}
 	panel.html(newContent);
@@ -935,6 +948,7 @@ function setAgentSubscriptionInfo(subscriptionsInfo, panel)
 		for(var i = 0; i != subscriptionsInfo.length; ++i)
 		{
 			var subscriptionName = subscriptionsInfo[i].subscriptionName;
+			var encSubscriptionName = encodeURIComponent(subscriptionName);
 			var count = parseFloat(subscriptionsInfo[i].subscriptions);
 			var isTopic = isPrefix(subscriptionName, TOPIC_PREFIX);
 			
@@ -943,11 +957,11 @@ function setAgentSubscriptionInfo(subscriptionsInfo, panel)
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 			if(isTopic)
 			{
-				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./topic.html?subscriptionname=" + subscriptionName + "'>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td><td style='padding-right:2em'>" +  count + "</td></tr>";
+				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./topic.html?subscriptionname=" + encSubscriptionName + "'>" + subscriptionName + "</td><td style='padding-right:2em'>TOPIC</td><td style='padding-right:2em'>" +  count + "</td></tr>";
 			}
 			else
 			{
-				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+subscriptionName+"'>"+ subscriptionName+ "</a></td><td style='padding-right:2em'>QUEUE</td><td style='padding-right:2em'>" + count +"</td></tr>";	
+				newContent = newContent + "<tr class=\"" + rowClass +"\"><td style='padding-left:2em'><a href='./queue.html?queuename="+encSubscriptionName+"'>"+ subscriptionName+ "</a></td><td style='padding-right:2em'>QUEUE</td><td style='padding-right:2em'>" + count +"</td></tr>";	
 			}
 		}
 	}
@@ -967,13 +981,15 @@ function setAgentFaultInfo(errorInfo, panel)
 		for(var i = 0; i != errorInfo.length; ++i)
 		{
 			var shortMessage = errorInfo[i].shortMessage;
+			var encShortMessage = encodeURIComponent(shortMessage);
+			var limitedShortMessage = shortMessage.substring.(0, FAULT_SHORT_MESSAGA_MAX_SIZE);
 			var count = errorInfo[i].count;
 			var previousValue = previousSysMsgInfo[shortMessage];
 			var pic = getLocalPic(previousValue, count);
 			previousSysMsgInfo[shortMessage] = count;
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faulttype.html?type="+shortMessage+"'>"+ shortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./faulttype.html?type="+encShortMessage+"'>"+ limitedShortMessage+ "</a></td><td class=\"countrow\">" +  count + "</td><td><img src='"+ pic + "' /></td></tr>";
 		}
 	}
 	panel.html(newContent);
@@ -1038,9 +1054,10 @@ function setInactiveQueuesInfo(inactiveQueuesInfo,  panel)
 		for(var i = 0; i != inactiveQueuesInfo.length; ++i)
 		{
 			var queueName = removePrefix(inactiveQueuesInfo[i].queueName, QUEUE_PREFIX);
+			var encQueueName = encodeURIComponent(queueName);
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ queueName+ "'>" + queueName + "</a></td></tr>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ encQueueName+ "'>" + queueName + "</a></td></tr>";
 		}
 	}
 
@@ -1084,6 +1101,7 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 		for(var i = 0; i != queueGeneralInfo.length; ++i)
 		{
 			var queueName = removePrefix(queueGeneralInfo[i].queueName, QUEUE_PREFIX);
+			var encQueueName = encodeURIComponent(queueName);
 
 			var prevQueueInfo = previousGeneralQueueInfo[queueName];
 
@@ -1099,7 +1117,7 @@ function setAllQueueGeneralInfo(queueGeneralInfo,  panel)
 			
 			var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ queueName+ "'>" + queueName + "</a></td><td>" + queueSize + "</td><td><img src='" + pic + "' /></td>";
+			newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./queue.html?queuename="+ encQueueName+ "'>" + queueName + "</a></td><td>" + queueSize + "</td><td><img src='" + pic + "' /></td>";
 
 
 			var inputRate = round(parseFloat(queueGeneralInfo[i].inputRate));
@@ -1163,10 +1181,11 @@ function setTopicGeneralInfo(topicsInfo, panel)
 
 			if(isTopic){	
 				subscriptionName = removePrefix(subscriptionName, isTopic ? TOPIC_PREFIX : QUEUE_PREFIX);
+				var encSubscriptionName = encodeURIComponent(subscriptionName);
 			
 				var rowClass =  ( ((i+1)%2) == 0) ? "evenrow" : "oddrow";
 
-				newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./topic.html?subscriptionname=" + subscriptionName + "'>" + subscriptionName + "</a></td><td style='padding-right:2em'>" + outputRate + "</td><td style='padding-right:2em'>" + count +"</td></tr>";
+				newContent = newContent + "<tr class=\"" + rowClass +"\"><td><a href='./topic.html?subscriptionname=" + encSubscriptionName + "'>" + subscriptionName + "</a></td><td style='padding-right:2em'>" + outputRate + "</td><td style='padding-right:2em'>" + count +"</td></tr>";
 		    	}
 		}
 	}
@@ -1181,6 +1200,7 @@ function topicMonitorizationInit()
 {
   var subscriptionname = jQuery.query.get('subscriptionname');
   var tnPanel =  jQuery('#topic_name'); 
+  var encSubscriptionName = encodeURIComponent(subscriptionname);
 
   if (subscriptionname == null)
   {
@@ -1192,19 +1212,19 @@ function topicMonitorizationInit()
  panel.html("<tr><td colspan='5' class='oddrow'>Please wait...</td></tr>");
 
   var f_rates_all = function() {
-	processGraphAll("/dataquery/rate?ratetype=subscriptionoutputrate&window=all&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
-	processGraphAll("/dataquery/rate?ratetype=subscriptiondiscardedrate&window=all&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=subscriptionoutputrate&window=all&subscriptionname=" + encSubscriptionName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphAll("/dataquery/rate?ratetype=subscriptiondiscardedrate&window=all&subscriptionname=" + encSubscriptionName, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
   }
   var f_rates_latest = function() {
-	processGraphLatest("/dataquery/rate?ratetype=subscriptionoutputrate&window=last&subscriptionname=" + subscriptionname, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
-	processGraphLatest("/dataquery/rate?ratetype=subscriptiondiscardedrate&window=last&subscriptionname=" + subscriptionname, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=subscriptionoutputrate&window=last&subscriptionname=" + encSubscriptionName, "img_output_rate", "count_output_rate", "m/s", imagesMetadataMapX);
+	processGraphLatest("/dataquery/rate?ratetype=subscriptiondiscardedrate&window=last&subscriptionname=" + encSubscriptionName, "img_discarded_rate", "discarded_size_rate", "m/s", imagesMetadataMapX);
   }
 
   var f_generalInfo = function() {
    jQuery.ajax(
    {
     type: 'GET',
-    url: '/dataquery/subscription?subscriptionname=' + subscriptionname,
+    url: '/dataquery/subscription?subscriptionname=' + encSubscriptionName,
     success: function(data){
       var panel = jQuery('#general_topic_information');   
       setGeneralTopicInfo(data, panel);

@@ -16,7 +16,7 @@ public class GeneralQueueInfoQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(GeneralQueueInfoQuery.class);
 	
-	private static String QUERY = "SELECT  agents.agent_name,\n last_event_for_subject_predicate_agent(?, 'queue-size', agents.agent_name, now(), '00:05') AS queuesize,\n last_event_for_subject_predicate_agent(?, 'input-rate', agents.agent_name, now(), '00:05') AS inputrate,\n last_event_for_subject_predicate_agent(?, 'output-rate', agents.agent_name, now(), '00:05') AS outputrate,\n last_event_for_subject_predicate_agent(?, 'failed-rate', agents.agent_name, now(), '00:05') AS failed,\n last_event_for_subject_predicate_agent(?, 'expired-rate', agents.agent_name, now(), '00:05') AS expired,\n last_event_for_subject_predicate_agent(?, 'redelivered-rate', agents.agent_name, now(), '00:05') AS redelivered,\n last_event_for_subject_predicate_agent(?, 'subscriptions', agents.agent_name, now(), '00:05') AS subscriptions \nFROM (SELECT DISTINCT agent_name FROM raw_data WHERE event_time > (now() - '00:05'::time) AND object_value > 0 AND subject=?) AS agents Order BY 2 DESC";
+	private static String QUERY = "SELECT  agents.agent_name,\n last_event_for_subject_predicate_agent(?, 'queue-size', agents.agent_name, now(), '00:05') AS queuesize,\n last_event_for_subject_predicate_agent(?, 'input-rate', agents.agent_name, now(), '00:05') AS inputrate,\n last_event_for_subject_predicate_agent(?, 'output-rate', agents.agent_name, now(), '00:05') AS outputrate,\n last_event_for_subject_predicate_agent(?, 'expired-rate', agents.agent_name, now(), '00:05') AS expired,\n last_event_for_subject_predicate_agent(?, 'redelivered-rate', agents.agent_name, now(), '00:05') AS redelivered,\n last_event_for_subject_predicate_agent(?, 'subscriptions', agents.agent_name, now(), '00:05') AS subscriptions \nFROM (SELECT DISTINCT agent_name FROM raw_data WHERE event_time > (now() - '00:05'::time) AND object_value > 0 AND subject=?) AS agents Order BY 2 DESC";
 
 	public String getId()
 	{
@@ -49,10 +49,9 @@ public class GeneralQueueInfoQuery
 				{
 					sb.append(",");
 				}
-				int idx = 1;
 				sb.append("{");
 				sb.append("\"agentName\":\"");
-				String agentname = queryResult.getString(idx++);
+				String agentname = queryResult.getString(1);
 				sb.append(agentname);
 				sb.append("\",");
 
@@ -61,31 +60,27 @@ public class GeneralQueueInfoQuery
 				sb.append("\",");
 
 				sb.append("\"queueSize\":\"");
-				sb.append(queryResult.getDouble(idx++));
+				sb.append(queryResult.getDouble(2));
 				sb.append("\",");
 
 				sb.append("\"inputRate\":\"");
-				sb.append(queryResult.getDouble(idx++));
+				sb.append(queryResult.getDouble(3));
 				sb.append("\",");
 				
 				sb.append("\"outputRate\":\"");
-				sb.append(queryResult.getDouble(idx++));
-				sb.append("\",");
-				
-				sb.append("\"failedRate\":\"");
-				sb.append(queryResult.getDouble(idx++));
+				sb.append(queryResult.getDouble(4));
 				sb.append("\",");
 				
 				sb.append("\"expiredRate\":\"");
-				sb.append(queryResult.getDouble(idx++));
+				sb.append(queryResult.getDouble(5));
 				sb.append("\",");
 				
 				sb.append("\"redeliveredRate\":\"");
-				sb.append(queryResult.getDouble(idx++));
+				sb.append(queryResult.getDouble(5));
 				sb.append("\",");
 				
 				sb.append("\"subscriptions\":\"");
-				sb.append(queryResult.getDouble(idx++));
+				sb.append(queryResult.getDouble(7));
 				sb.append("\"");
 				
 				sb.append("}");
@@ -112,6 +107,6 @@ public class GeneralQueueInfoQuery
 			return null;
 		}
 				
-		return db.runRetrievalPreparedStatement(QUERY, queuename, queuename, queuename, queuename, queuename, queuename, queuename, queuename);
+		return db.runRetrievalPreparedStatement(QUERY, queuename, queuename, queuename, queuename, queuename, queuename, queuename);
 	}
 }
