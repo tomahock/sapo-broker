@@ -116,7 +116,6 @@ public class QueueProcessor
 			else if (listener.getType() == MessageListener.Type.REMOTE)
 			{
 				success = addRemote(listener);
-
 			}
 			if (success)
 			{
@@ -141,12 +140,9 @@ public class QueueProcessor
 				{
 					broadCastNewQueueConsumer(listener);
 				}
-
 				log.info("Add listener -> '{}'", listener.toString());
-
 				return true;
 			}
-
 			return false;
 		}
 	}
