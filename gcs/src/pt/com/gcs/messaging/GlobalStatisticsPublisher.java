@@ -72,13 +72,6 @@ public class GlobalStatisticsPublisher implements Runnable
 				++infoCount;
 			}
 
-//			value = qp.getQueueStatistics().getQueueMessagesFailedAndReset();
-//			if (value != -1)
-//			{
-//				rate = ((double) value / dSeconds);
-//				qSb.append(String.format("\n	<item subject=\"queue://%s\" predicate=\"failed-rate\" value=\"%s\" />", qp.getQueueName(), rate));
-//				++infoCount;
-//			}
 
 			value = qp.getQueueStatistics().getQueueMessagesExpiredAndReset();
 			if (value != -1)

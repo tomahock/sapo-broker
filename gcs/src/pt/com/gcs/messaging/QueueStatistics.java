@@ -38,17 +38,6 @@ public class QueueStatistics
 	{
 		return getPublishInformation(qRedeliveredMessages, qRedeliveredPublish);
 	}
-	// failed
-	private final AtomicLong qFailedMessages = new AtomicLong(0);
-	private final AtomicBoolean qFailedPublish = new AtomicBoolean(true);
-	public final void newQueueFailedMessage()
-	{
-		qFailedMessages.incrementAndGet();
-	}
-	public final long getQueueMessagesFailedAndReset()
-	{
-		return getPublishInformation(qFailedMessages, qFailedPublish);
-	}
 	
 	// expired
 	private final AtomicLong qExpiredMessages = new AtomicLong(0);
