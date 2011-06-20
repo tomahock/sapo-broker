@@ -14,6 +14,7 @@ import javax.xml.xpath.XPathFactory;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.jdbc.DbExecutor;
 import org.caudexorigo.text.StringEscapeUtils;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -44,10 +45,10 @@ public class FaultsDB
 
 			ErrorInfo errorInfo = extractShortMessage(message);
 
-			String escapedMsg = StringEscapeUtils.escapeHtml(errorInfo.content.replace("\n", "\\n"));
+			String escapedMsg = StringEscapeUtils.escapeHtml(clean(errorInfo.content));
 
-			String shortMessage = StringEscapeUtils.escapeHtml(errorInfo.shortMessage.replace("\n", "\\n"));
-
+			String shortMessage = StringEscapeUtils.escapeHtml(clean(errorInfo.shortMessage));
+			
 			DbExecutor.runActionPreparedStatement(ins_sql, agent, sampleDate, escapedMsg, shortMessage);
 		}
 		catch (Throwable t)
@@ -55,6 +56,19 @@ public class FaultsDB
 			log.error("Failed to insert new information item.", t);
 		}
 
+	}
+	
+	
+	private static String clean(String s)
+	{
+		if(s == null || s.length() == 0)
+		{
+			return s;
+		}
+		
+		s = StringUtils.replace(s, "\n", "\\n");
+		s = StringUtils.replace(s, "\t", "\\t");
+		return s;
 	}
 
 

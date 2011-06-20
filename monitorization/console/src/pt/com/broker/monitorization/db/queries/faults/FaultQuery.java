@@ -8,6 +8,7 @@ import java.util.Map;
 import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbPool;
 import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,7 @@ public class FaultQuery
 				sb.append("\",");
 				
 				sb.append("\"message\":\"");
+				//sb.append(StringUtils.replace(queryResult.getString(idx++), "\t", ""));
 				sb.append(queryResult.getString(idx++));
 				sb.append("\",");
 				
