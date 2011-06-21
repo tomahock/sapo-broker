@@ -9,7 +9,7 @@ var TOPIC_PREFIX = "topic://";
 
 var imagesMetadataMapX = new Object();  // key: image element id, value: imageMetadata created by function processGraphAll
 
-var FAULT_SHORT_MESSAGA_MAX_SIZE = 80;
+var FAULT_SHORT_MESSAGA_MAX_SIZE = 40;
 
 function mainMonitorizationInit() 
 {
@@ -982,7 +982,7 @@ function setAgentFaultInfo(errorInfo, panel)
 		{
 			var shortMessage = errorInfo[i].shortMessage;
 			var encShortMessage = encodeURIComponent(shortMessage);
-			var limitedShortMessage = shortMessage.substring.(0, FAULT_SHORT_MESSAGA_MAX_SIZE);
+			var limitedShortMessage = shortMessage.substring(0, (shortMessage.length>FAULT_SHORT_MESSAGA_MAX_SIZE) ? FAULT_SHORT_MESSAGA_MAX_SIZE : shortMessage.length);
 			var count = errorInfo[i].count;
 			var previousValue = previousSysMsgInfo[shortMessage];
 			var pic = getLocalPic(previousValue, count);
