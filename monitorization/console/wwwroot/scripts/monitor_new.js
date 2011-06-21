@@ -542,9 +542,6 @@ function setGeneralQueueInfo(queueGeneralInfo,  panel)
 			var outputRate = round(parseFloat(queueGeneralInfo[i].outputRate));
 			newContent = newContent + "<td style='padding-left:2em'>" + outputRate + "</td>";
 
-			var expiredRate = round(parseFloat(queueGeneralInfo[i].expiredRate));
-			newContent = newContent + "<td style='padding-left:2em'>" + expiredRate + "</td>";
-
 			var redeliveredRate = round(parseFloat(queueGeneralInfo[i].redeliveredRate));
 			newContent = newContent + "<td style='padding-left:2em'>" + redeliveredRate + "</td>";
 
