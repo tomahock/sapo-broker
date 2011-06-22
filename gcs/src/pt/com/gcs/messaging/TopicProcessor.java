@@ -236,7 +236,7 @@ public class TopicProcessor
 	{
 		if (ml.onMessage(nmsg).result == ForwardResult.Result.SUCCESS)
 		{
-			if (ml.getTargetDestinationType() == DestinationType.TOPIC)
+			if ((ml.getTargetDestinationType() == DestinationType.TOPIC) && ml.getType().equals(MessageListener.Type.LOCAL))
 			{
 				topicStatistics.newTopicMessageDelivered();
 			}
