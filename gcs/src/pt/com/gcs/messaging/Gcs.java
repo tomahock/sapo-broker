@@ -1,8 +1,10 @@
 package pt.com.gcs.messaging;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -31,11 +33,11 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.types.Headers;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.net.Peer;
@@ -425,9 +427,15 @@ public class Gcs
 				return pipeline;
 			}
 		};
-
+		
 		bootstrap.setPipelineFactory(connectorPipelineFactory);
 
+		try {
+			bootstrap.setOption("localAddress", new InetSocketAddress(Inet4Address.getByName(GcsInfo.getAgentHost()), 0) );
+		} catch (UnknownHostException e) {
+			log.error(String.format("Failed to bind to local host address. Address: '%s'.", GcsInfo.getAgentHost()), e);
+		}
+		
 		bootstrap.setOption("child.keepAlive", true);
 		bootstrap.setOption("child.receiveBufferSize", 128 * 1024);
 		bootstrap.setOption("child.sendBufferSize", 128 * 1024);
