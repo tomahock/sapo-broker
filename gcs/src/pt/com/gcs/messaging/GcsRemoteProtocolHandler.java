@@ -25,7 +25,8 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
- * GcsAcceptorProtocolHandler is an NETTY SimpleChannelHandler. It handles incoming messages, such as publications, from other agents.
+ * GcsRemoteProtocolHandler is an NETTY SimpleChannelHandler.
+ * It handles outgoing connections to other agents (3315).
  * 
  */
 
