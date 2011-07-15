@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
@@ -24,8 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.MessageListener;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
+import pt.com.gcs.messaging.RemoteChannels;
 import pt.com.gcs.messaging.TopicProcessor;
 import pt.com.gcs.messaging.TopicProcessorList;
 
@@ -39,6 +43,7 @@ public class SubscriptionsAction extends HttpAction
 	private static final Logger log = LoggerFactory.getLogger(SubscriptionsAction.class);
 
 	private static final String NO_SUBSCRIPTIONS = "<p>No subscriptions</p>";
+	private static final String NO_CONNECTIONS = "<p>No connections</p>";
 
 	private static final String templateLocation = "/pt/com/broker/http/subscriptions.template";
 	private static final String cssLocation = "/pt/com/broker/http/style.css";
@@ -76,7 +81,15 @@ public class SubscriptionsAction extends HttpAction
 
 			if (template != null)
 			{
-				String smessage = String.format(template, getCss(), agentName, getLocalQueueConsumers(), getRemoteQueueConsumers(), getLocalTopicConsumers(),  getRemoteTopicConsumers());
+				String smessage = String.format(template, getCss(), agentName,
+						getLocalQueueConsumers(),
+						getRemoteQueueConsumers(),
+						getLocalTopicConsumers(),
+						getRemoteTopicConsumers(),
+						
+						getInboundConnections(),
+						getOutboundConnections()
+						);
 				byte[] bmessage = smessage.getBytes("UTF-8");
 				response.setHeader("Pragma", "no-cache");
 				response.setHeader("Cache-Control", "no-cache");
@@ -204,6 +217,39 @@ public class SubscriptionsAction extends HttpAction
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
 	}
 
+	private String getInboundConnections()
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		Map<String, ChannelHandlerContext> allRemoteAgents = RemoteChannels.getAll();
+		for(String agent: allRemoteAgents.keySet())
+		{
+			sb.append("<p><b>");
+			sb.append(agent);
+			sb.append("</b>: ");
+			sb.append(allRemoteAgents.get(agent).getChannel());
+			sb.append("</p>");
+		}
+		
+		return (sb.length() != 0) ? sb.toString() : NO_CONNECTIONS;
+	}
+	
+	private String getOutboundConnections()
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		Set<Channel> managedConnectorSessions = Gcs.getManagedConnectorSessions();
+		
+		for(Channel channel: managedConnectorSessions)
+		{
+			sb.append("<p>");
+			sb.append(channel);
+			sb.append("</p>");
+		}
+		
+		return (sb.length() != 0) ? sb.toString() : NO_CONNECTIONS;
+	}
+	
 	private static String generateHtml(String title, Collection<String> elements)
 	{
 		StringBuilder sb = new StringBuilder();

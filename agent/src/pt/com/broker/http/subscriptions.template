@@ -32,5 +32,19 @@
 		%s
 		</div>
 		</span>
+		<br/>
+		
+		<span class="infoPannel">
+		<div class="infoPannelTitle">Remote connections (inbound)</div>
+		<div class="infoPannelBody">
+		%s
+		</div>
+		</span>
+		<span class="infoPannel">
+		<div class="infoPannelTitle">Remote connections (outbound)</div>
+		<div class="infoPannelBody">
+		%s
+		</div>
+		</span>
 	</body>
 </html>
