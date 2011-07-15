@@ -1,5 +1,7 @@
 package pt.com.gcs.messaging;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,5 +44,10 @@ public class RemoteChannels
 			}
 		}		
 		return false;
+	}
+	
+	public static Map<String, ChannelHandlerContext> getAll()
+	{
+		return new HashMap<String, ChannelHandlerContext>(remoteChannels);
 	}
 }

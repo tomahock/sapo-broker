@@ -22,6 +22,7 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
@@ -115,6 +116,16 @@ public class Gcs
 			if (!sucess)
 			{
 				log.info("Connection fail to '{}'.", address.toString());
+				if(!cf.isDone())
+				{
+					cf.cancel();
+					// If the connection is established between isDone and Cancel, close it
+					if(cf.getChannel().isConnected())
+					{
+						log.warn("Connection to '{}' established after beeing canceled.", address.toString());
+						cf.getChannel().close();
+					}
+				}
 				GcsExecutor.schedule(new Connect(address), RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
 			}
 			else
@@ -178,7 +189,7 @@ public class Gcs
 		}
 	}
 
-	protected static Set<Channel> getManagedConnectorSessions()
+	public static Set<Channel> getManagedConnectorSessions()
 	{
 		LinkedHashSet<Channel> connections = null;
 		synchronized (instance.agentsConnection)

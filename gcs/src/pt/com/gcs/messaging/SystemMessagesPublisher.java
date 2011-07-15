@@ -53,7 +53,6 @@ public class SystemMessagesPublisher
 						MiscStats.newSystemMessageFailed();
 						closeChannel(channel);
 					}
-
 				}
 			};
 

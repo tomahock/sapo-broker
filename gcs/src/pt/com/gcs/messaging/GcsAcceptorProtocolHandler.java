@@ -33,7 +33,8 @@ import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
 import pt.com.gcs.net.Peer;
 
 /**
- * GcsAcceptorProtocolHandler is an NETTY SimpleChannelHandler. It handles remote subscription messages and acknowledges from other agents.
+ * GcsAcceptorProtocolHandler is an NETTY SimpleChannelHandler.
+ * It handles remote subscription messages and acknowledges from other agents.
  */
 
 @Sharable
@@ -147,6 +148,17 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			final String action = extract(msgContent, "<action>", "</action>");
 			final String src_name = extract(msgContent, "<source-name>", "</source-name>");
 
+			ChannelHandlerContext channelHandlerContext = RemoteChannels.get(src_name);
+			
+			if(!ctx.equals(channelHandlerContext))
+			{
+				log.error(String.format("RemoteChannel for agent '%s' is '%s' but received a system message from '%s'. Closing both.", src_name, channelHandlerContext, ctx));
+				channelHandlerContext.getChannel().close();
+				ctx.getChannel().close();
+				
+				return;
+			}
+			
 			final String subscriptionKey = extract(msgContent, "<destination>", "</destination>");
 
 			if (StringUtils.isBlank(subscriptionKey))
