@@ -2,6 +2,9 @@
 
 #define INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION
 #include "broker.pb.h"
+
+#include <algorithm>
+
 #include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
@@ -462,7 +465,7 @@ void protobuf_AddDesc_broker_2eproto() {
     "O.Broker.Codecs.Autogen.ProtobufXS.Atom."
     "DestinationType\022\023\n\013destination\030\003 \002(\t\022J\n\007"
     "message\030\004 \002(\01329.SAPO.Broker.Codecs.Autog"
-    "en.ProtobufXS.Atom.BrokerMessage\032?\n\004Poll"
+    "en.ProtobufXS.Atom.BrokerMessage\032\?\n\004Poll"
     "\022\021\n\taction_id\030\001 \001(\t\022\023\n\013destination\030\002 \002(\t"
     "\022\017\n\007timeout\030\003 \002(\003\032\035\n\010Accepted\022\021\n\taction_"
     "id\030\001 \002(\t\032P\n\022AcknowledgeMessage\022\021\n\taction"
@@ -586,8 +589,6 @@ const Atom_DestinationType Atom::DestinationType_MIN;
 const Atom_DestinationType Atom::DestinationType_MAX;
 const int Atom::DestinationType_ARRAYSIZE;
 #endif  // _MSC_VER
-const ::std::string Atom_Parameter::_default_name_;
-const ::std::string Atom_Parameter::_default_value_;
 #ifndef _MSC_VER
 const int Atom_Parameter::kNameFieldNumber;
 const int Atom_Parameter::kValueFieldNumber;
@@ -609,8 +610,8 @@ Atom_Parameter::Atom_Parameter(const Atom_Parameter& from)
 
 void Atom_Parameter::SharedCtor() {
   _cached_size_ = 0;
-  name_ = const_cast< ::std::string*>(&_default_name_);
-  value_ = const_cast< ::std::string*>(&_default_value_);
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  value_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -619,10 +620,10 @@ Atom_Parameter::~Atom_Parameter() {
 }
 
 void Atom_Parameter::SharedDtor() {
-  if (name_ != &_default_name_) {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
   }
-  if (value_ != &_default_value_) {
+  if (value_ != &::google::protobuf::internal::kEmptyString) {
     delete value_;
   }
   if (this != default_instance_) {
@@ -651,13 +652,13 @@ Atom_Parameter* Atom_Parameter::New() const {
 
 void Atom_Parameter::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (name_ != &_default_name_) {
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::kEmptyString) {
         name_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (value_ != &_default_value_) {
+    if (has_value()) {
+      if (value_ != &::google::protobuf::internal::kEmptyString) {
         value_->clear();
       }
     }
@@ -724,7 +725,7 @@ bool Atom_Parameter::MergePartialFromCodedStream(
 void Atom_Parameter::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string name = 1;
-  if (_has_bit(0)) {
+  if (has_name()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->name().data(), this->name().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -733,7 +734,7 @@ void Atom_Parameter::SerializeWithCachedSizes(
   }
   
   // required string value = 2;
-  if (_has_bit(1)) {
+  if (has_value()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->value().data(), this->value().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -750,7 +751,7 @@ void Atom_Parameter::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Parameter::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string name = 1;
-  if (_has_bit(0)) {
+  if (has_name()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->name().data(), this->name().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -760,7 +761,7 @@ void Atom_Parameter::SerializeWithCachedSizes(
   }
   
   // required string value = 2;
-  if (_has_bit(1)) {
+  if (has_value()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->value().data(), this->value().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -821,10 +822,10 @@ void Atom_Parameter::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Parameter::MergeFrom(const Atom_Parameter& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_name()) {
       set_name(from.name());
     }
-    if (from._has_bit(1)) {
+    if (from.has_value()) {
       set_value(from.value());
     }
   }
@@ -1075,8 +1076,6 @@ void Atom_Header::Swap(Atom_Header* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_BrokerMessage::_default_message_id_;
-const ::std::string Atom_BrokerMessage::_default_payload_;
 #ifndef _MSC_VER
 const int Atom_BrokerMessage::kMessageIdFieldNumber;
 const int Atom_BrokerMessage::kPayloadFieldNumber;
@@ -1100,8 +1099,8 @@ Atom_BrokerMessage::Atom_BrokerMessage(const Atom_BrokerMessage& from)
 
 void Atom_BrokerMessage::SharedCtor() {
   _cached_size_ = 0;
-  message_id_ = const_cast< ::std::string*>(&_default_message_id_);
-  payload_ = const_cast< ::std::string*>(&_default_payload_);
+  message_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  payload_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   expiration_ = GOOGLE_LONGLONG(0);
   timestamp_ = GOOGLE_LONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -1112,10 +1111,10 @@ Atom_BrokerMessage::~Atom_BrokerMessage() {
 }
 
 void Atom_BrokerMessage::SharedDtor() {
-  if (message_id_ != &_default_message_id_) {
+  if (message_id_ != &::google::protobuf::internal::kEmptyString) {
     delete message_id_;
   }
-  if (payload_ != &_default_payload_) {
+  if (payload_ != &::google::protobuf::internal::kEmptyString) {
     delete payload_;
   }
   if (this != default_instance_) {
@@ -1144,13 +1143,13 @@ Atom_BrokerMessage* Atom_BrokerMessage::New() const {
 
 void Atom_BrokerMessage::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (message_id_ != &_default_message_id_) {
+    if (has_message_id()) {
+      if (message_id_ != &::google::protobuf::internal::kEmptyString) {
         message_id_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (payload_ != &_default_payload_) {
+    if (has_payload()) {
+      if (payload_ != &::google::protobuf::internal::kEmptyString) {
         payload_->clear();
       }
     }
@@ -1205,7 +1204,7 @@ bool Atom_BrokerMessage::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &expiration_)));
-          _set_bit(2);
+          set_has_expiration();
         } else {
           goto handle_uninterpreted;
         }
@@ -1221,7 +1220,7 @@ bool Atom_BrokerMessage::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &timestamp_)));
-          _set_bit(3);
+          set_has_timestamp();
         } else {
           goto handle_uninterpreted;
         }
@@ -1248,7 +1247,7 @@ bool Atom_BrokerMessage::MergePartialFromCodedStream(
 void Atom_BrokerMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string message_id = 1;
-  if (_has_bit(0)) {
+  if (has_message_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->message_id().data(), this->message_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -1257,18 +1256,18 @@ void Atom_BrokerMessage::SerializeWithCachedSizes(
   }
   
   // required bytes payload = 2;
-  if (_has_bit(1)) {
+  if (has_payload()) {
     ::google::protobuf::internal::WireFormatLite::WriteBytes(
       2, this->payload(), output);
   }
   
   // optional int64 expiration = 3;
-  if (_has_bit(2)) {
+  if (has_expiration()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt64(3, this->expiration(), output);
   }
   
   // optional int64 timestamp = 4;
-  if (_has_bit(3)) {
+  if (has_timestamp()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt64(4, this->timestamp(), output);
   }
   
@@ -1281,7 +1280,7 @@ void Atom_BrokerMessage::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_BrokerMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string message_id = 1;
-  if (_has_bit(0)) {
+  if (has_message_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->message_id().data(), this->message_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -1291,19 +1290,19 @@ void Atom_BrokerMessage::SerializeWithCachedSizes(
   }
   
   // required bytes payload = 2;
-  if (_has_bit(1)) {
+  if (has_payload()) {
     target =
       ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         2, this->payload(), target);
   }
   
   // optional int64 expiration = 3;
-  if (_has_bit(2)) {
+  if (has_expiration()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(3, this->expiration(), target);
   }
   
   // optional int64 timestamp = 4;
-  if (_has_bit(3)) {
+  if (has_timestamp()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(4, this->timestamp(), target);
   }
   
@@ -1373,16 +1372,16 @@ void Atom_BrokerMessage::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_BrokerMessage::MergeFrom(const Atom_BrokerMessage& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_message_id()) {
       set_message_id(from.message_id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_payload()) {
       set_payload(from.payload());
     }
-    if (from._has_bit(2)) {
+    if (from.has_expiration()) {
       set_expiration(from.expiration());
     }
-    if (from._has_bit(3)) {
+    if (from.has_timestamp()) {
       set_timestamp(from.timestamp());
     }
   }
@@ -1430,8 +1429,6 @@ void Atom_BrokerMessage::Swap(Atom_BrokerMessage* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Publish::_default_action_id_;
-const ::std::string Atom_Publish::_default_destination_;
 #ifndef _MSC_VER
 const int Atom_Publish::kActionIdFieldNumber;
 const int Atom_Publish::kDestinationTypeFieldNumber;
@@ -1456,9 +1453,9 @@ Atom_Publish::Atom_Publish(const Atom_Publish& from)
 
 void Atom_Publish::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   destination_type_ = 0;
-  destination_ = const_cast< ::std::string*>(&_default_destination_);
+  destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   message_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -1468,10 +1465,10 @@ Atom_Publish::~Atom_Publish() {
 }
 
 void Atom_Publish::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
-  if (destination_ != &_default_destination_) {
+  if (destination_ != &::google::protobuf::internal::kEmptyString) {
     delete destination_;
   }
   if (this != default_instance_) {
@@ -1501,18 +1498,18 @@ Atom_Publish* Atom_Publish::New() const {
 
 void Atom_Publish::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
     destination_type_ = 0;
-    if (_has_bit(2)) {
-      if (destination_ != &_default_destination_) {
+    if (has_destination()) {
+      if (destination_ != &::google::protobuf::internal::kEmptyString) {
         destination_->clear();
       }
     }
-    if (_has_bit(3)) {
+    if (has_message()) {
       if (message_ != NULL) message_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_BrokerMessage::Clear();
     }
   }
@@ -1613,7 +1610,7 @@ bool Atom_Publish::MergePartialFromCodedStream(
 void Atom_Publish::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -1622,13 +1619,13 @@ void Atom_Publish::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.DestinationType destination_type = 2;
-  if (_has_bit(1)) {
+  if (has_destination_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       2, this->destination_type(), output);
   }
   
   // required string destination = 3;
-  if (_has_bit(2)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -1637,7 +1634,7 @@ void Atom_Publish::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.BrokerMessage message = 4;
-  if (_has_bit(3)) {
+  if (has_message()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       4, this->message(), output);
   }
@@ -1651,7 +1648,7 @@ void Atom_Publish::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Publish::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -1661,13 +1658,13 @@ void Atom_Publish::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.DestinationType destination_type = 2;
-  if (_has_bit(1)) {
+  if (has_destination_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       2, this->destination_type(), target);
   }
   
   // required string destination = 3;
-  if (_has_bit(2)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -1677,7 +1674,7 @@ void Atom_Publish::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.BrokerMessage message = 4;
-  if (_has_bit(3)) {
+  if (has_message()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         4, this->message(), target);
@@ -1748,16 +1745,16 @@ void Atom_Publish::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Publish::MergeFrom(const Atom_Publish& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_destination_type()) {
       set_destination_type(from.destination_type());
     }
-    if (from._has_bit(2)) {
+    if (from.has_destination()) {
       set_destination(from.destination());
     }
-    if (from._has_bit(3)) {
+    if (from.has_message()) {
       mutable_message()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_BrokerMessage::MergeFrom(from.message());
     }
   }
@@ -1808,8 +1805,6 @@ void Atom_Publish::Swap(Atom_Publish* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Poll::_default_action_id_;
-const ::std::string Atom_Poll::_default_destination_;
 #ifndef _MSC_VER
 const int Atom_Poll::kActionIdFieldNumber;
 const int Atom_Poll::kDestinationFieldNumber;
@@ -1832,8 +1827,8 @@ Atom_Poll::Atom_Poll(const Atom_Poll& from)
 
 void Atom_Poll::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
-  destination_ = const_cast< ::std::string*>(&_default_destination_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   timeout_ = GOOGLE_LONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -1843,10 +1838,10 @@ Atom_Poll::~Atom_Poll() {
 }
 
 void Atom_Poll::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
-  if (destination_ != &_default_destination_) {
+  if (destination_ != &::google::protobuf::internal::kEmptyString) {
     delete destination_;
   }
   if (this != default_instance_) {
@@ -1875,13 +1870,13 @@ Atom_Poll* Atom_Poll::New() const {
 
 void Atom_Poll::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (destination_ != &_default_destination_) {
+    if (has_destination()) {
+      if (destination_ != &::google::protobuf::internal::kEmptyString) {
         destination_->clear();
       }
     }
@@ -1938,7 +1933,7 @@ bool Atom_Poll::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &timeout_)));
-          _set_bit(2);
+          set_has_timeout();
         } else {
           goto handle_uninterpreted;
         }
@@ -1965,7 +1960,7 @@ bool Atom_Poll::MergePartialFromCodedStream(
 void Atom_Poll::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -1974,7 +1969,7 @@ void Atom_Poll::SerializeWithCachedSizes(
   }
   
   // required string destination = 2;
-  if (_has_bit(1)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -1983,7 +1978,7 @@ void Atom_Poll::SerializeWithCachedSizes(
   }
   
   // required int64 timeout = 3;
-  if (_has_bit(2)) {
+  if (has_timeout()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt64(3, this->timeout(), output);
   }
   
@@ -1996,7 +1991,7 @@ void Atom_Poll::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Poll::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2006,7 +2001,7 @@ void Atom_Poll::SerializeWithCachedSizes(
   }
   
   // required string destination = 2;
-  if (_has_bit(1)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2016,7 +2011,7 @@ void Atom_Poll::SerializeWithCachedSizes(
   }
   
   // required int64 timeout = 3;
-  if (_has_bit(2)) {
+  if (has_timeout()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(3, this->timeout(), target);
   }
   
@@ -2079,13 +2074,13 @@ void Atom_Poll::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Poll::MergeFrom(const Atom_Poll& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_destination()) {
       set_destination(from.destination());
     }
-    if (from._has_bit(2)) {
+    if (from.has_timeout()) {
       set_timeout(from.timeout());
     }
   }
@@ -2132,7 +2127,6 @@ void Atom_Poll::Swap(Atom_Poll* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Accepted::_default_action_id_;
 #ifndef _MSC_VER
 const int Atom_Accepted::kActionIdFieldNumber;
 #endif  // !_MSC_VER
@@ -2153,7 +2147,7 @@ Atom_Accepted::Atom_Accepted(const Atom_Accepted& from)
 
 void Atom_Accepted::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2162,7 +2156,7 @@ Atom_Accepted::~Atom_Accepted() {
 }
 
 void Atom_Accepted::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
   if (this != default_instance_) {
@@ -2191,8 +2185,8 @@ Atom_Accepted* Atom_Accepted::New() const {
 
 void Atom_Accepted::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
@@ -2242,7 +2236,7 @@ bool Atom_Accepted::MergePartialFromCodedStream(
 void Atom_Accepted::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2259,7 +2253,7 @@ void Atom_Accepted::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Accepted::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2313,7 +2307,7 @@ void Atom_Accepted::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Accepted::MergeFrom(const Atom_Accepted& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
   }
@@ -2358,9 +2352,6 @@ void Atom_Accepted::Swap(Atom_Accepted* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_AcknowledgeMessage::_default_action_id_;
-const ::std::string Atom_AcknowledgeMessage::_default_message_id_;
-const ::std::string Atom_AcknowledgeMessage::_default_destination_;
 #ifndef _MSC_VER
 const int Atom_AcknowledgeMessage::kActionIdFieldNumber;
 const int Atom_AcknowledgeMessage::kMessageIdFieldNumber;
@@ -2383,9 +2374,9 @@ Atom_AcknowledgeMessage::Atom_AcknowledgeMessage(const Atom_AcknowledgeMessage& 
 
 void Atom_AcknowledgeMessage::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
-  message_id_ = const_cast< ::std::string*>(&_default_message_id_);
-  destination_ = const_cast< ::std::string*>(&_default_destination_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  message_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2394,13 +2385,13 @@ Atom_AcknowledgeMessage::~Atom_AcknowledgeMessage() {
 }
 
 void Atom_AcknowledgeMessage::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
-  if (message_id_ != &_default_message_id_) {
+  if (message_id_ != &::google::protobuf::internal::kEmptyString) {
     delete message_id_;
   }
-  if (destination_ != &_default_destination_) {
+  if (destination_ != &::google::protobuf::internal::kEmptyString) {
     delete destination_;
   }
   if (this != default_instance_) {
@@ -2429,18 +2420,18 @@ Atom_AcknowledgeMessage* Atom_AcknowledgeMessage::New() const {
 
 void Atom_AcknowledgeMessage::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (message_id_ != &_default_message_id_) {
+    if (has_message_id()) {
+      if (message_id_ != &::google::protobuf::internal::kEmptyString) {
         message_id_->clear();
       }
     }
-    if (_has_bit(2)) {
-      if (destination_ != &_default_destination_) {
+    if (has_destination()) {
+      if (destination_ != &::google::protobuf::internal::kEmptyString) {
         destination_->clear();
       }
     }
@@ -2524,7 +2515,7 @@ bool Atom_AcknowledgeMessage::MergePartialFromCodedStream(
 void Atom_AcknowledgeMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2533,7 +2524,7 @@ void Atom_AcknowledgeMessage::SerializeWithCachedSizes(
   }
   
   // required string message_id = 2;
-  if (_has_bit(1)) {
+  if (has_message_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->message_id().data(), this->message_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2542,7 +2533,7 @@ void Atom_AcknowledgeMessage::SerializeWithCachedSizes(
   }
   
   // required string destination = 3;
-  if (_has_bit(2)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2559,7 +2550,7 @@ void Atom_AcknowledgeMessage::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_AcknowledgeMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2569,7 +2560,7 @@ void Atom_AcknowledgeMessage::SerializeWithCachedSizes(
   }
   
   // required string message_id = 2;
-  if (_has_bit(1)) {
+  if (has_message_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->message_id().data(), this->message_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2579,7 +2570,7 @@ void Atom_AcknowledgeMessage::SerializeWithCachedSizes(
   }
   
   // required string destination = 3;
-  if (_has_bit(2)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2647,13 +2638,13 @@ void Atom_AcknowledgeMessage::MergeFrom(const ::google::protobuf::Message& from)
 void Atom_AcknowledgeMessage::MergeFrom(const Atom_AcknowledgeMessage& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_message_id()) {
       set_message_id(from.message_id());
     }
-    if (from._has_bit(2)) {
+    if (from.has_destination()) {
       set_destination(from.destination());
     }
   }
@@ -2700,8 +2691,6 @@ void Atom_AcknowledgeMessage::Swap(Atom_AcknowledgeMessage* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Subscribe::_default_action_id_;
-const ::std::string Atom_Subscribe::_default_destination_;
 #ifndef _MSC_VER
 const int Atom_Subscribe::kActionIdFieldNumber;
 const int Atom_Subscribe::kDestinationFieldNumber;
@@ -2724,8 +2713,8 @@ Atom_Subscribe::Atom_Subscribe(const Atom_Subscribe& from)
 
 void Atom_Subscribe::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
-  destination_ = const_cast< ::std::string*>(&_default_destination_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   destination_type_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -2735,10 +2724,10 @@ Atom_Subscribe::~Atom_Subscribe() {
 }
 
 void Atom_Subscribe::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
-  if (destination_ != &_default_destination_) {
+  if (destination_ != &::google::protobuf::internal::kEmptyString) {
     delete destination_;
   }
   if (this != default_instance_) {
@@ -2767,13 +2756,13 @@ Atom_Subscribe* Atom_Subscribe::New() const {
 
 void Atom_Subscribe::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (destination_ != &_default_destination_) {
+    if (has_destination()) {
+      if (destination_ != &::google::protobuf::internal::kEmptyString) {
         destination_->clear();
       }
     }
@@ -2862,7 +2851,7 @@ bool Atom_Subscribe::MergePartialFromCodedStream(
 void Atom_Subscribe::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2871,7 +2860,7 @@ void Atom_Subscribe::SerializeWithCachedSizes(
   }
   
   // required string destination = 2;
-  if (_has_bit(1)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2880,7 +2869,7 @@ void Atom_Subscribe::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.DestinationType destination_type = 3;
-  if (_has_bit(2)) {
+  if (has_destination_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       3, this->destination_type(), output);
   }
@@ -2894,7 +2883,7 @@ void Atom_Subscribe::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Subscribe::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2904,7 +2893,7 @@ void Atom_Subscribe::SerializeWithCachedSizes(
   }
   
   // required string destination = 2;
-  if (_has_bit(1)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -2914,7 +2903,7 @@ void Atom_Subscribe::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.DestinationType destination_type = 3;
-  if (_has_bit(2)) {
+  if (has_destination_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       3, this->destination_type(), target);
   }
@@ -2977,13 +2966,13 @@ void Atom_Subscribe::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Subscribe::MergeFrom(const Atom_Subscribe& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_destination()) {
       set_destination(from.destination());
     }
-    if (from._has_bit(2)) {
+    if (from.has_destination_type()) {
       set_destination_type(from.destination_type());
     }
   }
@@ -3030,8 +3019,6 @@ void Atom_Subscribe::Swap(Atom_Subscribe* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Unsubscribe::_default_action_id_;
-const ::std::string Atom_Unsubscribe::_default_destination_;
 #ifndef _MSC_VER
 const int Atom_Unsubscribe::kActionIdFieldNumber;
 const int Atom_Unsubscribe::kDestinationFieldNumber;
@@ -3054,8 +3041,8 @@ Atom_Unsubscribe::Atom_Unsubscribe(const Atom_Unsubscribe& from)
 
 void Atom_Unsubscribe::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
-  destination_ = const_cast< ::std::string*>(&_default_destination_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   destination_type_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -3065,10 +3052,10 @@ Atom_Unsubscribe::~Atom_Unsubscribe() {
 }
 
 void Atom_Unsubscribe::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
-  if (destination_ != &_default_destination_) {
+  if (destination_ != &::google::protobuf::internal::kEmptyString) {
     delete destination_;
   }
   if (this != default_instance_) {
@@ -3097,13 +3084,13 @@ Atom_Unsubscribe* Atom_Unsubscribe::New() const {
 
 void Atom_Unsubscribe::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (destination_ != &_default_destination_) {
+    if (has_destination()) {
+      if (destination_ != &::google::protobuf::internal::kEmptyString) {
         destination_->clear();
       }
     }
@@ -3192,7 +3179,7 @@ bool Atom_Unsubscribe::MergePartialFromCodedStream(
 void Atom_Unsubscribe::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3201,7 +3188,7 @@ void Atom_Unsubscribe::SerializeWithCachedSizes(
   }
   
   // required string destination = 2;
-  if (_has_bit(1)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3210,7 +3197,7 @@ void Atom_Unsubscribe::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.DestinationType destination_type = 3;
-  if (_has_bit(2)) {
+  if (has_destination_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       3, this->destination_type(), output);
   }
@@ -3224,7 +3211,7 @@ void Atom_Unsubscribe::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Unsubscribe::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3234,7 +3221,7 @@ void Atom_Unsubscribe::SerializeWithCachedSizes(
   }
   
   // required string destination = 2;
-  if (_has_bit(1)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3244,7 +3231,7 @@ void Atom_Unsubscribe::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.DestinationType destination_type = 3;
-  if (_has_bit(2)) {
+  if (has_destination_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       3, this->destination_type(), target);
   }
@@ -3307,13 +3294,13 @@ void Atom_Unsubscribe::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Unsubscribe::MergeFrom(const Atom_Unsubscribe& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_destination()) {
       set_destination(from.destination());
     }
-    if (from._has_bit(2)) {
+    if (from.has_destination_type()) {
       set_destination_type(from.destination_type());
     }
   }
@@ -3360,8 +3347,6 @@ void Atom_Unsubscribe::Swap(Atom_Unsubscribe* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Notification::_default_destination_;
-const ::std::string Atom_Notification::_default_subscription_;
 #ifndef _MSC_VER
 const int Atom_Notification::kDestinationFieldNumber;
 const int Atom_Notification::kSubscriptionFieldNumber;
@@ -3386,8 +3371,8 @@ Atom_Notification::Atom_Notification(const Atom_Notification& from)
 
 void Atom_Notification::SharedCtor() {
   _cached_size_ = 0;
-  destination_ = const_cast< ::std::string*>(&_default_destination_);
-  subscription_ = const_cast< ::std::string*>(&_default_subscription_);
+  destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  subscription_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   destination_type_ = 0;
   message_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -3398,10 +3383,10 @@ Atom_Notification::~Atom_Notification() {
 }
 
 void Atom_Notification::SharedDtor() {
-  if (destination_ != &_default_destination_) {
+  if (destination_ != &::google::protobuf::internal::kEmptyString) {
     delete destination_;
   }
-  if (subscription_ != &_default_subscription_) {
+  if (subscription_ != &::google::protobuf::internal::kEmptyString) {
     delete subscription_;
   }
   if (this != default_instance_) {
@@ -3431,18 +3416,18 @@ Atom_Notification* Atom_Notification::New() const {
 
 void Atom_Notification::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (destination_ != &_default_destination_) {
+    if (has_destination()) {
+      if (destination_ != &::google::protobuf::internal::kEmptyString) {
         destination_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (subscription_ != &_default_subscription_) {
+    if (has_subscription()) {
+      if (subscription_ != &::google::protobuf::internal::kEmptyString) {
         subscription_->clear();
       }
     }
     destination_type_ = 0;
-    if (_has_bit(3)) {
+    if (has_message()) {
       if (message_ != NULL) message_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_BrokerMessage::Clear();
     }
   }
@@ -3543,7 +3528,7 @@ bool Atom_Notification::MergePartialFromCodedStream(
 void Atom_Notification::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string destination = 1;
-  if (_has_bit(0)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3552,7 +3537,7 @@ void Atom_Notification::SerializeWithCachedSizes(
   }
   
   // required string subscription = 2;
-  if (_has_bit(1)) {
+  if (has_subscription()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->subscription().data(), this->subscription().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3561,13 +3546,13 @@ void Atom_Notification::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.DestinationType destination_type = 3;
-  if (_has_bit(2)) {
+  if (has_destination_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       3, this->destination_type(), output);
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.BrokerMessage message = 4;
-  if (_has_bit(3)) {
+  if (has_message()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       4, this->message(), output);
   }
@@ -3581,7 +3566,7 @@ void Atom_Notification::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Notification::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string destination = 1;
-  if (_has_bit(0)) {
+  if (has_destination()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->destination().data(), this->destination().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3591,7 +3576,7 @@ void Atom_Notification::SerializeWithCachedSizes(
   }
   
   // required string subscription = 2;
-  if (_has_bit(1)) {
+  if (has_subscription()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->subscription().data(), this->subscription().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3601,13 +3586,13 @@ void Atom_Notification::SerializeWithCachedSizes(
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.DestinationType destination_type = 3;
-  if (_has_bit(2)) {
+  if (has_destination_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       3, this->destination_type(), target);
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.BrokerMessage message = 4;
-  if (_has_bit(3)) {
+  if (has_message()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         4, this->message(), target);
@@ -3678,16 +3663,16 @@ void Atom_Notification::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Notification::MergeFrom(const Atom_Notification& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_destination()) {
       set_destination(from.destination());
     }
-    if (from._has_bit(1)) {
+    if (from.has_subscription()) {
       set_subscription(from.subscription());
     }
-    if (from._has_bit(2)) {
+    if (from.has_destination_type()) {
       set_destination_type(from.destination_type());
     }
-    if (from._has_bit(3)) {
+    if (from.has_message()) {
       mutable_message()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_BrokerMessage::MergeFrom(from.message());
     }
   }
@@ -3738,10 +3723,6 @@ void Atom_Notification::Swap(Atom_Notification* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Fault::_default_action_id_;
-const ::std::string Atom_Fault::_default_fault_code_;
-const ::std::string Atom_Fault::_default_fault_message_;
-const ::std::string Atom_Fault::_default_fault_detail_;
 #ifndef _MSC_VER
 const int Atom_Fault::kActionIdFieldNumber;
 const int Atom_Fault::kFaultCodeFieldNumber;
@@ -3765,10 +3746,10 @@ Atom_Fault::Atom_Fault(const Atom_Fault& from)
 
 void Atom_Fault::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
-  fault_code_ = const_cast< ::std::string*>(&_default_fault_code_);
-  fault_message_ = const_cast< ::std::string*>(&_default_fault_message_);
-  fault_detail_ = const_cast< ::std::string*>(&_default_fault_detail_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  fault_code_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  fault_message_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  fault_detail_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -3777,16 +3758,16 @@ Atom_Fault::~Atom_Fault() {
 }
 
 void Atom_Fault::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
-  if (fault_code_ != &_default_fault_code_) {
+  if (fault_code_ != &::google::protobuf::internal::kEmptyString) {
     delete fault_code_;
   }
-  if (fault_message_ != &_default_fault_message_) {
+  if (fault_message_ != &::google::protobuf::internal::kEmptyString) {
     delete fault_message_;
   }
-  if (fault_detail_ != &_default_fault_detail_) {
+  if (fault_detail_ != &::google::protobuf::internal::kEmptyString) {
     delete fault_detail_;
   }
   if (this != default_instance_) {
@@ -3815,23 +3796,23 @@ Atom_Fault* Atom_Fault::New() const {
 
 void Atom_Fault::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (fault_code_ != &_default_fault_code_) {
+    if (has_fault_code()) {
+      if (fault_code_ != &::google::protobuf::internal::kEmptyString) {
         fault_code_->clear();
       }
     }
-    if (_has_bit(2)) {
-      if (fault_message_ != &_default_fault_message_) {
+    if (has_fault_message()) {
+      if (fault_message_ != &::google::protobuf::internal::kEmptyString) {
         fault_message_->clear();
       }
     }
-    if (_has_bit(3)) {
-      if (fault_detail_ != &_default_fault_detail_) {
+    if (has_fault_detail()) {
+      if (fault_detail_ != &::google::protobuf::internal::kEmptyString) {
         fault_detail_->clear();
       }
     }
@@ -3932,7 +3913,7 @@ bool Atom_Fault::MergePartialFromCodedStream(
 void Atom_Fault::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3941,7 +3922,7 @@ void Atom_Fault::SerializeWithCachedSizes(
   }
   
   // required string fault_code = 2;
-  if (_has_bit(1)) {
+  if (has_fault_code()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->fault_code().data(), this->fault_code().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3950,7 +3931,7 @@ void Atom_Fault::SerializeWithCachedSizes(
   }
   
   // required string fault_message = 3;
-  if (_has_bit(2)) {
+  if (has_fault_message()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->fault_message().data(), this->fault_message().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3959,7 +3940,7 @@ void Atom_Fault::SerializeWithCachedSizes(
   }
   
   // optional string fault_detail = 4;
-  if (_has_bit(3)) {
+  if (has_fault_detail()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->fault_detail().data(), this->fault_detail().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3976,7 +3957,7 @@ void Atom_Fault::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Fault::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3986,7 +3967,7 @@ void Atom_Fault::SerializeWithCachedSizes(
   }
   
   // required string fault_code = 2;
-  if (_has_bit(1)) {
+  if (has_fault_code()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->fault_code().data(), this->fault_code().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -3996,7 +3977,7 @@ void Atom_Fault::SerializeWithCachedSizes(
   }
   
   // required string fault_message = 3;
-  if (_has_bit(2)) {
+  if (has_fault_message()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->fault_message().data(), this->fault_message().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4006,7 +3987,7 @@ void Atom_Fault::SerializeWithCachedSizes(
   }
   
   // optional string fault_detail = 4;
-  if (_has_bit(3)) {
+  if (has_fault_detail()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->fault_detail().data(), this->fault_detail().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4081,16 +4062,16 @@ void Atom_Fault::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Fault::MergeFrom(const Atom_Fault& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_fault_code()) {
       set_fault_code(from.fault_code());
     }
-    if (from._has_bit(2)) {
+    if (from.has_fault_message()) {
       set_fault_message(from.fault_message());
     }
-    if (from._has_bit(3)) {
+    if (from.has_fault_detail()) {
       set_fault_detail(from.fault_detail());
     }
   }
@@ -4138,7 +4119,6 @@ void Atom_Fault::Swap(Atom_Fault* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Ping::_default_action_id_;
 #ifndef _MSC_VER
 const int Atom_Ping::kActionIdFieldNumber;
 #endif  // !_MSC_VER
@@ -4159,7 +4139,7 @@ Atom_Ping::Atom_Ping(const Atom_Ping& from)
 
 void Atom_Ping::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4168,7 +4148,7 @@ Atom_Ping::~Atom_Ping() {
 }
 
 void Atom_Ping::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
   if (this != default_instance_) {
@@ -4197,8 +4177,8 @@ Atom_Ping* Atom_Ping::New() const {
 
 void Atom_Ping::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
@@ -4248,7 +4228,7 @@ bool Atom_Ping::MergePartialFromCodedStream(
 void Atom_Ping::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4265,7 +4245,7 @@ void Atom_Ping::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Ping::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4319,7 +4299,7 @@ void Atom_Ping::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Ping::MergeFrom(const Atom_Ping& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
   }
@@ -4364,7 +4344,6 @@ void Atom_Ping::Swap(Atom_Ping* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Pong::_default_action_id_;
 #ifndef _MSC_VER
 const int Atom_Pong::kActionIdFieldNumber;
 #endif  // !_MSC_VER
@@ -4385,7 +4364,7 @@ Atom_Pong::Atom_Pong(const Atom_Pong& from)
 
 void Atom_Pong::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4394,7 +4373,7 @@ Atom_Pong::~Atom_Pong() {
 }
 
 void Atom_Pong::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
   if (this != default_instance_) {
@@ -4423,8 +4402,8 @@ Atom_Pong* Atom_Pong::New() const {
 
 void Atom_Pong::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
@@ -4474,7 +4453,7 @@ bool Atom_Pong::MergePartialFromCodedStream(
 void Atom_Pong::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4491,7 +4470,7 @@ void Atom_Pong::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Pong::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4545,7 +4524,7 @@ void Atom_Pong::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Pong::MergeFrom(const Atom_Pong& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
   }
@@ -4590,10 +4569,6 @@ void Atom_Pong::Swap(Atom_Pong* other) {
 
 // -------------------------------------------------------------------
 
-const ::std::string Atom_Authentication::_default_action_id_;
-const ::std::string Atom_Authentication::_default_authentication_type_;
-const ::std::string Atom_Authentication::_default_token_;
-const ::std::string Atom_Authentication::_default_user_id_;
 #ifndef _MSC_VER
 const int Atom_Authentication::kActionIdFieldNumber;
 const int Atom_Authentication::kAuthenticationTypeFieldNumber;
@@ -4618,10 +4593,10 @@ Atom_Authentication::Atom_Authentication(const Atom_Authentication& from)
 
 void Atom_Authentication::SharedCtor() {
   _cached_size_ = 0;
-  action_id_ = const_cast< ::std::string*>(&_default_action_id_);
-  authentication_type_ = const_cast< ::std::string*>(&_default_authentication_type_);
-  token_ = const_cast< ::std::string*>(&_default_token_);
-  user_id_ = const_cast< ::std::string*>(&_default_user_id_);
+  action_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  authentication_type_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  token_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  user_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4630,16 +4605,16 @@ Atom_Authentication::~Atom_Authentication() {
 }
 
 void Atom_Authentication::SharedDtor() {
-  if (action_id_ != &_default_action_id_) {
+  if (action_id_ != &::google::protobuf::internal::kEmptyString) {
     delete action_id_;
   }
-  if (authentication_type_ != &_default_authentication_type_) {
+  if (authentication_type_ != &::google::protobuf::internal::kEmptyString) {
     delete authentication_type_;
   }
-  if (token_ != &_default_token_) {
+  if (token_ != &::google::protobuf::internal::kEmptyString) {
     delete token_;
   }
-  if (user_id_ != &_default_user_id_) {
+  if (user_id_ != &::google::protobuf::internal::kEmptyString) {
     delete user_id_;
   }
   if (this != default_instance_) {
@@ -4668,23 +4643,23 @@ Atom_Authentication* Atom_Authentication::New() const {
 
 void Atom_Authentication::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (action_id_ != &_default_action_id_) {
+    if (has_action_id()) {
+      if (action_id_ != &::google::protobuf::internal::kEmptyString) {
         action_id_->clear();
       }
     }
-    if (_has_bit(1)) {
-      if (authentication_type_ != &_default_authentication_type_) {
+    if (has_authentication_type()) {
+      if (authentication_type_ != &::google::protobuf::internal::kEmptyString) {
         authentication_type_->clear();
       }
     }
-    if (_has_bit(2)) {
-      if (token_ != &_default_token_) {
+    if (has_token()) {
+      if (token_ != &::google::protobuf::internal::kEmptyString) {
         token_->clear();
       }
     }
-    if (_has_bit(3)) {
-      if (user_id_ != &_default_user_id_) {
+    if (has_user_id()) {
+      if (user_id_ != &::google::protobuf::internal::kEmptyString) {
         user_id_->clear();
       }
     }
@@ -4801,7 +4776,7 @@ bool Atom_Authentication::MergePartialFromCodedStream(
 void Atom_Authentication::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4810,7 +4785,7 @@ void Atom_Authentication::SerializeWithCachedSizes(
   }
   
   // required string authentication_type = 2;
-  if (_has_bit(1)) {
+  if (has_authentication_type()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->authentication_type().data(), this->authentication_type().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4819,13 +4794,13 @@ void Atom_Authentication::SerializeWithCachedSizes(
   }
   
   // required bytes token = 3;
-  if (_has_bit(2)) {
+  if (has_token()) {
     ::google::protobuf::internal::WireFormatLite::WriteBytes(
       3, this->token(), output);
   }
   
   // optional string user_id = 4;
-  if (_has_bit(3)) {
+  if (has_user_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->user_id().data(), this->user_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4851,7 +4826,7 @@ void Atom_Authentication::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Authentication::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string action_id = 1;
-  if (_has_bit(0)) {
+  if (has_action_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->action_id().data(), this->action_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4861,7 +4836,7 @@ void Atom_Authentication::SerializeWithCachedSizes(
   }
   
   // required string authentication_type = 2;
-  if (_has_bit(1)) {
+  if (has_authentication_type()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->authentication_type().data(), this->authentication_type().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4871,14 +4846,14 @@ void Atom_Authentication::SerializeWithCachedSizes(
   }
   
   // required bytes token = 3;
-  if (_has_bit(2)) {
+  if (has_token()) {
     target =
       ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         3, this->token(), target);
   }
   
   // optional string user_id = 4;
-  if (_has_bit(3)) {
+  if (has_user_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->user_id().data(), this->user_id().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
@@ -4970,16 +4945,16 @@ void Atom_Authentication::MergeFrom(const Atom_Authentication& from) {
   GOOGLE_CHECK_NE(&from, this);
   role_.MergeFrom(from.role_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_action_id()) {
       set_action_id(from.action_id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_authentication_type()) {
       set_authentication_type(from.authentication_type());
     }
-    if (from._has_bit(2)) {
+    if (from.has_token()) {
       set_token(from.token());
     }
-    if (from._has_bit(3)) {
+    if (from.has_user_id()) {
       set_user_id(from.user_id());
     }
   }
@@ -5166,39 +5141,39 @@ Atom_Action* Atom_Action::New() const {
 
 void Atom_Action::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_publish()) {
       if (publish_ != NULL) publish_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Publish::Clear();
     }
-    if (_has_bit(1)) {
+    if (has_poll()) {
       if (poll_ != NULL) poll_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Poll::Clear();
     }
-    if (_has_bit(2)) {
+    if (has_accepted()) {
       if (accepted_ != NULL) accepted_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Accepted::Clear();
     }
-    if (_has_bit(3)) {
+    if (has_ack_message()) {
       if (ack_message_ != NULL) ack_message_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_AcknowledgeMessage::Clear();
     }
-    if (_has_bit(4)) {
+    if (has_subscribe()) {
       if (subscribe_ != NULL) subscribe_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Subscribe::Clear();
     }
-    if (_has_bit(5)) {
+    if (has_unsubscribe()) {
       if (unsubscribe_ != NULL) unsubscribe_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Unsubscribe::Clear();
     }
-    if (_has_bit(6)) {
+    if (has_notification()) {
       if (notification_ != NULL) notification_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Notification::Clear();
     }
-    if (_has_bit(7)) {
+    if (has_fault()) {
       if (fault_ != NULL) fault_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Fault::Clear();
     }
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    if (_has_bit(8)) {
+    if (has_ping()) {
       if (ping_ != NULL) ping_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Ping::Clear();
     }
-    if (_has_bit(9)) {
+    if (has_pong()) {
       if (pong_ != NULL) pong_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Pong::Clear();
     }
-    if (_has_bit(10)) {
+    if (has_auth()) {
       if (auth_ != NULL) auth_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Authentication::Clear();
     }
     action_type_ = 0;
@@ -5406,73 +5381,73 @@ bool Atom_Action::MergePartialFromCodedStream(
 void Atom_Action::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Publish publish = 1;
-  if (_has_bit(0)) {
+  if (has_publish()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->publish(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Poll poll = 2;
-  if (_has_bit(1)) {
+  if (has_poll()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->poll(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Accepted accepted = 3;
-  if (_has_bit(2)) {
+  if (has_accepted()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       3, this->accepted(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.AcknowledgeMessage ack_message = 4;
-  if (_has_bit(3)) {
+  if (has_ack_message()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       4, this->ack_message(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Subscribe subscribe = 5;
-  if (_has_bit(4)) {
+  if (has_subscribe()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       5, this->subscribe(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Unsubscribe unsubscribe = 6;
-  if (_has_bit(5)) {
+  if (has_unsubscribe()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       6, this->unsubscribe(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Notification notification = 7;
-  if (_has_bit(6)) {
+  if (has_notification()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       7, this->notification(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Fault fault = 8;
-  if (_has_bit(7)) {
+  if (has_fault()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       8, this->fault(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Ping ping = 9;
-  if (_has_bit(8)) {
+  if (has_ping()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       9, this->ping(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Pong pong = 10;
-  if (_has_bit(9)) {
+  if (has_pong()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       10, this->pong(), output);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Authentication auth = 11;
-  if (_has_bit(10)) {
+  if (has_auth()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       11, this->auth(), output);
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Action.ActionType action_type = 12;
-  if (_has_bit(11)) {
+  if (has_action_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       12, this->action_type(), output);
   }
@@ -5486,84 +5461,84 @@ void Atom_Action::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom_Action::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Publish publish = 1;
-  if (_has_bit(0)) {
+  if (has_publish()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->publish(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Poll poll = 2;
-  if (_has_bit(1)) {
+  if (has_poll()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->poll(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Accepted accepted = 3;
-  if (_has_bit(2)) {
+  if (has_accepted()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         3, this->accepted(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.AcknowledgeMessage ack_message = 4;
-  if (_has_bit(3)) {
+  if (has_ack_message()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         4, this->ack_message(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Subscribe subscribe = 5;
-  if (_has_bit(4)) {
+  if (has_subscribe()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         5, this->subscribe(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Unsubscribe unsubscribe = 6;
-  if (_has_bit(5)) {
+  if (has_unsubscribe()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         6, this->unsubscribe(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Notification notification = 7;
-  if (_has_bit(6)) {
+  if (has_notification()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         7, this->notification(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Fault fault = 8;
-  if (_has_bit(7)) {
+  if (has_fault()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         8, this->fault(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Ping ping = 9;
-  if (_has_bit(8)) {
+  if (has_ping()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         9, this->ping(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Pong pong = 10;
-  if (_has_bit(9)) {
+  if (has_pong()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         10, this->pong(), target);
   }
   
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Authentication auth = 11;
-  if (_has_bit(10)) {
+  if (has_auth()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         11, this->auth(), target);
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Action.ActionType action_type = 12;
-  if (_has_bit(11)) {
+  if (has_action_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       12, this->action_type(), target);
   }
@@ -5691,42 +5666,42 @@ void Atom_Action::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom_Action::MergeFrom(const Atom_Action& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_publish()) {
       mutable_publish()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Publish::MergeFrom(from.publish());
     }
-    if (from._has_bit(1)) {
+    if (from.has_poll()) {
       mutable_poll()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Poll::MergeFrom(from.poll());
     }
-    if (from._has_bit(2)) {
+    if (from.has_accepted()) {
       mutable_accepted()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Accepted::MergeFrom(from.accepted());
     }
-    if (from._has_bit(3)) {
+    if (from.has_ack_message()) {
       mutable_ack_message()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_AcknowledgeMessage::MergeFrom(from.ack_message());
     }
-    if (from._has_bit(4)) {
+    if (from.has_subscribe()) {
       mutable_subscribe()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Subscribe::MergeFrom(from.subscribe());
     }
-    if (from._has_bit(5)) {
+    if (from.has_unsubscribe()) {
       mutable_unsubscribe()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Unsubscribe::MergeFrom(from.unsubscribe());
     }
-    if (from._has_bit(6)) {
+    if (from.has_notification()) {
       mutable_notification()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Notification::MergeFrom(from.notification());
     }
-    if (from._has_bit(7)) {
+    if (from.has_fault()) {
       mutable_fault()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Fault::MergeFrom(from.fault());
     }
   }
   if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    if (from._has_bit(8)) {
+    if (from.has_ping()) {
       mutable_ping()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Ping::MergeFrom(from.ping());
     }
-    if (from._has_bit(9)) {
+    if (from.has_pong()) {
       mutable_pong()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Pong::MergeFrom(from.pong());
     }
-    if (from._has_bit(10)) {
+    if (from.has_auth()) {
       mutable_auth()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Authentication::MergeFrom(from.auth());
     }
-    if (from._has_bit(11)) {
+    if (from.has_action_type()) {
       set_action_type(from.action_type());
     }
   }
@@ -5876,10 +5851,10 @@ Atom* Atom::New() const {
 
 void Atom::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_header()) {
       if (header_ != NULL) header_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Header::Clear();
     }
-    if (_has_bit(1)) {
+    if (has_action()) {
       if (action_ != NULL) action_->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Action::Clear();
     }
   }
@@ -5939,13 +5914,13 @@ bool Atom::MergePartialFromCodedStream(
 void Atom::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Header header = 1;
-  if (_has_bit(0)) {
+  if (has_header()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->header(), output);
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Action action = 2;
-  if (_has_bit(1)) {
+  if (has_action()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->action(), output);
   }
@@ -5959,14 +5934,14 @@ void Atom::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Atom::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Header header = 1;
-  if (_has_bit(0)) {
+  if (has_header()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->header(), target);
   }
   
   // required .SAPO.Broker.Codecs.Autogen.ProtobufXS.Atom.Action action = 2;
-  if (_has_bit(1)) {
+  if (has_action()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->action(), target);
@@ -6024,10 +5999,10 @@ void Atom::MergeFrom(const ::google::protobuf::Message& from) {
 void Atom::MergeFrom(const Atom& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_header()) {
       mutable_header()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Header::MergeFrom(from.header());
     }
-    if (from._has_bit(1)) {
+    if (from.has_action()) {
       mutable_action()->::SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom_Action::MergeFrom(from.action());
     }
   }
