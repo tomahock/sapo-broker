@@ -12,25 +12,25 @@ import org.caudexorigo.text.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.BaseBrokerClient;
+import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.monitorization.db.StatisticsDB;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class StatisticsCollector
 {
 	private static Logger log = LoggerFactory.getLogger(StatisticsCollector.class);
 
 	private final String SUBSCRIPTION = "/system/stats/.*";
-	private final BaseBrokerClient brokerClient;
+	private final BrokerClient brokerClient;
 
 	private static final XMLInputFactory factory = XMLInputFactory.newInstance();
 
 
-	public StatisticsCollector(BaseBrokerClient brokerClient)
+	public StatisticsCollector(BrokerClient brokerClient)
 	{
 		this.brokerClient = brokerClient;
 
@@ -38,7 +38,7 @@ public class StatisticsCollector
 
 	public void start()
 	{
-		BaseBrokerClient bc = getBrokerClient();
+		BrokerClient bc = getBrokerClient();
 
 		NetSubscribe netSub = new NetSubscribe(getSubscription(), DestinationType.TOPIC);
 		try
@@ -126,7 +126,7 @@ public class StatisticsCollector
 		StatisticsDB.add(agent, sampleStartDate, subject, predicate, value);
 	}
 
-	public BaseBrokerClient getBrokerClient()
+	public BrokerClient getBrokerClient()
 	{
 		return brokerClient;
 	}
