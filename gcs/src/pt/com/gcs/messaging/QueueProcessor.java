@@ -13,15 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.MessageListener.MessageListenerState;
 import pt.com.broker.types.MessageListenerEventChangeHandler;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.ForwardResult.Result;
-import pt.com.broker.types.MessageListener.MessageListenerState;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
@@ -59,7 +59,7 @@ public class QueueProcessor
 
 	private final AtomicLong lastCycle = new AtomicLong(Long.MAX_VALUE);
 
-	private int current_idx = 0;
+	private final AtomicLong currentIdx = new AtomicLong(0);
 
 	protected QueueProcessor(String queueName)
 	{
@@ -356,13 +356,13 @@ public class QueueProcessor
 		{
 			return failed;
 		}
-		int n = Math.abs(++current_idx % s);
+		int n = (int)Math.abs(currentIdx.incrementAndGet() % s);
 
 		try
 		{
 			int idx = 0;
 
-			// first we cycle the collection and only notify the first ready listener with an "index" greater than "current_index"
+			// first we cycle the collection and only notify the first ready listener with an "index" greater than "current index"
 			for (MessageListener ml : listeners)
 			{
 				++idx;
@@ -370,6 +370,7 @@ public class QueueProcessor
 				{
 					if (ml.isReady())
 					{
+						currentIdx.addAndGet(idx-1);
 						return ml.onMessage(nmsg);
 					}
 				}
@@ -387,6 +388,7 @@ public class QueueProcessor
 					{
 						if (ml.isReady())
 						{
+							currentIdx.addAndGet(n + idx -1); // all elements greater than 'current index', plus idx -1 (to compensate ++)
 							return ml.onMessage(nmsg);
 						}
 					}
@@ -397,7 +399,7 @@ public class QueueProcessor
 				}
 			}
 
-			// oh well ... we tried
+			// oh well ... we tried. To need to forward current index
 			return failed;
 		}
 		catch (Throwable t)

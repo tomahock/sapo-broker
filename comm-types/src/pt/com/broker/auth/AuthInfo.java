@@ -27,6 +27,21 @@ public class AuthInfo
 	{
 		this(userId, null, password.getBytes(Charset.forName("UTF-8")), null);
 	}
+	
+	/**
+	 * Creates an AuthInfo instance.
+	 * 
+	 * @param userId
+	 *            User identification, such as an username.
+	 * @param password
+	 *            User password. This is transformed in a binary token using UTF-8.
+	 * @param userAuthenticationType
+	 *            The type of authentication being used (e.g., SapoSTS).
+	 */
+	public AuthInfo(String userId, String password, String userAuthenticationType)
+	{
+		this(userId, null, password.getBytes(Charset.forName("UTF-8")), userAuthenticationType);
+	}
 
 	/**
 	 * Creates an AuthInfo instance.

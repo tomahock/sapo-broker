@@ -54,31 +54,6 @@ public class SynchronousMessageListener extends BrokerListener
 		this.queueName = queueName;
 		this.setInNoWaitMode(false);
 		this.isReady = new AtomicBoolean(false);
-		
-		lchannel.addStateChangeListener(new ListenerChannelEventHandler()
-		{
-			@Override
-			public void stateChanged(ListenerChannel listenerChannel, ChannelState state)
-			{
-				MessageListenerState newState = null;
-				switch (state)
-				{
-					case READY:
-						newState = MessageListenerState.Writable;
-						break;
-					case NOT_READY:
-						newState = MessageListenerState.NotWritable;
-						break;
-					default:
-						break;
-				}
-				
-				if(newState != null)
-				{
-					onEventChange(newState);
-				}
-			}
-		});
 	}
 
 	@Override

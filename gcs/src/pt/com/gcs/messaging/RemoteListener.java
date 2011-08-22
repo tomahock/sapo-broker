@@ -57,31 +57,6 @@ public class RemoteListener extends MessageListenerBase
 		{
 			max_write_time = QUEUE_MAX_WRITE_TIME;
 			success = successQueue;
-			
-			lchannel.addStateChangeListener(new ListenerChannelEventHandler()
-			{
-				@Override
-				public void stateChanged(ListenerChannel listenerChannel, ChannelState state)
-				{
-					MessageListenerState newState = null;
-					switch (state)
-					{
-						case READY:
-							newState = MessageListenerState.Writable;
-							break;
-						case NOT_READY:
-							newState = MessageListenerState.NotWritable;
-							break;
-						default:
-							break;
-					}
-					
-					if(newState != null)
-					{
-						onEventChange(newState);
-					}
-				}
-			});
 		}
 		else
 		{

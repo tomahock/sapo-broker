@@ -133,37 +133,4 @@ public class ListenerChannel
 	{
 		messageDeliveryTries.set(0);
 	}
-
-	/**
-	 * Event handling
-	 */
-
-	private CopyOnWriteArrayList<ListenerChannelEventHandler> eventHandlers = new CopyOnWriteArrayList<ListenerChannelEventHandler>();
-
-	public void addStateChangeListener(ListenerChannelEventHandler eventHandler)
-	{
-		eventHandlers.add(eventHandler);
-	}
-
-	public void removeStateChangeListener(ListenerChannelEventHandler eventHandler)
-	{
-		eventHandlers.remove(eventHandler);
-	}
-
-	private void onStateChageEvent(ChannelState state)
-	{
-		for (ListenerChannelEventHandler eventHandler : eventHandlers)
-		{
-			try
-			{
-				eventHandler.stateChanged(this, state);
-			}
-			catch (Throwable t)
-			{
-				
-				log.error(String.format("Failed to process event handler. New State: '%s'", state.toString()));
-			}
-		}
-	}
-
 }
