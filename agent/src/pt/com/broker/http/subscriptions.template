@@ -35,13 +35,13 @@
 		<br/>
 		
 		<span class="infoPannel">
-		<div class="infoPannelTitle">Remote connections (inbound)</div>
+		<div class="infoPannelTitle">Remote connections(in): %s</div>
 		<div class="infoPannelBody">
 		%s
 		</div>
 		</span>
 		<span class="infoPannel">
-		<div class="infoPannelTitle">Remote connections (outbound)</div>
+		<div class="infoPannelTitle">Remote connections(out): %s</div>
 		<div class="infoPannelBody">
 		%s
 		</div>
