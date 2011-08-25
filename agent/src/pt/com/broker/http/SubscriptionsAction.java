@@ -1,11 +1,16 @@
 package pt.com.broker.http;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,8 +43,7 @@ import pt.com.gcs.messaging.TopicProcessorList;
  * 
  */
 
-public class SubscriptionsAction extends HttpAction
-{
+public class SubscriptionsAction extends HttpAction {
 	private static final Logger log = LoggerFactory.getLogger(SubscriptionsAction.class);
 
 	private static final String NO_SUBSCRIPTIONS = "<p>No subscriptions</p>";
@@ -51,45 +55,40 @@ public class SubscriptionsAction extends HttpAction
 	private static String template = null;
 	private static String cssTemplate = null;
 
-	static
-	{
-		try
-		{
+	static {
+		try {
 			template = IOUtils.toString(MiscInfoAction.class.getResourceAsStream(templateLocation));
 			cssTemplate = IOUtils.toString(MiscInfoAction.class.getResourceAsStream(cssLocation));
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			Shutdown.now(e);
 		}
 	}
 
-	public SubscriptionsAction()
-	{
+	public SubscriptionsAction() {
 	}
 
 	@Override
-	public void service(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response)
-	{
+	public void service(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response) {
 		ChannelBuffer bbo = ChannelBuffers.dynamicBuffer();
 		OutputStream out = new ChannelBufferOutputStream(bbo);
 		Channel channel = ctx.getChannel();
 
-		try
-		{
+		try {
 			String agentName = GcsInfo.constructAgentName(GcsInfo.getAgentHost(), GcsInfo.getAgentPort());
 
-			if (template != null)
-			{
+			if (template != null) {
+				ConnectionInfo inboundConnections = getInboundConnections();
+				ConnectionInfo outboundConnections = getOutboundConnections();
+
 				String smessage = String.format(template, getCss(), agentName,
 						getLocalQueueConsumers(),
 						getRemoteQueueConsumers(),
 						getLocalTopicConsumers(),
 						getRemoteTopicConsumers(),
-						
-						getInboundConnections(),
-						getOutboundConnections()
-						);
+						inboundConnections.size,
+						inboundConnections.display,
+						outboundConnections.size,
+						outboundConnections.display);
 				byte[] bmessage = smessage.getBytes("UTF-8");
 				response.setHeader("Pragma", "no-cache");
 				response.setHeader("Cache-Control", "no-cache");
@@ -98,49 +97,36 @@ public class SubscriptionsAction extends HttpAction
 				response.setStatus(HttpResponseStatus.OK);
 
 				out.write(bmessage);
-			}
-			else
-			{
+			} else {
 				response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/html");
 
 				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 				out.write("No template loadded.".getBytes("UTF-8"));
 			}
-		}
-		catch (Throwable e)
-		{
+		} catch (Throwable e) {
 			e.printStackTrace();
 			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			log.error("HTTP Service error, cause:" + e.getMessage() + " client:" + channel.getRemoteAddress());
-		}
-		finally
-		{
+		} finally {
 			response.setContent(bbo);
 		}
 	}
 
-	private String getLocalTopicConsumers()
-	{
+	private String getLocalTopicConsumers() {
 		StringBuilder sb = new StringBuilder();
 
-		for (TopicProcessor tp : TopicProcessorList.values())
-		{
+		for (TopicProcessor tp : TopicProcessorList.values()) {
 			ArrayList<String> clients = new ArrayList<String>();
 
-			for (MessageListener l : tp.listeners())
-			{
-				if (l.getType() == MessageListener.Type.LOCAL)
-				{
+			for (MessageListener l : tp.listeners()) {
+				if (l.getType() == MessageListener.Type.LOCAL) {
 					clients.add(l.getChannel().getRemoteAddressAsString());
-				}
-				else if (l.getType() == MessageListener.Type.INTERNAL)
-				{
+				} else if (l.getType() == MessageListener.Type.INTERNAL) {
 					clients.add(l.toString());
 				}
 			}
 
-			if (clients.size() > 0)
-			{
+			if (clients.size() > 0) {
 				sb.append(generateHtml(tp.getSubscriptionName(), clients));
 			}
 		}
@@ -148,24 +134,19 @@ public class SubscriptionsAction extends HttpAction
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
 	}
 
-	private String getRemoteTopicConsumers()
-	{
+	private String getRemoteTopicConsumers() {
 		StringBuilder sb = new StringBuilder();
 
-		for (TopicProcessor tp : TopicProcessorList.values())
-		{
+		for (TopicProcessor tp : TopicProcessorList.values()) {
 			ArrayList<String> clients = new ArrayList<String>();
 
-			for (MessageListener l : tp.listeners())
-			{
-				if (l.getType() == MessageListener.Type.REMOTE)
-				{
+			for (MessageListener l : tp.listeners()) {
+				if (l.getType() == MessageListener.Type.REMOTE) {
 					clients.add(l.getChannel().getRemoteAddressAsString());
 				}
 			}
 
-			if (clients.size() > 0)
-			{
+			if (clients.size() > 0) {
 				sb.append(generateHtml(tp.getSubscriptionName(), clients));
 			}
 		}
@@ -173,18 +154,14 @@ public class SubscriptionsAction extends HttpAction
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
 	}
 
-	private String getLocalQueueConsumers()
-	{
+	private String getLocalQueueConsumers() {
 		StringBuilder sb = new StringBuilder();
 
-		for (QueueProcessor p : QueueProcessorList.values())
-		{
+		for (QueueProcessor p : QueueProcessorList.values()) {
 			ArrayList<String> clients = new ArrayList<String>();
 
-			if (p.localListeners().size() > 0)
-			{
-				for (MessageListener l : p.localListeners())
-				{
+			if (p.localListeners().size() > 0) {
+				for (MessageListener l : p.localListeners()) {
 					clients.add(l.getChannel().getRemoteAddressAsString());
 				}
 
@@ -195,18 +172,14 @@ public class SubscriptionsAction extends HttpAction
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
 	}
 
-	private String getRemoteQueueConsumers()
-	{
+	private String getRemoteQueueConsumers() {
 		StringBuilder sb = new StringBuilder();
 
-		for (QueueProcessor p : QueueProcessorList.values())
-		{
+		for (QueueProcessor p : QueueProcessorList.values()) {
 			ArrayList<String> clients = new ArrayList<String>();
 
-			if (p.remoteListeners().size() > 0)
-			{
-				for (MessageListener l : p.remoteListeners())
-				{
+			if (p.remoteListeners().size() > 0) {
+				for (MessageListener l : p.remoteListeners()) {
 					clients.add(l.getChannel().getRemoteAddressAsString());
 				}
 
@@ -217,41 +190,85 @@ public class SubscriptionsAction extends HttpAction
 		return (sb.length() != 0) ? sb.toString() : NO_SUBSCRIPTIONS;
 	}
 
-	private String getInboundConnections()
-	{
+	private static class ConnectionInfo{
+		public final int size;
+		public final String display;
+
+		ConnectionInfo(int size, String display)
+		{
+			this.size = size;
+			this.display = display;
+		}
+	}
+	
+	private ConnectionInfo getInboundConnections() {
 		StringBuilder sb = new StringBuilder();
-		
+
+		class ConInfo {
+			public final String agent;
+			public final Channel channel;
+
+			ConInfo(String agent, Channel channel) {
+				this.agent = agent;
+				this.channel = channel;
+			}
+		}
+		;
+
 		Map<String, ChannelHandlerContext> allRemoteAgents = RemoteChannels.getAll();
-		for(String agent: allRemoteAgents.keySet())
-		{
+		List<ConInfo> connections = new LinkedList<ConInfo>();
+
+		for (String agent : allRemoteAgents.keySet()) {
+			connections.add(new ConInfo(agent, allRemoteAgents.get(agent).getChannel()));
+		}
+
+		Collections.sort(connections, new Comparator<ConInfo>() {
+			public int compare(ConInfo o1, ConInfo o2) {
+				return o1.agent.compareTo(o2.agent);
+			};
+		});
+
+		for (ConInfo conInfo : connections) {
 			sb.append("<p><b>");
-			sb.append(agent);
+			sb.append(conInfo.agent);
 			sb.append("</b>: ");
-			sb.append(allRemoteAgents.get(agent).getChannel());
+			sb.append(conInfo.channel);
 			sb.append("</p>");
 		}
 		
-		return (sb.length() != 0) ? sb.toString() : NO_CONNECTIONS;
+		String display = (sb.length() != 0) ? sb.toString() : NO_CONNECTIONS;
+
+		return new ConnectionInfo(connections.size(), display);
 	}
-	
-	private String getOutboundConnections()
-	{
+
+	private ConnectionInfo getOutboundConnections() {
 		StringBuilder sb = new StringBuilder();
+
+		List<Channel> sessions = new LinkedList<Channel>(Gcs.getManagedConnectorSessions());
 		
-		Set<Channel> managedConnectorSessions = Gcs.getManagedConnectorSessions();
+		Collections.sort(sessions, new Comparator<Channel>() {
+			public int compare(Channel c1, Channel c2) {
+				InetSocketAddress c1RemoteAddress = (InetSocketAddress)c1.getRemoteAddress();
+				InetSocketAddress c2RemoteAddress = (InetSocketAddress)c2.getRemoteAddress();
+
+				return Arrays.toString(c1RemoteAddress.getAddress().getAddress()).
+									compareTo(
+					  Arrays.toString(c2RemoteAddress.getAddress().getAddress()));
+			};
+		});
 		
-		for(Channel channel: managedConnectorSessions)
-		{
+		for (Channel channel : sessions) {
 			sb.append("<p>");
 			sb.append(channel);
 			sb.append("</p>");
 		}
 		
-		return (sb.length() != 0) ? sb.toString() : NO_CONNECTIONS;
+		String display = (sb.length() != 0) ? sb.toString() : NO_CONNECTIONS;
+
+		return new ConnectionInfo(sessions.size(), display);
 	}
-	
-	private static String generateHtml(String title, Collection<String> elements)
-	{
+
+	private static String generateHtml(String title, Collection<String> elements) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<h3>");
 		sb.append(title);
@@ -260,8 +277,7 @@ public class SubscriptionsAction extends HttpAction
 		sb.append(")");
 		sb.append("</h3>");
 
-		for (String element : elements)
-		{
+		for (String element : elements) {
 			sb.append("<p>");
 			sb.append(element);
 			sb.append("</p>");
@@ -270,8 +286,7 @@ public class SubscriptionsAction extends HttpAction
 		return sb.toString();
 	}
 
-	public static String getCss()
-	{
+	public static String getCss() {
 		return cssTemplate;
 	}
 }
