@@ -49,8 +49,6 @@ public class OutboundRemoteChannels
 	{
 		boolean remove = remoteChannels.remove(socketToAgentId(channel.getRemoteAddress()), channel);
 		
-		System.out.println("Removing channel. Removed: " + remove);
-		
 		return remove;
 	}
 	
