@@ -9,9 +9,9 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RemoteChannels
+public class InboundRemoteChannels
 {
-	private static Logger log = LoggerFactory.getLogger(RemoteChannels.class);
+	private static Logger log = LoggerFactory.getLogger(InboundRemoteChannels.class);
 	
 	private static ConcurrentHashMap<String, ChannelHandlerContext> remoteChannels = new ConcurrentHashMap<String, ChannelHandlerContext>();
 
@@ -21,7 +21,7 @@ public class RemoteChannels
 	public static ChannelHandlerContext add(String agentId, ChannelHandlerContext channel)
 	{
 		ChannelHandlerContext previous = remoteChannels.put(agentId, channel);
-		log.info("Adding new ChannelHandlerContext to RemoteChannels. Current size: " + remoteChannels.size());
+		log.info("Adding new ChannelHandlerContext to InboundRemoteChannels. Current size: " + remoteChannels.size());
 		return previous;
 	}
 	

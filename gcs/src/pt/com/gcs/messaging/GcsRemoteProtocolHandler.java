@@ -120,7 +120,11 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		log.info("Session Closed: '{}'", channel.getRemoteAddress());
 
 		Gcs.remoteSessionClosed(channel);
-		GcsExecutor.schedule(new Connect(channel.getRemoteAddress()), 5000, TimeUnit.MILLISECONDS);
+		
+		if(OutboundRemoteChannels.remove(channel))
+		{
+			GcsExecutor.schedule(new Connect(channel.getRemoteAddress()), 5000, TimeUnit.MILLISECONDS);
+		}
 	}
 
 	@Override
