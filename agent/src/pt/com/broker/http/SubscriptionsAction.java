@@ -34,7 +34,7 @@ import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
-import pt.com.gcs.messaging.RemoteChannels;
+import pt.com.gcs.messaging.InboundRemoteChannels;
 import pt.com.gcs.messaging.TopicProcessor;
 import pt.com.gcs.messaging.TopicProcessorList;
 
@@ -215,7 +215,7 @@ public class SubscriptionsAction extends HttpAction {
 		}
 		;
 
-		Map<String, ChannelHandlerContext> allRemoteAgents = RemoteChannels.getAll();
+		Map<String, ChannelHandlerContext> allRemoteAgents = InboundRemoteChannels.getAll();
 		List<ConInfo> connections = new LinkedList<ConInfo>();
 
 		for (String agent : allRemoteAgents.keySet()) {
