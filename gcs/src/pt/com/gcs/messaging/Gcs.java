@@ -106,6 +106,17 @@ public class Gcs
 	{
 		if (GlobalConfig.contains((InetSocketAddress) address))
 		{
+			String remoteAgentId = OutboundRemoteChannels.socketToAgentId(address);
+			
+			Channel channel = OutboundRemoteChannels.get(remoteAgentId);
+			if(channel != null)
+			{
+				// A connection to the remote agent existed. Close it!
+				OutboundRemoteChannels.remove(remoteAgentId);
+				ChannelFuture channelFuture = channel.close();
+				channelFuture.awaitUninterruptibly(5, TimeUnit.SECONDS);
+			}
+			
 			log.info("Connecting to '{}'.", address.toString());
 
 			ChannelFuture cf = instance.connector.connect(address);
@@ -130,6 +141,7 @@ public class Gcs
 			}
 			else
 			{
+				OutboundRemoteChannels.add(remoteAgentId, cf.getChannel());
 				log.info("Connection established to '{}'.", address.toString());
 				synchronized (instance.agentsConnection)
 				{
@@ -300,7 +312,6 @@ public class Gcs
 
 	private boolean ienqueue(NetMessage nmsg, String queueName)
 	{
-		// QueueProcessor qp = QueueProcessorList.get((queueName != null) ? queueName : np.getDestination());
 		QueueProcessor qp = QueueProcessorList.get(queueName);
 		if (qp != null)
 		{
