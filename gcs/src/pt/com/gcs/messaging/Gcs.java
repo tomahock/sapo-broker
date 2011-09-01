@@ -356,7 +356,7 @@ public class Gcs
 
 			GcsExecutor.scheduleWithFixedDelay(new QueueWatchDog(), 2, 2, TimeUnit.MINUTES);
 			
-			GcsExecutor.scheduleWithFixedDelay(new PingPeers(), 1, 1, TimeUnit.MINUTES);
+			GcsExecutor.scheduleWithFixedDelay(new PingPeers(), 5, 5, TimeUnit.MINUTES);
 		}
 		catch (Throwable t)
 		{
