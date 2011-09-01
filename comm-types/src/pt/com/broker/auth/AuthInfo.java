@@ -13,7 +13,8 @@ public class AuthInfo
 	private String userId;
 	private List<String> roles;
 	private byte[] token;
-	private String userAuthenticationType;
+	private CredentialsProvider credentialProvider;
+	private final String authenticationType;
 
 	/**
 	 * Creates an AuthInfo instance.
@@ -22,10 +23,12 @@ public class AuthInfo
 	 *            User identification, such as an username.
 	 * @param password
 	 *            User password. This is transformed in a binary token using UTF-8.
+	 * @param credentialProvider
+	 *            Credentials provider being used (e.g., SapoSTSProvider).
 	 */
-	public AuthInfo(String userId, String password)
+	public AuthInfo(String userId, String password, CredentialsProvider credentialProvider)
 	{
-		this(userId, null, password.getBytes(Charset.forName("UTF-8")), null);
+		this(userId, null, password.getBytes(Charset.forName("UTF-8")), credentialProvider);
 	}
 	
 	/**
@@ -35,12 +38,12 @@ public class AuthInfo
 	 *            User identification, such as an username.
 	 * @param password
 	 *            User password. This is transformed in a binary token using UTF-8.
-	 * @param userAuthenticationType
-	 *            The type of authentication being used (e.g., SapoSTS).
+	 * @param authenticationType
+	 *            The type of authentication being used (e.g., BrokerRolesDB).
 	 */
-	public AuthInfo(String userId, String password, String userAuthenticationType)
+	public AuthInfo(String userId, String password, String authenticationType)
 	{
-		this(userId, null, password.getBytes(Charset.forName("UTF-8")), userAuthenticationType);
+		this(userId, null, password.getBytes(Charset.forName("UTF-8")), authenticationType, null);
 	}
 
 	/**
@@ -52,15 +55,26 @@ public class AuthInfo
 	 *            User roles associated with the roles.
 	 * @param token
 	 *            User binary authentication token.
-	 * @param userAuthenticationType
-	 *            The type of authentication being used (e.g., SapoSTS).
+	 * @param credentialProvider
+	 *             Credentials provider being used (e.g., SapoSTSProvider).
 	 */
-	public AuthInfo(String userId, List<String> roles, byte[] token, String userAuthenticationType)
+	public AuthInfo(String userId, List<String> roles, byte[] token, CredentialsProvider credentialProvider)
+	{
+		this(userId, roles, token, credentialProvider.getAuthenticationType(), credentialProvider);
+	}
+
+	public AuthInfo(String userId, List<String> roles, byte[] token, String authenticationType) {
+		this(userId, roles, token, authenticationType, null);
+	}
+	
+	
+	public AuthInfo(String userId, List<String> roles, byte[] token, String authenticationType, CredentialsProvider credentialProvider)
 	{
 		this.userId = userId;
 		this.roles = roles;
 		this.token = token;
-		this.userAuthenticationType = userAuthenticationType;
+		this.authenticationType = authenticationType;
+		this.credentialProvider = credentialProvider;
 	}
 
 	public void setUserId(String userId)
@@ -93,13 +107,19 @@ public class AuthInfo
 		return token;
 	}
 
-	public void setUserAuthenticationType(String userAuthenticationType)
-	{
-		this.userAuthenticationType = userAuthenticationType;
-	}
-
 	public String getUserAuthenticationType()
 	{
-		return userAuthenticationType;
+		return authenticationType;
 	}
+
+	public CredentialsProvider getCredentialProvider() {
+		return credentialProvider;
+	}
+
+	@Override
+	public String toString() {
+		return "AuthInfo [userId=" + userId + ", credentialProvider=" + credentialProvider + "]";
+	}
+	
+	
 }

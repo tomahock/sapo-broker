@@ -45,6 +45,10 @@ public class UDPProducer
 		producer.udpPort = cargs.getUdpPort();
 		producer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		producer.dname = cargs.getDestination();
+		
+		
+		
+		
 		producer.protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
 		
 		System.out.println("Protocol type: " + producer.protocolType); 
@@ -58,14 +62,14 @@ public class UDPProducer
 
 		Thread.sleep(2000);
 
-		producer.sendLoop(bk, cargs.getMessageLength());
+		producer.sendLoop(bk, cargs.getMessageLength() * 5);
 	}
 
 	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
 	{
+		final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
 		for (int i = 0; i < 100000; i++)
 		{
-			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
 
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
 
@@ -73,9 +77,9 @@ public class UDPProducer
 
 			bk.publishMessageOverUdp(publishMsg);
 
-			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
+//			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-			Sleep.time(500);
+//			Sleep.time(500);
 		}
 	}
 }

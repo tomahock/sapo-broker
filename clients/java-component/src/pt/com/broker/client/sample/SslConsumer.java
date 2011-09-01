@@ -45,7 +45,7 @@ public class SslConsumer implements BrokerListener
 		consumer.keystoreLocation = cargs.getKeystoreLocation();
 		consumer.keystorePassword = cargs.getKeystorePassword();
 
-		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
+		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword);
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 

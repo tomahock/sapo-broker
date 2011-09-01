@@ -176,13 +176,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 						SslBrokerClient sslClient = (SslBrokerClient) this.brokerClient;
 						if (sslClient.isAuthenticationRequired())
 						{
-							this.brokerClient.setState(BrokerClientState.AUTH);
-							if (sslClient.hasCredentialsProvider())
-							{
-								sslClient.renewCredentials();
-							}
 							sslClient.authenticateClient();
-							this.brokerClient.setState(BrokerClientState.OK);
 						}
 
 					}
@@ -340,6 +334,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			out.writeShort(protocolType);
 			out.writeShort(protocolVersion);
 		}
+
 		out.writeInt(marshaledMsg.length);
 
 		out.write(marshaledMsg);
