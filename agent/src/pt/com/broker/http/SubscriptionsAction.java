@@ -251,9 +251,9 @@ public class SubscriptionsAction extends HttpAction {
 				InetSocketAddress c1RemoteAddress = (InetSocketAddress)c1.getRemoteAddress();
 				InetSocketAddress c2RemoteAddress = (InetSocketAddress)c2.getRemoteAddress();
 
-				return Arrays.toString(c1RemoteAddress.getAddress().getAddress()).
+				return Arrays.toString(c2RemoteAddress.getAddress().getAddress()).
 									compareTo(
-					  Arrays.toString(c2RemoteAddress.getAddress().getAddress()));
+					  Arrays.toString(c1RemoteAddress.getAddress().getAddress()));
 			};
 		});
 		

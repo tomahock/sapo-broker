@@ -109,6 +109,11 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			Gcs.ackMessage(nnot.getDestination(), brkMsg.getMessageId());
 			return;
 		}
+		else if( mtype.equals("PING"))
+		{
+			acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
+			return;
+		}		
 		else if (mtype.equals("HELLO"))
 		{
 			Peer peer = Peer.createPeerFromHelloMessage(msgContent);
