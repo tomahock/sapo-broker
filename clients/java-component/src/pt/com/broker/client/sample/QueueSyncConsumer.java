@@ -51,6 +51,9 @@ public class QueueSyncConsumer
 
 	private void receiveLoop(BrokerClient bk) throws Throwable
 	{
+		
+		System.out.println("HELLO");
+		
 		System.out.println("reserveTime= " + reserveTime);
 		System.out.println("timeout= " + timeout);
 		

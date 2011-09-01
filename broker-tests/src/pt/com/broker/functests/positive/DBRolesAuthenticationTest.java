@@ -30,7 +30,7 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 			try
 			{
 				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-						BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
+						BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
 			}
 			catch (Throwable e)
 			{
@@ -52,8 +52,7 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 			{
 				SslBrokerClient bk = (SslBrokerClient) getInfoConsumer();
 	
-				AuthInfo clientAuthInfo = new AuthInfo(username, password);
-				clientAuthInfo.setUserAuthenticationType("BrokerRolesDB");
+				AuthInfo clientAuthInfo = new AuthInfo(username, password, "BrokerRolesDB");
 	
 				bk.setAuthenticationCredentials(clientAuthInfo);
 	

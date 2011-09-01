@@ -54,10 +54,9 @@ public class AuthenticatedDBConsumer implements BrokerListener
 		consumer.keystoreLocation = cargs.getKeystoreLocation();
 		consumer.keystorePassword = cargs.getKeystorePassword();
 
-		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword.toCharArray());
+		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword);
 
-		AuthInfo clientAuthInfo = new AuthInfo(consumer.username, consumer.password);
-		clientAuthInfo.setUserAuthenticationType("BrokerRolesDB");
+		AuthInfo clientAuthInfo = new AuthInfo(consumer.username, consumer.password, "BrokerRolesDB");
 
 		bk.setAuthenticationCredentials(clientAuthInfo);
 		try

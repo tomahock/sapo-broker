@@ -23,7 +23,7 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 			try
 			{
 				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-						Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword.toCharArray());
+						Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
 			}
 			catch (Throwable e)
 			{

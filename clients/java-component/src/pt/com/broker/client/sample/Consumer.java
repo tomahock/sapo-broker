@@ -1,6 +1,7 @@
 package pt.com.broker.client.sample;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
@@ -10,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
+import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
@@ -32,6 +35,7 @@ public class Consumer implements BrokerListener
 	private DestinationType dtype;
 	private String dname;
 	private long waitTime;
+	private NetProtocolType protocolType;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -44,11 +48,34 @@ public class Consumer implements BrokerListener
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
 		consumer.waitTime = cargs.getDelay();
+		consumer.protocolType = NetProtocolType.valueOf( cargs.getProtocolType() );
 
-		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer");
+		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", consumer.protocolType);
+		/*
+		bk.setNumberOfTries(1);
+		
+		bk.setErrorListener(new BrokerErrorListenter()
+		{
+			
+			@Override
+			public void onFault(NetFault fault)
+			{
+				System.out.println("## FAULT: " + fault.getMessage());
+				
+			}
+			
+			@Override
+			public void onError(Throwable throwable)
+			{
+				System.out.println("## ERROR: [" + throwable.getClass().getCanonicalName() + "] Message: " + throwable.getMessage());				
+			}
+		});
+		System.out.println("Hello. Trying error");
+		*/
+		
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
-
+		
 		bk.addAsyncConsumer(subscribe, consumer);
 
 		System.out.println("listening...");
@@ -68,6 +95,15 @@ public class Consumer implements BrokerListener
 		System.out.printf("Destination: '%s'%n", notification.getDestination());
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+		Map<String, String> headers = notification.getHeaders();
+		if( (headers != null)  && (headers.size() != 0) )
+		{
+			System.out.printf("Headers:");
+			for(String key : headers.keySet())
+			{
+				System.out.printf("  %s ->  %s%n", key, headers.get(key));
+			}
+		}
 
 		if (waitTime > 0)
 		{

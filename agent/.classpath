@@ -11,5 +11,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommTypes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-Auth-Jdbc"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-JsonCodec"/>
+	<classpathentry kind="lib" path="/SapoBrokerV4-Auth-SapoSTS-Validation/dist"/>
+	<classpathentry kind="lib" path="/SapoBrokerV4-ClientSapoSTS/dist"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
