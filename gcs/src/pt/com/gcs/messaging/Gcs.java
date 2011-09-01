@@ -355,6 +355,8 @@ public class Gcs
 			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new QueueWatchDog(), 2, 2, TimeUnit.MINUTES);
+			
+			GcsExecutor.scheduleWithFixedDelay(new PingPeers(), 1, 1, TimeUnit.MINUTES);
 		}
 		catch (Throwable t)
 		{
