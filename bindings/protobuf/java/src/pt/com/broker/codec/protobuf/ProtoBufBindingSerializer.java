@@ -394,25 +394,25 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 
 	private Authentication getAuth(NetMessage netMessage)
 	{
-		NetAuthentication authClientAuthrentication = netMessage.getAction().getAuthenticationMessage();
+		NetAuthentication authClientAuthentication = netMessage.getAction().getAuthenticationMessage();
 
 		PBMessage.Atom.Authentication.Builder builder = PBMessage.Atom.Authentication.newBuilder();
 
-		builder.setToken(ByteString.copyFrom(authClientAuthrentication.getToken()));
+		builder.setToken(ByteString.copyFrom(authClientAuthentication.getToken()));
 
-		if (authClientAuthrentication.getActionId() != null)
-			builder.setActionId(authClientAuthrentication.getActionId());
+		if (authClientAuthentication.getActionId() != null)
+			builder.setActionId(authClientAuthentication.getActionId());
 
-		if (authClientAuthrentication.getAuthenticationType() != null)
-			builder.setAuthenticationType(authClientAuthrentication.getAuthenticationType());
+		if (authClientAuthentication.getAuthenticationType() != null)
+			builder.setAuthenticationType(authClientAuthentication.getAuthenticationType());
 
-		if (authClientAuthrentication.getUserId() != null)
-			builder.setUserId(authClientAuthrentication.getUserId());
+		if (authClientAuthentication.getUserId() != null)
+			builder.setUserId(authClientAuthentication.getUserId());
 
-		if (authClientAuthrentication.getRoles() != null)
+		if (authClientAuthentication.getRoles() != null)
 		{
 			int i = 0;
-			for (String role : authClientAuthrentication.getRoles())
+			for (String role : authClientAuthentication.getRoles())
 				builder.setRole(i++, role);
 		}
 		return builder.build();
