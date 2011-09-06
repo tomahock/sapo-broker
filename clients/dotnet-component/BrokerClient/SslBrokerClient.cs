@@ -58,17 +58,6 @@ namespace SapoBrokerClient
             protocolHandler = new BrokerProtocolHandler(messageSerializer, sslNetHandler);
         }
 
-      
-        /// <summary>
-        /// Client authentication.
-        /// </summary>
-        /// <param name="provider">A ICredentialsProvider provider that translates between a given credentials to other credentials.</param>
-        /// <param name="clientAuthInfo">Client credentials</param>
-        /// <returns>A boolean indicating if the authentication suceeded.</returns>
-        public bool Authenticate(ICredentialsProvider provider, AuthenticationInfo clientAuthInfo)
-        {
-            return protocolHandler.Authenticate(provider, clientAuthInfo);
-        }
         /// <summary>
         /// Client authentication.
         /// </summary>
@@ -76,7 +65,7 @@ namespace SapoBrokerClient
         /// <returns>A boolean indicating if the authentication suceeded.</returns>
         public bool Authenticate(AuthenticationInfo clientAuthInfo)
         {
-            return protocolHandler.Authenticate(null, clientAuthInfo);
+            return protocolHandler.Authenticate(clientAuthInfo);
         }
 
            
