@@ -141,7 +141,7 @@ namespace SapoBrokerClient.Messaging
                     {
                         lock (this)
                         {
-                            Authenticate(this.provider, this.clientAuthInfo);
+                            Authenticate(this.clientAuthInfo);
                         }
                     }
 
@@ -304,11 +304,13 @@ namespace SapoBrokerClient.Messaging
 
         private ICredentialsProvider provider;
         private AuthenticationInfo clientAuthInfo;
-        private bool usingAuth = false;
+        private volatile bool usingAuth = false;
 
         
-        public bool Authenticate(ICredentialsProvider provider, AuthenticationInfo authInfo)
+        public bool Authenticate(AuthenticationInfo authInfo)
         {
+            ICredentialsProvider provider = authInfo.ProviderInfo;
+
             log.Info("Authenticating");
             if (authInfo == null)
             {

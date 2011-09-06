@@ -11,8 +11,6 @@ namespace SapoBrokerClient.Authentication
     {
         AuthenticationInfo GetCredentials(AuthenticationInfo clientAuthInfo);
 
-        bool Init(ProviderInfo info);
-
         string AuthenticationType
         {
             get;
