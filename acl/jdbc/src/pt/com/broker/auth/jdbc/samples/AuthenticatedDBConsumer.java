@@ -6,6 +6,8 @@ import org.caudexorigo.cli.CliFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.auth.CredentialsProvider;
+import pt.com.broker.auth.jdbc.JdbcProvider;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
@@ -20,7 +22,6 @@ import pt.com.broker.types.NetSubscribe;
  */
 public class AuthenticatedDBConsumer implements BrokerListener
 {
-
 	private static final Logger log = LoggerFactory.getLogger(AuthenticatedDBConsumer.class);
 	private final AtomicInteger counter = new AtomicInteger(0);
 
@@ -29,7 +30,6 @@ public class AuthenticatedDBConsumer implements BrokerListener
 	private DestinationType dtype;
 	private String dname;
 
-	private String stsLocation;
 	private String username;
 	private String password;
 
@@ -46,28 +46,28 @@ public class AuthenticatedDBConsumer implements BrokerListener
 		consumer.port = cargs.getPort();
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
+		consumer.keystoreLocation = cargs.getKeystoreLocation();
+		consumer.keystorePassword = cargs.getKeystorePassword();
 
 		consumer.username = cargs.getUsername();
 		consumer.password = cargs.getUserPassword();
 
-		consumer.keystoreLocation = cargs.getKeystoreLocation();
-		consumer.keystorePassword = cargs.getKeystorePassword();
 
 		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword);
 
-		bk.setCredentialsProvider(null);
+		CredentialsProvider cp = new JdbcProvider(consumer.username, consumer.password);
+		
+		bk.setCredentialsProvider(cp);
 		try
 		{
 			if (!bk.authenticateClient())
 			{
-				System.out.println("Authentication failed");
 				return;
 			}
 		}
 		catch (Throwable t)
 		{
-			System.out.println("Unable to authenticate client...");
-			System.out.println(t);
+			log.error("Failed to authenticate client", t);
 			return;
 		}
 

@@ -16,11 +16,13 @@
 
 	<path id="project.classpath">
 		<pathelement location="../../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
+		<fileset dir="../../clients/java-component/dist/">
+			<include name="**/*.jar" />
+		</fileset>
 		<fileset dir="../../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
-
 
 	<!-- show list of targets -->
 	<target name="help">
@@ -30,7 +32,7 @@
 		<echo message="build compiles and creates jar file" />
 	</target>
 
-	<target name="init">
+	<target name="init" depends="clean">
 		<mkdir dir="bin" />
 		<mkdir dir="dist" />
 	</target>
