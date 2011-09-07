@@ -3,6 +3,7 @@ package pt.com.broker.client;
 import java.util.Collection;
 
 import org.caudexorigo.text.RandomStringUtils;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public final class SslBrokerClient extends BaseBrokerClient {
 	private String keystoreLocation = null;
 	private char[] keystorePass = null;
 
-	private CredentialsProvider provider;
+	private CredentialsProvider credentialsProvider;
 
 	private AuthInfo providerCredentials;
 
@@ -52,6 +53,10 @@ public final class SslBrokerClient extends BaseBrokerClient {
 
 	public SslBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype, String keystoreLocation, String keystorePw) throws Throwable {
 		super(host, portNumber, appName, ptype);
+		if(StringUtils.isBlank(keystoreLocation))
+			throw new IllegalArgumentException("Mandatory keystore location missing.");
+		if(StringUtils.isBlank(keystorePw))
+			throw new IllegalArgumentException("Mandatory keystore password missing.");
 		this.keystoreLocation = keystoreLocation;
 		this.keystorePass = keystorePw.toCharArray();
 		init();
@@ -84,34 +89,22 @@ public final class SslBrokerClient extends BaseBrokerClient {
 		init();
 	}
 
-	public void setAuthenticationCredentials(AuthInfo userCredentials) {
-		this.userCredentials = userCredentials;
-	}
-
-	public void setCredentialsProvider(AuthInfo providerCredentials) {
-		this.providerCredentials = providerCredentials;
-		this.provider = providerCredentials.getCredentialProvider();
-	}
-
-	public boolean hasCredentialsProvider() {
-		return provider != null;
+	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+		this.credentialsProvider = credentialsProvider;
 	}
 
 	public boolean authenticateClient() throws Throwable {
+
+		if (this.credentialsProvider == null) {
+			throw new IllegalStateException("Mandatory Credential Provider missing.");
+		}
+
 		this.requiresAuthentication = true;
 
 		setState(BrokerClientState.AUTH);
 
-		if (this.provider != null) {
-			this.userCredentials = provider.getCredentials(this.providerCredentials);
-		}
-		else
-		{
-			if(userCredentials == null) {
-				throw new Exception("Can not authenticate without a crendential provider or authentication credentials. Use setAuthenticationCredentials(...) or setCredentialsProvider(...).");
-			}
-		}
-		
+		this.userCredentials = credentialsProvider.getCredentials();
+
 		NetAuthentication clientAuth = new NetAuthentication(userCredentials.getToken(), userCredentials.getUserAuthenticationType());
 		if (userCredentials.getRoles() != null && userCredentials.getRoles().size() != 0)
 			clientAuth.setRoles(userCredentials.getRoles());
