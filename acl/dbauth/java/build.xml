@@ -2,7 +2,7 @@
 <project basedir="." default="build" name="sapo-broker-auth-jdbc">
 	<property name="project.location" value="." />
 
-	<loadfile srcfile="../../agent/src/VERSION.txt" property="version">
+	<loadfile srcfile="../../../agent/src/VERSION.txt" property="version">
 		<filterchain>
 			<striplinebreaks />
 			<tokenfilter>
@@ -15,11 +15,11 @@
 	<property name="package" value="sapo-broker-auth-jdbc-${version}.jar" />
 
 	<path id="project.classpath">
-		<pathelement location="../../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
-		<fileset dir="../../clients/java-component/dist/">
+		<pathelement location="../../../comm-types/dist/sapo-broker-commtypes-${version}.jar" />
+		<fileset dir="../../../clients/java-component/dist/">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="../../common-libs/">
+		<fileset dir="../../../common-libs/">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -45,7 +45,7 @@
 	<target name="build" depends="init">
 		<echo message="${ant.project.name}: ${ant.file}" />
 
-		<ant antfile="../../comm-types/build.xml" inheritAll="false" target="build" />
+		<ant antfile="../../../comm-types/build.xml" inheritAll="false" target="build" />
 
 		<javac destdir="bin" encoding="UTF-8" debug="on" debuglevel="lines,vars,source" source="1.6" target="1.6" includeAntRuntime="false">
 			<src path="src" />
