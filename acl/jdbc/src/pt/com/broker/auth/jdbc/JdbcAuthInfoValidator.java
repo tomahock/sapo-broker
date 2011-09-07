@@ -141,6 +141,7 @@ public class JdbcAuthInfoValidator implements AuthInfoValidator
 		}
 		catch (Throwable t)
 		{
+			log.error("Failed to authenticate user.", t);
 			return internalError;
 		}
 
