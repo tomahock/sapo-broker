@@ -49,7 +49,7 @@
 		<ant antfile="../bindings/thrift/java/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../bindings/json/java/build.xml" inheritAll="false" target="clean" />
 		<ant antfile="../clients/java-component/build.xml" inheritAll="false" target="clean" />
-		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="clean" />
+		<ant antfile="../acl/dbauth/java/build.xml" inheritAll="false" target="clean" />
 	</target>
 
 	<target name="build" depends="init, build-depends">
@@ -93,7 +93,7 @@
 
 	<target name="build-depends">
 
-		<ant antfile="../acl/jdbc/build.xml" inheritAll="false" target="build">
+		<ant antfile="../acl/dbauth/java/build.xml" inheritAll="false" target="build">
 			<property name="version" value="${version}" />
 		</ant>
 
