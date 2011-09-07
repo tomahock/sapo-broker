@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerDb", "BrokerDb.csproj", "{DCB85B83-CF48-4914-B9E5-C9CAC1EDD865}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerDbSample", "..\BrokerDbSample\BrokerDbSample.csproj", "{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SapoBrokerClient", "..\..\..\..\..\BrokerPublicRepo\clients\dotnet-Component-BrokerTCP\BrokerClient\SapoBrokerClient.csproj", "{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "..\..\..\..\..\BrokerPublicRepo\clients\dotnet-Component-BrokerTCP\Tests\Tests.csproj", "{CA9B6984-B017-41B9-A0C5-423B07E98E23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "..\..\..\..\..\BrokerPublicRepo\clients\dotnet-Component-BrokerTCP\Samples\Samples.csproj", "{E3973196-CBAC-446C-A70A-351FBAA45DE9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DCB85B83-CF48-4914-B9E5-C9CAC1EDD865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCB85B83-CF48-4914-B9E5-C9CAC1EDD865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCB85B83-CF48-4914-B9E5-C9CAC1EDD865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCB85B83-CF48-4914-B9E5-C9CAC1EDD865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA9B6984-B017-41B9-A0C5-423B07E98E23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA9B6984-B017-41B9-A0C5-423B07E98E23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA9B6984-B017-41B9-A0C5-423B07E98E23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA9B6984-B017-41B9-A0C5-423B07E98E23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3973196-CBAC-446C-A70A-351FBAA45DE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3973196-CBAC-446C-A70A-351FBAA45DE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3973196-CBAC-446C-A70A-351FBAA45DE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3973196-CBAC-446C-A70A-351FBAA45DE9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
