@@ -1,0 +1,49 @@
+Authentication Type: BrokerRolesDB
+
+----------------------------------------
+
+AGENT CONFIGURAION (broker_blobal.config)
+
+<credential-validator provider-name="BrokerRolesDB">
+	<class>pt.com.broker.auth.jdbc.JdbcAuthInfoValidator</class>
+	<provider-params>
+		<db-roles>
+			<driver-class>org.postgresql.Driver</driver-class>
+			<database-url>jdbc:postgresql://localhost/BROKER_ROLES</database-url>
+			<database-username>roles_user</database-username>
+			<database-password>roles_user</database-password>
+		</db-roles>
+	</provider-params>
+</credential-validator>
+
+
+----------------------------------------
+
+DATABASE TABLES
+
+CREATE
+
+CREATE TABLE users
+(
+ username varchar(50),
+ password varchar(50)
+);
+ALTER TABLE users ADD PRIMARY KEY (username);
+
+CREATE TABLE roles
+(
+ username varchar(50),
+ role varchar(50)
+);
+ALTER TABLE roles ADD PRIMARY KEY (username, role);
+ALTER TABLE roles ADD FOREIGN KEY (username) REFERENCES users(username);
+
+GRANT ALL ON TABLE users TO roles_user;
+GRANT ALL ON TABLE roles TO roles_user;
+
+
+ADD TEST USER
+
+insert into users (username, password) values ('luis', 'luis');
+insert into roles(username, role) values ('luis', 'reidacocapreta@example.com');
+
