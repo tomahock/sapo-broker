@@ -42,6 +42,7 @@ sub new {
     my $socket = IO::Socket::INET->new(%sock_params);
 
     if ( defined $socket ) {
+        $socket->blocking(0);
         $socket->autoflush(0);
         my $select = IO::Select->new($socket);
         return bless {
@@ -63,9 +64,10 @@ sub __write {
     my $tot_written = 0;
     my $tot_write   = length($payload);
 
+    my $sock;
     while ( ( not defined($timeout) or $timeout > 0 ) and $tot_written < $tot_write ) {
         my $start = time();
-        my ($sock) = $select->can_write($timeout);
+        ($sock) = $select->can_write($timeout);
         if ($sock) {
             my $written;
             {
@@ -97,6 +99,7 @@ sub __write {
         }
     } ## end while ( ( not defined($timeout...
     if ( $tot_written == $tot_write ) {
+        $sock->flush();
         return $tot_written;
     } else {
         die "Error writing to socket";
@@ -146,5 +149,11 @@ sub __read {
         die "Error reading from socket";
     }
 } ## end sub __read
+
+sub DESTROY {
+    my ($self) = @_;
+    my $socket = $self->{'__socket'};
+    return $socket ? $socket->shutdown(2) : undef;
+}
 
 1;
