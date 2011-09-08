@@ -27,6 +27,7 @@ sub new {
 
     #and use the new wrapped socket as if it were a regular TCP socket
 
+    $original_socket->blocking(1);
     $self->{'__socket'} = IO::Socket::SSL->start_SSL( $original_socket, @_ );
     $self->{'__original_socket'} = $original_socket;
 
