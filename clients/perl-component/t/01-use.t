@@ -5,8 +5,13 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 1;
-BEGIN { use_ok('SAPO::Broker') };
+use Test::More tests => 6;
+BEGIN { use_ok('SAPO::Broker') }
+BEGIN { use_ok('SAPO::Broker::Clients::Minimal') }
+BEGIN { use_ok('SAPO::Broker::Clients::Simple') }
+BEGIN { use_ok('SAPO::Broker::Transport::TCP') }
+BEGIN { use_ok('SAPO::Broker::Transport::UDP') }
+BEGIN { use_ok('SAPO::Broker::Messages') }
 
 #########################
 
