@@ -9,7 +9,7 @@ namespace SapoBrokerClient.Authentication
     /// </summary>
     public interface ICredentialsProvider
     {
-        AuthenticationInfo GetCredentials(AuthenticationInfo clientAuthInfo);
+        AuthenticationInfo GetCredentials();
 
         string AuthenticationType
         {
