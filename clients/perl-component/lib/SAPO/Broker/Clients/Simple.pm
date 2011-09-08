@@ -14,7 +14,7 @@ use warnings;
 #don't fail if SSL is not a viable transport (please install IO::Socket::SSL)
 
 my $has_ssl = has_ssl();
-if ( $has_ssl ) {
+if ($has_ssl) {
     eval 'use SAPO::Broker::Transport::SSL';
 }
 
