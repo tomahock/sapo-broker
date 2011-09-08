@@ -64,11 +64,15 @@ sub serialize_publish($) {
             },
         } );
 
+    #XXX ugly kludge (is this needed in the protobuf codec?)
     my $expiration = $broker_message->expiration();
     if ( defined $expiration ) {
         $expiration = $expiration * 1000;
-        $ret->action->publish->message->set_expiration($expiration);
+    } else {
+        $expiration = -1;
     }
+
+    $ret->action->publish->message->set_timestamp($expiration);
 
     #broker expects milliseconds
     my $timestamp = $broker_message->timestamp();
@@ -84,7 +88,7 @@ sub serialize_poll($) {
 
     return SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
             'action' => {
-                'poll'        => $message,
+                'publish'     => $message,
                 'action_type' => SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Action::ActionType::POLL()
             },
         } );
@@ -140,10 +144,9 @@ sub parse_notification($) {
 
     my $notification = SAPO::Broker::Messages::Notification->new( $action->notification()->to_hashref() );
     my $message      = $notification->message();
-    $message->{'id'} = $message->{'message_id'};
-    $message = SAPO::Broker::Messages::Message->new($message);
-    $notification->message($message);
+    $message->{'id'}                    = $message->{'message_id'};
     $notification->{'destination_type'} = _kind2string( $notification->{'destination_type'} );
+    $notification->{'message'}          = SAPO::Broker::Messages::Message->new($message);
 
     for my $field (qw(expiration timestamp)) {
         my $val = $message->$field();
@@ -160,7 +163,7 @@ sub parse_notification($) {
 sub parse_fault($) {
     my ($action) = @_;
 
-    return SAPO::Broker::Messages::Fault->new( $action->fault()->to_hashref );
+    return SAPO::Broker::Messages::Fault( $action->fault()->to_hashref );
 }
 
 sub serialize_ping($) {
@@ -183,7 +186,7 @@ sub parse_pong($) {
 sub serialize_authentication($) {
     my ($message) = @_;
 
-    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
+    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Authentication->new( {
             'action' => {
                 'auth'        => $message,
                 'action_type' => SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Action::ActionType::AUTH()
