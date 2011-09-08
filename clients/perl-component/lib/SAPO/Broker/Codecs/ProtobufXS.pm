@@ -140,10 +140,19 @@ sub parse_notification($) {
     my ($action) = @_;
 
     my $notification = SAPO::Broker::Messages::Notification->new( $action->notification()->to_hashref() );
-    my $message      = $notification->message();
+    my $message      = $notification->{'message'};
     $message->{'id'}                    = $message->{'message_id'};
     $notification->{'destination_type'} = _kind2string( $notification->{'destination_type'} );
     $notification->{'message'}          = SAPO::Broker::Messages::Message->new($message);
+
+    #take care of the milliseconds
+
+    for my $field (qw(expiration timestamp)) {
+        my $val = $message->$field();
+        if ( defined $val ) {
+            $message->$field( $val / 1000. );
+        }
+    }
 
     #now cast the actual message containing the payload
     $notification->message( SAPO::Broker::Messages::Message->new($message) );
@@ -153,7 +162,7 @@ sub parse_notification($) {
 sub parse_fault($) {
     my ($action) = @_;
 
-    return SAPO::Broker::Messages::Fault( $action->fault()->to_hashref );
+    return SAPO::Broker::Messages::Fault->new( $action->fault()->to_hashref );
 }
 
 sub serialize_ping($) {
@@ -176,7 +185,7 @@ sub parse_pong($) {
 sub serialize_authentication($) {
     my ($message) = @_;
 
-    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Authentication->new( {
+    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
             'action' => {
                 'auth'        => $message,
                 'action_type' => SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Action::ActionType::AUTH()
