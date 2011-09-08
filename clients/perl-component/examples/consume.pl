@@ -9,7 +9,7 @@ use warnings;
 my $broker = SAPO::Broker::Clients::Simple->new('host' => 'localhost', 'proto' => 'tcp');
 my %options = (
 	'destination_type' => 'QUEUE',	
-	'destination' => '/perl/tests',
+	'destination' => '/tests/perl',
 	'auto_acknowledge' => 1
 );
 
