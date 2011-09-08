@@ -6,10 +6,10 @@ use Data::Dumper;
 use strict;
 use warnings;
 
-my $broker = SAPO::Broker::Clients::Simple->new('host' => 'localhost');
+my $broker = SAPO::Broker::Clients::Simple->new('host' => 'localhost', 'proto' => 'tcp');
 my %options = (
 	'destination_type' => 'QUEUE',	
-	'destination' => '/tests/perl',
+	'destination' => '/perl/tests',
 	'auto_acknowledge' => 1
 );
 
