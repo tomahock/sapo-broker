@@ -145,13 +145,6 @@ sub parse_notification($) {
     $notification->{'destination_type'} = _kind2string( $notification->{'destination_type'} );
     $notification->{'message'}          = SAPO::Broker::Messages::Message->new($message);
 
-    for my $field (qw(expiration timestamp)) {
-        my $val = $message->$field();
-        if ( defined $val ) {
-            $message->$field( $val / 1000. );
-        }
-    }
-
     #now cast the actual message containing the payload
     $notification->message( SAPO::Broker::Messages::Message->new($message) );
     return $notification;
