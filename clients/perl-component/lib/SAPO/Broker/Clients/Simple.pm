@@ -15,7 +15,7 @@ use warnings;
 
 my $has_ssl = has_ssl();
 if ( $has_ssl ) {
-    eval { use SAPO::Broker::Transport::SSL };
+    eval 'use SAPO::Broker::Transport::SSL';
 }
 
 my %DEFAULT_OPTIONS = ( 'proto' => 'tcp' );
