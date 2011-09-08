@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
-my %PREREQ_PM = ( 'SAPO::Broker' => 0, );
+my %PREREQ_PM = ( );
 
 WriteMakefile(
     'NAME' => 'SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom',
@@ -13,7 +13,7 @@ WriteMakefile(
     },
     'AUTHOR'        => 'Cláudio Valente <c.valente@co.sapo.pt>',
     'VERSION_FROM'  => 'Atom.pm',
-    'ABSTRACT_FROM' => 'Atom.pm',
+    'ABSTRACT'      => 'SAPO::Broker::Protobuf XS',
     'PREREQ_PM'     => {%PREREQ_PM},
 
     'OPTIMIZE' => '-O3 -Wall',
