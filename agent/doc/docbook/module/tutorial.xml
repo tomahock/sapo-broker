@@ -87,8 +87,8 @@
 							<entry>ProtoBuf encoding (binary)</entry>
 							<entry align="center">x</entry>
 							<entry align="center">o</entry>
-							<entry align="center">o</entry>
-							<entry align="center">o</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
 							<entry align="center">o</entry>
 							<entry align="center">x</entry>
 						</row>
@@ -96,8 +96,8 @@
 							<entry>Thrift encoding (binary)</entry>
 							<entry align="center">x</entry>
 							<entry align="center">x</entry>
-							<entry align="center">o</entry>
-							<entry align="center">o</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
 							<entry align="center">o</entry>
 							<entry align="center">x</entry>
 						</row>
@@ -105,8 +105,8 @@
 							<entry>SSL support</entry>
 							<entry align="center">x</entry>
 							<entry align="center">x</entry>
-							<entry align="center">o</entry>
-							<entry align="center">o</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
 							<entry align="center">o</entry>
 							<entry align="center">x</entry>
 						</row>
@@ -123,7 +123,7 @@
 							<entry>Client authentication with Sapo STS</entry>
 							<entry align="center">x</entry>
 							<entry align="center">x</entry>
-							<entry align="center">o</entry>
+							<entry align="center">x</entry>
 							<entry align="center">o</entry>
 							<entry align="center">o</entry>
 							<entry align="center">o</entry>
@@ -132,8 +132,8 @@
 							<entry>Client failover</entry>
 							<entry align="center">x</entry>
 							<entry align="center">x</entry>
-							<entry align="center">x</entry>
-							<entry align="center">x</entry>
+							<entry align="center">o</entry>
+							<entry align="center">o</entry>
 							<entry align="center">x</entry>
 							<entry align="center">x</entry>
 						</row>
