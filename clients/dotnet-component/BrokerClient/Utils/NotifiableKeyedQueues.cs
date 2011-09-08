@@ -57,7 +57,7 @@ namespace SapoBrokerClient.Utils
             public SynchronizationEntry(object synchronizationObject, bool receiveMultiple, IList<T> values)
             {
                 this.synchronizationObject = synchronizationObject;
-
+                this.receiveMultiple = receiveMultiple;
                 this.values = values;
             }
         }

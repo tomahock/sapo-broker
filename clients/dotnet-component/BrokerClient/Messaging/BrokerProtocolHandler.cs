@@ -141,7 +141,7 @@ namespace SapoBrokerClient.Messaging
                     {
                         lock (this)
                         {
-                            Authenticate(this.clientAuthInfo);
+                            Authenticate(this.provider);
                         }
                     }
 
@@ -306,41 +306,32 @@ namespace SapoBrokerClient.Messaging
         private AuthenticationInfo clientAuthInfo;
         private volatile bool usingAuth = false;
 
-        
-        public bool Authenticate(AuthenticationInfo authInfo)
-        {
-            ICredentialsProvider provider = authInfo.ProviderInfo;
 
+        public bool Authenticate(ICredentialsProvider provider)
+        {
             log.Info("Authenticating");
-            if (authInfo == null)
+            if (provider == null)
             {
                 throw new ArgumentNullException("AuthenticationInfo can not be null in order to authenticate.");
             }
-
-            AuthenticationInfo authInfoToUse = authInfo;
-            if (provider != null)
+            AuthenticationInfo authInfoToUse = null;
+            try
             {
-                try
-                {
-                    authInfoToUse = provider.GetCredentials(authInfo);
-                    if (authInfoToUse.UserAuthenticationType == null)
-                        authInfoToUse.UserAuthenticationType = provider.AuthenticationType;
-                }
-                catch (InvalidCredentialsException)
-                {
-                    return false;
-                }
+                authInfoToUse = provider.GetCredentials();
+                if (authInfoToUse == null)
+                    throw new InvalidCredentialsException("Credential provider returned null");
             }
-            else
+            catch (InvalidCredentialsException ice)
             {
-                authInfoToUse = authInfo;
+                log.Error("Failed to obtain credentials.", ice);
+                return false;
             }
 
             // save important information
             lock (this)
             {
                 this.provider = provider;
-                this.clientAuthInfo = authInfo;
+                this.clientAuthInfo = authInfoToUse;
                 this.usingAuth = true;
             }
 
@@ -352,9 +343,9 @@ namespace SapoBrokerClient.Messaging
             if ((authInfoToUse.Roles != null) && (authInfoToUse.Roles.Count != 0))
                 netAuth.Roles = authInfoToUse.Roles;
             if (authInfoToUse.UserId != null)
-
+            {
                 netAuth.UserId = authInfoToUse.UserId;
-
+            }
             netAuth.ActionId = actionId;
 
             NetAction netAction = new NetAction(NetAction.ActionType.AUTH);

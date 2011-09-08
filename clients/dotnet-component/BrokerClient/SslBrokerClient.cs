@@ -63,9 +63,9 @@ namespace SapoBrokerClient
         /// </summary>
         /// <param name="clientAuthInfo">Client credentials</param>
         /// <returns>A boolean indicating if the authentication suceeded.</returns>
-        public bool Authenticate(AuthenticationInfo clientAuthInfo)
+        public bool Authenticate(ICredentialsProvider provider)
         {
-            return protocolHandler.Authenticate(clientAuthInfo);
+            return protocolHandler.Authenticate(provider);
         }
 
            

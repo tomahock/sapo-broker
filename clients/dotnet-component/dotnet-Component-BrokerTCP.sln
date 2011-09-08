@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SapoSTS", "..\..\..\BrokerS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SapoSTSClientSample", "..\..\..\BrokerSapoRepo\sapo-sts\client\dotnet\SapoSTSClientSample\SapoSTSClientSample.csproj", "{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerDb", "..\..\acl\dbauth\dotnet\BrokerDb\BrokerDb.csproj", "{1E6265E2-4F62-4B2D-849D-D91088F8A732}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerDbSample", "..\..\acl\dbauth\dotnet\BrokerDbSample\BrokerDbSample.csproj", "{1F8ADB17-A3C8-4111-BC42-928856691E67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +41,14 @@ Global
 		{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FE1D1A1-8B93-4BB4-9BED-8CAEDBAC9937}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E6265E2-4F62-4B2D-849D-D91088F8A732}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E6265E2-4F62-4B2D-849D-D91088F8A732}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E6265E2-4F62-4B2D-849D-D91088F8A732}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E6265E2-4F62-4B2D-849D-D91088F8A732}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F8ADB17-A3C8-4111-BC42-928856691E67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F8ADB17-A3C8-4111-BC42-928856691E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F8ADB17-A3C8-4111-BC42-928856691E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F8ADB17-A3C8-4111-BC42-928856691E67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
