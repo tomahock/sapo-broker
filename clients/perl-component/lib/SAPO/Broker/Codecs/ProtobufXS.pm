@@ -67,9 +67,8 @@ sub serialize_publish($) {
     my $expiration = $broker_message->expiration();
     if ( defined $expiration ) {
         $expiration = $expiration * 1000;
+        $ret->action->publish->message->set_timestamp($expiration);
     }
-
-    $ret->action->publish->message->set_timestamp($expiration);
 
     #broker expects milliseconds
     my $timestamp = $broker_message->timestamp();
@@ -85,7 +84,7 @@ sub serialize_poll($) {
 
     return SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
             'action' => {
-                'publish'     => $message,
+                'poll'        => $message,
                 'action_type' => SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Action::ActionType::POLL()
             },
         } );
@@ -148,9 +147,9 @@ sub parse_notification($) {
     #take care of the milliseconds
 
     for my $field (qw(expiration timestamp)) {
-        my $val = $message->$field();
+        my $val = $message->{$field};
         if ( defined $val ) {
-            $message->$field( $val / 1000. );
+            $message->{$field} = $val / 1000.;
         }
     }
 
