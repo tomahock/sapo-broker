@@ -1,14 +1,14 @@
 use Test::More qw(no_plan);
 
-use_ok('SAPO::Broker');
+use_ok('SAPO::Broker::Utils');
 use_ok('SAPO::Broker::Clients::Simple');
 
 my $thrift;
 
 SKIP: {
-    if ( SAPO::Broker::has_thrift() ) {
+    if ( SAPO::Broker::Utils::has_thrift() ) {
         use_ok('SAPO::Broker::Codecs::Thrift');
-        ok( $thrift = SAPO::Broker::Codecs::ProtobufXS->new(), 'Thrift codec' );
+        ok( $thrift = SAPO::Broker::Codecs::Thrift->new(), 'Thrift codec' );
     } else {
         skip( 'no thrift support', 2 );
     }
@@ -17,7 +17,7 @@ SKIP: {
 my $protobuf;
 
 SKIP: {
-    if ( SAPO::Broker::has_protobufxs() ) {
+    if ( SAPO::Broker::Utils::has_protobufxs() ) {
         use_ok('SAPO::Broker::Codecs::ProtobufXS');
         ok( $protobuf = SAPO::Broker::Codecs::ProtobufXS->new(), 'ProtobufXS codec' );
     } else {
@@ -167,7 +167,7 @@ sub test_codec($) {
 
     #ssl stuff
 SKIP: {
-        if ( not $ENV{'BROKER_DISABLE_SSL'} and SAPO::Broker::has_ssl() ) {
+        if ( not $ENV{'BROKER_DISABLE_SSL'} and SAPO::Broker::Utils::has_ssl() ) {
             test_queue( 'SSL', 'TCP', $codec );
             test_queue( 'SSL', 'UDP', $codec );
         } else {

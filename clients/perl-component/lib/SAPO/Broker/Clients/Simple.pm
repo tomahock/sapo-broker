@@ -2,7 +2,7 @@ package SAPO::Broker::Clients::Simple;
 
 use Carp qw(carp croak);
 
-use SAPO::Broker;
+use SAPO::Broker::Utils qw(has_ssl has_thrift has_protobufxs);
 use SAPO::Broker::Messages;
 use SAPO::Broker::Clients::Minimal;
 use SAPO::Broker::Transport::TCP;
@@ -12,24 +12,24 @@ use strict;
 use warnings;
 
 #don't fail if SSL is not a viable transport (please install IO::Socket::SSL)
-my $has_ssl = SAPO::Broker::has_ssl();
 
-if ($has_ssl) {
-    use SAPO::Broker::Transport::SSL;
+my $has_ssl = has_ssl();
+if ( $has_ssl ) {
+    eval { use SAPO::Broker::Transport::SSL };
 }
 
 my %DEFAULT_OPTIONS = ( 'proto' => 'tcp' );
 our @ISA = qw(SAPO::Broker::Clients::Minimal);
 my %codecs;
 
-if ( SAPO::Broker::has_thrift() ) {
+if ( has_thrift() ) {
     require SAPO::Broker::Codecs::Thrift;
     my $name = 'thrift';
     $codecs{$name} = SAPO::Broker::Codecs::Thrift->new();
     $DEFAULT_OPTIONS{'codec'} = $name;
 }
 
-if ( SAPO::Broker::has_protobufxs() ) {
+if ( has_protobufxs() ) {
     require SAPO::Broker::Codecs::ProtobufXS;
     my $name = 'protobufxs';
     $codecs{$name} = SAPO::Broker::Codecs::ProtobufXS->new();
