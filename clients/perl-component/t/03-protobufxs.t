@@ -6,10 +6,10 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 
 use Test::More tests => 2;
-BEGIN { use_ok('SAPO::Broker') }
+BEGIN { use_ok('SAPO::Broker::Utils') }
 
 SKIP: {
-    if (SAPO::Broker::has_protobufxs) {
+    if (SAPO::Broker::Utils::has_protobufxs) {
         use_ok('SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom');
     } else {
         skip( 'No support for protobuf(XS)', 1 );
