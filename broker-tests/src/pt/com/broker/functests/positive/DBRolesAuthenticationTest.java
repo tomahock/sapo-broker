@@ -3,6 +3,8 @@ package pt.com.broker.functests.positive;
 import org.caudexorigo.concurrent.Sleep;
 
 import pt.com.broker.auth.AuthInfo;
+import pt.com.broker.auth.CredentialsProvider;
+import pt.com.broker.auth.jdbc.JdbcProvider;
 import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
@@ -52,9 +54,9 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 			{
 				SslBrokerClient bk = (SslBrokerClient) getInfoConsumer();
 	
-				AuthInfo clientAuthInfo = new AuthInfo(username, password, "BrokerRolesDB");
+				CredentialsProvider cp = new JdbcProvider(username, password);
 	
-				bk.setAuthenticationCredentials(clientAuthInfo);
+				bk.setCredentialsProvider(cp);
 	
 				bk.authenticateClient();
 	

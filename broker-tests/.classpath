@@ -10,5 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ThriftCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-XmlCodec"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-JsonCodec"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-Auth-Jdbc"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
