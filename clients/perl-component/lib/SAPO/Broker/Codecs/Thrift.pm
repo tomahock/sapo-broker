@@ -19,7 +19,8 @@ Readonly::Hash my %_string2kind => (
     'VIRTUAL_QUEUE' => SAPO::Broker::Codecs::Autogen::Thrift::DestinationType::VIRTUAL_QUEUE,
 );
 
-Readonly::Hash my %_kind2string => reverse(%_string2kind);
+Readonly::Hash my %_kind2string         => reverse(%_string2kind);
+Readonly::Scalar my $DEFAULT_EXPIRATION => 7 * 24 * 60 * 60;         #by default messages expire in 7 days
 
 sub new {
     my ($class) = @_;
@@ -62,7 +63,7 @@ sub serialize_publish($$) {
     #XXX ugly kludge to workaround a broker bug that doesn't check whether the field is sent over the wire
     my $expiration = $broker_message->expiration();
     if ( not defined $expiration ) {
-        $broker_message->expiration( ( time + 7 * 24 * 60 * 60 ) * 1000 );    #by default messages expire in 7 days
+        $broker_message->expiration( ( time + $DEFAULT_EXPIRATION ) * 1000 );
     } else {
         $broker_message->expiration( $expiration * 1000 );    #broker receives timestamps as milliseconds from the epoch
     }
