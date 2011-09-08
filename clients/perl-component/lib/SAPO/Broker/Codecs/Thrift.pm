@@ -137,7 +137,7 @@ sub parse_notification($) {
     my ($action)     = @_;
     my $notification = SAPO::Broker::Messages::Notification->new( $action->notification() );
     my $message      = $notification->{'message'};
-    $message->{'id'} = $message->{'message_id'};
+    $message->{'id'}           = $message->{'message_id'};
 
     #take care of the milliseconds
 
