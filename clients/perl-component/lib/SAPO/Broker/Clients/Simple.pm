@@ -70,7 +70,7 @@ sub __get_codec {
         if ($codec) {
             return $codec;
         } else {
-            die "Codec $codec not available.";
+            die "Codec $codec_name not available.";
         }
     }
 }
