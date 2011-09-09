@@ -70,7 +70,7 @@ sub serialize_publish($$) {
 
     my $timestamp = $broker_message->timestamp();
     if ( not defined $timestamp ) {
-        $timestamp = gmtime();    #must be sent on the wire due to stupid constraints in the java thrift implementation
+        $timestamp = time();    #must be sent on the wire due to stupid constraints in the java thrift implementation
     }
 
     $broker_message->timestamp( $timestamp * 1000 );    #milliseconds
