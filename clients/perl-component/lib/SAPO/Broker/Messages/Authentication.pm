@@ -5,7 +5,7 @@ use Readonly;
 use Carp qw(croak);
 
 #dynamic use of modules so that if not installed nothing breaks
-#there jus is a loss of functionality
+#there is just a loss of functionality
 eval {
     require JSON::Any;
     require LWP::UserAgent;
