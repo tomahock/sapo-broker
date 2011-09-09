@@ -181,11 +181,10 @@ sub receive {
     #now check the message type
     #if it is a fault just raise an exception
 
+    #possible inheritance problems
     my $msg_type = ref($message);
 
     if ( $msg_type eq 'SAPO::Broker::Messages::Fault' ) {
-        use Data::Dumper;
-        warn Dumper($message);
         warn __PACKAGE__ . " " . $message->fault_message;
         die $message;
 
