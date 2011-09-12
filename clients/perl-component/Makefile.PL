@@ -48,7 +48,13 @@ if ( prompt( 'Do you want to install support for Thrift', 'yes' ) !~ /yes/i ) {
     $use_thrift = 0;
 }
 
-if ( not( $use_thrift or $use_protobuf ) ) {
+my $use_thriftxs = 0;
+if ( prompt( 'Do you want to install support for Thrift(XS)', 'yes' ) =~ /yes/i ) {
+    push( @subdirs, 'protobufxs' );
+    $use_protobuf = 1;
+}
+
+if ( not( $use_thrift or $use_protobuf or $use_thriftxs ) ) {
     die "Thrift or protobuf codecs are mandatory. Please choose one.";
 }
 
@@ -56,12 +62,16 @@ if ($use_thrift) {
     $PREREQ_PM{'Thrift'} = '0.1';
 }
 
+if ($use_thriftxs) {
+    $PREREQ_PM{'Thrift::XS'} = '0.1';
+}
+
 WriteMakefile(
     'DIR'           => \@subdirs,
     'NAME'          => 'SAPO::Broker',
     'AUTHOR'        => 'Cláudio Valente <c.valente@co.sapo.pt>',
-    'VERSION_FROM'  => 'lib/SAPO/Broker.pm',
-    'ABSTRACT_FROM' => 'lib/SAPO/Broker.pm',
+    'VERSION_FROM'  => 'lib/SAPO/Broker/Clients.pm',
+    'ABSTRACT_FROM' => 'lib/SAPO/Broker/Clients.pm',
     'PMLIBDIRS'     => [@PMLIBDIRS],
     'PREREQ_PM'     => {%PREREQ_PM},
     'test'          => { 'TESTS' => 't/*.t' },

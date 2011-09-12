@@ -206,6 +206,14 @@ my %__dispatch_deserialize = (
     SAPO::Broker::Codecs::Autogen::Thrift::ActionType::ACCEPTED     => \&parse_accepted,
 );
 
+sub __serialize {
+    my ( $self, $atom ) = @_;
+    my $transport = Thrift::MemoryBuffer->new();
+    my $protocol  = Thrift::BinaryProtocol->new($transport);
+    $atom->write($protocol);
+    my $payload = $transport->getBuffer();
+}
+
 sub serialize {
     my ( $self, $message ) = @_;
 
@@ -228,15 +236,11 @@ sub serialize {
             my $atom = SAPO::Broker::Codecs::Autogen::Thrift::Atom->new( { action => $action } );
 
             #serialize the atom into bytes
-            my $transport = Thrift::MemoryBuffer->new();
-            my $protocol  = Thrift::BinaryProtocol->new($transport);
-            $atom->write($protocol);
-            my $payload = $transport->getBuffer();
 
             return SAPO::Broker::Transport::Message->new(
                 type    => $ENCODING_TYPE,
                 version => 1,
-                payload => $payload
+                payload => $self->__serialize($atom),
             );
         } ## end if ( $message->isa($class...
     } ## end while ( my ( $class, $serializer...
