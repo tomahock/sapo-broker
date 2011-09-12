@@ -9,7 +9,7 @@
 		<para>A security policy is composed by an Access Control List (ACL), which is composed by entries. Each entry has an action (PERMIT or DENY), a destination type (TOPIC, QUEUE or VIRTUAL_QUEUE), a destination (such as "/topic/foo" or a regular expression) and a privilege (READ or WRITE). Destination types and privileges may be declared as lists which makes the ACL entry easier to read and declare. An entry is also composed by conditions that determine when the ACL entry should be applied. Conditions represent a binary evaluation result which determines the application of the related ACL entry. They can be of the following types:</para>
 		<itemizedlist>
 			<listitem>
-				ADDRESS – An IPv4 address and mask
+				ADDRESS – An IPv4 address and mask (If the address is from a single machine, no mask is needed)
 			</listitem>
 			<listitem>
 				ROLE – A text value with the role name
@@ -27,7 +27,7 @@
 		<section>
 			<title>Access control evaluation criteria </title>
 			<para>Every agent as an associated security policy, except in the case of security policy absence in witch it defaults to "allow everything". In the case of policy inheritance, eventually with multiple degrees, a stack of entries is built with the most specific ACLs at the top and entries inserted by declaration order within each ACL. The result is an ordered entry stack where the most specific/priority come first, so evaluating a client request against the full access control is sequential evaluation of entries. The first entry witch results in a positive evaluation is applied.</para>
-			<para>The entry stack is optimized for evaluation, although maintaining the described model. (More on this we I have the time).</para>
+			<para>The entry stack is optimized for evaluation, although maintaining the described model. (More on this when we have the time).</para>
 		</section>
 		<section>
 			<title>An annotated sample</title>
@@ -42,20 +42,21 @@
 				<title id="CODE_SEC_POLICY_CONF">Security policy configuration sample</title>
 				<screen>
 &lt;security-policies&gt;
+   &lt;!-- THE RULES EVALUATION STOPS AFTER THE FIRST MATCH, GRANTING OR DENYING A PRIVILEGE. --/&gt;
    &lt;policies&gt;
       &lt;policy policy-name="default"&gt;
          &lt;acl&gt;
             &lt;entry action="DENY" destination-type="TOPIC QUEUE" destination="/system/.*"  privilege="WRITE"&gt;
                &lt;condition condition-type="ALWAYS" /&gt;
             &lt;/entry&gt;
-            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="WRITE READ"&gt;
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE VIRTUAL_QUEUE" destination="/private/.*"  privilege="WRITE READ"&gt;
                &lt;condition condition-type="ALWAYS" /&gt;
             &lt;/entry&gt;
          &lt;/acl&gt;
       &lt;/policy&gt;
       &lt;policy policy-name="anotherPolicy" inherits="default"&gt;
          &lt;acl&gt;
-            &lt;entry action="DENY" destination-type="TOPIC QUEUE TOPIC_AS_QUEUE" destination="/private/.*"  privilege="READ"&gt;
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE VIRTUAL_QUEUE" destination="/private/.*"  privilege="READ"&gt;
                &lt;condition condition-type="ADDRESS"&gt;
                   &lt;address  mask="24"&gt;10.11.12.0&lt;/address&gt;
                &lt;/condition&gt;
