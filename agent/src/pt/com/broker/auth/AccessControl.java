@@ -9,6 +9,8 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
+
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPoll;
@@ -255,7 +257,8 @@ public class AccessControl
 				Address address = cond.getAddress();
 				try
 				{
-					aclPreds.add(new AddressPredicate(InetAddress.getByName(address.getValue()), (int) address.getMask()));
+					int mask = address.getMask() == null ? 32 : (int) address.getMask();
+					aclPreds.add(new AddressPredicate(InetAddress.getByName(address.getValue()), mask));
 				}
 				catch (Throwable t)
 				{
