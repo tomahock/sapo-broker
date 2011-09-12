@@ -45,7 +45,7 @@
 			  <xs:complexType>
 				<xs:simpleContent>
 				  <xs:extension base="xs:string">
-					<xs:attribute name="mask" type="xs:unsignedByte" use="optional" />
+					<xs:attribute name="mask" type="xs:unsignedByte" use="optional" default="32"/>
 				  </xs:extension>
 				</xs:simpleContent>
 			  </xs:complexType>
