@@ -2,7 +2,7 @@ package SAPO::Broker::Clients::Simple;
 
 use Carp qw(carp croak);
 
-use SAPO::Broker::Utils qw(has_ssl has_thrift has_protobufxs);
+use SAPO::Broker::Utils qw(has_ssl has_thrift has_protobufxs has_thriftxs);
 use SAPO::Broker::Messages;
 use SAPO::Broker::Clients::Minimal;
 use SAPO::Broker::Transport::TCP;
@@ -26,6 +26,13 @@ if ( has_thrift() ) {
     require SAPO::Broker::Codecs::Thrift;
     my $name = 'thrift';
     $codecs{$name} = SAPO::Broker::Codecs::Thrift->new();
+    $DEFAULT_OPTIONS{'codec'} = $name;
+}
+
+if ( has_thriftxs() ) {
+    require SAPO::Broker::Codecs::ThriftXS;
+    my $name = 'thriftxs';
+    $codecs{$name} = SAPO::Broker::Codecs::ThriftXS->new();
     $DEFAULT_OPTIONS{'codec'} = $name;
 }
 

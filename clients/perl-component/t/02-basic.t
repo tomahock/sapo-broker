@@ -14,6 +14,17 @@ SKIP: {
     }
 }
 
+my $thriftxs;
+
+SKIP: {
+    if ( SAPO::Broker::Utils::has_thriftxs() ) {
+        use_ok('SAPO::Broker::Codecs::Thrift');
+        ok( $thriftxs = SAPO::Broker::Codecs::Thrift->new(), 'ThriftXS codec' );
+    } else {
+        skip( 'no thriftxs support', 2 );
+    }
+}
+
 my $protobuf;
 
 SKIP: {
@@ -181,6 +192,14 @@ SKIP: {
         test_codec('protobufxs');
     } else {
         skip( 'No protobuf support', 2 * ( 5 + 16 * $N ) + 1 );
+    }
+}
+
+SKIP: {
+    if ($thriftxs) {
+        test_codec('thriftxs');
+    } else {
+        skip( 'No thriftxs support', 2 * ( 5 + 16 * $N ) + 1 );
     }
 }
 
