@@ -1,3 +1,10 @@
+libsapo-broker-perl (0.3) unstable; urgency=low
+
+  * Thrift::XS support
+  * TCP improvements (shutdown connection)
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Tue, 13 Sep 2011 18:05:09 +0100
+
 libsapo-broker-perl (0.2-4) unstable; urgency=low
 
   * fix milliseconds bug in expiration and timestamps
