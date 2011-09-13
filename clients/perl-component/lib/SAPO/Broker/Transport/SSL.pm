@@ -95,4 +95,20 @@ sub __read {
     return $payload;
 } ## end sub __read
 
+sub DESTROY {
+    my ($self) = @_;
+
+    my $socket = $self->{'__socket'};
+
+    if ($socket) {
+        $socket->close(
+            'SSL_ctx_free'      => 1,
+            'SSL_fast_shutdown' => 0
+        );
+        return $self->{'__original_socket'}->shutdown(2);
+    } else {
+        return;
+    }
+}
+
 1;
