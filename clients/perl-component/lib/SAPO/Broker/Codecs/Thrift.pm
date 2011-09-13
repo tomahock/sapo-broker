@@ -63,7 +63,7 @@ sub serialize_publish($$) {
     #XXX ugly kludge to workaround a broker bug that doesn't check whether the field is sent over the wire
     my $expiration = $broker_message->expiration();
     if ( not defined $expiration ) {
-        $broker_message->expiration( ( time() + $DEFAULT_EXPIRATION) * 1000 );
+        $broker_message->expiration( ( time() + $DEFAULT_EXPIRATION ) * 1000 );
     } else {
         $broker_message->expiration( $expiration * 1000 );    #broker receives timestamps as milliseconds from the epoch
     }
