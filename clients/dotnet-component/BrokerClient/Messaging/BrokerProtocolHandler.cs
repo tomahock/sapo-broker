@@ -33,7 +33,8 @@ namespace SapoBrokerClient.Messaging
 		private NetworkHandler networkHandler;
 		private IMessageSerializer messageSerializer;
 		
-		private IDictionary<string, Subscription> subscriptions = new Dictionary<string, Subscription>();
+        //private IDictionary<string, Subscription> subscriptions = new Dictionary<string, Subscription>();
+        private IDictionary<NetAction.DestinationType, IDictionary<string, Subscription>> subscriptions = new Dictionary<NetAction.DestinationType, IDictionary<string, Subscription>>();
 
         private IDictionary<string, PollRequest> syncSubscriptions = new Dictionary<string, PollRequest>();
 
@@ -81,6 +82,9 @@ namespace SapoBrokerClient.Messaging
 		{
 			this.messageSerializer = messageSerializer;
             this.networkHandler = networkHandler;
+
+            subscriptions.Add(NetAction.DestinationType.TOPIC, new Dictionary<string, Subscription>());
+            subscriptions.Add(NetAction.DestinationType.QUEUE, new Dictionary<string, Subscription>());
 			
 			networkHandler.MessageReceived += delegate(byte[] encodedData) {
 				try{
@@ -105,9 +109,13 @@ namespace SapoBrokerClient.Messaging
         {
             lock (this)
             {
-                foreach (KeyValuePair<string, Subscription> subscription in subscriptions)
+                //IDictionary<NetAction.DestinationType, IDictionary<string, Subscription>>
+                foreach (KeyValuePair<NetAction.DestinationType, IDictionary<string, Subscription>> destinations in subscriptions)
                 {
-                    this.HandleOutgoingMessage(subscription.Value.ToNetMessage(), null);
+                    foreach (KeyValuePair<string, Subscription> subscription in destinations.Value)
+                    {
+                        this.HandleOutgoingMessage(subscription.Value.ToNetMessage(), null);
+                    }
                 }
 
                 lock (syncSubscriptions)
@@ -189,7 +197,9 @@ namespace SapoBrokerClient.Messaging
 		{
 			string subscription = message.Action.NotificationMessage.Subscription;
 
-            if (message.Action.NotificationMessage.DestinationType != NetAction.DestinationType.TOPIC)
+            NetAction.DestinationType destType = message.Action.NotificationMessage.DestinationType;
+
+            if (destType != NetAction.DestinationType.TOPIC)
             {
                 lock (this.syncSubscriptions)
                 {
@@ -205,9 +215,11 @@ namespace SapoBrokerClient.Messaging
 
             lock (subscriptions)
             {
-                if (subscriptions.ContainsKey(subscription))
+                IDictionary<string, Subscription> destSubscriptions = subscriptions[destType == NetAction.DestinationType.TOPIC ? NetAction.DestinationType.TOPIC : NetAction.DestinationType.QUEUE];
+
+                if (destSubscriptions.ContainsKey(subscription))
                 {
-                    subscriptions[subscription].FireOnMessage(message.Action.NotificationMessage);
+                    destSubscriptions[subscription].FireOnMessage(message.Action.NotificationMessage);
                 }
                 else
                 {
@@ -381,14 +393,16 @@ namespace SapoBrokerClient.Messaging
 		public void AddSubscription(Subscription subscription)
 		{
 			lock(subscriptions){
-				subscriptions.Add(subscription.DestinationPattern , subscription);
+                IDictionary<string, Subscription> destSubscriptions = subscriptions[subscription.DestinationType == NetAction.DestinationType.TOPIC ? NetAction.DestinationType.TOPIC : NetAction.DestinationType.QUEUE];
+                destSubscriptions.Add(subscription.DestinationPattern, subscription);
 			}
 		}
 		
 		public void RemoveSubscription(Subscription subscription)
 		{
 			lock(subscriptions){
-				subscriptions.Remove(subscription.DestinationPattern);
+                IDictionary<string, Subscription> destSubscriptions = subscriptions[subscription.DestinationType == NetAction.DestinationType.TOPIC ? NetAction.DestinationType.TOPIC : NetAction.DestinationType.QUEUE];
+                destSubscriptions.Remove(subscription.DestinationPattern);
 			}
 		}
 

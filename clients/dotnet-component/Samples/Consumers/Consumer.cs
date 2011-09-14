@@ -43,6 +43,8 @@ namespace Samples.Consumers
 
             brokerClient.Subscribe(subscription);
 
+
+
             Console.WriteLine("Write X to unsbscribe and exit");
             while (!System.Console.Read().Equals('X'))
                 ;
