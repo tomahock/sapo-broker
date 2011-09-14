@@ -6,23 +6,8 @@
 
 cd `dirname $0`
 
-# check version
-java -version 2>&1 | grep 1.5 > /dev/null
-if [ $? = 0 ] ; then # Yup, 1.5 still
-  echo Found Java version 1.5
-  classpath="./conf"
+classpath="./conf:../sapo-broker/lib/*:./dist/*:../clients/java-component/dist/*:../acl/dbauth/java/dist/*"
 
-  for i in ./jvm15/lib/*.jar; do
-    classpath=$classpath:$i
-  done
-
-  for i in ./lib/*.jar; do
-    classpath=$classpath:$i
-  done
-else # we assume 1.6 here
-  echo Found Java version 1.6
-  classpath="./conf:../sapo-broker/lib/*:./dist/*"
-fi
 
 #wait for 5 seconds
 #echo "Giving time (5s) for the agents to start..."

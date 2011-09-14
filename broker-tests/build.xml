@@ -66,6 +66,9 @@
 			<fileset dir="../bindings/json/java/dist/">
 				<include name="**/*.jar" />
 			</fileset>
+			<fileset dir="../acl/dbauth/java/dist/">
+				<include name="**/*.jar" />
+			</fileset>
 		</path>
 
 	<target name="init" depends="clean">

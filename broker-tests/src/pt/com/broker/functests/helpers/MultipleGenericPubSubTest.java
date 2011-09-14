@@ -52,8 +52,6 @@ public class MultipleGenericPubSubTest extends BrokerTest
 	@Override
 	public void build() throws Throwable
 	{
-		System.out.println("MultipleGenericPubSubTest.build()");
-		
 		addProducers();
 
 		addConsumers();
