@@ -8,7 +8,7 @@ namespace SapoBrokerClient.Utils
 {
     /// <summary>
     /// NotifiableKeyedQueues contains queues identified by a key.
-    /// It provides a synchronization mechanism through witch queue consumers are notified of available objects. After a client is notified of an object offer it is re-added to the end of the waiting queue, except if it declares that dosen't want to receive more than one object. If it doesn't want to be notified of more objects it should declare by setting StillInterested property to false.
+    /// It provides a synchronization mechanism through witch queue consumers are notified of available objects. After a client is notified of an object offer it is re-added to the end of the waiting queue, except if it declares that doesn't want to receive more than one object. If it doesn't want to be notified of more objects it should declare by setting StillInterested property to false.
     /// Clients offer items to a specific queue through Put method. If there aren't interested consumers the method returns false.
     /// Clients Register themselves in order to be notified of new object available to them through a SynchronizationEntry instance.
     /// Queues are automatically created and deleted.
