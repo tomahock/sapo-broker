@@ -1,7 +1,10 @@
 <monitorization-configuration>
 	<agents>
 		<agent hostname="127.0.0.1" port="3323" world-map="./conf/local.config" />
+		<agent hostname="127.0.0.1" port="3423" world-map="./conf/local2.config" />
+<!--
 		<agent hostname="broker.bk.sapo.pt" port="3323" world-map="./conf/global.config"/>
+-->
 	</agents>
 
 	<!--
