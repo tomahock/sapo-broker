@@ -275,7 +275,7 @@ public class Gcs
 	{
 		if (!QueueProcessorList.hasQueue(queueName))
 		{
-			log.warn(String.format("Trying to acknowledge a message whose queue dosen't existe. Queue: '%s', MsgId: '%s' ", queueName, msgId));
+			log.warn(String.format("Trying to acknowledge a message whose queue doesn't existe. Queue: '%s', MsgId: '%s' ", queueName, msgId));
 			return;
 		}
 
@@ -316,7 +316,7 @@ public class Gcs
 		if (qp != null)
 		{
 			qp.getQueueStatistics().newQueueMessageReceived();
-			qp.store(nmsg, true);
+			qp.store(nmsg, GlobalConfig.preferLocalConsumers());
 			return true;
 		}
 
@@ -374,7 +374,6 @@ public class Gcs
 	{
 		try
 		{
-			System.out.println("Flush buffers");
 			BDBEnviroment.sync();
 		}
 		catch (Throwable te)

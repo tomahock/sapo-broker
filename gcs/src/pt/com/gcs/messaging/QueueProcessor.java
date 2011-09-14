@@ -25,11 +25,11 @@ import pt.com.broker.types.NetNotification;
 import pt.com.gcs.conf.GcsInfo;
 
 /**
- * QueueProcessor provides several queue related features, representing each instance a distinct queue.
+ * QueueProcessor provides several queue related features, representing each
+ * instance a distinct queue.
  */
 
-public class QueueProcessor
-{
+public class QueueProcessor {
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
 	private static final Charset UTF8 = Charset.forName("UTF-8");
@@ -61,10 +61,8 @@ public class QueueProcessor
 
 	private final AtomicLong currentIdx = new AtomicLong(0);
 
-	protected QueueProcessor(String queueName)
-	{
-		if (StringUtils.isBlank(queueName))
-		{
+	protected QueueProcessor(String queueName) {
+		if (StringUtils.isBlank(queueName)) {
 			throw new IllegalArgumentException("Queue names can not be blank");
 		}
 
@@ -74,13 +72,10 @@ public class QueueProcessor
 
 		long cnt = storage.count();
 
-		if (cnt == 0)
-		{
+		if (cnt == 0) {
 			sequence = new AtomicLong(0L);
 			counter.set(0);
-		}
-		else
-		{
+		} else {
 			sequence = new AtomicLong(storage.getLastSequenceValue());
 			counter.set(cnt);
 		}
@@ -91,53 +86,38 @@ public class QueueProcessor
 		log.info("Queue '{}' has {} message(s).", queueName, getQueuedMessagesCount());
 	}
 
-	protected void ack(final String msgId)
-	{
-		if (log.isDebugEnabled())
-		{
+	protected void ack(final String msgId) {
+		if (log.isDebugEnabled()) {
 			log.debug("Ack message . MsgId: '{}'.", msgId);
 		}
 
-		if (storage.deleteMessage(msgId))
-		{
+		if (storage.deleteMessage(msgId)) {
 			counter.decrementAndGet();
 		}
 	}
 
-	public void add(MessageListener listener)
-	{
-		if (listener != null)
-		{
+	public void add(MessageListener listener) {
+		if (listener != null) {
 			boolean success = false;
-			if (listener.getType() == MessageListener.Type.LOCAL)
-			{
+			if (listener.getType() == MessageListener.Type.LOCAL) {
 				success = addLocal(listener);
-			}
-			else if (listener.getType() == MessageListener.Type.REMOTE)
-			{
+			} else if (listener.getType() == MessageListener.Type.REMOTE) {
 				success = addRemote(listener);
 			}
-			if (success)
-			{
+			if (success) {
 				listener.addStateChangeListener(getMessageListenerEventChangeHandler());
 
 				deliverMessages();
 			}
-		}
-		else
-		{
+		} else {
 			throw new IllegalArgumentException(String.format("Cannot add null listener to queue '%s'", queueName));
 		}
 	}
 
-	private boolean addLocal(MessageListener listener)
-	{
-		synchronized (localQueueListeners)
-		{
-			if (localQueueListeners.add(listener))
-			{
-				if (localQueueListeners.size() == 1)
-				{
+	private boolean addLocal(MessageListener listener) {
+		synchronized (localQueueListeners) {
+			if (localQueueListeners.add(listener)) {
+				if (localQueueListeners.size() == 1) {
 					broadCastNewQueueConsumer(listener);
 				}
 				log.info("Add listener -> '{}'", listener.toString());
@@ -147,12 +127,9 @@ public class QueueProcessor
 		}
 	}
 
-	private boolean addRemote(MessageListener listener)
-	{
-		synchronized (remoteQueueListeners)
-		{
-			if (remoteQueueListeners.add(listener))
-			{
+	private boolean addRemote(MessageListener listener) {
+		synchronized (remoteQueueListeners) {
+			if (remoteQueueListeners.add(listener)) {
 				log.info("Add listener -> '{}'", listener.toString());
 				return true;
 			}
@@ -160,40 +137,30 @@ public class QueueProcessor
 		}
 	}
 
-	private void broadCastActionQueueConsumer(String action)
-	{
+	private void broadCastActionQueueConsumer(String action) {
 		Set<Channel> sessions = Gcs.getManagedConnectorSessions();
 
-		for (Channel channel : sessions)
-		{
-			try
-			{
+		for (Channel channel : sessions) {
+			try {
 				broadCastQueueInfo(action, channel);
-			}
-			catch (Throwable t)
-			{
+			} catch (Throwable t) {
 				log.error(t.getMessage(), t);
 
-				try
-				{
+				try {
 					channel.close();
-				}
-				catch (Throwable ct)
-				{
+				} catch (Throwable ct) {
 					log.error(ct.getMessage(), ct);
 				}
 			}
 		}
 	}
 
-	private void broadCastNewQueueConsumer(MessageListener listener)
-	{
+	private void broadCastNewQueueConsumer(MessageListener listener) {
 		log.info("Tell all peers about new queue consumer for: '{}' in channel '{}'", queueName, listener.getChannel().getRemoteAddressAsString());
 		broadCastActionQueueConsumer("CREATE");
 	}
 
-	protected void broadCastQueueInfo(String action, Channel channel)
-	{
+	protected void broadCastQueueInfo(String action, Channel channel) {
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><destination>%s</destination></sysmessage>";
 		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), channel.getLocalAddress().toString(), queueName);
 
@@ -212,29 +179,23 @@ public class QueueProcessor
 		SystemMessagesPublisher.sendMessage(nmsg, channel);
 	}
 
-	private void broadCastRemovedQueueConsumer(MessageListener listener)
-	{
+	private void broadCastRemovedQueueConsumer(MessageListener listener) {
 		log.info("Tell all peers about deleted queue consumer for: '{}' in channel '{}'", queueName, listener.getChannel().getRemoteAddressAsString());
 		broadCastActionQueueConsumer("DELETE");
 	}
 
-	public synchronized void clearStorage()
-	{
+	public synchronized void clearStorage() {
 		removeDispatcher();
 		storage.deleteQueue();
 	}
 
-	private void createDispatcher()
-	{
-		try
-		{
-			if (StringUtils.contains(queueName, "@"))
-			{
+	private void createDispatcher() {
+		try {
+			if (StringUtils.contains(queueName, "@")) {
 				log.info("Get Dispatcher for: {}", queueName);
 
 				String topicName = StringUtils.substringAfter(queueName, "@");
-				if (StringUtils.isBlank(topicName))
-				{
+				if (StringUtils.isBlank(topicName)) {
 					String errorMessage = String.format("Can't create a topic dispatcher whose name is empty. VirtualQueue name: '%s'", queueName);
 					log.error(errorMessage);
 					throw new RuntimeException(errorMessage);
@@ -243,72 +204,67 @@ public class QueueProcessor
 
 				VirtualQueueStorage.saveVirtualQueue(queueName);
 				TopicProcessor topicProcessor = TopicProcessorList.get(topicName);
-				if (topicProcessor != null)
-				{
+				if (topicProcessor != null) {
 					topicProcessor.add(topicFwd, false);
 				}
 			}
-		}
-		catch (Throwable e)
-		{
+		} catch (Throwable e) {
 			topicFwd = null;
 			throw new RuntimeException(e);
 		}
 	}
 
-	public long decrementQueuedMessagesCount()
-	{
+	public long decrementQueuedMessagesCount() {
 		return counter.decrementAndGet();
 	}
 
-	public void deleteExpiredMessages()
-	{
-		if (!hasRecipient())
-		{
+	public void deleteExpiredMessages() {
+		if (!hasRecipient()) {
 			storage.deleteExpiredMessages();
 		}
 	}
 
-	protected ForwardResult forward(NetMessage nmsg, boolean preferLocalConsumer) throws IllegalStateException
-	{
+	/**
+	 * @param nmsg
+	 *            The message to deliver.
+	 * @param preferLocalConsumer
+	 *            If 'true' messages will be delivered to local consumers or
+	 *            remote consumers if there aren't any active local consumers.
+	 *            If 'false' messages will be delivered to local consumers, then
+	 *            to remote consumers.
+	 * @return ForwardResult.SUCCESS or ForwardResult.FAILED
+	 */
+	protected ForwardResult forward(NetMessage nmsg, boolean preferLocalConsumer) {
 		ForwardResult result = notify(localQueueListeners, nmsg);
 
-		if (result.result == Result.FAILED)
-		{
-			if (!hasActiveListeners(localQueueListeners))
-			{
+		if (result.result == Result.FAILED) {
+			if ((!preferLocalConsumer) || (!hasActiveListeners(localQueueListeners))) {
 				result = notify(remoteQueueListeners, nmsg);
 			}
 		}
-		else
-		{
+
+		if (result.result == Result.SUCCESS) {
 			queueStatistics.newQueueMessageDelivered();
 		}
 
-		if (log.isDebugEnabled())
-		{
+		if (log.isDebugEnabled()) {
 			log.debug("forward-> isDelivered: " + result.result.toString());
 		}
 
 		return result;
 	}
 
-	public long getQueuedMessagesCount()
-	{
+	public long getQueuedMessagesCount() {
 		return counter.get();
 	}
 
-	public String getQueueName()
-	{
+	public String getQueueName() {
 		return queueName;
 	}
 
-	private boolean hasActiveListeners(Set<MessageListener> listeners)
-	{
-		for (MessageListener ml : listeners)
-		{
-			if (ml.isActive())
-			{
+	private boolean hasActiveListeners(Set<MessageListener> listeners) {
+		for (MessageListener ml : listeners) {
+			if (ml.isActive()) {
 				return true;
 			}
 		}
@@ -316,12 +272,9 @@ public class QueueProcessor
 		return false;
 	}
 
-	private boolean hasReadyListeners(Set<MessageListener> listeners)
-	{
-		for (MessageListener ml : listeners)
-		{
-			if (ml.isReady())
-			{
+	private boolean hasReadyListeners(Set<MessageListener> listeners) {
+		for (MessageListener ml : listeners) {
+			if (ml.isReady()) {
 				return true;
 			}
 		}
@@ -329,14 +282,11 @@ public class QueueProcessor
 		return false;
 	}
 
-	protected boolean hasRecipient()
-	{
-		if (hasReadyListeners(localQueueListeners))
-		{
+	protected boolean hasRecipient() {
+		if (hasReadyListeners(localQueueListeners)) {
 			return true;
 		}
-		if (hasActiveListeners(localQueueListeners))
-		{
+		if (hasActiveListeners(localQueueListeners)) {
 			// it has sync consumers that are active but not ready. So, ignore remote consumers
 			return false;
 		}
@@ -344,183 +294,130 @@ public class QueueProcessor
 		return hasReadyListeners(remoteQueueListeners);
 	}
 
-	public Set<MessageListener> localListeners()
-	{
+	public Set<MessageListener> localListeners() {
 		return localQueueListeners;
 	}
 
-	private ForwardResult notify(Set<MessageListener> listeners, NetMessage nmsg)
-	{
+	private ForwardResult notify(Set<MessageListener> listeners, NetMessage nmsg) {
 		int s = listeners.size();
-		if (s == 0)
-		{
+		if (s == 0) {
 			return failed;
 		}
-		int n = (int)Math.abs(currentIdx.incrementAndGet() % s);
 
-		try
-		{
+		int n = (int) currentIdx.get();
+
+		try {
 			int idx = 0;
 
 			// first we cycle the collection and only notify the first ready listener with an "index" greater than "current index"
-			for (MessageListener ml : listeners)
-			{
-				++idx;
-				if (idx > n)
-				{
-					if (ml.isReady())
-					{
-						currentIdx.addAndGet(idx-1);
+			for (MessageListener ml : listeners) {
+				if (idx++ >= n) {
+					if (ml.isReady()) {
+						currentIdx.set(idx);
 						return ml.onMessage(nmsg);
 					}
 				}
 			}
 
 			// if no ready listener was found we cycle through the collection again and try the listeners with an "index" lower than the "current index"
-			if (s > 1)
-			{
-				idx = 0;
-
-				for (MessageListener ml : listeners)
-				{
-					++idx;
-					if (idx <= n)
-					{
-						if (ml.isReady())
-						{
-							currentIdx.addAndGet(n + idx -1); // all elements greater than 'current index', plus idx -1 (to compensate ++)
-							return ml.onMessage(nmsg);
-						}
+			idx = 0;
+			for (MessageListener ml : listeners) {
+				if (idx++ < n) {
+					if (ml.isReady()) {
+						currentIdx.set(idx);
+						return ml.onMessage(nmsg);
 					}
-					else
-					{
-						break;
-					}
+				} else {
+					break;
 				}
 			}
 
 			// oh well ... we tried. To need to forward current index
 			return failed;
-		}
-		catch (Throwable t)
-		{
+		} catch (Throwable t) {
 			return failed;
 		}
 	}
 
-	public Set<MessageListener> remoteListeners()
-	{
+	public Set<MessageListener> remoteListeners() {
 		return remoteQueueListeners;
 	}
 
-	public void remove(MessageListener listener)
-	{
-		if (listener != null)
-		{
+	public void remove(MessageListener listener) {
+		if (listener != null) {
 			boolean removed = false;
-			if (listener.getType() == MessageListener.Type.LOCAL)
-			{
-				synchronized (localQueueListeners)
-				{
-					if (localQueueListeners.remove(listener))
-					{
+			if (listener.getType() == MessageListener.Type.LOCAL) {
+				synchronized (localQueueListeners) {
+					if (localQueueListeners.remove(listener)) {
 						log.info("Removed listener -> '{}'", listener.toString());
 
-						if (localQueueListeners.size() == 0)
-						{
+						if (localQueueListeners.size() == 0) {
 							broadCastRemovedQueueConsumer(listener);
 						}
 						removed = true;
 					}
 				}
 			}
-			if (listener.getType() == MessageListener.Type.REMOTE)
-			{
-				synchronized (remoteQueueListeners)
-				{
-					if (remoteQueueListeners.remove(listener))
-					{
+			if (listener.getType() == MessageListener.Type.REMOTE) {
+				synchronized (remoteQueueListeners) {
+					if (remoteQueueListeners.remove(listener)) {
 						log.info("Removed listener -> '{}'", listener.toString());
 						removed = true;
 					}
 				}
 			}
-			if (removed)
-			{
+			if (removed) {
 
 				listener.removeStateChangeListener(getMessageListenerEventChangeHandler());
 			}
-		}
-		else
-		{
+		} else {
 			log.error(String.format("Cannot remove null listener to queue '%s'", queueName));
 		}
 	}
 
-	private void removeDispatcher()
-	{
-		try
-		{
-			if (topicFwd != null)
-			{
+	private void removeDispatcher() {
+		try {
+			if (topicFwd != null) {
 				Gcs.removeAsyncConsumer(topicFwd);
 				VirtualQueueStorage.deleteVirtualQueue(getQueueName());
 			}
-		}
-		catch (Throwable e)
-		{
+		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void setSequenceNumber(long seqNumber)
-	{
+	public void setSequenceNumber(long seqNumber) {
 		sequence.set(seqNumber);
 	}
 
-	public int size()
-	{
+	public int size() {
 		return localQueueListeners.size() + remoteQueueListeners.size();
 	}
 
-	public long getLastCycle()
-	{
+	public long getLastCycle() {
 		return lastCycle.get();
 	}
 
-	public void store(final NetMessage nmsg)
-	{
-		store(nmsg, false);
-	}
-
-	public void store(final NetMessage nmsg, boolean preferLocalConsumer)
-	{
-		try
-		{
+	public void store(final NetMessage nmsg, boolean preferLocalConsumer) {
+		try {
 			long seq_nr = sequence.incrementAndGet();
 			String mid = storage.insert(nmsg, seq_nr, preferLocalConsumer);
 
-			if (log.isDebugEnabled())
-			{
+			if (log.isDebugEnabled()) {
 				log.debug(String.format("Stored message with id '%s'.", mid));
 			}
 
 			counter.incrementAndGet();
 
 			deliverMessages();
-		}
-		catch (Throwable t)
-		{
+		} catch (Throwable t) {
 			throw new RuntimeException(t);
 		}
 	}
 
-	protected final void wakeup()
-	{
-		if (isWorking.getAndSet(true))
-		{
-			if (log.isDebugEnabled())
-			{
+	protected final void wakeup() {
+		if (isWorking.getAndSet(true)) {
+			if (log.isDebugEnabled()) {
 				log.debug("Queue '{}' is running, skip wakeup", queueName);
 			}
 			return;
@@ -528,16 +425,12 @@ public class QueueProcessor
 
 		long cnt = getQueuedMessagesCount();
 
-		if (cnt > 0)
-		{
+		if (cnt > 0) {
 			emptyQueueInfoDisplay.set(false);
 
-			if (hasReadyListeners(localQueueListeners) || hasReadyListeners(remoteQueueListeners))
-			{
-				try
-				{
-					if (log.isDebugEnabled())
-					{
+			if (hasReadyListeners(localQueueListeners) || hasReadyListeners(remoteQueueListeners)) {
+				try {
+					if (log.isDebugEnabled()) {
 						log.debug("Wakeup queue '{}'", queueName);
 					}
 
@@ -546,30 +439,25 @@ public class QueueProcessor
 					long now = System.currentTimeMillis();
 					long nextCycleTime = now + nextCycleDelay;
 
-					if (((nextCycleDelay != 0) && (nextCycleTime < nextRun.get())) || ((nextCycleDelay != 0) && (nextRun.get() < now)))
-					{
+					if (((nextCycleDelay != 0) && (nextCycleTime < nextRun.get())) || ((nextCycleDelay != 0) && (nextRun.get() < now))) {
 						/*
-						 * Schedule a new delivery if: - the nextCycleTime is earlier than a previous scheduled delivery, or - the nextRun is previous to 'now'
+						 * Schedule a new delivery if: - the nextCycleTime is
+						 * earlier than a previous scheduled delivery, or - the
+						 * nextRun is previous to 'now'
 						 */
 
 						nextRun.set(nextCycleTime);
-						GcsExecutor.schedule(new Runnable()
-						{
+						GcsExecutor.schedule(new Runnable() {
 							@Override
-							public void run()
-							{
+							public void run() {
 								deliverMessages();
 							}
 						}, nextCycleDelay, TimeUnit.MILLISECONDS);
 					}
-				}
-				catch (Throwable t)
-				{
+				} catch (Throwable t) {
 					log.error(t.getMessage(), t);
 					throw new RuntimeException(t);
-				}
-				finally
-				{
+				} finally {
 					isWorking.set(false);
 				}
 			}
@@ -577,8 +465,7 @@ public class QueueProcessor
 		isWorking.set(false);
 	}
 
-	public QueueStatistics getQueueStatistics()
-	{
+	public QueueStatistics getQueueStatistics() {
 		return queueStatistics;
 	}
 
@@ -587,22 +474,17 @@ public class QueueProcessor
 	 */
 
 	private AtomicBoolean deliveryRequest = new AtomicBoolean(false);
-	
+
 	// Calling methods have to ensure that deliveringMessages was set to true;
-	protected boolean deliverMessages()
-	{
+	protected boolean deliverMessages() {
 		boolean set = deliveringMessages.compareAndSet(false, true);
 		deliveryRequest.set(true);
-		if (set)
-		{
+		if (set) {
 			// Messages were not being delivered (deliveringMessages was 'false'). deliveringMessages was set to 'true' and let the delivery begin.
-			GcsExecutor.execute(new Runnable()
-			{
+			GcsExecutor.execute(new Runnable() {
 				@Override
-				public void run()
-				{
-					while( deliveryRequest.compareAndSet(true, false) )
-					{
+				public void run() {
+					while (deliveryRequest.compareAndSet(true, false)) {
 						wakeup();
 					}
 					deliveringMessages.set(false);
@@ -613,20 +495,16 @@ public class QueueProcessor
 		return set;
 	}
 
-	private MessageListenerEventChangeHandler msgListenterEventHandler = new MessageListenerEventChangeHandler()
-	{
+	private MessageListenerEventChangeHandler msgListenterEventHandler = new MessageListenerEventChangeHandler() {
 		@Override
-		public void stateChanged(MessageListener messageListener, MessageListenerState state)
-		{
-			if (messageListener.isReady() && messageListener.isActive())
-			{
+		public void stateChanged(MessageListener messageListener, MessageListenerState state) {
+			if (messageListener.isReady() && messageListener.isActive()) {
 				deliverMessages();
 			}
 		}
 	};
 
-	private MessageListenerEventChangeHandler getMessageListenerEventChangeHandler()
-	{
+	private MessageListenerEventChangeHandler getMessageListenerEventChangeHandler() {
 		return msgListenterEventHandler;
 	}
 }

@@ -23,6 +23,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.caudexorigo.Shutdown;
+import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -54,6 +55,7 @@ public class GlobalConfig
 	private int maxQueues;
 	private long maxStoreTime;
 	private int maxDistinctSubscriptions;
+	private boolean preferLocalConsumers = true;
 
 	private GlobalConfig()
 	{
@@ -71,8 +73,7 @@ public class GlobalConfig
 		}
 		Document doc = parseXmlFile(globalConfigPath, false);
 
-		init(doc);
-
+		init(doc);		
 	}
 
 	private void init(Document doc)
@@ -95,11 +96,22 @@ public class GlobalConfig
 		String maxQueueSize = extractElementInfo(doc, "max-queues")[0];
 		maxQueues = Integer.parseInt(maxQueueSize);
 
+		String[] extractElementInfo = extractElementInfo(doc, "prefer-local-consumers");
+		if( (extractElementInfo != null) && (extractElementInfo.length != 0))
+		{
+			String preferLocalConsumersStr = extractElementInfo[0];
+			if(StringUtils.isNotBlank(preferLocalConsumersStr))
+			{
+				preferLocalConsumers = preferLocalConsumersStr.toLowerCase().equals("true");
+			}
+		}		
+
 		String maxDistinctSubscriptionsStr = extractElementInfo(doc, "max-distinct-subscriptions")[0];
 		maxDistinctSubscriptions = Integer.parseInt(maxDistinctSubscriptionsStr);
 
 		String maxStoreTimeStr = extractElementInfo(doc, "store-time")[0];
 		maxStoreTime = Long.parseLong(maxStoreTimeStr);
+		
 	}
 
 	private synchronized void populateWorldMap(Document doc)
@@ -167,12 +179,18 @@ public class GlobalConfig
 	{
 		return Collections.unmodifiableList(instance.peerList);
 	}
-
+	
 	public static boolean contains(InetSocketAddress inet)
 	{
 		return instance.peerSet.contains(inet);
 	}
 
+	
+	public static boolean preferLocalConsumers()
+	{
+		return instance.preferLocalConsumers;
+	}
+	
 	private Document parseXmlFile(String filename, boolean validating)
 	{
 		try
