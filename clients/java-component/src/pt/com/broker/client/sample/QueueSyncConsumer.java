@@ -47,13 +47,8 @@ public class QueueSyncConsumer
 		qsconsumer.receiveLoop(bk);
 	}
 
-	volatile int count = 0;
-
 	private void receiveLoop(BrokerClient bk) throws Throwable
 	{
-		
-		System.out.println("HELLO");
-		
 		System.out.println("reserveTime= " + reserveTime);
 		System.out.println("timeout= " + timeout);
 		

@@ -52,7 +52,7 @@ public class Consumer implements BrokerListener
 
 		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", consumer.protocolType);
 		/*
-		bk.setNumberOfTries(1);
+		bk.setNumberOfTries(0);
 		
 		bk.setErrorListener(new BrokerErrorListenter()
 		{
