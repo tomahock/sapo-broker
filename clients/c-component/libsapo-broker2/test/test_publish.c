@@ -26,16 +26,16 @@ int main(int argc, char *argv[])
 
     server.hostname =   HOST;
     server.port =    SB_PORT;
-    server.transport =   TCP;
-    server.protocol = PROTOBUF;
+    server.transport =   SB_TCP;
+    server.protocol = SB_PROTOBUF;
 
     if( argc >= 2 ) {
         if( !strncmp("-udp", argv[1], 4 ) ) {
             printf("UDP ");
-            server.transport = UDP;
+            server.transport = SB_UDP;
         } else {
             printf("TCP ");
-            server.transport = TCP;
+            server.transport = SB_TCP;
         }
 
         if( argc >= 3)
