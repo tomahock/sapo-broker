@@ -133,8 +133,6 @@ public class TopicProcessorList
 
 	private TopicProcessor i_get(String destinationName)
 	{
-		log.debug("Get Topic for: {}", destinationName);
-
 		try
 		{
 			return tpCache.get(destinationName, tp_cf);
@@ -150,9 +148,10 @@ public class TopicProcessorList
 			{
 				tpCache.remove(destinationName);
 			}
-			catch (InterruptedException e)
+			catch (InterruptedException ie)
 			{
-				e.printStackTrace();
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(ie);
 			}
 			Gcs.broadcastMaxDistinctSubscriptionsReached();
 		}
@@ -160,6 +159,8 @@ public class TopicProcessorList
 		{
 			Throwable rootCause = ErrorAnalyser.findRootCause(t);
 			CriticalErrors.exitIfCritical(rootCause);
+			
+			log.error(String.format("Failed to get TopicProcessor for topic '%s'. Message: %s", destinationName, rootCause.getMessage()));
 
 			if (rootCause.getClass().isAssignableFrom(MaximumDistinctSubscriptionsReachedException.class))
 			{
@@ -169,13 +170,15 @@ public class TopicProcessorList
 				}
 				catch (InterruptedException e)
 				{
+					Thread.currentThread().interrupt();
 					log.error("Failed to removed topic processor entry that caused  MaxDistinctSubscriptionsReached. Reason: '{}'", e);
 				}
 
 				Gcs.broadcastMaxDistinctSubscriptionsReached();
 			}
-
-			log.error(String.format("Failed to get TopicProcessor for topic '%s'. Message: %s", destinationName, rootCause.getMessage()), rootCause);
+			
+			throw new RuntimeException(rootCause);
+			
 		}
 		return null;
 	}
