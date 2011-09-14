@@ -62,8 +62,6 @@ public class AdminAction extends HttpAction
 			{
 				String action = new String(request.getContent().array());
 				
-				System.out.println("AdminAction.writeResponse.action: " + action);
-
 				if (StringUtils.isBlank(action))
 				{
 					throw new IllegalArgumentException("No arguments supplied");

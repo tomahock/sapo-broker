@@ -10,14 +10,12 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.ForwardResult.Result;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.channels.ListenerChannel;
-import pt.com.broker.types.channels.ListenerChannelEventHandler;
-import pt.com.broker.types.channels.ListenerChannel.ChannelState;
 import pt.com.gcs.messaging.GcsExecutor;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
@@ -41,14 +39,14 @@ public class SynchronousMessageListener extends BrokerListener
 	private volatile boolean inNoWaitMode;
 	private volatile String actionId;
 
-	private AtomicLong lastDeliveredMessage = new AtomicLong(0);
+	private AtomicLong lastDeliveredMessage = new AtomicLong(System.currentTimeMillis());
 
 	private ForwardResult sucess;
 	
 	public SynchronousMessageListener(ListenerChannel lchannel, String queueName)
 	{
 		super(lchannel, queueName);
-
+		
 		sucess = new ForwardResult(Result.SUCCESS, DEFAULT_RESERVE_TIME);
 		
 		this.queueName = queueName;
