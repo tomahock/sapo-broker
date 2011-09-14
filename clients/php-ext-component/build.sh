@@ -28,7 +28,7 @@ mkdir tmp
 cp $EXT_VERSION.tgz tmp/
 cd tmp/
 
-dh-make-pecl --maintainer "Filipe Varela <filipe.varela@caixamagica.pt>" --only 5 $EXT_VERSION.tgz
+dh-make-pecl --maintainer "Filipe Varela <filipe.varela@caixamagica.pt>" $EXT_VERSION.tgz
 cd php-$EXT_VERSION/
 
 # quick hack for FAIL dh_shlibdeps

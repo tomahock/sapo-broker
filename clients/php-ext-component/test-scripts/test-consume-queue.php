@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$broker = broker_init("127.0.0.1", SB_PORT, SB_UDP, SB_PROTOBUF);
+$broker = broker_init("127.0.0.1", SB_PORT, SB_TCP, SB_PROTOBUF);
 $ret = broker_subscribe_queue($broker, "/test/foo", 0);
 
 $start = time();
