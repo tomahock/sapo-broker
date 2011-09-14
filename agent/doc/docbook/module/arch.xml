@@ -9,7 +9,7 @@
     <section>
       <title>Non-blocking IO</title>
       <para>Broker agents use Apache MINA as their communication stack. Apache MINA is, accordantly to the <ulink url="http://mina.apache.org">official site</ulink>, <quote>a network application framework which helps users develop high performance and high scalability network applications easily. It provides an abstract · event-driven · asynchronous API over various transports such as TCP/IP and UDP/IP via Java NIO</quote>.</para>
-      <para>MINA is used to handle client connections and inter-agents communication. All client endpoints, TCP, legacy TCP (backward compatible), SSL and HTTP are implemented on top MINA. Java client library dosen't use MINA.</para>
+      <para>MINA is used to handle client connections and inter-agents communication. All client endpoints, TCP, legacy TCP (backward compatible), SSL and HTTP are implemented on top MINA. Java client library doesn't use MINA.</para>
       <para>Although MINA's functionality as proven to be adequate to the design and implementation of Sapo-Broker, non-functional requirements may determine that alternatives should be considered. MINA gives higher priority to incoming communication. This design may be adequate in many cases, but not for Sapo-Broker: For every message received, possibly, <emphasis>N</emphasis> are sent.</para>
     </section>
     <section>
