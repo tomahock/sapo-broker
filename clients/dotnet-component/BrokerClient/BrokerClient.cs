@@ -258,7 +258,7 @@ namespace SapoBrokerClient
         /// Poll an message from a queue.
         /// </summary>
         /// <param name="queueName">Queue name (e.g. "/queue/foo").</param>
-        /// <param name="timeout">Time, in miliseconds, before the agent stops waiting for a message, if the timeout is bigger than 0. If timeout is reached a TimeoutException is thrown. If the value is zero, than the agent will wait forever. A negative value means that the client dosen't want to wait if there are no messages is local agent's queue.</param>
+        /// <param name="timeout">Time, in miliseconds, before the agent stops waiting for a message, if the timeout is bigger than 0. If timeout is reached a TimeoutException is thrown. If the value is zero, than the agent will wait forever. A negative value means that the client doesn't want to wait if there are no messages is local agent's queue.</param>
         /// <returns>A NetNotification instance. In case of connection fail or if there are no messages in local agent's queue when timeout is negative null is returned.</returns>
         public NetNotification Poll(String queueName, long timeout)
         {
@@ -268,7 +268,7 @@ namespace SapoBrokerClient
         /// Poll an message from a queue.
         /// </summary>
         /// <param name="queueName">Queue name (e.g. "/queue/foo").</param>
-        /// <param name="timeout">Time, in miliseconds, before the agent stops waiting for a message, if the timeout is bigger than 0. If timeout is reached a TimeoutException is thrown. If the value is zero, than the agent will wait forever. A negative value means that the client dosen't want to wait if there are no messages is local agent's queue.</param>
+        /// <param name="timeout">Time, in miliseconds, before the agent stops waiting for a message, if the timeout is bigger than 0. If timeout is reached a TimeoutException is thrown. If the value is zero, than the agent will wait forever. A negative value means that the client doesn't want to wait if there are no messages is local agent's queue.</param>
         /// <param name="acceptRequest">An AcceptRequest instance.</param>
         /// <returns>A NetNotification instance. In case of connection fail or if there are no messages in local agent's queue when timeout is negative null is returned.</returns>
         public NetNotification Poll(String queueName, long timeout, AcceptRequest acceptRequest)
@@ -298,7 +298,7 @@ namespace SapoBrokerClient
         /// Poll an message from a queue.
         /// </summary>
         /// <param name="queueName">Queue name (e.g. "/queue/foo").</param>
-        /// <param name="timeout">Time, in miliseconds, before the agent stops waiting for a message, if the timeout is bigger than 0. If timeout is reached a TimeoutException is thrown. If the value is zero, than the agent will wait forever. A negative value means that the client dosen't want to wait if there are no messages is local agent's queue.</param>
+        /// <param name="timeout">Time, in miliseconds, before the agent stops waiting for a message, if the timeout is bigger than 0. If timeout is reached a TimeoutException is thrown. If the value is zero, than the agent will wait forever. A negative value means that the client doesn't want to wait if there are no messages is local agent's queue.</param>
         /// <param name="reserveTime">Message reserve time, in milliseconds. Polled messages are reserved, by default, for 15 minutes. If clients prefer a different reserve time, bigger or small, they can specify it.</param>
         /// <param name="acceptRequest">An AcceptRequest instance.</param>
         /// <returns>A NetNotification instance. In case of connection fail or if there are no messages in local agent's queue when timeout is negative null is returned.</returns>
