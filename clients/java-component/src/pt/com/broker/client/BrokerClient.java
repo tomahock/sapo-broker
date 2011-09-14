@@ -100,7 +100,7 @@ public class BrokerClient extends BaseBrokerClient
 		HostInfo hostInfo = hosts.peek();
 		if (hostInfo.getUdpPort() == -1)
 		{
-			throw new InvalidParameterException("Active agent information (HostInfo) dosen't have a specified UDP port.");
+			throw new InvalidParameterException("Active agent information (HostInfo) doesn't have a specified UDP port.");
 		}
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
