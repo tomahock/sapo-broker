@@ -285,7 +285,7 @@ ALTER TABLE roles ADD FOREIGN KEY (username) REFERENCES users(username);
 			The persistence and delivery model of queued messages, as discussed <link linkend="INTRO_POINT2POINT">previously</link>, protects the system against client failure but not against broker failure.
 			If an agent crashes before receiving the client's Acknowledge the message will be delivered again.
 			This violates the "once and only once" promisse but in real world scenarios is near impossible to guarantee 100% robustness.
-			This is, of course, anomalous behaviour and should not happen in common operation. But if it does, and your application semantics dosen't allow for duplicate messages there are a couple of solutions to try.
+			This is, of course, anomalous behaviour and should not happen in common operation. But if it does, and your application semantics doesn't allow for duplicate messages there are a couple of solutions to try.
 		</para>
 		<section>
 			<title>Solution 1 – Client persistence</title>
