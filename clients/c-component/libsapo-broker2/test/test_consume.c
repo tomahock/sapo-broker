@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 
     server.hostname =   HOST;
     server.port =    SB_PORT;
-    server.transport = TCP;
-    server.protocol = PROTOBUF;
+    server.transport = SB_TCP;
+    server.protocol = SB_PROTOBUF;
 
     sb = broker_init( server );
     if (!sb) {
