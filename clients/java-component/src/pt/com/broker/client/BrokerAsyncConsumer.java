@@ -1,10 +1,8 @@
 package pt.com.broker.client;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
 
@@ -19,14 +17,11 @@ public class BrokerAsyncConsumer
 
 	private final BrokerListener _wrappedListener;
 
-	private final Pattern _subscriptionName;
-
 	public BrokerAsyncConsumer(NetSubscribe subscrition, BrokerListener listener)
 	{
 		super();
 		_wrappedListener = listener;
 		this.subscription = subscrition;
-		_subscriptionName = Pattern.compile(subscrition.getDestination());
 	}
 
 	public NetSubscribe getSubscription()
@@ -41,6 +36,10 @@ public class BrokerAsyncConsumer
 
 	public boolean deliver(NetNotification msg)
 	{
+		_wrappedListener.onMessage(msg);
+		return true;
+		
+		/*
 		String toMatch = null;
 		if (msg.getDestinationType() != NetAction.DestinationType.TOPIC)
 		{
@@ -63,6 +62,7 @@ public class BrokerAsyncConsumer
 		{
 			return false;
 		}
+		*/
 	}
 
 }
