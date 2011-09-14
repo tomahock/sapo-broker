@@ -2,6 +2,7 @@ package pt.com.gcs.messaging;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
@@ -23,6 +24,7 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.conf.GlobalConfig;
 
 /**
  * GcsRemoteProtocolHandler is an NETTY SimpleChannelHandler.
@@ -58,7 +60,7 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			log.error("STACKTRACE", t);
 		}
 	}
-
+	
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
 	{
@@ -94,7 +96,7 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			{
 				if (acknowledgeMessage(queueProcessor.getQueueName(), brkMsg.getMessageId(), channel))
 				{
-					queueProcessor.store(m, true);
+					queueProcessor.store(m, GlobalConfig.preferLocalConsumers());
 				}
 			}
 		}
