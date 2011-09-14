@@ -90,7 +90,7 @@ public class Start
 					try
 					{
 						Gcs.destroy();
-						System.out.println("Shutdown hook thread ended!");
+						log.info("Shutdown hook thread ended!");
 					}
 					catch (Throwable te)
 					{
