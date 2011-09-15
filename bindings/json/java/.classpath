@@ -5,9 +5,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommonLibs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-CommTypes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SapoBrokerV4-ProtoBufCodec"/>
-	<classpathentry kind="lib" path="lib/jackson-core-asl-1.7.4.jar"/>
-	<classpathentry kind="lib" path="lib/protobuf-codec-core-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/protobuf-codec-json-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-asl-1.8.5.jar"/>
+	<classpathentry kind="lib" path="lib/protobuf-codec-core-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/protobuf-codec-json-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
