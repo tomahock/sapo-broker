@@ -23,6 +23,7 @@ import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.conf.GlobalConfig;
 
 /**
  * QueueProcessor provides several queue related features, representing each
@@ -80,7 +81,10 @@ public class QueueProcessor {
 			counter.set(cnt);
 		}
 
-		createDispatcher();
+		if(GlobalConfig.supportVirtualQueues())
+		{
+			createDispatcher();
+		}
 
 		log.info("Create Queue Processor for '{}'.", queueName);
 		log.info("Queue '{}' has {} message(s).", queueName, getQueuedMessagesCount());
