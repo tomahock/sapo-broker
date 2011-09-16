@@ -56,6 +56,7 @@ public class GlobalConfig
 	private long maxStoreTime;
 	private int maxDistinctSubscriptions;
 	private boolean preferLocalConsumers = true;
+	private boolean supportVirtualQueues = true;
 
 	private GlobalConfig()
 	{
@@ -96,15 +97,25 @@ public class GlobalConfig
 		String maxQueueSize = extractElementInfo(doc, "max-queues")[0];
 		maxQueues = Integer.parseInt(maxQueueSize);
 
-		String[] extractElementInfo = extractElementInfo(doc, "prefer-local-consumers");
-		if( (extractElementInfo != null) && (extractElementInfo.length != 0))
+		String[] plcElementInfo = extractElementInfo(doc, "prefer-local-consumers");
+		if( (plcElementInfo != null) && (plcElementInfo.length != 0))
 		{
-			String preferLocalConsumersStr = extractElementInfo[0];
+			String preferLocalConsumersStr = plcElementInfo[0];
 			if(StringUtils.isNotBlank(preferLocalConsumersStr))
 			{
 				preferLocalConsumers = preferLocalConsumersStr.toLowerCase().equals("true");
 			}
-		}		
+		}
+		
+		String[] svqElementInfo = extractElementInfo(doc, "support-virtual-queues");
+		if( (svqElementInfo != null) && (svqElementInfo.length != 0))
+		{
+			String supportVirtualQueuesStr = svqElementInfo[0];
+			if(StringUtils.isNotBlank(supportVirtualQueuesStr))
+			{
+				supportVirtualQueues = supportVirtualQueuesStr.toLowerCase().equals("true");
+			}
+		}
 
 		String maxDistinctSubscriptionsStr = extractElementInfo(doc, "max-distinct-subscriptions")[0];
 		maxDistinctSubscriptions = Integer.parseInt(maxDistinctSubscriptionsStr);
@@ -189,6 +200,11 @@ public class GlobalConfig
 	public static boolean preferLocalConsumers()
 	{
 		return instance.preferLocalConsumers;
+	}
+	
+	public static boolean supportVirtualQueues()
+	{
+		return instance.supportVirtualQueues;
 	}
 	
 	private Document parseXmlFile(String filename, boolean validating)

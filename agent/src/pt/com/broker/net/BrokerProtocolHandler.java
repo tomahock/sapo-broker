@@ -54,6 +54,7 @@ import pt.com.broker.types.channels.ChannelAttributes;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.QueueProcessorList;
 import pt.com.gcs.messaging.TopicProcessorList;
@@ -438,6 +439,12 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			writeInvalidDestinationFault(ctx.getChannel(), actionId, destination);
 			return;
 		}
+		
+		if(!GlobalConfig.supportVirtualQueues() && StringUtils.contains(destination, "@"))
+		{
+			writeNoVirtualQueueSupportFault(ctx.getChannel(), actionId, destination);
+			return;
+		}
 
 		String value = null;
 		if (request.getHeaders() != null)
@@ -526,6 +533,11 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			}
 			break;
 		case VIRTUAL_QUEUE:
+			if(!GlobalConfig.supportVirtualQueues())
+			{
+				writeNoVirtualQueueSupportFault(channel, actionId, destination);
+				return;
+			}
 			if (StringUtils.contains(subscritption.getDestination(), "@"))
 			{
 				_brokerConsumer.listen(subscritption, ctx, ackRequired);
@@ -619,14 +631,25 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 	private void writeInvalidDestinationFault(Channel channel, String actionId, String destinationName)
 	{
+		writeSubscriptionFault(channel, actionId, destinationName, NetFault.InvalidDestinationNameErrorMessage);
+	}
+	
+	private void writeNoVirtualQueueSupportFault(Channel channel, String actionId, String destinationName)
+	{
+		writeSubscriptionFault(channel, actionId, destinationName, NetFault.NoVirtualQueueSupportErrorMessage);
+	}
+	
+	private void writeSubscriptionFault(Channel channel, String actionId, String destinationName, NetMessage netFault)
+	{
 		log.warn("Invalid destination name: '{}',  Channel: '{}'", destinationName, channel.getRemoteAddress().toString());
+		log.warn(String.format("%s: '%s',  Channel: '%s'", netFault.getAction().getFaultMessage().getMessage(), destinationName, channel.getRemoteAddress().toString()));
 		if (actionId == null)
 		{
-			channel.write(NetFault.InvalidDestinationNameErrorMessage).addListener(ChannelFutureListener.CLOSE);
+			channel.write(netFault).addListener(ChannelFutureListener.CLOSE);
 		}
 		else
 		{
-			channel.write(NetFault.getMessageFaultWithActionId(NetFault.InvalidDestinationNameErrorMessage, actionId)).addListener(ChannelFutureListener.CLOSE);
+			channel.write(NetFault.getMessageFaultWithActionId(netFault, actionId)).addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 
