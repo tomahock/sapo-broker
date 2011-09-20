@@ -49,7 +49,7 @@ public class VirtualQueueStorage
 			dbConfig.setAllowCreate(true);
 			dbConfig.setSortedDuplicates(false);
 			vqStorage = env.openDatabase(null, dbName, dbConfig);
-			
+
 			String home = env.getHome().getAbsolutePath();
 
 			log.info("VirtualQueueStorage is ready.");

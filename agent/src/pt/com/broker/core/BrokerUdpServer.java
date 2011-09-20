@@ -26,8 +26,8 @@ public class BrokerUdpServer
 {
 	private static Logger log = LoggerFactory.getLogger(BrokerUdpServer.class);
 
-	private static final int MAX_UDP_MESSAGE_SIZE = 65 * 1024;	
-	
+	private static final int MAX_UDP_MESSAGE_SIZE = 65 * 1024;
+
 	private int _legacyPort;
 	private int _binProtoPort;
 	private final Executor tpeIo;

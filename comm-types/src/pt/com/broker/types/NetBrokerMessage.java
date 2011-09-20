@@ -92,9 +92,9 @@ public class NetBrokerMessage
 				try
 				{
 					long value = Long.parseLong(deferredDeliveryStr);
-					if(value > 0)
+					if (value > 0)
 					{
-						this.deferredDelivery = value; 
+						this.deferredDelivery = value;
 					}
 				}
 				catch (Exception e)
@@ -105,7 +105,7 @@ public class NetBrokerMessage
 				}
 			}
 		}
-				
+
 		return deferredDelivery;
 	}
 
@@ -133,9 +133,9 @@ public class NetBrokerMessage
 		message.setMessageId(mid);
 		message.setExpiration(exp);
 		message.setTimestamp(ts);
-		
+
 		message.getDeferredDelivery();
-		
+
 		return message;
 	}
 

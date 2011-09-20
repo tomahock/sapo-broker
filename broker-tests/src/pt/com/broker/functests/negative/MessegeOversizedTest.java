@@ -1,8 +1,5 @@
 package pt.com.broker.functests.negative;
 
-import java.util.List;
-
-import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
@@ -15,7 +12,7 @@ public class MessegeOversizedTest extends GenericNegativeTest
 	{
 		super("Message oversize");
 
-		if(getEncodingProtocolType()!= NetProtocolType.SOAP_v0)
+		if (getEncodingProtocolType() != NetProtocolType.SOAP_v0)
 		{
 			setDataToSend(new byte[] { 0, (byte) getEncodingProtocolType().ordinal(), 0, 0, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0, 0 });
 		}
@@ -26,10 +23,10 @@ public class MessegeOversizedTest extends GenericNegativeTest
 
 		setFaultCode("1101");
 		setFaultMessage("Invalid message size");
-		
-		getPrerequisites().add( new Prerequisite("Ping")
+
+		getPrerequisites().add(new Prerequisite("Ping")
 		{
-			
+
 			@Override
 			public Step run() throws Exception
 			{
@@ -47,7 +44,7 @@ public class MessegeOversizedTest extends GenericNegativeTest
 			}
 		});
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

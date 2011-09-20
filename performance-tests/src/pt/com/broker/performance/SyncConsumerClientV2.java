@@ -9,10 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPoll;
-import pt.com.broker.types.NetAction.ActionType;
 
 public class SyncConsumerClientV2 implements Runnable
 {
@@ -50,7 +50,6 @@ public class SyncConsumerClientV2 implements Runnable
 		try
 		{
 			Socket client = new Socket(host, port);
-			
 
 			DataOutputStream rawo = new DataOutputStream(client.getOutputStream());
 
@@ -92,7 +91,7 @@ public class SyncConsumerClientV2 implements Runnable
 				if (action.getActionType() == ActionType.FAULT)
 				{
 					System.out.printf("Fault received. Code: '%s'%n", action.getFaultMessage().getCode());
-					//break;
+					// break;
 				}
 				else if (action.getActionType() == ActionType.NOTIFICATION)
 				{

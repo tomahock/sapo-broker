@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 
 public abstract class MessageListenerBase implements MessageListener
 {
-	private static final Logger log = LoggerFactory.getLogger(MessageListenerBase.class);	
+	private static final Logger log = LoggerFactory.getLogger(MessageListenerBase.class);
 
 	private CopyOnWriteArrayList<MessageListenerEventChangeHandler> handlers = new CopyOnWriteArrayList<MessageListenerEventChangeHandler>();
-	
+
 	@Override
 	public void addStateChangeListener(MessageListenerEventChangeHandler handler)
 	{
@@ -22,7 +22,7 @@ public abstract class MessageListenerBase implements MessageListener
 	{
 		handlers.remove(handler);
 	}
-	
+
 	protected void onEventChange(MessageListenerState state)
 	{
 		for (MessageListenerEventChangeHandler eventHandler : handlers)
@@ -33,7 +33,7 @@ public abstract class MessageListenerBase implements MessageListener
 			}
 			catch (Throwable t)
 			{
-				
+
 				log.error(String.format("Failed to process event handler. New State: '%s'", state.toString()));
 			}
 		}

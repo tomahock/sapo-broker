@@ -46,16 +46,16 @@ public class SimpleFramingDecoder extends FrameDecoder
 		int mark = buffer.readerIndex();
 
 		int len = buffer.getInt(mark);
-		
+
 		// Mark the current buffer position before reading the length field
 		// because the whole frame might not be in the buffer yet.
 		// We will reset the buffer position to the marked position if
 		// there's not enough bytes in the buffer.
-		
-		//buffer.markReaderIndex();
+
+		// buffer.markReaderIndex();
 
 		// The length field is in the buffer.
-		//int len = buffer.readInt();
+		// int len = buffer.readInt();
 
 		if (buffer.readableBytes() < (len + HEADER_LENGTH))
 		{
@@ -73,12 +73,12 @@ public class SimpleFramingDecoder extends FrameDecoder
 			channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
 			return null;
 		}
-		
+
 		buffer.skipBytes(HEADER_LENGTH);
 
 		// There's enough bytes in the buffer. Read it.
 		ChannelBuffer frame = buffer.readBytes(len);
-		
+
 		// Successfully decoded a frame. Return the decoded frame.
 		return frame;
 	}

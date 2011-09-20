@@ -9,22 +9,22 @@ import java.util.List;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.channels.ChannelAttributes;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
@@ -33,8 +33,7 @@ import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
 import pt.com.gcs.net.Peer;
 
 /**
- * GcsAcceptorProtocolHandler is an NETTY SimpleChannelHandler.
- * It handles remote subscription messages and acknowledges from other agents.
+ * GcsAcceptorProtocolHandler is an NETTY SimpleChannelHandler. It handles remote subscription messages and acknowledges from other agents.
  */
 
 @Sharable
@@ -81,8 +80,8 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 		CriticalErrors.exitIfCritical(rootCause);
 		log.error("Exception Caught:'{}', '{}'", ctx.getChannel().getRemoteAddress().toString(), rootCause.getMessage());
 		log.error(String.format("STACKTRACE:\n%s", rootCause));
-		
-		if(rootCause instanceof java.nio.channels.ClosedChannelException)
+
+		if (rootCause instanceof java.nio.channels.ClosedChannelException)
 		{
 			handleChannelClosed(ctx);
 		}
@@ -109,11 +108,11 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			Gcs.ackMessage(nnot.getDestination(), brkMsg.getMessageId());
 			return;
 		}
-		else if( mtype.equals("PING"))
+		else if (mtype.equals("PING"))
 		{
 			acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
 			return;
-		}		
+		}
 		else if (mtype.equals("HELLO"))
 		{
 			Peer peer = Peer.createPeerFromHelloMessage(msgContent);
@@ -153,16 +152,16 @@ class GcsAcceptorProtocolHandler extends SimpleChannelHandler
 			final String src_name = extract(msgContent, "<source-name>", "</source-name>");
 
 			ChannelHandlerContext channelHandlerContext = InboundRemoteChannels.get(src_name);
-			
-			if(!ctx.equals(channelHandlerContext))
+
+			if (!ctx.equals(channelHandlerContext))
 			{
 				log.error(String.format("RemoteChannel for agent '%s' is '%s' but received a system message from '%s'. Closing both.", src_name, channelHandlerContext, ctx));
 				channelHandlerContext.getChannel().close();
 				ctx.getChannel().close();
-				
+
 				return;
 			}
-			
+
 			final String subscriptionKey = extract(msgContent, "<destination>", "</destination>");
 
 			if (StringUtils.isBlank(subscriptionKey))

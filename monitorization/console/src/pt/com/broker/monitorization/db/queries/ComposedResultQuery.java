@@ -15,16 +15,15 @@ import org.slf4j.LoggerFactory;
 public abstract class ComposedResultQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(ComposedResultQuery.class);
-	
+
 	private String QUERY;
-	
-	
+
 	protected ComposedResultQuery(String query)
 	{
-		this.QUERY = query;		
+		this.QUERY = query;
 	}
 
-	public String getJsonData(Map<String,List<String>> params)
+	public String getJsonData(Map<String, List<String>> params)
 	{
 		Db db = null;
 
@@ -35,7 +34,7 @@ public abstract class ComposedResultQuery
 			db = DbPool.pick();
 
 			ResultSet queryResult = getResultSet(db, params);
-			if(queryResult == null)
+			if (queryResult == null)
 				return "";
 
 			boolean first = true;
@@ -66,11 +65,11 @@ public abstract class ComposedResultQuery
 	}
 
 	abstract public String getId();
-	
+
 	abstract protected void getElement(StringBuilder stringBuilder, ResultSet queryResult) throws Throwable;
-	
-	protected ResultSet getResultSet(Db db, Map<String,List<String>> params)
+
+	protected ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
-		return db.runRetrievalPreparedStatement(QUERY);	
+		return db.runRetrievalPreparedStatement(QUERY);
 	}
 }

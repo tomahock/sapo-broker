@@ -18,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AccessControl;
-import pt.com.broker.auth.Session;
 import pt.com.broker.auth.AccessControl.ValidationResult;
+import pt.com.broker.auth.Session;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapSerializer;
@@ -85,9 +85,9 @@ public class BrokerHttpAction extends HttpAction
 				byte[] buf = bb.array();
 
 				NetMessage message = (NetMessage) bindingSerializer.unmarshal(buf);
-				
+
 				ChannelStats.newHttpMessageReceived();
-				
+
 				ValidationResult validationResult = AccessControl.validate(message, new Session(channel));
 
 				if (!validationResult.accessGranted)

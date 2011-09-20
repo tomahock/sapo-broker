@@ -17,11 +17,11 @@ import pt.com.broker.client.net.ProtocolHandler;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetAction.ActionType;
 
 /**
  * BrokerProtocolHandler extends ProtocolHandler defining protocol aspects such as message handling (including errors), message encoding/decoding and on failure behavior.
@@ -50,7 +50,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	{
 		this.brokerClient = brokerClient;
 		this.connector = connector;
-		
+
 		this.usingNewFramming = !usingOldFramming;
 
 		setHostInfo(brokerClient.getHostInfo());
@@ -94,7 +94,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			case JSON:
 				proto_type = 3;
 				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.protobuf.JsonCodecForProtoBuf").newInstance();
-				break;				
+				break;
 			case SOAP_v0:
 				proto_type = 0;
 				serializer = (BindingSerializer) Class.forName("pt.com.broker.codec.xml.SoapBindingSerializer").newInstance();
@@ -164,7 +164,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 					this.brokerClient.setState(BrokerClientState.OK);
 
 					// READ THREADS
-					if(readerStarded)
+					if (readerStarded)
 					{
 						// initialize only if reader thread has been previously initialized
 						start();
@@ -231,9 +231,9 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		{
 		case NOTIFICATION:
 			NetNotification notification = action.getNotificationMessage();
-			
+
 			notification.setHeaders(message.getHeaders());
-			
+
 			if (!notification.getDestinationType().equals(NetAction.DestinationType.TOPIC))
 			{
 				boolean received = brokerClient.offerPollResponse(notification.getSubscription(), message);
@@ -258,7 +258,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			break;
 		case FAULT:
 			NetFault fault = action.getFaultMessage();
-			
+
 			fault.setHeaders(message.getHeaders());
 
 			if (fault.getCode().equals(PollTimeoutErrorMessageCode) || fault.getCode().equals(NoMessageInQueueErrorMessageCode))
@@ -339,7 +339,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 
 		out.write(marshaledMsg);
 	}
-	
+
 	public byte[] marshalMessage(NetMessage message) throws IOException
 	{
 		byte[] marshaledMsg = serializer.marshal(message);

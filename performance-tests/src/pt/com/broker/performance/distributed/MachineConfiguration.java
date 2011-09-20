@@ -14,23 +14,23 @@ import org.slf4j.LoggerFactory;
 public class MachineConfiguration
 {
 	private static final Logger log = LoggerFactory.getLogger(MachineConfiguration.class);
-	
+
 	private String machineName;
 	private List<String> producers;
 	private List<String> consumers;
-	
+
 	private boolean stop = false;
 
 	private MachineConfiguration()
 	{
-		
+
 	}
-	
+
 	public MachineConfiguration(String machineName, List<String> producers, List<String> consumers)
 	{
 		this.machineName = machineName;
 		this.producers = producers;
-		this.consumers = consumers;		
+		this.consumers = consumers;
 	}
 
 	public String getMachineName()
@@ -47,7 +47,7 @@ public class MachineConfiguration
 	{
 		return consumers;
 	}
-	
+
 	public byte[] serialize()
 	{
 		byte[] data = null;
@@ -57,20 +57,20 @@ public class MachineConfiguration
 			ObjectOutputStream outputObj = new ObjectOutputStream(bout);
 			outputObj.writeUTF(machineName);
 			outputObj.writeInt(producers.size());
-			for(String producer : producers)
+			for (String producer : producers)
 			{
 				outputObj.writeUTF(producer);
 			}
 			outputObj.writeInt(consumers.size());
-			for(String consumer : consumers)
+			for (String consumer : consumers)
 			{
 				outputObj.writeUTF(consumer);
 			}
 			outputObj.writeBoolean(stop);
-	
+
 			outputObj.flush();
 
-			data = bout.toByteArray();			
+			data = bout.toByteArray();
 		}
 		catch (IOException e)
 		{
@@ -78,34 +78,34 @@ public class MachineConfiguration
 		}
 		return data;
 	}
-	
+
 	public static MachineConfiguration deserialize(byte[] data)
 	{
 		MachineConfiguration machineConfiguration = new MachineConfiguration();
-		
+
 		try
 		{
 			ObjectInputStream inputObj;
 			inputObj = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(data));
-			
+
 			machineConfiguration.machineName = inputObj.readUTF();
-			
+
 			int producersCount = inputObj.readInt();
-			
+
 			machineConfiguration.producers = new ArrayList<String>(producersCount);
-			for(int i = 0; i != producersCount; ++i)
+			for (int i = 0; i != producersCount; ++i)
 			{
 				machineConfiguration.producers.add(inputObj.readUTF());
 			}
-			
+
 			int consumersCount = inputObj.readInt();
-			
+
 			machineConfiguration.consumers = new ArrayList<String>(consumersCount);
-			for(int i = 0; i != consumersCount; ++i)
+			for (int i = 0; i != consumersCount; ++i)
 			{
 				machineConfiguration.consumers.add(inputObj.readUTF());
 			}
-			
+
 			machineConfiguration.stop = inputObj.readBoolean();
 		}
 		catch (Throwable e)
@@ -113,7 +113,7 @@ public class MachineConfiguration
 			log.error("Failed to deserialize object", e);
 			return null;
 		}
-		
+
 		return machineConfiguration;
 	}
 
@@ -126,5 +126,5 @@ public class MachineConfiguration
 	{
 		return stop;
 	}
-	
+
 }

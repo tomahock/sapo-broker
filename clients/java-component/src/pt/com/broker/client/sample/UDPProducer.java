@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
-import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.HostInfo;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * Simple UDP producer sample.
@@ -45,13 +44,10 @@ public class UDPProducer
 		producer.udpPort = cargs.getUdpPort();
 		producer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		producer.dname = cargs.getDestination();
-		
-		
-		
-		
+
 		producer.protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
-		
-		System.out.println("Protocol type: " + producer.protocolType); 
+
+		System.out.println("Protocol type: " + producer.protocolType);
 
 		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
 		hosts.add(new HostInfo(producer.host, producer.port, producer.udpPort));
@@ -77,9 +73,9 @@ public class UDPProducer
 
 			bk.publishMessageOverUdp(publishMsg);
 
-//			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
+			// log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-//			Sleep.time(500);
+			// Sleep.time(500);
 		}
 	}
 }

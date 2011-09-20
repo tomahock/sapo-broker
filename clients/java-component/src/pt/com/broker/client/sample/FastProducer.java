@@ -10,10 +10,10 @@ import org.caudexorigo.text.RandomStringUtils;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.ActionType;
 
 public class FastProducer
 {
@@ -113,7 +113,7 @@ public class FastProducer
 	private byte[] getMesssage(String destinationName, String destinationType)
 	{
 		// int msize = 1024;
-		int msize = 25*1024;
+		int msize = 25 * 1024;
 
 		NetBrokerMessage msg = new NetBrokerMessage(RandomStringUtils.randomAlphabetic(msize));
 

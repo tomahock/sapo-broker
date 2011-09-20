@@ -17,7 +17,7 @@ public class ChannelAttributes
 
 	public static void set(String channelId, String name, Object value)
 	{
-		if(channelId == null)
+		if (channelId == null)
 		{
 			return;
 		}
@@ -34,7 +34,7 @@ public class ChannelAttributes
 
 	public static Object get(String channelId, String name)
 	{
-		if(channelId == null)
+		if (channelId == null)
 		{
 			return null;
 		}
@@ -63,16 +63,16 @@ public class ChannelAttributes
 			return Collections.emptySet();
 		}
 	}
-	
+
 	public static String getChannelId(ChannelHandlerContext ctx)
 	{
 		return getChannelId(ctx.getChannel());
 	}
-	
+
 	public static String getChannelId(Channel channel)
 	{
-		InetSocketAddress remoteAddress = (InetSocketAddress)channel.getRemoteAddress();
-		if(remoteAddress == null)
+		InetSocketAddress remoteAddress = (InetSocketAddress) channel.getRemoteAddress();
+		if (remoteAddress == null)
 		{
 			return null;
 		}

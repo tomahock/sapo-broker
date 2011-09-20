@@ -16,8 +16,7 @@ public class QueueTestDist extends QueueTest
 		super(testName);
 		try
 		{
-			setInfoConsumer(new BrokerClient(ConfigurationInfo.getParameter("agent2-host"), 
-					BrokerTest.getAgent2Port(), "tcp://mycompany.com/test", getEncodingProtocolType()));
+			setInfoConsumer(new BrokerClient(ConfigurationInfo.getParameter("agent2-host"), BrokerTest.getAgent2Port(), "tcp://mycompany.com/test", getEncodingProtocolType()));
 		}
 		catch (Throwable t)
 		{

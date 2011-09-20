@@ -2,33 +2,31 @@ package pt.com.gcs.messaging;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
 
 /**
- * GcsRemoteProtocolHandler is an NETTY SimpleChannelHandler.
- * It handles outgoing connections to other agents (3315).
+ * GcsRemoteProtocolHandler is an NETTY SimpleChannelHandler. It handles outgoing connections to other agents (3315).
  * 
  */
 
@@ -60,7 +58,7 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			log.error("STACKTRACE", t);
 		}
 	}
-	
+
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
 	{
@@ -122,8 +120,8 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 		log.info("Session Closed: '{}'", channel.getRemoteAddress());
 
 		Gcs.remoteSessionClosed(channel);
-		
-		if(OutboundRemoteChannels.remove(channel))
+
+		if (OutboundRemoteChannels.remove(channel))
 		{
 			GcsExecutor.schedule(new Connect(channel.getRemoteAddress()), 5000, TimeUnit.MILLISECONDS);
 		}

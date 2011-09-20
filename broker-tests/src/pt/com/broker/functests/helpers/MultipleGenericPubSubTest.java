@@ -14,9 +14,9 @@ import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class MultipleGenericPubSubTest extends BrokerTest
 {
@@ -76,8 +76,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), numberOfExecutions);
 			tci.numberOfExecutions = numberOfExecutions;
 
@@ -96,8 +95,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;
 
@@ -186,9 +184,9 @@ public class MultipleGenericPubSubTest extends BrokerTest
 			MultipleNotificationConsequence notConsequence = new MultipleNotificationConsequence("Consume", "consumer", tci.brokerListenter);
 			notConsequence.setDestination(getDestinationName());
 			notConsequence.setSubscription(getSubscriptionName());
-			
+
 			DestinationType dt = getConsumerDestinationType().equals(DestinationType.VIRTUAL_QUEUE) ? DestinationType.QUEUE : getConsumerDestinationType();
-			
+
 			notConsequence.setDestinationType(dt);
 			notConsequence.setMessagePayload(getData());
 

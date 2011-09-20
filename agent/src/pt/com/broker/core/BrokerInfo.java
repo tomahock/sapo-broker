@@ -14,7 +14,7 @@ public class BrokerInfo
 			java.io.InputStream in = BrokerInfo.class.getResourceAsStream("/VERSION.txt");
 			InputStreamReader isr = new InputStreamReader(in);
 			BufferedReader br = new BufferedReader(isr);
-			
+
 			VERSION = br.readLine().trim();
 		}
 		catch (Exception e)
@@ -28,7 +28,7 @@ public class BrokerInfo
 	{
 		return VERSION;
 	}
-	
+
 	public static void main(String[] args)
 	{
 		try

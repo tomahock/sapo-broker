@@ -8,7 +8,6 @@ import java.util.Map;
 import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbPool;
 import org.caudexorigo.text.DateUtil;
-import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,29 +53,29 @@ public class FaultQuery
 				}
 				int idx = 1;
 				sb.append("{");
-				
+
 				sb.append("\"id\":\"");
 				sb.append(queryResult.getInt(idx++));
 				sb.append("\",");
-				
+
 				sb.append("\"agentName\":\"");
 				String agentName = queryResult.getString(idx++);
 				sb.append(agentName);
 				sb.append("\",");
-				
+
 				sb.append("\"agentHostname\":\"");
 				sb.append(AgentHostname.get(agentName));
 				sb.append("\",");
-				
+
 				sb.append("\"time\":\"");
 				sb.append(DateUtil.formatISODate(new Date(queryResult.getTimestamp(idx++).getTime())));
 				sb.append("\",");
-				
+
 				sb.append("\"message\":\"");
-				//sb.append(StringUtils.replace(queryResult.getString(idx++), "\t", ""));
+				// sb.append(StringUtils.replace(queryResult.getString(idx++), "\t", ""));
 				sb.append(queryResult.getString(idx++));
 				sb.append("\",");
-				
+
 				sb.append("\"shortMessage\":\"");
 				sb.append(queryResult.getString(idx++));
 				sb.append("\"");

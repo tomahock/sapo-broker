@@ -10,21 +10,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.channels.ChannelAttributes;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.global.Agents;
+import pt.com.gcs.conf.global.Agents.Agent;
 import pt.com.gcs.conf.global.Authorization;
 import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 import pt.com.gcs.conf.global.ChannelType;
 import pt.com.gcs.conf.global.Condition;
-import pt.com.gcs.conf.global.Policies;
-import pt.com.gcs.conf.global.Agents.Agent;
 import pt.com.gcs.conf.global.Condition.Address;
+import pt.com.gcs.conf.global.Policies;
 import pt.com.gcs.conf.global.Policies.Policy;
 import pt.com.gcs.conf.global.Policies.Policy.Acl.Entry;
 import pt.com.gcs.messaging.DestinationMatcher;
@@ -407,26 +407,26 @@ public class AccessControl
 
 		return granted;
 	}
-	
+
 	public static boolean deliveryAllowed(NetMessage response, DestinationType destinationType, Channel channel, String subscription, String destination)
 	{
 		Object _session = ChannelAttributes.get(ChannelAttributes.getChannelId(channel), "BROKER_SESSION_PROPERTIES");
 		Session sessionProps = null;
-		if(_session == null)
+		if (_session == null)
 		{
 			_session = new Session();
 		}
 		if (_session != null)
 		{
 			sessionProps = (Session) _session;
-		}		
-		
+		}
+
 		ValidationResult validationResult = validate(destinationType, destination, Privilege.READ, sessionProps);
-		if(!validationResult.accessGranted)
+		if (!validationResult.accessGranted)
 		{
 			log.info(String.format("Message delivery refused to '%s'. Subscription: '%s', Destination: '%s'", channel.toString(), subscription, destination));
 		}
-			
+
 		return validationResult.accessGranted;
 	}
 

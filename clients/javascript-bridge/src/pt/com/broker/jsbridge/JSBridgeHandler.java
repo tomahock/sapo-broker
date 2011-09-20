@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.jsbridge.protocol.JsonMessage;
-import pt.com.broker.jsbridge.protocol.JsonSerializer;
 import pt.com.broker.jsbridge.protocol.JsonMessage.MessageType;
+import pt.com.broker.jsbridge.protocol.JsonSerializer;
 
 public class JSBridgeHandler implements WebSocketHandler
 {

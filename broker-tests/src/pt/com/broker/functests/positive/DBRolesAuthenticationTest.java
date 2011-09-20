@@ -2,7 +2,6 @@ package pt.com.broker.functests.positive;
 
 import org.caudexorigo.concurrent.Sleep;
 
-import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.jdbc.JdbcProvider;
 import pt.com.broker.client.SslBrokerClient;
@@ -24,15 +23,14 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
 
-		if(!skipTest())
+		if (!skipTest())
 		{
 			String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
 			String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
 			SslBrokerClient bk = null;
 			try
 			{
-				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-						BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
+				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
 			}
 			catch (Throwable e)
 			{
@@ -45,21 +43,21 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 	@Override
 	protected void addPrerequisites()
 	{
-		if(!skipTest())
+		if (!skipTest())
 		{
 			String username = ConfigurationInfo.getParameter("jdbcTest", "username");
 			String password = ConfigurationInfo.getParameter("jdbcTest", "password");
-	
+
 			try
 			{
 				SslBrokerClient bk = (SslBrokerClient) getInfoConsumer();
-	
+
 				CredentialsProvider cp = new JdbcProvider(username, password);
-	
+
 				bk.setCredentialsProvider(cp);
-	
+
 				bk.authenticateClient();
-	
+
 				Sleep.time(1000);
 			}
 			catch (Throwable e)
@@ -67,7 +65,7 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 				super.setFailure(e);
 				return;
 			}
-	
+
 			super.addPrerequisites();
 		}
 	}

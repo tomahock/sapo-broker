@@ -14,7 +14,6 @@ public class StatisticsDB
 	 * CREATE TABLE IF NOT EXISTS statistics(agentname VARCHAR(255) NOT NULL, time TIMESTAMP NOT NULL, subject VARCHAR(256) NOT NULL, predicate VARCHAR(255) NOT NULL, value DOUBLE NOT NULL);
 	 */
 
-
 	public static void add(String agent, Date sampleDate, String subject, String predicate, double value)
 	{
 		if (log.isDebugEnabled())

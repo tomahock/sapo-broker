@@ -26,7 +26,7 @@ public class GcsInfo
 {
 	private static final GcsInfo instance = new GcsInfo();
 
-	//public static final String VERSION = "3.0";
+	// public static final String VERSION = "3.0";
 
 	private static Logger log = LoggerFactory.getLogger(GcsInfo.class);
 
@@ -347,7 +347,7 @@ public class GcsInfo
 	private AgentConfig conf;
 
 	private String agentName;
-	
+
 	private GcsInfo()
 	{
 		String filePath = System.getProperty("agent-config-path");
@@ -369,14 +369,14 @@ public class GcsInfo
 				Shutdown.now();
 			}
 			conf = (AgentConfig) u.unmarshal(f);
-			
+
 			String prop = constructAgentName(conf.getNet().getIp(), conf.getNet().getPort());
 			if (StringUtils.isBlank(prop))
 			{
 				log.error("Fatal error: Must define an Agent name.");
 				Shutdown.now();
 			}
-			agentName= prop;			
+			agentName = prop;
 		}
 		catch (JAXBException e)
 		{

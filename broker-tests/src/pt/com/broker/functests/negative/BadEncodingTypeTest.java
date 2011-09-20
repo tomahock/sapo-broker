@@ -1,7 +1,6 @@
 package pt.com.broker.functests.negative;
 
 import pt.com.broker.functests.helpers.GenericNegativeTest;
-import pt.com.broker.types.NetProtocolType;
 
 public class BadEncodingTypeTest extends GenericNegativeTest
 {
@@ -15,13 +14,12 @@ public class BadEncodingTypeTest extends GenericNegativeTest
 		setFaultCode("1102");
 		setFaultMessage("Unknown encoding protocol");
 
-		
 	}
 
 	public void addConsequece()
 	{
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

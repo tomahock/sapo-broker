@@ -5,7 +5,6 @@
 // Generated on: 2011.04.05 at 08:43:48 PM WEST 
 //
 
-
 package pt.com.broker.monitorization.configuration;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,11 +13,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -37,91 +37,85 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "agents",
-    "tcpPortExceptions",
-    "httpPortExceptions"
-})
+@XmlType(name = "", propOrder = { "agents", "tcpPortExceptions", "httpPortExceptions" })
 @XmlRootElement(name = "monitorization-configuration")
-public class MonitorizationConfiguration {
+public class MonitorizationConfiguration
+{
 
-    @XmlElement(required = true)
-    protected Agents agents;
-    @XmlElement(name = "tcp-port-exceptions")
-    protected ExceptionAgents tcpPortExceptions;
-    @XmlElement(name = "http-port-exceptions")
-    protected ExceptionAgents httpPortExceptions;
+	@XmlElement(required = true)
+	protected Agents agents;
+	@XmlElement(name = "tcp-port-exceptions")
+	protected ExceptionAgents tcpPortExceptions;
+	@XmlElement(name = "http-port-exceptions")
+	protected ExceptionAgents httpPortExceptions;
 
-    /**
-     * Gets the value of the agents property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Agents }
-     *     
-     */
-    public Agents getAgents() {
-        return agents;
-    }
+	/**
+	 * Gets the value of the agents property.
+	 * 
+	 * @return possible object is {@link Agents }
+	 * 
+	 */
+	public Agents getAgents()
+	{
+		return agents;
+	}
 
-    /**
-     * Sets the value of the agents property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Agents }
-     *     
-     */
-    public void setAgents(Agents value) {
-        this.agents = value;
-    }
+	/**
+	 * Sets the value of the agents property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Agents }
+	 * 
+	 */
+	public void setAgents(Agents value)
+	{
+		this.agents = value;
+	}
 
-    /**
-     * Gets the value of the tcpPortExceptions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ExceptionAgents }
-     *     
-     */
-    public ExceptionAgents getTcpPortExceptions() {
-        return tcpPortExceptions;
-    }
+	/**
+	 * Gets the value of the tcpPortExceptions property.
+	 * 
+	 * @return possible object is {@link ExceptionAgents }
+	 * 
+	 */
+	public ExceptionAgents getTcpPortExceptions()
+	{
+		return tcpPortExceptions;
+	}
 
-    /**
-     * Sets the value of the tcpPortExceptions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ExceptionAgents }
-     *     
-     */
-    public void setTcpPortExceptions(ExceptionAgents value) {
-        this.tcpPortExceptions = value;
-    }
+	/**
+	 * Sets the value of the tcpPortExceptions property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link ExceptionAgents }
+	 * 
+	 */
+	public void setTcpPortExceptions(ExceptionAgents value)
+	{
+		this.tcpPortExceptions = value;
+	}
 
-    /**
-     * Gets the value of the httpPortExceptions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ExceptionAgents }
-     *     
-     */
-    public ExceptionAgents getHttpPortExceptions() {
-        return httpPortExceptions;
-    }
+	/**
+	 * Gets the value of the httpPortExceptions property.
+	 * 
+	 * @return possible object is {@link ExceptionAgents }
+	 * 
+	 */
+	public ExceptionAgents getHttpPortExceptions()
+	{
+		return httpPortExceptions;
+	}
 
-    /**
-     * Sets the value of the httpPortExceptions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ExceptionAgents }
-     *     
-     */
-    public void setHttpPortExceptions(ExceptionAgents value) {
-        this.httpPortExceptions = value;
-    }
+	/**
+	 * Sets the value of the httpPortExceptions property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link ExceptionAgents }
+	 * 
+	 */
+	public void setHttpPortExceptions(ExceptionAgents value)
+	{
+		this.httpPortExceptions = value;
+	}
 
 }

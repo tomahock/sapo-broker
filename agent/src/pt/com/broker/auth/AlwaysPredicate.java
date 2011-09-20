@@ -1,6 +1,5 @@
 package pt.com.broker.auth;
 
-
 /**
  * AlwaysPredicate is always <code>true</code>.
  * 

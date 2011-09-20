@@ -5,11 +5,11 @@
 // Generated on: 2010.05.17 at 03:40:07 PM WEST 
 //
 
-
 package pt.com.broker.functests.conf;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -17,11 +17,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -89,428 +90,418 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "defaults",
-    "tests",
-    "dynamicallyLoadedTests"
-})
+@XmlType(name = "", propOrder = { "defaults", "tests", "dynamicallyLoadedTests" })
 @XmlRootElement(name = "test-params")
-public class TestParams {
+public class TestParams
+{
 
-    @XmlElement(required = true)
-    protected TestParams.Defaults defaults;
-    @XmlElement(required = true)
-    protected TestParams.Tests tests;
-    @XmlElement(name = "dynamically-loaded-tests", required = true)
-    protected TestParams.DynamicallyLoadedTests dynamicallyLoadedTests;
+	@XmlElement(required = true)
+	protected TestParams.Defaults defaults;
+	@XmlElement(required = true)
+	protected TestParams.Tests tests;
+	@XmlElement(name = "dynamically-loaded-tests", required = true)
+	protected TestParams.DynamicallyLoadedTests dynamicallyLoadedTests;
 
-    /**
-     * Gets the value of the defaults property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TestParams.Defaults }
-     *     
-     */
-    public TestParams.Defaults getDefaults() {
-        return defaults;
-    }
+	/**
+	 * Gets the value of the defaults property.
+	 * 
+	 * @return possible object is {@link TestParams.Defaults }
+	 * 
+	 */
+	public TestParams.Defaults getDefaults()
+	{
+		return defaults;
+	}
 
-    /**
-     * Sets the value of the defaults property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TestParams.Defaults }
-     *     
-     */
-    public void setDefaults(TestParams.Defaults value) {
-        this.defaults = value;
-    }
+	/**
+	 * Sets the value of the defaults property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link TestParams.Defaults }
+	 * 
+	 */
+	public void setDefaults(TestParams.Defaults value)
+	{
+		this.defaults = value;
+	}
 
-    /**
-     * Gets the value of the tests property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TestParams.Tests }
-     *     
-     */
-    public TestParams.Tests getTests() {
-        return tests;
-    }
+	/**
+	 * Gets the value of the tests property.
+	 * 
+	 * @return possible object is {@link TestParams.Tests }
+	 * 
+	 */
+	public TestParams.Tests getTests()
+	{
+		return tests;
+	}
 
-    /**
-     * Sets the value of the tests property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TestParams.Tests }
-     *     
-     */
-    public void setTests(TestParams.Tests value) {
-        this.tests = value;
-    }
+	/**
+	 * Sets the value of the tests property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link TestParams.Tests }
+	 * 
+	 */
+	public void setTests(TestParams.Tests value)
+	{
+		this.tests = value;
+	}
 
-    /**
-     * Gets the value of the dynamicallyLoadedTests property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TestParams.DynamicallyLoadedTests }
-     *     
-     */
-    public TestParams.DynamicallyLoadedTests getDynamicallyLoadedTests() {
-        return dynamicallyLoadedTests;
-    }
+	/**
+	 * Gets the value of the dynamicallyLoadedTests property.
+	 * 
+	 * @return possible object is {@link TestParams.DynamicallyLoadedTests }
+	 * 
+	 */
+	public TestParams.DynamicallyLoadedTests getDynamicallyLoadedTests()
+	{
+		return dynamicallyLoadedTests;
+	}
 
-    /**
-     * Sets the value of the dynamicallyLoadedTests property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TestParams.DynamicallyLoadedTests }
-     *     
-     */
-    public void setDynamicallyLoadedTests(TestParams.DynamicallyLoadedTests value) {
-        this.dynamicallyLoadedTests = value;
-    }
+	/**
+	 * Sets the value of the dynamicallyLoadedTests property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link TestParams.DynamicallyLoadedTests }
+	 * 
+	 */
+	public void setDynamicallyLoadedTests(TestParams.DynamicallyLoadedTests value)
+	{
+		this.dynamicallyLoadedTests = value;
+	}
 
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;sequence>
+	 *         &lt;element name="param" type="{}Param" maxOccurs="unbounded"/>
+	 *       &lt;/sequence>
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "", propOrder = { "param" })
+	public static class Defaults
+	{
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
-     *         &lt;element name="param" type="{}Param" maxOccurs="unbounded"/>
-     *       &lt;/sequence>
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "param"
-    })
-    public static class Defaults {
+		@XmlElement(required = true)
+		protected List<Param> param;
 
-        @XmlElement(required = true)
-        protected List<Param> param;
+		/**
+		 * Gets the value of the param property.
+		 * 
+		 * <p>
+		 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the param property.
+		 * 
+		 * <p>
+		 * For example, to add a new item, do as follows:
+		 * 
+		 * <pre>
+		 * getParam().add(newItem);
+		 * </pre>
+		 * 
+		 * 
+		 * <p>
+		 * Objects of the following type(s) are allowed in the list {@link Param }
+		 * 
+		 * 
+		 */
+		public List<Param> getParam()
+		{
+			if (param == null)
+			{
+				param = new ArrayList<Param>();
+			}
+			return this.param;
+		}
 
-        /**
-         * Gets the value of the param property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the param property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getParam().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link Param }
-         * 
-         * 
-         */
-        public List<Param> getParam() {
-            if (param == null) {
-                param = new ArrayList<Param>();
-            }
-            return this.param;
-        }
+	}
 
-    }
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;sequence>
+	 *         &lt;element name="test-class" maxOccurs="unbounded">
+	 *           &lt;complexType>
+	 *             &lt;complexContent>
+	 *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *                 &lt;attribute name="class-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *               &lt;/restriction>
+	 *             &lt;/complexContent>
+	 *           &lt;/complexType>
+	 *         &lt;/element>
+	 *       &lt;/sequence>
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "", propOrder = { "testClass" })
+	public static class DynamicallyLoadedTests
+	{
 
+		@XmlElement(name = "test-class", required = true)
+		protected List<TestParams.DynamicallyLoadedTests.TestClass> testClass;
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
-     *         &lt;element name="test-class" maxOccurs="unbounded">
-     *           &lt;complexType>
-     *             &lt;complexContent>
-     *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                 &lt;attribute name="class-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *               &lt;/restriction>
-     *             &lt;/complexContent>
-     *           &lt;/complexType>
-     *         &lt;/element>
-     *       &lt;/sequence>
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "testClass"
-    })
-    public static class DynamicallyLoadedTests {
+		/**
+		 * Gets the value of the testClass property.
+		 * 
+		 * <p>
+		 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the testClass property.
+		 * 
+		 * <p>
+		 * For example, to add a new item, do as follows:
+		 * 
+		 * <pre>
+		 * getTestClass().add(newItem);
+		 * </pre>
+		 * 
+		 * 
+		 * <p>
+		 * Objects of the following type(s) are allowed in the list {@link TestParams.DynamicallyLoadedTests.TestClass }
+		 * 
+		 * 
+		 */
+		public List<TestParams.DynamicallyLoadedTests.TestClass> getTestClass()
+		{
+			if (testClass == null)
+			{
+				testClass = new ArrayList<TestParams.DynamicallyLoadedTests.TestClass>();
+			}
+			return this.testClass;
+		}
 
-        @XmlElement(name = "test-class", required = true)
-        protected List<TestParams.DynamicallyLoadedTests.TestClass> testClass;
+		/**
+		 * <p>
+		 * Java class for anonymous complex type.
+		 * 
+		 * <p>
+		 * The following schema fragment specifies the expected content contained within this class.
+		 * 
+		 * <pre>
+		 * &lt;complexType>
+		 *   &lt;complexContent>
+		 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+		 *       &lt;attribute name="class-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+		 *     &lt;/restriction>
+		 *   &lt;/complexContent>
+		 * &lt;/complexType>
+		 * </pre>
+		 * 
+		 * 
+		 */
+		@XmlAccessorType(XmlAccessType.FIELD)
+		@XmlType(name = "")
+		public static class TestClass
+		{
 
-        /**
-         * Gets the value of the testClass property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the testClass property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getTestClass().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link TestParams.DynamicallyLoadedTests.TestClass }
-         * 
-         * 
-         */
-        public List<TestParams.DynamicallyLoadedTests.TestClass> getTestClass() {
-            if (testClass == null) {
-                testClass = new ArrayList<TestParams.DynamicallyLoadedTests.TestClass>();
-            }
-            return this.testClass;
-        }
+			@XmlAttribute(name = "class-name", required = true)
+			protected String className;
 
+			/**
+			 * Gets the value of the className property.
+			 * 
+			 * @return possible object is {@link String }
+			 * 
+			 */
+			public String getClassName()
+			{
+				return className;
+			}
 
-        /**
-         * <p>Java class for anonymous complex type.
-         * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
-         * <pre>
-         * &lt;complexType>
-         *   &lt;complexContent>
-         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;attribute name="class-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *     &lt;/restriction>
-         *   &lt;/complexContent>
-         * &lt;/complexType>
-         * </pre>
-         * 
-         * 
-         */
-        @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "")
-        public static class TestClass {
+			/**
+			 * Sets the value of the className property.
+			 * 
+			 * @param value
+			 *            allowed object is {@link String }
+			 * 
+			 */
+			public void setClassName(String value)
+			{
+				this.className = value;
+			}
 
-            @XmlAttribute(name = "class-name", required = true)
-            protected String className;
+		}
 
-            /**
-             * Gets the value of the className property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getClassName() {
-                return className;
-            }
+	}
 
-            /**
-             * Sets the value of the className property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setClassName(String value) {
-                this.className = value;
-            }
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;sequence>
+	 *         &lt;element name="test" maxOccurs="unbounded">
+	 *           &lt;complexType>
+	 *             &lt;complexContent>
+	 *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *                 &lt;sequence>
+	 *                   &lt;element name="param" type="{}Param" maxOccurs="unbounded"/>
+	 *                 &lt;/sequence>
+	 *                 &lt;attribute name="test-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *               &lt;/restriction>
+	 *             &lt;/complexContent>
+	 *           &lt;/complexType>
+	 *         &lt;/element>
+	 *       &lt;/sequence>
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "", propOrder = { "test" })
+	public static class Tests
+	{
 
-        }
+		@XmlElement(required = true)
+		protected List<TestParams.Tests.Test> test;
 
-    }
+		/**
+		 * Gets the value of the test property.
+		 * 
+		 * <p>
+		 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the test property.
+		 * 
+		 * <p>
+		 * For example, to add a new item, do as follows:
+		 * 
+		 * <pre>
+		 * getTest().add(newItem);
+		 * </pre>
+		 * 
+		 * 
+		 * <p>
+		 * Objects of the following type(s) are allowed in the list {@link TestParams.Tests.Test }
+		 * 
+		 * 
+		 */
+		public List<TestParams.Tests.Test> getTest()
+		{
+			if (test == null)
+			{
+				test = new ArrayList<TestParams.Tests.Test>();
+			}
+			return this.test;
+		}
 
+		/**
+		 * <p>
+		 * Java class for anonymous complex type.
+		 * 
+		 * <p>
+		 * The following schema fragment specifies the expected content contained within this class.
+		 * 
+		 * <pre>
+		 * &lt;complexType>
+		 *   &lt;complexContent>
+		 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+		 *       &lt;sequence>
+		 *         &lt;element name="param" type="{}Param" maxOccurs="unbounded"/>
+		 *       &lt;/sequence>
+		 *       &lt;attribute name="test-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+		 *     &lt;/restriction>
+		 *   &lt;/complexContent>
+		 * &lt;/complexType>
+		 * </pre>
+		 * 
+		 * 
+		 */
+		@XmlAccessorType(XmlAccessType.FIELD)
+		@XmlType(name = "", propOrder = { "param" })
+		public static class Test
+		{
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
-     *         &lt;element name="test" maxOccurs="unbounded">
-     *           &lt;complexType>
-     *             &lt;complexContent>
-     *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                 &lt;sequence>
-     *                   &lt;element name="param" type="{}Param" maxOccurs="unbounded"/>
-     *                 &lt;/sequence>
-     *                 &lt;attribute name="test-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *               &lt;/restriction>
-     *             &lt;/complexContent>
-     *           &lt;/complexType>
-     *         &lt;/element>
-     *       &lt;/sequence>
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "test"
-    })
-    public static class Tests {
+			@XmlElement(required = true)
+			protected List<Param> param;
+			@XmlAttribute(name = "test-name", required = true)
+			protected String testName;
 
-        @XmlElement(required = true)
-        protected List<TestParams.Tests.Test> test;
+			/**
+			 * Gets the value of the param property.
+			 * 
+			 * <p>
+			 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the param property.
+			 * 
+			 * <p>
+			 * For example, to add a new item, do as follows:
+			 * 
+			 * <pre>
+			 * getParam().add(newItem);
+			 * </pre>
+			 * 
+			 * 
+			 * <p>
+			 * Objects of the following type(s) are allowed in the list {@link Param }
+			 * 
+			 * 
+			 */
+			public List<Param> getParam()
+			{
+				if (param == null)
+				{
+					param = new ArrayList<Param>();
+				}
+				return this.param;
+			}
 
-        /**
-         * Gets the value of the test property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the test property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getTest().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link TestParams.Tests.Test }
-         * 
-         * 
-         */
-        public List<TestParams.Tests.Test> getTest() {
-            if (test == null) {
-                test = new ArrayList<TestParams.Tests.Test>();
-            }
-            return this.test;
-        }
+			/**
+			 * Gets the value of the testName property.
+			 * 
+			 * @return possible object is {@link String }
+			 * 
+			 */
+			public String getTestName()
+			{
+				return testName;
+			}
 
+			/**
+			 * Sets the value of the testName property.
+			 * 
+			 * @param value
+			 *            allowed object is {@link String }
+			 * 
+			 */
+			public void setTestName(String value)
+			{
+				this.testName = value;
+			}
 
-        /**
-         * <p>Java class for anonymous complex type.
-         * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
-         * <pre>
-         * &lt;complexType>
-         *   &lt;complexContent>
-         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;sequence>
-         *         &lt;element name="param" type="{}Param" maxOccurs="unbounded"/>
-         *       &lt;/sequence>
-         *       &lt;attribute name="test-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *     &lt;/restriction>
-         *   &lt;/complexContent>
-         * &lt;/complexType>
-         * </pre>
-         * 
-         * 
-         */
-        @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "", propOrder = {
-            "param"
-        })
-        public static class Test {
+		}
 
-            @XmlElement(required = true)
-            protected List<Param> param;
-            @XmlAttribute(name = "test-name", required = true)
-            protected String testName;
-
-            /**
-             * Gets the value of the param property.
-             * 
-             * <p>
-             * This accessor method returns a reference to the live list,
-             * not a snapshot. Therefore any modification you make to the
-             * returned list will be present inside the JAXB object.
-             * This is why there is not a <CODE>set</CODE> method for the param property.
-             * 
-             * <p>
-             * For example, to add a new item, do as follows:
-             * <pre>
-             *    getParam().add(newItem);
-             * </pre>
-             * 
-             * 
-             * <p>
-             * Objects of the following type(s) are allowed in the list
-             * {@link Param }
-             * 
-             * 
-             */
-            public List<Param> getParam() {
-                if (param == null) {
-                    param = new ArrayList<Param>();
-                }
-                return this.param;
-            }
-
-            /**
-             * Gets the value of the testName property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getTestName() {
-                return testName;
-            }
-
-            /**
-             * Sets the value of the testName property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setTestName(String value) {
-                this.testName = value;
-            }
-
-        }
-
-    }
+	}
 
 }

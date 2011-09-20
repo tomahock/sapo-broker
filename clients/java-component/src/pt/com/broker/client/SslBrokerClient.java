@@ -12,12 +12,13 @@ import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.utils.BlockingMessageAcceptedListener;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetAction.ActionType;
 
-public final class SslBrokerClient extends BaseBrokerClient {
+public final class SslBrokerClient extends BaseBrokerClient
+{
 	private static final Logger log = LoggerFactory.getLogger(SslBrokerClient.class);
 
 	private volatile boolean requiresAuthentication = false;
@@ -31,71 +32,86 @@ public final class SslBrokerClient extends BaseBrokerClient {
 
 	private AuthInfo providerCredentials;
 
-	public SslBrokerClient(String host, int portNumber) throws Throwable {
+	public SslBrokerClient(String host, int portNumber) throws Throwable
+	{
 		this(host, portNumber, (String) null, (String) null);
 	}
 
-	public SslBrokerClient(String host, int portNumber, String keystoreLocation, String keystorePw) throws Throwable {
+	public SslBrokerClient(String host, int portNumber, String keystoreLocation, String keystorePw) throws Throwable
+	{
 		this(host, portNumber, "BrokerClient", keystoreLocation, keystorePw);
 	}
 
-	public SslBrokerClient(String host, int portNumber, String appName) throws Throwable {
+	public SslBrokerClient(String host, int portNumber, String appName) throws Throwable
+	{
 		this(host, portNumber, appName, null, null);
 	}
 
-	public SslBrokerClient(String host, int portNumber, String appName, String keystoreLocation, String keystorePw) throws Throwable {
+	public SslBrokerClient(String host, int portNumber, String appName, String keystoreLocation, String keystorePw) throws Throwable
+	{
 		this(host, portNumber, appName, NetProtocolType.PROTOCOL_BUFFER, keystoreLocation, keystorePw);
 	}
 
-	public SslBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable {
+	public SslBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
+	{
 		this(host, portNumber, appName, ptype, null, null);
 	}
 
-	public SslBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype, String keystoreLocation, String keystorePw) throws Throwable {
+	public SslBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype, String keystoreLocation, String keystorePw) throws Throwable
+	{
 		super(host, portNumber, appName, ptype);
-		if(StringUtils.isBlank(keystoreLocation))
+		if (StringUtils.isBlank(keystoreLocation))
 			throw new IllegalArgumentException("Mandatory keystore location missing.");
-		if(StringUtils.isBlank(keystorePw))
+		if (StringUtils.isBlank(keystorePw))
 			throw new IllegalArgumentException("Mandatory keystore password missing.");
 		this.keystoreLocation = keystoreLocation;
 		this.keystorePass = keystorePw.toCharArray();
 		init();
 	}
 
-	public SslBrokerClient(Collection<HostInfo> hosts) throws Throwable {
+	public SslBrokerClient(Collection<HostInfo> hosts) throws Throwable
+	{
 		this(hosts, (String) null, (char[]) null);
 	}
 
-	public SslBrokerClient(Collection<HostInfo> hosts, String keystoreLocation, char[] keystorePw) throws Throwable {
+	public SslBrokerClient(Collection<HostInfo> hosts, String keystoreLocation, char[] keystorePw) throws Throwable
+	{
 		this(hosts, "BrokerClient", keystoreLocation, keystorePw);
 	}
 
-	public SslBrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable {
+	public SslBrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable
+	{
 		this(hosts, appName, null, null);
 	}
 
-	public SslBrokerClient(Collection<HostInfo> hosts, String appName, String keystoreLocation, char[] keystorePw) throws Throwable {
+	public SslBrokerClient(Collection<HostInfo> hosts, String appName, String keystoreLocation, char[] keystorePw) throws Throwable
+	{
 		this(hosts, appName, NetProtocolType.PROTOCOL_BUFFER, keystoreLocation, keystorePw);
 	}
 
-	public SslBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable {
+	public SslBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable
+	{
 		this(hosts, appName, ptype, null, null);
 	}
 
-	public SslBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws Throwable {
+	public SslBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws Throwable
+	{
 		super(hosts, appName, ptype);
 		this.keystoreLocation = keystoreLocation;
 		this.keystorePass = keystorePw;
 		init();
 	}
 
-	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+	public void setCredentialsProvider(CredentialsProvider credentialsProvider)
+	{
 		this.credentialsProvider = credentialsProvider;
 	}
 
-	public boolean authenticateClient() throws Throwable {
+	public boolean authenticateClient() throws Throwable
+	{
 
-		if (this.credentialsProvider == null) {
+		if (this.credentialsProvider == null)
+		{
 			throw new IllegalStateException("Mandatory Credential Provider missing.");
 		}
 
@@ -126,16 +142,20 @@ public final class SslBrokerClient extends BaseBrokerClient {
 		PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 
 		getNetHandler().sendMessage(msg);
-		synchronized (syncObj) {
+		synchronized (syncObj)
+		{
 			syncObj.wait();
 		}
 
-		if (acceptedListener.wasFailure()) {
+		if (acceptedListener.wasFailure())
+		{
 			log.error("Authentication failed.", acceptedListener.getFault().getMessage());
 			setState(BrokerClientState.OK);
 			PendingAcceptRequestsManager.removeRequest(actionId);
 			return false;
-		} else if (acceptedListener.wasTimeout()) {
+		}
+		else if (acceptedListener.wasTimeout())
+		{
 			log.warn("Authentication failed by timeout.");
 			PendingAcceptRequestsManager.removeRequest(actionId);
 			setState(BrokerClientState.OK);
@@ -145,12 +165,14 @@ public final class SslBrokerClient extends BaseBrokerClient {
 		return true;
 	}
 
-	public boolean isAuthenticationRequired() {
+	public boolean isAuthenticationRequired()
+	{
 		return requiresAuthentication;
 	}
 
 	@Override
-	protected BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable {
+	protected BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable
+	{
 		BrokerProtocolHandler brokerProtocolHandler;
 
 		SslNetworkConnector networkConnector = new SslNetworkConnector(getHostInfo(), keystoreLocation, keystorePass);

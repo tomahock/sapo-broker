@@ -16,8 +16,7 @@ public class SyncConsumerClient implements Runnable
 	private int port;
 	private final String queueName;
 	private final CountDownLatch countDown;
-	
-	
+
 	private static AtomicInteger clientsEnded = new AtomicInteger(0);
 
 	public SyncConsumerClient(AtomicInteger counter, String clientId, String host, int port, String queueName, CountDownLatch countDown)
@@ -48,7 +47,7 @@ public class SyncConsumerClient implements Runnable
 			{
 
 				long initNanoTime = System.nanoTime();
-				NetNotification poll = bk.poll(queueName, -1 , null);
+				NetNotification poll = bk.poll(queueName, -1, null);
 				long endNanoTime = System.nanoTime();
 
 				pollTimeAcc += (endNanoTime - initNanoTime);
@@ -89,7 +88,7 @@ public class SyncConsumerClient implements Runnable
 				bk.close();
 
 			}
-			//System.out.println("Clients that ended: " +clientsEnded.incrementAndGet());
+			// System.out.println("Clients that ended: " +clientsEnded.incrementAndGet());
 			countDown.countDown();
 		}
 	}

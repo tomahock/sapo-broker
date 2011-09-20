@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.performance.distributed.TestResult.ActorType;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 /**
  * Simple producer sample. Behavior is determined by command line arguments.
@@ -33,16 +33,16 @@ public class DistProducerApp implements BrokerListener
 	private String actorName;
 
 	private BrokerClient brokerClient;
-	
+
 	public DistProducerApp(String host, int port, String actorName) throws Throwable
 	{
 		this.host = host;
 		this.port = port;
-		this.actorName = actorName;		
-	
+		this.actorName = actorName;
+
 		String destination = TestManager.TEST_MANAGEMENT_ACTION + actorName;
-		brokerClient = new BrokerClient(host, port, "Producer"); 
-	
+		brokerClient = new BrokerClient(host, port, "Producer");
+
 		NetSubscribe subscribe = new NetSubscribe(destination, DestinationType.QUEUE);
 
 		brokerClient.addAsyncConsumer(subscribe, this);
@@ -54,9 +54,9 @@ public class DistProducerApp implements BrokerListener
 	public static void main(String[] args) throws Throwable
 	{
 		final DistTestCliArgs cargs = CliFactory.parseArguments(DistTestCliArgs.class, args);
-	
+
 		DistProducerApp producer = new DistProducerApp(cargs.getHost(), cargs.getPort(), cargs.getActorName());
-	
+
 		while (true)
 		{
 			Sleep.time(5000);
@@ -66,9 +66,9 @@ public class DistProducerApp implements BrokerListener
 
 	private void sendLoop(BrokerClient bk, int messageLength, int nrOfMessages, DestinationType destinationType, String destination, TestResult testResult) throws Throwable
 	{
-		
+
 		System.out.println(String.format("Producing %s messages with %s chars.", nrOfMessages, messageLength));
-		
+
 		final String regularMsgContent = RandomStringUtils.randomAlphanumeric(messageLength - 1);
 		final String stopMsgContent = nrOfMessages + "";
 
@@ -79,7 +79,7 @@ public class DistProducerApp implements BrokerListener
 		NetBrokerMessage stopBrokerMessage = new NetBrokerMessage(stopMessage);
 
 		long startTime = System.currentTimeMillis();
-		
+
 		for (int i = 0; i != nrOfMessages; ++i)
 		{
 
@@ -94,7 +94,7 @@ public class DistProducerApp implements BrokerListener
 		}
 
 		long stopTime = System.currentTimeMillis();
-		
+
 		System.out.println(actorName + " sending stop messages");
 		for (int i = 0; i != 150; ++i)
 		{
@@ -107,16 +107,16 @@ public class DistProducerApp implements BrokerListener
 				bk.publishMessage(stopBrokerMessage, destination);
 			}
 
-			if(destinationType == DestinationType.TOPIC)
+			if (destinationType == DestinationType.TOPIC)
 			{
 				Sleep.time(50);
 			}
 		}
-		
+
 		bk.close();
-		
+
 		testResult.setMessages(nrOfMessages);
-		
+
 		testResult.setStartTime(startTime);
 		testResult.setStopTime(stopTime);
 	}
@@ -150,7 +150,7 @@ public class DistProducerApp implements BrokerListener
 			BrokerClient bk = new BrokerClient(testParams.getClientInfo().getAgentHost(), testParams.getClientInfo().getPort(), "ProducerActor", testParams.getEncoding());
 
 			sendLoop(bk, testParams.getMessageSize(), testParams.getNumberOfMessagesToSend(), testParams.getDestinationType(), testParams.getDestination(), testResult);
-			
+
 			bk.close();
 
 			byte[] data = testResult.serialize();
@@ -185,9 +185,9 @@ public class DistProducerApp implements BrokerListener
 		{
 			log.error("Acknowledge failed", t);
 		}
-		
+
 		System.out.println("DistProducerApp.onMessage()");
-		
+
 		byte[] testParams = notification.getMessage().getPayload();
 
 		DistTestParams distTestParams = DistTestParams.deserialize(testParams);

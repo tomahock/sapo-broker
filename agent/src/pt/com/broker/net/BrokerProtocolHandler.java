@@ -9,13 +9,12 @@ import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelLocal;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +38,7 @@ import pt.com.broker.types.Headers;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetFault;
@@ -49,7 +49,6 @@ import pt.com.broker.types.NetPong;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
-import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.channels.ChannelAttributes;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.broker.types.stats.MiscStats;
@@ -74,7 +73,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	private static final BrokerConsumer _brokerConsumer = BrokerConsumer.getInstance();
 
 	private static final BrokerProtocolHandler instance;
-	
+
 	static
 	{
 		instance = new BrokerProtocolHandler();
@@ -149,7 +148,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		super.channelClosed(ctx, e);
 		handleChannelClosed(ctx);
 	}
-	
+
 	private void handleChannelClosed(ChannelHandlerContext ctx)
 	{
 		Channel channel = ctx.getChannel();
@@ -159,7 +158,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			QueueProcessorList.removeSession(ctx);
 			TopicProcessorList.removeSession(ctx);
 			BrokerSyncConsumer.removeSession(ctx);
-			
+
 			ListenerChannelFactory.channelClosed(channel);
 
 			final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
@@ -179,7 +178,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			{
 				MiscStats.sslConnectionClosed();
 			}
-			
+
 			ChannelAttributes.remove(ChannelAttributes.getChannelId(ctx));
 
 			log.info("channel closed: " + remoteClient);
@@ -201,7 +200,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		try
 		{
 			Channel channel = ctx.getChannel();
-			
+
 			Throwable rootCause = ErrorAnalyser.findRootCause(cause);
 
 			String client = channel.getRemoteAddress() != null ? channel.getRemoteAddress().toString() : "Client unknown";
@@ -209,12 +208,12 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			log.error("Exception caught. Client: {} ", client, rootCause);
 
 			CriticalErrors.exitIfCritical(rootCause);
-			
-			if(rootCause instanceof java.nio.channels.ClosedChannelException)
+
+			if (rootCause instanceof java.nio.channels.ClosedChannelException)
 			{
 				handleChannelClosed(ctx);
 			}
-			
+
 			// Publish fault message
 			NetFault fault = new NetFault("CODE:99999", rootCause.getMessage());
 			fault.setActionId(actionId);
@@ -439,8 +438,8 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			writeInvalidDestinationFault(ctx.getChannel(), actionId, destination);
 			return;
 		}
-		
-		if(!GlobalConfig.supportVirtualQueues() && StringUtils.contains(destination, "@"))
+
+		if (!GlobalConfig.supportVirtualQueues() && StringUtils.contains(destination, "@"))
 		{
 			writeNoVirtualQueueSupportFault(ctx.getChannel(), actionId, destination);
 			return;
@@ -451,7 +450,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		{
 			value = request.getHeaders().get(Headers.RESERVE_TIME);
 		}
-		
+
 		sendAccepted(ctx, actionId);
 		BrokerSyncConsumer.poll(pollMsg, ctx, value);
 	}
@@ -533,7 +532,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			}
 			break;
 		case VIRTUAL_QUEUE:
-			if(!GlobalConfig.supportVirtualQueues())
+			if (!GlobalConfig.supportVirtualQueues())
 			{
 				writeNoVirtualQueueSupportFault(channel, actionId, destination);
 				return;
@@ -633,12 +632,12 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	{
 		writeSubscriptionFault(channel, actionId, destinationName, NetFault.InvalidDestinationNameErrorMessage);
 	}
-	
+
 	private void writeNoVirtualQueueSupportFault(Channel channel, String actionId, String destinationName)
 	{
 		writeSubscriptionFault(channel, actionId, destinationName, NetFault.NoVirtualQueueSupportErrorMessage);
 	}
-	
+
 	private void writeSubscriptionFault(Channel channel, String actionId, String destinationName, NetMessage netFault)
 	{
 		log.warn("Invalid destination name: '{}',  Channel: '{}'", destinationName, channel.getRemoteAddress().toString());

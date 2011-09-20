@@ -23,8 +23,7 @@ public class MultipleNNQueueRemote extends MultipleGenericQueuePubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent2-host"), 
-					BrokerTest.getAgent2Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent2-host"), BrokerTest.getAgent2Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), getConsumerNotifications());
 			tci.numberOfExecutions = getConsumerNotifications();
 
@@ -44,8 +43,7 @@ public class MultipleNNQueueRemote extends MultipleGenericQueuePubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent2-host"), 
-					BrokerTest.getAgent2Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent2-host"), BrokerTest.getAgent2Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 			tci.brokerListenter = null;
 
 			this.addInfoProducer(tci);

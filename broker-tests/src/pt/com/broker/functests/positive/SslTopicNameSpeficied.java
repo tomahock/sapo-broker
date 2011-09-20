@@ -15,15 +15,14 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 	public SslTopicNameSpeficied(String testName)
 	{
 		super(testName);
-		if(!skipTest())
+		if (!skipTest())
 		{
 			String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
 			String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
 			SslBrokerClient bk = null;
 			try
 			{
-				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-						Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
+				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
 			}
 			catch (Throwable e)
 			{
@@ -32,7 +31,7 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 			setInfoConsumer(bk);
 		}
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

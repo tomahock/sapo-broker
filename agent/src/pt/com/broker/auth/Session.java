@@ -19,7 +19,7 @@ public class Session
 	{
 		this(null);
 	}
-	
+
 	public Session(Channel session)
 	{
 		this(session, new SessionProperties(session));

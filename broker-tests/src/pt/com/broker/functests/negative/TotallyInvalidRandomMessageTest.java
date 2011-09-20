@@ -18,7 +18,7 @@ public class TotallyInvalidRandomMessageTest extends GenericNegativeTest
 		setDataToSend(randomData);
 		setOkToTimeOut(true);
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

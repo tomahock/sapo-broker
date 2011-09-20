@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.HostInfo;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.GcsExecutor;
 
 public class Producers
@@ -32,53 +32,52 @@ public class Producers
 	private final String appName;
 
 	private int messageSize = 512;
-	
+
 	private long messageExpiration = 0;
 
 	private List<ProducerInfo> producers;
 
 	private ScheduledThreadPoolExecutor shed_exec_srv;
-	
+
 	private NetBrokerMessage brokerMessage;
-	
+
 	volatile boolean stop = false;
 
 	private final int messageBurst;
-
 
 	private static List<Producers> activeProducers = new ArrayList<Producers>();
 
 	static
 	{
 		final long interval = 15;
-		
+
 		Runnable command = new Runnable()
 		{
 			@Override
 			public void run()
 			{
 				StringBuffer sb = new StringBuffer();
-				
-				for(Producers producers : activeProducers)
+
+				for (Producers producers : activeProducers)
 				{
 					sb.append("\nProducers:");
 					sb.append(producers.appName);
 					sb.append("\n");
-					for(ProducerInfo pi : producers.producers)
+					for (ProducerInfo pi : producers.producers)
 					{
-						sb.append(String.format("Messages send in the last %s (s) by %s: %s\n", interval, pi.producerName, pi.messagesSend)) ; 
+						sb.append(String.format("Messages send in the last %s (s) by %s: %s\n", interval, pi.producerName, pi.messagesSend));
 						pi.messagesSend = 0;
-					}					
+					}
 				}
-				
-				System.out.println( sb.toString());
+
+				System.out.println(sb.toString());
 			}
 		};
-		
+
 		GcsExecutor.scheduleAtFixedRate(command, interval, interval, TimeUnit.SECONDS);
-		
+
 	}
-	
+
 	private class ProducerInfo
 	{
 		public BrokerClient brokerClient;
@@ -97,16 +96,16 @@ public class Producers
 		this.protocolType = protocolType;
 		this.appName = appName;
 
-		if(messagesPerSecond >= 1000)
+		if (messagesPerSecond >= 1000)
 		{
 			throw new IllegalArgumentException("messagesPerSecond >= 1000");
 		}
-		
-		if( (messagesPerSecond != 0) && (messageBurst != 0) ) 
+
+		if ((messagesPerSecond != 0) && (messageBurst != 0))
 		{
 			throw new IllegalArgumentException("(messagesPerSecond != 0) && (messageBurst != 0)");
 		}
-		
+
 		shed_exec_srv = CustomExecutors.newScheduledThreadPool(producersCount, "Producers-Sched");
 	}
 
@@ -120,8 +119,8 @@ public class Producers
 			{
 				pi.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), String.format("Producer:%s:%s", destinatination, i), protocolType);
 
-				pi.producerName = appName+i;
-				
+				pi.producerName = appName + i;
+
 				producers.add(pi);
 			}
 			catch (Throwable e)
@@ -135,11 +134,11 @@ public class Producers
 	{
 		String randomStr = RandomStringUtils.random(messageSize);
 		brokerMessage = new NetBrokerMessage(randomStr);
-		if(messageExpiration != 0 )
+		if (messageExpiration != 0)
 		{
 			brokerMessage.setExpiration(System.currentTimeMillis() + messageExpiration);
 		}
-		
+
 		for (ProducerInfo pInfo : producers)
 		{
 			final ProducerInfo producerInfo = pInfo;
@@ -153,7 +152,7 @@ public class Producers
 					{
 						try
 						{
-							if(destinationType == DestinationType.TOPIC)
+							if (destinationType == DestinationType.TOPIC)
 							{
 								producerInfo.brokerClient.publishMessage(brokerMessage, destinatination);
 							}
@@ -162,9 +161,9 @@ public class Producers
 								producerInfo.brokerClient.enqueueMessage(brokerMessage, destinatination);
 							}
 							++producerInfo.messagesSend;
-							if(stop)
+							if (stop)
 								return;
-							Sleep.time( 1000 / messagesPerSecond );
+							Sleep.time(1000 / messagesPerSecond);
 						}
 						catch (Throwable e)
 						{
@@ -173,18 +172,18 @@ public class Producers
 					}
 				}
 			};
-			
+
 			Runnable messageBurstRunnable = new Runnable()
 			{
 				@Override
 				public void run()
 				{
 					int count = messageBurst;
-					while((count--) != 0)
+					while ((count--) != 0)
 					{
 						try
 						{
-							if(destinationType == DestinationType.TOPIC)
+							if (destinationType == DestinationType.TOPIC)
 							{
 								producerInfo.brokerClient.publishMessage(brokerMessage, destinatination);
 							}
@@ -193,7 +192,7 @@ public class Producers
 								producerInfo.brokerClient.enqueueMessage(brokerMessage, destinatination);
 							}
 							++producerInfo.messagesSend;
-							if(stop)
+							if (stop)
 								return;
 						}
 						catch (Throwable e)
@@ -203,15 +202,15 @@ public class Producers
 					}
 				}
 			};
-			
-			if(messageBurst == 0)
-			{				
+
+			if (messageBurst == 0)
+			{
 				shed_exec_srv.execute(nMessagesPerSecond);
 			}
 			else
 			{
 				shed_exec_srv.scheduleAtFixedRate(messageBurstRunnable, 5, 5, TimeUnit.SECONDS);
-				
+
 			}
 		}
 		activeProducers.add(this);
@@ -221,12 +220,12 @@ public class Producers
 	{
 		stop = true;
 		shed_exec_srv.shutdownNow();
-		
+
 		for (ProducerInfo pi : producers)
 		{
 			pi.brokerClient.close();
 		}
-		
+
 		activeProducers.remove(this);
 	}
 

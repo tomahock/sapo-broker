@@ -13,10 +13,10 @@ import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPing;
 import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetAction.ActionType;
 
 public class InvalidMessageTest extends GenericNegativeTest
 {
@@ -115,7 +115,7 @@ public class InvalidMessageTest extends GenericNegativeTest
 		}
 		while (start != end);
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

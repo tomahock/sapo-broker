@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 public abstract class StaticQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(StaticQuery.class);
-	
+
 	abstract public String getId();
 
-	public String getJsonData(Map<String,List<String>> params)
+	public String getJsonData(Map<String, List<String>> params)
 	{
 		Db db = null;
 
@@ -29,7 +29,7 @@ public abstract class StaticQuery
 			db = DbPool.pick();
 
 			ResultSet queryResult = getResultSet(db, params);
-			if(queryResult == null)
+			if (queryResult == null)
 				return "";
 
 			boolean first = true;
@@ -60,6 +60,6 @@ public abstract class StaticQuery
 
 		return sb.toString();
 	}
-	
-	abstract protected ResultSet getResultSet(Db db, Map<String,List<String>> params);
+
+	abstract protected ResultSet getResultSet(Db db, Map<String, List<String>> params);
 }

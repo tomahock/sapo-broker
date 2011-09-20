@@ -74,7 +74,7 @@ public class GlobalConfig
 		}
 		Document doc = parseXmlFile(globalConfigPath, false);
 
-		init(doc);		
+		init(doc);
 	}
 
 	private void init(Document doc)
@@ -98,20 +98,20 @@ public class GlobalConfig
 		maxQueues = Integer.parseInt(maxQueueSize);
 
 		String[] plcElementInfo = extractElementInfo(doc, "prefer-local-consumers");
-		if( (plcElementInfo != null) && (plcElementInfo.length != 0))
+		if ((plcElementInfo != null) && (plcElementInfo.length != 0))
 		{
 			String preferLocalConsumersStr = plcElementInfo[0];
-			if(StringUtils.isNotBlank(preferLocalConsumersStr))
+			if (StringUtils.isNotBlank(preferLocalConsumersStr))
 			{
 				preferLocalConsumers = preferLocalConsumersStr.toLowerCase().equals("true");
 			}
 		}
-		
+
 		String[] svqElementInfo = extractElementInfo(doc, "support-virtual-queues");
-		if( (svqElementInfo != null) && (svqElementInfo.length != 0))
+		if ((svqElementInfo != null) && (svqElementInfo.length != 0))
 		{
 			String supportVirtualQueuesStr = svqElementInfo[0];
-			if(StringUtils.isNotBlank(supportVirtualQueuesStr))
+			if (StringUtils.isNotBlank(supportVirtualQueuesStr))
 			{
 				supportVirtualQueues = supportVirtualQueuesStr.toLowerCase().equals("true");
 			}
@@ -122,7 +122,7 @@ public class GlobalConfig
 
 		String maxStoreTimeStr = extractElementInfo(doc, "store-time")[0];
 		maxStoreTime = Long.parseLong(maxStoreTimeStr);
-		
+
 	}
 
 	private synchronized void populateWorldMap(Document doc)
@@ -134,7 +134,7 @@ public class GlobalConfig
 		// Get a list of all elements in the document
 
 		int npeers = doc.getElementsByTagName("peer").getLength();
-		
+
 		String[] hosts = extractElementInfo(doc, "ip");
 		String[] ports = extractElementInfo(doc, "port");
 
@@ -145,8 +145,8 @@ public class GlobalConfig
 
 		for (int i = 0; i < npeers; i++)
 		{
-			String agentName = GcsInfo.constructAgentName(hosts[i] , Integer.parseInt(ports[i]) );
-			if (selfName.equalsIgnoreCase( agentName ) )
+			String agentName = GcsInfo.constructAgentName(hosts[i], Integer.parseInt(ports[i]));
+			if (selfName.equalsIgnoreCase(agentName))
 			{
 				if (selfHost.equalsIgnoreCase(hosts[i]))
 				{
@@ -190,23 +190,22 @@ public class GlobalConfig
 	{
 		return Collections.unmodifiableList(instance.peerList);
 	}
-	
+
 	public static boolean contains(InetSocketAddress inet)
 	{
 		return instance.peerSet.contains(inet);
 	}
 
-	
 	public static boolean preferLocalConsumers()
 	{
 		return instance.preferLocalConsumers;
 	}
-	
+
 	public static boolean supportVirtualQueues()
 	{
 		return instance.supportVirtualQueues;
 	}
-	
+
 	private Document parseXmlFile(String filename, boolean validating)
 	{
 		try

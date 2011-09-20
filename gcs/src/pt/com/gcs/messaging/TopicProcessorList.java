@@ -159,7 +159,7 @@ public class TopicProcessorList
 		{
 			Throwable rootCause = ErrorAnalyser.findRootCause(t);
 			CriticalErrors.exitIfCritical(rootCause);
-			
+
 			log.error(String.format("Failed to get TopicProcessor for topic '%s'. Message: %s", destinationName, rootCause.getMessage()));
 
 			if (rootCause.getClass().isAssignableFrom(MaximumDistinctSubscriptionsReachedException.class))
@@ -176,9 +176,9 @@ public class TopicProcessorList
 
 				Gcs.broadcastMaxDistinctSubscriptionsReached();
 			}
-			
+
 			throw new RuntimeException(rootCause);
-			
+
 		}
 		return null;
 	}

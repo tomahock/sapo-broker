@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class NoAckQueueConsumer implements BrokerListener
 {
@@ -27,9 +27,8 @@ public class NoAckQueueConsumer implements BrokerListener
 	private DestinationType dtype;
 	private String dname;
 	private long waitTime;
-	private NetProtocolType protocol; 
-	
-	
+	private NetProtocolType protocol;
+
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);
@@ -42,12 +41,12 @@ public class NoAckQueueConsumer implements BrokerListener
 		consumer.dname = cargs.getDestination();
 		consumer.waitTime = cargs.getDelay();
 		consumer.protocol = NetProtocolType.valueOf(cargs.getProtocolType());
-		
+
 		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", consumer.protocol);
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 		subscribe.addHeader("ACK_REQUIRED", "false");
-				
+
 		bk.addAsyncConsumer(subscribe, consumer);
 
 		System.out.println("listening...");
@@ -66,9 +65,9 @@ public class NoAckQueueConsumer implements BrokerListener
 		System.out.printf("Destination: '%s'%n", notification.getDestination());
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
-		
+
 		Map<String, String> headers = notification.getHeaders();
-		if(headers != null)
+		if (headers != null)
 		{
 			System.out.printf("Headers: %n");
 			for (String headerName : headers.keySet())
@@ -76,7 +75,7 @@ public class NoAckQueueConsumer implements BrokerListener
 				System.out.printf(" '%s' - '%s'%n", headerName, headers.get(headerName));
 			}
 		}
-		
+
 		Sleep.time(waitTime);
 	}
 }

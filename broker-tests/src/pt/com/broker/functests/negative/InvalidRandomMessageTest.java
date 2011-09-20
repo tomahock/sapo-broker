@@ -20,7 +20,7 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 
 		setTimeout(10 * 1000);
 		byte[] header = null;
-		if(getEncodingProtocolType() != NetProtocolType.SOAP_v0)
+		if (getEncodingProtocolType() != NetProtocolType.SOAP_v0)
 		{
 			header = new byte[] { 0, (byte) getEncodingProtocolType().ordinal(), 0, 0, (byte) 0, (byte) 0, (byte) 0, (byte) msgSize };
 		}
@@ -37,14 +37,13 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 		}
 		setDataToSend(binMsg);
 
-		
 		setFaultCode("1201");
 		setFaultMessage("Invalid message format");
-		
-		//setOkToTimeOut(true);
-		getPrerequisites().add( new Prerequisite("Ping")
+
+		// setOkToTimeOut(true);
+		getPrerequisites().add(new Prerequisite("Ping")
 		{
-			
+
 			@Override
 			public Step run() throws Exception
 			{
@@ -62,6 +61,7 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 			}
 		});
 	}
+
 	@Override
 	public boolean skipTest()
 	{

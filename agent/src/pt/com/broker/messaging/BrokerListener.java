@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.MessageListenerBase;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.channels.ListenerChannel;
 
 /**
@@ -75,7 +75,6 @@ public abstract class BrokerListener extends MessageListenerBase
 	{
 		return lchannel;
 	}
-
 
 	@Override
 	public Type getType()

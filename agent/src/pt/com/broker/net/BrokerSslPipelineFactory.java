@@ -27,13 +27,13 @@ public class BrokerSslPipelineFactory implements ChannelPipelineFactory
 		SSLEngine sslEngine = sslContext.createSSLEngine();
 		sslEngine.setUseClientMode(false);
 		SslHandler sslHandler = new SslHandler(sslEngine);
-		
+
 		pipeline.addLast("ssl", sslHandler);
 
 		pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
 
 		pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
-		
+
 		if (GcsInfo.useAccessControl())
 		{
 			pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
@@ -42,7 +42,7 @@ public class BrokerSslPipelineFactory implements ChannelPipelineFactory
 		pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
 		return pipeline;
 	}
-	
+
 	private javax.net.ssl.SSLContext getSSLContext() throws Exception
 	{
 

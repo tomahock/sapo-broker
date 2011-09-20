@@ -21,10 +21,7 @@ public class UdpPublishTest extends GenericPubSubTest
 	public UdpPublishTest(String testName)
 	{
 		super(testName);
-		HostInfo hostInfo = new HostInfo(
-				ConfigurationInfo.getParameter("agent1-host"), 
-				BrokerTest.getAgent1Port(),
-				BrokerTest.getAgent1UdpPort());
+		HostInfo hostInfo = new HostInfo(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), BrokerTest.getAgent1UdpPort());
 		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
 		hosts.add(hostInfo);
 		try

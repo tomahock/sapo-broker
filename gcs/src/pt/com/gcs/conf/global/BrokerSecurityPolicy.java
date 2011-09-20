@@ -5,18 +5,18 @@
 // Generated on: 2011.09.09 at 02:24:03 PM WEST 
 //
 
-
 package pt.com.gcs.conf.global;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for BrokerSecurityPolicy complex type.
+ * <p>
+ * Java class for BrokerSecurityPolicy complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="BrokerSecurityPolicy">
@@ -34,61 +34,57 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "BrokerSecurityPolicy", propOrder = {
-    "policies",
-    "agents"
-})
-public class BrokerSecurityPolicy {
+@XmlType(name = "BrokerSecurityPolicy", propOrder = { "policies", "agents" })
+public class BrokerSecurityPolicy
+{
 
-    protected Policies policies;
-    protected Agents agents;
+	protected Policies policies;
+	protected Agents agents;
 
-    /**
-     * Gets the value of the policies property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Policies }
-     *     
-     */
-    public Policies getPolicies() {
-        return policies;
-    }
+	/**
+	 * Gets the value of the policies property.
+	 * 
+	 * @return possible object is {@link Policies }
+	 * 
+	 */
+	public Policies getPolicies()
+	{
+		return policies;
+	}
 
-    /**
-     * Sets the value of the policies property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Policies }
-     *     
-     */
-    public void setPolicies(Policies value) {
-        this.policies = value;
-    }
+	/**
+	 * Sets the value of the policies property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Policies }
+	 * 
+	 */
+	public void setPolicies(Policies value)
+	{
+		this.policies = value;
+	}
 
-    /**
-     * Gets the value of the agents property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Agents }
-     *     
-     */
-    public Agents getAgents() {
-        return agents;
-    }
+	/**
+	 * Gets the value of the agents property.
+	 * 
+	 * @return possible object is {@link Agents }
+	 * 
+	 */
+	public Agents getAgents()
+	{
+		return agents;
+	}
 
-    /**
-     * Sets the value of the agents property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Agents }
-     *     
-     */
-    public void setAgents(Agents value) {
-        this.agents = value;
-    }
+	/**
+	 * Sets the value of the agents property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Agents }
+	 * 
+	 */
+	public void setAgents(Agents value)
+	{
+		this.agents = value;
+	}
 
 }

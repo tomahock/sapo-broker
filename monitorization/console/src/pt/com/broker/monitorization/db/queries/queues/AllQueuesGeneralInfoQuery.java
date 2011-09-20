@@ -12,7 +12,6 @@ import org.caudexorigo.jdbc.DbPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class AllQueuesGeneralInfoQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(GeneralQueueInfoQuery.class);
@@ -124,7 +123,7 @@ public class AllQueuesGeneralInfoQuery
 				String queueName = queryResult.getString(idx++);
 				String predicate = queryResult.getString(idx++);
 				double value = queryResult.getDouble(idx++);
-				
+
 				if (currentQueueInformation == null)
 				{
 					currentQueueInformation = new QueueInformation(queueName);
@@ -174,7 +173,7 @@ public class AllQueuesGeneralInfoQuery
 			{
 				queues.add(currentQueueInformation); // queue information is just added on new queue processing. Query has ended but the last queue hasn't been added.
 			}
-			
+
 			Comparator<QueueInformation> comparator = new Comparator<QueueInformation>()
 			{
 				@Override
@@ -182,18 +181,18 @@ public class AllQueuesGeneralInfoQuery
 				{
 					// If bigger say it's smaller... (DESC ordering)
 					double dif = o2.queueSize - o1.queueSize;
-					if(dif != 0)
-						return (int)dif;
+					if (dif != 0)
+						return (int) dif;
 					dif = (o2.inputRate + o2.outputRate) - (o1.inputRate + o1.outputRate);
-					if(dif != 0d)
+					if (dif != 0d)
 					{
-						return dif > 0 ? 1 : -1 ;
+						return dif > 0 ? 1 : -1;
 					}
 					dif = o2.subscriptions - o1.inputRate;
 					return (int) dif;
 				}
 			};
-			
+
 			Collections.sort(queues, comparator);
 
 			boolean first = true;
@@ -211,11 +210,11 @@ public class AllQueuesGeneralInfoQuery
 				sb.append("\"queueName\":\"");
 				sb.append(qInfo.queueName);
 				sb.append("\",");
-				
+
 				sb.append("\"queueSize\":\"");
 				sb.append(qInfo.queueSize);
 				sb.append("\",");
-				
+
 				sb.append("\"inputRate\":\"");
 				sb.append(qInfo.inputRate);
 				sb.append("\",");

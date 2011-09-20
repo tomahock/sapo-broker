@@ -85,20 +85,19 @@ public interface TestCliArgs
 	 */
 	@Option(shortName = "l", defaultValue = "2000")
 	int getMessageLength();
-	
+
 	/**
 	 * 
 	 * @return Number of Messages.
 	 */
 	@Option(shortName = "c", defaultValue = "10000")
 	int getNumberOfMessages();
-	
+
 	/**
 	 * 
 	 * @return Number of threads producing messages.
 	 */
 	@Option(shortName = "t", defaultValue = "1")
 	int getProducingThreads();
-
 
 }

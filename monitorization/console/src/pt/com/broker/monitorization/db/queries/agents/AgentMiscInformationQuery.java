@@ -14,7 +14,7 @@ import pt.com.broker.monitorization.http.QueryStringParameters;
 public class AgentMiscInformationQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(AgentMiscInformationQuery.class);
-	
+
 	private static String QUERY = "SELECT last_event_for_subject_predicate_agent('agent', 'status', ?, now(), '00:10') AS status , last_event_for_subject_predicate_agent('tcp', 'connections', ?, now(), '00:10') AS tcp , last_event_for_subject_predicate_agent('tcp-legacy', 'connections', ?, now(), '00:10') AS tcp_legacy , last_event_for_subject_predicate_agent('ssl', 'connections', ?, now(), '00:10') AS ssl , last_event_for_subject_predicate_agent('dropbox', 'count', ?, now(), '00:10') AS dropboxcount , last_event_for_subject_predicate_agent('faults', 'rate', ?, now(), '00:10') AS faulrate , last_event_for_subject_predicate_agent('system-message', 'failed-delivery', ?, now(), '00:10') AS pending_sys_msg;";
 
 	public String getId()
@@ -49,19 +49,19 @@ public class AgentMiscInformationQuery
 					sb.append(",");
 				}
 				int idx = 1;
-	
+
 				sb.append("{\"status\":\"");
-				sb.append( (queryResult.getDouble(idx++) == 1) ? "Ok" : "Down" );
+				sb.append((queryResult.getDouble(idx++) == 1) ? "Ok" : "Down");
 				sb.append("\",");
 
 				sb.append("\"tcpConnections\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\",");
-				
+
 				sb.append("\"tcpLegacyConnections\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\",");
-				
+
 				sb.append("\"ssl\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\",");
@@ -73,11 +73,11 @@ public class AgentMiscInformationQuery
 				sb.append("\"faultRate\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\",");
-				
+
 				sb.append("\"pendingAckSystemMsg\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\"");
-				
+
 				sb.append("}");
 			}
 		}
@@ -97,7 +97,7 @@ public class AgentMiscInformationQuery
 	{
 		String agentName = QueryStringParameters.getAgentNameParam(params);
 
-		if(agentName == null)
+		if (agentName == null)
 		{
 			return null;
 		}

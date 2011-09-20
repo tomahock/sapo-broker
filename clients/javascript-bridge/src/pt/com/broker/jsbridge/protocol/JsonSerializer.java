@@ -31,10 +31,10 @@ public class JsonSerializer
 	{
 
 		JsonMessage sr = new JsonMessage(JsonMessage.MessageType.SUBSCRIBE, "/topic/foo");
-		//sr.setPayload("This is a test");
+		// sr.setPayload("This is a test");
 
 		String json = toJson(sr);
-		
+
 		System.out.println(json);
 
 		JsonMessage b = fromJson(json);

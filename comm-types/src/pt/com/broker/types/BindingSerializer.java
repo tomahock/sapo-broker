@@ -17,6 +17,6 @@ public interface BindingSerializer
 	public abstract byte[] marshal(NetMessage message);
 
 	public abstract void marshal(NetMessage message, OutputStream out);
-	
-	public abstract NetProtocolType getProtocolType();	
+
+	public abstract NetProtocolType getProtocolType();
 }

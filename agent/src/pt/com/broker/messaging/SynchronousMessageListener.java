@@ -42,13 +42,13 @@ public class SynchronousMessageListener extends BrokerListener
 	private AtomicLong lastDeliveredMessage = new AtomicLong(System.currentTimeMillis());
 
 	private ForwardResult sucess;
-	
+
 	public SynchronousMessageListener(ListenerChannel lchannel, String queueName)
 	{
 		super(lchannel, queueName);
-		
+
 		sucess = new ForwardResult(Result.SUCCESS, DEFAULT_RESERVE_TIME);
-		
+
 		this.queueName = queueName;
 		this.setInNoWaitMode(false);
 		this.isReady = new AtomicBoolean(false);
@@ -72,7 +72,6 @@ public class SynchronousMessageListener extends BrokerListener
 		return DestinationType.QUEUE;
 	}
 
-
 	@Override
 	protected ForwardResult doOnMessage(NetMessage response)
 	{
@@ -89,8 +88,8 @@ public class SynchronousMessageListener extends BrokerListener
 		if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 		{
 			// final NetMessage response = BrokerListener.buildNotification(message, queueName, getSourceDestinationType());
-			
-			if(deliveryAllowed(response, lchannel.getChannel()))
+
+			if (deliveryAllowed(response, lchannel.getChannel()))
 			{
 				lchannel.write(response);
 				lastDeliveredMessage.set(System.currentTimeMillis());
@@ -117,7 +116,7 @@ public class SynchronousMessageListener extends BrokerListener
 		isReady.set(ready);
 		onEventChange(ready ? MessageListenerState.Ready : MessageListenerState.NotReady);
 	}
-	
+
 	@Override
 	public boolean isReady()
 	{
@@ -288,18 +287,18 @@ public class SynchronousMessageListener extends BrokerListener
 	{
 		this.sucess.time = reserveTime;
 	}
-	
+
 	/**
-	 * If the message was original sent to a topic validate delivery. 
+	 * If the message was original sent to a topic validate delivery.
 	 */
 	private boolean deliveryAllowed(NetMessage response, Channel channel)
 	{
 		String originalDestination = response.getHeaders().get("ORIGINAL_DESTINATION");
-		if(originalDestination == null)
+		if (originalDestination == null)
 		{
 			return true;
 		}
-		
+
 		// This is a Virtual Queue
 		DestinationType destinationType = DestinationType.TOPIC;
 		return AccessControl.deliveryAllowed(response, destinationType, channel, this.getsubscriptionKey(), originalDestination);

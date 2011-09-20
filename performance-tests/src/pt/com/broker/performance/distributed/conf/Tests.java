@@ -5,23 +5,24 @@
 // Generated on: 2010.04.10 at 05:51:46 PM WEST 
 //
 
-
 package pt.com.broker.performance.distributed.conf;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for Tests complex type.
+ * <p>
+ * Java class for Tests complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Tests">
@@ -72,447 +73,444 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Tests", propOrder = {
-    "test"
-})
-public class Tests {
+@XmlType(name = "Tests", propOrder = { "test" })
+public class Tests
+{
 
-    @XmlElement(required = true)
-    protected List<Tests.Test> test;
-    @XmlAttribute
-    protected String encoding;
+	@XmlElement(required = true)
+	protected List<Tests.Test> test;
+	@XmlAttribute
+	protected String encoding;
 
-    /**
-     * Gets the value of the test property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the test property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTest().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Tests.Test }
-     * 
-     * 
-     */
-    public List<Tests.Test> getTest() {
-        if (test == null) {
-            test = new ArrayList<Tests.Test>();
-        }
-        return this.test;
-    }
+	/**
+	 * Gets the value of the test property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the test property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getTest().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link Tests.Test }
+	 * 
+	 * 
+	 */
+	public List<Tests.Test> getTest()
+	{
+		if (test == null)
+		{
+			test = new ArrayList<Tests.Test>();
+		}
+		return this.test;
+	}
 
-    /**
-     * Gets the value of the encoding property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEncoding() {
-        if (encoding == null) {
-            return "PROTOCOL_BUFFER";
-        } else {
-            return encoding;
-        }
-    }
+	/**
+	 * Gets the value of the encoding property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getEncoding()
+	{
+		if (encoding == null)
+		{
+			return "PROTOCOL_BUFFER";
+		}
+		else
+		{
+			return encoding;
+		}
+	}
 
-    /**
-     * Sets the value of the encoding property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEncoding(String value) {
-        this.encoding = value;
-    }
+	/**
+	 * Sets the value of the encoding property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setEncoding(String value)
+	{
+		this.encoding = value;
+	}
 
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;sequence>
+	 *         &lt;element name="messages">
+	 *           &lt;complexType>
+	 *             &lt;complexContent>
+	 *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *                 &lt;attribute name="number-of-messages" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+	 *                 &lt;attribute name="message-size" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+	 *               &lt;/restriction>
+	 *             &lt;/complexContent>
+	 *           &lt;/complexType>
+	 *         &lt;/element>
+	 *         &lt;element name="destination">
+	 *           &lt;complexType>
+	 *             &lt;complexContent>
+	 *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *                 &lt;attribute name="destination-type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *                 &lt;attribute name="sync-consumer" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+	 *                 &lt;attribute name="no-ack-consumer" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+	 *               &lt;/restriction>
+	 *             &lt;/complexContent>
+	 *           &lt;/complexType>
+	 *         &lt;/element>
+	 *         &lt;element name="consumers" type="{}Consumers"/>
+	 *         &lt;element name="producers" type="{}Producers"/>
+	 *       &lt;/sequence>
+	 *       &lt;attribute name="test-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "", propOrder = { "messages", "destination", "consumers", "producers" })
+	public static class Test
+	{
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
-     *         &lt;element name="messages">
-     *           &lt;complexType>
-     *             &lt;complexContent>
-     *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                 &lt;attribute name="number-of-messages" type="{http://www.w3.org/2001/XMLSchema}decimal" />
-     *                 &lt;attribute name="message-size" type="{http://www.w3.org/2001/XMLSchema}decimal" />
-     *               &lt;/restriction>
-     *             &lt;/complexContent>
-     *           &lt;/complexType>
-     *         &lt;/element>
-     *         &lt;element name="destination">
-     *           &lt;complexType>
-     *             &lt;complexContent>
-     *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                 &lt;attribute name="destination-type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *                 &lt;attribute name="sync-consumer" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-     *                 &lt;attribute name="no-ack-consumer" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-     *               &lt;/restriction>
-     *             &lt;/complexContent>
-     *           &lt;/complexType>
-     *         &lt;/element>
-     *         &lt;element name="consumers" type="{}Consumers"/>
-     *         &lt;element name="producers" type="{}Producers"/>
-     *       &lt;/sequence>
-     *       &lt;attribute name="test-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "messages",
-        "destination",
-        "consumers",
-        "producers"
-    })
-    public static class Test {
+		@XmlElement(required = true)
+		protected Tests.Test.Messages messages;
+		@XmlElement(required = true)
+		protected Tests.Test.Destination destination;
+		@XmlElement(required = true)
+		protected Consumers consumers;
+		@XmlElement(required = true)
+		protected Producers producers;
+		@XmlAttribute(name = "test-name", required = true)
+		protected String testName;
 
-        @XmlElement(required = true)
-        protected Tests.Test.Messages messages;
-        @XmlElement(required = true)
-        protected Tests.Test.Destination destination;
-        @XmlElement(required = true)
-        protected Consumers consumers;
-        @XmlElement(required = true)
-        protected Producers producers;
-        @XmlAttribute(name = "test-name", required = true)
-        protected String testName;
+		/**
+		 * Gets the value of the messages property.
+		 * 
+		 * @return possible object is {@link Tests.Test.Messages }
+		 * 
+		 */
+		public Tests.Test.Messages getMessages()
+		{
+			return messages;
+		}
 
-        /**
-         * Gets the value of the messages property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Tests.Test.Messages }
-         *     
-         */
-        public Tests.Test.Messages getMessages() {
-            return messages;
-        }
+		/**
+		 * Sets the value of the messages property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link Tests.Test.Messages }
+		 * 
+		 */
+		public void setMessages(Tests.Test.Messages value)
+		{
+			this.messages = value;
+		}
 
-        /**
-         * Sets the value of the messages property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Tests.Test.Messages }
-         *     
-         */
-        public void setMessages(Tests.Test.Messages value) {
-            this.messages = value;
-        }
+		/**
+		 * Gets the value of the destination property.
+		 * 
+		 * @return possible object is {@link Tests.Test.Destination }
+		 * 
+		 */
+		public Tests.Test.Destination getDestination()
+		{
+			return destination;
+		}
 
-        /**
-         * Gets the value of the destination property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Tests.Test.Destination }
-         *     
-         */
-        public Tests.Test.Destination getDestination() {
-            return destination;
-        }
+		/**
+		 * Sets the value of the destination property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link Tests.Test.Destination }
+		 * 
+		 */
+		public void setDestination(Tests.Test.Destination value)
+		{
+			this.destination = value;
+		}
 
-        /**
-         * Sets the value of the destination property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Tests.Test.Destination }
-         *     
-         */
-        public void setDestination(Tests.Test.Destination value) {
-            this.destination = value;
-        }
+		/**
+		 * Gets the value of the consumers property.
+		 * 
+		 * @return possible object is {@link Consumers }
+		 * 
+		 */
+		public Consumers getConsumers()
+		{
+			return consumers;
+		}
 
-        /**
-         * Gets the value of the consumers property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Consumers }
-         *     
-         */
-        public Consumers getConsumers() {
-            return consumers;
-        }
+		/**
+		 * Sets the value of the consumers property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link Consumers }
+		 * 
+		 */
+		public void setConsumers(Consumers value)
+		{
+			this.consumers = value;
+		}
 
-        /**
-         * Sets the value of the consumers property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Consumers }
-         *     
-         */
-        public void setConsumers(Consumers value) {
-            this.consumers = value;
-        }
+		/**
+		 * Gets the value of the producers property.
+		 * 
+		 * @return possible object is {@link Producers }
+		 * 
+		 */
+		public Producers getProducers()
+		{
+			return producers;
+		}
 
-        /**
-         * Gets the value of the producers property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Producers }
-         *     
-         */
-        public Producers getProducers() {
-            return producers;
-        }
+		/**
+		 * Sets the value of the producers property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link Producers }
+		 * 
+		 */
+		public void setProducers(Producers value)
+		{
+			this.producers = value;
+		}
 
-        /**
-         * Sets the value of the producers property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Producers }
-         *     
-         */
-        public void setProducers(Producers value) {
-            this.producers = value;
-        }
+		/**
+		 * Gets the value of the testName property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getTestName()
+		{
+			return testName;
+		}
 
-        /**
-         * Gets the value of the testName property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getTestName() {
-            return testName;
-        }
+		/**
+		 * Sets the value of the testName property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setTestName(String value)
+		{
+			this.testName = value;
+		}
 
-        /**
-         * Sets the value of the testName property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setTestName(String value) {
-            this.testName = value;
-        }
+		/**
+		 * <p>
+		 * Java class for anonymous complex type.
+		 * 
+		 * <p>
+		 * The following schema fragment specifies the expected content contained within this class.
+		 * 
+		 * <pre>
+		 * &lt;complexType>
+		 *   &lt;complexContent>
+		 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+		 *       &lt;attribute name="destination-type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+		 *       &lt;attribute name="sync-consumer" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+		 *       &lt;attribute name="no-ack-consumer" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+		 *     &lt;/restriction>
+		 *   &lt;/complexContent>
+		 * &lt;/complexType>
+		 * </pre>
+		 * 
+		 * 
+		 */
+		@XmlAccessorType(XmlAccessType.FIELD)
+		@XmlType(name = "")
+		public static class Destination
+		{
 
+			@XmlAttribute(name = "destination-type", required = true)
+			protected String destinationType;
+			@XmlAttribute(name = "sync-consumer")
+			protected Boolean syncConsumer;
+			@XmlAttribute(name = "no-ack-consumer")
+			protected Boolean noAckConsumer;
 
-        /**
-         * <p>Java class for anonymous complex type.
-         * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
-         * <pre>
-         * &lt;complexType>
-         *   &lt;complexContent>
-         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;attribute name="destination-type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-         *       &lt;attribute name="sync-consumer" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-         *       &lt;attribute name="no-ack-consumer" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-         *     &lt;/restriction>
-         *   &lt;/complexContent>
-         * &lt;/complexType>
-         * </pre>
-         * 
-         * 
-         */
-        @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "")
-        public static class Destination {
+			/**
+			 * Gets the value of the destinationType property.
+			 * 
+			 * @return possible object is {@link String }
+			 * 
+			 */
+			public String getDestinationType()
+			{
+				return destinationType;
+			}
 
-            @XmlAttribute(name = "destination-type", required = true)
-            protected String destinationType;
-            @XmlAttribute(name = "sync-consumer")
-            protected Boolean syncConsumer;
-            @XmlAttribute(name = "no-ack-consumer")
-            protected Boolean noAckConsumer;
+			/**
+			 * Sets the value of the destinationType property.
+			 * 
+			 * @param value
+			 *            allowed object is {@link String }
+			 * 
+			 */
+			public void setDestinationType(String value)
+			{
+				this.destinationType = value;
+			}
 
-            /**
-             * Gets the value of the destinationType property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getDestinationType() {
-                return destinationType;
-            }
+			/**
+			 * Gets the value of the syncConsumer property.
+			 * 
+			 * @return possible object is {@link Boolean }
+			 * 
+			 */
+			public boolean isSyncConsumer()
+			{
+				if (syncConsumer == null)
+				{
+					return false;
+				}
+				else
+				{
+					return syncConsumer;
+				}
+			}
 
-            /**
-             * Sets the value of the destinationType property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setDestinationType(String value) {
-                this.destinationType = value;
-            }
+			/**
+			 * Sets the value of the syncConsumer property.
+			 * 
+			 * @param value
+			 *            allowed object is {@link Boolean }
+			 * 
+			 */
+			public void setSyncConsumer(Boolean value)
+			{
+				this.syncConsumer = value;
+			}
 
-            /**
-             * Gets the value of the syncConsumer property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link Boolean }
-             *     
-             */
-            public boolean isSyncConsumer() {
-                if (syncConsumer == null) {
-                    return false;
-                } else {
-                    return syncConsumer;
-                }
-            }
+			/**
+			 * Gets the value of the noAckConsumer property.
+			 * 
+			 * @return possible object is {@link Boolean }
+			 * 
+			 */
+			public boolean isNoAckConsumer()
+			{
+				if (noAckConsumer == null)
+				{
+					return false;
+				}
+				else
+				{
+					return noAckConsumer;
+				}
+			}
 
-            /**
-             * Sets the value of the syncConsumer property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link Boolean }
-             *     
-             */
-            public void setSyncConsumer(Boolean value) {
-                this.syncConsumer = value;
-            }
+			/**
+			 * Sets the value of the noAckConsumer property.
+			 * 
+			 * @param value
+			 *            allowed object is {@link Boolean }
+			 * 
+			 */
+			public void setNoAckConsumer(Boolean value)
+			{
+				this.noAckConsumer = value;
+			}
 
-            /**
-             * Gets the value of the noAckConsumer property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link Boolean }
-             *     
-             */
-            public boolean isNoAckConsumer() {
-                if (noAckConsumer == null) {
-                    return false;
-                } else {
-                    return noAckConsumer;
-                }
-            }
+		}
 
-            /**
-             * Sets the value of the noAckConsumer property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link Boolean }
-             *     
-             */
-            public void setNoAckConsumer(Boolean value) {
-                this.noAckConsumer = value;
-            }
+		/**
+		 * <p>
+		 * Java class for anonymous complex type.
+		 * 
+		 * <p>
+		 * The following schema fragment specifies the expected content contained within this class.
+		 * 
+		 * <pre>
+		 * &lt;complexType>
+		 *   &lt;complexContent>
+		 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+		 *       &lt;attribute name="number-of-messages" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+		 *       &lt;attribute name="message-size" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+		 *     &lt;/restriction>
+		 *   &lt;/complexContent>
+		 * &lt;/complexType>
+		 * </pre>
+		 * 
+		 * 
+		 */
+		@XmlAccessorType(XmlAccessType.FIELD)
+		@XmlType(name = "")
+		public static class Messages
+		{
 
-        }
+			@XmlAttribute(name = "number-of-messages")
+			protected BigDecimal numberOfMessages;
+			@XmlAttribute(name = "message-size")
+			protected BigDecimal messageSize;
 
+			/**
+			 * Gets the value of the numberOfMessages property.
+			 * 
+			 * @return possible object is {@link BigDecimal }
+			 * 
+			 */
+			public BigDecimal getNumberOfMessages()
+			{
+				return numberOfMessages;
+			}
 
-        /**
-         * <p>Java class for anonymous complex type.
-         * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
-         * <pre>
-         * &lt;complexType>
-         *   &lt;complexContent>
-         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;attribute name="number-of-messages" type="{http://www.w3.org/2001/XMLSchema}decimal" />
-         *       &lt;attribute name="message-size" type="{http://www.w3.org/2001/XMLSchema}decimal" />
-         *     &lt;/restriction>
-         *   &lt;/complexContent>
-         * &lt;/complexType>
-         * </pre>
-         * 
-         * 
-         */
-        @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "")
-        public static class Messages {
+			/**
+			 * Sets the value of the numberOfMessages property.
+			 * 
+			 * @param value
+			 *            allowed object is {@link BigDecimal }
+			 * 
+			 */
+			public void setNumberOfMessages(BigDecimal value)
+			{
+				this.numberOfMessages = value;
+			}
 
-            @XmlAttribute(name = "number-of-messages")
-            protected BigDecimal numberOfMessages;
-            @XmlAttribute(name = "message-size")
-            protected BigDecimal messageSize;
+			/**
+			 * Gets the value of the messageSize property.
+			 * 
+			 * @return possible object is {@link BigDecimal }
+			 * 
+			 */
+			public BigDecimal getMessageSize()
+			{
+				return messageSize;
+			}
 
-            /**
-             * Gets the value of the numberOfMessages property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public BigDecimal getNumberOfMessages() {
-                return numberOfMessages;
-            }
+			/**
+			 * Sets the value of the messageSize property.
+			 * 
+			 * @param value
+			 *            allowed object is {@link BigDecimal }
+			 * 
+			 */
+			public void setMessageSize(BigDecimal value)
+			{
+				this.messageSize = value;
+			}
 
-            /**
-             * Sets the value of the numberOfMessages property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setNumberOfMessages(BigDecimal value) {
-                this.numberOfMessages = value;
-            }
+		}
 
-            /**
-             * Gets the value of the messageSize property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public BigDecimal getMessageSize() {
-                return messageSize;
-            }
-
-            /**
-             * Sets the value of the messageSize property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setMessageSize(BigDecimal value) {
-                this.messageSize = value;
-            }
-
-        }
-
-    }
+	}
 
 }

@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.jsbridge.protocol.JsonMessage;
-import pt.com.broker.jsbridge.protocol.JsonSerializer;
 import pt.com.broker.jsbridge.protocol.JsonMessage.MessageType;
+import pt.com.broker.jsbridge.protocol.JsonSerializer;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class BridgeChannel implements BrokerListener
 {

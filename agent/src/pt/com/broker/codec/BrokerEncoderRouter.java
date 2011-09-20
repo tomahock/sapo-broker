@@ -8,8 +8,8 @@ import org.caudexorigo.ErrorAnalyser;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +89,7 @@ public class BrokerEncoderRouter extends OneToOneEncoder
 		catch (Throwable t)
 		{
 			Throwable r = ErrorAnalyser.findRootCause(t);
-			throw new IOException( "Failed to encode message. Reason: " + r.getMessage());
+			throw new IOException("Failed to encode message. Reason: " + r.getMessage());
 		}
 	}
 }

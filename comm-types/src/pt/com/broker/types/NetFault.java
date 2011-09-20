@@ -52,7 +52,7 @@ public final class NetFault
 	private String code;
 	private String message;
 	private String detail;
-	
+
 	private Map<String, String> headers;
 
 	public NetFault(String code, String message)

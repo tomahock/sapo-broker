@@ -38,16 +38,18 @@ import pt.com.broker.types.NetUnsubscribe;
 
 /**
  * 
- * BaseBrokerClient is the base class for Sapo-Broker Java client libraries. It
- * implements all basic client functionality.
+ * BaseBrokerClient is the base class for Sapo-Broker Java client libraries. It implements all basic client functionality.
  * 
  */
-public abstract class BaseBrokerClient {
-	public enum BrokerClientState {
+public abstract class BaseBrokerClient
+{
+	public enum BrokerClientState
+	{
 		UNSTARTED, CONNECT, OK, AUTH, FAIL, CLOSE;
 	}
 
-	public interface BrokerClientStateOk {
+	public interface BrokerClientStateOk
+	{
 		void onOk(BrokerClient brokerClient);
 	}
 
@@ -55,7 +57,7 @@ public abstract class BaseBrokerClient {
 
 	protected String _appName;
 	protected final BlockingQueue<NetPong> _bstatus = new LinkedBlockingQueue<NetPong>();
-	//	protected final List<BrokerAsyncConsumer> _consumerList = new CopyOnWriteArrayList<BrokerAsyncConsumer>();
+	// protected final List<BrokerAsyncConsumer> _consumerList = new CopyOnWriteArrayList<BrokerAsyncConsumer>();
 
 	protected final EnumMap<DestinationType, Map<String, BrokerAsyncConsumer>> _consumerList = new EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>>(DestinationType.class);
 	protected final Map<String, NetMessage> _syncSubscriptions = new HashMap<String, NetMessage>();
@@ -72,20 +74,26 @@ public abstract class BaseBrokerClient {
 	private static final int DEFAULT_MAX_NUMBER_OF_TRIES = Integer.MAX_VALUE;
 	private volatile int numberOfTries = DEFAULT_MAX_NUMBER_OF_TRIES;
 
-	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter() {
-		public void onFault(pt.com.broker.types.NetFault fault) {
-			try {
+	protected static final BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
+	{
+		public void onFault(pt.com.broker.types.NetFault fault)
+		{
+			try
+			{
 				log.error("Fault message received");
 				log.error("	Fault code: '{}'", fault.getCode());
 				log.error("	Fault message: '{}'", fault.getMessage());
 				log.error("	Fault action identifier: '{}'", fault.getActionId());
 				log.error("	Fault detail: '{}'", fault.getDetail());
-			} catch (Throwable t) {
+			}
+			catch (Throwable t)
+			{
 				log.error("Fault message format is unsuported.");
 			}
 		}
 
-		public void onError(Throwable throwable) {
+		public void onError(Throwable throwable)
+		{
 			log.error("An error occurred", throwable);
 		}
 	};
@@ -93,7 +101,8 @@ public abstract class BaseBrokerClient {
 	protected BrokerErrorListenter errorListener;
 
 	// Should be called by inherit types
-	protected void init() throws Throwable {
+	protected void init() throws Throwable
+	{
 		state = BrokerClientState.CONNECT;
 		setErrorListener(getDefaultErrorListener());
 		_netHandler = getBrokerProtocolHandler();
@@ -109,7 +118,8 @@ public abstract class BaseBrokerClient {
 	 * @param portNumber
 	 *            TCP ou SSL port number
 	 */
-	public BaseBrokerClient(String host, int portNumber) throws Throwable {
+	public BaseBrokerClient(String host, int portNumber) throws Throwable
+	{
 		this(host, portNumber, "BrokerClient", NetProtocolType.PROTOCOL_BUFFER);
 	}
 
@@ -123,7 +133,8 @@ public abstract class BaseBrokerClient {
 	 * @param appName
 	 *            The client application name.
 	 */
-	public BaseBrokerClient(String host, int portNumber, String appName) throws Throwable {
+	public BaseBrokerClient(String host, int portNumber, String appName) throws Throwable
+	{
 		this(host, portNumber, appName, NetProtocolType.PROTOCOL_BUFFER);
 	}
 
@@ -139,7 +150,8 @@ public abstract class BaseBrokerClient {
 	 * @param ptype
 	 *            The encoding protocol type that should be used.
 	 */
-	public BaseBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable {
+	public BaseBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
+	{
 		this.hosts = new CircularContainer<HostInfo>(1);
 		this.hosts.add(new HostInfo(host, portNumber));
 		_appName = appName;
@@ -156,7 +168,8 @@ public abstract class BaseBrokerClient {
 	 * @param hosts
 	 *            A collection of HostInfo objects
 	 */
-	public BaseBrokerClient(Collection<HostInfo> hosts) throws Throwable {
+	public BaseBrokerClient(Collection<HostInfo> hosts) throws Throwable
+	{
 		this(hosts, "BrokerClient");
 	}
 
@@ -168,7 +181,8 @@ public abstract class BaseBrokerClient {
 	 * @param appName
 	 *            The client application name.
 	 */
-	public BaseBrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable {
+	public BaseBrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable
+	{
 		this(hosts, appName, NetProtocolType.PROTOCOL_BUFFER);
 	}
 
@@ -182,7 +196,8 @@ public abstract class BaseBrokerClient {
 	 * @param ptype
 	 *            The encoding protocol type that should be used.
 	 */
-	public BaseBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable {
+	public BaseBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable
+	{
 		this.hosts = new CircularContainer<HostInfo>(hosts);
 		_appName = appName;
 		protocolType = ptype;
@@ -199,19 +214,23 @@ public abstract class BaseBrokerClient {
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
 	 */
-	public void acknowledge(NetNotification notification, AcceptRequest acceptRequest) throws Throwable {
+	public void acknowledge(NetNotification notification, AcceptRequest acceptRequest) throws Throwable
+	{
 
-		if ((notification != null) && (notification.getMessage() != null) && (StringUtils.isNotBlank(notification.getMessage().getMessageId()))) {
+		if ((notification != null) && (notification.getMessage() != null) && (StringUtils.isNotBlank(notification.getMessage().getMessageId())))
+		{
 			NetBrokerMessage brkMsg = notification.getMessage();
 
-			if (notification.getDestinationType() == DestinationType.TOPIC) {
+			if (notification.getDestinationType() == DestinationType.TOPIC)
+			{
 				return;
 			}
 
 			String ackDestination = notification.getSubscription();
 
 			NetAcknowledge ackMsg = new NetAcknowledge(ackDestination, brkMsg.getMessageId());
-			if (acceptRequest != null) {
+			if (acceptRequest != null)
+			{
 				ackMsg.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 			}
@@ -222,7 +241,9 @@ public abstract class BaseBrokerClient {
 
 			getNetHandler().sendMessage(msg);
 
-		} else {
+		}
+		else
+		{
 			throw new IllegalArgumentException("Can't acknowledge invalid message.");
 		}
 	}
@@ -233,7 +254,8 @@ public abstract class BaseBrokerClient {
 	 * @param notification
 	 *            The received notification message
 	 */
-	public void acknowledge(NetNotification notification) throws Throwable {
+	public void acknowledge(NetNotification notification) throws Throwable
+	{
 		acknowledge(notification, null);
 	}
 
@@ -247,21 +269,25 @@ public abstract class BaseBrokerClient {
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
 	 */
-	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener, AcceptRequest acceptRequest) throws Throwable {
-		if ((subscribe != null) && (StringUtils.isNotBlank(subscribe.getDestination()))) {
+	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener, AcceptRequest acceptRequest) throws Throwable
+	{
+		if ((subscribe != null) && (StringUtils.isNotBlank(subscribe.getDestination())))
+		{
 
 			Map<String, BrokerAsyncConsumer> subscriptions = _consumerList.get(subscribe.getDestinationType().equals(DestinationType.TOPIC) ? DestinationType.TOPIC : DestinationType.QUEUE);
 
 			BrokerAsyncConsumer previous = subscriptions.put(subscribe.getDestination(), new BrokerAsyncConsumer(subscribe, listener));
 
-			if (previous != null) {
-				// A subscription for the given destination already existed. Set it again and 
+			if (previous != null)
+			{
+				// A subscription for the given destination already existed. Set it again and
 				subscriptions.put(subscribe.getDestination(), previous);
 
 				throw new IllegalStateException("A listener for that Destination already exists");
 			}
 
-			if (acceptRequest != null) {
+			if (acceptRequest != null)
+			{
 				subscribe.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 			}
@@ -274,7 +300,9 @@ public abstract class BaseBrokerClient {
 			getNetHandler().sendMessage(msg);
 
 			log.info("Created new async consumer for '{}'", subscribe.getDestination());
-		} else {
+		}
+		else
+		{
 			throw new IllegalArgumentException("Mal-formed Notification request");
 		}
 	}
@@ -289,14 +317,18 @@ public abstract class BaseBrokerClient {
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
 	 */
-	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener) throws Throwable {
+	public void addAsyncConsumer(NetSubscribe subscribe, BrokerListener listener) throws Throwable
+	{
 		addAsyncConsumer(subscribe, listener, null);
 	}
 
-	protected void sendSubscriptions() throws Throwable {
-		for (DestinationType desType : _consumerList.keySet()) {
+	protected void sendSubscriptions() throws Throwable
+	{
+		for (DestinationType desType : _consumerList.keySet())
+		{
 			Map<String, BrokerAsyncConsumer> subscriptions = _consumerList.get(desType);
-			for (BrokerAsyncConsumer aconsumer : subscriptions.values()) {
+			for (BrokerAsyncConsumer aconsumer : subscriptions.values())
+			{
 				NetSubscribe subscription = aconsumer.getSubscription();
 
 				NetAction netAction = new NetAction(ActionType.SUBSCRIBE);
@@ -308,31 +340,34 @@ public abstract class BaseBrokerClient {
 				log.info("Reconnected async consumer for '{}'", subscription.getDestination());
 			}
 		}
-		synchronized (_syncSubscriptions) {
-			for (String queueName : _syncSubscriptions.keySet()) {
+		synchronized (_syncSubscriptions)
+		{
+			for (String queueName : _syncSubscriptions.keySet())
+			{
 				getNetHandler().sendMessage(_syncSubscriptions.get(queueName));
 			}
 		}
 	}
 
-	private NetMessage buildMessage(NetAction action) {
+	private NetMessage buildMessage(NetAction action)
+	{
 		return buildMessage(action, null);
 	}
 
-	private NetMessage buildMessage(NetAction action, Map<String, String> headers) {
+	private NetMessage buildMessage(NetAction action, Map<String, String> headers)
+	{
 		NetMessage message = new NetMessage(action, headers);
 
 		return message;
 	}
 
 	/**
-	 * Checks agent's liveness by sending a Ping message. Waits synchronously by
-	 * the response.
+	 * Checks agent's liveness by sending a Ping message. Waits synchronously by the response.
 	 * 
-	 * @return A <code>Pong</code> message or <code>null</code> if the agent
-	 *         doesn't answer in 2 seconds;
+	 * @return A <code>Pong</code> message or <code>null</code> if the agent doesn't answer in 2 seconds;
 	 */
-	public NetPong checkStatus() throws Throwable {
+	public NetPong checkStatus() throws Throwable
+	{
 		String actionId = UUID.randomUUID().toString();
 		NetPing ping = new NetPing(actionId);
 
@@ -346,20 +381,24 @@ public abstract class BaseBrokerClient {
 		long timeout = System.currentTimeMillis() + (2 * 1000);
 		NetPong pong = null;
 
-		do {
-			synchronized (_bstatus) {
+		do
+		{
+			synchronized (_bstatus)
+			{
 				Sleep.time(500);
 				if (System.currentTimeMillis() > timeout)
 					return null;
 				pong = _bstatus.peek();
 				if (pong == null)
 					continue;
-				if (!pong.getActionId().equals(NetPong.getUniversalActionId()) && !pong.getActionId().equals(actionId)) {
+				if (!pong.getActionId().equals(NetPong.getUniversalActionId()) && !pong.getActionId().equals(actionId))
+				{
 					pong = null;
 				}
 				_bstatus.remove();
 			}
-		} while (pong == null);
+		}
+		while (pong == null);
 
 		return pong;
 	}
@@ -374,11 +413,14 @@ public abstract class BaseBrokerClient {
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
 	 */
-	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName, AcceptRequest acceptRequest) {
+	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName, AcceptRequest acceptRequest)
+	{
 
-		if ((brokerMessage != null) && (StringUtils.isNotBlank(destinationName))) {
+		if ((brokerMessage != null) && (StringUtils.isNotBlank(destinationName)))
+		{
 			NetPublish publish = new NetPublish(destinationName, pt.com.broker.types.NetAction.DestinationType.QUEUE, brokerMessage);
-			if (acceptRequest != null) {
+			if (acceptRequest != null)
+			{
 				publish.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 			}
@@ -388,12 +430,17 @@ public abstract class BaseBrokerClient {
 
 			NetMessage msg = buildMessage(action, brokerMessage.getHeaders());
 
-			try {
+			try
+			{
 				getNetHandler().sendMessage(msg);
-			} catch (Throwable t) {
+			}
+			catch (Throwable t)
+			{
 				log.error("Failed to deliver message.", t);
 			}
-		} else {
+		}
+		else
+		{
 			throw new IllegalArgumentException("Mal-formed Enqueue request");
 		}
 	}
@@ -406,15 +453,18 @@ public abstract class BaseBrokerClient {
 	 * @param destinationName
 	 *            The destination name (e.g. /queue/foo).
 	 */
-	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName) {
+	public void enqueueMessage(NetBrokerMessage brokerMessage, String destinationName)
+	{
 		enqueueMessage(brokerMessage, destinationName, null);
 	}
 
-	protected void feedStatusConsumer(NetPong pong) throws Throwable {
+	protected void feedStatusConsumer(NetPong pong) throws Throwable
+	{
 		_bstatus.offer(pong);
 	}
 
-	protected HostInfo getHostInfo() {
+	protected HostInfo getHostInfo()
+	{
 		return hosts.get();
 	}
 
@@ -424,27 +474,32 @@ public abstract class BaseBrokerClient {
 	 * @param hostInfo
 	 *            Host information.
 	 */
-	public void addHostInfo(HostInfo hostInfo) {
+	public void addHostInfo(HostInfo hostInfo)
+	{
 		hosts.add(hostInfo);
 	}
 
-	protected void notifyListener(NetNotification notification) {
+	protected void notifyListener(NetNotification notification)
+	{
 		Map<String, String> headers = notification.getHeaders();
 		boolean ackRequired = true;
-		if (headers != null) {
+		if (headers != null)
+		{
 			String value = headers.get("ACK_REQUIRED");
-			if (value != null) {
-				if (value.equalsIgnoreCase("false")) {
+			if (value != null)
+			{
+				if (value.equalsIgnoreCase("false"))
+				{
 					ackRequired = false; // ACK is not required
 				}
 			}
 		}
 
-		Map<String, BrokerAsyncConsumer> subscripions = _consumerList.get(notification.getDestinationType().equals(DestinationType.TOPIC) ? DestinationType.TOPIC : DestinationType.QUEUE );
-		
+		Map<String, BrokerAsyncConsumer> subscripions = _consumerList.get(notification.getDestinationType().equals(DestinationType.TOPIC) ? DestinationType.TOPIC : DestinationType.QUEUE);
+
 		BrokerAsyncConsumer brokerAsyncConsumer = subscripions.get(notification.getSubscription());
 
-		if(brokerAsyncConsumer == null)
+		if (brokerAsyncConsumer == null)
 		{
 			log.error(String.format("Unexpected notification. DestinationType: %s, Destination: %s, Subscription: %s.", notification.getDestinationType(), notification.getDestination(), notification.getSubscription()));
 			return;
@@ -452,15 +507,20 @@ public abstract class BaseBrokerClient {
 		brokerAsyncConsumer.deliver(notification);
 
 		BrokerListener listener = brokerAsyncConsumer.getListener();
-		
-		if (!ackRequired) {
+
+		if (!ackRequired)
+		{
 			return;
 		}
-		
-		if ((notification.getDestinationType() != DestinationType.TOPIC) && listener.isAutoAck()) {
-			try {
+
+		if ((notification.getDestinationType() != DestinationType.TOPIC) && listener.isAutoAck())
+		{
+			try
+			{
 				acknowledge(notification);
-			} catch (Throwable t) {
+			}
+			catch (Throwable t)
+			{
 				log.error("Could not acknowledge message, messageId: '{}'", notification.getMessage().getMessageId());
 				log.error(t.getMessage(), t);
 			}
@@ -473,22 +533,15 @@ public abstract class BaseBrokerClient {
 	 * @param queueName
 	 *            Name of the queue from where to retrieve a message
 	 * @param timeout
-	 *            Timeout, in milliseconds. When timeout is reached a
-	 *            TimeoutException is thrown. Zero means that the client wants
-	 *            to wait forever. A negative value means that the client
-	 *            doesn't want to wait if there are no messages is local agent's
-	 *            queue.
+	 *            Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown. Zero means that the client wants to wait forever. A negative value means that the client doesn't want to wait if there are no messages is local agent's queue.
 	 * @param reserveTime
-	 *            Message reserve time, in milliseconds. Polled messages are
-	 *            reserved, by default, for 15 minutes. If clients prefer a
-	 *            different reserve time , bigger or small, they can specify it.
+	 *            Message reserve time, in milliseconds. Polled messages are reserved, by default, for 15 minutes. If clients prefer a different reserve time , bigger or small, they can specify it.
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
-	 * @return A notification containing the queue message. Or null if timeout
-	 *         was a negative value and there was no message in local agent's
-	 *         queue.
+	 * @return A notification containing the queue message. Or null if timeout was a negative value and there was no message in local agent's queue.
 	 */
-	public NetNotification poll(String queueName, long timeout, long reserveTime, AcceptRequest acceptRequest) throws Throwable {
+	public NetNotification poll(String queueName, long timeout, long reserveTime, AcceptRequest acceptRequest) throws Throwable
+	{
 		if (StringUtils.isBlank(queueName))
 			throw new IllegalArgumentException("Mal-formed Poll request. queueName is blank.");
 
@@ -500,7 +553,8 @@ public abstract class BaseBrokerClient {
 
 		SynchronousQueue<NetMessage> synQueue = new SynchronousQueue<NetMessage>();
 
-		synchronized (_syncSubscriptions) {
+		synchronized (_syncSubscriptions)
+		{
 			if (_syncSubscriptions.containsKey(queueName))
 				throw new IllegalArgumentException("Queue " + queueName + " has already a poll runnig.");
 			_syncSubscriptions.put(queueName, message);
@@ -508,11 +562,13 @@ public abstract class BaseBrokerClient {
 			pendingPolls.put(queueName, synQueue);
 		}
 
-		if (reserveTime > 0) {
+		if (reserveTime > 0)
+		{
 			message.getHeaders().put(Headers.RESERVE_TIME, reserveTime + "");
 		}
 
-		if (acceptRequest != null) {
+		if (acceptRequest != null)
+		{
 			poll.setActionId(acceptRequest.getActionId());
 			PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 		}
@@ -521,7 +577,8 @@ public abstract class BaseBrokerClient {
 
 		NetMessage receivedMsg = synQueue.take();
 
-		synchronized (_syncSubscriptions) {
+		synchronized (_syncSubscriptions)
+		{
 			_syncSubscriptions.remove(queueName);
 			pendingPolls.remove(queueName);
 		}
@@ -532,9 +589,12 @@ public abstract class BaseBrokerClient {
 			return null;
 
 		NetNotification m = null;
-		if (receivedMsg.getAction().getActionType().equals(ActionType.NOTIFICATION)) {
+		if (receivedMsg.getAction().getActionType().equals(ActionType.NOTIFICATION))
+		{
 			m = receivedMsg.getAction().getNotificationMessage();
-		} else {
+		}
+		else
+		{
 			log.error("Poll unbloqued by a message that wasn't of any of the expeceted error nor a notification.");
 			return null;
 		}
@@ -548,18 +608,13 @@ public abstract class BaseBrokerClient {
 	 * @param queueName
 	 *            Name of the queue from where to retrieve a message
 	 * @param timeout
-	 *            Timeout, in milliseconds. When timeout is reached a
-	 *            TimeoutException is thrown. Zero means that the client wants
-	 *            to wait forever. A negative value means that the client
-	 *            doesn't want to wait if there are no messages is local agent's
-	 *            queue.
+	 *            Timeout, in milliseconds. When timeout is reached a TimeoutException is thrown. Zero means that the client wants to wait forever. A negative value means that the client doesn't want to wait if there are no messages is local agent's queue.
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
-	 * @return A notification containing the queue message. Or null if timeout
-	 *         was a negative value and there was no message in local agent's
-	 *         queue.
+	 * @return A notification containing the queue message. Or null if timeout was a negative value and there was no message in local agent's queue.
 	 */
-	public NetNotification poll(String queueName, long timeout, AcceptRequest acceptRequest) throws Throwable {
+	public NetNotification poll(String queueName, long timeout, AcceptRequest acceptRequest) throws Throwable
+	{
 		return poll(queueName, timeout, -1, acceptRequest);
 	}
 
@@ -570,7 +625,8 @@ public abstract class BaseBrokerClient {
 	 *            Name of the queue from where to retrieve a message
 	 * @return A notification containing the queue message.
 	 */
-	public NetNotification poll(String queueName) throws Throwable {
+	public NetNotification poll(String queueName) throws Throwable
+	{
 		return poll(queueName, 0, null);
 	}
 
@@ -582,10 +638,13 @@ public abstract class BaseBrokerClient {
 	 * @param message
 	 *            Received message. Can be NetFault or NetNotification
 	 */
-	protected boolean offerPollResponse(String destination, NetMessage message) {
-		synchronized (_syncSubscriptions) {
+	protected boolean offerPollResponse(String destination, NetMessage message)
+	{
+		synchronized (_syncSubscriptions)
+		{
 			SynchronousQueue<NetMessage> synchronousQueue = pendingPolls.get(destination);
-			if (synchronousQueue != null) {
+			if (synchronousQueue != null)
+			{
 				return synchronousQueue.offer(message);
 			}
 			return false;
@@ -602,10 +661,13 @@ public abstract class BaseBrokerClient {
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
 	 */
-	public void publishMessage(NetBrokerMessage brokerMessage, String destination, AcceptRequest acceptRequest) {
-		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination))) {
+	public void publishMessage(NetBrokerMessage brokerMessage, String destination, AcceptRequest acceptRequest)
+	{
+		if ((brokerMessage != null) && (StringUtils.isNotBlank(destination)))
+		{
 			NetPublish publish = new NetPublish(destination, pt.com.broker.types.NetAction.DestinationType.TOPIC, brokerMessage);
-			if (acceptRequest != null) {
+			if (acceptRequest != null)
+			{
 				publish.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 			}
@@ -614,13 +676,18 @@ public abstract class BaseBrokerClient {
 
 			NetMessage msg = buildMessage(action, brokerMessage.getHeaders());
 
-			try {
+			try
+			{
 				getNetHandler().sendMessage(msg);
-			} catch (Throwable e) {
+			}
+			catch (Throwable e)
+			{
 				log.error("Could not publish message, messageId:");
 				log.error(e.getMessage(), e);
 			}
-		} else {
+		}
+		else
+		{
 			throw new IllegalArgumentException("Mal-formed Publish request");
 		}
 	}
@@ -633,7 +700,8 @@ public abstract class BaseBrokerClient {
 	 * @param destination
 	 *            The destination name (e.g. /topic/foo).
 	 */
-	public void publishMessage(NetBrokerMessage brokerMessage, String destination) {
+	public void publishMessage(NetBrokerMessage brokerMessage, String destination)
+	{
 		publishMessage(brokerMessage, destination, null);
 	}
 
@@ -647,10 +715,13 @@ public abstract class BaseBrokerClient {
 	 * @param acceptRequest
 	 *            An AcceptRequest object used handling Accept messages.
 	 */
-	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName, AcceptRequest acceptRequest) throws Throwable {
-		if ((StringUtils.isNotBlank(destinationName)) && (destinationType != null)) {
+	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName, AcceptRequest acceptRequest) throws Throwable
+	{
+		if ((StringUtils.isNotBlank(destinationName)) && (destinationType != null))
+		{
 			NetUnsubscribe unsubs = new NetUnsubscribe(destinationName, destinationType);
-			if (acceptRequest != null) {
+			if (acceptRequest != null)
+			{
 				unsubs.setActionId(acceptRequest.getActionId());
 				PendingAcceptRequestsManager.addAcceptRequest(acceptRequest);
 			}
@@ -661,9 +732,11 @@ public abstract class BaseBrokerClient {
 
 			getNetHandler().sendMessage(message);
 
-			Map<String, BrokerAsyncConsumer> subscriptions = _consumerList.get(destinationType.equals(DestinationType.TOPIC) ? DestinationType.TOPIC : DestinationType.QUEUE );
+			Map<String, BrokerAsyncConsumer> subscriptions = _consumerList.get(destinationType.equals(DestinationType.TOPIC) ? DestinationType.TOPIC : DestinationType.QUEUE);
 			subscriptions.remove(destinationName);
-		} else {
+		}
+		else
+		{
 			throw new IllegalArgumentException("Mal-formed Unsubscribe request");
 		}
 	}
@@ -676,19 +749,22 @@ public abstract class BaseBrokerClient {
 	 * @param destinationName
 	 *            The destination name (e.g., /topic/.*).
 	 */
-	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName) throws Throwable {
+	public void unsubscribe(NetAction.DestinationType destinationType, String destinationName) throws Throwable
+	{
 		unsubscribe(destinationType, destinationName, null);
 	}
 
 	/**
 	 * Close this connection with an Agent.
 	 */
-	public void close() {
+	public void close()
+	{
 		getNetHandler().stop();
 		state = BrokerClientState.CLOSE;
 	}
 
-	public BrokerProtocolHandler getNetHandler() {
+	public BrokerProtocolHandler getNetHandler()
+	{
 		return _netHandler;
 	}
 
@@ -697,7 +773,8 @@ public abstract class BaseBrokerClient {
 	 * 
 	 * @return A BrokerErrorListenter object.
 	 */
-	public static BrokerErrorListenter getDefaultErrorListener() {
+	public static BrokerErrorListenter getDefaultErrorListener()
+	{
 		return defaultErrorListener;
 	}
 
@@ -707,7 +784,8 @@ public abstract class BaseBrokerClient {
 	 * @param errorListener
 	 *            A BrokerErrorListenter object.
 	 */
-	public void setErrorListener(BrokerErrorListenter errorListener) {
+	public void setErrorListener(BrokerErrorListenter errorListener)
+	{
 		this.errorListener = errorListener;
 	}
 
@@ -716,7 +794,8 @@ public abstract class BaseBrokerClient {
 	 * 
 	 * @return errorListener A BrokerErrorListenter object.
 	 */
-	public BrokerErrorListenter getErrorListener() {
+	public BrokerErrorListenter getErrorListener()
+	{
 		return errorListener;
 	}
 
@@ -725,8 +804,10 @@ public abstract class BaseBrokerClient {
 	 * 
 	 * @return
 	 */
-	public BrokerClientState getState() {
-		synchronized (this) {
+	public BrokerClientState getState()
+	{
+		synchronized (this)
+		{
 			return state;
 		}
 	}
@@ -734,8 +815,10 @@ public abstract class BaseBrokerClient {
 	/**
 	 * Sets client state.
 	 */
-	protected void setState(BrokerClientState state) {
-		synchronized (this) {
+	protected void setState(BrokerClientState state)
+	{
+		synchronized (this)
+		{
 			this.state = state;
 		}
 	}
@@ -745,7 +828,8 @@ public abstract class BaseBrokerClient {
 	 * 
 	 * @param portocolType
 	 */
-	public void setPortocolType(NetProtocolType portocolType) {
+	public void setPortocolType(NetProtocolType portocolType)
+	{
 		this.protocolType = portocolType;
 	}
 
@@ -754,17 +838,18 @@ public abstract class BaseBrokerClient {
 	 * 
 	 * @return
 	 */
-	public NetProtocolType getPortocolType() {
+	public NetProtocolType getPortocolType()
+	{
 		return protocolType;
 	}
 
 	/**
-	 * Set the number of retries (used when a connection to the agent is lost).
-	 * Default is forever.
+	 * Set the number of retries (used when a connection to the agent is lost). Default is forever.
 	 * 
 	 * @param numberOfTries
 	 */
-	public void setNumberOfTries(int numberOfTries) {
+	public void setNumberOfTries(int numberOfTries)
+	{
 		this.numberOfTries = numberOfTries;
 	}
 
@@ -773,7 +858,8 @@ public abstract class BaseBrokerClient {
 	 * 
 	 * @return
 	 */
-	public int getNumberOfTries() {
+	public int getNumberOfTries()
+	{
 		return this.numberOfTries;
 	}
 
@@ -782,7 +868,8 @@ public abstract class BaseBrokerClient {
 	 * 
 	 * @return
 	 */
-	public boolean isOldFramming() {
+	public boolean isOldFramming()
+	{
 		return oldFramming;
 	}
 }

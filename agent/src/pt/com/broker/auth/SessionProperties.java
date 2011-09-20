@@ -28,10 +28,10 @@ public class SessionProperties extends HashMap<String, Object>
 
 	public SessionProperties(Channel session)
 	{
-		if( session != null )
+		if (session != null)
 		{
 			SocketAddress remoteAddress = session.getRemoteAddress();
-			if(remoteAddress != null)
+			if (remoteAddress != null)
 			{
 				address = ((InetSocketAddress) remoteAddress).getAddress();
 			}

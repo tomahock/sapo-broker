@@ -44,7 +44,7 @@ public abstract class ProtocolHandler<T>
 	protected abstract void handleReceivedMessage(T request);
 
 	protected abstract int getNumberOfTries();
-	
+
 	protected volatile boolean readerStarded = false;
 
 	private final Runnable reader = new Runnable()
@@ -72,7 +72,7 @@ public abstract class ProtocolHandler<T>
 
 					if (getNumberOfTries() == 0)
 					{
-						if(!closed.get())
+						if (!closed.get())
 						{
 							onError(rootCause);
 						}

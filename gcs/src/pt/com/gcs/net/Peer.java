@@ -27,12 +27,12 @@ public class Peer
 	 * @param port
 	 *            Agent's port.
 	 */
-	
+
 	public Peer(String name, String host, int port)
 	{
-		this(name, host, port, host+":"+port);
+		this(name, host, port, host + ":" + port);
 	}
-	
+
 	public Peer(String name, String host, int port, String address)
 	{
 		_name = name;

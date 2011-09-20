@@ -14,7 +14,7 @@ import pt.com.broker.monitorization.http.QueryStringParameters;
 public class QueueAgentQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(QueueAgentQuery.class);
-	
+
 	private static String QUERY = "SELECT * FROM ( SELECT queues.subject , last_event_for_subject_predicate_agent(queues.subject, 'queue-size', ?, now(), '00:01') AS queuesize FROM (SELECT DISTINCT subject FROM raw_data WHERE agent_name = ? AND subject ~ '^queue://' AND event_time > now() - '00:01'::time) AS queues ) AS q WHERE queuesize IS NOT NULL ORDER BY queuesize DESC";
 
 	public String getId()
@@ -58,7 +58,7 @@ public class QueueAgentQuery
 				sb.append("\"queueSize\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\"");
-				
+
 				sb.append("}");
 			}
 		}
@@ -76,10 +76,10 @@ public class QueueAgentQuery
 
 	protected ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
-		
+
 		String agentName = QueryStringParameters.getAgentNameParam(params);
-		
-		if(agentName == null)
+
+		if (agentName == null)
 		{
 			return null;
 		}

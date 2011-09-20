@@ -61,7 +61,7 @@ public class AdminAction extends HttpAction
 			if (request.getMethod().equals(HttpMethod.POST))
 			{
 				String action = new String(request.getContent().array());
-				
+
 				if (StringUtils.isBlank(action))
 				{
 					throw new IllegalArgumentException("No arguments supplied");
@@ -91,7 +91,7 @@ public class AdminAction extends HttpAction
 					response.setContent(bbo);
 				}
 
-				response.setStatus (HttpResponseStatus.OK);
+				response.setStatus(HttpResponseStatus.OK);
 			}
 			else
 			{
@@ -120,7 +120,7 @@ public class AdminAction extends HttpAction
 			CriticalErrors.exitIfCritical(rootCause);
 			out.write(("Error: " + rootCause.getMessage() + "\n").getBytes("UTF-8"));
 			out.flush();
-			
+
 			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, content_type);
 			response.setContent(bbf);
 		}

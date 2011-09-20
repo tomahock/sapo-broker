@@ -5,13 +5,13 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.MessageListenerEventChangeHandler;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.ForwardResult.Result;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.channels.ListenerChannel;
 
 /**
@@ -60,10 +60,8 @@ class TopicToQueueDispatcher implements MessageListener
 
 			NetMessage nmsg_fwd = new NetMessage(action_fwd);
 			nmsg_fwd.getHeaders().putAll(nmsg.getHeaders());
-			
-			
+
 			nmsg_fwd.getHeaders().put("ORIGINAL_DESTINATION", nnot_orig.getDestination());
-			
 
 			if (!isFromRemotePeer(nmsg))
 			{
@@ -178,6 +176,6 @@ class TopicToQueueDispatcher implements MessageListener
 	@Override
 	public void removeStateChangeListener(MessageListenerEventChangeHandler handler)
 	{
-		// No change state will ever exist, so there is nothing to do.	
+		// No change state will ever exist, so there is nothing to do.
 	}
 }

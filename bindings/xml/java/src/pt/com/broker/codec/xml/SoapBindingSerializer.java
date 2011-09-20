@@ -56,7 +56,7 @@ public class SoapBindingSerializer implements BindingSerializer
 		EncodingStats.newSoapDecodedMessage();
 		return message;
 	}
-	
+
 	@Override
 	public NetProtocolType getProtocolType()
 	{

@@ -10,9 +10,9 @@ import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class GenericPubSubTest extends BrokerTest
 {
@@ -39,10 +39,8 @@ public class GenericPubSubTest extends BrokerTest
 		super(testName);
 		try
 		{
-			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
-			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-					BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
 		}
 		catch (Throwable t)
 		{
@@ -58,7 +56,7 @@ public class GenericPubSubTest extends BrokerTest
 		if (constructionFailed)
 			throw reasonForFailure;
 
-		if( getBrokerListener() == null)
+		if (getBrokerListener() == null)
 		{
 			brokerListener = new GenericBrokerListener(getDestinationType());
 		}
@@ -88,7 +86,7 @@ public class GenericPubSubTest extends BrokerTest
 				{
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getDestinationType());
 					getInfoConsumer().addAsyncConsumer(subscribe, getBrokerListener());
-					
+
 					Sleep.time(250);
 					setDone(true);
 					setSucess(true);

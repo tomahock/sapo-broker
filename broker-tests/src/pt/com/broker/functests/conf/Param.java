@@ -5,7 +5,6 @@
 // Generated on: 2010.05.17 at 03:40:07 PM WEST 
 //
 
-
 package pt.com.broker.functests.conf;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,11 +12,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for Param complex type.
+ * <p>
+ * Java class for Param complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Param">
@@ -34,59 +34,58 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Param")
-public class Param {
+public class Param
+{
 
-    @XmlAttribute(name = "param-name", required = true)
-    protected String paramName;
-    @XmlAttribute(name = "param-value", required = true)
-    protected String paramValue;
+	@XmlAttribute(name = "param-name", required = true)
+	protected String paramName;
+	@XmlAttribute(name = "param-value", required = true)
+	protected String paramValue;
 
-    /**
-     * Gets the value of the paramName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getParamName() {
-        return paramName;
-    }
+	/**
+	 * Gets the value of the paramName property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getParamName()
+	{
+		return paramName;
+	}
 
-    /**
-     * Sets the value of the paramName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setParamName(String value) {
-        this.paramName = value;
-    }
+	/**
+	 * Sets the value of the paramName property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setParamName(String value)
+	{
+		this.paramName = value;
+	}
 
-    /**
-     * Gets the value of the paramValue property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getParamValue() {
-        return paramValue;
-    }
+	/**
+	 * Gets the value of the paramValue property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getParamValue()
+	{
+		return paramValue;
+	}
 
-    /**
-     * Sets the value of the paramValue property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setParamValue(String value) {
-        this.paramValue = value;
-    }
+	/**
+	 * Sets the value of the paramValue property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setParamValue(String value)
+	{
+		this.paramValue = value;
+	}
 
 }

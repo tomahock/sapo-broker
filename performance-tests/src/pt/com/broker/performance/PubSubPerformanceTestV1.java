@@ -8,10 +8,10 @@ import org.caudexorigo.concurrent.Sleep;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class PubSubPerformanceTestV1
 {
@@ -31,7 +31,7 @@ public class PubSubPerformanceTestV1
 	private static volatile long endTime = 0;
 
 	private static Object endSyncObj = new Object();
-	
+
 	private static CountDownLatch consumerThreadRegistered = new CountDownLatch(0);
 
 	public static class Producer extends Thread
@@ -78,7 +78,7 @@ public class PubSubPerformanceTestV1
 	{
 		private volatile int messagesReceived = 0;
 		private BrokerClient bk = null;
-		
+
 		@Override
 		public void run()
 		{
@@ -102,7 +102,7 @@ public class PubSubPerformanceTestV1
 				try
 				{
 					NetSubscribe subscribe = new NetSubscribe(DESTINATION_NAME, DestinationType.TOPIC);
-					
+
 					BrokerListener listener = new BrokerListener()
 					{
 
@@ -116,7 +116,7 @@ public class PubSubPerformanceTestV1
 						public void onMessage(NetNotification message)
 						{
 							System.out.print("C");
-							if( ++messagesReceived == MESSAGES_PRODUCED)
+							if (++messagesReceived == MESSAGES_PRODUCED)
 							{
 								synchronized (endSyncObj)
 								{
@@ -125,9 +125,9 @@ public class PubSubPerformanceTestV1
 								}
 							}
 						}
-						
+
 					};
-					
+
 					bk.addAsyncConsumer(subscribe, listener);
 					consumerThreadRegistered.countDown();
 				}
@@ -141,7 +141,7 @@ public class PubSubPerformanceTestV1
 			{
 				e.printStackTrace();
 				bk.close();
-				System.out.println("Consumer Thread ended (exception):" );
+				System.out.println("Consumer Thread ended (exception):");
 				return;
 			}
 			System.out.println("AsynConsumer.run() END");
@@ -151,8 +151,6 @@ public class PubSubPerformanceTestV1
 	public static void main(String[] args)
 	{
 		System.out.println("Test starting!");
-
-		
 
 		int consumerCount = NUMBER_OF_CONSUMERS;
 
@@ -170,7 +168,7 @@ public class PubSubPerformanceTestV1
 			e1.printStackTrace();
 			Shutdown.now();
 		}
-		
+
 		new Producer().start();
 
 		synchronized (endSyncObj)

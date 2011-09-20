@@ -5,43 +5,42 @@
  */
 package pt.com.broker.codec.thrift;
 
+public enum DestinationType implements org.apache.thrift.TEnum
+{
+	TOPIC(0), QUEUE(1), VIRTUAL_QUEUE(2);
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
+	private final int value;
 
-public enum DestinationType implements org.apache.thrift.TEnum {
-  TOPIC(0),
-  QUEUE(1),
-  VIRTUAL_QUEUE(2);
+	private DestinationType(int value)
+	{
+		this.value = value;
+	}
 
-  private final int value;
+	/**
+	 * Get the integer value of this enum value, as defined in the Thrift IDL.
+	 */
+	public int getValue()
+	{
+		return value;
+	}
 
-  private DestinationType(int value) {
-    this.value = value;
-  }
-
-  /**
-   * Get the integer value of this enum value, as defined in the Thrift IDL.
-   */
-  public int getValue() {
-    return value;
-  }
-
-  /**
-   * Find a the enum type by its integer value, as defined in the Thrift IDL.
-   * @return null if the value is not found.
-   */
-  public static DestinationType findByValue(int value) { 
-    switch (value) {
-      case 0:
-        return TOPIC;
-      case 1:
-        return QUEUE;
-      case 2:
-        return VIRTUAL_QUEUE;
-      default:
-        return null;
-    }
-  }
+	/**
+	 * Find a the enum type by its integer value, as defined in the Thrift IDL.
+	 * 
+	 * @return null if the value is not found.
+	 */
+	public static DestinationType findByValue(int value)
+	{
+		switch (value)
+		{
+		case 0:
+			return TOPIC;
+		case 1:
+			return QUEUE;
+		case 2:
+			return VIRTUAL_QUEUE;
+		default:
+			return null;
+		}
+	}
 }

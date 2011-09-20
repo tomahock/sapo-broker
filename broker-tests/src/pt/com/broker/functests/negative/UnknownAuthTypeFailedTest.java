@@ -5,10 +5,10 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetAction.ActionType;
 
 public class UnknownAuthTypeFailedTest extends GenericNetMessageNegativeTest
 {

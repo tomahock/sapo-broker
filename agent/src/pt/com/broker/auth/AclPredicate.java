@@ -1,6 +1,5 @@
 package pt.com.broker.auth;
 
-
 /**
  * AclPredicate interface should be implemented by objects representing security policiy predicates.
  * 

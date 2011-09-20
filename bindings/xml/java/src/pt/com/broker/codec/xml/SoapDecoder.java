@@ -7,8 +7,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class SoapDecoder extends OneToOneDecoder
 			Throwable r = ErrorAnalyser.findRootCause(t);
 			log.error(String.format("Message unmarshall failed: %s. Channel: '%s'", r.getMessage(), channel.getRemoteAddress().toString()));
 		}
-		
+
 		if (message == null)
 		{
 			try
@@ -55,7 +55,7 @@ public class SoapDecoder extends OneToOneDecoder
 				log.error("Failed to send 'InvalidMessageFormatErrorMessage'", t);
 			}
 		}
-		
-		return message;		
+
+		return message;
 	}
 }
