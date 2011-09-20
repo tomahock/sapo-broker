@@ -12,8 +12,8 @@ public class SnapshotQueries implements QueryDataProvider
 	private static Map<String, ComposedResultQuery> queries = new HashMap<String, ComposedResultQuery>();
 	private static final String QUERY_TYPE_PARAM = "type";
 
-	private static final String TYPE = "snapshot"; 
-	
+	private static final String TYPE = "snapshot";
+
 	static
 	{
 		QueueCountSnapshotQuery qcsq = new QueueCountSnapshotQuery();
@@ -44,7 +44,7 @@ public class SnapshotQueries implements QueryDataProvider
 		}
 		return sq.getJsonData(params);
 	}
-	
+
 	@Override
 	public String getType()
 	{

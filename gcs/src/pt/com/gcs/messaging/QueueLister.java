@@ -34,7 +34,7 @@ class QueueLister implements Runnable
 		}
 
 		sb.append("\n</mqinfo>");
-		
+
 		String result = sb.toString();
 		final String sys_topic = String.format("/system/stats/queues/#%s#", GcsInfo.getAgentName());
 		InternalPublisher.send(sys_topic, result);

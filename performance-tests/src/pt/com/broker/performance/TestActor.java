@@ -13,7 +13,7 @@ public abstract class TestActor implements Callable<Integer>, BrokerListener
 	{
 		this.brokerClient = brokerClient;
 	}
-	
+
 	public void close()
 	{
 		getBrokerClient().close();
@@ -22,5 +22,5 @@ public abstract class TestActor implements Callable<Integer>, BrokerListener
 	public BrokerClient getBrokerClient()
 	{
 		return brokerClient;
-	}	
+	}
 }

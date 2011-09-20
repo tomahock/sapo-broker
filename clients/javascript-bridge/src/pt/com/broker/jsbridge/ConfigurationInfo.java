@@ -35,8 +35,8 @@ public class ConfigurationInfo
 			jc = JAXBContext.newInstance("pt.com.broker.jsbridge.configuration");
 			u = jc.createUnmarshaller();
 
-			//configuration = (BridgeConfiguration) u.unmarshal(ConfigurationInfo.class.getResourceAsStream("configuration.xml"));
-			
+			// configuration = (BridgeConfiguration) u.unmarshal(ConfigurationInfo.class.getResourceAsStream("configuration.xml"));
+
 			File f = new File("./conf/configuration.xml");
 			configuration = (BridgeConfiguration) u.unmarshal(f);
 

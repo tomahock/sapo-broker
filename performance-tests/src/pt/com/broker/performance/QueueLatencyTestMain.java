@@ -10,10 +10,10 @@ import org.caudexorigo.concurrent.Sleep;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.Headers;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class QueueLatencyTestMain
 {
@@ -100,7 +100,7 @@ public class QueueLatencyTestMain
 
 		long global_start = System.currentTimeMillis();
 		Random rnd = new Random();
-		
+
 		BrokerClient brokerClientProducer = new BrokerClient(BROKER_HOST, BROKER_PORT);
 		do
 		{
@@ -137,13 +137,13 @@ public class QueueLatencyTestMain
 
 		// process and show test data
 		System.out.println("Test results:");
-		 System.out.println(String.format("Min latency:		%s ms", minLatency.doubleValue() / 1000000.0));
-		 System.out.println(String.format("Max latency:		%s ms", maxLatency.doubleValue() / 1000000.0));
-		 System.out.printf("Average latency:	%s ms%n", (totalLantecy.doubleValue() / (double) NUMBER_OF_MESSAGES) / 1000000.0);
+		System.out.println(String.format("Min latency:		%s ms", minLatency.doubleValue() / 1000000.0));
+		System.out.println(String.format("Max latency:		%s ms", maxLatency.doubleValue() / 1000000.0));
+		System.out.printf("Average latency:	%s ms%n", (totalLantecy.doubleValue() / (double) NUMBER_OF_MESSAGES) / 1000000.0);
 
-//		System.out.println(String.format("Min latency:		%s ms", minLatency.doubleValue()));
-//		System.out.println(String.format("Max latency:		%s ms", maxLatency.doubleValue()));
-//		System.out.printf("Average latency:	%s ms%n", (totalLantecy.doubleValue() / (double) NUMBER_OF_MESSAGES));
+		// System.out.println(String.format("Min latency:		%s ms", minLatency.doubleValue()));
+		// System.out.println(String.format("Max latency:		%s ms", maxLatency.doubleValue()));
+		// System.out.printf("Average latency:	%s ms%n", (totalLantecy.doubleValue() / (double) NUMBER_OF_MESSAGES));
 
 		System.out.printf("Test Duration: %sms%n", global_elapsed);
 	}

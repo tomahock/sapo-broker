@@ -42,13 +42,13 @@ public class BrokerProducer
 
 		// Deferred delivery
 		String defDeliveryStr = np.getMessage().getHeaders().get(Headers.DEFERRED_DELIVERY);
-		
+
 		if (!StringUtils.isBlank(defDeliveryStr))
 		{
 			try
 			{
 				long value = Long.parseLong(defDeliveryStr);
-				if(value < 0)
+				if (value < 0)
 				{
 					throw new NumberFormatException();
 				}

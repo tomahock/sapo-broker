@@ -22,7 +22,6 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
@@ -46,11 +45,11 @@ import pt.com.gcs.net.codec.GcsDecoder;
 import pt.com.gcs.net.codec.GcsEncoder;
 
 /**
- * Gcs is a facade for handling several message related functionality such as
- * publish, acknowledge, etc.
+ * Gcs is a facade for handling several message related functionality such as publish, acknowledge, etc.
  */
 
-public class Gcs {
+public class Gcs
+{
 	private static Logger log = LoggerFactory.getLogger(Gcs.class);
 
 	private static final String SERVICE_NAME = "SAPO GCS";
@@ -67,38 +66,50 @@ public class Gcs {
 
 	private static final long EXPIRATION_TIME;
 
-	public static void ackMessage(String queueName, final String msgId) {
-		if (StringUtils.isBlank(queueName)) {
+	public static void ackMessage(String queueName, final String msgId)
+	{
+		if (StringUtils.isBlank(queueName))
+		{
 			throw new IllegalArgumentException("Can not acknowledge a message with a blank queue name");
 		}
-		if (StringUtils.isBlank(msgId)) {
+		if (StringUtils.isBlank(msgId))
+		{
 			throw new IllegalArgumentException("Can not acknowledge a message with a blank message-id");
 		}
 		instance.iackMessage(queueName, msgId);
 	}
 
-	public static void addAsyncConsumer(String subscriptionKey, MessageListener listener) {
-		if (StringUtils.isBlank(subscriptionKey)) {
+	public static void addAsyncConsumer(String subscriptionKey, MessageListener listener)
+	{
+		if (StringUtils.isBlank(subscriptionKey))
+		{
 			throw new IllegalArgumentException("Can not make a subscription with a blank subscription name");
 		}
 
-		if (listener == null) {
+		if (listener == null)
+		{
 			throw new IllegalArgumentException("Can not make a subscription with a null listener");
 		}
 
-		if (listener.getSourceDestinationType() == DestinationType.TOPIC) {
+		if (listener.getSourceDestinationType() == DestinationType.TOPIC)
+		{
 			instance.iaddTopicConsumer(subscriptionKey, listener);
-		} else if (listener.getSourceDestinationType() == DestinationType.QUEUE) {
+		}
+		else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
+		{
 			instance.iaddQueueConsumer(subscriptionKey, listener);
 		}
 	}
 
-	protected static void connect(SocketAddress address) {
-		if (GlobalConfig.contains((InetSocketAddress) address)) {
+	protected static void connect(SocketAddress address)
+	{
+		if (GlobalConfig.contains((InetSocketAddress) address))
+		{
 			String remoteAgentId = OutboundRemoteChannels.socketToAgentId(address);
 
 			Channel channel = OutboundRemoteChannels.get(remoteAgentId);
-			if (channel != null) {
+			if (channel != null)
+			{
 				// A connection to the remote agent existed. Close it!
 				OutboundRemoteChannels.remove(remoteAgentId);
 				ChannelFuture channelFuture = channel.close();
@@ -112,153 +123,197 @@ public class Gcs {
 
 			boolean sucess = cf.isSuccess();
 
-			if (!sucess) {
+			if (!sucess)
+			{
 				log.info("Connection fail to '{}'.", address.toString());
-				if (!cf.isDone()) {
+				if (!cf.isDone())
+				{
 					cf.cancel();
 					// If the connection is established between isDone and Cancel, close it
-					if (cf.getChannel().isConnected()) {
+					if (cf.getChannel().isConnected())
+					{
 						log.warn("Connection to '{}' established after beeing canceled.", address.toString());
 						cf.getChannel().close();
 					}
 				}
 				GcsExecutor.schedule(new Connect(address), RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
-			} else {
+			}
+			else
+			{
 				OutboundRemoteChannels.add(remoteAgentId, cf.getChannel());
 				log.info("Connection established to '{}'.", address.toString());
-				synchronized (instance.agentsConnection) {
+				synchronized (instance.agentsConnection)
+				{
 					instance.agentsConnection.add(cf.getChannel());
 				}
 			}
-		} else {
+		}
+		else
+		{
 			log.info("Peer '{}' does not appear in the world map, it will be ignored.", address.toString());
 		}
 	}
 
-	public static boolean enqueue(NetMessage nmsg, String queueName) {
+	public static boolean enqueue(NetMessage nmsg, String queueName)
+	{
 		return instance.ienqueue(nmsg, queueName);
 	}
 
-	protected static void reloadWorldMap() {
+	protected static void reloadWorldMap()
+	{
 		log.info("Reloading the world map");
 		Set<Channel> connectedSessions = getManagedConnectorSessions();
 
 		ArrayList<Channel> sessionsToClose = new ArrayList<Channel>(connectedSessions.size());
 
-		for (Channel channel : connectedSessions) {
+		for (Channel channel : connectedSessions)
+		{
 			InetSocketAddress inet = (InetSocketAddress) channel.getRemoteAddress();
 
 			// remove connections to agents that were removed from world map
-			if (!GlobalConfig.contains(inet)) {
+			if (!GlobalConfig.contains(inet))
+			{
 				log.info("Remove peer '{}'", inet.toString());
 				sessionsToClose.add(channel);
 			}
 		}
-		for (Channel channel : sessionsToClose) {
+		for (Channel channel : sessionsToClose)
+		{
 			channel.close();
 		}
 
 		List<InetSocketAddress> remoteSessions = new ArrayList<InetSocketAddress>(connectedSessions.size());
-		for (Channel channel : connectedSessions) {
+		for (Channel channel : connectedSessions)
+		{
 			remoteSessions.add((InetSocketAddress) channel.getRemoteAddress());
 		}
 
 		List<Peer> peerList = GlobalConfig.getPeerList();
-		for (Peer peer : peerList) {
+		for (Peer peer : peerList)
+		{
 			SocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
 			// Connect only if not already connected
-			if (!remoteSessions.contains(addr)) {
+			if (!remoteSessions.contains(addr))
+			{
 				connect(addr);
 			}
 		}
 	}
 
-	public static Set<Channel> getManagedConnectorSessions() {
+	public static Set<Channel> getManagedConnectorSessions()
+	{
 		LinkedHashSet<Channel> connections = null;
-		synchronized (instance.agentsConnection) {
+		synchronized (instance.agentsConnection)
+		{
 			connections = new LinkedHashSet<Channel>(instance.agentsConnection);
 		}
 
 		return connections;
 	}
 
-	protected static List<Peer> getPeerList() {
+	protected static List<Peer> getPeerList()
+	{
 		return GlobalConfig.getPeerList();
 	}
 
-	public static void destroy() {
+	public static void destroy()
+	{
 		instance.idestroy();
 	}
 
-	public static void init() {
+	public static void init()
+	{
 		instance.iinit();
 	}
 
-	public static void publish(NetPublish np) {
+	public static void publish(NetPublish np)
+	{
 		instance.ipublish(np);
 	}
 
-	public static void removeAsyncConsumer(MessageListener listener) {
-		if (listener != null) {
-			if (listener.getSourceDestinationType() == DestinationType.TOPIC) {
+	public static void removeAsyncConsumer(MessageListener listener)
+	{
+		if (listener != null)
+		{
+			if (listener.getSourceDestinationType() == DestinationType.TOPIC)
+			{
 				TopicProcessorList.removeListener(listener);
 
-			} else if (listener.getSourceDestinationType() == DestinationType.QUEUE) {
+			}
+			else if (listener.getSourceDestinationType() == DestinationType.QUEUE)
+			{
 				QueueProcessorList.removeListener(listener);
 			}
-		} else {
+		}
+		else
+		{
 			log.warn("Can not remove null listener");
 		}
 	}
 
-	static {
+	static
+	{
 		EXPIRATION_TIME = GcsInfo.getMessageStorageTime();
 	}
 
-	private Gcs() {
+	private Gcs()
+	{
 	}
 
-	private void connectToAllPeers() {
+	private void connectToAllPeers()
+	{
 		List<Peer> peerList = GlobalConfig.getPeerList();
-		for (Peer peer : peerList) {
+		for (Peer peer : peerList)
+		{
 			SocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
 			connect(addr);
 		}
 	}
 
-	private void iackMessage(String queueName, final String msgId) {
-		if (!QueueProcessorList.hasQueue(queueName)) {
+	private void iackMessage(String queueName, final String msgId)
+	{
+		if (!QueueProcessorList.hasQueue(queueName))
+		{
 			log.warn(String.format("Trying to acknowledge a message whose queue doesn't existe. Queue: '%s', MsgId: '%s' ", queueName, msgId));
 			return;
 		}
 
 		QueueProcessor queueProcessor = QueueProcessorList.get(queueName);
-		if (queueProcessor != null) {
+		if (queueProcessor != null)
+		{
 			queueProcessor.ack(msgId);
 		}
 	}
 
-	private void iaddQueueConsumer(String queueName, MessageListener listener) {
-		if (listener != null) {
+	private void iaddQueueConsumer(String queueName, MessageListener listener)
+	{
+		if (listener != null)
+		{
 			QueueProcessor qp = QueueProcessorList.get(queueName);
-			if (qp != null) {
+			if (qp != null)
+			{
 				qp.add(listener);
 			}
 		}
 	}
 
-	private void iaddTopicConsumer(String subscriptionName, MessageListener listener) {
-		if (listener != null) {
+	private void iaddTopicConsumer(String subscriptionName, MessageListener listener)
+	{
+		if (listener != null)
+		{
 			TopicProcessor topicProcessor = TopicProcessorList.get(subscriptionName);
-			if (topicProcessor != null) {
+			if (topicProcessor != null)
+			{
 				topicProcessor.add(listener, true);
 			}
 		}
 	}
 
-	private boolean ienqueue(NetMessage nmsg, String queueName) {
+	private boolean ienqueue(NetMessage nmsg, String queueName)
+	{
 		QueueProcessor qp = QueueProcessorList.get(queueName);
-		if (qp != null) {
+		if (qp != null)
+		{
 			qp.getQueueStatistics().newQueueMessageReceived();
 			qp.store(nmsg, GlobalConfig.preferLocalConsumers());
 			return true;
@@ -267,11 +322,14 @@ public class Gcs {
 		return false;
 	}
 
-	private void iinit() {
-		if (GlobalConfig.supportVirtualQueues()) {
+	private void iinit()
+	{
+		if (GlobalConfig.supportVirtualQueues())
+		{
 			String[] virtual_queues = VirtualQueueStorage.getVirtualQueueNames();
 
-			for (String vqueue : virtual_queues) {
+			for (String vqueue : virtual_queues)
+			{
 				log.debug("Add VirtualQueue '{}' from storage", vqueue);
 				iaddQueueConsumer(vqueue, null);
 			}
@@ -283,12 +341,14 @@ public class Gcs {
 
 		String[] queues = BDBEnviroment.getQueueNames();
 
-		for (String queueName : queues) {
+		for (String queueName : queues)
+		{
 			QueueProcessorList.get(queueName);
 		}
 
 		log.info("{} starting.", SERVICE_NAME);
-		try {
+		try
+		{
 			startAcceptor(GcsInfo.getAgentPort());
 			startConnector();
 
@@ -303,7 +363,9 @@ public class Gcs {
 			GcsExecutor.scheduleWithFixedDelay(new QueueWatchDog(), 2, 2, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new PingPeers(), 5, 5, TimeUnit.MINUTES);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t)
+		{
 			Shutdown.now(t);
 		}
 
@@ -314,19 +376,25 @@ public class Gcs {
 		log.info("{} initialized.", SERVICE_NAME);
 	}
 
-	private void idestroy() {
-		try {
+	private void idestroy()
+	{
+		try
+		{
 			BDBEnviroment.sync();
-		} catch (Throwable te) {
+		}
+		catch (Throwable te)
+		{
 			log.error(te.getMessage(), te);
 		}
 	}
 
-	private void ipublish(final NetPublish np) {
+	private void ipublish(final NetPublish np)
+	{
 		TopicProcessorList.notify(np, false);
 	}
 
-	private void startAcceptor(int portNumber) throws IOException {
+	private void startAcceptor(int portNumber) throws IOException
+	{
 		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-1");
 		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-1");
 
@@ -340,9 +408,11 @@ public class Gcs {
 		bootstrap.setOption("reuseAddress", true);
 		bootstrap.setOption("backlog", 1024);
 
-		ChannelPipelineFactory serverPipelineFactory = new ChannelPipelineFactory() {
+		ChannelPipelineFactory serverPipelineFactory = new ChannelPipelineFactory()
+		{
 			@Override
-			public ChannelPipeline getPipeline() throws Exception {
+			public ChannelPipeline getPipeline() throws Exception
+			{
 				ChannelPipeline pipeline = Channels.pipeline();
 
 				pipeline.addLast("broker-encoder", new GcsEncoder());
@@ -363,15 +433,18 @@ public class Gcs {
 		log.info("{} listening on: '{}'.", SERVICE_NAME, inet.toString());
 	}
 
-	private void startConnector() {
+	private void startConnector()
+	{
 		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-2");
 		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-2");
 
 		ClientBootstrap bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(tpe_io, tpe_workers));
 
-		ChannelPipelineFactory connectorPipelineFactory = new ChannelPipelineFactory() {
+		ChannelPipelineFactory connectorPipelineFactory = new ChannelPipelineFactory()
+		{
 			@Override
-			public ChannelPipeline getPipeline() throws Exception {
+			public ChannelPipeline getPipeline() throws Exception
+			{
 				ChannelPipeline pipeline = Channels.pipeline();
 
 				pipeline.addLast("broker-encoder", new GcsEncoder());
@@ -386,9 +459,12 @@ public class Gcs {
 
 		bootstrap.setPipelineFactory(connectorPipelineFactory);
 
-		try {
+		try
+		{
 			bootstrap.setOption("localAddress", new InetSocketAddress(Inet4Address.getByName(GcsInfo.getAgentHost()), 0));
-		} catch (UnknownHostException e) {
+		}
+		catch (UnknownHostException e)
+		{
 			log.error(String.format("Failed to bind to local host address. Address: '%s'.", GcsInfo.getAgentHost()), e);
 		}
 
@@ -400,37 +476,50 @@ public class Gcs {
 		this.connector = bootstrap;
 	}
 
-	public synchronized static void deleteQueue(String queueName) {
+	public synchronized static void deleteQueue(String queueName)
+	{
 		QueueProcessorList.remove(queueName);
 	}
 
-	public static void remoteSessionClosed(Channel channel) {
-		synchronized (instance.agentsConnection) {
+	public static void remoteSessionClosed(Channel channel)
+	{
+		synchronized (instance.agentsConnection)
+		{
 			boolean removed = instance.agentsConnection.remove(channel);
 		}
 	}
 
-	public static NetMessage buildNotification(NetPublish np, String subscriptionName) {
+	public static NetMessage buildNotification(NetPublish np, String subscriptionName)
+	{
 		String msg_id = MessageId.getMessageId();
 
-		if (StringUtils.isBlank(np.getMessage().getMessageId())) {
+		if (StringUtils.isBlank(np.getMessage().getMessageId()))
+		{
 			np.getMessage().setMessageId(msg_id);
 		}
 
 		long now = System.currentTimeMillis();
-		if (np.getMessage().getTimestamp() == -1) {
+		if (np.getMessage().getTimestamp() == -1)
+		{
 			np.getMessage().setTimestamp(now);
 		}
 
-		if (np.getMessage().getExpiration() == -1) {
+		if (np.getMessage().getExpiration() == -1)
+		{
 			String deliveryTime = np.getMessage().getHeaders().get(Headers.DEFERRED_DELIVERY);
-			if (StringUtils.isBlank(deliveryTime)) {
+			if (StringUtils.isBlank(deliveryTime))
+			{
 				np.getMessage().setExpiration(now + EXPIRATION_TIME);
-			} else {
-				try {
+			}
+			else
+			{
+				try
+				{
 					long value = Long.parseLong(deliveryTime);
 					np.getMessage().setExpiration(value + EXPIRATION_TIME);
-				} catch (NumberFormatException nfe) {
+				}
+				catch (NumberFormatException nfe)
+				{
 					// This shouldn't happen because deliveryTime has been validated
 					log.error(String.format("'EXPIRATION_TIME' is invalid '%s'", deliveryTime), nfe);
 					throw new RuntimeException(nfe);
@@ -446,22 +535,26 @@ public class Gcs {
 
 		NetMessage message = new NetMessage(action);
 
-		if (np.getMessage().getHeaders() != null) {
+		if (np.getMessage().getHeaders() != null)
+		{
 			message.getHeaders().putAll(np.getMessage().getHeaders());
 		}
 
 		return message;
 	}
 
-	public static void broadcastMaxQueueSizeReached() {
+	public static void broadcastMaxQueueSizeReached()
+	{
 		broadcastMaxSizeFault(String.format("The maximum number of queues (%s) has been reached.", GcsInfo.getMaxQueues()));
 	}
 
-	public static void broadcastMaxDistinctSubscriptionsReached() {
+	public static void broadcastMaxDistinctSubscriptionsReached()
+	{
 		broadcastMaxSizeFault(String.format("The maximum number of distinct subscriptions (%s) has been reached.", GcsInfo.getMaxDistinctSubscriptions()));
 	}
 
-	private static void broadcastMaxSizeFault(String message) {
+	private static void broadcastMaxSizeFault(String message)
+	{
 		String topic = String.format("/system/faults/#%s#", GcsInfo.getAgentName());
 
 		// Soap fault message

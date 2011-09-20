@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestResult
-{	
+{
 	private static final Logger log = LoggerFactory.getLogger(TestResult.class);
-	
+
 	private ActorType actorType;
 	private String actorName;
 	private String testName;
@@ -20,15 +20,16 @@ public class TestResult
 	private long startTime;
 	private long stopTime;
 
+	public enum ActorType
+	{
+		Procucer, Consumer
+	};
 
-	public enum ActorType{ Procucer, Consumer};
-	
-	
 	private TestResult()
 	{
-		
+
 	}
-	
+
 	public TestResult(ActorType actorType, String actorName, String testName, int messages, long startTime, long stopTime)
 	{
 		this.actorType = actorType;
@@ -38,7 +39,7 @@ public class TestResult
 		this.startTime = startTime;
 		this.stopTime = stopTime;
 	}
-	
+
 	public TestResult(ActorType actorType, String actorName, String testName)
 	{
 		this.actorType = actorType;
@@ -68,7 +69,7 @@ public class TestResult
 	{
 		return messages;
 	}
-	
+
 	public void setMessages(int messages)
 	{
 		this.messages = messages;
@@ -78,22 +79,22 @@ public class TestResult
 	{
 		return startTime;
 	}
-	
+
 	public void setStartTime(long startTime)
 	{
 		this.startTime = startTime;
 	}
-	
+
 	public double getStopTime()
 	{
 		return stopTime;
 	}
-	
+
 	public void setStopTime(long stopTime)
 	{
 		this.stopTime = stopTime;
 	}
-	
+
 	public byte[] serialize()
 	{
 		byte[] data = null;
@@ -107,10 +108,10 @@ public class TestResult
 			outputObj.writeInt(messages);
 			outputObj.writeLong(startTime);
 			outputObj.writeLong(stopTime);
-			
+
 			outputObj.flush();
 
-			data = bout.toByteArray();			
+			data = bout.toByteArray();
 		}
 		catch (IOException e)
 		{
@@ -118,19 +119,19 @@ public class TestResult
 		}
 		return data;
 	}
-	
+
 	public static TestResult deserialize(byte[] data)
 	{
 		TestResult testResult = new TestResult();
-		
+
 		try
 		{
 			ObjectInputStream inputObj;
 			inputObj = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(data));
-			
+
 			testResult.testName = inputObj.readUTF();
 			testResult.actorName = inputObj.readUTF();
-			testResult.actorType = ActorType.valueOf( inputObj.readUTF() );
+			testResult.actorType = ActorType.valueOf(inputObj.readUTF());
 			testResult.messages = inputObj.readInt();
 			testResult.startTime = inputObj.readLong();
 			testResult.stopTime = inputObj.readLong();
@@ -140,8 +141,7 @@ public class TestResult
 			log.error("Failed to deserialize object", e);
 			return null;
 		}
-		
+
 		return testResult;
 	}
 }
-

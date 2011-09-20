@@ -30,6 +30,7 @@ import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetFault;
@@ -42,7 +43,6 @@ import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.stats.EncodingStats;
 
 import com.google.protobuf.ByteString;

@@ -4,8 +4,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ import pt.com.broker.types.NetMessage;
 public class GcsEncoder extends OneToOneEncoder
 {
 	private static final Logger log = LoggerFactory.getLogger(GcsEncoder.class);
-	
+
 	private final ProtoBufBindingSerializer serializer = new ProtoBufBindingSerializer();
 
 	@Override
@@ -48,7 +48,7 @@ public class GcsEncoder extends OneToOneEncoder
 		ChannelBuffer out = ChannelBuffers.dynamicBuffer();
 		ChannelBufferOutputStream sout = new ChannelBufferOutputStream(out);
 		sout.writeInt(0);
-		
+
 		serializer.marshal((NetMessage) msg, sout);
 
 		int len = out.writerIndex() - 4;

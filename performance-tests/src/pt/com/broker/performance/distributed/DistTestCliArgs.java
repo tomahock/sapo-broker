@@ -44,28 +44,27 @@ public interface DistTestCliArgs
 	@Option(shortName = "d", defaultValue = "TOPIC")
 	String getDestinationType();
 
-
 	/**
 	 * 
 	 * @return Message length. Useful for generate random messages with known size.
 	 */
 	@Option(shortName = "l", defaultValue = "-1")
 	int getMessageLength();
-	
+
 	/**
 	 * 
 	 * @return Number of Messages.
 	 */
 	@Option(shortName = "m", defaultValue = "-1")
 	int getNumberOfMessages();
-	
+
 	/**
 	 * 
 	 * @return Number of consumers.
 	 */
 	@Option(shortName = "c", defaultValue = "-1")
 	int getNumberOfConsumers();
-	
+
 	/**
 	 * 
 	 * @return Actor name (consumer1, producer3)
@@ -79,12 +78,12 @@ public interface DistTestCliArgs
 	 */
 	@Option(shortName = "M", defaultValue = "")
 	String getMachineName();
-	
+
 	/**
 	 * 
 	 * @return Perform initial warmup
 	 */
 	@Option(shortName = "w", defaultValue = "true")
 	boolean warmup();
-	
+
 }

@@ -21,8 +21,7 @@ public class DeferredDeliveryProducer
 	private String dname;
 
 	private long deferredDelivery;
-	
-	
+
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);
@@ -31,23 +30,23 @@ public class DeferredDeliveryProducer
 		producer.host = cargs.getHost();
 		producer.port = cargs.getPort();
 		producer.dname = cargs.getDestination();
-		producer.deferredDelivery = (cargs.getDelay() == 0 ) ? 1000 :  cargs.getDelay();
-				
+		producer.deferredDelivery = (cargs.getDelay() == 0) ? 1000 : cargs.getDelay();
+
 		NetProtocolType protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
-		
+
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher", protocolType);
 
 		log.info("Sending message. Size: " + cargs.getMessageLength() + ". This message should be received in " + producer.deferredDelivery + "milliseconds.");
-		
+
 		final String msg = RandomStringUtils.randomAlphanumeric(cargs.getMessageLength());
-		
+
 		NetBrokerMessage brokerMessage = new NetBrokerMessage(msg);
-		
-		// Specify the delivery  interval (in milliseconds) 
+
+		// Specify the delivery interval (in milliseconds)
 		brokerMessage.addHeader(Headers.DEFERRED_DELIVERY, "" + producer.deferredDelivery);
-		
+
 		bk.enqueueMessage(brokerMessage, producer.dname);
-		
+
 		bk.close();
 		Shutdown.now();
 	}

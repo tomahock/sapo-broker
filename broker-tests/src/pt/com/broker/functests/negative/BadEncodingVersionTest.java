@@ -18,7 +18,7 @@ public class BadEncodingVersionTest extends GenericNegativeTest
 	public void addConsequece()
 	{
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

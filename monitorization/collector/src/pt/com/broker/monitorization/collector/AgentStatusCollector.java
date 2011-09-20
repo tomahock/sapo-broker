@@ -16,7 +16,7 @@ import pt.com.broker.types.NetPong;
 public class AgentStatusCollector
 {
 	private static Logger log = LoggerFactory.getLogger(AgentStatusCollector.class);
-	
+
 	private Runnable statusVerifier;
 
 	public enum AgentStatus
@@ -37,13 +37,13 @@ public class AgentStatusCollector
 					NetPong checkStatus = null;
 					try
 					{
-						log.info(String.format("Checking client %s:%s", agent.tcpInfo.getHostname(), agent.tcpInfo.getPort())); 
+						log.info(String.format("Checking client %s:%s", agent.tcpInfo.getHostname(), agent.tcpInfo.getPort()));
 						bk = new BrokerClient(agent.tcpInfo.getHostname(), agent.tcpInfo.getPort(), 0);
 						checkStatus = bk.checkStatus();
 					}
 					catch (Throwable t)
 					{
-						log.info(String.format("Failed to check status client %s:%s", agent.tcpInfo.getHostname(), agent.tcpInfo.getPort())); 
+						log.info(String.format("Failed to check status client %s:%s", agent.tcpInfo.getHostname(), agent.tcpInfo.getPort()));
 					}
 					processResult(agent.hostname, (checkStatus != null) ? AgentStatus.Ok : AgentStatus.Down);
 					if (bk != null)

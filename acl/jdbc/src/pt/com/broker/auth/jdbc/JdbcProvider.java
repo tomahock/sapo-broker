@@ -21,7 +21,7 @@ public class JdbcProvider implements CredentialsProvider
 
 	private final String username;
 	private final String password;
-	
+
 	public JdbcProvider(String username, String password)
 	{
 		this.username = username;
@@ -48,7 +48,8 @@ public class JdbcProvider implements CredentialsProvider
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "JdbcProvider [providerName=" + providerName + ", username=" + username + ", password=" + password + "]";
 	}
 }

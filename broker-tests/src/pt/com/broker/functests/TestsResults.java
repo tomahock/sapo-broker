@@ -12,9 +12,9 @@ public class TestsResults
 	private AtomicInteger negativeTests = new AtomicInteger();
 	private List<String> badTests = new ArrayList<String>();
 	private List<String> skippedTests = new ArrayList<String>();
-	
-	public Map <String, String> properties = new HashMap<String, String>();
-	
+
+	public Map<String, String> properties = new HashMap<String, String>();
+
 	public void addPositiveTest()
 	{
 		positiveTests.addAndGet(1);
@@ -55,22 +55,22 @@ public class TestsResults
 	{
 		return skippedTests;
 	}
-	
+
 	public void addProperty(String name, String value)
 	{
 		properties.put(name, value);
 	}
-	
+
 	public String getProperty(String name)
 	{
 		return properties.get(name);
 	}
-	
+
 	public void deleteProperty(String name)
 	{
 		properties.remove(name);
 	}
-	
+
 	/***
 	 * Total number of tests performed (skipped tests are excluded).
 	 * 

@@ -1,13 +1,12 @@
 package pt.com.broker.functests.helpers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetNotification;
 
 public class MultipleNotificationsBrokerListener implements BrokerListener
 {
@@ -21,7 +20,7 @@ public class MultipleNotificationsBrokerListener implements BrokerListener
 	{
 		this.destinationType = destinationType;
 		this.expectedNotifications = expectedNotifications;
-		//this.list = new ArrayList<NetNotification>(expectedNotifications);
+		// this.list = new ArrayList<NetNotification>(expectedNotifications);
 		this.list = new CopyOnWriteArrayList<NetNotification>();
 	}
 

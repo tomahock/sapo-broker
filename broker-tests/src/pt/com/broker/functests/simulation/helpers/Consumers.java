@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.gcs.messaging.GcsExecutor;
 
 public class Consumers
@@ -38,43 +38,39 @@ public class Consumers
 
 	private final DestinationType destinationType;
 
-	
 	private static List<Consumers> activeConsumers = new ArrayList<Consumers>();
-	
+
 	static
 	{
 		final long interval = 15;
-		
+
 		Runnable command = new Runnable()
 		{
 
-			
 			@Override
 			public void run()
 			{
 				StringBuffer sb = new StringBuffer();
 
-				
-				for(Consumers consumers : activeConsumers)
+				for (Consumers consumers : activeConsumers)
 				{
 					sb.append("\nConsumers:");
 					sb.append(consumers.appName);
 					sb.append("\n");
-					for(ConsumerInfo ci : consumers.consumers)
+					for (ConsumerInfo ci : consumers.consumers)
 					{
-						sb.append(String.format("Messages received in the last %s (s) by %s: %s\n", interval, ci.consumerName, ci.messagesReceived)) ; 
+						sb.append(String.format("Messages received in the last %s (s) by %s: %s\n", interval, ci.consumerName, ci.messagesReceived));
 						ci.messagesReceived = 0;
-					}					
+					}
 				}
-				
-				System.out.println( sb.toString());
+
+				System.out.println(sb.toString());
 			}
 		};
-		
+
 		GcsExecutor.scheduleAtFixedRate(command, interval, interval, TimeUnit.SECONDS);
-		
+
 	}
-	
 
 	private static class ConsumerInfo
 	{
@@ -113,7 +109,7 @@ public class Consumers
 			ConsumerInfo ci = new ConsumerInfo();
 			try
 			{
-				ci.consumerName = appName+i;
+				ci.consumerName = appName + i;
 				ci.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), String.format("Consumer:%s:%s", destinationName, i), protocolType);
 
 				consumers.add(ci);
@@ -141,7 +137,7 @@ public class Consumers
 				public void onMessage(NetNotification message)
 				{
 					++consumerInfo.messagesReceived;
-					if(ackDelay != 0)
+					if (ackDelay != 0)
 					{
 						Sleep.time(ackDelay);
 					}

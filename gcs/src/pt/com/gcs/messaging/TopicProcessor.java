@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.MessageListener.Type;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.MessageListener.Type;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.gcs.conf.GcsInfo;
 

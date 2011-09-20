@@ -14,9 +14,9 @@ import pt.com.broker.monitorization.AgentHostname;
 public class GeneralSubscriptionInfoQuery
 {
 	private static final Logger log = LoggerFactory.getLogger(GeneralSubscriptionInfoQuery.class);
-	
+
 	private final static String SUBSCRIPTION_PARAM = "subscriptionname";
-		
+
 	private static String QUERY = "SELECT \n	agents.agent_name,\n	last_event_for_subject_predicate_agent(?, 'output-rate', agents.agent_name, now(), '00:05') AS outputrate,\n	last_event_for_subject_predicate_agent(?, 'discarded-rate', agents.agent_name, now(), '00:05') AS failed,\n	last_event_for_subject_predicate_agent(?, 'dispatched-to-queue-rate', agents.agent_name, now(), '00:05') AS expired,\n	last_event_for_subject_predicate_agent(?, 'subscriptions', agents.agent_name, now(), '00:05') AS subscriptions\nFROM (SELECT DISTINCT agent_name FROM raw_data WHERE event_time > (now() - '00:05'::time) AND subject=? AND object_value > 0) AS agents\nORDER BY 2 DESC";
 
 	public String getId()
@@ -68,15 +68,15 @@ public class GeneralSubscriptionInfoQuery
 				sb.append("\"discardedRate\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\",");
-				
+
 				sb.append("\"dispatchedToQueueRate\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\",");
-				
+
 				sb.append("\"subscriptions\":\"");
 				sb.append(queryResult.getDouble(idx++));
 				sb.append("\"");
-				
+
 				sb.append("}");
 			}
 		}
@@ -91,25 +91,25 @@ public class GeneralSubscriptionInfoQuery
 
 		return sb.toString();
 	}
-	
+
 	public static String getsubscription(Map<String, List<String>> params)
 	{
 		List<String> list = params.get(SUBSCRIPTION_PARAM);
-		if( (list != null) && (list.size() == 1) )
+		if ((list != null) && (list.size() == 1))
 		{
-			return "topic://"+list.get(0);
+			return "topic://" + list.get(0);
 		}
 		return null;
 	}
 
 	protected ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
-		String subscriptionName = getsubscription(params) ;
-		if(subscriptionName == null)
+		String subscriptionName = getsubscription(params);
+		if (subscriptionName == null)
 		{
 			return null;
 		}
-		
+
 		return db.runRetrievalPreparedStatement(QUERY, subscriptionName, subscriptionName, subscriptionName, subscriptionName, subscriptionName);
 	}
 }

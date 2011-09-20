@@ -22,23 +22,23 @@ public abstract class AgentRateQuery extends StaticQuery
 		QUERY_LAST = queryLast;
 	}
 
-	public ResultSet getResultSet(Db db, Map<String,List<String>> params)
+	public ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
 		String windowParam = QueryStringParameters.getWindowParam(params);
-		
+
 		String agentName = QueryStringParameters.getAgentNameParam(params);
-		if(agentName == null)
+		if (agentName == null)
 		{
 			return null;
 		}
-		
-		if(windowParam != null)
+
+		if (windowParam != null)
 		{
-			if(windowParam.equals(QueryStringParameters.WINDOW_PARAM_ALL))
+			if (windowParam.equals(QueryStringParameters.WINDOW_PARAM_ALL))
 			{
 				return db.runRetrievalPreparedStatement(QUERY_ALL, agentName);
 			}
-			else if(windowParam.equals(QueryStringParameters.WINDOW_PARAM_LAST))
+			else if (windowParam.equals(QueryStringParameters.WINDOW_PARAM_LAST))
 			{
 				return db.runRetrievalPreparedStatement(QUERY_LAST, agentName);
 			}

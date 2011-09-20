@@ -4,7 +4,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 public class UdpQueuePublishTest extends UdpPublishTest
 {
-	
+
 	public UdpQueuePublishTest()
 	{
 		super("UDP queue publication");

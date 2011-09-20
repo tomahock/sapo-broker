@@ -6,11 +6,10 @@ import org.caudexorigo.text.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.stats.ChannelStats;
-import pt.com.broker.types.stats.EncodingStats;
 import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
 
@@ -36,7 +35,7 @@ public class GlobalStatisticsPublisher implements Runnable
 
 		publishChannelInfo(currentDateStr, difSeconds);
 
-		//publishEncodingInfo(currentDateStr, difSeconds);
+		// publishEncodingInfo(currentDateStr, difSeconds);
 
 		publishMiscInformation(currentDateStr, difSeconds);
 	}
@@ -72,7 +71,6 @@ public class GlobalStatisticsPublisher implements Runnable
 				++infoCount;
 			}
 
-
 			value = qp.getQueueStatistics().getQueueMessagesExpiredAndReset();
 			if (value != -1)
 			{
@@ -97,11 +95,11 @@ public class GlobalStatisticsPublisher implements Runnable
 
 		// queue count (number of queues in this agent)
 		sb.append(String.format("\n	<item subject=\"queue\" predicate=\"count\" value=\"%s\" />", QueueProcessorList.values().size()));
-		
+
 		sb.append("\n</mqinfo>");
 
 		String result = sb.toString();
-		
+
 		final String sys_topic = String.format("/system/stats/queues/#%s#", GcsInfo.getAgentName());
 
 		NetPublish np = new NetPublish(sys_topic, DestinationType.TOPIC, new NetBrokerMessage(result));
@@ -180,8 +178,8 @@ public class GlobalStatisticsPublisher implements Runnable
 
 		rate = ((double) ChannelStats.getDropboxReceivedMessagesAndReset() / dSeconds);
 		sb.append(String.format("\n\t<item subject='dropbox' predicate='input-rate' value='%s' />", rate));
-//		rate = ((double) ChannelStats.getHttpReceivedMessagesAndReset() / dSeconds);
-//		sb.append(String.format("\n\t<item subject='http' predicate='input-rate' value='%s' />", rate));
+		// rate = ((double) ChannelStats.getHttpReceivedMessagesAndReset() / dSeconds);
+		// sb.append(String.format("\n\t<item subject='http' predicate='input-rate' value='%s' />", rate));
 
 		sb.append("\n</mqinfo>");
 		String result = sb.toString();
@@ -206,7 +204,7 @@ public class GlobalStatisticsPublisher implements Runnable
 
 		// access denied
 		rate = ((double) MiscStats.getAccessesDeniedAndReset());
-		if(rate > 0)
+		if (rate > 0)
 		{
 			sb.append(String.format("\n\t<item subject='access' predicate='denied' value='%s' />", rate));
 		}

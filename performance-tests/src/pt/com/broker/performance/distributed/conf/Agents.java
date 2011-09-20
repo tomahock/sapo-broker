@@ -5,23 +5,24 @@
 // Generated on: 2010.04.10 at 05:51:46 PM WEST 
 //
 
-
 package pt.com.broker.performance.distributed.conf;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for Agents complex type.
+ * <p>
+ * Java class for Agents complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Agents">
@@ -50,199 +51,194 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Agents", propOrder = {
-    "agent"
-})
-public class Agents {
+@XmlType(name = "Agents", propOrder = { "agent" })
+public class Agents
+{
 
-    @XmlElement(required = true)
-    protected List<Agents.Agent> agent;
-    @XmlAttribute(name = "default-agent", required = true)
-    protected String defaultAgent;
+	@XmlElement(required = true)
+	protected List<Agents.Agent> agent;
+	@XmlAttribute(name = "default-agent", required = true)
+	protected String defaultAgent;
 
-    /**
-     * Gets the value of the agent property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the agent property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAgent().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Agents.Agent }
-     * 
-     * 
-     */
-    public List<Agents.Agent> getAgent() {
-        if (agent == null) {
-            agent = new ArrayList<Agents.Agent>();
-        }
-        return this.agent;
-    }
+	/**
+	 * Gets the value of the agent property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the agent property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getAgent().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link Agents.Agent }
+	 * 
+	 * 
+	 */
+	public List<Agents.Agent> getAgent()
+	{
+		if (agent == null)
+		{
+			agent = new ArrayList<Agents.Agent>();
+		}
+		return this.agent;
+	}
 
-    /**
-     * Gets the value of the defaultAgent property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDefaultAgent() {
-        return defaultAgent;
-    }
+	/**
+	 * Gets the value of the defaultAgent property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getDefaultAgent()
+	{
+		return defaultAgent;
+	}
 
-    /**
-     * Sets the value of the defaultAgent property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDefaultAgent(String value) {
-        this.defaultAgent = value;
-    }
+	/**
+	 * Sets the value of the defaultAgent property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setDefaultAgent(String value)
+	{
+		this.defaultAgent = value;
+	}
 
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;attribute name="hostname" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *       &lt;attribute name="tcp-port" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+	 *       &lt;attribute name="http-port" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+	 *       &lt;attribute name="agent-id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "")
+	public static class Agent
+	{
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="hostname" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="tcp-port" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
-     *       &lt;attribute name="http-port" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
-     *       &lt;attribute name="agent-id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-    public static class Agent {
+		@XmlAttribute(required = true)
+		protected String hostname;
+		@XmlAttribute(name = "tcp-port", required = true)
+		protected BigDecimal tcpPort;
+		@XmlAttribute(name = "http-port", required = true)
+		protected BigDecimal httpPort;
+		@XmlAttribute(name = "agent-id", required = true)
+		protected String agentId;
 
-        @XmlAttribute(required = true)
-        protected String hostname;
-        @XmlAttribute(name = "tcp-port", required = true)
-        protected BigDecimal tcpPort;
-        @XmlAttribute(name = "http-port", required = true)
-        protected BigDecimal httpPort;
-        @XmlAttribute(name = "agent-id", required = true)
-        protected String agentId;
+		/**
+		 * Gets the value of the hostname property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getHostname()
+		{
+			return hostname;
+		}
 
-        /**
-         * Gets the value of the hostname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getHostname() {
-            return hostname;
-        }
+		/**
+		 * Sets the value of the hostname property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setHostname(String value)
+		{
+			this.hostname = value;
+		}
 
-        /**
-         * Sets the value of the hostname property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setHostname(String value) {
-            this.hostname = value;
-        }
+		/**
+		 * Gets the value of the tcpPort property.
+		 * 
+		 * @return possible object is {@link BigDecimal }
+		 * 
+		 */
+		public BigDecimal getTcpPort()
+		{
+			return tcpPort;
+		}
 
-        /**
-         * Gets the value of the tcpPort property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getTcpPort() {
-            return tcpPort;
-        }
+		/**
+		 * Sets the value of the tcpPort property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link BigDecimal }
+		 * 
+		 */
+		public void setTcpPort(BigDecimal value)
+		{
+			this.tcpPort = value;
+		}
 
-        /**
-         * Sets the value of the tcpPort property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setTcpPort(BigDecimal value) {
-            this.tcpPort = value;
-        }
+		/**
+		 * Gets the value of the httpPort property.
+		 * 
+		 * @return possible object is {@link BigDecimal }
+		 * 
+		 */
+		public BigDecimal getHttpPort()
+		{
+			return httpPort;
+		}
 
-        /**
-         * Gets the value of the httpPort property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getHttpPort() {
-            return httpPort;
-        }
+		/**
+		 * Sets the value of the httpPort property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link BigDecimal }
+		 * 
+		 */
+		public void setHttpPort(BigDecimal value)
+		{
+			this.httpPort = value;
+		}
 
-        /**
-         * Sets the value of the httpPort property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setHttpPort(BigDecimal value) {
-            this.httpPort = value;
-        }
+		/**
+		 * Gets the value of the agentId property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getAgentId()
+		{
+			return agentId;
+		}
 
-        /**
-         * Gets the value of the agentId property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getAgentId() {
-            return agentId;
-        }
+		/**
+		 * Sets the value of the agentId property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setAgentId(String value)
+		{
+			this.agentId = value;
+		}
 
-        /**
-         * Sets the value of the agentId property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setAgentId(String value) {
-            this.agentId = value;
-        }
-
-    }
+	}
 
 }

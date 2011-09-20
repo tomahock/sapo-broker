@@ -3,9 +3,9 @@ package pt.com.broker.functests.negative;
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetAction.ActionType;
 
 public class AcceptedTest extends GenericNetMessageNegativeTest
 {
@@ -22,7 +22,7 @@ public class AcceptedTest extends GenericNetMessageNegativeTest
 		setFaultCode("1202");
 		setFaultMessage("Unexpected message type");
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

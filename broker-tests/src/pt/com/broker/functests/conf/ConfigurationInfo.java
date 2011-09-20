@@ -16,17 +16,17 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.functests.conf.TestParams.DynamicallyLoadedTests.TestClass;
 
-
 public class ConfigurationInfo
 {
 	private static final Logger log = LoggerFactory.getLogger(ConfigurationInfo.class);
-	
+
 	private static TestParams testParams = null;
-	
-	private static Map<String, Map<String, String> > parameters = new HashMap<String, Map<String,String>>();
+
+	private static Map<String, Map<String, String>> parameters = new HashMap<String, Map<String, String>>();
 	private static List<Class> testClasses = new ArrayList<Class>();
-	
-	static{
+
+	static
+	{
 		JAXBContext jc;
 		Unmarshaller u = null;
 		String filename = System.getProperty("config-file");
@@ -41,9 +41,9 @@ public class ConfigurationInfo
 			u = jc.createUnmarshaller();
 			File f = new File(filename);
 			boolean b = f.exists();
-			if(!b)
+			if (!b)
 			{
-				log.error("Configuration file (" + filename +  ") was not found.");
+				log.error("Configuration file (" + filename + ") was not found.");
 			}
 			testParams = (TestParams) u.unmarshal(f);
 		}
@@ -55,19 +55,19 @@ public class ConfigurationInfo
 	}
 
 	private static final String DEFAULT_NAME = "default";
-	
+
 	public static void init()
 	{
-		//defaults test params
+		// defaults test params
 		addParams(DEFAULT_NAME, testParams.getDefaults().getParam());
-		
-		//test specific
-		for(TestParams.Tests.Test test : testParams.getTests().getTest() )
+
+		// test specific
+		for (TestParams.Tests.Test test : testParams.getTests().getTest())
 		{
 			addParams(test.getTestName(), test.getParam());
 		}
-		
-		for( TestClass testClass : testParams.getDynamicallyLoadedTests().getTestClass())
+
+		for (TestClass testClass : testParams.getDynamicallyLoadedTests().getTestClass())
 		{
 			try
 			{
@@ -80,46 +80,45 @@ public class ConfigurationInfo
 				Shutdown.now();
 			}
 		}
-		
+
 		testParams = null;
 	}
-	
+
 	private static void addParams(String testName, List<Param> parameters)
 	{
-		if( ConfigurationInfo.parameters.containsValue(testName) )
+		if (ConfigurationInfo.parameters.containsValue(testName))
 		{
 			log.error("Trying to add the already existent test: " + testName);
 			return;
 		}
-		
+
 		HashMap<String, String> params = new HashMap<String, String>(parameters.size());
-		for(Param para : parameters)
+		for (Param para : parameters)
 		{
-			params.put(para.getParamName(), para.getParamValue() );
+			params.put(para.getParamName(), para.getParamValue());
 		}
-		
+
 		ConfigurationInfo.parameters.put(testName, params);
 	}
-	
-	
+
 	public static String getParameter(String paramName)
 	{
 		return getParameter(DEFAULT_NAME, paramName);
 	}
-	
+
 	public static String getParameter(String testName, String paramName)
 	{
 		Map<String, String> test = ConfigurationInfo.parameters.get(testName);
-		if(test == null)
+		if (test == null)
 			return null;
 		String paramValue = test.get(paramName);
-		
+
 		return paramValue; // may be null
 	}
-	
+
 	public static List<Class> getTestClasses()
 	{
 		return testClasses;
 	}
-		
+
 }

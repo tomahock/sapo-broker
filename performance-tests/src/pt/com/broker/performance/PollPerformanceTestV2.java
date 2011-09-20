@@ -39,9 +39,9 @@ public class PollPerformanceTestV2
 
 		for (int i = 0; i < NUMBER_OF_CONSUMERS; i++)
 		{
-			//SyncConsumerClient sc = new SyncConsumerClient(counter, "Client#" + i, hostname, port, QUEUE_NAME, cdc);
+			// SyncConsumerClient sc = new SyncConsumerClient(counter, "Client#" + i, hostname, port, QUEUE_NAME, cdc);
 			SyncConsumerClientV2 sc = new SyncConsumerClientV2(counter, "Client#" + i, hostname, port, QUEUE_NAME, cdc);
-			
+
 			exec.execute(sc);
 		}
 
@@ -55,7 +55,7 @@ public class PollPerformanceTestV2
 		System.out.println("Messages produced: " + MESSAGES_PRODUCED);
 		System.out.println("Number of consumer: " + NUMBER_OF_CONSUMERS);
 		System.out.println("Time (in seconds): " + elapsed);
-		
+
 		Shutdown.now();
 	}
 }

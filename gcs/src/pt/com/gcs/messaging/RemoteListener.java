@@ -9,14 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.MessageListenerBase;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ListenerChannel;
-import pt.com.broker.types.channels.ListenerChannelEventHandler;
-import pt.com.broker.types.channels.ListenerChannel.ChannelState;
 
 public class RemoteListener extends MessageListenerBase
 {
@@ -41,7 +39,7 @@ public class RemoteListener extends MessageListenerBase
 
 	private boolean showSuspendedDeliveryMessage;
 	private AtomicBoolean isReady = new AtomicBoolean(true);
-	
+
 	private long droppedMessages;
 
 	public RemoteListener(ListenerChannel lchannel, String subscriptionKey, DestinationType sourceType, DestinationType targetType)
@@ -114,7 +112,7 @@ public class RemoteListener extends MessageListenerBase
 	{
 		return isReady.get();
 	}
-	
+
 	private void setReady(boolean ready)
 	{
 		isReady.set(ready);
@@ -174,16 +172,16 @@ public class RemoteListener extends MessageListenerBase
 						@Override
 						public void operationComplete(ChannelFuture future) throws Exception
 						{
-							if(future.isSuccess())
+							if (future.isSuccess())
 							{
 								setReady(true);
 							}
-							if(lchannel.isWritable())
+							if (lchannel.isWritable())
 							{
 								if (log.isDebugEnabled())
 								{
 									log.debug(String.format("Resume message delivery for %s '%s' to session '%s'.", getSourceDestinationType(), getsubscriptionKey(), lchannel.getRemoteAddressAsString()));
-								}								
+								}
 								showSuspendedDeliveryMessage = true;
 							}
 							else

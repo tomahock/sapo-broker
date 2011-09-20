@@ -33,8 +33,7 @@ public class SampleTests
 				{
 					try
 					{
-						consumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-								BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+						consumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 						NetSubscribe subscribe = new NetSubscribe("/topic/.*", NetAction.DestinationType.TOPIC);
 						consumer.addAsyncConsumer(subscribe, brokerListener);
@@ -58,8 +57,7 @@ public class SampleTests
 
 					try
 					{
-						BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-								BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+						BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 						bk.publishMessage(brokerMessage, topicName);

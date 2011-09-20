@@ -56,7 +56,6 @@ public class NoFramingDecoder extends OneToOneDecoder
 			return null;
 		}
 
-		
 		byte[] decoded = new byte[readableBytes];
 		buffer.readBytes(decoded);
 

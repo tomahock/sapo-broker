@@ -14,10 +14,9 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetSubscribe;
 
 /**
  * Consumer sample using client failover. Behavior is determined by command line arguments.
@@ -33,7 +32,7 @@ public class ConsumerWithFailover implements BrokerListener
 	private DestinationType dtype;
 	private String dname;
 	private long waitTime;
-	
+
 	public static void main(String[] args) throws Throwable
 	{
 		final CliArgs cargs = CliFactory.parseArguments(CliArgs.class, args);

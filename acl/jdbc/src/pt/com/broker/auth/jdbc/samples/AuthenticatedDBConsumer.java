@@ -52,11 +52,10 @@ public class AuthenticatedDBConsumer implements BrokerListener
 		consumer.username = cargs.getUsername();
 		consumer.password = cargs.getUserPassword();
 
-
 		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword);
 
 		CredentialsProvider cp = new JdbcProvider(consumer.username, consumer.password);
-		
+
 		bk.setCredentialsProvider(cp);
 		try
 		{

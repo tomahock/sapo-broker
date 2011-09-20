@@ -26,13 +26,12 @@ public class PingTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-							BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 					NetPong pong = bk.checkStatus();
 
 					System.out.println("Pong: " + pong.getActionId());
-					
+
 					bk.close();
 
 					setDone(true);

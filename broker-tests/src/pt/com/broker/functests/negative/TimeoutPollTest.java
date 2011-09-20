@@ -11,7 +11,6 @@ import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
-import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 
 public class TimeoutPollTest extends GenericNetMessageNegativeTest
@@ -50,8 +49,7 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 				boolean success = false;
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), 
-							BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 					bk.poll(queueName, 500, null);
 

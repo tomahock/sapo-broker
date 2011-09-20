@@ -17,18 +17,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AccessControl;
-import pt.com.broker.auth.Session;
 import pt.com.broker.auth.AccessControl.ValidationResult;
+import pt.com.broker.auth.Session;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.stats.ChannelStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
@@ -45,11 +45,11 @@ public class FilePublisher
 	private static final long INITIAL_DELAY = 10L; // 10 segundos
 
 	private static final long DEFAULT_CHECK_DELAY = 60L; // 60 segundos
-	
-	private static final long PUBLISH_PERIOD = 60 * 1000; // 1 minute 
+
+	private static final long PUBLISH_PERIOD = 60 * 1000; // 1 minute
 
 	private static final long PUBLISH_EVERY_CHECKS = 30;
-	
+
 	private final String dir;
 
 	private final boolean isEnabled;
@@ -59,7 +59,7 @@ public class FilePublisher
 	private File dropBoxDir;
 
 	private int fileCount = 0;
-	
+
 	volatile private long checks;
 
 	private FilePublisher()
@@ -105,7 +105,6 @@ public class FilePublisher
 	volatile private long previousPublish = 0;
 	private SoapBindingSerializer soapBindingSerializer = new SoapBindingSerializer();
 
-	
 	final Runnable publisher = new Runnable()
 	{
 		byte[] buffer = new byte[1024];
@@ -117,12 +116,12 @@ public class FilePublisher
 			{
 				fileCount = 0;
 				File[] files = dropBoxDir.listFiles(fileFilter);
-				if(files == null)
+				if (files == null)
 				{
 					return;
 				}
 				int goodFileCount = files.length;
-				
+
 				publishInfo(goodFileCount);
 
 				if ((files != null) && (files.length > 0))
@@ -179,7 +178,7 @@ public class FilePublisher
 									if (netMessage.getAction().getActionType().equals(NetAction.ActionType.PUBLISH))
 									{
 										ChannelStats.newDropboxMessageReceived();
-										
+
 										if (netMessage.getAction().getPublishMessage().getDestinationType() == NetAction.DestinationType.TOPIC)
 										{
 											BrokerProducer.getInstance().publishMessage(netMessage.getAction().getPublishMessage(), MQ.requestSource(netMessage));
@@ -273,32 +272,31 @@ public class FilePublisher
 					return soap.header.wsaFrom.address;
 		return null;
 	}
-	
-	
+
 	private void publishInfo(int goodFileCount)
 	{
-		long now  = System.currentTimeMillis();
+		long now = System.currentTimeMillis();
 		boolean publish = false;
-		
-		if( (now >  (previousPublish + PUBLISH_PERIOD))  )
+
+		if ((now > (previousPublish + PUBLISH_PERIOD)))
 		{
 			publish = true;
 
 			++checks;
 		}
-		else if( ((++checks)%PUBLISH_EVERY_CHECKS) == 0 )
+		else if (((++checks) % PUBLISH_EVERY_CHECKS) == 0)
 		{
 			publish = true;
 		}
-		
-		if(publish)
+
+		if (publish)
 		{
 			StringBuilder sb = new StringBuilder();
 			String topic = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
-			sb.append(String.format("<mqinfo date=\"%s\" agent-name=\"%s\">", DateUtil.formatISODate( new Date(now) ), GcsInfo.getAgentName()));
-			
-			sb.append(String.format("\n	<item subject=\"dropbox\" predicate=\"count\" value=\"%s\" />",fileCount));
-			
+			sb.append(String.format("<mqinfo date=\"%s\" agent-name=\"%s\">", DateUtil.formatISODate(new Date(now)), GcsInfo.getAgentName()));
+
+			sb.append(String.format("\n	<item subject=\"dropbox\" predicate=\"count\" value=\"%s\" />", fileCount));
+
 			sb.append("\n</mqinfo>");
 
 			NetPublish np = new NetPublish(topic, DestinationType.TOPIC, new NetBrokerMessage(sb.toString()));
@@ -307,5 +305,3 @@ public class FilePublisher
 		}
 	}
 }
-
-

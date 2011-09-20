@@ -510,7 +510,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 
 			TSerializer serializer = new TSerializer(new TBinaryProtocol.Factory());
 			result = serializer.serialize(tm);
-			
+
 			EncodingStats.newThriftEncodedMessage();
 		}
 		catch (Throwable e)
@@ -575,7 +575,7 @@ public class ThriftBindingSerializer implements BindingSerializer
 			TDeserializer deserializer = new TDeserializer(new TBinaryProtocol.Factory());
 			deserializer.deserialize(tm, packet);
 			message = constructMessage(tm);
-			
+
 			EncodingStats.newThriftDecodedMessage();
 		}
 		catch (Throwable e)

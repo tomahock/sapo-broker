@@ -13,7 +13,7 @@ public final class NetSubscribe
 	private String actionId;
 	private String destination;
 	private NetAction.DestinationType destinationType;
-	
+
 	private Map<String, String> headers;
 
 	public NetSubscribe(String destination, NetAction.DestinationType destinationType)
@@ -41,7 +41,7 @@ public final class NetSubscribe
 	{
 		return destinationType;
 	}
-	
+
 	public void setHeaders(Map<String, String> headers)
 	{
 		this.headers = headers;
@@ -51,10 +51,10 @@ public final class NetSubscribe
 	{
 		return headers;
 	}
-	
+
 	public void addHeader(String header, String value)
 	{
-		if(headers == null)
+		if (headers == null)
 		{
 			headers = new HashMap<String, String>();
 		}

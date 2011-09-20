@@ -61,7 +61,7 @@ public class JdbcRoles
 
 		ResultSet resultSet = statement.executeQuery();
 		resultSet.next();
-		
+
 		int count = resultSet.getInt(1);
 
 		System.out.println("count: " + count);
@@ -77,8 +77,7 @@ public class JdbcRoles
 	public List<String> getRoles(String username) throws Throwable
 	{
 		System.out.println("JdbcRoles.getRoles()");
-		
-		
+
 		Connection connection = getConnection();
 
 		PreparedStatement statement = connection.prepareStatement("select role from users join roles on (users.username = roles.username) where (users.username = ?)");

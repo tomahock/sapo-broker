@@ -2,12 +2,12 @@ package pt.com.broker.functests.negative;
 
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.ActionType;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class InvalidDestinationNameInPublishTest extends GenericNetMessageNegativeTest
 {
@@ -25,7 +25,7 @@ public class InvalidDestinationNameInPublishTest extends GenericNetMessageNegati
 		setFaultCode("2001");
 		setFaultMessage("Invalid destination name");
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

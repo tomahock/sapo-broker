@@ -31,11 +31,11 @@ import pt.com.broker.performance.distributed.conf.Consumers.Consumer;
 import pt.com.broker.performance.distributed.conf.Machines.Machine;
 import pt.com.broker.performance.distributed.conf.Producers.Producer;
 import pt.com.broker.performance.distributed.conf.Tests.Test;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class TestManager implements BrokerListener
 {
@@ -190,7 +190,6 @@ public class TestManager implements BrokerListener
 	{
 		AgentInfo defaultAgent = pt.com.broker.performance.distributed.conf.ConfigurationInfo.getDefaultAgent();
 		NetProtocolType encoding = pt.com.broker.performance.distributed.conf.ConfigurationInfo.getEncoding();
-		
 
 		for (Test t : pt.com.broker.performance.distributed.conf.ConfigurationInfo.getConfiguration().getTests().getTest())
 		{
@@ -214,7 +213,7 @@ public class TestManager implements BrokerListener
 			}
 
 			String randName = RandomStringUtils.randomAlphanumeric(15);
-			
+
 			DistTestParams distTestParams = new DistTestParams(testName, String.format("/perf/%s/%s", destinationType.toString().toLowerCase(), randName), destinationType, messageSize, nrMessages, isSyncConsumer, isNoAckConsumer, encoding);
 
 			/*
@@ -373,9 +372,9 @@ public class TestManager implements BrokerListener
 		{
 			log.error("InterruptedException while waiting on testCountDown", e);
 		}
-		
+
 		String testname = distTestParams.getTestName();
-		
+
 		showTestResult(testname, tests.get(testname), results.get(testname));
 
 	}
@@ -427,9 +426,8 @@ public class TestManager implements BrokerListener
 				producerMessages += tRes.getMessages();
 			}
 
-			
 			double actorTestTime = tRes.getStopTime() - tRes.getStartTime();
-			
+
 			double timePerMsg = ((actorTestTime) / tRes.getMessages()) / milli2second;
 			double messagesPerSecond = 1 / timePerMsg;
 
@@ -438,7 +436,7 @@ public class TestManager implements BrokerListener
 
 		double timePerMsg = ((consumerLatestStop - consumerEarliestStart) / consumerMessages) / milli2second;
 		double messagesPerSecond = 1 / timePerMsg;
-		
+
 		sb.append(String.format("\nTOTAL CONSUMER: Messages/second: %.3f", messagesPerSecond));
 
 		timePerMsg = ((producerLatestStop - producerEarliestStart) / producerMessages) / milli2second;
@@ -450,7 +448,7 @@ public class TestManager implements BrokerListener
 
 		this.testResults.append(sb);
 	}
-	
+
 	private void showTotalResults()
 	{
 		System.out.println(this.testResults.toString());

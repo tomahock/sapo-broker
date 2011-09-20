@@ -58,7 +58,7 @@ public class Xml2JsonTransformer implements MessageTransformer
 		}
 		catch (Throwable t)
 		{
-			
+
 			log.error("Error while transforming XML \"" + xmlMessage + "\" to JSON", t);
 			jsonMessage = "{\"transform-error\":\"" + StringEscapeUtils.escapeJavaScript(ErrorAnalyser.findRootCause(t).getMessage()) + "\"}";
 		}

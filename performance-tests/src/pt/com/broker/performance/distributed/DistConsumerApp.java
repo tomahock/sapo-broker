@@ -13,10 +13,10 @@ import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.performance.ProducerApp;
 import pt.com.broker.performance.distributed.TestResult.ActorType;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class DistConsumerApp implements BrokerListener
 {
@@ -35,26 +35,25 @@ public class DistConsumerApp implements BrokerListener
 	{
 		this.host = host;
 		this.port = port;
-		this.actorName = actorName;		
-		
+		this.actorName = actorName;
+
 		dname = TestManager.TEST_MANAGEMENT_ACTION + actorName;
 		brokerClient = new BrokerClient(host, port);
-	
+
 		NetSubscribe subscribe = new NetSubscribe(dname, DestinationType.QUEUE);
 
 		brokerClient.addAsyncConsumer(subscribe, this);
-		
+
 		System.out.println(String.format("Consumer '%s' running...", actorName));
-		
+
 	}
-	
-	
+
 	public static void main(String[] args) throws Throwable
 	{
 		final DistTestCliArgs cargs = CliFactory.parseArguments(DistTestCliArgs.class, args);
 
 		DistConsumerApp consumer = new DistConsumerApp(cargs.getHost(), cargs.getPort(), cargs.getActorName());
-		
+
 		while (true)
 		{
 			Sleep.time(5000);
@@ -65,19 +64,19 @@ public class DistConsumerApp implements BrokerListener
 	{
 		try
 		{
-			//BrokerClient bk = new BrokerClient(host, port);
-			
+			// BrokerClient bk = new BrokerClient(host, port);
+
 			System.out.println("########## Consumer using: " + testParams.getEncoding());
-			
+
 			BrokerClient bk = new BrokerClient(testParams.getClientInfo().getAgentHost(), testParams.getClientInfo().getPort(), "ConsumerActor", testParams.getEncoding());
 
 			final DestinationType destType = testParams.getDestinationType();
 
 			NetSubscribe subscribe = new NetSubscribe(testParams.getDestination(), destType);
-			
-			if(testParams.isNoAckConsumer())
+
+			if (testParams.isNoAckConsumer())
 			{
-				subscribe.addHeader("ACK_REQUIRED", "false"); 
+				subscribe.addHeader("ACK_REQUIRED", "false");
 			}
 
 			final AtomicInteger counter = new AtomicInteger(0);
@@ -95,7 +94,7 @@ public class DistConsumerApp implements BrokerListener
 					public void onMessage(NetNotification notification)
 					{
 						startTime.compareAndSet(0, System.currentTimeMillis());
-						
+
 						if (notification.getMessage().getPayload()[0] == ProducerApp.REGULAR_MESSAGE)
 						{
 							counter.incrementAndGet();
@@ -110,9 +109,9 @@ public class DistConsumerApp implements BrokerListener
 					@Override
 					public boolean isAutoAck()
 					{
-						if(testParams.isNoAckConsumer())
+						if (testParams.isNoAckConsumer())
 						{
-							return false; 
+							return false;
 						}
 						return destType != DestinationType.TOPIC;
 					}
@@ -127,7 +126,7 @@ public class DistConsumerApp implements BrokerListener
 				System.out.println(actorName + " Sync consumer");
 
 				startTime.set(System.currentTimeMillis());
-				
+
 				do
 				{
 					NetNotification notification = bk.poll(testParams.getDestination());
@@ -145,12 +144,11 @@ public class DistConsumerApp implements BrokerListener
 				while (!stop);
 			}
 
-			
 			Sleep.time(500);
-			
+
 			bk.close();
-			
-			TestResult testResult = new TestResult(ActorType.Consumer, actorName, testParams.getTestName(), counter.get(),  startTime.get(), stopTime.get());
+
+			TestResult testResult = new TestResult(ActorType.Consumer, actorName, testParams.getTestName(), counter.get(), startTime.get(), stopTime.get());
 			byte[] data = testResult.serialize();
 
 			NetBrokerMessage netBrokerMessage = new NetBrokerMessage(data);

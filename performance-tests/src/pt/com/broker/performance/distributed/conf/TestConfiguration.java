@@ -5,7 +5,6 @@
 // Generated on: 2010.04.10 at 05:51:46 PM WEST 
 //
 
-
 package pt.com.broker.performance.distributed.conf;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,11 +13,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -37,91 +37,85 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "agents",
-    "machines",
-    "tests"
-})
+@XmlType(name = "", propOrder = { "agents", "machines", "tests" })
 @XmlRootElement(name = "test-configuration")
-public class TestConfiguration {
+public class TestConfiguration
+{
 
-    @XmlElement(required = true)
-    protected Agents agents;
-    @XmlElement(required = true)
-    protected Machines machines;
-    @XmlElement(required = true)
-    protected Tests tests;
+	@XmlElement(required = true)
+	protected Agents agents;
+	@XmlElement(required = true)
+	protected Machines machines;
+	@XmlElement(required = true)
+	protected Tests tests;
 
-    /**
-     * Gets the value of the agents property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Agents }
-     *     
-     */
-    public Agents getAgents() {
-        return agents;
-    }
+	/**
+	 * Gets the value of the agents property.
+	 * 
+	 * @return possible object is {@link Agents }
+	 * 
+	 */
+	public Agents getAgents()
+	{
+		return agents;
+	}
 
-    /**
-     * Sets the value of the agents property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Agents }
-     *     
-     */
-    public void setAgents(Agents value) {
-        this.agents = value;
-    }
+	/**
+	 * Sets the value of the agents property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Agents }
+	 * 
+	 */
+	public void setAgents(Agents value)
+	{
+		this.agents = value;
+	}
 
-    /**
-     * Gets the value of the machines property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Machines }
-     *     
-     */
-    public Machines getMachines() {
-        return machines;
-    }
+	/**
+	 * Gets the value of the machines property.
+	 * 
+	 * @return possible object is {@link Machines }
+	 * 
+	 */
+	public Machines getMachines()
+	{
+		return machines;
+	}
 
-    /**
-     * Sets the value of the machines property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Machines }
-     *     
-     */
-    public void setMachines(Machines value) {
-        this.machines = value;
-    }
+	/**
+	 * Sets the value of the machines property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Machines }
+	 * 
+	 */
+	public void setMachines(Machines value)
+	{
+		this.machines = value;
+	}
 
-    /**
-     * Gets the value of the tests property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Tests }
-     *     
-     */
-    public Tests getTests() {
-        return tests;
-    }
+	/**
+	 * Gets the value of the tests property.
+	 * 
+	 * @return possible object is {@link Tests }
+	 * 
+	 */
+	public Tests getTests()
+	{
+		return tests;
+	}
 
-    /**
-     * Sets the value of the tests property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Tests }
-     *     
-     */
-    public void setTests(Tests value) {
-        this.tests = value;
-    }
+	/**
+	 * Sets the value of the tests property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Tests }
+	 * 
+	 */
+	public void setTests(Tests value)
+	{
+		this.tests = value;
+	}
 
 }

@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.ForwardResult;
-import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
+import pt.com.broker.types.NetMessage;
 import pt.com.gcs.messaging.serialization.MessageMarshaller;
 
 import com.sleepycat.bind.ByteArrayBinding;
@@ -347,7 +347,7 @@ public class BDBStorage
 		int a0 = 0; // delivered messages that don't require ACK
 
 		Cursor msg_cursor = null;
-		
+
 		try
 		{
 			msg_cursor = messageDb.openCursor(null, null);
@@ -392,19 +392,19 @@ public class BDBStorage
 				if (!isReserved)
 				{
 					long deferredDelivery = nmsg.getAction().getNotificationMessage().getMessage().getDeferredDelivery();
-					
-					if( deferredDelivery > now)
+
+					if (deferredDelivery > now)
 					{
 						long diff = deferredDelivery - now;
-						
-						if(diff < nextCycle)
+
+						if (diff < nextCycle)
 						{
 							nextCycle = diff;
 						}
-						
+
 						continue;
 					}
-															
+
 					if (now > nmsg.getAction().getNotificationMessage().getMessage().getExpiration())
 					{
 						cursorDelete(msg_cursor);
@@ -436,7 +436,7 @@ public class BDBStorage
 								// msg.getDestination(), msg.getMessageId());
 								dumpMessage(nmsg);
 
-								//queueProcessor.getQueueStatistics().newQueueFailedMessage();
+								// queueProcessor.getQueueStatistics().newQueueFailedMessage();
 								++j0;
 
 								break;

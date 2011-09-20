@@ -5,8 +5,8 @@ import org.caudexorigo.Shutdown;
 import pt.com.broker.client.HostInfo;
 import pt.com.broker.functests.simulation.helpers.Consumers;
 import pt.com.broker.functests.simulation.helpers.Producers;
-import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetProtocolType;
 
 public class ScenarioD
 {
@@ -58,26 +58,26 @@ public class ScenarioD
 		System.out.println("Starting Scenario D");
 
 		TestMachines machines = TestMachines.All;
-		
-		if(args.length == 1)
+
+		if (args.length == 1)
 		{
-			if( args[0].equals("machine1") )
+			if (args[0].equals("machine1"))
 			{
 				machines = TestMachines.Machine1;
 				System.out.println("Working on machine1");
 			}
-			else if( args[0].equals("machine2") )
+			else if (args[0].equals("machine2"))
 			{
 				machines = TestMachines.Machine2;
 				System.out.println("Working on machine2");
 			}
 			else
 			{
-				System.out.println(String.format( "Expecting %s [ machine1 | machine2 ] ", "ScenarioD"));
+				System.out.println(String.format("Expecting %s [ machine1 | machine2 ] ", "ScenarioD"));
 				Shutdown.now();
 			}
 		}
-		
+
 		run(machines);
 	}
 }

@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
-import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
 
 public class IntensiveProducer
 {
@@ -38,7 +38,7 @@ public class IntensiveProducer
 		Thread.sleep(1000);
 
 		producer.sendLoop(bk, cargs.getMessageLength());
-		
+
 		Shutdown.now();
 	}
 

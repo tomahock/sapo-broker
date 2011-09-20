@@ -11,12 +11,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.ForwardResult;
-import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ListenerChannel;
-import pt.com.broker.types.channels.ListenerChannelEventHandler;
-import pt.com.broker.types.channels.ListenerChannel.ChannelState;
 import pt.com.gcs.messaging.Gcs;
 
 /**
@@ -94,18 +92,18 @@ public class BrokerQueueListener extends BrokerListener
 						}
 						else
 						{
-							// Not Writable but Ready							
+							// Not Writable but Ready
 							lchannel.incrementAndGetDeliveryTries();
 
 							setReady(false);
-							
+
 							ChannelFuture future = lchannel.write(response);
 							future.addListener(new ChannelFutureListener()
 							{
 								@Override
 								public void operationComplete(ChannelFuture future) throws Exception
 								{
-									if(future.isSuccess())
+									if (future.isSuccess())
 									{
 										setReady(true);
 									}
@@ -125,7 +123,6 @@ public class BrokerQueueListener extends BrokerListener
 									}
 								}
 							});
-
 
 							if (showSuspendedDeliveryMessage && log.isDebugEnabled())
 							{
@@ -181,7 +178,7 @@ public class BrokerQueueListener extends BrokerListener
 	private void setReady(boolean ready)
 	{
 		boolean previous = isReady.getAndSet(ready);
-		if(ready != previous)
+		if (ready != previous)
 		{
 			onEventChange(ready ? MessageListenerState.Ready : MessageListenerState.NotReady);
 		}

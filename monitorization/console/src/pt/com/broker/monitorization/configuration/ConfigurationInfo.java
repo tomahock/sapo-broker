@@ -35,10 +35,10 @@ public class ConfigurationInfo
 		{
 			this.hostname = hostname;
 			this.tcpInfo = tcpInfo;
-			this.httpInfo = httpInfo; 
+			this.httpInfo = httpInfo;
 		}
 	}
-	
+
 	static
 	{
 		JAXBContext jc;
@@ -68,7 +68,7 @@ public class ConfigurationInfo
 	private static List<HostInfo> agents = new ArrayList<HostInfo>();
 	// Agent in the cloud
 	public static List<AgentInfo> cloudAgents = new ArrayList<AgentInfo>();
-	
+
 	private static volatile int httpPort = 0;
 
 	private static String filesystemPath;
@@ -80,14 +80,11 @@ public class ConfigurationInfo
 		extractPaths();
 	}
 
-
-
 	public static int getConsoleHttpPort()
 	{
 		return httpPort;
 	}
-	
-	
+
 	public static String getGlobalConfigFile()
 	{
 		return globalConfigFile;
@@ -97,8 +94,8 @@ public class ConfigurationInfo
 	{
 		return cloudAgents;
 	}
-	
-	public static List<HostInfo>  getAgents()
+
+	public static List<HostInfo> getAgents()
 	{
 		return agents;
 	}
@@ -107,23 +104,23 @@ public class ConfigurationInfo
 	{
 		if (configuration == null)
 			return;
-		httpPort = Integer.parseInt( configuration.getConsole().getHttpPort() );
+		httpPort = Integer.parseInt(configuration.getConsole().getHttpPort());
 	}
-	
+
 	private static void extractPaths()
 	{
 		if (configuration == null)
 			return;
-		
+
 		filesystemPath = configuration.getRootPaths().getFilesystemPath();
-		wwwrootPath = configuration.getRootPaths().getWwwrootPath();		
+		wwwrootPath = configuration.getRootPaths().getWwwrootPath();
 	}
-	
+
 	private static int getPortForAgent(String agentHostname, ExceptionAgents exceptionAgents, int defaultVaule)
 	{
 		if (configuration == null)
 			return defaultVaule;
-		
+
 		for (pt.com.broker.monitorization.configuration.ExceptionAgents.Agent agent : exceptionAgents.getAgent())
 		{
 			if (agent.getAgentName().equals(agentHostname))
@@ -133,7 +130,7 @@ public class ConfigurationInfo
 		}
 		return defaultVaule;
 	}
-	
+
 	private static List<HostInfo> getAgentsFromGlobalConfFile()
 	{
 		if (globalConfigFile == null)
@@ -162,18 +159,17 @@ public class ConfigurationInfo
 				for (int j = 0; j != item.getChildNodes().getLength(); ++j)
 				{
 					Node peerInfoBit = item.getChildNodes().item(j);
-					if(peerInfoBit.getNodeType() != Node.ELEMENT_NODE)
+					if (peerInfoBit.getNodeType() != Node.ELEMENT_NODE)
 						continue;
-					
+
 					String nodeName = peerInfoBit.getNodeName();
 
 					NodeList childNodes = peerInfoBit.getChildNodes();
 					for (int k = 0; k != childNodes.getLength(); ++k)
 					{
 						Node node = childNodes.item(k);
-						
+
 						String textContent = node.getTextContent();
-						
 
 						if (nodeName.equals("ip"))
 						{
@@ -212,10 +208,10 @@ public class ConfigurationInfo
 	{
 		return wwwrootPath;
 	}
-	
+
 	public static String getResourceFullPath(String resource)
 	{
 		return String.format("%s%s%s%s%s", getFilesystemPath(), File.separator, getWwwrootPath(), File.separator, resource);
 	}
-	
+
 }

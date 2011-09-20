@@ -22,7 +22,7 @@ public class RedirectAction extends HttpAction
 	public void service(ChannelHandlerContext ctx, HttpRequest req, HttpResponse res)
 	{
 		res.setStatus(HttpResponseStatus.TEMPORARY_REDIRECT);
-		res.addHeader(HttpHeaders.Names.LOCATION, path);		
+		res.addHeader(HttpHeaders.Names.LOCATION, path);
 
 	}
 

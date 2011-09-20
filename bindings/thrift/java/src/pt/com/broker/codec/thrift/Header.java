@@ -5,360 +5,414 @@
  */
 package pt.com.broker.codec.thrift;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.EnumSet;
 import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-class Header implements org.apache.thrift.TBase<Header, Header._Fields>, java.io.Serializable, Cloneable {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Header");
+class Header implements org.apache.thrift.TBase<Header, Header._Fields>, java.io.Serializable, Cloneable
+{
+	private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Header");
 
-  private static final org.apache.thrift.protocol.TField PARAMETERS_FIELD_DESC = new org.apache.thrift.protocol.TField("parameters", org.apache.thrift.protocol.TType.MAP, (short)1);
+	private static final org.apache.thrift.protocol.TField PARAMETERS_FIELD_DESC = new org.apache.thrift.protocol.TField("parameters", org.apache.thrift.protocol.TType.MAP, (short) 1);
 
-  public Map<String,String> parameters;
+	public Map<String, String> parameters;
 
-  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    PARAMETERS((short)1, "parameters");
+	/** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+	public enum _Fields implements org.apache.thrift.TFieldIdEnum
+	{
+		PARAMETERS((short) 1, "parameters");
 
-    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+		private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
-    static {
-      for (_Fields field : EnumSet.allOf(_Fields.class)) {
-        byName.put(field.getFieldName(), field);
-      }
-    }
+		static
+		{
+			for (_Fields field : EnumSet.allOf(_Fields.class))
+			{
+				byName.put(field.getFieldName(), field);
+			}
+		}
 
-    /**
-     * Find the _Fields constant that matches fieldId, or null if its not found.
-     */
-    public static _Fields findByThriftId(int fieldId) {
-      switch(fieldId) {
-        case 1: // PARAMETERS
-          return PARAMETERS;
-        default:
-          return null;
-      }
-    }
+		/**
+		 * Find the _Fields constant that matches fieldId, or null if its not found.
+		 */
+		public static _Fields findByThriftId(int fieldId)
+		{
+			switch (fieldId)
+			{
+			case 1: // PARAMETERS
+				return PARAMETERS;
+			default:
+				return null;
+			}
+		}
 
-    /**
-     * Find the _Fields constant that matches fieldId, throwing an exception
-     * if it is not found.
-     */
-    public static _Fields findByThriftIdOrThrow(int fieldId) {
-      _Fields fields = findByThriftId(fieldId);
-      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-      return fields;
-    }
+		/**
+		 * Find the _Fields constant that matches fieldId, throwing an exception if it is not found.
+		 */
+		public static _Fields findByThriftIdOrThrow(int fieldId)
+		{
+			_Fields fields = findByThriftId(fieldId);
+			if (fields == null)
+				throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+			return fields;
+		}
 
-    /**
-     * Find the _Fields constant that matches name, or null if its not found.
-     */
-    public static _Fields findByName(String name) {
-      return byName.get(name);
-    }
+		/**
+		 * Find the _Fields constant that matches name, or null if its not found.
+		 */
+		public static _Fields findByName(String name)
+		{
+			return byName.get(name);
+		}
 
-    private final short _thriftId;
-    private final String _fieldName;
+		private final short _thriftId;
+		private final String _fieldName;
 
-    _Fields(short thriftId, String fieldName) {
-      _thriftId = thriftId;
-      _fieldName = fieldName;
-    }
+		_Fields(short thriftId, String fieldName)
+		{
+			_thriftId = thriftId;
+			_fieldName = fieldName;
+		}
 
-    public short getThriftFieldId() {
-      return _thriftId;
-    }
+		public short getThriftFieldId()
+		{
+			return _thriftId;
+		}
 
-    public String getFieldName() {
-      return _fieldName;
-    }
-  }
+		public String getFieldName()
+		{
+			return _fieldName;
+		}
+	}
 
-  // isset id assignments
+	// isset id assignments
 
-  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
-  static {
-    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.PARAMETERS, new org.apache.thrift.meta_data.FieldMetaData("parameters", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Header.class, metaDataMap);
-  }
+	public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+	static
+	{
+		Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+		tmpMap.put(_Fields.PARAMETERS, new org.apache.thrift.meta_data.FieldMetaData("parameters", org.apache.thrift.TFieldRequirementType.DEFAULT, new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+		metaDataMap = Collections.unmodifiableMap(tmpMap);
+		org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Header.class, metaDataMap);
+	}
 
-  public Header() {
-  }
+	public Header()
+	{
+	}
 
-  public Header(
-    Map<String,String> parameters)
-  {
-    this();
-    this.parameters = parameters;
-  }
+	public Header(Map<String, String> parameters)
+	{
+		this();
+		this.parameters = parameters;
+	}
 
-  /**
-   * Performs a deep copy on <i>other</i>.
-   */
-  public Header(Header other) {
-    if (other.isSetParameters()) {
-      Map<String,String> __this__parameters = new HashMap<String,String>();
-      for (Map.Entry<String, String> other_element : other.parameters.entrySet()) {
+	/**
+	 * Performs a deep copy on <i>other</i>.
+	 */
+	public Header(Header other)
+	{
+		if (other.isSetParameters())
+		{
+			Map<String, String> __this__parameters = new HashMap<String, String>();
+			for (Map.Entry<String, String> other_element : other.parameters.entrySet())
+			{
 
-        String other_element_key = other_element.getKey();
-        String other_element_value = other_element.getValue();
+				String other_element_key = other_element.getKey();
+				String other_element_value = other_element.getValue();
 
-        String __this__parameters_copy_key = other_element_key;
+				String __this__parameters_copy_key = other_element_key;
 
-        String __this__parameters_copy_value = other_element_value;
+				String __this__parameters_copy_value = other_element_value;
 
-        __this__parameters.put(__this__parameters_copy_key, __this__parameters_copy_value);
-      }
-      this.parameters = __this__parameters;
-    }
-  }
+				__this__parameters.put(__this__parameters_copy_key, __this__parameters_copy_value);
+			}
+			this.parameters = __this__parameters;
+		}
+	}
 
-  public Header deepCopy() {
-    return new Header(this);
-  }
+	public Header deepCopy()
+	{
+		return new Header(this);
+	}
 
-  @Override
-  public void clear() {
-    this.parameters = null;
-  }
+	@Override
+	public void clear()
+	{
+		this.parameters = null;
+	}
 
-  public int getParametersSize() {
-    return (this.parameters == null) ? 0 : this.parameters.size();
-  }
+	public int getParametersSize()
+	{
+		return (this.parameters == null) ? 0 : this.parameters.size();
+	}
 
-  public void putToParameters(String key, String val) {
-    if (this.parameters == null) {
-      this.parameters = new HashMap<String,String>();
-    }
-    this.parameters.put(key, val);
-  }
+	public void putToParameters(String key, String val)
+	{
+		if (this.parameters == null)
+		{
+			this.parameters = new HashMap<String, String>();
+		}
+		this.parameters.put(key, val);
+	}
 
-  public Map<String,String> getParameters() {
-    return this.parameters;
-  }
+	public Map<String, String> getParameters()
+	{
+		return this.parameters;
+	}
 
-  public Header setParameters(Map<String,String> parameters) {
-    this.parameters = parameters;
-    return this;
-  }
+	public Header setParameters(Map<String, String> parameters)
+	{
+		this.parameters = parameters;
+		return this;
+	}
 
-  public void unsetParameters() {
-    this.parameters = null;
-  }
+	public void unsetParameters()
+	{
+		this.parameters = null;
+	}
 
-  /** Returns true if field parameters is set (has been assigned a value) and false otherwise */
-  public boolean isSetParameters() {
-    return this.parameters != null;
-  }
+	/** Returns true if field parameters is set (has been assigned a value) and false otherwise */
+	public boolean isSetParameters()
+	{
+		return this.parameters != null;
+	}
 
-  public void setParametersIsSet(boolean value) {
-    if (!value) {
-      this.parameters = null;
-    }
-  }
+	public void setParametersIsSet(boolean value)
+	{
+		if (!value)
+		{
+			this.parameters = null;
+		}
+	}
 
-  public void setFieldValue(_Fields field, Object value) {
-    switch (field) {
-    case PARAMETERS:
-      if (value == null) {
-        unsetParameters();
-      } else {
-        setParameters((Map<String,String>)value);
-      }
-      break;
+	public void setFieldValue(_Fields field, Object value)
+	{
+		switch (field)
+		{
+		case PARAMETERS:
+			if (value == null)
+			{
+				unsetParameters();
+			}
+			else
+			{
+				setParameters((Map<String, String>) value);
+			}
+			break;
 
-    }
-  }
+		}
+	}
 
-  public Object getFieldValue(_Fields field) {
-    switch (field) {
-    case PARAMETERS:
-      return getParameters();
+	public Object getFieldValue(_Fields field)
+	{
+		switch (field)
+		{
+		case PARAMETERS:
+			return getParameters();
 
-    }
-    throw new IllegalStateException();
-  }
+		}
+		throw new IllegalStateException();
+	}
 
-  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
-  public boolean isSet(_Fields field) {
-    if (field == null) {
-      throw new IllegalArgumentException();
-    }
+	/** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+	public boolean isSet(_Fields field)
+	{
+		if (field == null)
+		{
+			throw new IllegalArgumentException();
+		}
 
-    switch (field) {
-    case PARAMETERS:
-      return isSetParameters();
-    }
-    throw new IllegalStateException();
-  }
+		switch (field)
+		{
+		case PARAMETERS:
+			return isSetParameters();
+		}
+		throw new IllegalStateException();
+	}
 
-  @Override
-  public boolean equals(Object that) {
-    if (that == null)
-      return false;
-    if (that instanceof Header)
-      return this.equals((Header)that);
-    return false;
-  }
+	@Override
+	public boolean equals(Object that)
+	{
+		if (that == null)
+			return false;
+		if (that instanceof Header)
+			return this.equals((Header) that);
+		return false;
+	}
 
-  public boolean equals(Header that) {
-    if (that == null)
-      return false;
+	public boolean equals(Header that)
+	{
+		if (that == null)
+			return false;
 
-    boolean this_present_parameters = true && this.isSetParameters();
-    boolean that_present_parameters = true && that.isSetParameters();
-    if (this_present_parameters || that_present_parameters) {
-      if (!(this_present_parameters && that_present_parameters))
-        return false;
-      if (!this.parameters.equals(that.parameters))
-        return false;
-    }
+		boolean this_present_parameters = true && this.isSetParameters();
+		boolean that_present_parameters = true && that.isSetParameters();
+		if (this_present_parameters || that_present_parameters)
+		{
+			if (!(this_present_parameters && that_present_parameters))
+				return false;
+			if (!this.parameters.equals(that.parameters))
+				return false;
+		}
 
-    return true;
-  }
+		return true;
+	}
 
-  @Override
-  public int hashCode() {
-    return 0;
-  }
+	@Override
+	public int hashCode()
+	{
+		return 0;
+	}
 
-  public int compareTo(Header other) {
-    if (!getClass().equals(other.getClass())) {
-      return getClass().getName().compareTo(other.getClass().getName());
-    }
+	public int compareTo(Header other)
+	{
+		if (!getClass().equals(other.getClass()))
+		{
+			return getClass().getName().compareTo(other.getClass().getName());
+		}
 
-    int lastComparison = 0;
-    Header typedOther = (Header)other;
+		int lastComparison = 0;
+		Header typedOther = (Header) other;
 
-    lastComparison = Boolean.valueOf(isSetParameters()).compareTo(typedOther.isSetParameters());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetParameters()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parameters, typedOther.parameters);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    return 0;
-  }
+		lastComparison = Boolean.valueOf(isSetParameters()).compareTo(typedOther.isSetParameters());
+		if (lastComparison != 0)
+		{
+			return lastComparison;
+		}
+		if (isSetParameters())
+		{
+			lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parameters, typedOther.parameters);
+			if (lastComparison != 0)
+			{
+				return lastComparison;
+			}
+		}
+		return 0;
+	}
 
-  public _Fields fieldForId(int fieldId) {
-    return _Fields.findByThriftId(fieldId);
-  }
+	public _Fields fieldForId(int fieldId)
+	{
+		return _Fields.findByThriftId(fieldId);
+	}
 
-  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-    org.apache.thrift.protocol.TField field;
-    iprot.readStructBegin();
-    while (true)
-    {
-      field = iprot.readFieldBegin();
-      if (field.type == org.apache.thrift.protocol.TType.STOP) { 
-        break;
-      }
-      switch (field.id) {
-        case 1: // PARAMETERS
-          if (field.type == org.apache.thrift.protocol.TType.MAP) {
-            {
-              org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
-              this.parameters = new HashMap<String,String>(2*_map0.size);
-              for (int _i1 = 0; _i1 < _map0.size; ++_i1)
-              {
-                String _key2;
-                String _val3;
-                _key2 = iprot.readString();
-                _val3 = iprot.readString();
-                this.parameters.put(_key2, _val3);
-              }
-              iprot.readMapEnd();
-            }
-          } else { 
-            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
-      }
-      iprot.readFieldEnd();
-    }
-    iprot.readStructEnd();
+	public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException
+	{
+		org.apache.thrift.protocol.TField field;
+		iprot.readStructBegin();
+		while (true)
+		{
+			field = iprot.readFieldBegin();
+			if (field.type == org.apache.thrift.protocol.TType.STOP)
+			{
+				break;
+			}
+			switch (field.id)
+			{
+			case 1: // PARAMETERS
+				if (field.type == org.apache.thrift.protocol.TType.MAP)
+				{
+					{
+						org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
+						this.parameters = new HashMap<String, String>(2 * _map0.size);
+						for (int _i1 = 0; _i1 < _map0.size; ++_i1)
+						{
+							String _key2;
+							String _val3;
+							_key2 = iprot.readString();
+							_val3 = iprot.readString();
+							this.parameters.put(_key2, _val3);
+						}
+						iprot.readMapEnd();
+					}
+				}
+				else
+				{
+					org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
+				}
+				break;
+			default:
+				org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
+			}
+			iprot.readFieldEnd();
+		}
+		iprot.readStructEnd();
 
-    // check for required fields of primitive type, which can't be checked in the validate method
-    validate();
-  }
+		// check for required fields of primitive type, which can't be checked in the validate method
+		validate();
+	}
 
-  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-    validate();
+	public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException
+	{
+		validate();
 
-    oprot.writeStructBegin(STRUCT_DESC);
-    if (this.parameters != null) {
-      oprot.writeFieldBegin(PARAMETERS_FIELD_DESC);
-      {
-        oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, this.parameters.size()));
-        for (Map.Entry<String, String> _iter4 : this.parameters.entrySet())
-        {
-          oprot.writeString(_iter4.getKey());
-          oprot.writeString(_iter4.getValue());
-        }
-        oprot.writeMapEnd();
-      }
-      oprot.writeFieldEnd();
-    }
-    oprot.writeFieldStop();
-    oprot.writeStructEnd();
-  }
+		oprot.writeStructBegin(STRUCT_DESC);
+		if (this.parameters != null)
+		{
+			oprot.writeFieldBegin(PARAMETERS_FIELD_DESC);
+			{
+				oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, this.parameters.size()));
+				for (Map.Entry<String, String> _iter4 : this.parameters.entrySet())
+				{
+					oprot.writeString(_iter4.getKey());
+					oprot.writeString(_iter4.getValue());
+				}
+				oprot.writeMapEnd();
+			}
+			oprot.writeFieldEnd();
+		}
+		oprot.writeFieldStop();
+		oprot.writeStructEnd();
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder("Header(");
-    boolean first = true;
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder("Header(");
+		boolean first = true;
 
-    sb.append("parameters:");
-    if (this.parameters == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.parameters);
-    }
-    first = false;
-    sb.append(")");
-    return sb.toString();
-  }
+		sb.append("parameters:");
+		if (this.parameters == null)
+		{
+			sb.append("null");
+		}
+		else
+		{
+			sb.append(this.parameters);
+		}
+		first = false;
+		sb.append(")");
+		return sb.toString();
+	}
 
-  public void validate() throws org.apache.thrift.TException {
-    // check for required fields
-  }
+	public void validate() throws org.apache.thrift.TException
+	{
+		// check for required fields
+	}
 
-  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-    try {
-      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-    } catch (org.apache.thrift.TException te) {
-      throw new java.io.IOException(te);
-    }
-  }
+	private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException
+	{
+		try
+		{
+			write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+		}
+		catch (org.apache.thrift.TException te)
+		{
+			throw new java.io.IOException(te);
+		}
+	}
 
-  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-    try {
-      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-    } catch (org.apache.thrift.TException te) {
-      throw new java.io.IOException(te);
-    }
-  }
+	private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException
+	{
+		try
+		{
+			read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+		}
+		catch (org.apache.thrift.TException te)
+		{
+			throw new java.io.IOException(te);
+		}
+	}
 
 }
-

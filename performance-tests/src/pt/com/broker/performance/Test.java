@@ -9,8 +9,8 @@ import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.performance.conf.ConfigurationInfo;
-import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetProtocolType;
 
 public class Test
 {
@@ -39,7 +39,6 @@ public class Test
 		remotAgentAddress = ConfigurationInfo.getParameter("agent2-host");
 		remoteAgentPort = Integer.parseInt(ConfigurationInfo.getParameter("agent2-port"));
 	}
-	
 
 	public Test(DestinationType destinationType, NetProtocolType protocolType, int messageSize, int nrProducers, int nrLocalConsumers, int nrRemoteConsumers)
 	{
@@ -61,7 +60,7 @@ public class Test
 
 		if (destinationType == DestinationType.QUEUE)
 		{
-			if(totalConsumers == 0)
+			if (totalConsumers == 0)
 			{
 				msgPerClient = 0;
 			}
@@ -135,12 +134,12 @@ public class Test
 		}
 
 		long execTime = System.nanoTime() - start;
-		
+
 		for (TestActor testActor : clients)
 		{
 			testActor.close();
-		}		
-		
+		}
+
 		return execTime;
 	}
 

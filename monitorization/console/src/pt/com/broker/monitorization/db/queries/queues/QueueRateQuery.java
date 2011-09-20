@@ -22,23 +22,23 @@ public abstract class QueueRateQuery extends StaticQuery
 		QUERY_LAST = queryLast;
 	}
 
-	public ResultSet getResultSet(Db db, Map<String,List<String>> params)
+	public ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
 		String windowParam = QueryStringParameters.getWindowParam(params);
-		
+
 		String queueName = QueryStringParameters.getQueueNameParam(params);
-		if(queueName == null)
+		if (queueName == null)
 		{
 			return null;
 		}
-		
-		if(windowParam != null)
+
+		if (windowParam != null)
 		{
-			if(windowParam.equals(QueryStringParameters.WINDOW_PARAM_ALL))
+			if (windowParam.equals(QueryStringParameters.WINDOW_PARAM_ALL))
 			{
 				return db.runRetrievalPreparedStatement(QUERY_ALL, queueName);
 			}
-			else if(windowParam.equals(QueryStringParameters.WINDOW_PARAM_LAST))
+			else if (windowParam.equals(QueryStringParameters.WINDOW_PARAM_LAST))
 			{
 				return db.runRetrievalPreparedStatement(QUERY_LAST, queueName);
 			}

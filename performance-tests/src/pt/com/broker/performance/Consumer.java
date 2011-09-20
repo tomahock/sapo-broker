@@ -3,9 +3,9 @@ package pt.com.broker.performance;
 import java.util.concurrent.CountDownLatch;
 
 import pt.com.broker.client.BrokerClient;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class Consumer extends TestActor
 {
@@ -40,7 +40,7 @@ public class Consumer extends TestActor
 	public Integer call() throws Exception
 	{
 		countDown.await();
-		
+
 		return new Integer(0);
 	}
 

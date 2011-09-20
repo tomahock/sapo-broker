@@ -22,25 +22,25 @@ public class ConfigurationInfo
 
 	public static class AgentInfo
 	{
-	
+
 		public final String id;
 		public final String hostname;
 		public final int tcpPort;
 		public final int httpPort;
-	
+
 		AgentInfo(String id, String hostname, int tcpPort, int httpPort)
 		{
 			this.id = id;
 			this.hostname = hostname;
 			this.tcpPort = tcpPort;
-			this.httpPort = httpPort; 
+			this.httpPort = httpPort;
 		}
 	}
-	
+
 	private static HashMap<String, AgentInfo> agents = new HashMap<String, AgentInfo>();
-	
+
 	private static AgentInfo defaultAgent;
-	
+
 	static
 	{
 		JAXBContext jc;
@@ -51,10 +51,10 @@ public class ConfigurationInfo
 			u = jc.createUnmarshaller();
 			String filename = System.getProperty("perf-test-configuration");
 
-			if( filename == null)
+			if (filename == null)
 			{
 				log.error("Property 'perf-test-configuration' not defined. Exiting...");
-				Shutdown.now();				
+				Shutdown.now();
 			}
 			File f = new File(filename);
 			boolean b = f.exists();
@@ -62,7 +62,7 @@ public class ConfigurationInfo
 			{
 				log.error("Configuration file (" + filename + ") was not found.");
 			}
-			configuration= (TestConfiguration) u.unmarshal(f);
+			configuration = (TestConfiguration) u.unmarshal(f);
 		}
 		catch (Throwable e)
 		{
@@ -72,28 +72,27 @@ public class ConfigurationInfo
 
 	private static void loadAgents()
 	{
-		if(getConfiguration() == null)
+		if (getConfiguration() == null)
 		{
 			org.caudexorigo.Shutdown.now();
 		}
-		
+
 		Agents agents = getConfiguration().getAgents();
-		
+
 		List<Agent> agentList = agents.getAgent();
-		
-		for(Agent agent : agentList)
+
+		for (Agent agent : agentList)
 		{
-			ConfigurationInfo.getAgents().put(agent.getAgentId(),  new AgentInfo(agent.getAgentId(), agent.getHostname(), agent.getTcpPort().intValue(), agent.getHttpPort().intValue()));
+			ConfigurationInfo.getAgents().put(agent.getAgentId(), new AgentInfo(agent.getAgentId(), agent.getHostname(), agent.getTcpPort().intValue(), agent.getHttpPort().intValue()));
 		}
-		
-		defaultAgent = ConfigurationInfo.getAgents().get( agents.getDefaultAgent() );
+
+		defaultAgent = ConfigurationInfo.getAgents().get(agents.getDefaultAgent());
 	}
 
 	public static void init()
 	{
 		loadAgents();
 	}
-
 
 	public static HashMap<String, AgentInfo> getAgents()
 	{
@@ -105,7 +104,6 @@ public class ConfigurationInfo
 		return configuration;
 	}
 
-
 	public static AgentInfo getDefaultAgent()
 	{
 		return defaultAgent;
@@ -116,5 +114,5 @@ public class ConfigurationInfo
 		String encoding = configuration.getTests().getEncoding();
 		return NetProtocolType.valueOf(encoding);
 	}
-	
+
 }

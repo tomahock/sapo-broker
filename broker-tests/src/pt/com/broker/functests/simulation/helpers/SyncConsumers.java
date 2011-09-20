@@ -35,38 +35,38 @@ public class SyncConsumers
 	private static List<SyncConsumers> activeConsumers = new ArrayList<SyncConsumers>();
 
 	private final String appName;
-	
+
 	static
 	{
 		final long interval = 15;
-		
+
 		Runnable command = new Runnable()
 		{
 			@Override
 			public void run()
 			{
 				StringBuffer sb = new StringBuffer();
-				
-				for(SyncConsumers consumers : activeConsumers)
+
+				for (SyncConsumers consumers : activeConsumers)
 				{
 					sb.append("\nSync Consumers:");
 					sb.append(consumers.appName);
 					sb.append("\n");
-					for(ConsumerInfo ci : consumers.consumers)
+					for (ConsumerInfo ci : consumers.consumers)
 					{
-						sb.append(String.format("Messages received in the last %s (s) by %s: %s\n", interval, ci.consumerName, ci.messagesReceived)) ; 
+						sb.append(String.format("Messages received in the last %s (s) by %s: %s\n", interval, ci.consumerName, ci.messagesReceived));
 						ci.messagesReceived = 0;
-					}					
+					}
 				}
-				
-				System.out.println( sb.toString());
+
+				System.out.println(sb.toString());
 			}
 		};
-		
+
 		GcsExecutor.scheduleAtFixedRate(command, interval, interval, TimeUnit.SECONDS);
-		
+
 	}
-	
+
 	private class ConsumerInfo
 	{
 		public BrokerClient brokerClient;
@@ -95,7 +95,7 @@ public class SyncConsumers
 			ConsumerInfo ci = new ConsumerInfo();
 			try
 			{
-				ci.consumerName = appName+i;
+				ci.consumerName = appName + i;
 				ci.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), String.format("Consumer:%s:%s", queueName, i), protocolType);
 
 				consumers.add(ci);
@@ -127,9 +127,9 @@ public class SyncConsumers
 							++consumerInfo.messagesReceived;
 							Sleep.time(ackDelay);
 							consumerInfo.brokerClient.acknowledge(notification);
-							if(pollInterval != 0)
+							if (pollInterval != 0)
 							{
-								Sleep.time( pollInterval);
+								Sleep.time(pollInterval);
 							}
 						}
 						catch (Throwable e)
@@ -149,7 +149,7 @@ public class SyncConsumers
 		{
 			ci.brokerClient.close();
 		}
-		
+
 		activeConsumers.remove(this);
 	}
 }

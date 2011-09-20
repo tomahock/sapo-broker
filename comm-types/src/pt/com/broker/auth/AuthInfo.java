@@ -15,7 +15,6 @@ public class AuthInfo
 	private byte[] token;
 	private final String authenticationType;
 
-	
 	/**
 	 * Creates an AuthInfo instance.
 	 * 
@@ -30,6 +29,7 @@ public class AuthInfo
 	{
 		this(userId, null, password.getBytes(Charset.forName("UTF-8")), authenticationType);
 	}
+
 	/**
 	 * Creates an AuthInfo instance.
 	 * 
@@ -84,7 +84,8 @@ public class AuthInfo
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "AuthInfo [userId=" + userId + ", roles=" + roles + ", authenticationType=" + authenticationType + "]";
 	}
 }

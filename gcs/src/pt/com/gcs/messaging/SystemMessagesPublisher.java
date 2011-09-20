@@ -47,7 +47,7 @@ public class SystemMessagesPublisher
 					NetMessage netMessage = pending_messages.remove(messageId);
 					if (netMessage != null)
 					{
-						// message wasn't removed meanwhile (not acknowledged) 
+						// message wasn't removed meanwhile (not acknowledged)
 
 						log.info(String.format("Message with id '%s' wasn't acknowledged. Closing channel '%s'. Message: '%s'", messageId, channel.toString(), new String(netMessage.getAction().getNotificationMessage().getMessage().getPayload())));
 						MiscStats.newSystemMessageFailed();

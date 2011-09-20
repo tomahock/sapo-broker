@@ -5,23 +5,24 @@
 // Generated on: 2011.04.05 at 08:43:48 PM WEST 
 //
 
-
 package pt.com.broker.monitorization.configuration;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for Agents complex type.
+ * <p>
+ * Java class for Agents complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Agents">
@@ -50,146 +51,143 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Agents", propOrder = {
-    "agent"
-})
-public class Agents {
+@XmlType(name = "Agents", propOrder = { "agent" })
+public class Agents
+{
 
-    @XmlElement(required = true)
-    protected List<Agents.Agent> agent;
+	@XmlElement(required = true)
+	protected List<Agents.Agent> agent;
 
-    /**
-     * Gets the value of the agent property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the agent property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAgent().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Agents.Agent }
-     * 
-     * 
-     */
-    public List<Agents.Agent> getAgent() {
-        if (agent == null) {
-            agent = new ArrayList<Agents.Agent>();
-        }
-        return this.agent;
-    }
+	/**
+	 * Gets the value of the agent property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the agent property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getAgent().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link Agents.Agent }
+	 * 
+	 * 
+	 */
+	public List<Agents.Agent> getAgent()
+	{
+		if (agent == null)
+		{
+			agent = new ArrayList<Agents.Agent>();
+		}
+		return this.agent;
+	}
 
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;attribute name="hostname" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *       &lt;attribute name="port" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+	 *       &lt;attribute name="world-map" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "")
+	public static class Agent
+	{
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="hostname" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="port" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
-     *       &lt;attribute name="world-map" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-    public static class Agent {
+		@XmlAttribute(required = true)
+		protected String hostname;
+		@XmlAttribute(required = true)
+		protected BigDecimal port;
+		@XmlAttribute(name = "world-map", required = true)
+		protected String worldMap;
 
-        @XmlAttribute(required = true)
-        protected String hostname;
-        @XmlAttribute(required = true)
-        protected BigDecimal port;
-        @XmlAttribute(name = "world-map", required = true)
-        protected String worldMap;
+		/**
+		 * Gets the value of the hostname property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getHostname()
+		{
+			return hostname;
+		}
 
-        /**
-         * Gets the value of the hostname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getHostname() {
-            return hostname;
-        }
+		/**
+		 * Sets the value of the hostname property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setHostname(String value)
+		{
+			this.hostname = value;
+		}
 
-        /**
-         * Sets the value of the hostname property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setHostname(String value) {
-            this.hostname = value;
-        }
+		/**
+		 * Gets the value of the port property.
+		 * 
+		 * @return possible object is {@link BigDecimal }
+		 * 
+		 */
+		public BigDecimal getPort()
+		{
+			return port;
+		}
 
-        /**
-         * Gets the value of the port property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getPort() {
-            return port;
-        }
+		/**
+		 * Sets the value of the port property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link BigDecimal }
+		 * 
+		 */
+		public void setPort(BigDecimal value)
+		{
+			this.port = value;
+		}
 
-        /**
-         * Sets the value of the port property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setPort(BigDecimal value) {
-            this.port = value;
-        }
+		/**
+		 * Gets the value of the worldMap property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getWorldMap()
+		{
+			return worldMap;
+		}
 
-        /**
-         * Gets the value of the worldMap property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getWorldMap() {
-            return worldMap;
-        }
+		/**
+		 * Sets the value of the worldMap property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setWorldMap(String value)
+		{
+			this.worldMap = value;
+		}
 
-        /**
-         * Sets the value of the worldMap property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setWorldMap(String value) {
-            this.worldMap = value;
-        }
-
-    }
+	}
 
 }

@@ -4,7 +4,7 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 public class UdpTopicPublishTest extends UdpPublishTest
 {
-	
+
 	public UdpTopicPublishTest()
 	{
 		super("UDP topic publication");

@@ -25,13 +25,13 @@ public class InputRateStaticQuery extends StaticQuery
 	public ResultSet getResultSet(Db db, Map<String, List<String>> params)
 	{
 		String windowParam = QueryStringParameters.getWindowParam(params);
-		if(windowParam != null)
+		if (windowParam != null)
 		{
-			if(windowParam.equals(QueryStringParameters.WINDOW_PARAM_ALL))
+			if (windowParam.equals(QueryStringParameters.WINDOW_PARAM_ALL))
 			{
 				return db.runRetrievalPreparedStatement(QUERY_ALL);
 			}
-			else if(windowParam.equals(QueryStringParameters.WINDOW_PARAM_LAST))
+			else if (windowParam.equals(QueryStringParameters.WINDOW_PARAM_LAST))
 			{
 				return db.runRetrievalPreparedStatement(QUERY_LAST);
 			}

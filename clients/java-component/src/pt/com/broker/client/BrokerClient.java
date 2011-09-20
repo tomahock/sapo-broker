@@ -12,10 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetAction.ActionType;
 
 /**
  * BrokerClient represents a connection between a client and an agent. Through it clients can produce and consume broker messages. <br/>
@@ -32,7 +32,7 @@ public class BrokerClient extends BaseBrokerClient
 		super(host, portNumber);
 		init();
 	}
-	
+
 	public BrokerClient(String host, int portNumber, int retries) throws Throwable
 	{
 		super(host, portNumber);
@@ -113,7 +113,7 @@ public class BrokerClient extends BaseBrokerClient
 
 		try
 		{
-			if(this.isOldFramming())
+			if (this.isOldFramming())
 			{
 				byte[] marshaledMessage = super._netHandler.marshalMessage(netMessage);
 				out.write(marshaledMessage);

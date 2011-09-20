@@ -70,7 +70,7 @@ public class PollNoWaitTest extends BrokerTest
 
 		});
 	}
-	
+
 	@Override
 	public boolean skipTest()
 	{

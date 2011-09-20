@@ -8,9 +8,9 @@ import org.caudexorigo.cli.CliFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class ConsumerApp implements BrokerListener
 {
@@ -49,20 +49,18 @@ public class ConsumerApp implements BrokerListener
 		System.out.println("Waiting...");
 
 		consumer.countDown.await();
-		
+
 		bk.close();
-		
-		System.out.println(String.format("Received messages: %s, Sent messages: %s", consumer.counter.get()+"", consumer.sentMessages+""));
-		System.out.println(String.format("Time: %s (ns)", (consumer.stopTime - consumer.startTime.get()) +""));
-		
-		
-		double nano2second = (1000 * 1000 * 1000); //nanos
-		double time = (double)consumer.stopTime - consumer.startTime.get();
+
+		System.out.println(String.format("Received messages: %s, Sent messages: %s", consumer.counter.get() + "", consumer.sentMessages + ""));
+		System.out.println(String.format("Time: %s (ns)", (consumer.stopTime - consumer.startTime.get()) + ""));
+
+		double nano2second = (1000 * 1000 * 1000); // nanos
+		double time = (double) consumer.stopTime - consumer.startTime.get();
 		double totalNrOfMessagesSent = (double) consumer.sentMessages;
-		double timePerMsg = ( (((double) time)) / totalNrOfMessagesSent ) / nano2second;
+		double timePerMsg = ((((double) time)) / totalNrOfMessagesSent) / nano2second;
 		double messagesPerSecond = 1 / timePerMsg;
-		String result = String.format("--------> Messages: %s.Time: %s (s). Time per message: %s (s). Messages per second: %s\n",
-				(int)totalNrOfMessagesSent,time / nano2second, timePerMsg, messagesPerSecond);
+		String result = String.format("--------> Messages: %s.Time: %s (s). Time per message: %s (s). Messages per second: %s\n", (int) totalNrOfMessagesSent, time / nano2second, timePerMsg, messagesPerSecond);
 		System.out.println(result);
 	}
 
@@ -80,7 +78,7 @@ public class ConsumerApp implements BrokerListener
 			if (notification.getMessage().getPayload()[0] == ProducerApp.STOP_MESSAGE)
 			{
 				stopTime = System.nanoTime();
-				
+
 				byte[] payload = notification.getMessage().getPayload();
 				byte[] serializedCount = new byte[payload.length - 1];
 
@@ -94,9 +92,9 @@ public class ConsumerApp implements BrokerListener
 			else
 			{
 				int localCounter = counter.incrementAndGet();
-				if( (localCounter % 100) == 0)
+				if ((localCounter % 100) == 0)
 				{
-					System.out.println("Messages received: "+ localCounter);
+					System.out.println("Messages received: " + localCounter);
 				}
 			}
 		}

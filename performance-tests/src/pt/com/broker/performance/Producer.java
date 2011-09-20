@@ -1,9 +1,9 @@
 package pt.com.broker.performance;
 
 import pt.com.broker.client.BrokerClient;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class Producer extends TestActor
 {

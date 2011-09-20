@@ -5,18 +5,19 @@
 // Generated on: 2011.09.09 at 02:24:03 PM WEST 
 //
 
-
 package pt.com.gcs.conf.global;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for DestinationType.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for DestinationType.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * 
  * <pre>
  * &lt;simpleType name="DestinationType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -30,18 +31,19 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "DestinationType")
 @XmlEnum
-public enum DestinationType {
+public enum DestinationType
+{
 
-    TOPIC,
-    QUEUE,
-    VIRTUAL_QUEUE;
+	TOPIC, QUEUE, VIRTUAL_QUEUE;
 
-    public String value() {
-        return name();
-    }
+	public String value()
+	{
+		return name();
+	}
 
-    public static DestinationType fromValue(String v) {
-        return valueOf(v);
-    }
+	public static DestinationType fromValue(String v)
+	{
+		return valueOf(v);
+	}
 
 }

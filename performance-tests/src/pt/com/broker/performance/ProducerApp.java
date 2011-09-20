@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
-import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
 
 /**
  * Simple producer sample. Behavior is determined by command line arguments.
@@ -24,12 +24,12 @@ public class ProducerApp
 {
 	public static final byte STOP_MESSAGE = (byte) 0;
 	public static final byte REGULAR_MESSAGE = (byte) 1;
-	
+
 	private static final ExecutorService executer = Executors.newFixedThreadPool(16);
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ProducerApp.class);
 	private final AtomicInteger counter = new AtomicInteger(0);
-	
+
 	private AtomicInteger threadsWorking;
 
 	private String host;
@@ -50,16 +50,16 @@ public class ProducerApp
 		final BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher");
 
 		Thread.sleep(200);
-		
+
 		int producingThreads = cargs.getProducingThreads();
 
-		log.info("Start sending " + cargs.getNumberOfMessages() +  " strings of " + cargs.getMessageLength() + " random alphanumeric characters in 200 milliseconds to " + producer.dname + " using " + producingThreads + " threads.");
-		
+		log.info("Start sending " + cargs.getNumberOfMessages() + " strings of " + cargs.getMessageLength() + " random alphanumeric characters in 200 milliseconds to " + producer.dname + " using " + producingThreads + " threads.");
+
 		final int messagesPerThread = cargs.getNumberOfMessages() / producingThreads;
-		
-		ArrayList< Callable<Integer> > producers = new ArrayList<Callable<Integer>>(producingThreads);
-		
-		for(int i = 0; i != producingThreads; ++i)
+
+		ArrayList<Callable<Integer>> producers = new ArrayList<Callable<Integer>>(producingThreads);
+
+		for (int i = 0; i != producingThreads; ++i)
 		{
 			producers.add(new Callable<Integer>()
 			{
@@ -78,29 +78,29 @@ public class ProducerApp
 				}
 			});
 		}
-		
+
 		producer.threadsWorking = new AtomicInteger(producingThreads);
 
 		executer.invokeAll(producers);
-		
-		//producer.sendLoop(bk, cargs.getMessageLength(), cargs.getNumberOfMessages());
+
+		// producer.sendLoop(bk, cargs.getMessageLength(), cargs.getNumberOfMessages());
 
 		System.out.println("Done!");
-		
+
 		System.exit(0);
 	}
 
 	private void sendLoop(BrokerClient bk, int messageLength, int nrOfMessages, int totalMessages) throws Throwable
 	{
 		final String regularMsgContent = RandomStringUtils.randomAlphanumeric(messageLength - 1);
-		final String stopMsgContent =  totalMessages+"";
-		
+		final String stopMsgContent = totalMessages + "";
+
 		byte[] regularMessage = getMessage(REGULAR_MESSAGE, regularMsgContent);
 		byte[] stopMessage = getMessage(STOP_MESSAGE, stopMsgContent);
-		
+
 		NetBrokerMessage brokerMessage = new NetBrokerMessage(regularMessage);
 		NetBrokerMessage stopBrokerMessage = new NetBrokerMessage(stopMessage);
-		
+
 		for (int i = 0; i != nrOfMessages; ++i)
 		{
 
@@ -113,19 +113,19 @@ public class ProducerApp
 				bk.publishMessage(brokerMessage, dname);
 			}
 
-//			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
+			// log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 
-//			Sleep.time(3);
+			// Sleep.time(3);
 		}
-		
-		if( threadsWorking.decrementAndGet() == 0)
+
+		if (threadsWorking.decrementAndGet() == 0)
 		{
-		
+
 			System.out.println("Sending stop messages");
-		
+
 			for (int i = 0; i != 10; ++i)
 			{
-	
+
 				if (dtype == DestinationType.QUEUE)
 				{
 					bk.enqueueMessage(stopBrokerMessage, dname);
@@ -134,16 +134,16 @@ public class ProducerApp
 				{
 					bk.publishMessage(stopBrokerMessage, dname);
 				}
-	
-	//			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
-	
-	//			Sleep.time(3);
+
+				// log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
+
+				// Sleep.time(3);
 			}
-	
+
 			bk.close();
 		}
 	}
-	
+
 	private byte[] getMessage(byte headerByte, String messageContent)
 	{
 		byte[] serializedContent = new byte[0];
@@ -153,14 +153,14 @@ public class ProducerApp
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			//this will never happen
+			// this will never happen
 		}
 		byte[] serializedMessage = new byte[serializedContent.length + 1];
 
 		serializedMessage[0] = headerByte;
 		System.arraycopy(serializedContent, 0, serializedMessage, 1, serializedContent.length);
-		
+
 		return serializedMessage;
 	}
-	
+
 }

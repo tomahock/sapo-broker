@@ -50,16 +50,14 @@ public class AgentFaultTypeQuery
 				}
 				int idx = 1;
 				sb.append("{");
-				
+
 				sb.append("\"shortMessage\":\"");
 				sb.append(queryResult.getString(idx++));
 				sb.append("\",");
-				
-				
+
 				sb.append("\"count\":\"");
 				sb.append(queryResult.getInt(idx++));
 				sb.append("\"");
-				
 
 				sb.append("}");
 			}

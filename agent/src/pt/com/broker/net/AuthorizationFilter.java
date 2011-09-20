@@ -6,18 +6,18 @@ import java.util.List;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.auth.AccessControl;
+import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.auth.Session;
 import pt.com.broker.auth.SessionProperties;
-import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ChannelAttributes;
@@ -67,11 +67,11 @@ public class AuthorizationFilter extends SimpleChannelUpstreamHandler
 		Channel channel = ctx.getChannel();
 		Object _session = ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "BROKER_SESSION_PROPERTIES");
 
-		if(_session == null)
+		if (_session == null)
 		{
 			_session = new Session(channel);
 		}
-		
+
 		NetMessage netMessage = (NetMessage) e.getMessage();
 		Session sessionProps = null;
 
@@ -87,7 +87,7 @@ public class AuthorizationFilter extends SimpleChannelUpstreamHandler
 			messageRefused(channel, netMessage, result.reasonForRejection);
 			return;
 		}
-		
+
 		ctx.sendUpstream(e);
 	}
 

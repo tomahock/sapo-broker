@@ -10,29 +10,28 @@ import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetProtocolType;
 
 public class DistTestParams
 {
 	private static final Logger log = LoggerFactory.getLogger(DistTestParams.class);
-	
-	
+
 	public static class ClientInfo
 	{
 		private String name;
 		private String agentHost;
 		private int port;
-	
+
 		private ClientInfo()
 		{
 		}
-		
+
 		public ClientInfo(String name, String agentHost, int port)
 		{
 			this.name = name;
 			this.agentHost = agentHost;
-			this.port = port;			
+			this.port = port;
 		}
 
 		public String getName()
@@ -49,6 +48,7 @@ public class DistTestParams
 		{
 			return port;
 		}
+
 		public void write(ObjectOutputStream outputObj)
 		{
 			try
@@ -62,13 +62,14 @@ public class DistTestParams
 				log.error("Failed to serialize object", e);
 			}
 		}
+
 		public void read(ObjectInputStream inputObj)
 		{
 			try
 			{
 				this.name = inputObj.readUTF();
 				this.agentHost = inputObj.readUTF();
-				this.port = inputObj.readInt();		
+				this.port = inputObj.readInt();
 			}
 			catch (Throwable e)
 			{
@@ -76,9 +77,9 @@ public class DistTestParams
 			}
 		}
 	}
-	
+
 	private String testName;
-	
+
 	private String destination;
 	private DestinationType destinationType;
 	private int messageSize;
@@ -86,18 +87,17 @@ public class DistTestParams
 	private boolean syncConsumer;
 	private boolean isNoAckConsumer;
 	private NetProtocolType encoding;
-	
+
 	private ClientInfo clientInfo;
-	
+
 	private final HashMap<String, ClientInfo> producers = new HashMap<String, ClientInfo>(); // name of each producer
 	private final HashMap<String, ClientInfo> consumers = new HashMap<String, ClientInfo>(); // name of each consumer
 
-	
 	private DistTestParams()
 	{
-		
+
 	}
-	
+
 	public DistTestParams(String testName, String destination, DestinationType destinationType, int messageSize, int numberOfMessagesToSend, boolean syncConsumer, boolean isNoAckConsumer, NetProtocolType encoding)
 	{
 		this.testName = testName;
@@ -108,9 +108,8 @@ public class DistTestParams
 		this.syncConsumer = syncConsumer;
 		this.isNoAckConsumer = isNoAckConsumer;
 		this.encoding = encoding;
-	}	
+	}
 
-	
 	public String getTestName()
 	{
 		return testName;
@@ -130,7 +129,7 @@ public class DistTestParams
 	{
 		return messageSize;
 	}
-	
+
 	public int getNumberOfMessagesToSend()
 	{
 		return numberOfMessagesToSend;
@@ -150,18 +149,17 @@ public class DistTestParams
 	{
 		return syncConsumer;
 	}
-	
+
 	public boolean isNoAckConsumer()
 	{
 		return isNoAckConsumer;
 	}
-	
+
 	public NetProtocolType getEncoding()
 	{
 		return encoding;
 	}
 
-	
 	public byte[] serialize(ClientInfo clientInfo)
 	{
 		byte[] data = null;
@@ -173,16 +171,16 @@ public class DistTestParams
 			outputObj.writeUTF(destination);
 			outputObj.writeUTF(destinationType.toString());
 			outputObj.writeInt(messageSize);
-			outputObj.writeInt(numberOfMessagesToSend);		
+			outputObj.writeInt(numberOfMessagesToSend);
 			outputObj.writeBoolean(syncConsumer);
 			outputObj.writeBoolean(isNoAckConsumer);
 			outputObj.writeUTF(encoding.toString());
-			
+
 			clientInfo.write(outputObj);
-			
+
 			outputObj.flush();
 
-			data = bout.toByteArray();			
+			data = bout.toByteArray();
 		}
 		catch (IOException e)
 		{
@@ -190,43 +188,41 @@ public class DistTestParams
 		}
 		return data;
 	}
-	
+
 	public static DistTestParams deserialize(byte[] data)
 	{
 		DistTestParams distTestParams = new DistTestParams();
-		
+
 		try
 		{
 			ObjectInputStream inputObj;
 			inputObj = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(data));
-			
+
 			distTestParams.testName = inputObj.readUTF();
 			distTestParams.destination = inputObj.readUTF();
-			distTestParams.destinationType = DestinationType.valueOf( inputObj.readUTF() );
+			distTestParams.destinationType = DestinationType.valueOf(inputObj.readUTF());
 			distTestParams.messageSize = inputObj.readInt();
 			distTestParams.numberOfMessagesToSend = inputObj.readInt();
 			distTestParams.syncConsumer = inputObj.readBoolean();
 			distTestParams.isNoAckConsumer = inputObj.readBoolean();
 			distTestParams.encoding = NetProtocolType.valueOf(inputObj.readUTF());
-			
+
 			distTestParams.clientInfo = new ClientInfo();
 			distTestParams.clientInfo.read(inputObj);
-			
+
 		}
 		catch (Throwable e)
 		{
 			log.error("Failed to deserialize object", e);
 			return null;
 		}
-		
+
 		return distTestParams;
 	}
-
 
 	public ClientInfo getClientInfo()
 	{
 		return clientInfo;
 	}
 
-	
 }

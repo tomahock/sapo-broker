@@ -114,7 +114,7 @@ public abstract class BrokerTest extends Test
 			return defaultDataLenght;
 		}
 	}
-	
+
 	public static int getAgent1Port()
 	{
 		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
@@ -129,7 +129,7 @@ public abstract class BrokerTest extends Test
 		}
 		return port;
 	}
-	
+
 	public static int getAgent2Port()
 	{
 		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
@@ -144,6 +144,7 @@ public abstract class BrokerTest extends Test
 		}
 		return port;
 	}
+
 	public static int getAgent1UdpPort()
 	{
 		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
@@ -158,6 +159,7 @@ public abstract class BrokerTest extends Test
 		}
 		return port;
 	}
+
 	public static int getAgent2UdpPort()
 	{
 		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();

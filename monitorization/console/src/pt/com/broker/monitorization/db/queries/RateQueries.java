@@ -17,14 +17,13 @@ import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionDiscard
 import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionOutputRateQuery;
 import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionRateQuery;
 
-
 public class RateQueries implements QueryDataProvider
 {
 	private static Map<String, StaticQuery> queries = new HashMap<String, StaticQuery>();
 	private static final String QUERY_TYPE_PARAM = "ratetype";
 
-	private static final String TYPE = "rate"; 
-	
+	private static final String TYPE = "rate";
+
 	static
 	{
 		QueueCountStaticQuery qsq = new QueueCountStaticQuery();
@@ -41,8 +40,8 @@ public class RateQueries implements QueryDataProvider
 
 		SubscriptionRateQuery sorq = new SubscriptionOutputRateQuery();
 		queries.put(sorq.getId(), sorq);
-		
-		SubscriptionDiscardedRateQuery  sdrq = new SubscriptionDiscardedRateQuery();
+
+		SubscriptionDiscardedRateQuery sdrq = new SubscriptionDiscardedRateQuery();
 		queries.put(sdrq.getId(), sdrq);
 
 		AgentQueueCountQuery aqc = new AgentQueueCountQuery();
@@ -56,13 +55,13 @@ public class RateQueries implements QueryDataProvider
 
 		AgentOutputRateQuery aorq = new AgentOutputRateQuery();
 		queries.put(aorq.getId(), aorq);
-		
+
 		QueueCountRateQuery qcrq = new QueueCountRateQuery();
 		queries.put(qcrq.getId(), qcrq);
-		
+
 		QueueInputRateQuery qirq = new QueueInputRateQuery();
 		queries.put(qirq.getId(), qirq);
-		
+
 		QueueOutputRateQuery qorq = new QueueOutputRateQuery();
 		queries.put(qorq.getId(), qorq);
 	}
@@ -82,6 +81,7 @@ public class RateQueries implements QueryDataProvider
 		}
 		return sq.getJsonData(params);
 	}
+
 	@Override
 	public String getType()
 	{

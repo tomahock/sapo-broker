@@ -30,7 +30,6 @@ public class FaultsDB
 	 * CREATE TABLE IF NOT EXISTS fault(id INT PRIMARY KEY AUTO_INCREMENT, agentName VARCHAR(255) NOT NULL, time TIMESTAMP NOT NULL, message VARCHAR(8192), shortmessage VARCHAR(255));
 	 */
 
-
 	public static void add(String agent, Date sampleDate, String message)
 	{
 		if (log.isDebugEnabled())
@@ -48,7 +47,7 @@ public class FaultsDB
 			String escapedMsg = StringEscapeUtils.escapeHtml(clean(errorInfo.content));
 
 			String shortMessage = StringEscapeUtils.escapeHtml(clean(errorInfo.shortMessage));
-			
+
 			DbExecutor.runActionPreparedStatement(ins_sql, agent, sampleDate, escapedMsg, shortMessage);
 		}
 		catch (Throwable t)
@@ -57,20 +56,18 @@ public class FaultsDB
 		}
 
 	}
-	
-	
+
 	private static String clean(String s)
 	{
-		if(s == null || s.length() == 0)
+		if (s == null || s.length() == 0)
 		{
 			return s;
 		}
-		
+
 		s = StringUtils.replace(s, "\n", "\\n");
 		s = StringUtils.replace(s, "\t", "\\t");
 		return s;
 	}
-
 
 	private static class SoapFaultNS implements NamespaceContext
 	{
@@ -152,7 +149,7 @@ public class FaultsDB
 		{
 			Throwable r = ErrorAnalyser.findRootCause(t);
 			log.error(r.getMessage(), r);
-			shortMessage = String.format("Unknown - (failed to extract data from Fault message. Reason: %s)", r.getMessage() );
+			shortMessage = String.format("Unknown - (failed to extract data from Fault message. Reason: %s)", r.getMessage());
 		}
 
 		return new ErrorInfo(shortMessage, content);

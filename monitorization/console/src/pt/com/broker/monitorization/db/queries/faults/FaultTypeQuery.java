@@ -53,24 +53,23 @@ public class FaultTypeQuery
 				}
 				int idx = 1;
 				sb.append("{");
-				
+
 				sb.append("\"id\":\"");
 				sb.append(queryResult.getInt(idx++));
 				sb.append("\",");
-				
+
 				sb.append("\"agentName\":\"");
 				String agentName = queryResult.getString(idx++);
 				sb.append(agentName);
 				sb.append("\",");
-				
+
 				sb.append("\"agentHostname\":\"");
 				sb.append(AgentHostname.get(agentName));
 				sb.append("\",");
-				
+
 				sb.append("\"time\":\"");
 				sb.append(DateUtil.formatISODate(new Date(queryResult.getTimestamp(idx++).getTime())));
 				sb.append("\"");
-				
 
 				sb.append("}");
 			}

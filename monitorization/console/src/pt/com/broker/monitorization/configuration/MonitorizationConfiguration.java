@@ -5,7 +5,6 @@
 // Generated on: 2011.04.05 at 08:38:11 PM WEST 
 //
 
-
 package pt.com.broker.monitorization.configuration;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,11 +14,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -54,193 +54,190 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "console",
-    "rootPaths"
-})
+@XmlType(name = "", propOrder = { "console", "rootPaths" })
 @XmlRootElement(name = "monitorization-configuration")
-public class MonitorizationConfiguration {
+public class MonitorizationConfiguration
+{
 
-    @XmlElement(required = true)
-    protected MonitorizationConfiguration.Console console;
-    @XmlElement(name = "root-paths", required = true)
-    protected MonitorizationConfiguration.RootPaths rootPaths;
+	@XmlElement(required = true)
+	protected MonitorizationConfiguration.Console console;
+	@XmlElement(name = "root-paths", required = true)
+	protected MonitorizationConfiguration.RootPaths rootPaths;
 
-    /**
-     * Gets the value of the console property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link MonitorizationConfiguration.Console }
-     *     
-     */
-    public MonitorizationConfiguration.Console getConsole() {
-        return console;
-    }
+	/**
+	 * Gets the value of the console property.
+	 * 
+	 * @return possible object is {@link MonitorizationConfiguration.Console }
+	 * 
+	 */
+	public MonitorizationConfiguration.Console getConsole()
+	{
+		return console;
+	}
 
-    /**
-     * Sets the value of the console property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link MonitorizationConfiguration.Console }
-     *     
-     */
-    public void setConsole(MonitorizationConfiguration.Console value) {
-        this.console = value;
-    }
+	/**
+	 * Sets the value of the console property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link MonitorizationConfiguration.Console }
+	 * 
+	 */
+	public void setConsole(MonitorizationConfiguration.Console value)
+	{
+		this.console = value;
+	}
 
-    /**
-     * Gets the value of the rootPaths property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link MonitorizationConfiguration.RootPaths }
-     *     
-     */
-    public MonitorizationConfiguration.RootPaths getRootPaths() {
-        return rootPaths;
-    }
+	/**
+	 * Gets the value of the rootPaths property.
+	 * 
+	 * @return possible object is {@link MonitorizationConfiguration.RootPaths }
+	 * 
+	 */
+	public MonitorizationConfiguration.RootPaths getRootPaths()
+	{
+		return rootPaths;
+	}
 
-    /**
-     * Sets the value of the rootPaths property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link MonitorizationConfiguration.RootPaths }
-     *     
-     */
-    public void setRootPaths(MonitorizationConfiguration.RootPaths value) {
-        this.rootPaths = value;
-    }
+	/**
+	 * Sets the value of the rootPaths property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link MonitorizationConfiguration.RootPaths }
+	 * 
+	 */
+	public void setRootPaths(MonitorizationConfiguration.RootPaths value)
+	{
+		this.rootPaths = value;
+	}
 
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;attribute name="http-port" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "")
+	public static class Console
+	{
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="http-port" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-    public static class Console {
+		@XmlAttribute(name = "http-port", required = true)
+		protected String httpPort;
 
-        @XmlAttribute(name = "http-port", required = true)
-        protected String httpPort;
+		/**
+		 * Gets the value of the httpPort property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getHttpPort()
+		{
+			return httpPort;
+		}
 
-        /**
-         * Gets the value of the httpPort property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getHttpPort() {
-            return httpPort;
-        }
+		/**
+		 * Sets the value of the httpPort property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setHttpPort(String value)
+		{
+			this.httpPort = value;
+		}
 
-        /**
-         * Sets the value of the httpPort property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setHttpPort(String value) {
-            this.httpPort = value;
-        }
+	}
 
-    }
+	/**
+	 * <p>
+	 * Java class for anonymous complex type.
+	 * 
+	 * <p>
+	 * The following schema fragment specifies the expected content contained within this class.
+	 * 
+	 * <pre>
+	 * &lt;complexType>
+	 *   &lt;complexContent>
+	 *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+	 *       &lt;attribute name="filesystem-path" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *       &lt;attribute name="wwwroot-path" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+	 *     &lt;/restriction>
+	 *   &lt;/complexContent>
+	 * &lt;/complexType>
+	 * </pre>
+	 * 
+	 * 
+	 */
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "")
+	public static class RootPaths
+	{
 
+		@XmlAttribute(name = "filesystem-path", required = true)
+		protected String filesystemPath;
+		@XmlAttribute(name = "wwwroot-path", required = true)
+		protected String wwwrootPath;
 
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="filesystem-path" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="wwwroot-path" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-    public static class RootPaths {
+		/**
+		 * Gets the value of the filesystemPath property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getFilesystemPath()
+		{
+			return filesystemPath;
+		}
 
-        @XmlAttribute(name = "filesystem-path", required = true)
-        protected String filesystemPath;
-        @XmlAttribute(name = "wwwroot-path", required = true)
-        protected String wwwrootPath;
+		/**
+		 * Sets the value of the filesystemPath property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setFilesystemPath(String value)
+		{
+			this.filesystemPath = value;
+		}
 
-        /**
-         * Gets the value of the filesystemPath property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getFilesystemPath() {
-            return filesystemPath;
-        }
+		/**
+		 * Gets the value of the wwwrootPath property.
+		 * 
+		 * @return possible object is {@link String }
+		 * 
+		 */
+		public String getWwwrootPath()
+		{
+			return wwwrootPath;
+		}
 
-        /**
-         * Sets the value of the filesystemPath property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setFilesystemPath(String value) {
-            this.filesystemPath = value;
-        }
+		/**
+		 * Sets the value of the wwwrootPath property.
+		 * 
+		 * @param value
+		 *            allowed object is {@link String }
+		 * 
+		 */
+		public void setWwwrootPath(String value)
+		{
+			this.wwwrootPath = value;
+		}
 
-        /**
-         * Gets the value of the wwwrootPath property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getWwwrootPath() {
-            return wwwrootPath;
-        }
-
-        /**
-         * Sets the value of the wwwrootPath property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setWwwrootPath(String value) {
-            this.wwwrootPath = value;
-        }
-
-    }
+	}
 
 }

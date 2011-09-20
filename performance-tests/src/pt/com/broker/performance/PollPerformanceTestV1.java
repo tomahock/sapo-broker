@@ -5,10 +5,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class PollPerformanceTestV1
 {
@@ -132,7 +132,7 @@ public class PollPerformanceTestV1
 						}
 						else
 						{
-							if(timeAccCount!= 0)
+							if (timeAccCount != 0)
 								System.out.println("Consumer Thread ended (null message). Average:" + (pollTimeAcc / timeAccCount));
 							else
 								System.out.println("Consumer Thread ended (null message).  No messages received.");
@@ -161,7 +161,7 @@ public class PollPerformanceTestV1
 			}
 			finally
 			{
-				if(timeAccCount!= 0)
+				if (timeAccCount != 0)
 					System.out.println("Consumer Thread ended (finally). Average:" + (pollTimeAcc / timeAccCount));
 				else
 					System.out.println("Consumer Thread ended (finally).  No messages received.");
@@ -197,7 +197,7 @@ public class PollPerformanceTestV1
 				try
 				{
 					NetSubscribe subscribe = new NetSubscribe(QUEUE_NAME, DestinationType.QUEUE);
-					
+
 					BrokerListener listener = new BrokerListener()
 					{
 
@@ -211,28 +211,28 @@ public class PollPerformanceTestV1
 						public void onMessage(NetNotification message)
 						{
 							long currentCount = messagesReceived.addAndGet(1);
-							
+
 							if ((currentCount % 50) == 0)
 								System.out.println(currentCount);
 							if (currentCount == MESSAGES_PRODUCED)
 							{
 								endTime = System.nanoTime();
-								System.out.println("Consumer Thread ended (limit reached). " );
-								
+								System.out.println("Consumer Thread ended (limit reached). ");
+
 								synchronized (endSyncObj)
 								{
 									endSyncObj.notifyAll();
 								}
-								
+
 								return;
 							}
-							
+
 						}
-						
+
 					};
-					
+
 					bk.addAsyncConsumer(subscribe, listener);
-					
+
 					synchronized (endObj)
 					{
 						endObj.wait();
@@ -254,7 +254,7 @@ public class PollPerformanceTestV1
 			{
 				e.printStackTrace();
 				bk.close();
-				System.out.println("Consumer Thread ended (exception):" );
+				System.out.println("Consumer Thread ended (exception):");
 				return;
 			}
 		}
@@ -271,7 +271,7 @@ public class PollPerformanceTestV1
 		while ((consumerCount--) != 0)
 		{
 			new Consumer().start();
-			//new AsynConsumer().start();
+			// new AsynConsumer().start();
 		}
 
 		synchronized (endSyncObj)

@@ -85,34 +85,34 @@ public interface CliArgs
 	 */
 	@Option(shortName = "l", defaultValue = "1000")
 	int getMessageLength();
-	
+
 	/**
 	 * 
-	 * @return Delay time. Time to wait between messages in milliseconds. 
+	 * @return Delay time. Time to wait between messages in milliseconds.
 	 */
 	@Option(shortName = "D", defaultValue = "0")
 	long getDelay();
-	
+
 	/**
 	 * 
-	 * @return Number of messages 
+	 * @return Number of messages
 	 */
 	@Option(shortName = "z", defaultValue = "1000000")
-	long getMessageNumber();	
-	
+	long getMessageNumber();
+
 	/**
 	 * 
-	 * @return Protocol Type. Encoding Protocol Type 
+	 * @return Protocol Type. Encoding Protocol Type
 	 */
 	@Option(shortName = "T", defaultValue = "PROTOCOL_BUFFER")
 	String getProtocolType();
-	
+
 	/**
 	 * 
 	 * @return Poll Timeout
 	 */
 	@Option(shortName = "t", defaultValue = "0")
-	long getPollTimeout();	
+	long getPollTimeout();
 
 	/**
 	 * 

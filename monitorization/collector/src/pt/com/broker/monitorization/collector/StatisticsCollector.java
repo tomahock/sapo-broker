@@ -29,7 +29,6 @@ public class StatisticsCollector
 
 	private static final XMLInputFactory factory = XMLInputFactory.newInstance();
 
-
 	public StatisticsCollector(BrokerClient brokerClient)
 	{
 		this.brokerClient = brokerClient;

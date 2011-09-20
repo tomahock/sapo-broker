@@ -1,7 +1,5 @@
 package pt.com.broker.types.channels;
 
-
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jboss.netty.channel.Channel;
@@ -19,7 +17,7 @@ public class ListenerChannel
 	{
 		NOT_READY, READY
 	};
-	
+
 	public static final long MAX_WRITE_TRIES = 100;
 
 	private final Channel channel;
@@ -68,7 +66,7 @@ public class ListenerChannel
 	{
 		return context;
 	}
-	
+
 	public ChannelPipeline getPipeline()
 	{
 		return channel.getPipeline();

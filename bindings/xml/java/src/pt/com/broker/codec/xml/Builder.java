@@ -9,6 +9,7 @@ import org.caudexorigo.text.StringUtils;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
@@ -19,7 +20,6 @@ import pt.com.broker.types.NetPong;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 
 public class Builder
 {

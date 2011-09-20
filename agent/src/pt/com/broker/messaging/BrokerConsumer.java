@@ -5,16 +5,15 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.text.DateUtil;
-import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.types.MessageListener;
+import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.NetUnsubscribe;
-import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
