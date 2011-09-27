@@ -286,7 +286,7 @@ public class QueueProcessor
 
 		if (result.result == Result.FAILED)
 		{
-			if ((!preferLocalConsumer) || (!hasActiveListeners(localQueueListeners)))
+			if ((!preferLocalConsumer) && (!hasActiveListeners(localQueueListeners)))
 			{
 				result = notify(remoteQueueListeners, nmsg);
 			}
