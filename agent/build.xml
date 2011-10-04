@@ -93,13 +93,13 @@
 
 	<target name="build-depends">
 
-		<ant antfile="../acl/dbauth/java/build.xml" inheritAll="false" target="build">
-			<property name="version" value="${version}" />
-		</ant>
-
 		<ant antfile="../clients/java-component/build.xml" inheritAll="false" target="build">
 			<property name="version" value="${version}" />
 			<property name="project.location" value="../clients/java-component" />
+		</ant>
+
+		<ant antfile="../acl/dbauth/java/build.xml" inheritAll="false" target="build">
+			<property name="version" value="${version}" />
 		</ant>
 
 		<ant antfile="../gcs/build.xml" inheritAll="false" target="build">
