@@ -282,10 +282,12 @@ public class QueueProcessor
 	 */
 	protected ForwardResult forward(NetMessage nmsg, boolean preferLocalConsumer)
 	{
+		boolean delivedToLocal = true;
 		ForwardResult result = notify(localQueueListeners, nmsg);
 
 		if (result.result == Result.FAILED)
 		{
+			delivedToLocal = false;
 			if (!hasActiveListeners(localQueueListeners))
 			{
 				result = notify(remoteQueueListeners, nmsg);
@@ -299,7 +301,7 @@ public class QueueProcessor
 			}
 		}
 
-		if (result.result == Result.SUCCESS)
+		if ((result.result == Result.SUCCESS) && delivedToLocal)
 		{
 			queueStatistics.newQueueMessageDelivered();
 		}
