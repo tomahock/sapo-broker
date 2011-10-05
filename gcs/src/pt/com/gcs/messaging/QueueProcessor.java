@@ -298,7 +298,7 @@ public class QueueProcessor
 			}
 		}
 
-		if ((result.result == Result.SUCCESS) && isLocalDelivery)
+		if ((result.result != Result.FAILED) && isLocalDelivery)
 		{
 			queueStatistics.newQueueMessageDelivered();
 		}
