@@ -282,33 +282,25 @@ public class QueueProcessor
 	 */
 	protected ForwardResult forward(NetMessage nmsg, boolean preferLocalConsumer)
 	{
-		boolean delivedToLocal = true;
+		boolean isLocalDelivery = true;
 		ForwardResult result = notify(localQueueListeners, nmsg);
 
 		if (result.result == Result.FAILED)
 		{
-			delivedToLocal = false;
-			if (!hasActiveListeners(localQueueListeners))
+			if (preferLocalConsumer && (localQueueListeners.size() > 0))
 			{
-				result = notify(remoteQueueListeners, nmsg);
+				//Do nothing. Since we have local consumers that are prefered we just hold the messages locally.
 			}
 			else
 			{
-				if (!preferLocalConsumer)
-				{
-					result = notify(remoteQueueListeners, nmsg);
-				}
+				result = notify(remoteQueueListeners, nmsg);
+				isLocalDelivery = false;
 			}
 		}
 
-		if ((result.result == Result.SUCCESS) && delivedToLocal)
+		if ((result.result == Result.SUCCESS) && isLocalDelivery)
 		{
 			queueStatistics.newQueueMessageDelivered();
-		}
-
-		if (log.isDebugEnabled())
-		{
-			log.debug("forward-> isDelivered: " + result.result.toString());
 		}
 
 		return result;
