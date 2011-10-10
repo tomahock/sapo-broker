@@ -25,10 +25,9 @@ public class ChannelAttributes
 
 		if (attribs == null)
 		{
-			attribs = new HashMap<String, Object>();
+			attribs = new ConcurrentHashMap<String, Object>();
 			PROPS.put(channelId, attribs);
 		}
-
 		attribs.put(name, value);
 	}
 
