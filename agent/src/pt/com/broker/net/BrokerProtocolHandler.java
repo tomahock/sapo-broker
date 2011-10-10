@@ -136,7 +136,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 		super.channelClosed(ctx, e);
 		Channel channel = ctx.getChannel();
 
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()  && channel.getRemoteAddress() != null)
 		{
 			log.debug("channel created: '%s'", channel.getRemoteAddress().toString());
 		}
@@ -321,8 +321,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	private void handleMessage(ChannelHandlerContext ctx, final NetMessage request)
 	{
 		String actionId = null;
-		Channel channel = ctx.getChannel();
-
+		
 		try
 		{
 			switch (request.getAction().getActionType())
