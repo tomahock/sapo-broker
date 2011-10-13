@@ -73,11 +73,6 @@ public class NetBrokerMessage
 		return timestamp;
 	}
 
-	public void setDeferedDelivery(long deferredDelivery)
-	{
-		this.deferredDelivery = deferredDelivery;
-	}
-
 	public long getDeferredDelivery()
 	{
 		if (deferredDelivery == -1)
