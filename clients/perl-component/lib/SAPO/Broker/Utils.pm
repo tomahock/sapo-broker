@@ -61,6 +61,7 @@ sub class {
 
     my @mandatory = @{ $params{'mandatory'} || [] };
     my @optional  = @{ $params{'optional'}  || [] };
+    my $has_header = not $params{'noheader'};
 
     #aux function to create functions in the caller namespace
 
@@ -99,6 +100,13 @@ sub class {
             }
         }
 
+        if ($has_header) {
+            my $header = $params{'header'};
+            if ( 'HASH' eq ref($header) ) {
+                $self->{'header'} = $header;
+            }
+        }
+
         return bless $self, $class;
     };
 
@@ -112,6 +120,21 @@ sub class {
             } else {
                 return $self->{$param};
             }
+        };
+    }
+
+    #header code
+    if ($has_header) {
+        parent_sub 'header', sub {
+            my ($self) = @_;
+            my $header = $self->{'header'};
+
+            if ( not defined $header ) {
+                $header = {};
+                $self->{'header'} = $header;
+            }
+
+            return $header;
         };
     }
 

@@ -16,7 +16,7 @@ class Transport(INET):
         INET.__init__(self, host, port)
 
         try:
-            #try some basix socket options
+            #try some basic socket options
             #failure should be OK
             self.__socket.setsockopt(socket.SOL_TCP,socket.SO_KEEPALIVE,True)
             self.__socket.setsockopt(socket.SOL_SOCKET,socket.SO_KEEPALIVE,True)

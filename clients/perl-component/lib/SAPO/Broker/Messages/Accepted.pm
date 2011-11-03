@@ -6,8 +6,8 @@ use Readonly;
 use strict;
 use warnings;
 
-Readonly::Array my @mandatory => qw();
-Readonly::Array my @optional  => qw(action_id);
+Readonly::Array my @mandatory => qw(action_id);
+Readonly::Array my @optional  => qw();
 
 class(
     'mandatory' => \@mandatory,

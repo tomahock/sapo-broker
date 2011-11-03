@@ -232,8 +232,17 @@ sub serialize {
             #populate action
             $serializer->( $message, $action );
 
+            #serialize headers
+            my $header = $message->{'header'};
+            if ( 'HASH' eq ref($header) ) {
+                $header = SAPO::Broker::Codecs::Autogen::Thrift::Header->new( { 'parameters' => $header } );
+            }
+
             #create the data structure's outer shell
-            my $atom = SAPO::Broker::Codecs::Autogen::Thrift::Atom->new( { action => $action } );
+            my $atom = SAPO::Broker::Codecs::Autogen::Thrift::Atom->new( {
+                    'action' => $action,
+                    'header' => $header
+            } );
 
             #serialize the atom into bytes
 
@@ -270,7 +279,12 @@ sub deserialize {
 
     my $deserialize = $__dispatch_deserialize{ $action->action_type() };
     if ($deserialize) {
-        return $deserialize->($action);
+        my $msg    = $deserialize->($action);
+        my $header = $atom->{'header'}->{'parameters'};
+        if ( 'HASH' eq ref($header) ) {
+            $msg->{'header'} = $header;
+        }
+        return $msg;
     } else {
         croak( "Unknown action_type " . $action->action_type() . ". Can't deserialize" );
         return;

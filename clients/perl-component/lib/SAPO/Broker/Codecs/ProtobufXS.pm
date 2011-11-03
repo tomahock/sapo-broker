@@ -221,7 +221,20 @@ sub serialize {
             #reset the hash iterator
             scalar keys(%__dispatch_serialize);
 
-            my $atom    = $serializer->($message);
+            my $atom   = $serializer->($message);
+            my $header = $message->{'header'};
+            if ( 'HASH' eq ref($header) ) {
+                my $header_obj = SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Header->new();
+                while ( my ( $name, $value ) = each(%$header) ) {
+                    $header_obj->add_parameter(
+                        SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Parameter->new( {
+                                'name'  => $name,
+                                'value' => $value
+                            },
+                        ) );
+                }
+                $atom->set_header($header_obj);
+            }
             my $payload = $atom->pack();
 
             return SAPO::Broker::Transport::Message->new(
@@ -229,8 +242,8 @@ sub serialize {
                 version => 1,
                 payload => $payload
             );
-        }
-    }
+        } ## end if ( $message->isa($class...
+    } ## end while ( my ( $class, $serializer...
 
     croak("Can't serialize $message");
     return;
@@ -245,16 +258,26 @@ sub __deserialize {
 sub deserialize {
     my ( $self, $payload ) = @_;
 
-    my $atom   = $self->__deserialize($payload);
+    my $atom = $self->__deserialize($payload);
+    my $header = $atom->header->to_hashref() // {};
+    $header = $header->{'parameter'};
     my $action = $atom->action();
 
     my $deserialize = $__dispatch_deserialize{ $action->action_type() };
     if ($deserialize) {
-        return $deserialize->($action);
+        my $msg = $deserialize->($action);
+
+        if ( 'ARRAY' eq ref($header) ) {
+            my %header = map { $_->{'name'}, $_->{'value'} } @$header;
+            $msg->{'header'} = \%header;
+        }
+
+        return $msg;
+
     } else {
         croak( "Unknown action_type " . $action->action_type() . ". Can't deserialize" );
         return;
     }
-}
+} ## end sub deserialize
 
 1;
