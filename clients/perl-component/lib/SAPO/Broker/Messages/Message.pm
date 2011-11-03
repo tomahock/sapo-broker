@@ -12,6 +12,7 @@ Readonly::Array my @optional  => qw(id timestamp expiration);
 class(
     'mandatory' => \@mandatory,
     'optional'  => \@optional,
+    'noheader'  => 1,
 );
 
 1;
