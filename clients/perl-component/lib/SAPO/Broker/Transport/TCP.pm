@@ -1,6 +1,7 @@
 package SAPO::Broker::Transport::TCP;
 
 use Readonly;
+use Socket ();
 
 use strict;
 use warnings;
@@ -13,11 +14,27 @@ use base qw(SAPO::Broker::Transport::INET);
 sub new {
     my $self = shift @_;
 
-    return $self->SUPER::new(
+    $self = $self->SUPER::new(
         'host' => $DEFAULT_HOST,
         'port' => $DEFAULT_PORT,
         @_, 'proto' => 'tcp'
     );
-}
+
+    #try to turn on TCP Keep-Alive
+    eval {
+        $self->{'__socket'}->setsockopt( Socket::SOL_SOCKET, Socket::SO_KEEPALIVE, 1 ) or die $!;
+
+        #linux specific stuff
+        #$self->{'__socket'}->setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPIDLE, 1) or die $!;
+        #$self->{'__socket'}->setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPCNT, 5) or die $!;
+        #$self->{'__socket'}->setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPINTVL, 1) or die $!;
+        1;
+        }
+        or do {
+        warn "Error setting TCP keep-alive: $@";
+        };
+
+    return $self;
+} ## end sub new
 
 1;
