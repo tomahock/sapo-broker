@@ -6,19 +6,20 @@ use Data::Dumper;
 use strict;
 use warnings;
 
-my $broker = SAPO::Broker::Clients::Simple->new(host=> 'localhost');
+my $broker = SAPO::Broker::Clients::Simple->new( host => 'localhost' );
 my %options = (
-	'destination_type' => 'VIRTUAL_QUEUE',
-	'destination' => 'handle@topic',
-	'auto_acknowledge' => 1
+    'destination_type' => 'VIRTUAL_QUEUE',
+    'destination'      => 'handle@topic',
+    'auto_acknowledge' => 1
 );
 
 $broker->subscribe(%options);
 
 my $N = $ARGV[0] || 100;
 
-for my $n (1..$N){
-	my $notification = $broker->receive();
-    my $payload = $notification->message->payload;
-	#print Dumper($notification);
+for my $n ( 1 .. $N ) {
+    my $notification = $broker->receive();
+    my $payload      = $notification->message->payload;
+
+    #print Dumper($notification);
 }
