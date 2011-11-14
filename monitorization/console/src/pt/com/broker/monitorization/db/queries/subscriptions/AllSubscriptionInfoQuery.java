@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbPool;
+import org.caudexorigo.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +52,8 @@ public class AllSubscriptionInfoQuery
 				int idx = 1;
 				sb.append("{");
 				sb.append("\"subscriptionName\":\"");
-				String queuename = queryResult.getString(idx++);
-				sb.append(queuename);
+				String subs_name = queryResult.getString(idx++);
+				sb.append(StringEscapeUtils.escapeJavaScript(subs_name));
 				sb.append("\",");
 
 				sb.append("\"outputRate\":\"");
