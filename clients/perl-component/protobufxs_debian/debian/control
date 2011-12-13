@@ -1,0 +1,15 @@
+Source: libsapo-broker-perl-xs-helper
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 5), perl (>= 5.6), libprotobuf-dev
+Maintainer: Claudio Valente <c.valente@co.sapo.pt>
+Standards-Version: 3.8.0
+Homepage: http://search.cpan.org/dist/SAPO-Broker/
+
+Package: libsapo-broker-perl-xs-helper
+Architecture: any
+Depends: ${perl:Depends}, ${shlibs:Depends}, ${misc:Depends}, libprotobuf6
+Description: SAPO Broker perl bindings (XS helper modules)
+ This is SAPO Broker's perl API.
+ .
+ perl library to use SAPO broker.
