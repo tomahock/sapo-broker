@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 
 using SapoBrokerClient.Encoding.Thrift.Messages;
+using Action = SapoBrokerClient.Encoding.Thrift.Messages.Action;
 
 namespace SapoBrokerClient
 {
