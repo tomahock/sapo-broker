@@ -1,3 +1,9 @@
+libsapo-broker-python2 (0.0.8) all; urgency=low
+
+  * debian dependencies
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Mon, 05 Dec 2011 18:41:22 +0000
+
 libsapo-broker-python2 (0.0.7) all; urgency=low
 
   * debian
