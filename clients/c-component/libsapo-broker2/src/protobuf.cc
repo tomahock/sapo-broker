@@ -16,6 +16,33 @@ extern "C" {
 #include "broker.pb.h"
 
 
+static destination_type_t
+atom_2_destination_type ( sapo_broker::Atom_DestinationType atom_destination_type ){
+    switch( atom_destination_type ){
+        case sapo_broker::Atom_DestinationType_TOPIC:
+            return SB_TOPIC;
+        case sapo_broker::Atom_DestinationType_VIRTUAL_QUEUE:
+            return SB_VIRTUAL_QUEUE;
+        default:
+            return SB_QUEUE;
+
+    }
+}
+
+static sapo_broker::Atom_DestinationType
+destination_type_2_atom ( destination_type_t destination_type ){
+    switch( destination_type ){
+		case SB_TOPIC:
+            return sapo_broker::Atom_DestinationType_TOPIC;
+		case SB_VIRTUAL_QUEUE:
+            return sapo_broker::Atom_DestinationType_VIRTUAL_QUEUE;
+        default:
+            return sapo_broker::Atom_DestinationType_QUEUE;
+    }
+}
+
+
+
 extern "C"
 int
 proto_protobuf_send(
@@ -37,10 +64,7 @@ proto_protobuf_send(
 
     publish = action->mutable_publish();
     publish->set_destination( dest->name );
-    if( dest->type == SB_TOPIC )
-        publish->set_destination_type( sapo_broker::Atom_DestinationType_TOPIC );
-    else
-        publish->set_destination_type( sapo_broker::Atom_DestinationType_QUEUE );
+    publish->set_destination_type( destination_type_2_atom( static_cast<destination_type_t> ( dest->type ) ) );
 
     message = publish->mutable_message();
 
@@ -139,13 +163,15 @@ proto_protobuf_read_msg( sapo_broker_t *sb, _broker_server_t *srv)
     msg->server = srv->srv;
 
     notification = atom.action().notification();
-    if( notification.destination_type() == sapo_broker::Atom_DestinationType_TOPIC )
-        msg->origin = broker_get_destination( sb, notification.destination().c_str(), SB_TOPIC );
-    else
-        msg->origin = broker_get_destination( sb, notification.destination().c_str(), SB_QUEUE );
+
+    msg->origin = broker_get_destination(
+        sb,
+        notification.destination().c_str(),
+        atom_2_destination_type( notification.destination_type() )
+    );
 
     message = notification.message();
-    if( msg->origin.type == SB_QUEUE && msg->origin.queue_autoack ) {
+    if( (msg->origin.type == SB_QUEUE || msg->origin.type==SB_VIRTUAL_QUEUE ) && msg->origin.queue_autoack ) {
         rc = proto_protobuf_send_ack( sb, srv, msg->origin.name, message.message_id().c_str() );
         if( rc == SB_ERROR )
             msg->acked = 0;
@@ -163,10 +189,10 @@ proto_protobuf_read_msg( sapo_broker_t *sb, _broker_server_t *srv)
 
     /* FIXME: too many data copies */
     memcpy(msg->payload, message.payload().c_str(), msg->payload_len );
-    msg->payload[msg->payload_len] = NULL;
+    msg->payload[msg->payload_len] = '\0';
 
     memcpy(msg->message_id, message.message_id().c_str(), id_len);
-    msg->message_id[id_len] = NULL;
+    msg->message_id[id_len] = '\0';
 
     log_info(sb, "protobuf_read_msg: from: %s, size: %u", msg->origin.name, (uint_t) msg->payload_len);
     return msg;
@@ -197,4 +223,3 @@ proto_protobuf_send_ack( sapo_broker_t *sb, _broker_server_t *srv, const char *d
 
     return rc;
 }
-

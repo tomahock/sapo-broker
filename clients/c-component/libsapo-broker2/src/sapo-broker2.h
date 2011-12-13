@@ -31,7 +31,7 @@ enum {
 
 typedef enum { SB_TCP = 0, SB_UDP } transport_type_t;
 typedef enum { SB_SOAP = 0, SB_PROTOBUF, SB_THRIFT } protocol_type_t;
-typedef enum { SB_QUEUE = 0, SB_TOPIC } destination_type_t;
+typedef enum { SB_QUEUE = 0, SB_TOPIC, SB_VIRTUAL_QUEUE } destination_type_t;
 
 typedef struct {
 	char *hostname;
