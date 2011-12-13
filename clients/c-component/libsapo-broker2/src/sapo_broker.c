@@ -266,6 +266,19 @@ broker_subscribe_queue( sapo_broker_t *sb, char *queue, bool queue_autoack)
     return broker_subscribe(sb, dest);
 }
 
+int
+broker_subscribe_virtual_queue( sapo_broker_t *sb, char *queue, bool queue_autoack)
+{
+	/* TODO: check whether queue has a @ char (is this mandatory?) */
+    broker_destination_t dest;
+
+    dest.name = queue;
+    dest.type = SB_VIRTUAL_QUEUE;
+    dest.queue_autoack = queue_autoack;
+
+    return broker_subscribe(sb, dest);
+}
+
 
 int
 broker_msg_free( broker_msg_t *msg)
