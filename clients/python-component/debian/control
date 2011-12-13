@@ -8,7 +8,7 @@ Build-Depends-Indep: python-setuptools (>= 0.6a9)
 
 Package: libsapo-broker-python2
 Architecture: all
-Depends: ${python:Depends}, libthrift-python
+Depends: ${python:Depends}, libthrift-python | python-protobuf
 Provides: ${python:Provides}
 Description: python client libraries to acess SAPO's broker
  These libraries install python code to use SAPO broker as a client.
