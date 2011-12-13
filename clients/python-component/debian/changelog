@@ -1,3 +1,9 @@
+libsapo-broker-python2 (0.0.7) all; urgency=low
+
+  * debian
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Fri, 18 Nov 2011 17:42:03 +0000
+
 libsapo-broker-python2 (0.0.6) unstable; urgency=low
 
   * raise DisconnectedError when there is a write error
