@@ -17,6 +17,7 @@ PHP_FUNCTION(broker_add_server);
 PHP_FUNCTION(broker_subscribe);
 PHP_FUNCTION(broker_subscribe_topic);
 PHP_FUNCTION(broker_subscribe_queue);
+PHP_FUNCTION(broker_subscribe_virtual_queue);
 PHP_FUNCTION(broker_receive);
 PHP_FUNCTION(broker_msg_free);
 PHP_FUNCTION(broker_msg_ack);
