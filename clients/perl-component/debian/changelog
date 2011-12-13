@@ -1,3 +1,15 @@
+libsapo-broker-perl (0.5) all; urgency=low
+
+  * debian package split
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Mon, 05 Dec 2011 19:06:38 +0000
+
+libsapo-broker-perl (0.4) all; urgency=low
+
+  * debian
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Fri, 18 Nov 2011 18:14:09 +0000
+
 libsapo-broker-perl (0.3) unstable; urgency=low
 
   * Thrift::XS support

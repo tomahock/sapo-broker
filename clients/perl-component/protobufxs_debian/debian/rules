@@ -19,7 +19,7 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 	# Add commands to compile the package here
-	echo -e "no\nyes\nno" | $(PERL) Makefile.PL INSTALLDIRS=vendor
+	$(PERL) Makefile.PL INSTALLDIRS=vendor
 	$(MAKE)
 	#$(MAKE) test
 	touch $@
@@ -49,7 +49,7 @@ binary-arch:
 binary-indep: build install
 	dh_testdir
 	dh_testroot
-	dh_installexamples examples/*
+	#dh_installexamples examples/*
 	dh_installdocs README
 	dh_installchangelogs Changes
 	dh_perl

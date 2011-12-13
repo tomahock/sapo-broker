@@ -50,7 +50,6 @@ if ( prompt( 'Do you want to install support for Thrift', 'yes' ) !~ /yes/i ) {
 
 my $use_thriftxs = 0;
 if ( prompt( 'Do you want to install support for Thrift(XS)', 'yes' ) =~ /yes/i ) {
-    push( @subdirs, 'protobufxs' );
     $use_protobuf = 1;
 }
 
