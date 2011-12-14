@@ -13,7 +13,8 @@ enum {
     SB_ERROR    = -100,
     SB_NOT_CONNECTED = 120,
     SB_ERROR_UNKNOWN = 121,
-    SB_NOT_INITIALIZED = -122
+    SB_NOT_INITIALIZED = -122,
+    SB_INVALID_VIRTUAL_QUEUE = 123
 } sb_return_codes_t;
 
 #define TRUE    1

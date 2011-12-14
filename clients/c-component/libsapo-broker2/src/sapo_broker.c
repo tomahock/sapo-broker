@@ -269,14 +269,18 @@ broker_subscribe_queue( sapo_broker_t *sb, char *queue, bool queue_autoack)
 int
 broker_subscribe_virtual_queue( sapo_broker_t *sb, char *queue, bool queue_autoack)
 {
-	/* TODO: check whether queue has a @ char (is this mandatory?) */
     broker_destination_t dest;
 
-    dest.name = queue;
-    dest.type = SB_VIRTUAL_QUEUE;
-    dest.queue_autoack = queue_autoack;
+    if( NULL == strchr( queue, '@') ) {
+        log_err(sb, "broker_subscribe_virtual_queue(): virtual queue name \"%s\" doesn't include '@'", queue );
+        return SB_INVALID_VIRTUAL_QUEUE;
+    }else{
+        dest.name = queue;
+        dest.type = SB_VIRTUAL_QUEUE;
+        dest.queue_autoack = queue_autoack;
 
-    return broker_subscribe(sb, dest);
+        return broker_subscribe(sb, dest);
+    }
 }
 
 
@@ -472,14 +476,17 @@ broker_get_destination( sapo_broker_t *sb, const char *dest_name, uint8_t type)
     broker_destination_t *dest;
     for(uint_t i = 0; i < sb->destinations.dest_count; i++) {
         dest = &(sb->destinations.dest[i]);
-        if( dest->type == type && !strcmp(dest->name, dest_name) ) {
+        if(
+            ( ( dest->type == type )  || ( dest->type == SB_VIRTUAL_QUEUE && type == SB_QUEUE  ) ) 
+            && !strcmp(dest->name, dest_name)
+        ) {
             pthread_mutex_unlock(sb->lock);
             return *dest;
         }
     }
     /* not found? .. log error and return destination without auto-ack */
     broker_destination_t dst = { (char *) dest_name, type, 0 };
-    log_err(sb, "broker_get_destination: cannot find this destination on destination list.");
+    log_err(sb, "broker_get_destination: cannot find \"%s\" on destination list.", dest_name);
 
     pthread_mutex_unlock(sb->lock);
     return dst;
