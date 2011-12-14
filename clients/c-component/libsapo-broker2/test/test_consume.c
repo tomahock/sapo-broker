@@ -31,8 +31,10 @@ int main(int argc, char *argv[])
     }
 
     if( argc >= 2 ) {
-        if( !strncmp("-topic", argv[1], 4 ) ) {
+        if( !strcmp("-topic", argv[1]) ) {
             dest.type = SB_TOPIC;
+        } else if( !strcmp("-virtual-queue", argv[1] ) ) {
+            dest.type = SB_VIRTUAL_QUEUE;
         } else {
             dest.type = SB_QUEUE;
         }
@@ -64,7 +66,7 @@ int main(int argc, char *argv[])
     }
 
     /* by default: process 2^31-1 msgs, depends on int overflow */
-    for(; i <= count; i++) {
+    for(i; i < count; i++) {
         m = broker_receive(sb, NULL);
         if( !m ) {
             printf("NO MSG\n");
@@ -80,7 +82,7 @@ int main(int argc, char *argv[])
         } else {
             broker_msg_free(m);
         }
-	}
+    }
 
     printf("Exiting: %s\n", broker_error(sb));
     /* pedantic mode, good for the server */
