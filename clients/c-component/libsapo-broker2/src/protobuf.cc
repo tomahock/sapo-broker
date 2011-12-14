@@ -171,7 +171,7 @@ proto_protobuf_read_msg( sapo_broker_t *sb, _broker_server_t *srv)
     );
 
     message = notification.message();
-    if( (msg->origin.type == SB_QUEUE || msg->origin.type==SB_VIRTUAL_QUEUE ) && msg->origin.queue_autoack ) {
+    if( (msg->origin.type == SB_QUEUE || msg->origin.type == SB_VIRTUAL_QUEUE ) && msg->origin.queue_autoack ) {
         rc = proto_protobuf_send_ack( sb, srv, msg->origin.name, message.message_id().c_str() );
         if( rc == SB_ERROR )
             msg->acked = 0;

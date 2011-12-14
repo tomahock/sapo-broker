@@ -56,6 +56,8 @@ int main(int argc, char *argv[])
 
     if( dest.type == SB_QUEUE)
         printf("QUEUE ");
+    else if ( dest.type == SB_QUEUE )
+        printf("VIRTUAL QUEUE ");
     else
         printf("TOPIC ");
     printf("%s\n", dest.name);
@@ -77,7 +79,7 @@ int main(int argc, char *argv[])
 
         printf("%s\n", m->payload);
 
-        if( dest.type == SB_QUEUE && dest.queue_autoack == FALSE ) {
+        if( ( dest.type == SB_QUEUE || dest.type == SB_VIRTUAL_QUEUE ) && dest.queue_autoack == FALSE ) {
             broker_msg_ack( sb, m);
         } else {
             broker_msg_free(m);
