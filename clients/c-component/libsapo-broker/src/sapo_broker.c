@@ -424,7 +424,7 @@ int sb_publish(SAPO_BROKER_T * conn, int type, char *topic, char *payload)
 
 int sb_subscribe(SAPO_BROKER_T * conn, int type, char *topic)
 {
-    char msg_type[10];
+    char msg_type[20];
     uint32_t body_len;
     char static_body[MAX_BUFFER];
     char *body;
@@ -438,9 +438,18 @@ int sb_subscribe(SAPO_BROKER_T * conn, int type, char *topic)
     _sb_set_error("");
 
     if (type == EQUEUE_QUEUE) {
-        strcpy(msg_type, SB_RECV_QUEUE);
+        strncpy(msg_type, SB_RECV_QUEUE, 20);
     } else if (type == EQUEUE_TOPIC) {
-        strcpy(msg_type, SB_RECV_TOPIC);
+        strncpy(msg_type, SB_RECV_TOPIC, 20);
+    } else if (type == EQUEUE_VIRTUAL_QUEUE) {
+		if(NULL == strchr(topic, '@') ){
+        _sb_set_errorf
+            ("[SB]Subscribe:Invalid virtual queue name \"%s\". Must contain '@'. Not sending message.",
+             topic);
+        return SB_BAD_MESSAGE_TYPE;
+		}else{
+			strncpy(msg_type, SB_RECV_VIRTUAL_QUEUE, 20);
+		}
     } else {
         _sb_set_errorf
             ("[SB]Subscribe:Unknown message type %d. Not sending message.",
