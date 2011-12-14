@@ -424,7 +424,7 @@ PHP_FUNCTION(broker_subscribe_topic) {
     if (zend_parse_parameters(argc TSRMLS_CC, "rs", &zsapo_broker, &topic, &topic_len) == FAILURE)
         RETURN_FALSE;
 
-    if (sapo_broker == NULL)
+    if (zsapo_broker == NULL)
         RETURN_FALSE;
 
     ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
