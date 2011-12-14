@@ -1,0 +1,7 @@
+#!/bin/bash -ex
+
+libtoolize --force 
+aclocal -I config
+autoheader
+automake --foreign --add-missing
+autoconf
