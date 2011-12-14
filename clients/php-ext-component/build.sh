@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXT_VERSION=sapobroker-0.2
+EXT_VERSION=sapobroker-0.3
 
 # create
 mkdir -p build/$EXT_VERSION
