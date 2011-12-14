@@ -1,4 +1,9 @@
 libsapo-broker2 (2.0.1) unstable; urgency=low
+ * virtual queue support
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Wed, 14 Dec 2011 15:30:44 +0000
+
+libsapo-broker2 (2.0.1) unstable; urgency=low
  * first public build
  * all major features are funcional
 
