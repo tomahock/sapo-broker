@@ -16,11 +16,13 @@ enum {
     EQUEUE_QUEUE = 1,
     EQUEUE_TOPIC = 2,
     EQUEUE_PUBLISH = 3,
+    EQUEUE_VIRTUAL_QUEUE = 4,
 };
 
 #define SB_SEND_QUEUE "Enqueue"
 #define SB_SEND_TOPIC "Publish"
 #define SB_RECV_QUEUE "QUEUE"
+#define SB_RECV_VIRTUAL_QUEUE "TOPIC_AS_QUEUE"
 #define SB_RECV_TOPIC "TOPIC"
 
 // not in use ... yet
