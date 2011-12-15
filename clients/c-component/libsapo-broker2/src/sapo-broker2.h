@@ -118,6 +118,8 @@ int
 broker_subscribe_topic( sapo_broker_t *sb, char *destination );
 int
 broker_subscribe_queue( sapo_broker_t *sb, char *destination, bool autoack);
+int
+broker_subscribe_virtual_queue( sapo_broker_t *sb, char *destination, bool autoack);
 
 /* TODO:
 int
