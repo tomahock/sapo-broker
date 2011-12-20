@@ -18,11 +18,14 @@ class DisconnectedError(EOFError):
 
 class Transport(BaseTransport):
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, timeout=None):
         BaseTransport.__init__(self)
         self.__host = host
         self.__port = port
         self.__socket = socket.socket( socket.AF_INET, self.socket_type)
+
+        if timeout is not None:
+            self.settimeout(timeout)
 
         LOG.debug("Socket timeout  %s s", self.__socket.gettimeout())
         #connect to host:port
@@ -67,3 +70,9 @@ class Transport(BaseTransport):
 
     def close(self):
         return self.__socket.close()
+
+    def settimeout(self, timeout):
+        return self.__socket.settimeout(timeout)
+
+    def gettimeout(self, timeout):
+        return self.__socket.gettimeout(timeout)

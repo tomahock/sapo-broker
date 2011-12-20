@@ -13,8 +13,8 @@ DEFAULT_HOST = 'localhost'
 
 class Transport(TCP):
 
-    def __init__(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
-        TCP.__init__(self, host, port)
+    def __init__(self, host=DEFAULT_HOST, port=DEFAULT_PORT, timeout=None):
+        TCP.__init__(self, host, port, timeout)
 
         #now try to warp the socket into SSL stuf
         self.__socket = wrap_socket(self.__socket)
