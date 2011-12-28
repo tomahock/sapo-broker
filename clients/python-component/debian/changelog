@@ -1,3 +1,9 @@
+libsapo-broker-python2 (0.0.9) all; urgency=low
+
+  * network timeouts
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Tue, 20 Dec 2011 15:25:49 +0000
+
 libsapo-broker-python2 (0.0.8) all; urgency=low
 
   * debian dependencies
