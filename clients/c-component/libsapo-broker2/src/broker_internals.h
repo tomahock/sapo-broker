@@ -1,6 +1,7 @@
 #ifndef _BROKER_INTERNALS_H
 #define _BROKER_INTERNALS_H
 
+#pragma GCC visibility push(hidden)
 int
 _log_msgf(sapo_broker_t *sb, const char *, const char *, int, ...);
 int
@@ -48,5 +49,7 @@ broker_get_destination( sapo_broker_t *sb, const char *dest_name, uint8_t type);
 
 int
 broker_resubscribe_destinations( sapo_broker_t *sb, _broker_server_t *srv );
+
+#pragma GCC visibility pop
 
 #endif // _BROKER_INTERNALS_H

@@ -19,9 +19,9 @@ PREFIX ?= /usr
 # Default settings for gcc
 CC      := gcc
 CXX     := g++
-CFLAGS  := -pipe -fPIC
-LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fPIC -shared -ggdb
-TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -fPIC -lc -ggdb
+CFLAGS  := -pipe -fpic -fvisibility=hidden
+LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fpic -shared -ggdb -fvisibility=hidden
+TEST_LDFLAGS := $(LDFLAGS)
 OPTS    := -O3 -fomit-frame-pointer -ffast-math
 #OPTS	+= -msse -msse2 -ftree-vectorize # use only with gcc-4 or above.
 OPTS	+= -g -ggdb -std=c99

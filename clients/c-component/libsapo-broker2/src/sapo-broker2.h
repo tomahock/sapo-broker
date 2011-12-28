@@ -30,6 +30,8 @@ enum {
  typedef unsigned int uint_t;
 #endif
 
+#pragma GCC visibility push(default)
+
 typedef enum { SB_TCP = 0, SB_UDP } transport_type_t;
 typedef enum { SB_SOAP = 0, SB_PROTOBUF, SB_THRIFT } protocol_type_t;
 typedef enum { SB_QUEUE = 0, SB_TOPIC, SB_VIRTUAL_QUEUE } destination_type_t;
@@ -105,19 +107,25 @@ typedef struct {
 sapo_broker_t *
 broker_init( broker_server_t broker);
 
+extern
 int
 broker_destroy( sapo_broker_t *);
 
 /* add more servers for failover */
+extern
 int
 broker_add_server( sapo_broker_t * sb, broker_server_t broker);
 
+extern
 int
 broker_subscribe( sapo_broker_t *sb, broker_destination_t destination);
+extern
 int
 broker_subscribe_topic( sapo_broker_t *sb, char *destination );
+extern
 int
 broker_subscribe_queue( sapo_broker_t *sb, char *destination, bool autoack);
+extern
 int
 broker_subscribe_virtual_queue( sapo_broker_t *sb, char *destination, bool autoack);
 
@@ -133,23 +141,31 @@ broker_unsubscribe_queue(sapo_broker_t *sb, char *destination);
 broker_msg_t *
 broker_receive(sapo_broker_t *sb, struct timeval *timeout);
 
+extern
 int
 broker_msg_free( broker_msg_t * );
 
 /* Acknowledge Message and free it */
+extern
 int
 broker_msg_ack( sapo_broker_t *sb, broker_msg_t *);
 
 /* all the producer calls send only to the first active server */
+extern
 int
 broker_send( sapo_broker_t *sb, broker_destination_t destination, broker_sendmsg_t msg);
 
+extern
 int
 broker_publish(sapo_broker_t *sb, char *destination, char *msg, size_t size);
+extern
 int
 broker_enqueue(sapo_broker_t *sb, char *destination, char *msg, size_t size);
 
+extern
 char *
 broker_error( sapo_broker_t *sb );
+
+#pragma GCC visibility pop
 
 #endif // _SAPO_BROKER_H
