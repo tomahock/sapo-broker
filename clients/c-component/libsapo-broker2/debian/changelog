@@ -1,3 +1,9 @@
+libsapo-broker2 (2.0.2) unstable; urgency=low
+ * dll symbol visibility
+ * only export functions that are part of the library interface
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Thu, 29 Dec 2011 18:14:51 +0000
+
 libsapo-broker2 (2.0.1) unstable; urgency=low
  * virtual queue support
 
