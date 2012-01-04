@@ -15,7 +15,7 @@ sub new {
 
     my $self = $class->SUPER::new(%params);
 
-    print STDERR __PACKAGE__ . "::params: ", Dumper( \%params );
+    #print STDERR __PACKAGE__ . "::params: ", Dumper( \%params );
     my $socket = AnyEvent::Handle->new(
         connect => [ $params{host}, $params{port} ],
 
@@ -88,7 +88,7 @@ sub __drain {
 
     if ( scalar @{ $self->{_wcbs} } ) {
         for my $cb ( @{ $self->{_wcbs} } ) {
-            print STDERR "on_drain: calling cb\n";
+            #print STDERR "on_drain: calling cb\n";
             $cb->($error);
         }
 
