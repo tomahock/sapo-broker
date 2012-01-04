@@ -5,7 +5,7 @@ use SAPO::Broker::Clients::Simple;
 use strict;
 use warnings;
 
-my $broker  = SAPO::Broker::Clients::Simple->new();
+my $broker  = SAPO::Broker::Clients::Simple->new(host=>'broker.m3.bk.sapo.pt',port=>2222);
 my %options = (
     'destination_type' => 'QUEUE',
     'destination'      => '/tests/perl',
