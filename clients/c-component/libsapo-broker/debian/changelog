@@ -1,3 +1,9 @@
+libsapo-broker (0.1.3) unstable; urgency=low
+
+  * Virtual queue support
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Thu, 05 Jan 2012 10:19:57 +0000
+
 libsapo-broker (0.1.2) unstable; urgency=low
 
   * Fix build for linux/x86_64
