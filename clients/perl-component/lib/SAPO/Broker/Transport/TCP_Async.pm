@@ -84,7 +84,7 @@ sub __drain {
     #print STDERR "on_drain error [",$error || "","]\n";
 
     #$self->{__socket}->wtimeout(0);
-    $self->{__socket}->timeout_reset;
+    $self->{__socket}->wtimeout_reset;
 
     if ( scalar @{ $self->{_wcbs} } ) {
         for my $cb ( @{ $self->{_wcbs} } ) {
