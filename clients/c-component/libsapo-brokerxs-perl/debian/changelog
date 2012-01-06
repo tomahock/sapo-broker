@@ -1,3 +1,8 @@
+libsapo-brokerxs-perl (0.0.5) unstable; urgency=low
+  * version bump (publish to topic fixed)
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Tue, 03 Jan 2012 18:46:58 +0000
+
 libsapo-brokerxs-perl (0.0.4) unstable; urgency=low
   * update for version libsapobroker-0.1.1.0
   
