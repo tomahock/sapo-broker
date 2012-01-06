@@ -1,3 +1,5 @@
+#define _POSIX_SOURCE
+
 #include <stdio.h>              // s/printf , perror,
 #include <netdb.h>              // gethostbyname
 #include <errno.h>              // error numbers
@@ -213,11 +215,11 @@ static int _sb_write(int socket, char *msg, int size)
     int ret = 0;
     int err = 0;
 #ifdef __APPLE__
-	/* Mac OS X does not support the flag MSG_NOSIGNAL. Starting with version
-	 * 10.2 (Jaguar), Mac OS X has the socket option SO_NOSIGPIPE that prevents
-	 * SIGPIPE from being raised when a write fails on a socket to which there
-	 * is no reader; instead the write to the socket returns with the error
-	 * EPIPE. */
+    /* Mac OS X does not support the flag MSG_NOSIGNAL. Starting with version
+     * 10.2 (Jaguar), Mac OS X has the socket option SO_NOSIGPIPE that prevents
+     * SIGPIPE from being raised when a write fails on a socket to which there
+     * is no reader; instead the write to the socket returns with the error
+     * EPIPE. */
     int flags = SO_NOSIGPIPE;
 #else
     int flags = MSG_NOSIGNAL;
@@ -329,18 +331,23 @@ int sb_publish_time(SAPO_BROKER_T * conn, int type, char *topic, char *payload,
 
     if (timetolive > 0) {
         time_t tnow, tmax;
-        struct tm *tm_max;
+        struct tm tm_max;
 
         tnow = time(NULL);
         tmax = tnow + timetolive;
 
-        tm_max = gmtime(&tmax);
-
-        if (strftime(ttl_str, sizeof(ttl_str), "%FT%TZ", tm_max) == 0) {
-            _sb_set_errorf("[SB]Publish:Cannot set timetolive in message!"
-                           "Sending without ttl");
+        if( NULL  == gmtime_r(&tmax, &tm_max) ){
+            _sb_set_errorf("[SB]Error converting time: %s",
+                           strerror(errno));
             timetolive = 0;
+        }else{
 
+            if (strftime(ttl_str, sizeof(ttl_str), "%FT%TZ", &tm_max) == 0) {
+                _sb_set_errorf("[SB]Publish:Cannot set timetolive in message!"
+                               "Sending without ttl");
+                timetolive = 0;
+
+            }
         }
     } else {                    // either zero or invalid
         timetolive = 0;
@@ -363,10 +370,10 @@ int sb_publish_time(SAPO_BROKER_T * conn, int type, char *topic, char *payload,
     // allocate memory if necessary
     if (body_len > MAX_BUFFER) {
         body = calloc(body_len + 1, sizeof(char));
-		if (!body) {
-			fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
-			return SB_ERROR;;
-		}
+        if (!body) {
+            fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
+            return SB_ERROR;;
+        }
         allocated = 1;
     } else {
         body = static_body;
@@ -442,14 +449,14 @@ int sb_subscribe(SAPO_BROKER_T * conn, int type, char *topic)
     } else if (type == EQUEUE_TOPIC) {
         strncpy(msg_type, SB_RECV_TOPIC, 20);
     } else if (type == EQUEUE_VIRTUAL_QUEUE) {
-		if(NULL == strchr(topic, '@') ){
+        if(NULL == strchr(topic, '@') ){
         _sb_set_errorf
             ("[SB]Subscribe:Invalid virtual queue name \"%s\". Must contain '@'. Not sending message.",
              topic);
         return SB_BAD_MESSAGE_TYPE;
-		}else{
-			strncpy(msg_type, SB_RECV_VIRTUAL_QUEUE, 20);
-		}
+        }else{
+            strncpy(msg_type, SB_RECV_VIRTUAL_QUEUE, 20);
+        }
     } else {
         _sb_set_errorf
             ("[SB]Subscribe:Unknown message type %d. Not sending message.",
@@ -464,10 +471,10 @@ int sb_subscribe(SAPO_BROKER_T * conn, int type, char *topic)
 
     if (body_len > MAX_BUFFER) {
         body = calloc(body_len + 1, sizeof(char));
-		if (!body) {
-			fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
-			return SB_ERROR;;
-		}
+        if (!body) {
+            fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
+            return SB_ERROR;;
+        }
         allocated = 1;
     } else {
         body = static_body;
@@ -538,10 +545,10 @@ BrokerMessage *sb_receive(SAPO_BROKER_T * conn)
 
     if (body_len > MAX_BUFFER) {
         body = malloc( (body_len + 1) * sizeof(char));
-		if (!body) {
-			fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
-			return NULL;
-		}
+        if (!body) {
+            fprintf(stderr,"[SB]Cannot allocate memory for body: %s\n", strerror(errno));
+            return NULL;
+        }
         allocated = 1;
     } else {
         body = static_body;
