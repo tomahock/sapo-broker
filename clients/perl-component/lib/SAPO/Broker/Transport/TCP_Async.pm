@@ -24,11 +24,10 @@ sub new {
         #on_eof => sub { delete $self->{__socket} },
         on_error => sub {
             my ( $h, $fatal, $msg ) = @_;
-            my $error = $!;
 
             #print STDERR "on_error: [$fatal]\n";
-            $params{error_cb}->($error) if $params{error_cb};
-            $self->__drain($error);
+            $params{error_cb}->($msg,$fatal) if $params{error_cb};
+            $self->__drain($msg);
 
             delete $self->{__socket} if $fatal;
         },
@@ -59,13 +58,13 @@ sub new {
         if ( defined $params{wcb} ) {
             $socket->on_drain(
                 sub {
-                    $_[0]->timeout_reset;
+                    $_[0]->wtimeout(0);
                     if ( !$self->__drain() ) {
                         $params{wcb}->();
                     }
                 } );
         } else {
-            $socket->on_drain( sub { $_[0]->timeout_reset; $self->__drain } );
+            $socket->on_drain( sub { $_[0]->wtimeout(0); $self->__drain } );
         }
 
         if ( defined $params{tls} ) {
@@ -84,7 +83,7 @@ sub __drain {
     #print STDERR "on_drain error [",$error || "","]\n";
 
     #$self->{__socket}->wtimeout(0);
-    $self->{__socket}->wtimeout_reset;
+    $self->{__socket}->wtimeout(0);
 
     if ( scalar @{ $self->{_wcbs} } ) {
         for my $cb ( @{ $self->{_wcbs} } ) {
