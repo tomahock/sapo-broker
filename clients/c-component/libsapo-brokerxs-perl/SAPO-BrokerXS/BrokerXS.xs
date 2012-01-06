@@ -136,6 +136,16 @@ CODE:
 OUTPUT:
     RETVAL
 
+int publish_time(self, char* topic, char* payload, int expiration)
+SAPO::BrokerXS self
+CODE:
+{
+       int r = sb_publish_time(self->handle, EQUEUE_PUBLISH, topic, payload, expiration);
+       RETVAL = (r==0);
+}
+OUTPUT:
+    RETVAL
+
 int
 publish_queue(self, char * topic, char * payload)
 SAPO::BrokerXS self
