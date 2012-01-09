@@ -18,11 +18,20 @@ class Transport(INET):
         try:
             #try some basic socket options
             #failure should be OK
-            self.__socket.setsockopt(socket.SOL_TCP,socket.SO_KEEPALIVE,True)
-            self.__socket.setsockopt(socket.SOL_SOCKET,socket.SO_KEEPALIVE,True)
-            #10 seconds of idle connection time
-            self.__socket.setsockopt(socket.SOL_TCP,socket.TCP_KEEPIDLE, 10000)
-            #see also  SOL_TCP integer parameters TCP_KEEPIDLE, TCP_KEEPINTVL,and TCP_KEEPCNT
+            self.__socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, True)
+
+            # my default is 124KB which is just way too much and may cause too many messages in the backlog
+            self.__socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024) #1B receive buffer
+
+            #60 seconds of idle connection time before starting to send probes
+            self.__socket.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, 60)
+
+            #send probes every 60 seconds
+            self.__socket.setsockopt(socket.SOL_TCP, socket.TCP_KEEPINTVL, 60)
+
+            #after 5 failed probes (5 minutes) the connection is considered to be dead
+            self.__socket.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, 5)
+
         except Exception, ex:
             LOG.warning("Socket options failed. %s", ex)
 
