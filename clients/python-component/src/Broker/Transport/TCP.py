@@ -20,9 +20,6 @@ class Transport(INET):
             #failure should be OK
             self.__socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, True)
 
-            # my default is 124KB which is just way too much and may cause too many messages in the backlog
-            self.__socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024) #1B receive buffer
-
             #60 seconds of idle connection time before starting to send probes
             self.__socket.setsockopt(socket.SOL_TCP, socket.TCP_KEEPIDLE, 60)
 

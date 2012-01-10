@@ -7,7 +7,7 @@ from Broker.Clients import Minimal
 
 server='localhost'
 destination = '/python/tests'
-destination_type = 'QUEUE'
+destination_type = 'TOPIC'
 N=10000
 
 broker = Minimal(codec=Codec(), transport=TCP(host=server))
