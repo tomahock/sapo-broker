@@ -210,7 +210,7 @@ _net_recv(sapo_broker_t *sb, int socket, char *buf, size_t len, int flags)
             /* error reading */
             if (errno == EINTR) {
                 continue;
-            } else if(errno == ENOTCONN){
+            } else if(errno == ENOTCONN || errno == ECONNREFUSED || errno == EPIPE){
                 log_err(sb, "recv(): Error reading (Not connected [%d]): %s",
                         errno, strerror(errno));
                 return SB_NOT_CONNECTED;
