@@ -5,6 +5,8 @@
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 
 #include "sapo-broker2.h"
@@ -83,7 +85,10 @@ static int
 _broker_server_disconnect(sapo_broker_t *sb, _broker_server_t *srv)
 {
     if( srv->connected ) {
-        close(srv->fd); // best effort only.
+        /* best effort */
+        shutdown(srv->fd, 2);
+        close(srv->fd);
+        srv->fd = -1; /* so that if we use it something definitely fails */
         srv->fail_count = 0;
         srv->connected = 0;
     }
@@ -179,26 +184,29 @@ static int
 _net_send(sapo_broker_t *sb, int socket, const char *buf, size_t len, int flags)
 {
     size_t remain = len;
-    int rc = 0;
+    ssize_t rc = 0;
     do {
         rc = send(socket, buf, remain, flags);
-        if (rc < 0 && errno == EINTR) {
-            continue;
-        }
 
-        if (errno == ENOTCONN || errno == EPIPE || errno == ECONNRESET) {
-            log_err(sb, "send(): Error writing (Not connected): %s",
-                    strerror(errno));
-            return SB_NOT_CONNECTED;
+        if(rc < 0){
+            /* error writing */
+            if (errno == EINTR) {
+                continue;
+            }else if (errno == ENOTCONN || errno == EPIPE || errno == ECONNRESET) {
+                log_err(sb, "send(): Error writing (Not connected [%d]): %s",
+                        errno, strerror(errno));
+                return SB_NOT_CONNECTED;
+            }else {
+                log_err(sb, "send(): Erro writing (Unknown [%d]): %s",
+                        errno, strerror(errno));
+                return SB_ERROR_UNKNOWN;
+            }
+        }else{
+            remain -= rc;
+            buf += rc;
         }
-        if (rc < 0) {          // got an error writing . Aborting
-            log_err(sb, "send(): Erro writing (Unknown): %s", strerror(errno));
-            return SB_ERROR_UNKNOWN;
-        }
-        remain -= rc;
-        buf += rc;
     } while (remain > 0);
-    log_debug(sb, "send() %d bytes", rc);
+    log_debug(sb, "send() %zd bytes", rc);
     return SB_OK;
 }
 
@@ -206,26 +214,32 @@ static int
 _net_recv(sapo_broker_t *sb, int socket, char *buf, size_t len, int flags)
 {
     size_t remain = len;
-    int rc = 0;
+    ssize_t rc = 0;
     do {
         rc = recv(socket, buf, remain, flags);
-        if (rc < 0 && errno == EINTR) {
-            continue;
-        }
 
-        if (errno == ENOTCONN || 0 == rc) {
-            log_err(sb, "recv(): Error writing (Not connected): %s",
-                    strerror(errno));
+        if (rc < 0){
+            /* error reading */
+            if (errno == EINTR) {
+                continue;
+            } else if(errno == ENOTCONN){
+                log_err(sb, "recv(): Error reading (Not connected [%d]): %s",
+                        errno, strerror(errno));
+                return SB_NOT_CONNECTED;
+            }else{
+                log_err(sb, "recv(): Error reading (Unknown [%d]): %s",
+                        errno, strerror(errno));
+                return SB_ERROR_UNKNOWN;
+            }
+        }else if( 0 == rc ){ /* clean shutdown */
+            log_err(sb, "recv(): Error writing (Not connected): clean shutdown from server");
             return SB_NOT_CONNECTED;
+        }else{
+            remain -= rc;
+            buf += rc;
         }
-        if (rc < 0) {          // got an error writing . Aborting
-            log_err(sb, "recv(): Erro writing (Unknown): %s", strerror(errno));
-            return SB_ERROR_UNKNOWN;
-        }
-        remain -= rc;
-        buf += rc;
     } while (remain > 0);
-    log_debug(sb, "recv() %d bytes", rc);
+    log_debug(sb, "recv() %zd bytes", rc);
     return SB_OK;
 
 }
@@ -246,36 +260,36 @@ net_send(sapo_broker_t *sb, _broker_server_t *srv, const char *bytes, size_t len
 
     if(srv->socket_type == SB_UDP)
     {
-	// UDP
+    // UDP
      
-	char*  buffer = malloc( sizeof(header) + len);
+    char*  buffer = malloc( sizeof(header) + len);
 
-	memcpy(buffer, header, sizeof(header));
+    memcpy(buffer, header, sizeof(header));
 
-	memcpy(buffer + sizeof(header), bytes, len);
-	
- 	pthread_mutex_lock(srv->lock_w);
-	rc = _net_send(sb, srv->fd, (const char *) buffer,  sizeof(header) + len, SB_MSG_NOSIGPIPE);
-	free(buffer);
-	if( rc != SB_OK) {
-		log_err(sb, "net_send(): failed to send header");
-		goto err;
-	}
+    memcpy(buffer + sizeof(header), bytes, len);
+
+    pthread_mutex_lock(srv->lock_w);
+    rc = _net_send(sb, srv->fd, (const char *) buffer,  sizeof(header) + len, SB_MSG_NOSIGPIPE);
+    free(buffer);
+    if( rc != SB_OK) {
+        log_err(sb, "net_send(): failed to send header");
+        goto err;
+    }
     }
     else
     {
-	// TCP
-	    pthread_mutex_lock(srv->lock_w);
-	    rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), SB_MSG_NOSIGPIPE);
-	    if( rc != SB_OK) {
-		log_err(sb, "net_send(): failed to send header");
-		goto err;
-	    }
-	    rc = _net_send(sb, srv->fd, bytes, len, SB_MSG_NOSIGPIPE);
-	    if( rc != SB_OK){
-		log_err(sb, "net_send(): failed to send message");
-		goto err;
-	    }
+    // TCP
+        pthread_mutex_lock(srv->lock_w);
+        rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), SB_MSG_NOSIGPIPE);
+        if( rc != SB_OK) {
+        log_err(sb, "net_send(): failed to send header");
+        goto err;
+        }
+        rc = _net_send(sb, srv->fd, bytes, len, SB_MSG_NOSIGPIPE);
+        if( rc != SB_OK){
+        log_err(sb, "net_send(): failed to send message");
+        goto err;
+        }
         
     }
     pthread_mutex_unlock(srv->lock_w);
