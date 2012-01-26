@@ -13,13 +13,64 @@
 #include "broker_internals.h"
 #include "net.h"
 
-
-
-/* private function declarations */
 static int
-_server_connect( sapo_broker_t *sb, _broker_server_t *server );
-static int
-_net_send(sapo_broker_t *sb, int fd, const char *buf, size_t len, int flags);
+_server_connect( sapo_broker_t *sb, _broker_server_t *server )
+{
+    struct hostent *he = NULL;
+    struct sockaddr_in server_addr;
+    int rc = 0;
+
+    if(!sb)
+        return SB_NOT_INITIALIZED;
+
+    /* don't lock because parent functions of this one allready handle locking */
+
+    if (server && server->connected) {
+        return SB_OK;
+    }
+
+    log_debug(sb, "connect(): trying %s:%d", server->srv.hostname , server->srv.port);
+
+    /* FIXME: do this sooner and only once on server_add */
+    if( server->srv.transport == SB_TCP )
+        server->socket_type = SOCK_STREAM;
+    else
+        server->socket_type = SOCK_DGRAM;
+
+    rc = socket(AF_INET, server->socket_type, 0);
+    if ( rc < 0) {
+        log_err(sb, "connect(): %s", strerror(errno));
+        return SB_ERROR;
+    }
+    server->fd = rc;
+
+    he = gethostbyname( server->srv.hostname );
+    if ( he == NULL) {
+        server->connected = FALSE;
+        server->fail_count++;
+        log_err(sb, "gethostbyhostname: %s", strerror(errno));
+        return SB_ERROR;
+    }
+
+    memset(&server_addr, 0, sizeof(server_addr));
+    memcpy(&server_addr.sin_addr, he->h_addr_list[0], he->h_length);
+    server_addr.sin_family = AF_INET;   // Internet address family
+    server_addr.sin_port = htons(server->srv.port);   // Server port
+
+    rc = connect(server->fd, (struct sockaddr *) &server_addr,
+          sizeof(server_addr));
+    if ( rc < 0) {
+        server->fail_count++;
+        log_err(sb, "connect(): %s", strerror(errno));
+        close(server->fd);
+        server->connected = FALSE;
+        return SB_ERROR;
+    }
+    server->fail_count = 0;
+    server->connected = 1;
+
+    return SB_OK;
+}
 
 
 _broker_server_t *
@@ -114,69 +165,6 @@ _broker_server_disconnect_all(sapo_broker_t *sb)
     }
 
     pthread_mutex_unlock(sb->lock);
-    return SB_OK;
-}
-
-
-
-
-
-static int
-_server_connect( sapo_broker_t *sb, _broker_server_t *server )
-{
-    struct hostent *he = NULL;
-    struct sockaddr_in server_addr;
-    int rc = 0;
-
-    if(!sb)
-        return SB_NOT_INITIALIZED;
-
-    /* don't lock because parent functions of this one allready handle locking */
-
-    if (server && server->connected) {
-        return SB_OK;
-    }
-
-    log_debug(sb, "connect(): trying %s:%d", server->srv.hostname , server->srv.port);
-
-    /* FIXME: do this sooner and only once on server_add */
-    if( server->srv.transport == SB_TCP )
-        server->socket_type = SOCK_STREAM;
-    else
-        server->socket_type = SOCK_DGRAM;
-
-    rc = socket(AF_INET, server->socket_type, 0);
-    if ( rc < 0) {
-        log_err(sb, "connect(): %s", strerror(errno));
-        return SB_ERROR;
-    }
-    server->fd = rc;
-
-    he = gethostbyname( server->srv.hostname );
-    if ( he == NULL) {
-        server->connected = FALSE;
-        server->fail_count++;
-        log_err(sb, "gethostbyhostname: %s", strerror(errno));
-        return SB_ERROR;
-    }
-
-    memset(&server_addr, 0, sizeof(server_addr));
-    memcpy(&server_addr.sin_addr, he->h_addr_list[0], he->h_length);
-    server_addr.sin_family = AF_INET;   // Internet address family
-    server_addr.sin_port = htons(server->srv.port);   // Server port
-
-    rc = connect(server->fd, (struct sockaddr *) &server_addr,
-          sizeof(server_addr));
-    if ( rc < 0) {
-        server->fail_count++;
-        log_err(sb, "connect(): %s", strerror(errno));
-        close(server->fd);
-        server->connected = FALSE;
-        return SB_ERROR;
-    }
-    server->fail_count = 0;
-    server->connected = 1;
-
     return SB_OK;
 }
 
