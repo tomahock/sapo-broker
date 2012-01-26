@@ -1,6 +1,8 @@
 #ifndef _BROKER_INTERNALS_H
 #define _BROKER_INTERNALS_H
 
+#include <stdio.h>
+
 #pragma GCC visibility push(hidden)
 int
 _log_msgf(sapo_broker_t *sb, const char *, const char *, int, ...);
