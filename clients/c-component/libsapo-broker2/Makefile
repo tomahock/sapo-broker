@@ -19,7 +19,7 @@ PREFIX ?= /usr
 # Default settings for gcc
 CC      := gcc
 CXX     := g++
-CFLAGS  := -pipe -fpic -fvisibility=hidden
+CFLAGS  := -pipe -fpic -fvisibility=hidden -Wall
 LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fpic -shared -ggdb -fvisibility=hidden
 TEST_LDFLAGS := $(LDFLAGS)
 OPTS    := -O3 -fomit-frame-pointer -ffast-math
