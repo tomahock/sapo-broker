@@ -1,6 +1,6 @@
 import os, os.path, tempfile, shutil
 
-from Base import Transport as BaseTransport, Message
+from Base import Transport as BaseTransport
 import logging
 LOG = logging.getLogger('Broker.Transport.DropBox')
 

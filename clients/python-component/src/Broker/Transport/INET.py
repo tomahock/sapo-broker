@@ -33,11 +33,11 @@ class Transport(BaseTransport):
         LOG.debug("Connected to %s:%d", self.__host, self.__port)
 
     def send(self, message):
-        payload = message.__bytes__()
+        header = message.get_header()
         try:
-            return self.__socket.sendall(payload)
-        except:
-            raise DisconnectedError("""Broker server at %s is dead. Can't write message data %r""" % (self.endpoint(), payload))
+            return self.__socket.sendall(header) + self.__socket.sendall(message.payload)
+        except Exception, exception:
+            raise DisconnectedError("""Broker server at %s is dead. Can't write message data %r (%r)""" % (self.endpoint(), bytes(message), exception))
 
     def __read_len(self, length):
         """
