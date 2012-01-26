@@ -1,3 +1,4 @@
+#define _SVID_SOURCE
 #include <assert.h>
 #include <errno.h>
 #include <netdb.h>
@@ -25,7 +26,9 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
 
     /* don't lock because parent functions of this one allready handle locking */
 
+    pthread_mutex_lock(sb->lock);
     if (server && server->connected) {
+        pthread_mutex_unlock(sb->lock);
         return SB_OK;
     }
 
@@ -40,6 +43,7 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
     rc = socket(AF_INET, server->socket_type, 0);
     if ( rc < 0) {
         log_err(sb, "connect(): %s", strerror(errno));
+        pthread_mutex_unlock(sb->lock);
         return SB_ERROR;
     }
     server->fd = rc;
@@ -48,7 +52,8 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
     if ( he == NULL) {
         server->connected = FALSE;
         server->fail_count++;
-        log_err(sb, "gethostbyhostname: %s", strerror(errno));
+        log_err(sb, "gethostbyhostname: %s", hstrerror(h_errno));
+        pthread_mutex_unlock(sb->lock);
         return SB_ERROR;
     }
 
@@ -64,11 +69,13 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
         log_err(sb, "connect(): %s", strerror(errno));
         close(server->fd);
         server->connected = FALSE;
+        pthread_mutex_unlock(sb->lock);
         return SB_ERROR;
     }
     server->fail_count = 0;
     server->connected = 1;
 
+    pthread_mutex_unlock(sb->lock);
     return SB_OK;
 }
 
