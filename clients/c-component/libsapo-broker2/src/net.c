@@ -42,7 +42,7 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
 
     rc = socket(AF_INET, server->socket_type, 0);
     if ( rc < 0) {
-        log_err(sb, "connect(): %s", strerror(errno));
+        log_err(sb, "connect(): (error creqting socket) %s", strerror(errno));
         pthread_mutex_unlock(sb->lock);
         return SB_ERROR;
     }
@@ -57,7 +57,7 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
         return SB_ERROR;
     }
 
-    memset(&server_addr, 0, sizeof(server_addr));
+    bzero(&server_addr, sizeof(server_addr));
     memcpy(&server_addr.sin_addr, he->h_addr_list[0], he->h_length);
     server_addr.sin_family = AF_INET;   // Internet address family
     server_addr.sin_port = htons(server->srv.port);   // Server port
@@ -66,7 +66,7 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
           sizeof(server_addr));
     if ( rc < 0) {
         server->fail_count++;
-        log_err(sb, "connect(): %s", strerror(errno));
+        log_err(sb, "connect(): (can't conntect) %s", strerror(errno));
         close(server->fd);
         server->connected = FALSE;
         pthread_mutex_unlock(sb->lock);
@@ -144,7 +144,7 @@ _broker_server_disconnect(sapo_broker_t *sb, _broker_server_t *srv)
 {
     if( srv->connected ) {
         /* best effort */
-        shutdown(srv->fd, 2);
+        shutdown(srv->fd, 2); /* bidirectional shutdown */
         close(srv->fd);
         srv->fd = -1; /* so that if we use it something definitely fails */
         srv->fail_count = 0;
