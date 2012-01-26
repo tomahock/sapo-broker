@@ -384,7 +384,7 @@ net_recv( sapo_broker_t *sb, _broker_server_t *srv, int *buf_len)
 
 err:
     pthread_mutex_unlock(srv->lock_r);
-    if( rc = SB_NOT_CONNECTED ) {
+    if( rc == SB_NOT_CONNECTED ) {
         pthread_mutex_lock(sb->lock);
         _broker_server_disconnect(sb, srv);
         pthread_mutex_unlock(sb->lock);
