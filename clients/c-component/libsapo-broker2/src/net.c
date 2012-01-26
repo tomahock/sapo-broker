@@ -1,3 +1,4 @@
+#define _SVID_SOURCE
 #include <assert.h>
 #include <errno.h>
 #include <netdb.h>
@@ -5,19 +6,78 @@
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 
 #include "sapo-broker2.h"
 #include "broker_internals.h"
 #include "net.h"
 
-
-
-/* private function declarations */
 static int
-_server_connect( sapo_broker_t *sb, _broker_server_t *server );
-static int
-_net_send(sapo_broker_t *sb, int fd, const char *buf, size_t len, int flags);
+_server_connect( sapo_broker_t *sb, _broker_server_t *server )
+{
+    struct hostent *he = NULL;
+    struct sockaddr_in server_addr;
+    int rc = 0;
+
+    if(!sb)
+        return SB_NOT_INITIALIZED;
+
+    /* don't lock because parent functions of this one allready handle locking */
+
+    pthread_mutex_lock(sb->lock);
+    if (server && server->connected) {
+        pthread_mutex_unlock(sb->lock);
+        return SB_OK;
+    }
+
+    log_debug(sb, "connect(): trying %s:%d", server->srv.hostname , server->srv.port);
+
+    /* FIXME: do this sooner and only once on server_add */
+    if( server->srv.transport == SB_TCP )
+        server->socket_type = SOCK_STREAM;
+    else
+        server->socket_type = SOCK_DGRAM;
+
+    rc = socket(AF_INET, server->socket_type, 0);
+    if ( rc < 0) {
+        log_err(sb, "connect(): (error creqting socket) %s", strerror(errno));
+        pthread_mutex_unlock(sb->lock);
+        return SB_ERROR;
+    }
+    server->fd = rc;
+
+    he = gethostbyname( server->srv.hostname );
+    if ( he == NULL) {
+        server->connected = FALSE;
+        server->fail_count++;
+        log_err(sb, "gethostbyhostname: %s", hstrerror(h_errno));
+        pthread_mutex_unlock(sb->lock);
+        return SB_ERROR;
+    }
+
+    bzero(&server_addr, sizeof(server_addr));
+    memcpy(&server_addr.sin_addr, he->h_addr_list[0], he->h_length);
+    server_addr.sin_family = AF_INET;   // Internet address family
+    server_addr.sin_port = htons(server->srv.port);   // Server port
+
+    rc = connect(server->fd, (struct sockaddr *) &server_addr,
+          sizeof(server_addr));
+    if ( rc < 0) {
+        server->fail_count++;
+        log_err(sb, "connect(): (can't conntect) %s", strerror(errno));
+        close(server->fd);
+        server->connected = FALSE;
+        pthread_mutex_unlock(sb->lock);
+        return SB_ERROR;
+    }
+    server->fail_count = 0;
+    server->connected = 1;
+
+    pthread_mutex_unlock(sb->lock);
+    return SB_OK;
+}
 
 
 _broker_server_t *
@@ -83,7 +143,10 @@ static int
 _broker_server_disconnect(sapo_broker_t *sb, _broker_server_t *srv)
 {
     if( srv->connected ) {
-        close(srv->fd); // best effort only.
+        /* best effort */
+        shutdown(srv->fd, 2); /* bidirectional shutdown */
+        close(srv->fd);
+        srv->fd = -1; /* so that if we use it something definitely fails */
         srv->fail_count = 0;
         srv->connected = 0;
     }
@@ -112,93 +175,33 @@ _broker_server_disconnect_all(sapo_broker_t *sb)
     return SB_OK;
 }
 
-
-
-
-
-static int
-_server_connect( sapo_broker_t *sb, _broker_server_t *server )
-{
-    struct hostent *he = NULL;
-    struct sockaddr_in server_addr;
-    int rc = 0;
-
-    if(!sb)
-        return SB_NOT_INITIALIZED;
-
-    /* don't lock because parent functions of this one allready handle locking */
-
-    if (server && server->connected) {
-        return SB_OK;
-    }
-
-    log_debug(sb, "connect(): trying %s:%d", server->srv.hostname , server->srv.port);
-
-    /* FIXME: do this sooner and only once on server_add */
-    if( server->srv.transport == SB_TCP )
-        server->socket_type = SOCK_STREAM;
-    else
-        server->socket_type = SOCK_DGRAM;
-
-    rc = socket(AF_INET, server->socket_type, 0);
-    if ( rc < 0) {
-        log_err(sb, "connect(): %s", strerror(errno));
-        return SB_ERROR;
-    }
-    server->fd = rc;
-
-    he = gethostbyname( server->srv.hostname );
-    if ( he == NULL) {
-        server->connected = FALSE;
-        server->fail_count++;
-        log_err(sb, "gethostbyhostname: %s", strerror(errno));
-        return SB_ERROR;
-    }
-
-    memset(&server_addr, 0, sizeof(server_addr));
-    memcpy(&server_addr.sin_addr, he->h_addr_list[0], he->h_length);
-    server_addr.sin_family = AF_INET;   // Internet address family
-    server_addr.sin_port = htons(server->srv.port);   // Server port
-
-    rc = connect(server->fd, (struct sockaddr *) &server_addr,
-          sizeof(server_addr));
-    if ( rc < 0) {
-        server->fail_count++;
-        log_err(sb, "connect(): %s", strerror(errno));
-        close(server->fd);
-        server->connected = FALSE;
-        return SB_ERROR;
-    }
-    server->fail_count = 0;
-    server->connected = 1;
-
-    return SB_OK;
-}
-
 static int
 _net_send(sapo_broker_t *sb, int socket, const char *buf, size_t len, int flags)
 {
     size_t remain = len;
-    int rc = 0;
+    ssize_t rc = 0;
     do {
         rc = send(socket, buf, remain, flags);
-        if (rc < 0 && errno == EINTR) {
-            continue;
-        }
 
-        if (errno == ENOTCONN || errno == EPIPE || errno == ECONNRESET) {
-            log_err(sb, "send(): Error writing (Not connected): %s",
-                    strerror(errno));
-            return SB_NOT_CONNECTED;
+        if(rc < 0){
+            /* error writing */
+            if (errno == EINTR) {
+                continue;
+            }else if (errno == ENOTCONN || errno == EPIPE || errno == ECONNRESET) {
+                log_err(sb, "send(): Error writing (Not connected [%d]): %s",
+                        errno, strerror(errno));
+                return SB_NOT_CONNECTED;
+            }else {
+                log_err(sb, "send(): Erro writing (Unknown [%d]): %s",
+                        errno, strerror(errno));
+                return SB_ERROR_UNKNOWN;
+            }
+        }else{
+            remain -= rc;
+            buf += rc;
         }
-        if (rc < 0) {          // got an error writing . Aborting
-            log_err(sb, "send(): Erro writing (Unknown): %s", strerror(errno));
-            return SB_ERROR_UNKNOWN;
-        }
-        remain -= rc;
-        buf += rc;
     } while (remain > 0);
-    log_debug(sb, "send() %d bytes", rc);
+    log_debug(sb, "send() %zd bytes", rc);
     return SB_OK;
 }
 
@@ -206,26 +209,32 @@ static int
 _net_recv(sapo_broker_t *sb, int socket, char *buf, size_t len, int flags)
 {
     size_t remain = len;
-    int rc = 0;
+    ssize_t rc = 0;
     do {
         rc = recv(socket, buf, remain, flags);
-        if (rc < 0 && errno == EINTR) {
-            continue;
-        }
 
-        if (errno == ENOTCONN || 0 == rc) {
-            log_err(sb, "recv(): Error writing (Not connected): %s",
-                    strerror(errno));
+        if (rc < 0){
+            /* error reading */
+            if (errno == EINTR) {
+                continue;
+            } else if(errno == ENOTCONN || errno == ECONNREFUSED || errno == EPIPE){
+                log_err(sb, "recv(): Error reading (Not connected [%d]): %s",
+                        errno, strerror(errno));
+                return SB_NOT_CONNECTED;
+            }else{
+                log_err(sb, "recv(): Error reading (Unknown [%d]): %s",
+                        errno, strerror(errno));
+                return SB_ERROR_UNKNOWN;
+            }
+        }else if( 0 == rc ){ /* clean shutdown */
+            log_err(sb, "recv(): Error writing (Not connected): clean shutdown from server");
             return SB_NOT_CONNECTED;
+        }else{
+            remain -= rc;
+            buf += rc;
         }
-        if (rc < 0) {          // got an error writing . Aborting
-            log_err(sb, "recv(): Erro writing (Unknown): %s", strerror(errno));
-            return SB_ERROR_UNKNOWN;
-        }
-        remain -= rc;
-        buf += rc;
     } while (remain > 0);
-    log_debug(sb, "recv() %d bytes", rc);
+    log_debug(sb, "recv() %zd bytes", rc);
     return SB_OK;
 
 }
@@ -246,36 +255,36 @@ net_send(sapo_broker_t *sb, _broker_server_t *srv, const char *bytes, size_t len
 
     if(srv->socket_type == SB_UDP)
     {
-	// UDP
+    // UDP
      
-	char*  buffer = malloc( sizeof(header) + len);
+    char*  buffer = malloc( sizeof(header) + len);
 
-	memcpy(buffer, header, sizeof(header));
+    memcpy(buffer, header, sizeof(header));
 
-	memcpy(buffer + sizeof(header), bytes, len);
-	
- 	pthread_mutex_lock(srv->lock_w);
-	rc = _net_send(sb, srv->fd, (const char *) buffer,  sizeof(header) + len, SB_MSG_NOSIGPIPE);
-	free(buffer);
-	if( rc != SB_OK) {
-		log_err(sb, "net_send(): failed to send header");
-		goto err;
-	}
+    memcpy(buffer + sizeof(header), bytes, len);
+
+    pthread_mutex_lock(srv->lock_w);
+    rc = _net_send(sb, srv->fd, (const char *) buffer,  sizeof(header) + len, SB_MSG_NOSIGPIPE);
+    free(buffer);
+    if( rc != SB_OK) {
+        log_err(sb, "net_send(): failed to send header");
+        goto err;
+    }
     }
     else
     {
-	// TCP
-	    pthread_mutex_lock(srv->lock_w);
-	    rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), SB_MSG_NOSIGPIPE);
-	    if( rc != SB_OK) {
-		log_err(sb, "net_send(): failed to send header");
-		goto err;
-	    }
-	    rc = _net_send(sb, srv->fd, bytes, len, SB_MSG_NOSIGPIPE);
-	    if( rc != SB_OK){
-		log_err(sb, "net_send(): failed to send message");
-		goto err;
-	    }
+    // TCP
+        pthread_mutex_lock(srv->lock_w);
+        rc = _net_send(sb, srv->fd, (const char *) header, sizeof(header), SB_MSG_NOSIGPIPE);
+        if( rc != SB_OK) {
+        log_err(sb, "net_send(): failed to send header");
+        goto err;
+        }
+        rc = _net_send(sb, srv->fd, bytes, len, SB_MSG_NOSIGPIPE);
+        if( rc != SB_OK){
+        log_err(sb, "net_send(): failed to send message");
+        goto err;
+        }
         
     }
     pthread_mutex_unlock(srv->lock_w);
@@ -382,7 +391,7 @@ net_recv( sapo_broker_t *sb, _broker_server_t *srv, int *buf_len)
 
 err:
     pthread_mutex_unlock(srv->lock_r);
-    if( rc = SB_NOT_CONNECTED ) {
+    if( rc == SB_NOT_CONNECTED ) {
         pthread_mutex_lock(sb->lock);
         _broker_server_disconnect(sb, srv);
         pthread_mutex_unlock(sb->lock);

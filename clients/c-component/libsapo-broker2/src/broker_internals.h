@@ -1,6 +1,8 @@
 #ifndef _BROKER_INTERNALS_H
 #define _BROKER_INTERNALS_H
 
+#include <stdio.h>
+
 #pragma GCC visibility push(hidden)
 int
 _log_msgf(sapo_broker_t *sb, const char *, const char *, int, ...);
@@ -38,7 +40,7 @@ _log_err(sapo_broker_t *sb, const char *, const char *, int, ...);
         fflush(stdout); \
     } while(0);
     #define log_err(sb, msg, ...) do { \
-        fprintf( stderr, msg, ##__VA_ARGS__); \
+        fprintf(stderr, msg, ##__VA_ARGS__); \
         fprintf(stderr,"\n"); \
         fflush(stderr); \
     } while(0);

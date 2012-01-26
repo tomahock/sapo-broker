@@ -33,9 +33,12 @@ class Message:
         self.version = encoding_version
         self.payload = payload
 
+    def get_header(self):
+        return self._packer.pack(self.type, self.version, len(self.payload))
+
     def __bytes__(self):
         if isinstance(self.payload, bytes):
-            return self._packer.pack(self.type, self.version, len(self.payload)) + self.payload
+            return self.get_header() + self.payload
         else:
             raise TypeError("can only serialize bytes")
 
