@@ -35,7 +35,8 @@ class Transport(BaseTransport):
     def send(self, message):
         header = message.get_header()
         try:
-            return self.__socket.sendall(header) + self.__socket.sendall(message.payload)
+            self.__socket.sendall(header)
+            self.__socket.sendall(message.payload)
         except Exception, exception:
             raise DisconnectedError("""Broker server at %s is dead. Can't write message data %r (%r)""" % (self.endpoint(), bytes(message), exception))
 

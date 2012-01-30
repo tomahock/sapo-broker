@@ -13,3 +13,7 @@ class Transport(INET):
 
     def __init__(self, host=DEFAULT_HOST, port=DEFAULT_PORT, timeout=None):
         INET.__init__(self, host, port, timeout)
+
+    def send(self, message):
+        header = message.get_header()
+        return self.__socket.sendall(header + message.payload)
