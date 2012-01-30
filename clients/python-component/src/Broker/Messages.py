@@ -1,6 +1,7 @@
 from datetime import datetime
 from urllib import urlopen, urlencode
 from xml.dom.minidom import parseString
+import types
 
 def todate(date):
     if date is None:
@@ -23,7 +24,7 @@ class Message:
         
         timestamp and expiration are supposed to be datetime objects and default to None and are thus optional.
         If these fields don't have timezone information, they are assumed to be in UTC.
-        You can also pass seconds since the epoch or a string in ISO8601 (use at your own risk).
+        You can also pass seconds since the epoch.
 
         id is supposed to be a unique id of the message and defaults to None meaning that the Broker server will generate one automatically.
 
@@ -32,11 +33,11 @@ class Message:
 
         self.payload       = payload
         self.id            = id
-        self.__timestamp   = timestamp
-        self.__expiration  = expiration
+        self.timestamp     = timestamp
+        self.expiration    = expiration
 
     def __set_timestamp(self, value):
-        self.__timeout = value
+        self.__timestamp = value
         return self
 
     def __get_timestamp(self):
@@ -48,8 +49,8 @@ class Message:
         return self
 
     def __get_expiration(self):
-        self.__expiration = todate(self.__timestamp)
-        return self.__timestamp
+        self.__expiration = todate(self.__expiration)
+        return self.__expiration
 
     timestamp  = property(fget=__get_timestamp, fset=__set_timestamp)
     expiration = property(fget=__get_expiration, fset=__set_expiration)
