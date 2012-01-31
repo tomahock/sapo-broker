@@ -10,10 +10,16 @@ use bytes;
 
 class( 'mandatory' => [qw(payload type version)] );
 
+sub serialized_header {
+    my ($self) = @_;
+
+    return __header_from_meta( $self->{'type'}, $self->{'version'}, length( $self->{'payload'} ) );
+}
+
 sub serialize {
     my ($self) = @_;
 
-    return __header_from_meta( $self->{'type'}, $self->{'version'}, length( $self->{'payload'} ) ) . $self->{'payload'};
+    return $self->serialized_header() . $self->{'payload'};
 }
 
 #utility static method

@@ -15,7 +15,9 @@ sub new {
 sub send {
     my ( $self, $message ) = @_;
 
-    return $self->__write( $message->serialize() );
+    $self->__write( $message->serialize() );
+
+    return $self;
 }
 
 sub receive {
