@@ -37,4 +37,13 @@ sub new {
     return $self;
 } ## end sub new
 
+sub send {
+    my ( $self, $message ) = @_;
+
+    $self->__write( $message->serialized_header() );
+    $self->__write( $message->payload() );
+
+    return $self;
+}
+
 1;
