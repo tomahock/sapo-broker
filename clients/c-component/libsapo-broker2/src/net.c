@@ -26,9 +26,7 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
 
     /* don't lock because parent functions of this one allready handle locking */
 
-    pthread_mutex_lock(sb->lock);
     if (server && server->connected) {
-        pthread_mutex_unlock(sb->lock);
         return SB_OK;
     }
 
@@ -69,13 +67,11 @@ _server_connect( sapo_broker_t *sb, _broker_server_t *server )
         log_err(sb, "connect(): (can't conntect) %s", strerror(errno));
         close(server->fd);
         server->connected = FALSE;
-        pthread_mutex_unlock(sb->lock);
         return SB_ERROR;
     }
     server->fail_count = 0;
     server->connected = 1;
 
-    pthread_mutex_unlock(sb->lock);
     return SB_OK;
 }
 
