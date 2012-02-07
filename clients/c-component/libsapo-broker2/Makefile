@@ -21,7 +21,7 @@ CC      := gcc
 CXX     := g++
 CFLAGS  := -pipe -fpic -fvisibility=hidden -Wall
 LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fpic -shared -ggdb -fvisibility=hidden
-TEST_LDFLAGS := $(LDFLAGS)
+TEST_LDFLAGS := -lm -lgcc -lpthread -lprotobuf -lc -fpic -ggdb -fvisibility=hidden
 OPTS    := -O3 -fomit-frame-pointer -ffast-math
 #OPTS	+= -msse -msse2 -ftree-vectorize # use only with gcc-4 or above.
 OPTS	+= -g -ggdb -std=c99
