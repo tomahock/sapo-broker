@@ -23,7 +23,6 @@ _log_err(sapo_broker_t *sb, const char *, const char *, int, ...);
     #define log_err(sb, msg, ...) _log_err(sb, msg, __FILE__, __LINE__, ##__VA_ARGS__)
 
 #else
-#include <stdio.h>
     #define log_msgf(sb, msg, ...) do { \
         printf( msg, ##__VA_ARGS__); \
         printf("\n"); \
