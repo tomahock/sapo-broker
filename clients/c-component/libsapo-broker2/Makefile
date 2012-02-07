@@ -91,8 +91,8 @@ install: release Makefile
 	chmod 755 $(PREFIX)/include
 	cp $(RELEASE_TARGET) $(PREFIX)/lib/$(RELEASE_TARGET)
 	chmod 644 $(PREFIX)/lib/$(RELEASE_TARGET)
-	ln -s $(RELEASE_TARGET) $(PREFIX)/lib/lib$(REL_NAME).so.2
-	ln -s $(RELEASE_TARGET) $(PREFIX)/lib/lib$(REL_NAME).so
+	ln -sf $(RELEASE_TARGET) $(PREFIX)/lib/lib$(REL_NAME).so.2
+	ln -sf $(RELEASE_TARGET) $(PREFIX)/lib/lib$(REL_NAME).so
 # FIXME: this is ugly
 	cp $(SOURCE_DIR)/sapo-broker2.h $(PREFIX)/include/sapo-broker2.h
 	chmod 644 $(PREFIX)/include/sapo-broker2.h
