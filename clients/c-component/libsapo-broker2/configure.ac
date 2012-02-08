@@ -11,6 +11,7 @@ AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AC_PROG_CC_C99
 AC_PROG_LIBTOOL
 
 # Checks for libraries.
@@ -48,4 +49,4 @@ PKG_CHECK_MODULES([PROTOBUF], [protobuf], ,
 	AC_MSG_ERROR([ *** protobuf package not found])
 )
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile src/Makefile test/Makefile)
