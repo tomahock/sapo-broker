@@ -1,0 +1,51 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_INIT([libsapo-broker2], [2.1.0], [c.valente@co.sapo.pt])
+AM_INIT_AUTOMAKE(dist-bzip2)
+AC_CONFIG_MACRO_DIR([m4])
+
+AC_CONFIG_SRCDIR([src/sapo_broker.c])
+AC_CONFIG_HEADERS([config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_LIBTOOL
+
+# Checks for libraries.
+
+# Checks for header files.
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h stdint.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_TYPE_INT64_T
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINT8_T
+
+AC_C_CONST
+AC_C_INLINE
+AC_HEADER_STDBOOL
+AC_TYPE_SIZE_T
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([bzero gethostbyname memset select socket strchr strerror])
+
+
+# Check for used libs/programs
+
+PKG_CHECK_MODULES([GLIB], [glib-2.0], ,
+	AC_MSG_ERROR([ *** glib2 package not found])
+)
+PKG_CHECK_MODULES([PROTOBUF], [protobuf], ,
+	AC_MSG_ERROR([ *** protobuf package not found])
+)
+
+AC_OUTPUT(Makefile)

@@ -1,0 +1,11 @@
+cd `dirname $0`
+
+set -x
+set -e
+
+aclocal
+libtoolize --force --copy
+#autoheader
+automake --add-missing --copy
+autoconf
+#./mk_changelog
