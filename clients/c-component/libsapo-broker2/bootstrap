@@ -3,7 +3,7 @@ cd `dirname $0`
 set -x
 set -e
 
-aclocal
+aclocal -I m4
 libtoolize --force --copy
 #autoheader
 automake --add-missing --copy

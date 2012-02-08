@@ -41,12 +41,17 @@ AC_CHECK_FUNCS([bzero gethostbyname memset select socket strchr strerror])
 
 
 # Check for used libs/programs
-
-PKG_CHECK_MODULES([GLIB], [glib-2.0], ,
-	AC_MSG_ERROR([ *** glib2 package not found])
-)
 PKG_CHECK_MODULES([PROTOBUF], [protobuf], ,
 	AC_MSG_ERROR([ *** protobuf package not found])
 )
 
-AC_OUTPUT(Makefile src/Makefile test/Makefile)
+ACX_PTHREAD(
+	AC_MSG_NOTICE([pthread found]),
+	AC_MSG_ERROR([ *** pthreads not found])
+)
+
+LIBS="$PTHREAD_LIBS $PROTOBUF_LIBS $LIBS"
+CFLAGS="$CFLAGS $PTHREAD_CFLAGS $PROTOBUF_CFLAGS"
+CC="$PTHREAD_CC"
+
+AC_OUTPUT(Makefile src/Makefile test/Makefile libsapo-broker2.pc)
