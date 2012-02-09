@@ -59,4 +59,4 @@ CFLAGS="$CFLAGS $PTHREAD_CFLAGS $PROTOBUF_CFLAGS -fvisibility=hidden"
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
 CC="$PTHREAD_CC"
 
-AC_OUTPUT(Makefile src/Makefile test/Makefile libsapo-broker2.pc)
+AC_OUTPUT(Makefile src/Makefile examples/Makefile libsapo-broker2.pc)
