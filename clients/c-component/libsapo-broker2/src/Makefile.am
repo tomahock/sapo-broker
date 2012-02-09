@@ -7,7 +7,7 @@ BUILT_SOURCES = broker.pb.cc broker.pb.h
 nodist_libsapo_broker2_la_SOURCES = $(BUILT_SOURCES)
 CLEANFILES=$(BUILT_SOURCES)
 
-libsapo_broker2_la_LDFLAGS = -version-info 2:1:0 -no-undefined
+libsapo_broker2_la_LDFLAGS = -version-info @SOVERSION@ -no-undefined
 
 libsapo_broker2_la_includedir = $(includedir)
 libsapo_broker2_la_include_HEADERS = sapo-broker2.h

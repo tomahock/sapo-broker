@@ -2,6 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([libsapo-broker2], [2.1.0], [c.valente@co.sapo.pt])
+SOVERSION=3:1:1
+AC_SUBST(SOVERSION)
+
 AM_INIT_AUTOMAKE(dist-bzip2)
 AC_CONFIG_MACRO_DIR([m4])
 

@@ -11,6 +11,6 @@ libsapo-broker2 (2.0.1) unstable; urgency=low
 
 libsapo-broker2 (2.0.1) unstable; urgency=low
  * first public build
- * all major features are funcional
+ * all major features are functional
 
  -- Miguel Filipe <miguel.filipe@caixamagica.pt>  Thu Apr 22 11:43:05 WEST 2010
