@@ -54,9 +54,18 @@ ACX_PTHREAD(
 	AC_MSG_ERROR([ *** pthreads not found])
 )
 
+AC_ARG_ENABLE(
+    tests,
+    AC_HELP_STRING(
+        [--disable-tests],
+		[do not compile tests]
+    )
+)
+AM_CONDITIONAL(WITH_TEST, test "${enable_tests}" != "no")
+
 LIBS="$PTHREAD_LIBS $PROTOBUF_LIBS $LIBS"
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS $PROTOBUF_CFLAGS -fvisibility=hidden"
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
 CC="$PTHREAD_CC"
 
-AC_OUTPUT(Makefile src/Makefile examples/Makefile libsapo-broker2.pc)
+AC_OUTPUT(Makefile src/Makefile test/Makefile examples/Makefile libsapo-broker2.pc)
