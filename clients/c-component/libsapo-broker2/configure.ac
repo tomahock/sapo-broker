@@ -6,7 +6,7 @@ AM_INIT_AUTOMAKE(dist-bzip2)
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SRCDIR([src/sapo_broker.c])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([src/config.h])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -44,6 +44,7 @@ AC_CHECK_FUNCS([bzero gethostbyname memset select socket strchr strerror])
 PKG_CHECK_MODULES([PROTOBUF], [protobuf], ,
 	AC_MSG_ERROR([ *** protobuf package not found])
 )
+ACX_NEED_PROG([PROTOC], [protoc])
 
 ACX_PTHREAD(
 	AC_MSG_NOTICE([pthread found]),
