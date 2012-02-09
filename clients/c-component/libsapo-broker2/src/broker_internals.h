@@ -1,6 +1,8 @@
 #ifndef _BROKER_INTERNALS_H
 #define _BROKER_INTERNALS_H
 
+#include "config.h"
+
 #include <stdio.h>
 
 #pragma GCC visibility push(hidden)
