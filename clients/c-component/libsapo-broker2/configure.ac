@@ -55,7 +55,8 @@ ACX_PTHREAD(
 )
 
 LIBS="$PTHREAD_LIBS $PROTOBUF_LIBS $LIBS"
-CFLAGS="$CFLAGS $PTHREAD_CFLAGS $PROTOBUF_CFLAGS"
+CFLAGS="$CFLAGS $PTHREAD_CFLAGS $PROTOBUF_CFLAGS -fvisibility=hidden"
+CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
 CC="$PTHREAD_CC"
 
 AC_OUTPUT(Makefile src/Makefile test/Makefile libsapo-broker2.pc)
