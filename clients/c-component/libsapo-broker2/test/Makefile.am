@@ -1,10 +1,12 @@
-noinst_PROGRAMS = test_enqueue test_publish test_consume
+TESTS = queue virtual_queue
+#TESTS = topic queue
+check_PROGRAMS = $(TESTS)
 
-test_enqueue_SOURCES = test_enqueue.c
-test_enqueue_LDADD = ../src/libsapo-broker2.la
+#topic_SOURCES = topic.c
+#topic_LDADD = ../src/libsapo-broker2.la
 
-test_publish_SOURCES = test_publish.c
-test_publish_LDADD = ../src/libsapo-broker2.la
+queue_SOURCES = queue.c
+queue_LDADD = ../src/libsapo-broker2.la
 
-test_consume_SOURCES = test_consume.c
-test_consume_LDADD = ../src/libsapo-broker2.la
+virtual_queue_SOURCES = virtual_queue.c
+virtual_queue_LDADD = ../src/libsapo-broker2.la
