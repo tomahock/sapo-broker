@@ -54,9 +54,24 @@ ACX_PTHREAD(
 	AC_MSG_ERROR([ *** pthreads not found])
 )
 
+AC_ARG_ENABLE(
+    tests,
+    AC_HELP_STRING(
+        [--disable-tests],
+		[do not compile tests]
+    )
+)
+AM_CONDITIONAL(WITH_TEST, test "${enable_tests}" != "no")
+
+ACX_ARG_VAR_DEFAULT([TEST_BROKER_HOST], [broker host to connect to while testing], [broker.labs.sapo.pt])
+
+ACX_ARG_VAR_DEFAULT([TEST_BROKER_TCP_PORT], [broker tcp port to connect to while testing], [3323])
+
+ACX_ARG_VAR_DEFAULT([TEST_BROKER_QUEUE_ITERATIONS], [number of messages to produce and consume while testing], [10000])
+
 LIBS="$PTHREAD_LIBS $PROTOBUF_LIBS $LIBS"
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS $PROTOBUF_CFLAGS -fvisibility=hidden"
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
 CC="$PTHREAD_CC"
 
-AC_OUTPUT(Makefile src/Makefile test/Makefile libsapo-broker2.pc)
+AC_OUTPUT(Makefile src/Makefile test/Makefile test/broker_config.h examples/Makefile libsapo-broker2.pc)
