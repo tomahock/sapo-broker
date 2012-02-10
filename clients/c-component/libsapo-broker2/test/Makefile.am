@@ -1,6 +1,6 @@
-TESTS = queue
+TESTS = queue virtual_queue
 #TESTS = topic queue
-noinst_PROGRAMS = $(TESTS)
+check_PROGRAMS = $(TESTS)
 
 #topic_SOURCES = topic.c
 #topic_LDADD = ../src/libsapo-broker2.la
@@ -8,4 +8,5 @@ noinst_PROGRAMS = $(TESTS)
 queue_SOURCES = queue.c
 queue_LDADD = ../src/libsapo-broker2.la
 
-EXTRA_DIST = broker_config.h
+virtual_queue_SOURCES = virtual_queue.c
+virtual_queue_LDADD = ../src/libsapo-broker2.la

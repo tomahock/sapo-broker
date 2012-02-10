@@ -7,7 +7,7 @@
 #include "sapo-broker2.h"
 #include "broker_config.h"
 
-#define QUEUE_TEMPLATE "/libsapo-broker2/%lld"
+#define TOPIC_TEMPLATE "/libsapo-broker2/%lld"
 #define PAYLOAD_TEMPLATE "test %d"
 
 void error(const char* str){
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     server.transport = SB_TCP;
     server.protocol = SB_PROTOBUF;
 
-    destination.type = SB_QUEUE;
+    destination.type = SB_VIRTUAL_QUEUE;
     destination.queue_autoack = TRUE;
 
 
@@ -35,26 +35,29 @@ int main(int argc, char *argv[])
         error(broker_error(broker));
     }
     
-	char* queue;
-	asprintf(&queue, QUEUE_TEMPLATE, (long long int) time(NULL));
+	char* topic;
+	asprintf(&topic, TOPIC_TEMPLATE, (long long int) time(NULL));
 
+	char* virtual_queue;
+	asprintf(&virtual_queue, "client@%s", topic);
+	destination.name = virtual_queue;
+
+	//need to subscribe before producing
+	if ( SB_OK != broker_subscribe(broker, destination) ) {
+            error(broker_error(broker));
+	}
 
 	//produce
     for(int count=0; count < QUEUE_ITERATIONS; count++) {
 		char* payload;
 		size_t payload_len = asprintf(&payload, PAYLOAD_TEMPLATE, count);
-        if ( SB_OK != broker_enqueue( broker, queue, payload, payload_len ) ){
+        if ( SB_OK != broker_publish( broker, topic, payload, payload_len ) ){
             error(broker_error(broker));
         }
 		free(payload);
     }
 
-	destination.name = queue;
 	//consume
-	if ( SB_OK != broker_subscribe(broker, destination) ) {
-            error(broker_error(broker));
-	}
-
     for(int count=0; count < QUEUE_ITERATIONS; count++) {
 		char* payload;
 		size_t payload_len = asprintf(&payload, PAYLOAD_TEMPLATE, count);
@@ -70,7 +73,8 @@ int main(int argc, char *argv[])
 	}
 
     broker_destroy(broker);
-	free(queue);
+	free(topic);
+	free(virtual_queue);
 
     exit(0);
 }
