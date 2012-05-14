@@ -179,6 +179,17 @@ sub authenticate {
     }
 }
 
+sub ping {
+    my ( $self, $action_id ) = @_;
+
+    if ( not defined $action_id ) {
+        $action_id = int( time() . "_" . int( rand(1000000) ) );
+    }
+
+    my $ping = SAPO::Broker::Messages::Ping->new( 'action_id' => $action_id );
+    return $self->send($ping);
+}
+
 sub receive {
     my ($self) = @_;
 

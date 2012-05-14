@@ -166,7 +166,7 @@ sub parse_fault($) {
 sub serialize_ping($) {
     my ($message) = @_;
 
-    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Ping->new( {
+    return SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom->new( {
             'action' => {
                 'ping'        => $message,
                 'action_type' => SAPO::Broker::Codecs::Autogen::ProtobufXS::Atom::Action::ActionType::PING()
@@ -177,7 +177,7 @@ sub serialize_ping($) {
 sub parse_pong($) {
     my ($action) = @_;
 
-    return SAPO::Broker::Messages::Pong( $action->pong()->to_hashref );
+    return SAPO::Broker::Messages::Pong->new( $action->pong()->to_hashref );
 }
 
 sub serialize_authentication($) {
@@ -242,8 +242,8 @@ sub serialize {
                 version => 1,
                 payload => $payload
             );
-        } ## end if ( $message->isa($class...
-    } ## end while ( my ( $class, $serializer...
+        } ## end if ( $message->isa($class...))
+    } ## end while ( my ( $class, $serializer...))
 
     croak("Can't serialize $message");
     return;
