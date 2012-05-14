@@ -29,10 +29,9 @@ sub new {
         #$self->{'__socket'}->setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPCNT, 5) or die $!;
         #$self->{'__socket'}->setsockopt(Socket::SOL_TCP, Socket::TCP_KEEPINTVL, 1) or die $!;
         1;
-        }
-        or do {
+    } or do {
         warn "Error setting TCP keep-alive: $@";
-        };
+    };
 
     return $self;
 } ## end sub new
