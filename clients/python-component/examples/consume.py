@@ -6,7 +6,7 @@ from Broker.Codecs import Codec #auto codec selection (thrift or protobuf if thr
 from Broker.Clients import Minimal
 
 server='localhost'
-destination = '/python/tests'
+destination = '/python/tests/expiration'
 destination_type = 'QUEUE'
 N=10000
 
