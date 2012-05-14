@@ -251,8 +251,8 @@ sub serialize {
                 version => 1,
                 payload => $self->__serialize($atom),
             );
-        } ## end if ( $message->isa($class...
-    } ## end while ( my ( $class, $serializer...
+        } ## end if ( $message->isa($class...))
+    } ## end while ( my ( $class, $serializer...))
 
     croak("Can't serialize $message");
     return;

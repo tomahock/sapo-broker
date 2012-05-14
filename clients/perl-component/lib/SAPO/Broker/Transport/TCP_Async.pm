@@ -26,7 +26,7 @@ sub new {
             my ( $h, $fatal, $msg ) = @_;
 
             #print STDERR "on_error: [$fatal]\n";
-            $params{error_cb}->($msg,$fatal) if $params{error_cb};
+            $params{error_cb}->( $msg, $fatal ) if $params{error_cb};
             $self->__drain($msg);
 
             delete $self->{__socket} if $fatal;
@@ -87,6 +87,7 @@ sub __drain {
 
     if ( scalar @{ $self->{_wcbs} } ) {
         for my $cb ( @{ $self->{_wcbs} } ) {
+
             #print STDERR "on_drain: calling cb\n";
             $cb->($error);
         }

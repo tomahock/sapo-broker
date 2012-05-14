@@ -498,7 +498,7 @@ sub _reconnect {
             return 1;
         }
         sleep 1;
-    } ## end for ( 1 .. $self->{recon_attempts...
+    } ## end for ( 1 .. $self->{recon_attempts...})
 
     return undef;
 } ## end sub _reconnect
