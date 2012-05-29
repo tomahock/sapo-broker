@@ -7,5 +7,6 @@ Name: libsapo-broker2
 Description: simple C client for SAPO broker
 Requires: protobuf
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} @PROTOBUF_LIBS@
+Libs.private: @PROTOBUF_LIBS@
+Libs: -L${libdir} @PROTOBUF_LIBS@ -lsapo-broker2
 Cflags: -I${includedir}/

@@ -1,3 +1,5 @@
+AM_CFLAGS=-I "$(top_srcdir)/src"
+
 noinst_PROGRAMS = enqueue publish consume
 
 enqueue_SOURCES = enqueue.c
