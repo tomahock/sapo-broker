@@ -1,3 +1,5 @@
+AM_CFLAGS=-I "$(top_srcdir)/src"
+
 TESTS = queue virtual_queue
 #TESTS = topic queue
 check_PROGRAMS = $(TESTS)
