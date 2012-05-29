@@ -71,7 +71,7 @@ ACX_ARG_VAR_DEFAULT([TEST_BROKER_QUEUE_ITERATIONS], [number of messages to produ
 
 LIBS="$PTHREAD_LIBS $PROTOBUF_LIBS $LIBS"
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS $PROTOBUF_CFLAGS -fvisibility=hidden"
-CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
+CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS $PROTOBUF_CFLAGS -fvisibility=hidden"
 CC="$PTHREAD_CC"
 
 AC_OUTPUT(Makefile src/Makefile test/Makefile test/broker_config.h examples/Makefile libsapo-broker2.pc)
