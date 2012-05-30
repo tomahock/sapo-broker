@@ -7,10 +7,21 @@ use strict;
 use warnings;
 use bytes;
 
+sub rand_string($) {
+    my ($n) = @_;
+
+    my $ret = '';
+    for ( 1 .. $n ) {
+        $ret .= chr( int( rand(256) ) );
+    }
+    return $ret;
+}
+
 my $rand_name = '/perl/tests/' . hostfqdn() . "_" . time();
 my $N         = $ENV{'BROKER_N_TESTS'} || 100;
 my $L         = $ENV{'BROKER_SIZE_TESTS'} || 1000;
 my $host      = $ENV{'BROKER_HOST'} || 'broker.labs.sapo.pt';
+my $action_id = $host.'_'.(rand (1000000000));	#quick and dirty uuid
 
 #plan tests => 3 + 2 * $N;
 
@@ -18,7 +29,7 @@ sub write_broker_data {
     eval {
         open my $f, '>', '.broker_info' or die $!;
         local $, = "\n";
-        print $f $rand_name, $host, $N,, $L;
+        print $f $rand_name, $host, $N,, $L, $action_id;
         close($f) or die !$;;
     };
     if ($@) {
@@ -28,16 +39,6 @@ sub write_broker_data {
         return 1;
     }
 
-}
-
-sub rand_string($) {
-    my ($n) = @_;
-
-    my $ret = '';
-    for ( 1 .. $n ) {
-        $ret .= chr( int( rand(256) ) );
-    }
-    return $ret;
 }
 
 sub write_rand_data() {

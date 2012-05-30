@@ -42,6 +42,7 @@ use warnings;
 my $name;
 my $host;
 my $N;
+my $action_id;
 my @payloads;
 
 sub read_info {
@@ -51,9 +52,11 @@ sub read_info {
         $name = <$f>;
         $host = <$f>;
         $N    = <$f>;
+		$action_id = <$f>;
         chomp $name;
         chomp $host;
         chomp $N;
+		chomp $action_id;
         close($f) or die !$;;
     };
     if ($@) {
@@ -171,9 +174,33 @@ sub test_queue($;$$) {
     }
 } ## end sub test_queue($;$$)
 
+sub test_pingpong($;$$) {
+    my ( $proto, $pproto, $codec ) = @_;
+
+    $pproto ||= $proto;
+    $codec  ||= $thrift;
+    my $codec_name = ref($codec) ? $codec->name : $codec;
+
+    ok(
+        my $broker = SAPO::Broker::Clients::Simple->new(
+            'codec'   => $codec,
+            'host'    => $host,
+            'proto'   => lc($pproto),
+            'timeout' => 10,
+        ),
+        "Instantiate broker ($pproto)"
+      );
+
+	  my $aid = "${action_id}_$pproto";
+	  ok($broker->ping($aid), "Send ping ($aid) [$codec_name]");
+	  isa_ok(my $message = $broker->receive(), 'SAPO::Broker::Messages::Pong');
+	  is($message->action_id(), $aid, 'Check action_id');
+}
+
 sub test_codec($) {
     my $codec = shift;
     test_queue( 'TCP', 'TCP', $codec );
+    test_pingpong( 'TCP', 'TCP', $codec );
     test_queue( 'TCP', 'UDP', $codec );
 
     #ssl stuff

@@ -108,7 +108,7 @@ class Fault:
         self.action_id = action_id
 
     def __repr__(self):
-        return u'<%s(fault_code=%r, fault_message=%r, fault_detail=%r, action_id=%r)>' % (
+        return '<%s(fault_code=%r, fault_message=%r, fault_detail=%r, action_id=%r)>' % (
             self.__class__,
             self.fault_code,
             self.fault_message,
@@ -154,4 +154,4 @@ class Authentication:
             for node in top.childNodes:
                 if 'faultstring' == node.nodeName:
                     faultstring = node.firstChild.nodeValue
-                    raise RuntimeError(u'Authentication error: %s' % faultstring)
+                    raise RuntimeError('Authentication error: %s' % faultstring)
