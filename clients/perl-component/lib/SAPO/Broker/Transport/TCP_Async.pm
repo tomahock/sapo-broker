@@ -22,6 +22,11 @@ sub new {
         #on_rtimeout => sub { die "read timeout" },
         #on_wtimeout => sub { die "write timeout" },
         #on_eof => sub { delete $self->{__socket} },
+				on_eof => sub {
+          delete $self->{__socket};
+					$params{eof_cb}->() if $params{eof_cb};
+				},
+
         on_error => sub {
             my ( $h, $fatal, $msg ) = @_;
 
@@ -78,9 +83,9 @@ sub new {
 } ## end sub new
 
 sub __drain {
-    my ( $self, $error ) = @_;
+    my ( $self) = @_;
 
-    #print STDERR "on_drain error [",$error || "","]\n";
+    #print STDERR "on_drain\n";
 
     #$self->{__socket}->wtimeout(0);
     $self->{__socket}->wtimeout(0);
@@ -89,7 +94,7 @@ sub __drain {
         for my $cb ( @{ $self->{_wcbs} } ) {
 
             #print STDERR "on_drain: calling cb\n";
-            $cb->($error);
+            $cb->(@_);
         }
 
         $self->{_wcbs} = [];
@@ -109,6 +114,7 @@ sub __write {
     }
 
     $self->{__socket}->push_write($payload);
+		#print STDERR "__write: after push ",length($payload)," bytes\n";
 
     if ( defined $args{cb} ) {
         push @{ $self->{_wcbs} }, $args{cb};
@@ -171,10 +177,20 @@ sub receive {
     #read the payload
 } ## end sub receive
 
-sub DESTROY {
-    my ($self) = @_;
-    my $socket = $self->{'__socket'};
-    return $socket ? $socket->push_shutdown() : undef;
+
+sub destroy {
+	my $self = shift;
+	$self->{'__socket'}->destroy() if $self->{__socket};
 }
+
+=cut
+sub DESTROY {
+		my $self = shift;
+		print STDERR __PACKAGE__ ."::DESTROY\n";
+		$self->{'__socket'}->destroy() if $self->{__socket};
+    #my $socket = $self->{'__socket'};
+    #return $socket ? $socket->push_shutdown() : undef;
+}
+=cut
 
 1;

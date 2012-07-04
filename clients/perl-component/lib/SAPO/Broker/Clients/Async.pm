@@ -92,6 +92,14 @@ sub new {
     return $self;
 } ## end sub new
 
+
+sub destroy {
+	my $self = shift;
+	#print STDERR __PACKAGE__."::DESTROY\n";
+	$self->{transport}->destroy if $self->{transport}
+}
+
+
 sub __get_codec {
     my (%options) = @_;
     my $codec_name = lc( $options{'codec'} );
