@@ -7,7 +7,7 @@ $ret = broker_subscribe_virtual_queue($broker, "prefix@/test/foo", 0);
 $start = time();
 $msgs = 0;
 
-// consume without auto-ack
+// consume with auto-ack
 while (1) {
     $msg = broker_receive($broker, 1000, true);
     echo "Got message: " . print_r($msg, true) . "\n";
