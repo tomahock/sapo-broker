@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.SslBrokerClient;
@@ -21,8 +19,6 @@ import pt.com.broker.types.NetSubscribe;
  */
 public class SslConsumer implements BrokerListener
 {
-
-	private static final Logger log = LoggerFactory.getLogger(SslConsumer.class);
 	private final AtomicInteger counter = new AtomicInteger(0);
 
 	private String host;
@@ -74,7 +70,5 @@ public class SslConsumer implements BrokerListener
 		System.out.printf("Destination: '%s'%n", notification.getDestination());
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
-
 	}
-
 }

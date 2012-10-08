@@ -59,7 +59,6 @@ public class BridgeChannel implements BrokerListener
 		{
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	public void publish(String payload) throws Throwable

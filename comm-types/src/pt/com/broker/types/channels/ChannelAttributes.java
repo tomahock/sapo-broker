@@ -2,7 +2,6 @@ package pt.com.broker.types.channels;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

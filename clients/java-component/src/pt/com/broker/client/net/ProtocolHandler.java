@@ -16,11 +16,8 @@ import pt.com.broker.client.BaseNetworkConnector;
  * ProtocolHandler is an abstract class that defines the basic functionality for implementing Sapo-Broker messaging aspects.
  * 
  */
-
 public abstract class ProtocolHandler<T>
 {
-	private final AtomicBoolean _isReconnecting = new AtomicBoolean(false);
-
 	private final ExecutorService exec = CustomExecutors.newThreadPool(4, "protocol-handler");
 
 	private final ScheduledExecutorService shed_exec = CustomExecutors.newScheduledThreadPool(1, "sched-protocol-handler");
@@ -99,7 +96,6 @@ public abstract class ProtocolHandler<T>
 							// ignore
 						}
 					}
-
 				}
 			}
 		}
@@ -134,7 +130,7 @@ public abstract class ProtocolHandler<T>
 	}
 
 	public void sendMessage(final T message) throws Throwable
-	{
+	{		
 		final BaseNetworkConnector connector = getConnector();
 		long connectionVersion = connector.getConnectionVersion();
 		try

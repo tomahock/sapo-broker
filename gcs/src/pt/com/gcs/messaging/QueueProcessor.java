@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -289,7 +290,7 @@ public class QueueProcessor
 		{
 			if (preferLocalConsumer && (localQueueListeners.size() > 0))
 			{
-				//Do nothing. Since we have local consumers that are prefered we just hold the messages locally.
+				// Do nothing. Since we have local consumers that are prefered we just hold the messages locally.
 			}
 			else
 			{
@@ -498,23 +499,59 @@ public class QueueProcessor
 
 	public void store(final NetMessage nmsg, boolean preferLocalConsumer)
 	{
-		try
+		long seq_nr = sequence.incrementAndGet();
+
+		String msg_id = MessageId.getBaseMessageId() + seq_nr;
+		nmsg.getAction().getNotificationMessage().getMessage().setMessageId(msg_id);
+
+		BDBMessage bdbm = new BDBMessage(nmsg, seq_nr, preferLocalConsumer);
+
+		doStore(msg_id, bdbm);
+		deliverMessages();
+
+		// TODO: evaluate new delivery strategies in the future
+		//
+		// if (storage.recoveryRunning.get())
+		// {
+		// bdbm.setReserveTimeout(0L);
+		// doStore(msg_id, bdbm);
+		// }
+		// else
+		// {
+		// bdbm.setReserveTimeout(System.currentTimeMillis() + (2 * 60 * 1000));
+		// doStore(msg_id, bdbm);
+		//
+		// ForwardResult result;
+		// int tries = 0;
+		//
+		// do
+		// {
+		// result = forward(nmsg, preferLocalConsumer);
+		// preferLocalConsumer = false;
+		// ++tries;
+		// }
+		// while ((result.result == Result.FAILED) && (tries != 3));
+		//
+		// if (result.result == Result.FAILED)
+		// {
+		// bdbm.setReserveTimeout(0L);
+		// storage.insert(bdbm);
+		// deliverMessages();
+		// }
+		// else if (result.result == Result.NOT_ACKNOWLEDGE)
+		// {
+		// ack(msg_id);
+		// }
+		// }
+	}
+
+	private void doStore(String msg_id, BDBMessage bdbm)
+	{
+		storage.insert(bdbm);
+		counter.incrementAndGet();
+		if (log.isDebugEnabled())
 		{
-			long seq_nr = sequence.incrementAndGet();
-			String mid = storage.insert(nmsg, seq_nr, preferLocalConsumer);
-
-			if (log.isDebugEnabled())
-			{
-				log.debug(String.format("Stored message with id '%s'.", mid));
-			}
-
-			counter.incrementAndGet();
-
-			deliverMessages();
-		}
-		catch (Throwable t)
-		{
-			throw new RuntimeException(t);
+			log.debug(String.format("Stored message with id '%s'.", msg_id));
 		}
 	}
 
@@ -568,8 +605,8 @@ public class QueueProcessor
 				}
 				catch (Throwable t)
 				{
-					log.error(t.getMessage(), t);
-					throw new RuntimeException(t);
+					Throwable r = ErrorAnalyser.findRootCause(t);
+					log.error(r.getMessage(), r);
 				}
 				finally
 				{

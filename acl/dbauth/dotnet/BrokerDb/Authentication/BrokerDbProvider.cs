@@ -11,8 +11,6 @@ namespace SapoBrokerClient.Authentication.BrokerDb
 {
     public class BrokerDbProvider : ICredentialsProvider
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly static string Name = "BrokerRolesDB";
 
         private string username;

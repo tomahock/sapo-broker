@@ -36,7 +36,7 @@ public abstract class BrokerListener extends MessageListenerBase
 
 		if (StringUtils.isBlank(subscriptionKey))
 		{
-			throw new IllegalArgumentException("Can not use a blank subscriptiok key as argument");
+			throw new IllegalArgumentException("Can not use a blank subscription key as argument");
 		}
 
 		this.lchannel = lchannel;

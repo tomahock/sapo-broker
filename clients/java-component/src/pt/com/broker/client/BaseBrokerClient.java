@@ -154,6 +154,11 @@ public abstract class BaseBrokerClient
 	{
 		this.hosts = new CircularContainer<HostInfo>(1);
 		this.hosts.add(new HostInfo(host, portNumber));
+		init(appName, ptype);
+	}
+
+	private void init(String appName, NetProtocolType ptype)
+	{
 		_appName = appName;
 		protocolType = ptype;
 		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
@@ -199,9 +204,7 @@ public abstract class BaseBrokerClient
 	public BaseBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable
 	{
 		this.hosts = new CircularContainer<HostInfo>(hosts);
-		_appName = appName;
-		protocolType = ptype;
-		oldFramming = (protocolType == NetProtocolType.SOAP_v0);
+		init(appName, ptype);
 	}
 
 	protected abstract BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable;

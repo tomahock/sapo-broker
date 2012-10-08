@@ -99,7 +99,6 @@ public class TopicProcessorList
 
 	public static void removeSession(ChannelHandlerContext context)
 	{
-		Channel channel = context.getChannel();
 		instance.i_removeSession(context);
 	}
 
@@ -223,7 +222,6 @@ public class TopicProcessorList
 
 	private void i_removeSession(ChannelHandlerContext context)
 	{
-		Channel channel = context.getChannel();
 		try
 		{
 			ListenerChannel lc = ListenerChannelFactory.getListenerChannel(context);

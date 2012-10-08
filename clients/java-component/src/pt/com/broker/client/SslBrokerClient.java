@@ -22,15 +22,11 @@ public final class SslBrokerClient extends BaseBrokerClient
 	private static final Logger log = LoggerFactory.getLogger(SslBrokerClient.class);
 
 	private volatile boolean requiresAuthentication = false;
-
 	protected AuthInfo userCredentials;
-
 	private String keystoreLocation = null;
 	private char[] keystorePass = null;
 
 	private CredentialsProvider credentialsProvider;
-
-	private AuthInfo providerCredentials;
 
 	public SslBrokerClient(String host, int portNumber) throws Throwable
 	{
@@ -109,7 +105,6 @@ public final class SslBrokerClient extends BaseBrokerClient
 
 	public boolean authenticateClient() throws Throwable
 	{
-
 		if (this.credentialsProvider == null)
 		{
 			throw new IllegalStateException("Mandatory Credential Provider missing.");
@@ -149,7 +144,7 @@ public final class SslBrokerClient extends BaseBrokerClient
 
 		if (acceptedListener.wasFailure())
 		{
-			log.error("Authentication failed.", acceptedListener.getFault().getMessage());
+			log.error(String.format("Authentication failed: %s", acceptedListener.getFault().getMessage()));
 			setState(BrokerClientState.OK);
 			PendingAcceptRequestsManager.removeRequest(actionId);
 			return false;

@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography.X509Certificates;
-
-using SapoBrokerClient;
-using SapoBrokerClient.Authentication;
-using SapoBrokerClient.Authentication.BrokerDb;
-using Samples.Utils;
-using RJH.CommandLineHelper;
-
-using log4net;
-using log4net.Config;
-
-namespace Samples.Consumers
+﻿namespace Samples.Consumers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Text;
+
+    using log4net;
+    using log4net.Config;
+
+    using SapoBrokerClient;
+    using SapoBrokerClient.Authentication;
+    using SapoBrokerClient.Authentication.BrokerDb;
+	
+	using Samples.Utils;
+	using RJH.CommandLineHelper;
 
     /**
      * Run using :
-     * -hn:127.0.0.1 -sslPort:3390 -dt:TOPIC -cer:c:\agent.cer -dn:/secret/foo     
+     * -hn:127.0.0.1 -sslPort:3390 -dt:TOPIC -cer:c:\agent.cer -dn:/secret/foo
      */
-
-    class StsAuthConsumer
+    class BrokerDbAuthConsumer
     {
+        #region Methods
+
         public static void Main(string[] args)
         {
             Console.WriteLine("BrokerDB authenticated Consumer test");
@@ -50,7 +51,6 @@ namespace Samples.Consumers
 
             List<HostInfo> hosts = new List<HostInfo>();
             hosts.Add(new HostInfo(cliArgs.Hostname, cliArgs.SslPortNumber));
-
 
             SslBrokerClient brokerClient = new SslBrokerClient(hosts, certCollection);
 
@@ -86,11 +86,12 @@ namespace Samples.Consumers
             Console.WriteLine();
             Console.WriteLine("Unsubscribe...");
 
-
-            // Note Subscription instance could other than the one used for subscription as long as it was equivelent (same destination type and subscription pattern). Since the application is ending and therefor the socket will be closed agent's will discard the previous subscription. 
+            // Note Subscription instance could other than the one used for subscription as long as it was equivelent (same destination type and subscription pattern). Since the application is ending and therefor the socket will be closed agent's will discard the previous subscription.
             brokerClient.Unsubscribe(subscription);
 
             Console.WriteLine("Good bye");
         }
+
+        #endregion Methods
     }
 }

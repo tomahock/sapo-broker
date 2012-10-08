@@ -5,8 +5,6 @@ import java.io.ObjectOutputStream;
 
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.types.NetMessage;
@@ -14,24 +12,38 @@ import pt.com.gcs.messaging.BDBMessage;
 
 public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 {
-	private static Logger log = LoggerFactory.getLogger(BDBMessageMarshallerV2.class);
 	private static final ProtoBufBindingSerializer serializer = new ProtoBufBindingSerializer();
 
-	public byte[] marshall(BDBMessage bdbMessage) throws Throwable
+	public byte[] marshall(BDBMessage bdbMessage)
 	{
-		UnsynchronizedByteArrayOutputStream bout = new UnsynchronizedByteArrayOutputStream();
-		ObjectOutputStream oout = new ObjectOutputStream(bout);
+		try
+		{
+			UnsynchronizedByteArrayOutputStream bout = new UnsynchronizedByteArrayOutputStream();
+			ObjectOutputStream oout = new ObjectOutputStream(bout);
 
-		oout.writeShort(bdbMessage.getVersion());
+			oout.writeShort(bdbMessage.getVersion());
 
-		oout.writeLong(bdbMessage.getSequence());
-		oout.writeBoolean(bdbMessage.getPreferLocalConsumer());
-		oout.writeLong(bdbMessage.getReserveTimeout());
-		serializer.marshal(bdbMessage.getMessage(), oout);
+			oout.writeLong(bdbMessage.getSequence());
+			oout.writeBoolean(bdbMessage.getPreferLocalConsumer());
+			oout.writeLong(bdbMessage.getReserveTimeout());
 
-		oout.flush();
+			if (bdbMessage.getRawPacket() == null)
+			{
+				serializer.marshal(bdbMessage.getMessage(), oout);
+			}
+			else
+			{
+				oout.write(bdbMessage.getRawPacket());
+			}
 
-		return bout.toByteArray();
+			oout.flush();
+
+			return bout.toByteArray();
+		}
+		catch (Throwable t)
+		{
+			throw new RuntimeException(t);
+		}
 	}
 
 	@Override
@@ -45,7 +57,7 @@ public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 
 		if (version != 2)
 		{
-			String errorMessage = "Incorrect serialization version: " + version;
+			String errorMessage = String.format("Incorrect serialization version: ", version);
 			throw new RuntimeException(errorMessage);
 		}
 
@@ -54,8 +66,12 @@ public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 		message.setPreferLocalConsumer(oIn.readBoolean());
 		message.setReserveTimeout(oIn.readLong());
 
+		//byte[] buf = new byte[oIn.available()];
+
+	
 		NetMessage nmsg = serializer.unmarshal(oIn);
 
+		//message.setRawPacket(buf);
 		message.setMessage(nmsg);
 
 		return message;

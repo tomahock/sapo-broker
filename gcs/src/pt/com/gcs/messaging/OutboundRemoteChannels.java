@@ -56,10 +56,18 @@ public class OutboundRemoteChannels
 
 	public static String socketToAgentId(SocketAddress socketAddress)
 	{
-		InetSocketAddress remoteAddress = (InetSocketAddress) socketAddress;
-		byte[] ip = remoteAddress.getAddress().getAddress();
-		int port = remoteAddress.getPort();
+		try
+		{
+			InetSocketAddress remoteAddress = (InetSocketAddress) socketAddress;
+			byte[] ip = remoteAddress.getAddress().getAddress();
+			int port = remoteAddress.getPort();
 
-		return String.format("%s.%s.%s.%s:%s", (int) ip[0] & 0xFF, (int) ip[1] & 0xFF, (int) ip[2] & 0xFF, (int) ip[3] & 0xFF, port);
+			return String.format("%s.%s.%s.%s:%s", (int) ip[0] & 0xFF, (int) ip[1] & 0xFF, (int) ip[2] & 0xFF, (int) ip[3] & 0xFF, port);
+		}
+		catch (Throwable t)
+		{
+			return "Unable to identify agent";
+		}
+
 	}
 }

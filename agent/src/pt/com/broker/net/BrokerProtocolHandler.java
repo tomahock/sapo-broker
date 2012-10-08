@@ -2,6 +2,7 @@ package pt.com.broker.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Set;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
@@ -16,6 +17,7 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.ssl.SslHandler;
+import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +75,8 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	private static final BrokerConsumer _brokerConsumer = BrokerConsumer.getInstance();
 
 	private static final BrokerProtocolHandler instance;
+
+	private static final Set<String> open_channels = java.util.Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
 	static
 	{
@@ -133,10 +137,32 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	@Override
 	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
-		super.channelClosed(ctx, e);
+		super.channelOpen(ctx, e);
 		Channel channel = ctx.getChannel();
 
-		if (log.isDebugEnabled()  && channel.getRemoteAddress() != null)
+		try
+		{
+			if (channel != null)
+			{
+				String remoteClient = channel.getRemoteAddress().toString();
+				log.info("channel open: " + remoteClient);
+
+				if (open_channels.contains(remoteClient))
+				{
+					log.warn("There is already a registred ip:port bundle with the value '{}'. Check your network settings", remoteClient);
+				}
+				else
+				{
+					open_channels.add(remoteClient);
+				}
+			}
+		}
+		catch (Throwable t)
+		{
+			exceptionCaught(ctx, t, null);
+		}
+
+		if (log.isDebugEnabled() && channel.getRemoteAddress() != null)
 		{
 			log.debug("channel created: '%s'", channel.getRemoteAddress().toString());
 		}
@@ -182,6 +208,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			ChannelAttributes.remove(ChannelAttributes.getChannelId(ctx));
 
 			log.info("channel closed: " + remoteClient);
+			open_channels.remove(remoteClient);
 		}
 		catch (Throwable t)
 		{
@@ -280,7 +307,6 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 			SoapSerializer.ToXml(faultMessage, out);
 
 			NetBrokerMessage xfaultMessage = new NetBrokerMessage(out.toByteArray());
-
 			NetPublish p = new NetPublish((String.format("/system/faults/#%s#", GcsInfo.getAgentName())), NetAction.DestinationType.TOPIC, xfaultMessage);
 
 			_brokerProducer.publishMessage(p, null);
@@ -321,7 +347,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	private void handleMessage(ChannelHandlerContext ctx, final NetMessage request)
 	{
 		String actionId = null;
-		
+
 		try
 		{
 			switch (request.getAction().getActionType())
@@ -359,7 +385,6 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 	private void handleUnexpectedMessageType(ChannelHandlerContext ctx, NetMessage request)
 	{
-
 		Channel channel = ctx.getChannel();
 
 		log.error("Unexpected message type. Channel: '{}'", channel.getRemoteAddress().toString());
@@ -472,11 +497,19 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 	private void handleUnsubscribeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
-		Channel channel = ctx.getChannel();
 		NetUnsubscribe unsubMsg = request.getAction().getUnsbuscribeMessage();
 
 		String actionId = unsubMsg.getActionId();
 		String destination = unsubMsg.getDestination();
+
+		try
+		{
+			log.info("Unsubscribe '{}' from client '{}'", destination, ctx.getChannel().getRemoteAddress().toString());
+		}
+		catch (Throwable t)
+		{
+			log.error("Got error when logging unsubscribe request");
+		}
 
 		if (!isValidDestination(destination))
 		{
@@ -490,7 +523,6 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 	private void handleSubscribeMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
-
 		Channel channel = ctx.getChannel();
 		NetSubscribe subscritption = request.getAction().getSubscribeMessage();
 
