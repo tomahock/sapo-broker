@@ -41,8 +41,6 @@ public class BrokerHttpAction extends HttpAction
 
 	private static final Logger log = LoggerFactory.getLogger(BrokerHttpAction.class);
 
-	private static final long serialVersionUID = 9072384515868129239L;
-
 	private static final BrokerProducer _http_broker = BrokerProducer.getInstance();
 
 	private static final SoapBindingSerializer bindingSerializer = new SoapBindingSerializer();

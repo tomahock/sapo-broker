@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,6 @@ public class BrokerSyncConsumer
 
 	public static void poll(NetPoll poll, ChannelHandlerContext ctx, String reserveArgument)
 	{
-		Channel channel = ctx.getChannel();
 		try
 		{
 			String queueName = poll.getDestination();

@@ -106,7 +106,7 @@
 
 	<service name="Broker">
 		<port name="BrokerSoap" binding="tns:BrokerSoap">
-			<soap:address location="http://localhost:3380/broker/producer" />
+			<soap:address location="http://broker.ws.bk.sapo.pt/broker/producer" />
 		</port>
 	</service>
 
