@@ -156,6 +156,7 @@ public class Gcs
 
 	public static boolean enqueue(NetMessage nmsg, String queueName)
 	{
+		nmsg.getHeaders().put("TYPE", "COM_QUEUE");
 		return instance.ienqueue(nmsg, queueName);
 	}
 
@@ -485,7 +486,7 @@ public class Gcs
 	{
 		synchronized (instance.agentsConnection)
 		{
-			boolean removed = instance.agentsConnection.remove(channel);
+			instance.agentsConnection.remove(channel);
 		}
 	}
 
@@ -539,6 +540,15 @@ public class Gcs
 		{
 			message.getHeaders().putAll(np.getMessage().getHeaders());
 		}
+
+		// if (np.getDestinationType() == DestinationType.TOPIC)
+		// {
+		// message.getHeaders().put("TYPE", "COM_TOPIC");
+		// }
+		// else if (np.getDestinationType() == DestinationType.QUEUE)
+		// {
+		// message.getHeaders().put("TYPE", "COM_QUEUE");
+		// }
 
 		return message;
 	}

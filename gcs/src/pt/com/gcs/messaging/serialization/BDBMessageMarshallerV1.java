@@ -3,8 +3,6 @@ package pt.com.gcs.messaging.serialization;
 import java.io.ObjectInputStream;
 
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -19,26 +17,9 @@ public class BDBMessageMarshallerV1 implements Codec<BDBMessage>
 	private static final short VERSION = 1;
 	private static final short CURRENT_VERSION = 2;
 
-	private static Logger log = LoggerFactory.getLogger(BDBMessageMarshallerV1.class);
-
 	@Override
 	public byte[] marshall(BDBMessage bdbMessage) throws Throwable
 	{
-		// UnsynchronizedByteArrayOutputStream bout = new UnsynchronizedByteArrayOutputStream();
-		// ObjectOutputStream oout = new ObjectOutputStream(bout);
-		//
-		// oout.writeShort(bdbMessage.getVersion());
-		//
-		// oout.writeLong(bdbMessage.getSequence());
-		// oout.writeBoolean(bdbMessage.getPreferLocalConsumer());
-		// oout.writeLong(bdbMessage.getReserveTimeout());
-		//
-		// MessageMarshaller.marshallInternalMessage(bdbMessage.getMessage(), oout);
-		//
-		// oout.flush();
-		//
-		// return bout.toByteArray();
-
 		throw new RuntimeException("BDBMessageMarshallerV1 is deprecated");
 	}
 
@@ -89,5 +70,4 @@ public class BDBMessageMarshallerV1 implements Codec<BDBMessage>
 
 		return message;
 	}
-
 }

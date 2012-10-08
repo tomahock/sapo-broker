@@ -8,13 +8,14 @@ import pt.com.broker.types.NetMessage;
 public class BDBMessage
 {
 	public static final short CURRENT_VERSION = 2;
-
-	private long _sequence;
-	private boolean _preferLocalConsumer;
-	private long _reserve;
-	private NetMessage _message;
 	private static final String SEPARATOR = "<#>";
 
+	private NetMessage _message;
+	private boolean _preferLocalConsumer;
+
+	private byte[] _raw_packet;
+	private long _reserve;
+	private long _sequence;
 	private short version = CURRENT_VERSION;
 
 	public BDBMessage()
@@ -37,24 +38,19 @@ public class BDBMessage
 		_reserve = reserveTimeout;
 	}
 
+	public NetMessage getMessage()
+	{
+		return _message;
+	}
+
 	public boolean getPreferLocalConsumer()
 	{
 		return _preferLocalConsumer;
 	}
 
-	public void setPreferLocalConsumer(boolean localConsumer)
+	public byte[] getRawPacket()
 	{
-		_preferLocalConsumer = localConsumer;
-	}
-
-	public long getSequence()
-	{
-		return _sequence;
-	}
-
-	public void setSequence(long sequence)
-	{
-		_sequence = sequence;
+		return _raw_packet;
 	}
 
 	public long getReserveTimeout()
@@ -62,14 +58,14 @@ public class BDBMessage
 		return _reserve;
 	}
 
-	public void setReserveTimeout(long reserve)
+	public long getSequence()
 	{
-		_reserve = reserve;
+		return _sequence;
 	}
 
-	public NetMessage getMessage()
+	public short getVersion()
 	{
-		return _message;
+		return version;
 	}
 
 	public void setMessage(NetMessage internalMessage)
@@ -77,14 +73,29 @@ public class BDBMessage
 		_message = internalMessage;
 	}
 
+	public void setPreferLocalConsumer(boolean localConsumer)
+	{
+		_preferLocalConsumer = localConsumer;
+	}
+
+	public void setRawPacket(byte[] raw_packet)
+	{
+		_raw_packet = raw_packet;
+	}
+
+	public void setReserveTimeout(long reserve)
+	{
+		_reserve = reserve;
+	}
+
+	public void setSequence(long sequence)
+	{
+		_sequence = sequence;
+	}
+
 	public void setVersion(short version)
 	{
 		this.version = version;
-	}
-
-	public short getVersion()
-	{
-		return version;
 	}
 
 	@Override
@@ -101,5 +112,4 @@ public class BDBMessage
 
 		return buf.toString();
 	}
-
 }

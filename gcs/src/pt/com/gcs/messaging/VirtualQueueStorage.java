@@ -50,8 +50,6 @@ public class VirtualQueueStorage
 			dbConfig.setSortedDuplicates(false);
 			vqStorage = env.openDatabase(null, dbName, dbConfig);
 
-			String home = env.getHome().getAbsolutePath();
-
 			log.info("VirtualQueueStorage is ready.");
 		}
 		catch (Throwable t)
@@ -82,7 +80,6 @@ public class VirtualQueueStorage
 			CriticalErrors.exitIfCritical(rt);
 			log.error(rt.getMessage(), rt);
 		}
-
 	}
 
 	private void i_deleteVirtualQueue(String queueName)
@@ -103,7 +100,6 @@ public class VirtualQueueStorage
 			CriticalErrors.exitIfCritical(rt);
 			log.error(rt.getMessage(), rt);
 		}
-
 	}
 
 	protected synchronized static void saveVirtualQueue(String queueName)

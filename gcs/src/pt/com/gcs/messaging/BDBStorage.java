@@ -1,8 +1,6 @@
 package pt.com.gcs.messaging;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
@@ -75,33 +73,21 @@ public class BDBStorage
 		}
 	}
 
-	private DatabaseEntry buildDatabaseEntry(BDBMessage bdbm) throws IOException
+	private DatabaseEntry buildDatabaseEntry(BDBMessage bdbm)
 	{
 		DatabaseEntry data = new DatabaseEntry();
-
 		ByteArrayBinding bab = new ByteArrayBinding();
 
-		byte[] marshallBDBMessage;
-		try
+		byte[] marshallBDBMessage = MessageMarshaller.marshallBDBMessage(bdbm);
+		if (marshallBDBMessage != null)
 		{
-			marshallBDBMessage = MessageMarshaller.marshallBDBMessage(bdbm);
-			if (marshallBDBMessage != null)
-			{
-				bab.objectToEntry(marshallBDBMessage, data);
-
-			}
-			else
-			{
-				throw new Exception("MessageMarshaller.marshallBDBMessage returned null");
-			}
+			bab.objectToEntry(marshallBDBMessage, data);
+			return data;
 		}
-		catch (Throwable e)
+		else
 		{
-			log.error("Serialization failed", e);
-			return null;
+			throw new RuntimeException("MessageMarshaller.marshallBDBMessage returned null");
 		}
-
-		return data;
 	}
 
 	private void closeDatabase(Database db)
@@ -149,14 +135,6 @@ public class BDBStorage
 		if (rethrow)
 		{
 			throw new RuntimeException(rt);
-		}
-	}
-
-	private void dumpMessage(final NetMessage msg)
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("Could not deliver message. Dump: {}", msg.toString());
 		}
 	}
 
@@ -288,41 +266,34 @@ public class BDBStorage
 		return seqValue;
 	}
 
-	AtomicInteger entryCount = new AtomicInteger();
+	// public String insert(NetMessage nmsg, long sequence, boolean preferLocalConsumer)
 
-	public String insert(NetMessage nmsg, long sequence, boolean preferLocalConsumer)
+	public void insert(BDBMessage bdbm)
 	{
 		if (!isMarkedForDeletion.get())
 		{
 			try
 			{
-				BDBMessage bdbm = new BDBMessage(nmsg, sequence, preferLocalConsumer);
 
 				DatabaseEntry key = new DatabaseEntry();
 				DatabaseEntry data = buildDatabaseEntry(bdbm);
 
-				LongBinding.longToEntry(sequence, key);
+				LongBinding.longToEntry(bdbm.getSequence(), key);
 
 				if (messageDb.put(null, key, data) != OperationStatus.SUCCESS)
 				{
-					log.error("Failed to insert message in queue '{}'", this.queueProcessor.getQueueName());
-				}
-				else
-				{
-					return MessageId.getBaseMessageId() + sequence;
+					String msg = String.format("Failed to insert message in queue '%s'", this.queueProcessor.getQueueName());
+					throw new RuntimeException(msg);
 				}
 			}
 			catch (Throwable t)
 			{
 				dealWithError(t, true);
-
 			}
 		}
-
-		return MessageId.getBaseMessageId() + "0";
 	}
 
-	private AtomicBoolean recoveryRunning = new AtomicBoolean(false);
+	protected AtomicBoolean recoveryRunning = new AtomicBoolean(false);
 
 	protected long recoverMessages()
 	{
@@ -377,13 +348,10 @@ public class BDBStorage
 				}
 				catch (Throwable e)
 				{
-					log.error(e.getMessage());
+					log.error(e.getMessage(), e);
 					cursorDelete(msg_cursor);
 					continue;
 				}
-
-				long k = LongBinding.entryToLong(key);
-				nmsg.getAction().getNotificationMessage().getMessage().setMessageId(MessageId.getBaseMessageId() + k);
 
 				boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
 				long reserveTimeout = bdbm.getReserveTimeout();
@@ -409,7 +377,6 @@ public class BDBStorage
 					{
 						cursorDelete(msg_cursor);
 						e0++;
-						dumpMessage(nmsg);
 					}
 					else
 					{
@@ -432,13 +399,7 @@ public class BDBStorage
 
 							if (result.result == Result.FAILED)
 							{
-								// log.info("Could not deliver message. Queue: '{}',  Id: '{}'.",
-								// msg.getDestination(), msg.getMessageId());
-								dumpMessage(nmsg);
-
-								// queueProcessor.getQueueStatistics().newQueueFailedMessage();
 								++j0;
-
 								break;
 							}
 							else
@@ -453,7 +414,8 @@ public class BDBStorage
 								{
 									long time = result.time;
 									bdbm.setReserveTimeout(now + result.time);
-									msg_cursor.put(key, buildDatabaseEntry(bdbm));
+
+									msg_cursor.putCurrent(buildDatabaseEntry(bdbm));
 									++i0;
 
 									if (time < nextCycle)
@@ -490,7 +452,6 @@ public class BDBStorage
 					log.warn(String.format("Queue '%s' processing summary; Expired: %s; Redelivered: %s", queueProcessor.getQueueName(), e0, k0));
 				}
 			}
-
 		}
 		catch (Throwable t)
 		{
@@ -566,7 +527,6 @@ public class BDBStorage
 						cursorDelete(msg_cursor);
 						e0++;
 						queueProcessor.getQueueStatistics().newQueueExpiredMessage();
-						dumpMessage(msg);
 					}
 				}
 			}
@@ -574,7 +534,6 @@ public class BDBStorage
 			{
 				log.warn("Number of expired messages for queue '{}': {}", queueProcessor.getQueueName(), e0);
 			}
-
 		}
 		catch (Throwable t)
 		{

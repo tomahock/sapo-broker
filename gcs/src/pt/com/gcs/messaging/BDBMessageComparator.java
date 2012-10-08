@@ -12,7 +12,6 @@ import com.sleepycat.je.DatabaseEntry;
 
 public class BDBMessageComparator implements Comparator<byte[]>
 {
-
 	@Override
 	public int compare(byte[] bkey1, byte[] bkey2)
 	{

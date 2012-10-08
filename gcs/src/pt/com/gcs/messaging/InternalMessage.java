@@ -14,8 +14,6 @@ public class InternalMessage implements DeliverableMessage
 {
 
 	public static final short CURRENT_VERSION = 1;
-
-	private static final long serialVersionUID = -3656321513130930115L;
 	public static final int DEFAULT_PRIORITY = 4;
 	private static final long DEFAULT_EXPIRY;// = 1000L * 3600L * 24L * 7L; // 7days
 	private static final String SEPARATOR = "<#>";
@@ -241,5 +239,4 @@ public class InternalMessage implements DeliverableMessage
 	{
 		return version;
 	}
-
 }

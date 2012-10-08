@@ -24,9 +24,6 @@ public class RemoteListener extends MessageListenerBase
 	private final DestinationType sourceType;
 	private final DestinationType targetType;
 
-	private static final long QUEUE_MAX_WRITE_TIME = 250 * 1000 * 1000;
-	private static final long TOPIC_MAX_WRITE_TIME = 125 * 1000 * 1000;
-
 	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
 
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
@@ -35,12 +32,8 @@ public class RemoteListener extends MessageListenerBase
 
 	private final ForwardResult success;
 
-	private final long max_write_time;
-
 	private boolean showSuspendedDeliveryMessage;
 	private AtomicBoolean isReady = new AtomicBoolean(true);
-
-	private long droppedMessages;
 
 	public RemoteListener(ListenerChannel lchannel, String subscriptionKey, DestinationType sourceType, DestinationType targetType)
 	{
@@ -53,16 +46,12 @@ public class RemoteListener extends MessageListenerBase
 
 		if (targetType == DestinationType.QUEUE)
 		{
-			max_write_time = QUEUE_MAX_WRITE_TIME;
 			success = successQueue;
 		}
 		else
 		{
-			max_write_time = TOPIC_MAX_WRITE_TIME;
 			success = successTopic;
 		}
-
-		droppedMessages = 0L;
 	}
 
 	@Override
