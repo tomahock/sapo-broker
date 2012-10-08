@@ -35,8 +35,8 @@ lib/SAPO/Broker.pm
 
 t/99-cleanup.t
 t/01-setup_data.t
-t/02-basic.t
-t/03-protobufxs.t
+t/02-protobufxs.t
+t/03-basic.t
 t/00-use.t
 
 examples/produce.pl
