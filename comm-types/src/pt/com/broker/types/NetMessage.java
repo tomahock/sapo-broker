@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class NetMessage implements DeliverableMessage
 {
-
 	private NetAction action;
 	private Map<String, String> headers;
 

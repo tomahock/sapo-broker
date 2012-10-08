@@ -6,13 +6,9 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ListenerChannel
 {
-	private static final Logger log = LoggerFactory.getLogger(ListenerChannel.class);
-
 	public enum ChannelState
 	{
 		NOT_READY, READY
