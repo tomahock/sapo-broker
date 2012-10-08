@@ -142,4 +142,10 @@ public class BrokerClient extends BaseBrokerClient
 			throw new RuntimeException(t);
 		}
 	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("BrokerClient [HostInfo:%s]", getHostInfo());
+	}	
 }

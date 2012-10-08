@@ -2,12 +2,9 @@ package pt.com.broker.client.sample;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.text.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
@@ -21,12 +18,8 @@ import pt.com.broker.types.NetPublish;
  * Simple UDP producer sample.
  * 
  */
-
 public class UDPProducer
 {
-	private static final Logger log = LoggerFactory.getLogger(UDPProducer.class);
-	private final AtomicInteger counter = new AtomicInteger(0);
-
 	private String host;
 	private int port;
 	private int udpPort;
@@ -54,7 +47,7 @@ public class UDPProducer
 
 		BrokerClient bk = new BrokerClient(hosts, "UdpProducer", producer.protocolType);
 
-		log.info("Start sending a string of " + cargs.getMessageLength() + " random alphanumeric characters in 2 seconds...");
+		System.out.printf("Start sending a string of %s random alphanumeric characters in 2 seconds...%n", cargs.getMessageLength());
 
 		Thread.sleep(2000);
 
@@ -68,9 +61,7 @@ public class UDPProducer
 		{
 
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
-
 			NetPublish publishMsg = new NetPublish(dname, dtype, brokerMessage);
-
 			bk.publishMessageOverUdp(publishMsg);
 
 			// log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));

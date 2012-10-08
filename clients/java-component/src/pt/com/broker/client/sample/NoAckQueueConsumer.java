@@ -6,8 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
@@ -19,7 +17,6 @@ import pt.com.broker.types.NetSubscribe;
 
 public class NoAckQueueConsumer implements BrokerListener
 {
-	private static final Logger log = LoggerFactory.getLogger(Consumer.class);
 	private final AtomicInteger counter = new AtomicInteger(0);
 
 	private String host;

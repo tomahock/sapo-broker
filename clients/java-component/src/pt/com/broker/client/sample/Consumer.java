@@ -6,8 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
@@ -21,11 +19,8 @@ import pt.com.broker.types.NetSubscribe;
  * Simple consumer sample. Behavior is determined by command line arguments.
  * 
  */
-
 public class Consumer implements BrokerListener
 {
-
-	private static final Logger log = LoggerFactory.getLogger(Consumer.class);
 	private static final AtomicInteger counter = new AtomicInteger(0);
 
 	private String host;
@@ -82,7 +77,9 @@ public class Consumer implements BrokerListener
 		System.out.printf("Destination: '%s'%n", notification.getDestination());
 		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
 		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+		System.out.printf("Timestamp: '%s'%n", new Date(notification.getMessage().getTimestamp()));
 		Map<String, String> headers = notification.getHeaders();
+		
 		if ((headers != null) && (headers.size() != 0))
 		{
 			System.out.printf("Headers:");

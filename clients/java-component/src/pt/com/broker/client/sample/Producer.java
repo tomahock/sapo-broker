@@ -11,8 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
+import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetProtocolType;
 
 /**
@@ -44,7 +46,7 @@ public class Producer
 		NetProtocolType protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
 
 		BrokerClient bk = new BrokerClient(producer.host, producer.port, "tcp://mycompany.com/mypublisher", protocolType);
-
+		
 		log.info("Start sending string of " + cargs.getMessageLength() + " random alphanumeric characters in 1 seconds to " + producer.dname + "...");
 
 		producer.sendLoop(bk, cargs.getMessageLength());

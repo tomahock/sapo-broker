@@ -5,19 +5,12 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.net.SocketAddress;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * BaseNetworkConnector provides the basic functionality to TCP networking.
  * 
  */
-
 public abstract class BaseNetworkConnector
 {
-
-	private static final Logger log = LoggerFactory.getLogger(BaseNetworkConnector.class);
-
 	protected Socket client;
 	protected DataInputStream rawInput = null;
 	protected DataOutputStream rawOutput = null;
