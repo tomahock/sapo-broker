@@ -10,8 +10,8 @@
 	<classpathentry exported="true" kind="lib" path="stax2-api-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libthrift-0.8.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="netty-3.5.8.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="logback-classic-1.0.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="logback-core-1.0.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="slf4j-api-1.6.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="logback-classic-1.0.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="logback-core-1.0.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="slf4j-api-1.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
