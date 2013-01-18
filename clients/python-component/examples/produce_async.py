@@ -6,7 +6,7 @@ from Broker.Transport import TCP, UDP
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-server='localhost'
+server='broker.bk.sapo.pt'
 destination = '/python/tests'
 destination_type = 'QUEUE'
 N=10000

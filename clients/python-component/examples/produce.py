@@ -9,8 +9,7 @@ from datetime import datetime, timedelta
 
 delta = timedelta(seconds=30)
 
-server='localhost'
-#server='10.134.132.29'
+server='broker.bk.sapo.pt'
 destination = '/python/tests/expiration'
 destination_type = 'QUEUE'
 N=10000
