@@ -5,7 +5,7 @@ from Broker.Transport import TCP, UDP, SSL
 from Broker.Codecs import Codec
 from Broker.Clients import Minimal
 
-server='localhost'
+server='broker.bk.sapo.pt'
 destination = '/perl/tests'
 destination_type = 'QUEUE'
 N=1000
