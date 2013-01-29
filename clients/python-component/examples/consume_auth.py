@@ -18,5 +18,5 @@ for n in xrange(N):
     broker.send(Poll(destination=destination, timeout=0))
     message = broker.receive()
     print message
-    broker.send(Acknowledge(message_id=message.message.id, destination=message.destination))
+    broker.send(Acknowledge(message_id=message.message.id, destination=message.subscription))
     

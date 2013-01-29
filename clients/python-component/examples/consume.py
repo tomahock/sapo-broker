@@ -15,5 +15,5 @@ broker = Minimal(codec=Codec(), transport=TCP(host=server))
 broker.send(Subscribe(destination=destination, destination_type=destination_type))
 for n in xrange(N):
     message = broker.receive()
-    broker.send(Acknowledge(message_id=message.message.id, destination=message.destination))
+    broker.send(Acknowledge(message_id=message.message.id, destination=message.subscription))
     print message.message.payload
