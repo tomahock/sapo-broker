@@ -101,10 +101,9 @@ public class Start
 
 			Runtime.getRuntime().addShutdownHook(sync_hook);
 		}
-		catch (Throwable e)
+		catch (Throwable t)
 		{
-			log.error(e.getMessage(), e);
-			Shutdown.now();
+			Shutdown.now(t);
 		}
 	}
 }

@@ -63,8 +63,13 @@ public class QueueProcessor
 
 	private final AtomicLong currentIdx = new AtomicLong(0);
 
-	protected QueueProcessor(String queueName)
+	private final AtomicLong lastMessageDelivered = new AtomicLong(System.currentTimeMillis());
+	private long maxStaleAge;
+
+	protected QueueProcessor(String queueName, long maxStaleAge)
 	{
+		this.maxStaleAge = maxStaleAge;
+
 		if (StringUtils.isBlank(queueName))
 		{
 			throw new IllegalArgumentException("Queue names can not be blank");
@@ -94,6 +99,11 @@ public class QueueProcessor
 
 		log.info("Create Queue Processor for '{}'.", queueName);
 		log.info("Queue '{}' has {} message(s).", queueName, getQueuedMessagesCount());
+	}
+
+	protected long getMaxStaleAge()
+	{
+		return maxStaleAge;
 	}
 
 	protected void ack(final String msgId)
@@ -433,7 +443,7 @@ public class QueueProcessor
 				{
 					if (localQueueListeners.remove(listener))
 					{
-						log.info("Removed listener -> '{}'", listener.toString());
+						log.info("Removed local listener -> '{}'", listener.toString());
 
 						if (localQueueListeners.size() == 0)
 						{
@@ -449,7 +459,7 @@ public class QueueProcessor
 				{
 					if (remoteQueueListeners.remove(listener))
 					{
-						log.info("Removed listener -> '{}'", listener.toString());
+						log.info("Removed remote listener -> '{}'", listener.toString());
 						removed = true;
 					}
 				}
@@ -555,6 +565,11 @@ public class QueueProcessor
 		}
 	}
 
+	protected long lastMessageDelivered()
+	{
+		return lastMessageDelivered.get();
+	}
+
 	protected final void wakeup()
 	{
 		if (isWorking.getAndSet(true))
@@ -602,6 +617,8 @@ public class QueueProcessor
 							}
 						}, nextCycleDelay, TimeUnit.MILLISECONDS);
 					}
+
+					lastMessageDelivered.set(now);
 				}
 				catch (Throwable t)
 				{

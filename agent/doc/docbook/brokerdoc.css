@@ -23,11 +23,7 @@ div.longdesc-link {
 
 
 
-div.book {
-	
-	background-image:url(http://softwarelivre.sapo.pt/htdocs/images/bg.gif);
-    background-repeat:repeat-x;
-}
+
 
 h2.subtitle {
 	
@@ -142,12 +138,12 @@ ol li, ul li {
 
 ul {
     padding-left:1.6em;
-    list-style-image:url(../images/community/dot.png);
+    /* list-style-image:url(../images/community/dot.png);*/
     list-style-type:circle;
 }
 
 ul ul {
-    list-style-image:url(../images/community/dot2.png);
+    /* list-style-image:url(../images/community/dot2.png); */
     list-style-type:circle;
 }
 

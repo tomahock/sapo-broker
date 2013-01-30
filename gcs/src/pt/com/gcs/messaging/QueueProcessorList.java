@@ -17,6 +17,7 @@ import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.conf.GlobalConfig;
 
 /**
  * QueueProcessorList contains references for all active QueueProcessor objects.
@@ -50,7 +51,8 @@ public class QueueProcessorList
 					throw new MaximumQueuesAllowedReachedException();
 				}
 				log.info("Populate QueueProcessorList with queue: '{}'", destinationName);
-				QueueProcessor qp = new QueueProcessor(destinationName);
+
+				QueueProcessor qp = new QueueProcessor(destinationName, GlobalConfig.getQueueMaxStaleAge());
 				return qp;
 			}
 			catch (Throwable e)
@@ -83,9 +85,14 @@ public class QueueProcessorList
 		}
 	}
 
+	protected static void remove(String queueName, boolean safe)
+	{
+		instance.i_remove(queueName, false);
+	}
+
 	protected static void remove(String queueName)
 	{
-		instance.i_remove(queueName);
+		instance.i_remove(queueName, true);
 	}
 
 	public static void removeListener(MessageListener listener)
@@ -167,11 +174,10 @@ public class QueueProcessorList
 		return null;
 	}
 
-	private synchronized void i_remove(String queueName)
+	private synchronized void i_remove(String queueName, boolean safe)
 	{
 		try
 		{
-
 			if (!qpCache.containsKey(queueName))
 			{
 				throw new IllegalArgumentException(String.format("Queue named '%s' doesn't exist.", queueName));
@@ -184,12 +190,12 @@ public class QueueProcessorList
 			}
 			catch (MaximumQueuesAllowedReachedException e)
 			{
-				// This should never happens
+				// This should never happen
 				log.error("Trying to remove an inexistent queue.");
 				return;
 			}
 
-			if (qp.hasRecipient())
+			if (safe && qp.hasRecipient())
 			{
 				String m = String.format("Queue '%s' has active consumers.", queueName);
 				throw new IllegalStateException(m);
@@ -199,7 +205,6 @@ public class QueueProcessorList
 			qp.clearStorage();
 
 			log.info("Destination '{}' was deleted", queueName);
-
 		}
 		catch (InterruptedException ie)
 		{

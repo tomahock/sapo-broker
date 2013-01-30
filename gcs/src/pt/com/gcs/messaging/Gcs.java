@@ -275,7 +275,7 @@ public class Gcs
 	{
 		if (!QueueProcessorList.hasQueue(queueName))
 		{
-			log.warn(String.format("Trying to acknowledge a message whose queue doesn't existe. Queue: '%s', MsgId: '%s' ", queueName, msgId));
+			log.warn(String.format("Trying to acknowledge a message whose queue doesn't exists. Queue: '%s', MsgId: '%s' ", queueName, msgId));
 			return;
 		}
 
@@ -364,6 +364,8 @@ public class Gcs
 			GcsExecutor.scheduleWithFixedDelay(new QueueWatchDog(), 2, 2, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new PingPeers(), 5, 5, TimeUnit.MINUTES);
+
+			GcsExecutor.scheduleWithFixedDelay(new StaleQueueCleaner(), GlobalConfig.getQueueMaxStaleAge(), GlobalConfig.getQueueMaxStaleAge(), TimeUnit.MILLISECONDS);
 		}
 		catch (Throwable t)
 		{
@@ -475,6 +477,11 @@ public class Gcs
 		bootstrap.setOption("connectTimeoutMillis", 5000);
 
 		this.connector = bootstrap;
+	}
+
+	public synchronized static void deleteQueue(String queueName, boolean safe)
+	{
+		QueueProcessorList.remove(queueName, safe);
 	}
 
 	public synchronized static void deleteQueue(String queueName)

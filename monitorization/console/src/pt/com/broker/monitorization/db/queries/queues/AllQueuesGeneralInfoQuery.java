@@ -181,15 +181,19 @@ public class AllQueuesGeneralInfoQuery
 				{
 					// If bigger say it's smaller... (DESC ordering)
 					double dif = o2.queueSize - o1.queueSize;
-					if (dif != 0)
-						return (int) dif;
+					if (dif != 0d)
+					{
+						return dif > 0d ? 1 : -1;
+					}
+
 					dif = (o2.inputRate + o2.outputRate) - (o1.inputRate + o1.outputRate);
 					if (dif != 0d)
 					{
-						return dif > 0 ? 1 : -1;
+						return dif > 0d ? 1 : -1;
 					}
-					dif = o2.subscriptions - o1.inputRate;
-					return (int) dif;
+
+					dif = o2.subscriptions - o1.subscriptions;
+					return dif > 0d ? 1 : -1;
 				}
 			};
 

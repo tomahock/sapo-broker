@@ -29,6 +29,7 @@ public class Consumer implements BrokerListener
 	private String dname;
 	private long waitTime;
 	private NetProtocolType protocolType;
+	private boolean isRaw;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -42,6 +43,7 @@ public class Consumer implements BrokerListener
 		consumer.dname = cargs.getDestination();
 		consumer.waitTime = cargs.getDelay();
 		consumer.protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
+		consumer.isRaw = cargs.getOutput().equals("raw");
 
 		BrokerClient bk = new BrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", consumer.protocolType);
 		/*
@@ -60,8 +62,10 @@ public class Consumer implements BrokerListener
 
 		bk.addAsyncConsumer(subscribe, consumer);
 
-		System.out.println("listening...");
-
+		if (!consumer.isRaw)
+		{
+			System.out.println("listening...");
+		}
 	}
 
 	@Override
@@ -73,25 +77,35 @@ public class Consumer implements BrokerListener
 	@Override
 	public void onMessage(NetNotification notification)
 	{
-		System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
-		System.out.printf("Destination: '%s'%n", notification.getDestination());
-		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
-		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
-		System.out.printf("Timestamp: '%s'%n", new Date(notification.getMessage().getTimestamp()));
-		Map<String, String> headers = notification.getHeaders();
-		
-		if ((headers != null) && (headers.size() != 0))
+		if (isRaw)
 		{
-			System.out.printf("Headers:");
-			for (String key : headers.keySet())
+			System.out.println(new String(notification.getMessage().getPayload()));
+		}
+		else
+		{
+			System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
+			System.out.printf("Destination: '%s'%n", notification.getDestination());
+			System.out.printf("Subscription: '%s'%n", notification.getSubscription());
+			System.out.printf("Timestamp: '%s'%n", new Date(notification.getMessage().getTimestamp()));
+
+			Map<String, String> headers = notification.getHeaders();
+
+			if ((headers != null) && (headers.size() != 0))
 			{
-				System.out.printf("  %s ->  %s%n", key, headers.get(key));
+				System.out.printf("Headers:");
+				for (String key : headers.keySet())
+				{
+					System.out.printf("  %s ->  %s%n", key, headers.get(key));
+				}
+			}
+
+			System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+
+			if (waitTime > 0)
+			{
+				Sleep.time(waitTime);
 			}
 		}
 
-		if (waitTime > 0)
-		{
-			Sleep.time(waitTime);
-		}
 	}
 }

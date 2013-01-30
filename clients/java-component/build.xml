@@ -56,4 +56,12 @@
 		</jar>
 	</target>
 
+
+	<!-- target name="onejar" depends="package">
+		<jar destfile="wa.jar">
+			<zipgroupfileset dir="dist" includes="*.jar" excludes="logback*" />
+			<zipgroupfileset dir="dlib" includes="*.jar" />
+		</jar>
+	</target -->
+
 </project>

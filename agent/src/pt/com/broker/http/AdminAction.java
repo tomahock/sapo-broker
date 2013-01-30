@@ -6,8 +6,10 @@ import java.util.concurrent.TimeUnit;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
+import org.caudexorigo.io.IOUtils;
 import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -60,7 +62,7 @@ public class AdminAction extends HttpAction
 		{
 			if (request.getMethod().equals(HttpMethod.POST))
 			{
-				String action = new String(request.getContent().array());
+				String action = IOUtils.toString(new ChannelBufferInputStream(request.getContent()));
 
 				if (StringUtils.isBlank(action))
 				{

@@ -80,10 +80,9 @@ public class BrokerUdpServer
 			bootstrap0.bind(inet0);
 			log.info("SAPO-UDP-BROKER BINARY Listening on: '{}'.", inet0.toString());
 		}
-		catch (Throwable e)
+		catch (Throwable t)
 		{
-			log.error(e.getMessage(), e);
-			Shutdown.now();
+			Shutdown.now(t);
 		}
 
 		try
@@ -124,10 +123,9 @@ public class BrokerUdpServer
 			bootstrap1.bind(inet1);
 			log.info("SAPO-UDP-BROKER LEGACY Listening on: '{}'.", inet1.toString());
 		}
-		catch (Throwable e)
+		catch (Throwable t)
 		{
-			log.error(e.getMessage(), e);
-			Shutdown.now();
+			Shutdown.now(t);
 		}
 	}
 }

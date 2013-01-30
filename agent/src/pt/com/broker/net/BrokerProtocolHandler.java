@@ -137,15 +137,20 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	@Override
 	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
+		if ((ctx == null) || (e == null))
+		{
+			return;
+		}
+
 		super.channelOpen(ctx, e);
 		Channel channel = ctx.getChannel();
 
 		try
 		{
-			if (channel != null)
+			if ((channel != null) && (channel.getRemoteAddress() != null))
 			{
 				String remoteClient = channel.getRemoteAddress().toString();
-				log.info("channel open: " + remoteClient);
+				log.info("channel open: {}", remoteClient);
 
 				if (open_channels.contains(remoteClient))
 				{

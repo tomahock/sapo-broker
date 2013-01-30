@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="aalto-gpl-0.9.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="je-5.0.34.jar"/>
 	<classpathentry exported="true" kind="lib" path="jibx-run.jar"/>
-	<classpathentry exported="true" kind="lib" path="org.caudexorigo.http.netty.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.caudexorigo.jar"/>
-	<classpathentry exported="true" kind="lib" path="protobuf-java-2.4.0a.jar"/>
-	<classpathentry exported="true" kind="lib" path="stax2-api-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="protobuf-java-2.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libthrift-0.8.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="netty-3.5.8.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="logback-classic-1.0.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="logback-core-1.0.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="slf4j-api-1.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="logback-classic-1.0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="logback-core-1.0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="slf4j-api-1.7.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="aalto-xml-0.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="stax2-api-3.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="je-5.0.58.jar"/>
+	<classpathentry exported="true" kind="lib" path="netty-3.6.2.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="org.caudexorigo.http.netty.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -213,5 +213,4 @@ public class ConfigurationInfo
 	{
 		return String.format("%s%s%s%s%s", getFilesystemPath(), File.separator, getWwwrootPath(), File.separator, resource);
 	}
-
 }

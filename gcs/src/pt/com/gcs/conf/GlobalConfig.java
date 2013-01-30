@@ -54,6 +54,7 @@ public class GlobalConfig
 	private int msgMaxSize;
 	private int maxQueues;
 	private long maxStoreTime;
+	private long queueMaxStaleAge;
 	private int maxDistinctSubscriptions;
 	private boolean preferLocalConsumers = true;
 	private boolean supportVirtualQueues = true;
@@ -96,6 +97,17 @@ public class GlobalConfig
 
 		String maxQueueSize = extractElementInfo(doc, "max-queues")[0];
 		maxQueues = Integer.parseInt(maxQueueSize);
+
+		String[] sMaxQueueStaleAgeHolder = extractElementInfo(doc, "max-stale-age");
+
+		if ((sMaxQueueStaleAgeHolder.length > 0) && StringUtils.isNotBlank(sMaxQueueStaleAgeHolder[0]))
+		{
+			queueMaxStaleAge = Integer.parseInt(sMaxQueueStaleAgeHolder[0]);
+		}
+		else
+		{
+			queueMaxStaleAge = 1296000000l; // two weeks;
+		}
 
 		String[] plcElementInfo = extractElementInfo(doc, "prefer-local-consumers");
 		if ((plcElementInfo != null) && (plcElementInfo.length != 0))
@@ -175,15 +187,24 @@ public class GlobalConfig
 	private String[] extractElementInfo(Document doc, String tag)
 	{
 		NodeList nList = doc.getElementsByTagName(tag);
-		String[] value = new String[nList.getLength()];
 
-		for (int i = 0; i < nList.getLength(); i++)
+		if (nList.getLength() > 0)
 		{
-			Element name = (Element) nList.item(i);
-			value[i] = name.getTextContent();
+			String[] value = new String[nList.getLength()];
+
+			for (int i = 0; i < nList.getLength(); i++)
+			{
+				Element name = (Element) nList.item(i);
+				value[i] = name.getTextContent();
+			}
+
+			return value;
+		}
+		else
+		{
+			return new String[0];
 		}
 
-		return value;
 	}
 
 	public static List<Peer> getPeerList()
@@ -341,6 +362,11 @@ public class GlobalConfig
 		return instance.maxQueues;
 	}
 
+	public static long getQueueMaxStaleAge()
+	{
+		return instance.queueMaxStaleAge;
+	}
+
 	public static long getMaxStoreTime()
 	{
 		return instance.maxStoreTime;
@@ -350,5 +376,4 @@ public class GlobalConfig
 	{
 		return instance.maxDistinctSubscriptions;
 	}
-
 }

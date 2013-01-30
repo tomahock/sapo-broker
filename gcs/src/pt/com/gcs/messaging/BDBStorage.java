@@ -94,11 +94,11 @@ public class BDBStorage
 	{
 		try
 		{
-			BDBEnviroment.sync();
+			
 			String dbName = db.getDatabaseName();
-			log.info("Try to close db '{}'", dbName);
+			log.debug("Try to close db '{}'", dbName);
 			db.close();
-			log.info("Closed db '{}'", dbName);
+			log.debug("Closed db '{}'", dbName);
 		}
 		catch (Throwable t)
 		{
@@ -146,12 +146,10 @@ public class BDBStorage
 		{
 			try
 			{
-				BDBEnviroment.sync();
-				log.info("Try to remove db '{}'", dbName);
+				log.debug("Try to remove db '{}'", dbName);
 				env.truncateDatabase(null, dbName, false);
 				env.removeDatabase(null, dbName);
-				BDBEnviroment.sync();
-				log.info("Storage for queue '{}' was removed", queueProcessor.getQueueName());
+				log.debug("Storage for queue '{}' was removed", queueProcessor.getQueueName());
 
 				break;
 			}
@@ -229,11 +227,9 @@ public class BDBStorage
 	protected void deleteQueue()
 	{
 		isMarkedForDeletion.set(true);
-		Sleep.time(2500);
-
 		closeDatabase(messageDb);
-
 		removeDatabase(primaryDbName);
+		//BDBEnviroment.sync();
 	}
 
 	protected long getLastSequenceValue()

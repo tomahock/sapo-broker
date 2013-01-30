@@ -2,6 +2,7 @@ package pt.com.broker.monitorization.db;
 
 import java.util.Date;
 
+import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.jdbc.DbExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,8 @@ public class StatisticsDB
 		}
 		catch (Throwable t)
 		{
-			log.error("Failed to insert new information item.", t);
+			Throwable r = ErrorAnalyser.findRootCause(t);
+			log.error("Failed to insert new information item.", r);
 		}
 	}
 }

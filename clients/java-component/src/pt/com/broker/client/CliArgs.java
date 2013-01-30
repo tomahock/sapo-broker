@@ -120,4 +120,7 @@ public interface CliArgs
 	 */
 	@Option(shortName = "r", defaultValue = "-1")
 	long getReserveTime();
+
+	@Option(shortName = "o", defaultValue = "full")
+	String getOutput();
 }

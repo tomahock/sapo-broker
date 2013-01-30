@@ -291,6 +291,11 @@ public class GcsInfo
 		return GlobalConfig.getMaxQueues();
 	}
 
+	public static long getQueueMaxStaleAge()
+	{
+		return GlobalConfig.getQueueMaxStaleAge();
+	}
+
 	// Message related properties
 	/**
 	 * Maximum message size.

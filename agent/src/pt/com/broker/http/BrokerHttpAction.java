@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -80,9 +81,7 @@ public class BrokerHttpAction extends HttpAction
 			{
 				ChannelBuffer bb = request.getContent();
 
-				byte[] buf = bb.array();
-
-				NetMessage message = (NetMessage) bindingSerializer.unmarshal(buf);
+				NetMessage message = (NetMessage) bindingSerializer.unmarshal(new ChannelBufferInputStream(bb));
 
 				ChannelStats.newHttpMessageReceived();
 
