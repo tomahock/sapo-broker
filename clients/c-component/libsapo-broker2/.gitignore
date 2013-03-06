@@ -1,3 +1,4 @@
 *.in
 *~
 .*
+autom4te.cache
