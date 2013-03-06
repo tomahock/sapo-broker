@@ -8,7 +8,7 @@
 #include <pthread.h>
 
 // error codes
-enum {
+typedef enum {
     SB_OK = 0,
     SB_ERROR    = -100,
     SB_NOT_CONNECTED = 120,
