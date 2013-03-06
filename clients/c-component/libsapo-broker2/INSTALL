@@ -4,10 +4,8 @@ $ ./make_deb.sh
 or
 
 To compile:
-$ make all
+$ ./configure
+$ make
 
 To install:
 $ make install
-or
-$ PREFIX=/opt/xxx make install
-
