@@ -253,6 +253,7 @@ net_send(sapo_broker_t *sb, _broker_server_t *srv, const char *bytes, size_t len
     {
     // UDP
      
+    //XXX check return code
     char*  buffer = malloc( sizeof(header) + len);
 
     memcpy(buffer, header, sizeof(header));
