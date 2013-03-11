@@ -98,20 +98,20 @@ proto_protobuf_subscribe(
         broker_destination_t *dest)
 {
     int rc = 0;
-	char *msg;
-	size_t len;
+    char *msg;
+    size_t len;
 
     SapoBroker__Atom                atom      = SAPO_BROKER__ATOM__INIT;
-	SapoBroker__Atom__Action        action    = SAPO_BROKER__ATOM__ACTION__INIT;
-	SapoBroker__Atom__Subscribe     subscribe = SAPO_BROKER__ATOM__SUBSCRIBE__INIT;
+    SapoBroker__Atom__Action        action    = SAPO_BROKER__ATOM__ACTION__INIT;
+    SapoBroker__Atom__Subscribe     subscribe = SAPO_BROKER__ATOM__SUBSCRIBE__INIT;
 
-	subscribe.destination = dest->name;
-	subscribe.destination_type = destination_type_2_atom(dest->type);
+    subscribe.destination = dest->name;
+    subscribe.destination_type = destination_type_2_atom(dest->type);
 
     action.subscribe = &subscribe;
     action.action_type = SAPO_BROKER__ATOM__ACTION__ACTION_TYPE__SUBSCRIBE;
 
-	atom.action = &action;
+    atom.action = &action;
 
     len = sapo_broker__atom__get_packed_size(&atom);
     msg = (char *) malloc( len );
@@ -201,9 +201,11 @@ proto_protobuf_send_ack( sapo_broker_t *sb, _broker_server_t *srv, char *dest_na
 
     ack.destination = dest_name;
     ack.message_id = message_id;
+
+    action.ack_message = &ack;
     action.action_type = SAPO_BROKER__ATOM__ACTION__ACTION_TYPE__ACKNOWLEDGE_MESSAGE;
 
-	atom.action = &action;
+    atom.action = &action;
 
     len = sapo_broker__atom__get_packed_size(&atom);
     msg = (char *) malloc( len );
