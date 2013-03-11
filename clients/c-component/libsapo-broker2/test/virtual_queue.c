@@ -12,7 +12,7 @@
 
 void error(const char* str){
     fprintf(stderr, "ERROR: %s\n", str);
-	exit(-1);
+    exit(-1);
 }
 
 int main(int argc, char *argv[])
@@ -35,46 +35,46 @@ int main(int argc, char *argv[])
         error(broker_error(broker));
     }
     
-	char* topic;
-	asprintf(&topic, TOPIC_TEMPLATE, (long long int) time(NULL));
+    char* topic;
+    asprintf(&topic, TOPIC_TEMPLATE, (long long int) time(NULL));
 
-	char* virtual_queue;
-	asprintf(&virtual_queue, "client@%s", topic);
-	destination.name = virtual_queue;
+    char* virtual_queue;
+    asprintf(&virtual_queue, "client@%s", topic);
+    destination.name = virtual_queue;
 
-	//need to subscribe before producing
-	if ( SB_OK != broker_subscribe(broker, destination) ) {
+    //need to subscribe before producing
+    if ( SB_OK != broker_subscribe(broker, destination) ) {
             error(broker_error(broker));
-	}
+    }
 
-	//produce
+    //produce
     for(int count=0; count < QUEUE_ITERATIONS; count++) {
-		char* payload;
-		size_t payload_len = asprintf(&payload, PAYLOAD_TEMPLATE, count);
+        char* payload;
+        size_t payload_len = asprintf(&payload, PAYLOAD_TEMPLATE, count);
         if ( SB_OK != broker_publish( broker, topic, payload, payload_len ) ){
             error(broker_error(broker));
         }
-		free(payload);
+        free(payload);
     }
 
-	//consume
+    //consume
     for(int count=0; count < QUEUE_ITERATIONS; count++) {
-		char* payload;
-		size_t payload_len = asprintf(&payload, PAYLOAD_TEMPLATE, count);
+        char* payload;
+        size_t payload_len = asprintf(&payload, PAYLOAD_TEMPLATE, count);
 
-		broker_msg_t *message = broker_receive(broker, NULL);
+        broker_msg_t *message = broker_receive(broker, NULL);
 
-		if( NULL == message ){
-			error("NULL message");
-		}else if( 0 != strncmp(message->payload, payload, payload_len) ){
-			error("mismatch message");
-		}
-		
-	}
+        if( NULL == message ){
+            error("NULL message");
+        }else if( 0 != strncmp(message->payload, payload, payload_len) ){
+            error("mismatch message");
+        }
+
+    }
 
     broker_destroy(broker);
-	free(topic);
-	free(virtual_queue);
+    free(topic);
+    free(virtual_queue);
 
     exit(0);
 }
