@@ -1,3 +1,9 @@
+libsapo-broker-perl (0.6) all; urgency=low
+
+  * fix message accepted message
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Wed, 13 Mar 2013 18:18:32 +0000
+
 libsapo-broker-perl (0.5) all; urgency=low
 
   * debian package split
