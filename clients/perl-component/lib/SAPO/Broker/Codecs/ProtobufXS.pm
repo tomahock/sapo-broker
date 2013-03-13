@@ -92,7 +92,7 @@ sub serialize_poll($) {
 sub parse_accepted($) {
     my ($action) = @_;
 
-    return SAPO::Broker::Messages::Accepted( $action->accepted()->to_hashref );
+    return SAPO::Broker::Messages::Accepted->new( $action->accepted()->to_hashref );
 }
 
 sub serialize_acknowledge($) {
