@@ -45,7 +45,7 @@ sub new {
 
 				on_connect => sub { $params{connect_cb}->() if $params{connect_cb} },
         #on_connect => sub { shift->timeout_reset },
-        #autocork  => 1,
+        autocork  => 1,
 				no_delay => 1,
         keepalive => 1,
     );
