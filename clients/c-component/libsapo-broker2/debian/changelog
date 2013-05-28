@@ -1,3 +1,9 @@
+libsapo-broker2 (2.2.0) unstable; urgency=low
+
+  * proto-c implementation (no more google protobuf dependency)
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Tue, 28 May 2013 17:08:47 +0100
+
 libsapo-broker2 (2.1.0) unstable; urgency=low
 
   * autoconfiscated and package split (dev, debug)
