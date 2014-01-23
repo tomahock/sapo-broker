@@ -1,15 +1,14 @@
 package pt.com.broker.codec;
 
+import org.caudexorigo.ErrorAnalyser;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.codec.xml.SoapBindingSerializer;
-import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 
 public class NoFramingDecoder extends OneToOneDecoder
@@ -47,16 +46,15 @@ public class NoFramingDecoder extends OneToOneDecoder
 		}
 		int readableBytes = buffer.readableBytes();
 
-		if (readableBytes > _max_message_size)
+		if ((readableBytes > _max_message_size) || (readableBytes <= 0))
 		{
 			log.error(String.format("Illegal message size!! Received message has %s bytes.", readableBytes));
-
-			channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
 
 			return null;
 		}
 
 		byte[] decoded = new byte[readableBytes];
+
 		buffer.readBytes(decoded);
 
 		NetMessage nm = null;
@@ -67,7 +65,8 @@ public class NoFramingDecoder extends OneToOneDecoder
 		}
 		catch (Throwable t)
 		{
-			log.error("Failed to unmarshal message", t);
+			Throwable r = ErrorAnalyser.findRootCause(t);
+			log.error("Failed to unmarshal message: '{}', payload: \n'{}'", r.getMessage(), new String(decoded));
 		}
 
 		return nm;

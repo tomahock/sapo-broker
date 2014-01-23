@@ -5,13 +5,11 @@ import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * NetworkConnector is an implementation of BaseNetworkConnector for plain TCP connections.
- * 
  */
 public class NetworkConnector extends BaseNetworkConnector
 {
@@ -32,10 +30,11 @@ public class NetworkConnector extends BaseNetworkConnector
 			client = new Socket();
 
 			client.setReceiveBufferSize(256 * 1024);
-			client.setReceiveBufferSize(256 * 1024);
+			client.setSendBufferSize(256 * 1024);
 			client.setSoLinger(true, 2);
+			client.setSoTimeout(host.getReadTimeout());
 
-			client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), 15 * 1000);
+			client.connect(new InetSocketAddress(host.getHostname(), host.getPort()), host.getConnectTimeout());
 			rawOutput = new DataOutputStream(getSocket().getOutputStream());
 			rawInput = new DataInputStream(getSocket().getInputStream());
 			socketAddress = getSocket().getRemoteSocketAddress();
@@ -47,6 +46,5 @@ public class NetworkConnector extends BaseNetworkConnector
 		{
 			throw new RuntimeException(t);
 		}
-
 	}
 }

@@ -25,12 +25,10 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 
 		if (!skipTest())
 		{
-			String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
-			String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
 			SslBrokerClient bk = null;
 			try
 			{
-				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
+				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 			}
 			catch (Throwable e)
 			{

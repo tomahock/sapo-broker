@@ -1,9 +1,15 @@
 package pt.com.broker.client;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Collection;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.caudexorigo.text.RandomStringUtils;
-import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,78 +29,41 @@ public final class SslBrokerClient extends BaseBrokerClient
 
 	private volatile boolean requiresAuthentication = false;
 	protected AuthInfo userCredentials;
-	private String keystoreLocation = null;
-	private char[] keystorePass = null;
+	private final SSLContext sslContext;
 
 	private CredentialsProvider credentialsProvider;
 
-	public SslBrokerClient(String host, int portNumber) throws Throwable
+	public SslBrokerClient(String hostname, int portNumber) throws Throwable
 	{
-		this(host, portNumber, (String) null, (String) null);
+		this(hostname, portNumber, "BrokerClient", NetProtocolType.PROTOCOL_BUFFER);
 	}
 
-	public SslBrokerClient(String host, int portNumber, String keystoreLocation, String keystorePw) throws Throwable
+	public SslBrokerClient(String hostname, int portNumber, String appName, NetProtocolType ptype) throws Throwable
 	{
-		this(host, portNumber, "BrokerClient", keystoreLocation, keystorePw);
+		this(hostname, portNumber, appName, HostInfo.DEFAULT_CONNECT_TIMEOUT, HostInfo.DEFAULT_READ_TIMEOUT, ptype, getDefaultSslContext());
 	}
 
-	public SslBrokerClient(String host, int portNumber, String appName) throws Throwable
+	public SslBrokerClient(String hostname, int portNumber, String appName, NetProtocolType ptype, SSLContext sslContext) throws Throwable
 	{
-		this(host, portNumber, appName, null, null);
+		this(hostname, portNumber, appName, HostInfo.DEFAULT_CONNECT_TIMEOUT, HostInfo.DEFAULT_READ_TIMEOUT, ptype, sslContext);
 	}
 
-	public SslBrokerClient(String host, int portNumber, String appName, String keystoreLocation, String keystorePw) throws Throwable
+	public SslBrokerClient(String hostname, int portNumber, String appName, int connectTimeout, int readTimeout, NetProtocolType ptype, SSLContext sslContext) throws Throwable
 	{
-		this(host, portNumber, appName, NetProtocolType.PROTOCOL_BUFFER, keystoreLocation, keystorePw);
-	}
-
-	public SslBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
-	{
-		this(host, portNumber, appName, ptype, null, null);
-	}
-
-	public SslBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype, String keystoreLocation, String keystorePw) throws Throwable
-	{
-		super(host, portNumber, appName, ptype);
-		if (StringUtils.isBlank(keystoreLocation))
-			throw new IllegalArgumentException("Mandatory keystore location missing.");
-		if (StringUtils.isBlank(keystorePw))
-			throw new IllegalArgumentException("Mandatory keystore password missing.");
-		this.keystoreLocation = keystoreLocation;
-		this.keystorePass = keystorePw.toCharArray();
+		super(hostname, portNumber, connectTimeout, readTimeout, appName, ptype);
+		this.sslContext = sslContext;
 		init();
-	}
-
-	public SslBrokerClient(Collection<HostInfo> hosts) throws Throwable
-	{
-		this(hosts, (String) null, (char[]) null);
-	}
-
-	public SslBrokerClient(Collection<HostInfo> hosts, String keystoreLocation, char[] keystorePw) throws Throwable
-	{
-		this(hosts, "BrokerClient", keystoreLocation, keystorePw);
-	}
-
-	public SslBrokerClient(Collection<HostInfo> hosts, String appName) throws Throwable
-	{
-		this(hosts, appName, null, null);
-	}
-
-	public SslBrokerClient(Collection<HostInfo> hosts, String appName, String keystoreLocation, char[] keystorePw) throws Throwable
-	{
-		this(hosts, appName, NetProtocolType.PROTOCOL_BUFFER, keystoreLocation, keystorePw);
 	}
 
 	public SslBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype) throws Throwable
 	{
-		this(hosts, appName, ptype, null, null);
+		this(hosts, appName, ptype, getDefaultSslContext());
 	}
 
-	public SslBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype, String keystoreLocation, char[] keystorePw) throws Throwable
+	public SslBrokerClient(Collection<HostInfo> hosts, String appName, NetProtocolType ptype, SSLContext sslContext) throws Throwable
 	{
 		super(hosts, appName, ptype);
-		this.keystoreLocation = keystoreLocation;
-		this.keystorePass = keystorePw;
+		this.sslContext = sslContext;
 		init();
 	}
 
@@ -165,15 +134,53 @@ public final class SslBrokerClient extends BaseBrokerClient
 		return requiresAuthentication;
 	}
 
+	public SSLSession getSSLSession()
+	{
+		return ((SslNetworkConnector) this.getNetHandler().getConnector()).getSSLSession();
+	}
+
 	@Override
 	protected BrokerProtocolHandler getBrokerProtocolHandler() throws Throwable
 	{
 		BrokerProtocolHandler brokerProtocolHandler;
 
-		SslNetworkConnector networkConnector = new SslNetworkConnector(getHostInfo(), keystoreLocation, keystorePass);
-		brokerProtocolHandler = new BrokerProtocolHandler(this, getPortocolType(), networkConnector, this.isOldFramming());
+		SslNetworkConnector networkConnector = new SslNetworkConnector(getHostInfo(), sslContext);
+		brokerProtocolHandler = new BrokerProtocolHandler(this, getProtocolType(), networkConnector, this.isOldFramming());
 		networkConnector.setProtocolHandler(brokerProtocolHandler);
 
 		return brokerProtocolHandler;
+	}
+
+	private static SSLContext getDefaultSslContext()
+	{
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
+		{
+			public X509Certificate[] getAcceptedIssuers()
+			{
+				return new X509Certificate[0];
+			}
+
+			@Override
+			public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
+			{
+			}
+
+			@Override
+			public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
+			{
+
+			}
+		} };
+		try
+		{
+			SSLContext sc = SSLContext.getInstance("SSLv3");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+
+			return sc;
+		}
+		catch (Throwable t)
+		{
+			throw new RuntimeException(t);
+		}
 	}
 }

@@ -17,12 +17,10 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 		super(testName);
 		if (!skipTest())
 		{
-			String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
-			String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
 			SslBrokerClient bk = null;
 			try
 			{
-				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
+				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
 			}
 			catch (Throwable e)
 			{
@@ -37,5 +35,4 @@ public class SslTopicNameSpeficied extends GenericPubSubTest
 	{
 		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0);
 	}
-
 }

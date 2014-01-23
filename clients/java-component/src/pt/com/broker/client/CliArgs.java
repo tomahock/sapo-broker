@@ -44,19 +44,6 @@ public interface CliArgs
 	@Option(shortName = "d", defaultValue = "TOPIC")
 	String getDestinationType();
 
-	/**
-	 * 
-	 * @return Keystore location.
-	 */
-	@Option(shortName = "L", defaultValue = ".")
-	String getKeystoreLocation();
-
-	/**
-	 * 
-	 * @return Keystore password.
-	 */
-	@Option(shortName = "W", defaultValue = "")
-	String getKeystorePassword();
 
 	/**
 	 * 
@@ -83,7 +70,7 @@ public interface CliArgs
 	 * 
 	 * @return Message length. Useful for generate random messages with known size.
 	 */
-	@Option(shortName = "l", defaultValue = "1000")
+	@Option(shortName = "l", defaultValue = "256")
 	int getMessageLength();
 
 	/**
@@ -123,4 +110,7 @@ public interface CliArgs
 
 	@Option(shortName = "o", defaultValue = "full")
 	String getOutput();
+	
+	@Option(longName = "strip-newlines", defaultValue = "false")
+	boolean stripNewlines();
 }

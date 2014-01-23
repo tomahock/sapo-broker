@@ -24,7 +24,6 @@ sub new {
         #on_eof => sub { delete $self->{__socket} },
 				on_eof => sub {
           delete $self->{__socket};
-          #print STDERR "on_eof\n";
 					$params{eof_cb}->() if $params{eof_cb};
 				},
 
@@ -32,8 +31,8 @@ sub new {
             my ( $h, $fatal, $msg ) = @_;
 
             #print STDERR "on_error: [$fatal]\n";
-            $self->__drain($fatal,$msg);
-            $params{error_cb}->($fatal,$msg) if $params{error_cb};
+            $params{error_cb}->( $msg, $fatal ) if $params{error_cb};
+            $self->__drain($msg);
 
             delete $self->{__socket} if $fatal;
         },
@@ -43,10 +42,8 @@ sub new {
             return $params{ctimeout} || 10;
         },
 
-				on_connect => sub { $params{connect_cb}->() if $params{connect_cb} },
         #on_connect => sub { shift->timeout_reset },
         autocork  => 1,
-				no_delay => 1,
         keepalive => 1,
     );
 
@@ -75,7 +72,7 @@ sub new {
             $socket->on_drain( sub { $_[0]->wtimeout(0); $self->__drain } );
         }
 
-        if ( $params{tls}) {
+        if ( defined $params{tls} ) {
             $socket->starttls('connect');
         }
 
@@ -86,7 +83,7 @@ sub new {
 } ## end sub new
 
 sub __drain {
-    my $self = shift;
+    my ( $self) = @_;
 
     #print STDERR "on_drain\n";
 

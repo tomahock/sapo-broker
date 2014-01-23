@@ -29,6 +29,7 @@
 										<xs:element name="max-queues" type="xs:int" />
 										<xs:element name="store-time" type="xs:long" />
 										<xs:element name="max-stale-age" type="xs:long" minOccurs="0" />
+										<xs:element name="redelivery-interval" type="xs:long" minOccurs="0" />
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>

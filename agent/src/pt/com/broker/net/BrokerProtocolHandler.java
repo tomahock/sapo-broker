@@ -93,7 +93,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 	}
 
 	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
+	public void channelConnected(final ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
 	{
 		// Get the SslHandler in the current pipeline.
 		// We added it in SecureChatPipelineFactory.
@@ -114,7 +114,39 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 					}
 					else
 					{
-						log.info("SSL handshake failled.");
+						Channel channel = ctx.getChannel();
+
+						if (channel == null)
+						{
+							log.info("SSL handshake failled.");
+							return;
+						}
+
+						try
+						{
+							String remoteClient = channel.getRemoteAddress() != null ? channel.getRemoteAddress().toString() : "(unknown client)";
+							log.info("SSL handshake failled, client: '{}'", remoteClient);
+
+							// String client = channel.
+
+							// Publish fault message
+							NetFault fault = new NetFault("CODE:99999", "SSL handshake failled");
+							fault.setActionId("99999");
+
+							NetAction action = new NetAction(ActionType.FAULT);
+							action.setFaultMessage(fault);
+
+							NetMessage ex_msg = new NetMessage(action, null);
+
+							if (channel.isConnected())
+							{
+								channel.write(ex_msg).addListener(ChannelFutureListener.CLOSE);
+							}
+						}
+						catch (Throwable t)
+						{
+							log.error("Error writing 'SSL handshake failled' message");
+						}
 					}
 				}
 			});
@@ -169,7 +201,7 @@ public class BrokerProtocolHandler extends SimpleChannelHandler
 
 		if (log.isDebugEnabled() && channel.getRemoteAddress() != null)
 		{
-			log.debug("channel created: '%s'", channel.getRemoteAddress().toString());
+			log.debug("channel created: '{}'", channel.getRemoteAddress().toString());
 		}
 	}
 

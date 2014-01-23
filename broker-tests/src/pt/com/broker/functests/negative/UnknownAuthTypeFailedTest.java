@@ -31,10 +31,7 @@ public class UnknownAuthTypeFailedTest extends GenericNetMessageNegativeTest
 			SslBrokerClient bk = null;
 			try
 			{
-				String keyStoreLocation = ConfigurationInfo.getParameter("keystoreLocation");
-				String keystorePassword = ConfigurationInfo.getParameter("keystorePassword");
-
-				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType(), keyStoreLocation, keystorePassword);
+				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 
 				setBrokerClient(bk);
 			}

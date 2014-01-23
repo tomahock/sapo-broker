@@ -1,11 +1,7 @@
 package pt.com.broker.functests.positive;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import pt.com.broker.client.BaseBrokerClient;
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.HostInfo;
+import pt.com.broker.client.UdpClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
@@ -16,17 +12,15 @@ import pt.com.broker.types.NetPublish;
 
 public class UdpPublishTest extends GenericPubSubTest
 {
-	private BrokerClient client;
+	private  UdpClient client;
 
 	public UdpPublishTest(String testName)
 	{
 		super(testName);
-		HostInfo hostInfo = new HostInfo(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), BrokerTest.getAgent1UdpPort());
-		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
-		hosts.add(hostInfo);
+
 		try
 		{
-			client = new BrokerClient(hosts, "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			client = new UdpClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1UdpPort());
 		}
 		catch (Throwable e)
 		{
@@ -40,6 +34,8 @@ public class UdpPublishTest extends GenericPubSubTest
 	@Override
 	public Action getAction()
 	{
+		final UdpClient uclient = client;
+		
 		return new Action("Publish", "producer")
 		{
 			public Step run() throws Exception
@@ -51,7 +47,7 @@ public class UdpPublishTest extends GenericPubSubTest
 
 					NetPublish netPublish = new NetPublish(getDestinationName(), getDestinationType(), brokerMessage);
 
-					((BrokerClient) getInfoProducer()).publishMessageOverUdp(netPublish);
+					uclient.publish(netPublish);
 
 					getInfoProducer().close();
 
@@ -70,6 +66,7 @@ public class UdpPublishTest extends GenericPubSubTest
 	@Override
 	public BaseBrokerClient getInfoProducer()
 	{
-		return client;
+		// return client;
+		return null;
 	}
 }

@@ -4,7 +4,7 @@ Priority: optional
 Build-Depends: debhelper (>= 5), perl (>= 5.6.10-12)
 Maintainer: Claudio Valente <c.valente@co.sapo.pt>
 Standards-Version: 3.8.0
-Homepage: https://github.com/sapo/sapo-broker
+Homepage: http://search.cpan.org/dist/SAPO-Broker/
 
 Package: libsapo-broker-perl
 Architecture: all

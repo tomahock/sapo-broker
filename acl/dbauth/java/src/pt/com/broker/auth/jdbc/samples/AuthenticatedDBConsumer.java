@@ -46,14 +46,12 @@ public class AuthenticatedDBConsumer implements BrokerListener
 		consumer.port = cargs.getPort();
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
-		consumer.keystoreLocation = cargs.getKeystoreLocation();
-		consumer.keystorePassword = cargs.getKeystorePassword();
 
 		consumer.username = cargs.getUsername();
 		consumer.password = cargs.getUserPassword();
 
 
-		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword);
+		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER);
 
 		CredentialsProvider cp = new JdbcProvider(consumer.username, consumer.password);
 		

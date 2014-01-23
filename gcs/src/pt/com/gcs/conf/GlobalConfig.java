@@ -44,6 +44,8 @@ public class GlobalConfig
 
 	private static final GlobalConfig instance = new GlobalConfig();
 
+	private static final long DEFAULT_REDELIVERY_INTERVAL = 2l * 60l * 1000l;
+
 	private AtomicLong last_modified = new AtomicLong(0L);
 
 	private BrokerSecurityPolicy secPolicy;
@@ -55,6 +57,7 @@ public class GlobalConfig
 	private int maxQueues;
 	private long maxStoreTime;
 	private long queueMaxStaleAge;
+	private long queueRedeliveryInterval;
 	private int maxDistinctSubscriptions;
 	private boolean preferLocalConsumers = true;
 	private boolean supportVirtualQueues = true;
@@ -107,6 +110,17 @@ public class GlobalConfig
 		else
 		{
 			queueMaxStaleAge = 1296000000l; // two weeks;
+		}
+
+		String[] sRedeliveryIntervalolder = extractElementInfo(doc, "redelivery-interval");
+
+		if ((sRedeliveryIntervalolder.length > 0) && StringUtils.isNotBlank(sRedeliveryIntervalolder[0]))
+		{
+			queueRedeliveryInterval = Integer.parseInt(sRedeliveryIntervalolder[0]);
+		}
+		else
+		{
+			queueRedeliveryInterval = DEFAULT_REDELIVERY_INTERVAL; // two minutes;
 		}
 
 		String[] plcElementInfo = extractElementInfo(doc, "prefer-local-consumers");
@@ -365,6 +379,11 @@ public class GlobalConfig
 	public static long getQueueMaxStaleAge()
 	{
 		return instance.queueMaxStaleAge;
+	}
+	
+	public static long getRedeliveryInterval()
+	{
+		return instance.queueRedeliveryInterval;
 	}
 
 	public static long getMaxStoreTime()

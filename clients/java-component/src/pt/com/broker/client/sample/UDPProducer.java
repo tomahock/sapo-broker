@@ -1,17 +1,13 @@
 package pt.com.broker.client.sample;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.caudexorigo.cli.CliFactory;
+import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 
-import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
-import pt.com.broker.client.HostInfo;
+import pt.com.broker.client.UdpClient;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 
 /**
@@ -21,11 +17,9 @@ import pt.com.broker.types.NetPublish;
 public class UDPProducer
 {
 	private String host;
-	private int port;
 	private int udpPort;
 	private DestinationType dtype;
 	private String dname;
-	private NetProtocolType protocolType;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -33,40 +27,32 @@ public class UDPProducer
 		UDPProducer producer = new UDPProducer();
 
 		producer.host = cargs.getHost();
-		producer.port = cargs.getPort();
 		producer.udpPort = cargs.getUdpPort();
 		producer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		producer.dname = cargs.getDestination();
 
-		producer.protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
+		UdpClient bk = new UdpClient(producer.host, producer.udpPort);
 
-		System.out.println("Protocol type: " + producer.protocolType);
+		// System.out.printf("Start sending a string of %s random alphanumeric characters in 2 seconds...%n", cargs.getMessageLength());
+		//
+		Thread.sleep(500);
 
-		List<HostInfo> hosts = new ArrayList<HostInfo>(1);
-		hosts.add(new HostInfo(producer.host, producer.port, producer.udpPort));
-
-		BrokerClient bk = new BrokerClient(hosts, "UdpProducer", producer.protocolType);
-
-		System.out.printf("Start sending a string of %s random alphanumeric characters in 2 seconds...%n", cargs.getMessageLength());
-
-		Thread.sleep(2000);
-
-		producer.sendLoop(bk, cargs.getMessageLength() * 5);
+		producer.sendLoop(bk, cargs.getMessageLength());
 	}
 
-	private void sendLoop(BrokerClient bk, int messageLength) throws Throwable
+	private void sendLoop(UdpClient bk, int messageLength) throws Throwable
 	{
-		final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
-		for (int i = 0; i < 100000; i++)
-		{
 
+		for (int i = 0; i < 1000000; i++)
+		{
+			final String msg = RandomStringUtils.randomAlphanumeric(messageLength);
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg.getBytes("UTF-8"));
 			NetPublish publishMsg = new NetPublish(dname, dtype, brokerMessage);
-			bk.publishMessageOverUdp(publishMsg);
+			bk.publish(publishMsg);
 
-			// log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
+			System.out.printf("%s -> Destination: '%s#%s';  Message: '%s'%n", i, dtype, dname, msg);
 
-			// Sleep.time(500);
+			Sleep.time(500);
 		}
 	}
 }

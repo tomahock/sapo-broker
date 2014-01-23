@@ -60,7 +60,7 @@ public class BrokerServer
 			bootstrap0.setOption("child.keepAlive", true);
 			bootstrap0.setOption("child.receiveBufferSize", 256 * 1024);
 			bootstrap0.setOption("child.sendBufferSize", 256 * 1024);
-			bootstrap0.setOption("child.soLinger", 1);
+			bootstrap0.setOption("child.soLinger", -1);
 			bootstrap0.setOption("reuseAddress", true);
 			bootstrap0.setOption("backlog", 1024);
 			bootstrap0.setOption("writeBufferHighWaterMark", WRITE_BUFFER_HIGH_WATER_MARK); // default=64K
@@ -126,11 +126,11 @@ public class BrokerServer
 
 			bootstrap1.setPipelineFactory(serverPipelineFactory1);
 
-			bootstrap1.setOption("child.tcpNoDelay", true);
+			bootstrap1.setOption("child.tcpNoDelay", false);
 			bootstrap1.setOption("child.keepAlive", true);
 			bootstrap1.setOption("child.receiveBufferSize", 128 * 1024);
 			bootstrap1.setOption("child.sendBufferSize", 128 * 1024);
-			bootstrap1.setOption("child.soLinger", 1);
+			bootstrap1.setOption("child.soLinger", -1);
 			bootstrap1.setOption("reuseAddress", true);
 			bootstrap1.setOption("backlog", 1024);
 			bootstrap1.setOption("writeBufferHighWaterMark", WRITE_BUFFER_HIGH_WATER_MARK); // default=64K

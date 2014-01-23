@@ -1,10 +1,8 @@
 package pt.com.gcs.messaging;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -15,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.CustomExecutors;
-import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.StringUtils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -263,7 +260,13 @@ public class Gcs
 
 	private void connectToAllPeers()
 	{
+		log.info("connectToAllPeers()");
 		List<Peer> peerList = GlobalConfig.getPeerList();
+
+		String peers = peerList.toString();
+
+		log.info("Peers: {}", peers);
+
 		for (Peer peer : peerList)
 		{
 			SocketAddress addr = new InetSocketAddress(peer.getHost(), peer.getPort());
@@ -372,7 +375,7 @@ public class Gcs
 			Shutdown.now(t);
 		}
 
-		Sleep.time(GcsInfo.getInitialDelay());
+		// Sleep.time(GcsInfo.getInitialDelay());
 
 		connectToAllPeers();
 
@@ -438,10 +441,19 @@ public class Gcs
 
 	private void startConnector()
 	{
+		log.info("Starting Local Connector - step 0");
+
 		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-2");
+
+		log.info("Starting Local Connector - step 1");
+
 		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-2");
 
+		log.info("Starting Local Connector - step 2");
+
 		ClientBootstrap bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(tpe_io, tpe_workers));
+
+		log.info("Starting Local Connector - step 3");
 
 		ChannelPipelineFactory connectorPipelineFactory = new ChannelPipelineFactory()
 		{
@@ -459,22 +471,27 @@ public class Gcs
 				return pipeline;
 			}
 		};
+		log.info("Starting Local Connector - step 4");
 
 		bootstrap.setPipelineFactory(connectorPipelineFactory);
 
-		try
-		{
-			bootstrap.setOption("localAddress", new InetSocketAddress(Inet4Address.getByName(GcsInfo.getAgentHost()), 0));
-		}
-		catch (UnknownHostException e)
-		{
-			log.error(String.format("Failed to bind to local host address. Address: '%s'.", GcsInfo.getAgentHost()), e);
-		}
+		log.info("Starting Local Connector - step 5");
+
+		// try
+		// {
+		// bootstrap.setOption("localAddress", new InetSocketAddress(Inet4Address.getByName(GcsInfo.getAgentHost()), 0));
+		// }
+		// catch (UnknownHostException e)
+		// {
+		// log.error(String.format("Failed to bind to local host address. Address: '%s'.", GcsInfo.getAgentHost()), e);
+		// }
 
 		bootstrap.setOption("child.keepAlive", true);
 		bootstrap.setOption("child.receiveBufferSize", 128 * 1024);
 		bootstrap.setOption("child.sendBufferSize", 128 * 1024);
 		bootstrap.setOption("connectTimeoutMillis", 5000);
+
+		log.info("Starting Local Connector - step 6");
 
 		this.connector = bootstrap;
 	}

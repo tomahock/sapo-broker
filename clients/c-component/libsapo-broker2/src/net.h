@@ -4,7 +4,6 @@
 #include <sys/time.h>   // struct timeval
 #include <sys/types.h>  // NOSIGPIPE
 #include <sys/socket.h> // NOSIGPIPE
-#include <netinet/in.h>
 
 #include "sapo-broker2.h"
 

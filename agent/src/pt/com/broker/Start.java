@@ -57,8 +57,13 @@ public class Start
 
 			InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
 
+			log.info("Before GCS init");
 			Gcs.init();
+			log.info("After GCS init");
+
+			log.info("Before ProvidersLoader init");
 			ProvidersLoader.init();
+			log.info("After ProvidersLoader init");
 
 			int broker_port = GcsInfo.getBrokerPort();
 			int broker_legacy_port = GcsInfo.getBrokerLegacyPort();

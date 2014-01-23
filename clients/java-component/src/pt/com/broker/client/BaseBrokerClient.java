@@ -118,9 +118,9 @@ public abstract class BaseBrokerClient
 	 * @param portNumber
 	 *            TCP ou SSL port number
 	 */
-	public BaseBrokerClient(String host, int portNumber) throws Throwable
+	public BaseBrokerClient(String host, int portNumber, int connectTimeout, int readTimeout) throws Throwable
 	{
-		this(host, portNumber, "BrokerClient", NetProtocolType.PROTOCOL_BUFFER);
+		this(host, portNumber, connectTimeout, readTimeout, "BrokerClient", NetProtocolType.PROTOCOL_BUFFER);
 	}
 
 	/**
@@ -133,9 +133,9 @@ public abstract class BaseBrokerClient
 	 * @param appName
 	 *            The client application name.
 	 */
-	public BaseBrokerClient(String host, int portNumber, String appName) throws Throwable
+	public BaseBrokerClient(String host, int portNumber, int connectTimeout, int readTimeout, String appName) throws Throwable
 	{
-		this(host, portNumber, appName, NetProtocolType.PROTOCOL_BUFFER);
+		this(host, portNumber, connectTimeout, readTimeout, appName, NetProtocolType.PROTOCOL_BUFFER);
 	}
 
 	/**
@@ -150,10 +150,10 @@ public abstract class BaseBrokerClient
 	 * @param ptype
 	 *            The encoding protocol type that should be used.
 	 */
-	public BaseBrokerClient(String host, int portNumber, String appName, NetProtocolType ptype) throws Throwable
+	public BaseBrokerClient(String host, int portNumber, int connectTimeout, int readTimeout, String appName, NetProtocolType ptype) throws Throwable
 	{
 		this.hosts = new CircularContainer<HostInfo>(1);
-		this.hosts.add(new HostInfo(host, portNumber));
+		this.hosts.add(new HostInfo(host, portNumber, -1, connectTimeout, readTimeout));
 		init(appName, ptype);
 	}
 
@@ -841,7 +841,7 @@ public abstract class BaseBrokerClient
 	 * 
 	 * @return
 	 */
-	public NetProtocolType getPortocolType()
+	public NetProtocolType getProtocolType()
 	{
 		return protocolType;
 	}

@@ -3,6 +3,7 @@ package pt.com.gcs.messaging;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,8 @@ public class DestinationMatcher
 		}
 		catch (Throwable t)
 		{
-			String message = String.format("match-> subscriptionName: '%s'; topicName: '%s'", subscriptionName, topicName);
-			log.error(message, t);
+			// String message = String.format("match-> subscriptionName: '%s'; topicName: '%s'", subscriptionName, topicName)
+			Shutdown.now(t); // TODO: Something very wrong happens when this method fails, for now just exit. A proper fix should be done ASAP!
 			return false;
 		}
 	}

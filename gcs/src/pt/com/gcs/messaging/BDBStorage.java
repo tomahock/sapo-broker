@@ -94,7 +94,7 @@ public class BDBStorage
 	{
 		try
 		{
-			
+
 			String dbName = db.getDatabaseName();
 			log.debug("Try to close db '{}'", dbName);
 			db.close();
@@ -229,7 +229,7 @@ public class BDBStorage
 		isMarkedForDeletion.set(true);
 		closeDatabase(messageDb);
 		removeDatabase(primaryDbName);
-		//BDBEnviroment.sync();
+		// BDBEnviroment.sync();
 	}
 
 	protected long getLastSequenceValue()
@@ -378,7 +378,7 @@ public class BDBStorage
 					{
 						try
 						{
-							bdbm.setPreferLocalConsumer(false);
+							// bdbm.setPreferLocalConsumer(false);
 
 							int tries = 0;
 							// long reserveTime = -1;
@@ -388,7 +388,7 @@ public class BDBStorage
 							do
 							{
 								result = queueProcessor.forward(nmsg, preferLocalConsumer);
-								preferLocalConsumer = false;
+								//preferLocalConsumer = false;
 								++tries;
 							}
 							while ((result.result == Result.FAILED) && (tries != MAX_REDELIVERY_PER_MESSAGE));

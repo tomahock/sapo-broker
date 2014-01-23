@@ -15,6 +15,7 @@ import pt.com.broker.types.MessageListenerBase;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.gcs.conf.GlobalConfig;
 
 public class RemoteListener extends MessageListenerBase
 {
@@ -24,10 +25,8 @@ public class RemoteListener extends MessageListenerBase
 	private final DestinationType sourceType;
 	private final DestinationType targetType;
 
-	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
-
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
-	private static final ForwardResult successQueue = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
+	private static final ForwardResult successQueue = new ForwardResult(Result.SUCCESS, GlobalConfig.getRedeliveryInterval());
 	private static final ForwardResult successTopic = new ForwardResult(Result.SUCCESS);
 
 	private final ForwardResult success;

@@ -14,10 +14,9 @@ import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.codec.BrokerDecoderRouter;
-import pt.com.broker.codec.BrokerEncoderRouter;
 import pt.com.broker.codec.NoFramingDecoder;
 import pt.com.broker.codec.NoFramingEncoder;
+import pt.com.broker.codec.UdpFramingDecoder;
 import pt.com.broker.net.AuthorizationFilter;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.gcs.conf.GcsInfo;
@@ -57,9 +56,9 @@ public class BrokerUdpServer
 				{
 					ChannelPipeline pipeline = Channels.pipeline();
 
-					pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
+					pipeline.addLast("broker-encoder", new NoFramingEncoder());
 
-					pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
+					pipeline.addLast("broker-decoder", new UdpFramingDecoder(GcsInfo.getMessageMaxSize()));
 
 					if (GcsInfo.useAccessControl())
 					{

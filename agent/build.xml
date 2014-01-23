@@ -155,7 +155,7 @@
 	</target>
 
 
-	<target name="package-dotnet-client">
+	<!-- target name="package-dotnet-client">
 		<exec dir="../clients/dotnet-component" executable="./build.sh" />
 
 		<mkdir dir="${target-dir}/clients/dotnet/Lib" />
@@ -168,7 +168,7 @@
 		<copy todir="${target-dir}/clients/dotnet/Samples">
 			<fileset dir="../clients/dotnet-component/Samples" />
 		</copy>
-	</target>
+	</target -->
 
 	<target name="package-java-client">
 
@@ -239,7 +239,7 @@
 
 		<antcall target="package-agent" />
 		<antcall target="package-java-client" />
-		<antcall target="package-dotnet-client" />
+		<!-- antcall target="package-dotnet-client" / -->
 		<antcall target="package-c-client" />
 		<antcall target="package-python-client" />
 		<antcall target="package-php-client" />

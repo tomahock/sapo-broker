@@ -10,7 +10,6 @@ import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 
 /**
@@ -25,8 +24,6 @@ public class SslConsumer implements BrokerListener
 	private int port;
 	private DestinationType dtype;
 	private String dname;
-	private String keystoreLocation;
-	private String keystorePassword;
 
 	public static void main(String[] args) throws Throwable
 	{
@@ -38,10 +35,10 @@ public class SslConsumer implements BrokerListener
 		consumer.port = cargs.getPort();
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
-		consumer.keystoreLocation = cargs.getKeystoreLocation();
-		consumer.keystorePassword = cargs.getKeystorePassword();
 
-		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER, consumer.keystoreLocation, consumer.keystorePassword);
+		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port);
+
+		// SSLSession ssl_session = bk.getSSLSession();
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 

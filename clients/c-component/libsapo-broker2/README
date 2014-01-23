@@ -2,7 +2,7 @@ New libsapo-broker2, a C client library for sapo-broker.
 
 
 Tentative Features:
- - Support several comunication protocols by design. (only protobuff currently implemented)
+ - Support several comunication protocols by design.
  - Support multiple servers for failover and load balancing.
  - Gracefully handle network & broker failures.
  - FAST, lightweight, thread-safe and pleasant API.
@@ -16,7 +16,6 @@ WHAT WORKS NOW:
     - Enqueue to QUEUES
     - Subscribe to QUEUE, with auto-acknowledge (or not),
     - Subscribe to TOPIC
-	- Subscribe VIRTUAL_QUEUE
     - broker_receive():
         blocking reception of messages, can specify timeout.
         message indicates which:
@@ -53,6 +52,12 @@ TODO:
 -----------------------
 BUILD INSTRUCTIONS
 -----------------------
-./configure
-make
-sudo make install
+building the library:
+$ make -jN
+building the library with debug on:
+$ make -jN debug
+building the tests:
+$ make -jN tests
+instaling the library (PREFIX is optional):
+$ PREFIX=/usr/local/libsapo-broker2 make install
+

@@ -74,7 +74,6 @@ public class BrokerDecoderRouter extends FrameDecoder
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception
 	{
-
 		int readableBytes = buffer.readableBytes();
 		if (readableBytes < HEADER_LENGTH)
 		{
@@ -89,15 +88,44 @@ public class BrokerDecoderRouter extends FrameDecoder
 
 		if (len > _max_message_size)
 		{
-			log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Protocol Type: %s. Channel: '%s'", len, protocol_type, channel.getRemoteAddress().toString()));
-			channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
+
+			try
+			{
+				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Protocol Type: %s. Channel: '%s'", len, protocol_type, channel.getRemoteAddress().toString()));
+			}
+			catch (Throwable t)
+			{
+				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+			}
+
+			if (channel != null)
+			{
+				if (channel.isConnected() && channel.isWritable())
+				{
+					channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
+				}
+			}
 
 			return null;
 		}
 		else if (len <= 0)
 		{
-			log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Channel: '%s'", len, channel.getRemoteAddress().toString()));
-			channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
+			try
+			{
+				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Channel: '%s'", len, channel.getRemoteAddress().toString()));
+			}
+			catch (Throwable t)
+			{
+				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes", len));
+			}
+
+			if (channel != null)
+			{
+				if (channel.isConnected() && channel.isWritable())
+				{
+					channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
+				}
+			}
 
 			return null;
 		}
@@ -132,7 +160,15 @@ public class BrokerDecoderRouter extends FrameDecoder
 		catch (Throwable t)
 		{
 			Throwable r = ErrorAnalyser.findRootCause(t);
-			log.error(String.format("Message unmarshall failed: %s. Serializer: '%s' Channel: '%s'", r.getMessage(), serializer.getClass().getCanonicalName(), channel.getRemoteAddress().toString()));
+
+			try
+			{
+				log.error(String.format("Message unmarshall failed: %s. Serializer: '%s' Channel: '%s'", r.getMessage(), serializer.getClass().getCanonicalName(), channel.getRemoteAddress().toString()));
+			}
+			catch (Throwable t1)
+			{
+				log.error(String.format("Message unmarshall failed: %s. Serializer: '%s'", r.getMessage(), serializer.getClass().getCanonicalName()));
+			}
 		}
 
 		if (message == null)

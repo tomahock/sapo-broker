@@ -318,6 +318,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		byte[] data = new byte[len];
 		in.readFully(data);
 
+		// System.out.println("BrokerProtocolHandler.decode: " + new String(data));
+
 		NetMessage message = (NetMessage) serializer.unmarshal(data);
 		return message;
 
@@ -339,6 +341,8 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 		out.writeInt(marshaledMsg.length);
 
 		out.write(marshaledMsg);
+
+		// System.out.println("BrokerProtocolHandler.encode: " + new String(marshaledMsg));
 	}
 
 	public byte[] marshalMessage(NetMessage message) throws IOException
@@ -352,7 +356,6 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 	{
 		if (brokerClient.getState() == BrokerClientState.CLOSE)
 		{
-			System.out.println("BrokerProtocolHandler.sendMessage(BrokerClientState.CLOSE)");
 			onError(new Exception("Message cannot be sent because client was closed"));
 			return;
 		}
@@ -363,9 +366,7 @@ public class BrokerProtocolHandler extends ProtocolHandler<NetMessage>
 			return;
 		}
 		else
-		{	
-			System.out.println("BrokerProtocolHandler.sendMessage( BROKER IS DOWN)");
-			
+		{
 			// BrokerCliet state is CLOSE. onFailure already invoked. Notify
 			// message lost
 			onError(new Exception("Message Lost due to failure of agent"));

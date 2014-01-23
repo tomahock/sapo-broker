@@ -15,6 +15,7 @@ import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ListenerChannel;
+import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.Gcs;
 
 /**
@@ -24,10 +25,7 @@ public class BrokerQueueListener extends BrokerListener
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerQueueListener.class);
 
-	private static final long RESERVE_TIME = 2 * 60 * 1000; // reserve for 2mn
-	// private static final String ACK_REQUIRED = "ACK_REQUIRED";
-
-	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, RESERVE_TIME);
+	private static final ForwardResult success = new ForwardResult(Result.SUCCESS, GlobalConfig.getRedeliveryInterval());
 	private static final ForwardResult ackNotRequired = new ForwardResult(Result.NOT_ACKNOWLEDGE);
 	private final boolean ackRequired;
 
