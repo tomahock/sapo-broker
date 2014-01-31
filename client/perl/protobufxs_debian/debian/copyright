@@ -1,0 +1,14 @@
+This is the debian package for the SAPO-Broker module.
+It was created by Claudio Valente <c.valente@co.sapo.pt> using dh-make-perl.
+
+It was downloaded from http://search.cpan.org/dist/SAPO-Broker/
+
+This copyright info was automatically extracted from the perl module.
+It may not be accurate, so you better check the module sources
+if you don't want to get into legal troubles.
+
+The upstream author is: Cláudio Valente <c.valente@co.sapo.pt>.
+
+
+The Debian packaging is (C) 2010, Claudio Valente <c.valente@co.sapo.pt> and
+is licensed under the same terms as the software itself (see above).

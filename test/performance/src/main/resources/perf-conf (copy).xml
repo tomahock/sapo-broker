@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-configuration>
+	<agents default-agent="cordination-agent">
+		<agent hostname="172.17.1.100" tcp-port="3323" http-port="3380"
+			agent-id="cordination-agent" />
+	</agents>
+	<machines>
+		<machine machine-name="machine1" consumers="consumer1 consumer2 consumer3 consumer4"/>
+		<machine machine-name="machine2" producers="producer1 producer2"/>
+	</machines>
+	<tests encoding="PROTOCOL_BUFFER">
+		<!-- TOPIC -->
+		<test test-name="test1">
+			<messages number-of-messages="100000" message-size="256" />
+			<destination destination-type="TOPIC" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test2">
+			<messages number-of-messages="100000" message-size="512" />
+			<destination destination-type="TOPIC" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test3">
+			<messages number-of-messages="100000" message-size="1024" />
+			<destination destination-type="TOPIC" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test4">
+			<messages number-of-messages="100000" message-size="4096" />
+			<destination destination-type="TOPIC" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test5">
+			<messages number-of-messages="100000" message-size="8192" />
+			<destination destination-type="TOPIC" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<!-- with 2 consumers -->
+		<test test-name="test6">
+			<messages number-of-messages="100000" message-size="4096" />
+			<destination destination-type="TOPIC" sync-consumer="false" />
+			<consumers count="2" />
+			<producers count="1" />
+		</test>
+		<test test-name="test7">
+			<messages number-of-messages="100000" message-size="8192" />
+			<destination destination-type="TOPIC" sync-consumer="false" />
+			<consumers count="2" />
+			<producers count="1" />
+		</test>
+
+		<!-- QUEUE -->
+		<test test-name="test8">
+			<messages number-of-messages="100000" message-size="256" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test9">
+			<messages number-of-messages="100000" message-size="512" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test10">
+			<messages number-of-messages="100000" message-size="1024" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test11">
+			<messages number-of-messages="100000" message-size="4096" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test12">
+			<messages number-of-messages="100000" message-size="8192" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<!-- with 2 consumers -->
+		<test test-name="test13">
+			<messages number-of-messages="100000" message-size="4096" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="2" />
+			<producers count="1" />
+		</test>
+		<test test-name="test14">
+			<messages number-of-messages="100000" message-size="8192" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="2" />
+			<producers count="1" />
+		</test>
+		<!-- QUEUE WITH SYNC CONSUMER -->
+		<test test-name="test15">
+			<messages number-of-messages="100000" message-size="256" />
+			<destination destination-type="QUEUE" sync-consumer="true" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test16">
+			<messages number-of-messages="100000" message-size="512" />
+			<destination destination-type="QUEUE" sync-consumer="true" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test17">
+			<messages number-of-messages="100000" message-size="1024" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test18">
+			<messages number-of-messages="100000" message-size="4096" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test19">
+			<messages number-of-messages="100000" message-size="8192" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<!-- with 2 consumers -->
+		<test test-name="test20">
+			<messages number-of-messages="100000" message-size="4096" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="2" />
+			<producers count="1" />
+		</test>
+		<test test-name="test21">
+			<messages number-of-messages="100000" message-size="8192" />
+			<destination destination-type="QUEUE" sync-consumer="false" />
+			<consumers count="2" />
+			<producers count="1" />
+		</test>
+		<!-- QUEUE WITH NO ACK CONSUMER -->
+		<test test-name="test22">
+			<messages number-of-messages="100000" message-size="1024" />
+			<destination destination-type="QUEUE" no-ack-consumer="true" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+		<test test-name="test23">
+			<messages number-of-messages="100000" message-size="4096" />
+			<destination destination-type="QUEUE" no-ack-consumer="true" />
+			<consumers count="1" />
+			<producers count="1" />
+		</test>
+	</tests>
+</test-configuration>

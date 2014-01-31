@@ -1,0 +1,26 @@
+#!/usr/bin/env perl
+
+#get the execution path
+use FindBin qw($Bin);
+use File::Spec::Functions;
+
+use strict;
+
+my $conf     = catfile( $Bin, 'perltidy_config' );
+my $perltidy = catfile( $Bin, 'perltidy' );
+
+sub tidy_dir {
+    my ( $dir, $rx ) = @_;
+
+    system "find $dir -iname '$rx' | grep -v Autogen | xargs -d '\n' $perltidy 2>/dev/null";
+}
+
+system "$perltidy " . catfile( $Bin, '..', 'Makefile.PL' ) . ' 2>/dev/null';
+
+tidy_dir( catfile( $Bin, '..', 'lib' ),      '*.pm' );
+tidy_dir( catfile( $Bin, '..', 'examples' ), '*.p*' );
+tidy_dir( catfile( $Bin, '..', 't' ),        '*.t' );
+tidy_dir( $Bin, 'perltidy_all' );
+tidy_dir( $Bin, 'perlcritic' );
+tidy_dir( $Bin, 'Makefile.PL' );
+tidy_dir( catfile( $Bin, '..', 'protobufxs' ), 'Makefile.PL' );

@@ -1,0 +1,32 @@
+libsapo-broker2 (2.1.0) unstable; urgency=low
+
+  * autoconfiscated and package split (dev, debug)
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Thu, 09 Feb 2012 15:45:36 +0000
+
+libsapo-broker2 (2.0.3) unstable; urgency=low
+
+  * Network error flow fixed
+  * Logging now flushes FILE
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Thu, 26 Jan 2012 12:37:03 +0000
+
+libsapo-broker2 (2.0.2) unstable; urgency=low
+
+  * dll symbol visibility
+  * only export functions that are part of the library interface
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Thu, 29 Dec 2011 18:14:51 +0000
+
+libsapo-broker2 (2.0.1) unstable; urgency=low
+
+  * virtual queue support
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Wed, 14 Dec 2011 15:30:44 +0000
+
+libsapo-broker2 (2.0.1) unstable; urgency=low
+
+  * first public build
+  * all major features are functional
+
+ -- Miguel Filipe <miguel.filipe@caixamagica.pt>  Thu Apr 22 11:43:05 WEST 2010

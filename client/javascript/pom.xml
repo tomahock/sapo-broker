@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>pt.sapo.oss.broker</groupId>
+        <artifactId>sapo-broker-parent</artifactId>
+        <version>4.0.46</version>
+    </parent>
+    <artifactId>sapo-broker-javascript-client</artifactId>
+    <name>sapo-broker-javascript-client</name>
+    <packaging>jar</packaging>
+    <properties>
+        <mainClass>pt.com.broker.jsbridge.JSBridgeServer</mainClass>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-docs</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <tasks>
+                                <copy todir="target">
+                                    <fileset dir="package" />
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.caudexorigo</groupId>
+            <artifactId>org-caudexorigo-http-netty3</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>  
+        <dependency>
+	    <groupId>${project.groupId}</groupId>
+	    <version>${project.version}</version>
+            <artifactId>sapo-broker-java-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.7.4</version>
+        </dependency>
+    </dependencies>
+</project>

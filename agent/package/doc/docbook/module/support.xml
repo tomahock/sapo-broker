@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="support">
+  <title>Community and Support</title>
+  <section>
+    <title>Building from the source </title>
+    <para>You can fetch the latest version of the Sapo-Broker source code from our <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk">subversion server</ulink>. For checking out the code use the svn command line client as follows:</para>
+    <command>
+      <prompt>svn co svn://softwarelivre.sapo.pt/broker/</prompt>
+    </command>
+    <para>To build, go to agents directory and type (you must have <ulink url="http://ant.apache.org/">ant</ulink> installed):</para>
+    <command>
+      <prompt>ant build-dist</prompt>
+    </command>
+  </section>
+  <section>
+    <title><anchor id="help"/>Still have questions?</title>
+    <para>If you have unanswered questions send us an email to the project mailing list<ulink url="http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker">http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker</ulink>.</para>
+  </section>
+</chapter>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<preface id="preface">
+	<title>Preface</title>
+
+	<section>
+		<title>Introduction</title>
+		<para>Sapo-Broker is a distributed messaging framework.	Among other features, it provides minimal administration overhead, Publish-Subscribe, Request-Reply and Point-to-Point messaging, guaranteed delivery and wildcard subscriptions.</para>
+		<para>Sapo-Broker is written in Java and has client libraries for Java, Perl, Python, PHP, .NET and C.</para>
+	</section>
+	<section>
+		<title>Sapo-Broker features</title>
+		<section>
+			<title>Supported broker topologies</title>
+			<para>
+				Sapo-Broker can be used as a single instance or in a multi-node cluster.
+				Although a single agent instance could be used in small working sets, a multiple agent (network) design would better take advantage of Sapo-Broker, namely in system availability and throughput, with client failover and distributed workload, respectively.
+				In a multi-node scenario all agents are interconnected in what is known as agent cloud. It is not yet possible to communicate between different clouds.
+			</para>
+		</section>
+		<section>
+			<title>Message publication and subscription</title>
+			<para>
+				Like Java Message Service (<ulink url="http://java.sun.com/products/jms/">JMS</ulink>) we use the terms "TOPIC" to refer Publish-Subscribe messaging and "QUEUE" to designate Point-to-Point messaging.
+			</para>
+			<para>
+				There is no way, nor need, to create a "QUEUE" or "TOPIC" before any client can consume or produce messages. The "QUEUE" or "TOPIC" is created on the fly, as clients subscribe to it. Note that a typo in the "QUEUE" name, in the subscription operation, can lead to two different queues, in a way that the consumer will try to read from a forever empty queue, and the producer will write to a never read queue.
+			</para>
+			<section>
+				<title id="INTRO_PUBSUB">Topics</title>
+				<para>
+					Messages published to "TOPIC"s are delivered to any consumer which has a subscription name that matches the Destination name (topic subscriptions can have regular expressions).
+					There are no provisions for message persistence when using Topics and slow consumer will force the broker to discard messages.
+				</para>
+			</section>
+			<section>
+				<title id="INTRO_POINT2POINT">Queues</title>
+				<para>
+					Queues implement reliable load balancing (a message is delivered to only one consumer).
+					Messages are persisted to disk and are only removed from the Queue after the broker receives an acknowledgement, unacknowledged messages are redelivered after 2 minutes.
+				</para>
+			
+				<section>
+					<title id="INTRO_VIRTUAL_QUEUES">Virtual Queues</title>
+					<para>
+						Events published as TOPIC messages are not persisted and QUEUE messages once consumed by a client can not be consumed by another, this means that if there are two systems interested in the same messages they can not subscribe to the same Queue.
+					</para>
+					<para>
+						To overcome these handicaps Sapo-Broker supports a VIRTUAL_QUEUE Destination Type.
+						When clients subscribe to a topic as a Virtual Queue an ordinary queue is created and all topic messages whose Destination Name match the subscription are stored in the created queue.
+					</para>
+					<para>The subscription for a Virtual Queues has the form:</para>
+					<code>[private name]@[topic subscription pattern]</code>
+					<para>
+						An example could be: <code>myVirtualQueue@/topic/.*</code>
+					</para>
+					<para>Please note that the private names must be unique. Also note that can exist several Virtual Queues for the same topic or subscription pattern.</para>
+				</section>
+			</section>
+		</section>
+	</section>
+	<section>
+		<title>
+			<anchor id="License" />
+			License
+		</title>
+		<para>
+			Sapo-Broker is distributed under the <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/license/LICENSE.txt">BSD license</ulink>.
+		</para>
+	</section>
+</preface>
+

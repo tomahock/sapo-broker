@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="arch">
+  <title>Architecture</title>
+
+  <section>
+    <title>Sapo-Broker under the hood</title>
+    <para>The major part of components that constitute Sapo-Broker were developed in-house. Exceptions to this, besides the logging infrastructure, are the non-bocking I/O and Persistence components. Communications are implented using <ulink url="http://mina.apache.org">Apache MINA</ulink> and persistency is supported by <ulink url="http://www.oracle.com/technology/products/berkeley-db/index.html">Berkeley DB</ulink>.</para>
+    <section>
+      <title>Non-blocking IO</title>
+      <para>Broker agents use Apache MINA as their communication stack. Apache MINA is, accordantly to the <ulink url="http://mina.apache.org">official site</ulink>, <quote>a network application framework which helps users develop high performance and high scalability network applications easily. It provides an abstract · event-driven · asynchronous API over various transports such as TCP/IP and UDP/IP via Java NIO</quote>.</para>
+      <para>MINA is used to handle client connections and inter-agents communication. All client endpoints, TCP, legacy TCP (backward compatible), SSL and HTTP are implemented on top MINA. Java client library doesn't use MINA.</para>
+      <para>Although MINA's functionality as proven to be adequate to the design and implementation of Sapo-Broker, non-functional requirements may determine that alternatives should be considered. MINA gives higher priority to incoming communication. This design may be adequate in many cases, but not for Sapo-Broker: For every message received, possibly, <emphasis>N</emphasis> are sent.</para>
+    </section>
+    <section>
+      <title>Message persistence</title>
+      <para>To store messages reliably Sapo-Broker uses Berkeley DB, witch is, accordantly to the official <ulink url="http://www.oracle.com/technology/products/berkeley-db/index.html">site</ulink> an  <quote>embeddable databases [that] provides developers with fast, reliable, local persistence with zero administration. Often deployed as "edge" databases, the Oracle Berkeley DB family provides very high performance, reliability, scalability, and availability for application use cases that do not require SQL.</quote></para>
+      <para>Not always Berkeley DB was used as Sapo-Broker embedded database but tests, and usage, have proved it to be a reliable and efficient solution.</para>
+      <para>Enqueued messages, such as those that are published to a queue or topic messages that have persistent subscribers, are persistently stored in agent's filesystem. Only once messages are delivered and acknowledged are removed.</para>
+      <para>Sapo-Broker makes to attempt to give further reliability guarantees  than the database and filesystem. If this is a problem database and filesystem replication and redundancy should be considered.</para>
+    </section>
+  </section>
+  <section>
+    <title>Frequently asked questions</title>
+    <para>Here are some questions that you may have and should help you take advantaged of Sapo-Broker.</para>
+    <qandaset>
+      <qandaentry>
+        <question>
+          <para>How do configure my one hundred agents with minimum efford?</para>
+        </question>
+        <answer>
+          <para>Use a global configuration file and distributed automatically!</para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>Should I configure DNS name for each agent?</para>
+        </question>
+        <answer>
+          <para>No, but if you do start with 007.</para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>Is Sapo-Broker JMS compilant?</para>
+        </question>
+        <answer>
+          <para>No, not for now, but it may come to be.</para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </section>
+  <section>
+    <title>Use cases</title>
+    <para>In this section we provide some hints on how to design a messaging solution based on Sapo-Broker.</para>
+    <section id="TOPICS_QUEUES_USE_CASE">
+      <title>Topics, queues and virtual queues</title>
+      <para>In order to make the choice of what message pattern to use easier and clarify the previous discussed destination type options a sample is provided.</para>
+      <para>Image a company, BigCompany Inc., that uses Sapo-Broker as their messaging middleware. This company has several applications, many of witch produce information, such as "new client" engaged, "new sale" processed, "new product" added to products catalog. When these <emphasis>events</emphasis> occur they should be made available to other applications. Given that they are events and not work items they should be published to a topic. Applications interested in this information subscribe to the topic, but if the published information is so important and constitutes a work item to some of the subscribing applications, them they subscribe to the topic in persistent fashion, using a virtual queue (also known as a durable subscription).</para>
+      <para>As an example lets consider that a CRM application publishes a message to the topic /customer/new every time the company has a new customer. This information could be important to an application implementing an informal statistic on client's average age (if some client is missed, it's not a problem) so this application subscribe to the topic, however, for an application designed to initialize a workflow conducting to send the new client a welcome present as a limited time promotion, this information is crucial so it creates a durable subscription, such as promotions-app@/customer/new. Other applications could register other virtual queues (e.g., foo@/customer/.*). Given the ability that every application as to consume messages published to topic /customer/.* the format and the semantics of each message should be published to a known repository, such as a topic web catalog.</para>
+      <para>Now consider that the promotions application, after some business logic, decides what gift should be send. The gift delivery is responsibility of the stock management application so the promotions application publishes a message to the queue /client-gift including client and gift information. This work dependency was established as a consequence of a business process definition so both applications know the name of the queue, message format and semantics.To guarantee that only the promotions application could publish messages to that queue and only the stock management application could retrieve messages from the queue a security policy could be defined.</para>
+    </section>
+    <section id="DISTRIBUTED_WORKLOAD_USE_CASE">
+      <title>Distributed workload</title>
+      <para>A classical example of workload distribution is based in queues. This can be done in-memory, in case of local process coordination, or using a messaging system in case of applications are running on different machines.</para>
+      <para>The way to implement this using Sapo-Broker is very simple. Just determine the queue name and let information producers deliver messages to that queue and consumers subscribe to the queue. Messages will be delivered in a round-robin fashion to each subscriber.</para>
+      <para>If there is a substantial difference between of work required to process each message type (e.g., type messages A are processed in 100 milliseconds, but type B messages are processed in 1 minute) each consumer may use synchronous <link linkend="POLL_MESSAGE">poll</link> to retrieve a message, doing it only when it's available to process messages.</para>
+    </section>
+    <section id="CACHE_INVALIDATION_USE_CASE">
+      <title>Cache invalidation</title>
+      <para>TBD...</para>
+    </section>
+  </section>
+  <section>
+    <title>Future developments</title>
+    <para>Sapo-Broker is an on going project at Sapo. As such several new features and improvements are to come. Here are some examples of planned developments:</para>
+    <itemizedlist>
+      <listitem>Improve Sapo-Broker documentation (this document is already a step towards that goal)</listitem>
+      <listitem>Update client libraries to support binary encoding, as well all other missing features in client compatibility matrix</listitem>
+      <listitem>Develop a Javascript client</listitem>
+      <listitem>Create a monitoring dashboard</listitem>
+      <listitem>Improve Broker's performance</listitem>
+      <listitem>Evaluate alternatives to MINA</listitem>
+      <listitem>Define and implement a mechanism for bridging agent "clouds"</listitem>
+      <listitem>Other developments are likely to be defined be implemented. <ulink url="http://listas.softwarelivre.sapo.pt/mailman/listinfo/broker">Stay tunned</ulink></listitem>
+    </itemizedlist>
+  </section>
+</chapter>
+

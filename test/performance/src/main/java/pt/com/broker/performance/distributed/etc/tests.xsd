@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified"
+	attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:complexType name="Agents">
+		<xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="unbounded" name="agent">
+				<xs:complexType>
+					<xs:attribute name="hostname" type="xs:string" use="required" />
+					<xs:attribute name="tcp-port" type="xs:decimal" use="required" />
+					<xs:attribute name="http-port" type="xs:decimal" use="required" />
+					<xs:attribute name="agent-id" type="xs:string" use="required" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="default-agent" type="xs:string" use="required" />
+	</xs:complexType>
+	<xs:complexType name="Machines">
+		<xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="unbounded" name="machine">
+				<xs:complexType>
+					<xs:attribute name="machine-name" type="xs:string" use="required" />
+					<xs:attribute name="consumers"  use="optional">
+								<xs:simpleType>
+								  <xs:list itemType="xs:string" />
+								</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="producers"  use="optional">
+								<xs:simpleType>
+								  <xs:list itemType="xs:string" />
+								</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Consumers">
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="consumer">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required" />
+					<xs:attribute name="agent-id" type="xs:string" use="required" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="count" type="xs:decimal" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="Producers">
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="producer">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required" />
+					<xs:attribute name="agent-id" type="xs:string" use="required" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="count" type="xs:decimal" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="Tests">
+		<xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="unbounded" name="test">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="1" maxOccurs="1" name="messages">
+							<xs:complexType>
+								<xs:attribute name="number-of-messages" type="xs:decimal"
+									use="optional" />
+								<xs:attribute name="message-size" type="xs:decimal"
+									use="optional" />
+							</xs:complexType>
+						</xs:element>
+						<xs:element minOccurs="1" maxOccurs="1" name="destination">
+							<xs:complexType>
+								<xs:attribute name="destination-type" type="xs:string"
+									use="required" />
+								<xs:attribute name="sync-consumer" type="xs:boolean"
+									use="optional" default="false" />
+								<xs:attribute name="no-ack-consumer" type="xs:boolean"
+									use="optional" default="false" />
+							</xs:complexType>
+						</xs:element>
+						<xs:element minOccurs="1" maxOccurs="1" name="consumers"
+							type="Consumers" />
+						<xs:element minOccurs="1" maxOccurs="1" name="producers"
+							type="Producers" />
+					</xs:sequence>
+					<xs:attribute name="test-name" type="xs:string" use="required" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="encoding" type="xs:string" use="optional" default="PROTOCOL_BUFFER" />
+	</xs:complexType>
+
+	<xs:element name="test-configuration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="1" maxOccurs="1" name="agents"
+					type="Agents" />
+				<xs:element minOccurs="1" maxOccurs="1" name="machines"
+					type="Machines" />					
+				<xs:element minOccurs="1" maxOccurs="1" name="tests"
+					type="Tests" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

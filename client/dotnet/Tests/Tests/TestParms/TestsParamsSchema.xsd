@@ -1,0 +1,33 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="test-params">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="defaults">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="param" type="Param" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="tests">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="test">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="param" type="Param" />
+                  </xs:sequence>
+                  <xs:attribute name="test-name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Param">
+    <xs:attribute name="param-name" type="xs:string" use="required" />
+    <xs:attribute name="param-value" type="xs:string" use="required" />
+  </xs:complexType>
+</xs:schema>

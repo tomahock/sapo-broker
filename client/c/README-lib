@@ -1,0 +1,63 @@
+New libsapo-broker2, a C client library for sapo-broker.
+
+
+Tentative Features:
+ - Support several comunication protocols by design.
+ - Support multiple servers for failover and load balancing.
+ - Gracefully handle network & broker failures.
+ - FAST, lightweight, thread-safe and pleasant API.
+
+WHAT WORKS NOW:
+    - uses PROTOCOL BUFFERS for the comunication protocol
+    - supports 2 transport protocols:
+       - TCP
+       - UDP (for sending only, broker limitation)
+    - Publish to TOPIC
+    - Enqueue to QUEUES
+    - Subscribe to QUEUE, with auto-acknowledge (or not),
+    - Subscribe to TOPIC
+    - broker_receive():
+        blocking reception of messages, can specify timeout.
+        message indicates which:
+            topic/queue the message belongs
+            server
+            if it was already acked or not.
+    - multiple server support:
+        - basic fail-over for sending:
+            it tries servers in order, stops trying on success.
+        - if failures are reported during comunication with a given server,
+            at most 3 reconnect are tried,
+            after that, it tries diferent server.
+    - thread safe
+
+TODO:
+    - Handle disconnects better:
+        - on disconnect, re-subscribe current topics in (some other) accessible broker.
+    - POLL support
+    - Handle to user PONG/FAULT/* messages from Broker.
+    - Better support for multiple servers:
+        - balance enqueues or publishes through ALL servers
+        - subscribe to topics/queues in ALL servers.
+    - support adicional features:
+        - priorities?
+        - expiration times
+        - action_id
+    - support assyncronous API with callbacks.
+    - comunication protocols:
+        - THRIFT (patches are welcome)
+        - SOAP (patches are welcome)
+
+
+
+-----------------------
+BUILD INSTRUCTIONS
+-----------------------
+building the library:
+$ make -jN
+building the library with debug on:
+$ make -jN debug
+building the tests:
+$ make -jN tests
+instaling the library (PREFIX is optional):
+$ PREFIX=/usr/local/libsapo-broker2 make install
+

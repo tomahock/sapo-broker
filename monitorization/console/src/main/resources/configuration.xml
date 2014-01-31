@@ -1,0 +1,4 @@
+<monitorization-configuration>
+	<console http-port="8878" />
+	<root-paths filesystem-path="." wwwroot-path="wwwroot" />
+</monitorization-configuration>

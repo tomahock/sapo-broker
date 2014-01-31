@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>pt.sapo.oss.broker</groupId>
+    <artifactId>sapo-broker-parent</artifactId>
+    <name>sapo-broker-parent</name>
+    <version>4.0.46</version>
+    <packaging>pom</packaging>
+    <parent>
+        <groupId>pt.sapo</groupId>
+        <artifactId>sapo-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <modules>
+        <module>comm-types</module>
+        <module>gcs</module>
+        <module>binding/protobuf</module>
+        <module>binding/thrift</module>
+        <module>binding/json</module>
+        <module>binding/xml</module>
+        <module>agent</module>
+        <module>client/java</module>
+        <module>client/javascript</module>
+        <module>test/broker</module>
+        <module>test/performance</module>
+        <module>monitorization/collector</module>
+        <module>monitorization/console</module>
+    </modules>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>http://10.135.66.173/mvn/content/repositories/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>		
+    </repositories>
+</project>

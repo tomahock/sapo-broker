@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="arch">
+  <title>Bayeux Bridge</title>
+  <section>
+    <title>Introduction</title>
+    <para>Sapo-Broker Bayeux Bridge is a server component and javascript library that enables user agents (browsers) to subscribe and publish messages to Sapo-Broker messaging system. It enables the creation of dynamic, event-driven Web 2.0 applications.</para>
+    <para>The Bayeux Bridge lies between a public HTTP network and a private network where the Sapo-Broker agents are accessible. This scheme is presentend in <xref linkend="Figure-jsBridge"/>.</para>
+    <figure id="Figure-jsBridge">
+      <title>Bayeux Bridge participants</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/bayeuxBridge.jpeg"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+   <section>
+     <title>Bayeux protocol</title>
+       <para>The communication between user agents and the Bayeux Bridge is supported by <ulink url="http://svn.cometd.com/trunk/bayeux/bayeux.html">Bayeux Protocol</ulink>. The protocol is meant "for transporting asynchronous messages (primarily over HTTP), with low latency between a web server", and "the primary purpose of Bayeux is to support responsive 2 way interactions between web clients using Ajax and the web server."</para>
+       <para>Bayeux enables the implementation of Subscribe/Request communication style over HTTP by supporting "server-push" or a technique known as <ulink url="http://alex.dojotoolkit.org/2006/03/comet-low-latency-data-for-the-browser/">comet</ulink>.</para>
+       <para>The protocol specification defines the term "channel" as a "named destination and/or source of events". This means that clients subscribe to channels and are notified of messages published to those channels. In this aspect channels are identical to Sapo-Broker topics, however, in this text the term "channel" is used to refer to user agent subscription and publication destination types.</para>
+   </section>
+  </section>
+  <section>
+    <title>Server component</title>
+    <para>Sapo-Broker Bayeux Bridge server component is based in <ulink url="http://jboss.org/netty/">Netty</ulink> and <ulink url="http://viewvc.jboss.org/cgi-bin/viewvc.cgi/netty/subproject/bayeux/">Bayeux4Netty</ulink>. Bayeux4Netty is a Bayeux encoder/decoder on top of which the bridging functionality is built.</para>
+    <para>The server sits in the middle of public HTTP network and Sapo-Broker messaging system, translating channel subscription requests to topic subscription (and unsubscriptions) and publication requests to message publication.</para>
+    <para>With Sapo-Broker, topics (queues and virtual queues) are created dynamically, as they are subscribed to or a message is published to them. With Bayeux Bridge the channels that can be subscribed or where messages can be published are constrained by the rules defined in the configuration file.</para>
+    <section>
+      <title>Configuration</title>
+      <para>The configuration of Bayeux Bridge is divided in three parts.</para>
+      <itemizedlist>
+        <listitem>Bridge settings</listitem>
+        <listitem>Broker clouds</listitem>
+        <listitem>Channel mappings</listitem>
+      </itemizedlist>
+      <section>
+        <title>Bridge settings</title>
+        <para>Used to specify the port where the bridge will be listening.</para>
+      </section>
+      <section>
+        <title>Broker clouds</title>
+        <para>The Bayeux Bridge can be connected to several Broker Clouds. Each cloud has a name a channel mapping and several agents.</para>
+      </section>
+      <section>
+        <title>Channel mappings</title>
+        <para>A channel mapping is a association between a channel name and a topic. Topic name values may be diferent for subscription and publication. Also, for each channel subscription or publication can be denied or the message may be changed. Message modification is possible through the implementation of an interface (MessageTransformer).</para>
+        <para>A mapping set is a collection of mappings and besides of sequential declaration it may include other mappings.</para>
+      </section>
+      <para>To ilustrate the configuration of a Bayeux Bridge a sample is presented.</para>
+      <example>
+        <title>Bayeux Bridge configration file</title>
+          <screen>&lt;bridge-configuration&gt;
+	&lt;settings&gt;
+		&lt;bridge port=&quot;8080&quot; /&gt;
+	&lt;/settings&gt;
+	&lt;broker-clouds&gt;
+		&lt;cloud cloud-name=&quot;cloud A&quot; mapping=&quot;X&quot;&gt;
+			&lt;agent hostname=&quot;10.0.0.1&quot; port=&quot;3323&quot; /&gt;
+			&lt;agent hostname=&quot;10.0.0.2&quot; port=&quot;3323&quot; /&gt;
+		&lt;/cloud&gt;
+		&lt;cloud cloud-name=&quot;cloud B&quot; mapping=&quot;Y&quot;&gt;
+			&lt;agent hostname=&quot;127.0.0.1&quot; port=&quot;3423&quot; /&gt;
+			&lt;agent hostname=&quot;127.0.0.2&quot; port=&quot;3423&quot; /&gt;
+		&lt;/cloud&gt;
+	&lt;/broker-clouds&gt;
+	&lt;mappings&gt;
+		&lt;mapping-set set-name=&quot;X&quot;&gt;
+			&lt;mapping channel=&quot;/channel/messages&quot; subscription=&quot;/topic/.*&quot; publication=&quot;/topic/message&quot; /&gt;
+			&lt;mapping channel=&quot;/topic/foo&quot; subscription=&quot;/topic/foo&quot; publication=&quot;/topic/foo&quot; to-agent-transformation-class=&quot;pt.com.broker.jsbridge.ToUpperMessageTransformer&quot; from-agent-transformation-class=&quot;pt.com.broker.jsbridge.ToUpperMessageTransformer&quot; denyPublication=&quot;true&quot; /&gt;
+		&lt;/mapping-set&gt;
+		&lt;mapping-set set-name=&quot;Y&quot; include-set=&quot;X&quot;&gt;
+			&lt;mapping channel=&quot;/topic/stats&quot; subscription=&quot;/system/stats/.*&quot; publication=&quot;&quot; denyPublication=&quot;true&quot;  /&gt;
+		&lt;/mapping-set&gt;
+	&lt;/mappings&gt;
+&lt;/bridge-configuration&gt;</screen>
+      </example>
+    </section>
+  </section>
+  <section>
+    <title>Client library</title>
+    <para>In order to web applications take advantege of Javascrit Bridge a simple javascript library, sbJsBridge.js, was developed. The library, for now, depends on <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/clients/bayeux-bridge/example/wwwroot/cometd_uncompressed_changed.js">modified version</ulink> of DojoX Comet implementation Bayeux .</para>
+    <para>The javascrit library is composed by the folowing methods:</para>
+    <itemizedlist>
+      <listitem>connect(hostname, port) - Initialize a communication with a Bayeux Bridge.</listitem>
+      <listitem>disconnect() - End a previously established communication.</listitem>
+      <listitem>subscribe(channel, callback) - Subscribe to a channel specifying a callback function called when a new message arrives.</listitem>
+      <listitem>unsubscribe(channel) - Unsubscribe to a previous subscription.</listitem>
+      <listitem>publish(channel, text) - Publish a message to a channel.</listitem>
+    </itemizedlist>
+    <section>
+      <title>Sample application</title>
+      <para>In order to test Bayeux Bridge a simple sample application was developed. It's gold is to enable javascript clients to subcribe to channels and publish messages, which will be fowared to the Sapo-Broker messaging system. A printscreen of the application is presented in <xref linkend="Figure-jsBridgeSampleApp"/> as well as the code required for running the sample.</para>
+      <figure id="Figure-jsBridgeSampleApp">
+        <title>Bayeux Bridge sample application</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/bridgeSample.jpg"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <example>
+        <title>HTML code of the sample</title>
+        <screen>&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;Sapo-Broker Bayeux Bridge sample&lt;/title&gt;
+        &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+	&lt;script type=&quot;text/javascript&quot; src=&quot;sapolib.js&quot; &gt;&lt;/script&gt;
+	&lt;script type=&quot;text/javascript&quot; src=&quot;dojo_cometd.js&quot; &gt;&lt;/script&gt;
+	&lt;script type=&quot;text/javascript&quot; src=&quot;sbJsBridge.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;sample.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+	&lt;h1&gt;Sapo-Broker Bayeux Bridge sample&lt;/h1&gt;
+	&lt;div id=&quot;publicationSection&quot;&gt;
+		&lt;h2&gt;Message publication&lt;/h2&gt;
+			&lt;table&gt;
+				&lt;tr&gt;
+					&lt;td&gt;
+						Channel:
+					&lt;/td&gt;
+					&lt;td&gt;
+						&lt;select id=&quot;publicationChannels&quot; style=&quot;width:150px&quot;&gt;
+						&lt;/select&gt;	
+					&lt;/td&gt;
+				&lt;/tr&gt;
+				&lt;tr&gt;
+					&lt;td&gt;
+						Message:
+					&lt;/td&gt;
+					&lt;td&gt;
+						&lt;input id=&quot;publishText&quot; type=&quot;text&quot; style=&quot;width:150px&quot;/&gt;	
+					&lt;/td&gt;
+				&lt;/tr&gt;
+				&lt;tr&gt;
+					&lt;td&gt;
+					&lt;/td&gt;
+					&lt;td&gt;
+						&lt;input id=&quot;publishBtn&quot; type=&quot;submit&quot; class=&quot;button&quot; value=&quot;Publish&quot;/&gt;
+					&lt;/td&gt;			
+				&lt;/tr&gt;
+			&lt;/table&gt;
+		&lt;/tr&gt;&lt;/table&gt;
+	&lt;/div&gt;
+	&lt;div id=&quot;SubscriptionSection&quot;&gt;
+		&lt;h2&gt;Subscriptions&lt;/h2&gt;
+		&lt;p&gt;Subscribe and unsubscribe&lt;/p&gt;
+		&lt;table&gt;&lt;tr&gt;
+			&lt;td&gt;
+				&lt;select size=&quot;8&quot; multiple=&quot;true&quot; id=&quot;channelsToSubscribe&quot; style=&quot;width:250px&quot; &gt;
+				&lt;/select&gt;
+				&lt;p style=&quot;text-align:center&quot;&gt;Channels to subscribe&lt;/p&gt;
+			&lt;/td&gt;
+			&lt;td&gt;
+				&lt;input id=&quot;subscribeChannels&quot; type=&quot;submit&quot; class=&quot;button&quot; value=&quot;&gt;&gt;&quot; /&gt;&lt;/br&gt;
+				&lt;input id=&quot;unsubscribeChannels&quot; type=&quot;submit&quot; class=&quot;button&quot; value=&quot;&lt;&lt;&quot; /&gt;
+			&lt;/td&gt;
+			&lt;td&gt;
+				&lt;select size=&quot;8&quot; multiple=&quot;true&quot; id=&quot;subscribedChannels&quot; style=&quot;width:250px&quot; &gt;
+
+				&lt;/select&gt;
+				&lt;p style=&quot;text-align:center&quot;&gt;Subscribed channels&lt;/p&gt;
+			&lt;/td&gt;			
+		&lt;/tr&gt;&lt;/table&gt;
+
+		&lt;p&gt;Received messages&lt;/p&gt;
+		&lt;textarea rows=&quot;10&quot; cols=&quot;40&quot; readonly=&quot;true&quot; id=&quot;receivedMessages&quot; style=&quot;width:90%&quot; &gt;
+		
+		&lt;/textarea&gt;
+	&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</screen>
+      </example>
+      <example>
+        <title>Javascript client of the Bayeux Bridge library</title>
+        <screen>function jsTestInit() 
+{
+	// This are the available channels
+	var availableChannels = new Array(&quot;/topic/messages&quot;, &quot;/topic/foo&quot;,&quot;/bad&quot;);
+
+
+	// Add available channels to subscription and publication select elements
+	var channelsToSubscribe = s$('channelsToSubscribe');
+	var publicationChannels = s$('publicationChannels');
+	for( var idx in availableChannels)
+	{
+		addOptionToSelectElement(channelsToSubscribe, availableChannels[idx], availableChannels[idx]);
+		addOptionToSelectElement(publicationChannels, availableChannels[idx], availableChannels[idx]);
+	}
+		
+	// Add subscription logic
+	var subscribeChannels = s$('subscribeChannels');
+	subscribeChannels.onclick = function(msg){
+		var subscribedChannels = s$('subscribedChannels');
+		// Find new subscriptions		
+		var subscribeChannels = s$('channelsToSubscribe');
+		
+		switchSelectedElements(subscribeChannels, subscribedChannels, function(channelName){
+			getBridge().subscribe(channelName, function(msg) {
+				var receivedMessages=s$('receivedMessages');
+				receivedMessages.value = msg.data.subscription + &quot;: &quot; + msg.data.data +&quot;\n&quot;  + receivedMessages.value;
+			});
+		});
+		
+
+		return false;
+	}
+
+	// Add unsubscription logic
+	var unsubscribeChannels = s$('unsubscribeChannels');
+	unsubscribeChannels.onclick = function(msg){
+		var subscribedChannels = s$('subscribedChannels');
+		// Find new subscriptions		
+		var subscribeChannels = s$('channelsToSubscribe');
+		
+		switchSelectedElements(subscribedChannels, subscribeChannels, function(channelName){
+			getBridge().unsubscribe(channelName);
+		});
+		
+
+		return false;
+	}
+	
+	// Add publication logic
+	element = s$('publishBtn');
+	element.onclick = function(msg){
+		var publicationChannels	= s$('publicationChannels');
+		var publishText = s$('publishText');
+
+		getBridge().publish(publicationChannels.value, publishText.value);
+		/*
+		for(var idx = 0; idx &lt; publicationChannels.length; ++idx)
+		{
+			if(publicationChannels.options[idx].selected)
+			{
+				alert(publicationChannels.options[idx].value + &quot;: &quot; + publishText.value);
+				getBridge().publish(publicationChannels.options[idx].value, publishText.value);
+				return false;
+			}
+		}
+		*/		
+		return false;
+	}
+}
+
+var sbJsBridge= new sbJsBridge();
+function getBridge()
+{
+	if(!sbJsBridge.connected)
+		sbJsBridge.connect(&quot;localhost&quot;, 9999);
+	return sbJsBridge;
+}
+
+
+// user interface auxiliary functions
+
+
+function addOptionToSelectElement(selectElement, optionValue, optionText)
+{	
+	selectElement.options[selectElement.length] = new Option(optionValue, optionText);
+}
+
+function removeOptionFromSelectElement(selectElement, optionValue)
+{
+	for(var idx in selectElement.options)
+	{
+		if(selectElement.options[idx].value === optionValue)
+		{
+			selectElement.remove(idx);
+		}
+	}
+}
+
+// onChange signature: onChange(valueOfOption)
+function switchSelectedElements(fromSelectElement, toSelectElement, onChange)
+{
+	var newSubscriptions = new Array();
+	for(var idx = 0; idx &lt; fromSelectElement.length; ++idx)
+	{
+		if(fromSelectElement.options[idx].selected)
+		{
+			newSubscriptions[newSubscriptions.length] = fromSelectElement.options[idx].value;
+			// Add selected channel to the correspondent list
+			addOptionToSelectElement(toSelectElement, fromSelectElement.options[idx].value, fromSelectElement.options[idx].value);
+		}
+	}
+	
+	for( var idx in newSubscriptions)
+	{
+		// perform action
+		onChange(newSubscriptions[idx]);
+		
+		// Remove elements from original select element
+		removeOptionFromSelectElement(fromSelectElement, newSubscriptions[idx]);
+	}
+}
+
+window.onload = jsTestInit;</screen>
+      </example>
+    </section>
+  </section>
+  <section>
+    <title>Known issues</title>
+    <para>Sapo-Broker Javascript is still experimental and relies on some beta or immature software such <ulink url="http://viewvc.jboss.org/cgi-bin/viewvc.cgi/netty/subproject/bayeux/">Bayeux4Netty</ulink> or <ulink url="http://api.dojotoolkit.org/jsdoc/1.3/dojox.cometd">DojoX Cometd</ulink>, so it's quite understandable that some issues exist. This sections states the known issues.</para>
+    <section>
+      <title>Duplicate subscriptions</title>
+      <para>User agents Subscription Requests are transformed by Bayeux Bridge to Topic Subscriptions and sent to each agent cloud connected to the bridge. When a message it's published to a given topic,
+ and that topic is valid in more than one cloud, registed user agents will receive the message more than once.</para>
+      <para>This problem results from having multiple clients, one for each cloud, on the bridge through which are sent and received uncorrelated messages.</para>
+    </section>
+    <section>
+      <title>Access control errors are not signalized</title>
+      <para>Every brigde has a configuration file where is determined the channels that can be subscribed and where messages can be published. If a not allowed channel is subscribed or a message is sent to it, the subscription will be ignored, as the publication, but the user agent will not be notified.</para>
+      <para>This behavior is a consequence of an unsupported feature in DojoX Cometd library.</para>
+    </section>
+  </section>
+</chapter>
+

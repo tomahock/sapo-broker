@@ -1,0 +1,11 @@
+libthrift-python (0.8.0) all; urgency=low
+
+  * debian
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Fri, 18 Nov 2011 18:10:40 +0000
+
+libthrift-python (0.7.0) unstable; urgency=low
+
+  * First debianization
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Fri, 11 Feb 2011 20:02:49 +0000

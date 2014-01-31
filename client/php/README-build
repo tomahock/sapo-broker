@@ -1,0 +1,17 @@
+PHP Extension for libsapo-broker2
+
+BUILD
+run ./build.sh on the deployment system to create the debian package
+for the correct php version
+
+requires dh_* tools, php5-dev and libsapo-broker2
+
+NOTE
+This tool uses dh-make-pecl, which is unable to read a dependency list and pass it do dpkg,
+You will need to manually install the following packages in order to build this pecl extension
+	apt-get install dh-make-php php5-dev build-essential
+Make sure you build the package using the same php version as your deployment environment to
+avoid arch, versioning problems with phpize
+
+There is a generic Linux/amd64/php5 deb package included. It may or may not work on _your_ system :)
+

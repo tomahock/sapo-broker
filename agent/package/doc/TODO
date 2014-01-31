@@ -1,0 +1,12 @@
+TODO, TO THINK
+
+1) Difered message publication:
+   - Publish a message to be delivered after a given time/date. (header VALID_AFTER?)
+
+2) TTL in Virtual Queues 
+   - Set a TTL in subscriptions. TTL is uptaded in each subscription.
+
+3) Rethink delivery strategy for message from queues
+   - More event-driven
+   - Less thread-driven
+   - Or some

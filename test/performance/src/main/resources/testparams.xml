@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<test-params>
+  <defaults>
+    <param param-name="agent1-host" param-value="localhost"/>
+    <param param-name="agent1-port" param-value="3323"/>
+    <param param-name="agent1-ssl-port" param-value="3390"/>
+    <param param-name="agent1-udp-port" param-value="3323"/>
+    <param param-name="agent2-host" param-value="localhost"/>
+    <param param-name="agent2-port" param-value="3423"/>
+    <param param-name="agent2-ssl-port" param-value="3490"/>
+    <param param-name="agent2-udp-port" param-value="3423"/>
+    <param param-name="keystoreLocation" param-value="[location]" />
+    <param param-name="keystorePassword" param-value="[password]" />
+  </defaults>
+  <tests>
+    <test test-name="jdbcTest">
+      <param param-name="userparam-name" param-value="[username]"/>
+      <param param-name="password" param-value="[password]"/>
+    </test>
+    <test test-name="sapoSts">
+      <param param-name="userparam-name" param-value="[username]"/>
+      <param param-name="password" param-value="[password]"/>
+    </test>
+  </tests>
+</test-params>

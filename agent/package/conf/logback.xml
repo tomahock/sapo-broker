@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<jmxConfigurator />
+
+	<appender class="ch.qos.logback.core.ConsoleAppender" name="ConsoleAppender">
+		<encoder>
+			<pattern>%5p #%C# [%t] - %m%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender class="ch.qos.logback.core.ConsoleAppender" name="Broker-ConsoleAppender">
+		<encoder>
+			<pattern>%5p #BROKER#%C# [%t] - %m%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender class="ch.qos.logback.core.ConsoleAppender" name="GCS-ConsoleAppender">
+		<encoder>
+			<pattern>%5p #GCS#%C# [%t] - %m%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger level="error" additivity="false" name="org.apache">
+		<appender-ref ref="ConsoleAppender" />
+	</logger>
+
+	<logger level="info" additivity="false" name="pt.com.gcs">
+		<appender-ref ref="GCS-ConsoleAppender" />
+	</logger>
+
+	<logger level="info" additivity="false" name="pt.com.broker">
+		<appender-ref ref="Broker-ConsoleAppender" />
+	</logger>
+
+	<root level="info">
+		<appender-ref ref="ConsoleAppender" />
+	</root>
+
+</configuration>

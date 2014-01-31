@@ -1,0 +1,50 @@
+<html>
+	<head>
+	<title>Sapo-Broker Subscription Information</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<style type="text/css">
+	%s
+	</style>
+	</head>
+	<body>
+		<h1>Agent: %s</h1>
+		<span class="infoPannel">
+		<div class="infoPannelTitle">Local queue subscriptions</div>
+		<div class="infoPannelBody">
+		%s
+		</div>
+		</span>
+		<span class="infoPannel">
+		<div class="infoPannelTitle">Remote queue subscriptions</div>
+		<div class="infoPannelBody">
+		%s
+		</div>
+		</span>
+		<span class="infoPannel">
+		<div class="infoPannelTitle">Local topic subscriptions</div>
+		<div class="infoPannelBody">
+		%s
+		</div>
+		</span>
+		<span class="infoPannel">
+		<div class="infoPannelTitle">Remote topic subscriptions</div>
+		<div class="infoPannelBody">
+		%s
+		</div>
+		</span>
+		<br/>
+		
+		<span class="infoPannel">
+		<div class="infoPannelTitle">Remote connections(in): %s</div>
+		<div class="infoPannelBody">
+		%s
+		</div>
+		</span>
+		<span class="infoPannel">
+		<div class="infoPannelTitle">Remote connections(out): %s</div>
+		<div class="infoPannelBody">
+		%s
+		</div>
+		</span>
+	</body>
+</html>

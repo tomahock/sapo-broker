@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<test-params>
+  <defaults>
+    <param param-name="agent1-host" param-value="localhost"/>
+    <param param-name="agent1-port" param-value="3323"/>
+    <param param-name="agent1-legacy-port" param-value="3322"/>
+    <param param-name="agent1-ssl-port" param-value="3390"/>
+    <param param-name="agent1-udp-port" param-value="3323"/>
+    <param param-name="agent1-legacy-udp-port" param-value="3366"/>
+    <param param-name="agent2-host" param-value="localhost"/>
+    <param param-name="agent2-port" param-value="3423"/>
+    <param param-name="agent2-legacy-port" param-value="3422"/>
+    <param param-name="agent2-ssl-port" param-value="3490"/>
+    <param param-name="agent2-udp-port" param-value="3423"/>
+    <param param-name="agent2-legacy-udp-port" param-value="3466"/>
+    <param param-name="keystoreLocation" param-value="[location]" />
+    <param param-name="keystorePassword" param-value="[password]" />
+  </defaults>
+  <tests>
+    <test test-name="jdbcTest">
+      <param param-name="userparam-name" param-value="[username]"/>
+      <param param-name="password" param-value="[password]"/>
+    </test>
+    <test test-name="sapoSts">
+      <param param-name="userparam-name" param-value="[username]"/>
+      <param param-name="password" param-value="[password]"/>
+    </test>
+  </tests>
+  <dynamically-loaded-tests>
+    <!--test-class class-name="pt.com.broker.functests.positive.DBRolesAuthenticationTest" />
+    <test-class class-name="pt.com.broker.functests.positive.SslTopicNameSpeficied" />
+    <test-class class-name="pt.com.broker.functests.positive.SslTopicNameSpeficied" />
+    <test-class class-name="pt.com.broker.functests.negative.UnknownAuthTypeFailedTest" /-->
+  </dynamically-loaded-tests>    
+</test-params>

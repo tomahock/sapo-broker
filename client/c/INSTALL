@@ -1,0 +1,13 @@
+build & create a debian package:
+$ ./make_deb.sh
+
+or
+
+To compile:
+$ make all
+
+To install:
+$ make install
+or
+$ PREFIX=/opt/xxx make install
+

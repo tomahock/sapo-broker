@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>BrokerClient</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <RootNamespace>SapoBrokerClient</RootNamespace>
+    <PublishUrl>http://localhost/BrokerClient/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Thrift">
+      <HintPath>Lib\Thrift.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>Lib\log4net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Authentication\AuthenticationInfo.cs" />
+    <Compile Include="Authentication\ICredentialsProvider.cs" />
+    <Compile Include="Authentication\InvalidCredentialsException.cs" />
+    <Compile Include="Authentication\ProviderInfo.cs" />
+    <Compile Include="Encoding\Messages.cs" />
+    <Compile Include="Encoding\MessagesSerializer.cs" />
+    <Compile Include="Encoding\Thrift\ThriftMessageSerializer.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Accepted.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Acknowledge.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Action.cs" />
+    <Compile Include="Encoding\Thrift\Messages\ActionType.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Atom.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Authentication.cs" />
+    <Compile Include="Encoding\Thrift\Messages\BrokerMessage.cs" />
+    <Compile Include="Encoding\Thrift\Messages\DestinationType.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Fault.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Header.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Notification.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Ping.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Poll.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Pong.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Publish.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Subscribe.cs" />
+    <Compile Include="Encoding\Thrift\Messages\Unsubscribe.cs" />
+    <Compile Include="Encoding\Thrift\ThriftMessageConverter.cs" />
+    <Compile Include="Messaging\BrokerProtocolHandler.cs" />
+    <Compile Include="Messaging\PendingAcceptRequestsManager.cs" />
+    <Compile Include="Messaging\UnexpectedMessageException.cs" />
+    <Compile Include="Networking\SslNetworkHandler.cs" />
+    <Compile Include="Networking\UdpNetworkHandler.cs" />
+    <Compile Include="SslBrokerClient.cs" />
+    <Compile Include="Utils\CircularContainer.cs" />
+    <Compile Include="Utils\HandoverSyncObject.cs" />
+    <Compile Include="Utils\NotifiableEvent.cs" />
+    <Compile Include="Utils\NotifiableKeyedQueues.cs" />
+    <Compile Include="Networking\MessageAccumulator.cs" />
+    <Compile Include="BrokerClient.cs" />
+    <Compile Include="IMessageAcceptedListener.cs" />
+    <Compile Include="AcceptRequest.cs" />
+    <Compile Include="Encoding\MessageSerializerFactory.cs" />
+    <Compile Include="HostInfo.cs" />
+    <Compile Include="Networking\NetworkHandler.cs" />
+    <Compile Include="Subscription.cs" />
+    <Compile Include="Utils\RandomString.cs" />
+    <Compile Include="Utils\WaitMessageAccepted.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

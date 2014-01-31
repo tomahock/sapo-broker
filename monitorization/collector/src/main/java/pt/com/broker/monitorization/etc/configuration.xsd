@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:complexType name="Agents">
+		<xs:sequence>
+			<xs:sequence>
+				<xs:element minOccurs="1" maxOccurs="unbounded" name="agent" >
+					<xs:complexType>
+						<xs:attribute name="hostname" type="xs:string" use="required" />
+						<xs:attribute name="port" type="xs:decimal" use="required" />
+						<xs:attribute name="world-map" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ExceptionAgents">
+		<xs:sequence>
+			<xs:sequence>
+				<xs:element minOccurs="1" maxOccurs="unbounded" name="agent" >
+					<xs:complexType>
+						<xs:attribute name="agent-name" type="xs:string" use="required" />
+						<xs:attribute name="port" type="xs:decimal" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="monitorization-configuration">
+		<xs:complexType>
+		  <xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="1" name="agents" type="Agents" />
+			<xs:element minOccurs="0" maxOccurs="1" name="tcp-port-exceptions" type="ExceptionAgents" />
+			<xs:element minOccurs="0" maxOccurs="1" name="http-port-exceptions" type="ExceptionAgents" />
+		  </xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

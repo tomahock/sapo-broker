@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="advanced">
+	<title>Advanced topics</title>
+	<section id="ACCESS_CONTROL">
+		<title>Access control</title>
+		<para>In order to protect sensitive information Sapo-Broker provides an access control mechanism. This mechanism is parameterized by a security policy in the global configuration file, in the element "security-policies". Each agent may have a specific security or it may inherit the default security policy. The default policy is named "default".</para>
+		<para>Security policies may be composed hierarchically, which means that a given security policy X can inherit from a policy Y adding or overriding  specific aspects to the policy. These policies may be associated with agents. If no security policy is to be used, then the element "security-policies" should be omitted for performance reasons.</para>
+		<para>A security policy is composed by an Access Control List (ACL), which is composed by entries. Each entry has an action (PERMIT or DENY), a destination type (TOPIC, QUEUE or VIRTUAL_QUEUE), a destination (such as "/topic/foo" or a regular expression) and a privilege (READ or WRITE). Destination types and privileges may be declared as lists which makes the ACL entry easier to read and declare. An entry is also composed by conditions that determine when the ACL entry should be applied. Conditions represent a binary evaluation result which determines the application of the related ACL entry. They can be of the following types:</para>
+		<itemizedlist>
+			<listitem>
+				ADDRESS – An IPv4 address and mask (If the address is from a single machine, no mask is needed)
+			</listitem>
+			<listitem>
+				ROLE – A text value with the role name
+			</listitem>
+			<listitem>
+				CHANNEL_TYPE – A type of security property (CONFIDENTIALITY, INTEGRITY and/or AUTHENTICITY) guaranteed by the transport channel
+			</listitem>
+			<listitem>
+				AND – A composed condition that evaluates to true if all the contained conditions are true
+			</listitem>
+			<listitem>
+				ALWAYS – The ACL entry is always applied
+			</listitem>
+		</itemizedlist>
+		<section>
+			<title>Access control evaluation criteria </title>
+			<para>Every agent as an associated security policy, except in the case of security policy absence in witch it defaults to "allow everything". In the case of policy inheritance, eventually with multiple degrees, a stack of entries is built with the most specific ACLs at the top and entries inserted by declaration order within each ACL. The result is an ordered entry stack where the most specific/priority come first, so evaluating a client request against the full access control is sequential evaluation of entries. The first entry witch results in a positive evaluation is applied.</para>
+			<para>The entry stack is optimized for evaluation, although maintaining the described model. (More on this when we have the time).</para>
+		</section>
+		<section>
+			<title>An annotated sample</title>
+			<para>
+				In
+				<link linkend="CODE_SEC_POLICY_CONF" endterm="CODE_SEC_POLICY_CONF" />
+				a security configuration sample is presented. As said before, this configuration aspect is defined in global configuration file.
+			</para>
+			<para>The sample presents a scenario where the default security policy mandates that no client can produce messages to topic or queue whose named begin with "/system/". The default policy also dictates that destination names beginning with "/private/" are forbidden for all clients. These security settings apply to all agents using the default security policy.</para>
+			<para>At the bottom of the sample a section (XML element) entitled "agents" is present. Here is the place to associate specific security policies with agents. The sample states that an agent named "agent007" must used the "anotherPolicy" security policy. This policy inherits from the default security, adds some entries to the ACL and in a specific case overrides the default policy. The added entries specify that message production to the queue named "/specialQueue" is denied to all except those clients that simultaneous possess the role "VIP_role" and are using a type of communication channel that offers confidentiality (such as SSL). The declaration details are self-explanatory.</para>
+			<example>
+				<title id="CODE_SEC_POLICY_CONF">Security policy configuration sample</title>
+				<screen>
+&lt;security-policies&gt;
+   &lt;!-- THE RULES EVALUATION STOPS AFTER THE FIRST MATCH, GRANTING OR DENYING A PRIVILEGE. --/&gt;
+   &lt;policies&gt;
+      &lt;policy policy-name="default"&gt;
+         &lt;acl&gt;
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE" destination="/system/.*"  privilege="WRITE"&gt;
+               &lt;condition condition-type="ALWAYS" /&gt;
+            &lt;/entry&gt;
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE VIRTUAL_QUEUE" destination="/private/.*"  privilege="WRITE READ"&gt;
+               &lt;condition condition-type="ALWAYS" /&gt;
+            &lt;/entry&gt;
+         &lt;/acl&gt;
+      &lt;/policy&gt;
+      &lt;policy policy-name="anotherPolicy" inherits="default"&gt;
+         &lt;acl&gt;
+            &lt;entry action="DENY" destination-type="TOPIC QUEUE VIRTUAL_QUEUE" destination="/private/.*"  privilege="READ"&gt;
+               &lt;condition condition-type="ADDRESS"&gt;
+                  &lt;address  mask="24"&gt;10.11.12.0&lt;/address&gt;
+               &lt;/condition&gt;
+            &lt;/entry&gt;
+            &lt;entry action="PERMIT" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt;
+               &lt;condition condition-type="AND"&gt;
+                  &lt;condition condition-type="ROLE"&gt;
+                     &lt;role&gt;VIP_role&lt;/role&gt;
+                  &lt;/condition&gt;
+                  &lt;condition condition-type="CHANNELTYPE"&gt;
+                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt;
+                  &lt;/condition&gt;
+               &lt;/condition&gt;
+            &lt;/entry&gt;
+            &lt;entry action="DENY" destination-type="QUEUE" destination="/specialQueue"  privilege="WRITE"&gt;
+               &lt;condition condition-type="ALWAYS" /&gt;
+            &lt;/entry&gt;
+         &lt;/acl&gt;
+         &lt;/policy&gt;
+         &lt;policy policy-name="very special policy" inherits="special policy"&gt;
+         &lt;acl&gt;
+            &lt;entry action="PERMIT" destination-type="TOPIC" destination="/topic/sensitive"  privilege="READ WRITE"&gt;
+               &lt;condition condition-type="AND"&gt;
+                  &lt;condition condition-type="ROLE"&gt;
+                     &lt;role&gt;brk_writer_role&lt;/role&gt;
+                  &lt;/condition&gt;
+                  &lt;condition condition-type="CHANNELTYPE"&gt;
+                     &lt;channel-type&gt;CONFIDENTIALITY&lt;/channel-type&gt;
+                  &lt;/condition&gt;
+               &lt;/condition&gt;
+            &lt;/entry&gt;       
+           &lt;/acl&gt;
+         &lt;/policy&gt;
+      &lt;/policies&gt;
+     &lt;agents&gt;
+         &lt;agent agent-name="agent007"&gt;
+            &lt;agent-policy policy-name="anotherPolicy" /&gt;
+         &lt;/agent&gt;
+      &lt;/agents&gt;
+&lt;/security-policies&gt;
+				</screen>
+			</example>
+		</section>
+	</section>
+	<section>
+		<title>Authentication extensibility model</title>
+		<para>One of the possibilities of Sapo-Broker access control is based in client roles. The roles associated with clients are determined by pluggable components that comply to Sapo-Broker authentication extensibility model. This model defines:</para>
+		<orderedlist>
+			<listitem>
+				Configuration aspects that lead to component loading and usage
+			</listitem>
+			<listitem>
+				A set of classes and interfaces that authentication modules implement and interact with
+			</listitem>
+		</orderedlist>
+		<para>The modules are responsible for validating client credentials, directly or indirectly, and transform them in roles, if there are any associated with the authenticating client.</para>
+		<para>In order to support client authentication agents must provide an SSL channel and all role dependent communications (publications, notifications and subscriptions) should happen over a secure channel. This was a design decision. Given that client credentials are critical information they should not  be disclosed. One could argue that once authentication was established it could be used a clear channel, and therefore more efficient. However, the implementation approaches to address that design proved to be insecure or have a great deal of complexity (highly undesirable given the number of supported client libraries). Another reason drove this design: If something is so important that requires users to authenticate themselves and have a specified role, why allow this information to
+			flow in clear? Moreover, the most significant burden of secure communication occurs during handshaking.</para>
+		<section>
+			<title>Configuration</title>
+			<para>
+				Authentication modules, also called validation providers, are configured at the global configuration file.
+				There are defined the full name of type implementing pt.com.broker.auth.AuthInfoValidator (more on this later) in the element class and some provider specific provider parameters, under provider-params.
+				The class must be in agent's classpath in order to be loaded.
+			</para>
+			<para>
+				Each "provider-name" must be unique and known by both the broker agent and the client.
+			</para>
+			<table frame="all" id="Table3">
+				<title>Authentication types</title>
+				<tgroup cols="2">
+					<tbody>
+						<row>
+							<entry>SapoSTS</entry>
+							<entry>Accepts SapoSTS (http://services.sapo.pt/Metadata/Service/STS?culture=EN) authentication tokens and obtains clients roles.</entry>
+						</row>
+						<row>
+							<entry>BrokerRolesDB</entry>
+							<entry>User name/password based authentication mechanism. Developed as as a proof-of-concept</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+			<para>Each of the available implementations are described later.</para>
+			<example>
+				<title id="CODE_AUTH_PROV_CONF">Authorization providers configuration</title>
+				<screen>
+&lt;credential-validators&gt;
+   &lt;credential-validator provider-name="SapoSTS"&gt;
+      &lt;class&gt;pt.com.broker.auth.saposts.SapoSTSAuthInfoValidator&lt;/class&gt;
+      &lt;provider-params&gt;
+         &lt;sts&gt;
+            &lt;sts-location&gt;https://services.sapo.pt/STS/&lt;/sts-location&gt;
+            &lt;sts-username&gt;username&lt;/sts-username&gt;
+            &lt;sts-password&gt;password&lt;/sts-password&gt;
+         &lt;/sts&gt;
+      &lt;/provider-params&gt;
+   &lt;/credential-validator&gt;
+   &lt;credential-validator provider-name="BrokerRolesDB"&gt;
+      &lt;class&gt;pt.com.broker.auth.jdbc.JdbcAuthInfoValidator&lt;/class&gt;
+      &lt;provider-params&gt;
+         &lt;db-roles&gt;
+            &lt;driver-class&gt;org.postgresql.Driver&lt;/driver-class&gt;
+            &lt;database-url&gt;jdbc:postgresql://localhost/BROKER_ROLES&lt;/database-url&gt;
+            &lt;database-username&gt;username&lt;/database-username&gt;
+            &lt;database-password&gt;password&lt;/database-password&gt;
+         &lt;/db-roles&gt;
+      &lt;/provider-params&gt;
+   &lt;/credential-validator&gt;
+&lt;/credential-validators&gt;
+				</screen>
+			</example>
+		</section>
+		<section>
+			<title>Relevant classes</title>
+			<para>At the heart of an authorization provider lies an implementation of the interface  pt.com.broker.auth.AuthInfoValidator. This interface and reaming relevant types are presented at Figure 5.</para>
+			<para>The initialization method of AuthInfoValidator gives the provider an opportunity to realize any actions  required to properly validate client's authorization information and translate that information in client roles. The ProviderInfo is used to inform the provider what is the name of the authentication type it will be performing, the class name (redundant) and the parameter specified in the configuration file. These arguments are supplied as an XML representation object.</para>
+			<para>
+				The AuthInfoValidator.validate() method is invoked after the reception of an AuthInfo message.
+				Depending on the authentication type the AuthInfo object contains a combination of a user identifier, an authentication token and list of user roles.
+				The authentication token is a binary value, so, in case of representing a string such as a password must be UTF-8 encoded.
+				In response to an authentication request a result is produced (AuthValidationResult) indicating whether the credentials are valid (a reason for failure should be supplied in case their not), and the list of roles associated with the user in case of valid credentials.
+			</para>
+			<figure id="Figure-AuthorizationProvider">
+				<title>Authorization Provider relevant types</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/authenticationproviders.jpeg" />
+					</imageobject>
+				</mediaobject>
+			</figure>
+		</section>
+		<section>
+			<title>Implemented authentication modules</title>
+			<para>Currently, there are two authenticate modules implemented. One interacts with Sapo STS and it's used internally; the other was implemented as a proof-of-concept attesting broker authentication extensibility model's flexibility and provides user name-password database authentication.</para>
+			<section>
+				<title>Database based authentication</title>
+				<para>
+					Sapo-Broker users may not have access to Sapo STS, and probably this would be the case, or they may need do provide their own authentication mechanisms. As a proof-of-concept it was implemented an authentication provider supported by a relational database.
+					<link linkend="CODE_DATABASE_SCRIPTS">Here</link>
+					is the script used to create the tables. As shown, salts are not used and users passwords are store in clear, not their hashes. This approach won't cope with production environment requirements where the use of secure practices is (should be) mandatory. As said, this is just a proof-of-concept.
+				</para>
+				<para>When using this authentication method, denoted by "BrokerRolesDB" authentication type, clients provide, as credentials, their user name and password.</para>
+				<para>
+					The configuration of this provider, presented in
+					<link linkend="CODE_AUTH_PROV_CONF" endterm="CODE_AUTH_PROV_CONF" />
+					, takes the driver class to be loaded, which must be in agent's classpath, the connection URL and the credentials to access the database and respective tables. The authentication functionality is provided in sapo-broker-auth-jdbc.jar.
+				</para>
+				<example>
+					<title id="CODE_DATABASE_SCRIPTS">Database creation scripts</title>
+					<screen>
+<![CDATA[
+CREATE TABLE users
+(
+ username varchar(50),
+ password varchar(50)
+);
+ALTER TABLE users ADD PRIMARY KEY (username);
+
+CREATE TABLE roles
+(
+ username varchar(50),
+ role varchar(50)
+);
+ALTER TABLE roles ADD PRIMARY KEY (username, role);
+ALTER TABLE roles ADD FOREIGN KEY (username) REFERENCES users(username);
+]]>
+					</screen>
+				</example>
+			</section>
+		</section>
+		<section id="SSL_CONFIGURATION">
+			<title>SSL configuration</title>
+			<para>
+				Sapo-Broker agents use SSL connections as message transport to client authentication messages and to support all communications that require authentication (role based access control). This type of connection is based on asymmetric cryptography operations and X.509 certificates. In order generate your own key pair and X.509 certificates a small tutorial on how to use
+				<ulink url="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">SUN's keytool</ulink>
+				is provided.
+			</para>
+			<section>
+				<title>Keytool tutorial</title>
+				<para>Generating a pair of keys to a new keystore:</para>
+				<command>
+					<prompt>keytool -genkey -validity 1000 -keystore ./certs2 -keyalg rsa -alias test -storepass serverkspw -keypass serverpw</prompt>
+				</command>
+				<para>View the stored keys:</para>
+				<command>
+					<prompt>keytool -list -alias test -keystore ./certs2</prompt>
+				</command>
+				<para>Export public key as an X.509 certificate</para>
+				<command>
+					<prompt>keytool -export -keystore ./certs2 -alias test -file testCert.cer</prompt>
+				</command>
+				<para>Importing a X.509 certificate o the default truststore (easier, but not recommend)</para>
+				<command>
+					<prompt>sudo keytool -import -file ./testCert.cer -keystore  /usr/lib/jvm/java-6-sun-1.6.0.10/jre/lib/security/cacerts</prompt>
+				</command>
+				<para>To a new keystore</para>
+				<command>
+					<prompt>
+						<code>keytool -import -file ./testCert.cer -keystore  ./clientKeystore</code>
+					</prompt>
+				</command>
+				<para>
+					The generated keystore contains a public and private key. This keystore is meant to be used by the agent. A sample on how to configure SSL on the agent is presented
+					<link linkend="CODE_AGENTS_SSL_CONF">here</link>
+					Code 4. This configuration element is specific to each agent, thus, it's not included in global.config file.
+				</para>
+				<example>
+					<title id="CODE_AGENTS_SSL_CONF">Agent's SSL sample configuration</title>
+					<screen>
+&lt;ssl&gt;
+   &lt;broker-ssl-port&gt;3390&lt;/broker-ssl-port&gt;
+   &lt;keystore-location&gt;/home/server/agent/certs2&lt;/keystore-location&gt;
+   &lt;keystore-password&gt;serverkspw&lt;/keystore-password&gt;
+   &lt;key-password&gt;serverpw&lt;/key-password&gt;
+&lt;/ssl&gt;
+					</screen>
+				</example>
+				<para>In order to clients trust agents certificates, during SSL handshaking, the agent's public key, through an X.509 certificate must be added to the trusted certificates client store. It can be added to the default truststore, but it's recommended that client applications specifically used a keystore containing the agent's certificate. This is the approach used by the Java client library.</para>
+			</section>
+		</section>
+	</section>
+	<section>
+		<title>Sapo-Broker reliability</title>
+		<para>
+			The persistence and delivery model of queued messages, as discussed <link linkend="INTRO_POINT2POINT">previously</link>, protects the system against client failure but not against broker failure.
+			If an agent crashes before receiving the client's Acknowledge the message will be delivered again.
+			This violates the "once and only once" promisse but in real world scenarios is near impossible to guarantee 100% robustness.
+			This is, of course, anomalous behaviour and should not happen in common operation. But if it does, and your application semantics doesn't allow for duplicate messages there are a couple of solutions to try.
+		</para>
+		<section>
+			<title>Solution 1 – Client persistence</title>
+			<para>Clients, once they receive the message may persist it and send the respective Acknowledge with an Action Identifier. If the connection with the agent is lost or the Accept message is not received the message should not be processed, but if this not the case the client can process the message. Furthermore, the client is responsible for process locally persisted messages, and this behaviour should be ensured whenever a client restarts.</para>
+		</section>
+		<section>
+			<title>Solution 2 – Global acknowledge record</title>
+			<para>To guarantee that each produced message is processed only once a global acknowledge record may be implemented. After receiving a message, clients query the global acknowledge system to determine if the message was already processed, if not, they process it and afterwards send the due Acknowledge message and inform the global acknowledge system that a given message was already processed. The  last step may be only done if the acknowledge fails.</para>
+		</section>
+	</section>
+</chapter>

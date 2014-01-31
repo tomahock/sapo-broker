@@ -1,0 +1,48 @@
+libsapo-broker-perl (0.5) all; urgency=low
+
+  * debian package split
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Mon, 05 Dec 2011 19:06:38 +0000
+
+libsapo-broker-perl (0.4) all; urgency=low
+
+  * debian
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Fri, 18 Nov 2011 18:14:09 +0000
+
+libsapo-broker-perl (0.3) unstable; urgency=low
+
+  * Thrift::XS support
+  * TCP improvements (shutdown connection)
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Tue, 13 Sep 2011 18:05:09 +0100
+
+libsapo-broker-perl (0.2-4) unstable; urgency=low
+
+  * fix milliseconds bug in expiration and timestamps
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Wed, 8 Sep 2010 18:27:34 +0100
+
+libsapo-broker-perl (0.2-3) unstable; urgency=low
+
+  * deb now recommends several usefull optional runtime dependencies
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Wed, 8 Sep 2010 18:27:34 +0100
+
+libsapo-broker-perl (0.2-2) unstable; urgency=low
+
+  * auto_acknowledge fixes and support when using poll
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Wed, 8 Sep 2010 17:06:34 +0100
+
+libsapo-broker-perl (0.2-1) unstable; urgency=low
+
+  * Protobuf XS support
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Tue, 7 Sep 2010 12:28:12 +0100
+
+libsapo-broker-perl (0.1-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Thu, 2 Sep 2010 16:27:56 +0100

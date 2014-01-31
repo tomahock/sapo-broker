@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>pt.sapo.oss.broker</groupId>
+        <artifactId>sapo-broker-parent</artifactId>
+        <version>4.0.46</version>
+    </parent>
+    <artifactId>sapo-broker-binding-thrift</artifactId>
+    <name>sapo-broker-binding-thrift</name>
+    <packaging>jar</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <echo message="Running Thrift compiler" />
+                                <exec executable="thrift">
+                                    <arg value="-gen"/>
+                                    <arg value="java"/>			
+                                    <arg value="src/main/thrift/broker.thrift"/>
+                                </exec>
+                                <copy todir="src/main/java">
+                                    <fileset dir="gen-java"/>
+                                </copy>
+                                <property name="codedir" value="src/main/java/pt/com/broker/codec/thrift/" />
+                                <replace dir="${codedir}" token="public class" value="class">
+                                    <include name="*.java"/>
+                                    <exclude name="Thrift*.java"/>
+                                </replace>
+                                <delete dir="gen-java" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+        <dependency>
+	    <groupId>${project.groupId}</groupId>
+	    <version>${project.version}</version>
+            <artifactId>sapo-broker-comm-types</artifactId>
+        </dependency>
+    </dependencies>
+</project>

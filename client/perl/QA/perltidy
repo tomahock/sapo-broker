@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+
+#get the execution path
+use FindBin qw($Bin);
+use File::Spec::Functions;
+use File::Compare qw(compare);
+use Term::ANSIColor qw(colored);
+
+use strict;
+
+my $bkext  = 'tdybk';
+my $errext = 'ERR';
+my $conf   = catfile( $Bin, 'perltidy_config' );
+
+for my $fname (@ARGV) {
+    my $err_file = "$fname.$errext";
+    my $bk_file  = "$fname.$bkext";
+
+    unlink($err_file);
+
+    print colored( "$fname\t", 'bold' );
+    system( 'perltidy', '-b', "-pro=$conf", "-bext=$bkext", $fname );
+
+    if ( -e $err_file ) {
+        print colored( "Error (see $err_file)", 'bold red' );
+    } else {
+        if ( -e $bk_file ) {
+            if ( 0 != compare( $fname, $bk_file ) ) {
+                print colored( "OK ", 'bold green' ), colored( '(tidied)', 'bold yellow' );
+            } else {
+                print colored( "NOP", 'bold blue' );
+            }
+            unlink($bk_file);
+        } else {
+            print colored( "Skipped", 'bold cyan' );
+        }
+    }
+    print "\n";
+} ## end for my $fname (@ARGV)

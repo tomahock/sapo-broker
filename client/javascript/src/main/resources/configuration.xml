@@ -1,0 +1,18 @@
+<bridge-configuration>
+	<settings>
+		<bridge port="8888" root-dir="./wwwroot/" />
+		<default-broker host="broker.bk.sapo.pt" port="3323" />
+	</settings>
+	<channels>
+	
+		<!-- channel name="/topic/foo" topic="/topic/foo" broker-host="localhost" broker-port="3323" allow-subscription="true" allow-publication="true"/ -->
+
+		<channel name="/topic/foo" topic="/sapo/messenger/raw/sessions" broker-host="broker.bk.sapo.pt" broker-port="3323" allow-subscription="true" allow-publication="false" downstream-filter="pt.com.broker.jsbridge.transformers.Xml2JsonTransformer" upstream-filter="pt.com.broker.jsbridge.transformers.Xml2JsonTransformer" />
+	
+		<!--
+		<channel name="/topic/foo" topic="/topic/foo" broker-host="broker.bk.sapo.pt" broker-port="3323" allow-subscription="true" allow-publication="true" downstream-filter="pt.com.broker.jsbridge.transformers.Xml2JsonTransformer" upstream-filter="pt.com.broker.jsbridge.transformers.Xml2JsonTransformer" />
+		<channel name="/topic/foo" topic="/topic/foo" broker-host="broker.bk.sapo.pt" broker-port="3323" allow-subscription="true" allow-publication="true" downstream-filter="pt.com.broker.jsbridge.transformers.Xml2JsonTransformer" upstream-filter="pt.com.broker.jsbridge.transformers.Xml2JsonTransformer" />
+		-->
+		<!--  <channel name="/all/topic" topic="/topic/.*" broker-host="broker.bk.sapo.pt" broker-port="3323" allow-subscription="true" allow-publication="false" downstream-filter="pt.com.broker.jsbridge.transformers.Xml2JsonTransformer" upstream-filter="pt.com.broker.jsbridge.transformers.Xml2JsonTransformer" />  -->
+	</channels>
+</bridge-configuration>

@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="tutorial">
+	<title>User Guide</title>
+	<section>
+		<title>Getting started</title>
+		<section>
+			<title>Requirements</title>
+			<para>In order to start using the Sapo-Broker you just need to have an installation of Java SDK 1.6 or higher and the "java" command in your PATH. You can quickly check for java version by opening a shell and typing:</para>
+			<command>
+				<prompt>java -version</prompt>
+			</command>
+		</section>
+		<section>
+			<title>Installation procedure</title>
+			<para>The installation process is very easy. These are the required steps:</para>
+			<itemizedlist>
+				<listitem>
+					Download the latest Sapo-Broker release from
+					<ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/Download">http://softwarelivre.sapo.pt/projects/broker/wiki/</ulink>
+				</listitem>
+				<listitem>
+					Extract the archive or run the installer
+				</listitem>
+				<listitem>
+					Run the samples
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Running the samples</title>
+			<para>From a shell type:</para>
+			<command>
+				<prompt>./bin/broker.sh</prompt>
+			</command>
+			<para>
+				At this moment you should have an instance of the Sapo-Broker up and running.
+				There is nothing stopping you from using a single instance of Sapo-Broker, but since one of it's main goals is to be used in a distributed fashion you really want to have at least two instances to play with, read the
+				<ulink url="http://softwarelivre.sapo.pt/projects/broker/wiki/UserGuide">User Guide</ulink> to know how to setup and connect multiple instances.
+			</para>
+			<para>The distribution includes a couple of sample scripts that illustrate a common use case for Sapo-Broker, event propagation, among others. These scripts include a producer that sends messages with 100 random alpha numeric characters at the rate of one per second and a consumer that prints the message content to the console every time it receives a message.</para>
+			<para>To run the producer open a shell and type:</para>
+			<command>
+				<prompt>./clients/java/bin/producer.sh</prompt>
+			</command>
+			<para>To run the consumer:</para>
+			<command>
+				<prompt>./clients/java/bin/consumer.sh</prompt>
+			</command>
+			<para>Besides the Linux scripts, there are also available windows batch files counterparts.</para>
+		</section>
+	</section>
+	<section>
+		<title>Client libraries</title>
+		<para>Given the environment where Sapo-Broker was developed, somewhere where several projects are interconnected, written in many different programming languages it was absolutely crucial to support several broker client libraries written in various programming languages.</para>
+		<para>For now, not all take advantaged of the features implemented in Sapo-Broker 3, but are still compatible through the use of a legacy port.</para>
+		<para>The supported programming languages or platforms are: Java, .NET, Perl, Python, PHP, Ruby, C and Erlang. These libraries may be in different states of maturity.</para>
+		<section>
+			<title>Client compatibility matrix</title>
+			<para>To help the choice of library and enlighten about what features are supported by witch libraries a client compatibility matrix is presented.</para>
+			<table frame="all" id="clientcompmatrix">
+				<title>Client library compatibility matrix</title>
+				<tgroup cols="3">
+					<colspec colnum="1" colname="c1" />
+					<colspec colnum="2" colname="c2" />
+					<colspec colnum="3" colname="c3" />
+					<tbody>
+						<row>
+							<entry />
+							<entry>Java</entry>
+							<entry>.NET</entry>
+							<entry>Perl</entry>
+							<entry>Python</entry>
+							<entry>PHP</entry>
+							<entry>C</entry>
+						</row>
+						<row>
+							<entry>SOAP encoding</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+						</row>
+						<row>
+							<entry>ProtoBuf encoding (binary)</entry>
+							<entry align="center">x</entry>
+							<entry align="center">o</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">o</entry>
+							<entry align="center">x</entry>
+						</row>
+						<row>
+							<entry>Thrift encoding (binary)</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">o</entry>
+							<entry align="center">x</entry>
+						</row>
+						<row>
+							<entry>SSL support</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">o</entry>
+							<entry align="center">x</entry>
+						</row>
+						<row>
+							<entry>Client authentication</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">o</entry>
+							<entry align="center">o</entry>
+							<entry align="center">o</entry>
+							<entry align="center">o</entry>
+						</row>
+						<row>
+							<entry>Client authentication with Sapo STS</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">o</entry>
+							<entry align="center">o</entry>
+							<entry align="center">o</entry>
+						</row>
+						<row>
+							<entry>Client failover</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+							<entry align="center">o</entry>
+							<entry align="center">o</entry>
+							<entry align="center">x</entry>
+							<entry align="center">x</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+			<para>
+				Specific information about each client and their features, as well some samples, should be available. Poke <ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/clients">around</ulink>.
+			</para>
+		</section>
+		<section>
+			<title>Client usage samples in different languages</title>
+			<para>
+				In this section examples of publishing and consuming messages are going to be presented for several languages, namely
+				<link linkend="CODESAMPLE_JAVA">Java</link>
+				,
+				<link linkend="CODESAMPLE_NET">C# (.NET)</link>
+				,
+				<link linkend="CODESAMPLE_PYTHON">Python</link>
+				,
+				<link linkend="CODESAMPLE_PERL">Perl</link>
+				,
+				<link linkend="CODESAMPLE_PHP">PHP</link>.
+			</para>
+			<section id="CODESAMPLE_JAVA">
+				<title>Java samples</title>
+				<example>
+					<title>Sample Java producer</title>
+					<screen><![CDATA[BrokerClient bk = new BrokerClient("127.0.0.1", 3323);
+String msg = RandomStringUtils.randomAlphanumeric(messageLength);
+NetBrokerMessage brokerMessage = new NetBrokerMessage("Hello World!!".getBytes("UTF-8"));
+bk.publishMessage(brokerMessage, "/topic/foo");]]></screen>
+				</example>
+				<example>
+					<title>Sample Java consumer</title>
+					<screen><![CDATA[public class Consumer implements BrokerListener
+{
+	public static void main(String[] args) throws Throwable
+	{
+		Consumer consumer = new Consumer();
+		BrokerClient bk = new BrokerClient("localhost", 3323);
+		NetSubscribe subscribe = new NetSubscribe("/topic/foo", DestinationType.TOPIC);
+		bk.addAsyncConsumer(subscribe, consumer);
+	}
+
+	@Override
+	public boolean isAutoAck()
+	{
+		return false;
+	}
+
+	@Override
+	public void onMessage(NetNotification notification)
+	{
+		byte[] payload = notification.getMessage().getPayload();
+		System.out.println(String.format("Message destination: %s%n Payload: %s", notification.getDestination(), new String(payload)));
+	}
+}]]></screen>
+				</example>
+			</section>
+			<section id="CODESAMPLE_NET">
+				<title>C#/.NET samples</title>
+				<example>
+					<title>Sample C#/.NET publisher</title>
+					<screen><![CDATA[BrokerClient brokerClient = new BrokerClient(new HostInfo("localhost", 3323));
+NetBrokerMessage brokerMessage = new NetBrokerMessage(System.Text.Encoding.UTF8.GetBytes("Hello World!!"));
+brokerClient.Publish(brokerMessage, "/topic/foo");]]></screen>
+				</example>
+				<example>
+					<title>Sample C#/.NET consumer</title>
+					<screen><![CDATA[BrokerClient brokerClient = new BrokerClient(HostInfo("localhost", 3323));
+Subscription subscription = new Subscription("/topic/foo", NetAction.DestinationType.TOPIC);
+subscription.OnMessage += delegate(NetNotification notification)
+{
+	 System.Console.WriteLine("Message received: {0}", System.Text.Encoding.UTF8.GetString(notification.Message.Payload));
+};
+brokerClient.Subscribe(subscription);]]></screen>
+				</example>
+			</section>
+			<section id="CODESAMPLE_PYTHON">
+				<title>Python samples</title>
+				<example>
+					<title>Sample Python consumer</title>
+					<screen><![CDATA[#!/usr/bin/env python
+
+from Broker.Messages import Message, Publish
+from Broker.Transport import TCP, UDP
+from Broker.Codecs import Codec
+from Broker.Clients import Minimal
+
+server='localhost'
+destination = '/python/tests'
+destination_type = 'QUEUE'
+N=10000
+
+broker = Minimal(codec=Codec(), transport=TCP(host=server))
+
+for n in xrange(N):
+    message = Message(payload='Message number %d' % n)
+    publish = Publish(destination=destination, destination_type=destination_type, message=message)
+    broker.send(publish)]]></screen>
+				</example>
+				<example>
+					<title>Sample Python producer</title>
+					<screen><![CDATA[#!/usr/bin/env python
+
+
+from Broker.Messages import Message, Subscribe, Acknowledge
+from Broker.Transport import TCP, UDP
+from Broker.Codecs import Codec
+from Broker.Clients import Minimal
+
+server='localhost'
+destination = '/python/tests'
+destination_type = 'QUEUE'
+
+broker = Minimal(codec=Codec(), transport=TCP(host=server))
+
+broker.send(Subscribe(destination=destination, destination_type=destination_type))
+for n in xrange(N):
+    message = broker.receive()
+    broker.send(Acknowledge(message_id=message.message.id, destination=message.destination))
+    print message.message.payload
+]]></screen>
+				</example>
+			</section>
+			<section id="CODESAMPLE_PERL">
+				<title>Perl samples</title>
+				<example>
+					<title>Sample Perl producer</title>
+					<screen><![CDATA[
+use SAPO::Broker::Clients::Simple;
+
+use strict;
+use warnings;
+
+my $broker = SAPO::Broker::Clients::Simple->new();
+my %options = (
+	'destination_type' => 'QUEUE',
+	'destination' => '/perl/tests',
+);
+
+my $N = $ARGV[0] || 100;
+
+for my $n (1..$N){
+	$broker->publish(%options, 'payload' => "payload $n");
+}]]></screen>
+				</example>
+				<example>
+				<title>Sample Perl consumer</title>
+					<screen><![CDATA[use lib ('../lib');
+
+use SAPO::Broker::Clients::Simple;
+use Data::Dumper;
+
+use strict;
+use warnings;
+
+my $broker = SAPO::Broker::Clients::Simple->new();
+my %options = (
+	'destination_type' => 'QUEUE',
+	'destination' => '/perl/tests',
+	'auto_acknowledge' => 1
+);
+
+$broker->subscribe(%options);
+
+my $N = $ARGV[0] || 100;
+
+for my $n (1..$N){
+	my $message = $broker->receive();
+	print Dumper($message);
+}]]></screen>
+				</example>
+			</section>
+			<section id="CODESAMPLE_PHP">
+				<title>PHP samples</title>
+				<example>
+					<title>Sample PHP producer</title>
+					<screen><![CDATA[#!/usr/bin/env php
+<?php
+
+$broker = broker_init("127.0.0.1", 3323, 0, 1);
+$msg = "Hello, world!";
+broker_publish($broker, "/test/foo", $msg, strlen($msg));
+broker_destroy($broker);
+?>]]></screen>
+				</example>
+				<example>
+					<title>Sample PHP consumer</title>
+					<screen><![CDATA[#!/usr/bin/env php
+<?php
+
+$broker = broker_init("127.0.0.1", 3323, 0, 1);
+$ret = broker_subscribe_topic($broker, "/test/foo");
+
+// consume without auto-ack
+while (1) {
+	if (($msg = broker_receive($broker, 1000, true)) !== false)
+    	echo "Got message: " . print_r($msg, true) . "\n";
+}
+
+?>]]></screen>
+				</example>
+			</section>
+		</section>
+	</section>
+	<section>
+		<title>System topics</title>
+		<para>Sapo-Broker agents publish several information regarding their internal state and events. This information is published to /system/[information type] topics.</para>
+		<para>
+			In order to guarantee that only agents produce messages to these topics an access control entry should be defined in the default
+			<link linkend="ACCESS_CONTROL">security policy</link>.
+		</para>
+		<section>
+			<title>Statistics</title>
+			<para>Agents publish statistics regarding the number of consumers subscribed in each topic and queue.</para>
+			<section>
+				<title>Topic consumers</title>
+				<para>Topic consumers are published in topic:</para>
+				<code>/system/stats/topic-consumer-count/#[topic subscription]#</code>
+				<para>The format of the published message, encoded using UTF-8, is:</para>
+				<computeroutput>[agent name]#[subscription]#[number of subscriptions]</computeroutput>
+			</section>
+			<section>
+				<title>Queue consumers</title>
+				<para>Queue consumers are published in topic:</para>
+				<code>/system/stats/queue-consumer-count/#[queue name]#</code>
+				<para>The format of the published message, encoded using UTF-8, is:</para>
+				<computeroutput>[agent name]#[queue name]#[number of subscriptions]</computeroutput>
+			</section>
+			<section>
+				<title>Queue Size</title>
+				<para>The number of messages by queue is published in topic:</para>
+				<code>/system/stats/queue-size/#[queue name]#</code>
+				<para>The format of the published message, encoded using UTF-8, is:</para>
+				<computeroutput>[agent name]#[queue name]#[number of messages]</computeroutput>
+			</section>
+			<section>
+				<title>Dropbox messages</title>
+				<para>The number of messages in the dropbox are published in topic:</para>
+				<code>/system/stats/dropbox/#[agent name]#</code>
+				<para>The format of the published message, encoded using UTF-8, is:</para>
+				<computeroutput>[agent name]#[dropbox location]#[number of messages]#[number of good messages]</computeroutput>
+			</section>
+		</section>
+		<section>
+			<title>Faults</title>
+			<para>When an unhandled exception occurs, and it's not I/O related, agents publish a fault error. The message content conforms to SOAP Fault message format.</para>
+			<para>Fault messages are published to topic:</para>
+			<para>
+				<computeroutput>/system/faults/[agent name]</computeroutput>
+			</para>
+			<para>A fault message can also be published when the maximum number of allowed queues or distinct topic subscriptions is reached . Here is a sample message content for each fault type:</para>
+			<para>
+				<computeroutput>The maximum number of queues (500) has been reached.</computeroutput>
+			</para>
+			<para>
+				<computeroutput>The maximum number of distinct subscriptions (500) has been reached.</computeroutput>
+			</para>
+		</section>
+	</section>
+	<section>
+		<title>Configuration</title>
+		<para>Sapo-Broker configuration has a two level scope, meaning that some configuration aspects are related to Broker agents and others are global, and, as such, are applicable to all agents in the same cloud.</para>
+		<section>
+			<title>Global configuration</title>
+			<para>
+				There are three main configuration sections in global configuration file: Domain, Messages and Access Control. 
+				The later is divided in two parts as discussed in <link linkend="ACCESS_CONTROL">Access control</link> section.
+			</para>
+			<para>The "domain" element contains all agentes that are part of the broker cloud. For each agent an IP:PORT must be defined.</para>
+			<para>This would be the Domain section of a configuration used to setup a cloud with two nodes:</para>
+			<screen><![CDATA[<domain>
+	<peer>
+		<ip>192.168.0.10</ip>
+		<port>3315</port>
+	</peer>
+	<peer>
+		<ip>192.168.0.11</ip>
+		<port>3315</port>
+	</peer>
+</domain>]]></screen>
+			<para>Keep in mind that the configuration must be the same for all cloud agents.</para>
+			<para>In the "messages" section it is possible to define the maximum message size, the maximum number of queues/subscriptions and default message TTL.</para>
+			<para>
+				See the <link linkend="SSL_CONFIGURATION">SSL Configuration</link> guide for help on how to setup the SSL transport.
+			</para>
+		</section>
+	</section>
+</chapter>
+

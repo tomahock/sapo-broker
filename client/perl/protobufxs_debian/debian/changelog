@@ -1,0 +1,5 @@
+libsapo-broker-perl-xs-helper (0.1) all; urgency=low
+
+  * Initial Release.
+
+ -- Claudio Valente <c.valente@co.sapo.pt>  Mon, 05 Dec 2011 19:14:06 +0000

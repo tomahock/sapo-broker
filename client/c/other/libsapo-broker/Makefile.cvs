@@ -1,0 +1,20 @@
+
+KERNEL:=$(shell uname -s)
+
+# Apple's MacOSX uses it's own named libtoolize
+ifeq ($(KERNEL),Darwin)
+LIBTOOLIZE=glibtoolize
+else
+LIBTOOLIZE=libtoolize
+endif
+
+all:
+	@echo "** Kernel is $(KERNEL) **"
+	$(LIBTOOLIZE) --force 
+	aclocal -I config
+	autoheader
+	automake --foreign --add-missing
+	autoconf
+
+clean:
+	rm -rf config.h.in configure Makefile.in autom4te.cache aclocal.m4 stamp-h.in src/Makefile.in test/Makefile.in 

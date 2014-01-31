@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+	<xs:element name="global-config">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="domain">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element minOccurs="0" maxOccurs="unbounded" name="peer">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="name" type="xs:string" />
+										<xs:element name="transport">
+											<xs:complexType>
+												<xs:all>
+													<xs:element name="type" type="xs:string" />
+													<xs:element name="ip" type="xs:string" />
+													<xs:element name="port" type="xs:int" />
+												</xs:all>
+											</xs:complexType>
+										</xs:element>
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="1" name="security-policies" type="BrokerSecurityPolicy" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	
+	<xs:simpleType name="Privilege">
+		<xs:restriction base="xs:string">
+		 <xs:enumeration value="READ"/>
+		 <xs:enumeration value="WRITE"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DestinationType">
+		<xs:restriction base="xs:string">
+		 <xs:enumeration value="TOPIC"/>
+		 <xs:enumeration value="QUEUE"/>
+		 <xs:enumeration value="VIRTUAL_QUEUE"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Authorization">
+	   <xs:restriction base="xs:string">
+		 <xs:enumeration value="PERMIT"/>
+		 <xs:enumeration value="DENY"/>
+	   </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ChannelType">
+	  <xs:restriction base="xs:string">
+		<xs:enumeration value="INTEGRITY"/>
+		<xs:enumeration value="CONFIDENTIALITY"/>
+		<xs:enumeration value="AUTHENTICATION"/>
+	  </xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ConditionType">
+	  <xs:restriction base="xs:string">
+		<xs:enumeration value="ROLE"/>
+		<xs:enumeration value="CHANNELTYPE"/>
+		<xs:enumeration value="ADDRESS"/>
+		<xs:enumeration value="ALWAYS"/>
+		<xs:enumeration value="AND"/>
+	  </xs:restriction>
+	</xs:simpleType>
+	
+	<xs:complexType name="Condition">
+		<xs:sequence>			
+			<xs:element minOccurs="0" name="role" type="xs:string" />
+			<xs:element minOccurs="0" name="channel-type" type="ChannelType"/>
+			<xs:element minOccurs="0" name="address">
+			  <xs:complexType>
+				<xs:simpleContent>
+				  <xs:extension base="xs:string">
+					<xs:attribute name="mask" type="xs:unsignedByte" use="optional" />
+				  </xs:extension>
+				</xs:simpleContent>
+			  </xs:complexType>
+			</xs:element>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="condition" type="Condition" />
+		</xs:sequence>
+		<xs:attribute name="condition-type" use="required" type="ConditionType" />
+	</xs:complexType>
+	
+	<xs:complexType name="Policies">
+	  <xs:sequence>
+		<xs:element maxOccurs="unbounded" name="policy">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="acl">
+				<xs:complexType>
+				  <xs:sequence>
+					<xs:element maxOccurs="unbounded" name="entry">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element maxOccurs="unbounded" name="condition" type="Condition" />
+							</xs:sequence>
+							<xs:attribute name="action" use="required" type="Authorization" />
+							<xs:attribute name="destination-type"  use="required">
+								<xs:simpleType>
+								  <xs:list itemType="DestinationType" />
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="destination" type="xs:string" use="required" />							
+							<xs:attribute name="privilege" use="required">
+								<xs:simpleType>
+									<xs:list itemType="Privilege" />
+								</xs:simpleType>
+							</xs:attribute>
+					  </xs:complexType>
+					</xs:element>
+				  </xs:sequence>
+				</xs:complexType>
+			  </xs:element>
+			</xs:sequence>
+			<xs:attribute name="policy-name" type="xs:string" use="required" />
+			<xs:attribute name="inherits" type="xs:string" use="optional" />
+		  </xs:complexType>
+		</xs:element>
+	  </xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="Agents"> 
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="agent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="agent-policy">
+                <xs:complexType>
+                  <xs:attribute name="policy-name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="agent-name" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+	
+	<xs:complexType name="BrokerSecurityPolicy">
+	  <xs:sequence>
+		<xs:element minOccurs="0" maxOccurs="1" name="policies" type="Policies" />
+		<xs:element minOccurs="0" maxOccurs="1" name="agents" type="Agents" />
+	  </xs:sequence>
+	</xs:complexType>
+	
+</xs:schema>

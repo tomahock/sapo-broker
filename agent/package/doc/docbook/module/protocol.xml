@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="protocol">
+	<title>Protocol specification</title>
+	<section>
+		<title>Protocol messages</title>
+		<para>Sapo-Broker makes its asynchronous messaging features available through the exchange of some well-known messages. These messages must be encoded using a supported encoding type and comply to the wire message format as well as the messaging format defined for each message. This means that messaging level message format (as opposite as wire messages), are not defined in any particular binary format, they are defined as structures composed by fields and other structures. Such approach provides a greater flexibility in terms of message encoding.</para>
+		<para>
+			The overall structure of a Sapo-Broker message is demonstrated in <xref linkend="Figure-MessageFormat" />. The wire message serves as a transportation medium for the messaging layer message as payload, witch, in cases of message publishing or notification, contains client's data.
+		</para>
+		<figure id="Figure-MessageFormat">
+			<title>Message Format</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/simplemessageformat.jpeg" />
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<section>
+			<title>Wire message format</title>
+			<para>
+				A Sapo-Broker wire message is composed by an header and a payload like
+				<xref linkend="Figure-WireMessageFormat" />
+				shows.
+			</para>
+			<figure id="Figure-WireMessageFormat">
+				<title>Wire message format</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/wiremessageformat.jpeg" />
+					</imageobject>
+				</mediaobject>
+			</figure>
+			<section>
+				<title>Header</title>
+				<para>
+					In a previous, but still supported, version the header was composed by a 32 bits value specifying the payload's length. This is intended to provide temporary retro compatibility but will be made unavailable. Header layout is presented in <xref linkend="Figure-OldHeader" />.
+				</para>
+				<figure id="Figure-OldHeader">
+					<title>Header layout in previous versions</title>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="images/oldheader.jpeg" />
+						</imageobject>
+					</mediaobject>
+				</figure>
+				<para>
+					Currently, the header specifies the payload encoding protocol used (16 bits) as well as it's version (16 bits) and payload length (32 bits). Although the payload length can represent a maximum of 4GB, a message size limit is set at 256KB. Header layout is presented in <xref linkend="Figure-NewHeader" />.
+				</para>
+				<figure id="Figure-NewHeader">
+					<title>Header layout in current version</title>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="images/newheader.jpg" />
+						</imageobject>
+					</mediaobject>
+				</figure>
+			</section>
+			<section>
+				<title>Encoding</title>
+				<para>Sapo-Broker supports binary and SOAP messages. For now are supported the following encodings with respective identifiers:</para>
+				<table frame="all" id="Table7">
+					<title>Available encodings</title>
+					<tgroup cols="4">
+						<tbody>
+							<row>
+								<entry>Encoding Type Id</entry>
+								<entry>Encoding Version</entry>
+								<entry>Encoding Format</entry>
+								<entry>Notes</entry>
+							</row>
+							<row>
+								<entry>0</entry>
+								<entry>0</entry>
+								<entry>XML/SOAP</entry>
+								<entry>Same as in previous versions</entry>
+							</row>
+							<row>
+								<entry>1</entry>
+								<entry>0</entry>
+								<entry>Google Protocol Buffers (ProtoBufs)</entry>
+								<entry>http://code.google.com/apis/protocolbuffers/docs/overview.html</entry>
+							</row>
+							<row>
+								<entry>2</entry>
+								<entry>0</entry>
+								<entry>Thrift</entry>
+								<entry>http://incubator.apache.org/thrift/</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				<para>As stated, XML/SOAP encoding format is still supported, both as in a legacy port using the previous header format, or using the new header format with Encoding Type Id 0. Currently, all encodings are versioned as zero, but upgrades are expected.</para>
+				<para>The type of encoding used is bounded to the session. Clients receive messages using their session encoding type, not the producer encoding type, witch means, besides other things, that messages produced using ProtoBufs may be consumed by SOAP consumers.</para>
+				<para>All of the message fields declared as being of type string are encoded in UTF-8.</para>
+			</section>
+			<section>
+				<title>Payload</title>
+				<para>The payload of wire level messages is a messaging level message witch is encoded accordantly to what was specified in wire level header. The messages semantic meaning and format are described in the next sections.</para>
+			</section>
+		</section>
+		<section>
+			<title>Messaging level messages</title>
+			<para>The actions performed by agents and clients are determined by the following message set:</para>
+			<table frame="all" id="Table13">
+				<title>Message types</title>
+				<tgroup cols="2">
+					<tbody>
+						<row>
+							<entry id="PUBLISH_MESSAGE">
+								<link linkend="PUBLISH_MSG_DETAIL">Publish</link>
+							</entry>
+							<entry>When a client wants to publish a message to the broker, whether its to a queue or topic, it sends a Publish message.</entry>
+						</row>
+						<row>
+							<entry id="SUBSCRIBE_MESSAGE">
+								<link linkend="SUBSCRIBE_MSG_DETAIL">Subscribe</link>
+							</entry>
+							<entry>A client denotes his interest in receiving a determined type of message (TOPIC, QUEUE or VIRTUAL_QUEUE) by sending a Subscribe message specifying a destination name or pattern.</entry>
+						</row>
+						<row>
+							<entry id="NOTIFICATION_MESSAGE">
+								<link linkend="NOTIFICATION_MSG_DETAIL">Notification</link>
+							</entry>
+							<entry>A notification message is sent by an agent to a client as a consequence of a previous subscription.</entry>
+						</row>
+						<row>
+							<entry id="UNSUBSCRIBE_MESSAGE">
+								<link linkend="UNSUBSCRIBE_MSG_DETAIL">Unsubscribe</link>
+							</entry>
+							<entry>When a client wants to cancel a previous subscription it sends an Unsubscribe message.</entry>
+						</row>
+						<row>
+							<entry id="POLL_MESSAGE">
+								<link linkend="POLL_MSG_DETAIL">Poll</link>
+							</entry>
+							<entry>A client may explicit poll from a queue or virtual queue an available message by sending a Poll message. Client libraries wait until a message is received or timeout occurs.</entry>
+						</row>
+						<row>
+							<entry id="ACKNOWLEDGE_MESSAGE">
+								<link linkend="ACKNOWLEDGE_MSG_DETAIL">Acknowledge</link>
+							</entry>
+							<entry>When a client receives a message from a queue and assumes the responsibility for persisting or handle the received message it sends an Acknowledge message.</entry>
+						</row>
+						<row>
+							<entry id="ACCEPTED_MESSAGE">
+								<link linkend="ACCEPTED_MSG_DETAIL">Accepted</link>
+							</entry>
+							<entry>When the client specifies a action identifier the agent receiving the message sends an Accepted message with the specified action identifier. This message can also be used as a synchronization mean (eg. Accepted messages, in response to Authentication messages, are only sent when credentials validation is concluded).</entry>
+						</row>
+						<row>
+							<entry id="FAULT_MESSAGE">
+								<link linkend="FAULT_MSG_DETAIL">Fault</link>
+							</entry>
+							<entry>When an error occurs the agent sends a Fault message.</entry>
+						</row>
+						<row>
+							<entry id="PING_MESSAGE">
+								<link linkend="PING_MSG_DETAIL">Ping</link>
+							</entry>
+							<entry>In order to the client determine an agent liveness it sends a Ping message containing a action identifier.</entry>
+						</row>
+						<row>
+							<entry id="PONG_MESSAGE">
+								<link linkend="PONG_MSG_DETAIL">Pong</link>
+							</entry>
+							<entry>The agent responds to a Ping message with a Pong message.</entry>
+						</row>
+						<row>
+							<entry id="AUTHENTICATION_MESSAGE">
+								<link linkend="AUTHENTICATION_MSG_DETAIL">Authentication</link>
+							</entry>
+							<entry>The Authentication message is used in the process of establishing client's identity in order to comply to role based authorization.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+			<section>
+				<title>Message format definition</title>
+				<para>
+					The structure of messaging level messages is defined as an object structure (rooted in
+					<link linkend="ATOM_STRUCTURE">Atom</link>
+					) composed by fields and other structures. These messages must be encoded in a supported serialization format.
+				</para>
+				<para>
+					Both ProtoBufs and Thrift are binary serialization formats and frameworks witch support binary message encoding. Sapo-Broker leverages
+					<emphasis> on these frameworks to provide binary message support. Both have their own message description format (and code generating tools) but, for the intended purpose, are isomorphic.</emphasis>
+					ProtoBufs and Thrift message descriptions is available
+					<ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/bindings/protobuf/broker.proto">here</ulink>
+					and
+					<ulink url="http://softwarelivre.sapo.pt/projects/broker/browser/trunk/bindings/thrift/broker.thrift">here</ulink>
+					, respectively.
+				</para>
+				<para>
+					<emphasis>SOAP messages are slightly different, and since they are going to be made obsolete they are not described.</emphasis>
+				</para>
+				<section id="ATOM_STRUCTURE">
+					<title>Atom</title>
+					<para>Client and broker agents exchange messages of type Atom with is composed by the mandatory message Action and a optional Message Header.</para>
+					<para>
+						Atom: {Header,
+						<emphasis role="mandatory">Action</emphasis>
+						}
+					</para>
+				</section>
+				<section>
+					<title>Header</title>
+					<para>Headers are meant to contain extra information about the message. They are represented as a unbounded set of Parameters. For now there is no associated meaning to the these fiels.</para>
+					<para>Header: {Parameter*}</para>
+				</section>
+				<section>
+					<title>Parameter</title>
+					<para>A parameter is pair name value.</para>
+					<para>
+						Parameter: {
+						<emphasis role="mandatory">string</emphasis>
+						,
+						<emphasis role="mandatory">string</emphasis>
+						}
+					</para>
+				</section>
+				<section>
+					<title>Action</title>
+					<para>Action represents the action to be performed. Is composed by a enumerate that identifies the action and a set of possible messages that represent it. Only the messages type identified by the enumerate must be present.</para>
+					<para>
+						Action: {
+						<emphasis role="mandatory">ActionType</emphasis>
+						, Publish, Poll, Accepted, Acknowledge_message, Subscribe, Unsubscribe, Notification, Fault, Ping, Pong, Auth}
+					</para>
+				</section>
+				<section>
+					<title>ActionType</title>
+					<para>ActionType is a enumerate that identifies a message type.</para>
+					<para>ActionType: {PUBLISH, POLL, ACCEPTED, ACKNOWLEDGE, SUBSCRIBE, UNSUBSCRIBE, NOTIFICATION, FAULT, PING, PONG, AUTH}</para>
+				</section>
+				<section id="PUBLISH_MSG_DETAIL">
+					<title>Publish</title>
+					<para>
+						Publish messages contain an optional action identifier (used by the receiving agent to notify of message acceptance -
+						<link linkend="ACCEPTED_MESSAGE">Accepted message</link>
+						), an enumerate describing the type of destiny, the destination and a Broker Message.
+					</para>
+					<para>
+						Publish: {action_id,
+						<emphasis role="mandatory">DestinationType</emphasis>
+						,
+						<emphasis role="mandatory">destination</emphasis>
+						,
+						<emphasis role="mandatory">BrokerMessage</emphasis>
+						}
+					</para>
+				</section>
+				<section>
+					<title>DestinationType</title>
+					<para>DestinationType is a enumerate that identifies a type of destination.</para>
+					<para>DestinationType: {TOPIC, QUEUE, VIRTUAL_QUEUE}</para>
+				</section>
+				<section>
+					<title>BrokerMessage</title>
+					<para>BrokerMessage contains the actual data that is meat to the recipient applications. Such data is represented by a mandatory binary field payload. message_id is the identifier of the message, expiration  determines the time frame within the message is valid and timestamp the time of creation.</para>
+					<para>The payload of BrokerMessage are the client's message payload.</para>
+					<para>
+						BrokerMessage: {message_id,
+						<emphasis role="mandatory">payload</emphasis>
+						, expiration, timestamp}
+					</para>
+				</section>
+				<section id="SUBSCRIBE_MSG_DETAIL">
+					<title>Subscribe</title>
+					<para>Subscribe messages are composed by an optional action identifier field, a destination, and a destination.</para>
+					<para>
+						Subscribe: {action_id,
+						<emphasis role="mandatory">destination</emphasis>
+						,
+						<emphasis role="mandatory">destination_type</emphasis>
+						}
+					</para>
+				</section>
+				<section id="NOTIFICATION_MSG_DETAIL">
+					<title>Notification</title>
+					<para>This message is composed by by a destination name (such as "/topic/foo"), a subscription (witch was used by the client, such as "/topic/.*"), a DestinationType and a BrokerMessage. All of these elements are mandatory.</para>
+					<para>
+						Notifcation: {
+						<emphasis role="mandatory">destination</emphasis>
+						,
+						<emphasis role="mandatory">subscription</emphasis>
+						,
+						<emphasis role="mandatory">DestinationType</emphasis>
+						,
+						<emphasis role="mandatory">BrokerMessage</emphasis>
+						}
+					</para>
+				</section>
+				<section id="UNSUBSCRIBE_MSG_DETAIL">
+					<title>Unsubscribe</title>
+					<para>The contents of Unsubscribe message are analogue to the Subscribe's message.</para>
+					<para>
+						Unsubscribe: {action_id,
+						<emphasis role="mandatory">destination</emphasis>
+						,
+						<emphasis role="mandatory">destination_type</emphasis>
+						}
+					</para>
+				</section>
+				<section id="POLL_MSG_DETAIL">
+					<title>Poll</title>
+					<para>A client may explicit poll a queue message by sending a Poll message. Client libraries wait until they receive a message or timeout occurs. This message is composed by an optional action identifier and a mandatory destination and timeout in milliseconds.</para>
+					<para>
+						Poll: {action_id,
+						<emphasis role="mandatory">destination</emphasis>
+						,
+						<emphasis role="mandatory">timeout</emphasis>
+						}
+					</para>
+				</section>
+				<section id="ACKNOWLEDGE_MSG_DETAIL">
+					<title>Acknowledge</title>
+					<para>This message is composed by an optional action identifier, a message identifier and destination.</para>
+					<para>
+						Acknowledge: {action_id,
+						<emphasis role="mandatory">message_id</emphasis>
+						,
+						<emphasis role="mandatory">destination</emphasis>
+						}
+					</para>
+				</section>
+				<section id="ACCEPTED_MSG_DETAIL">
+					<title>Accepted</title>
+					<para>The only field in an Accepted message is an action identifier.</para>
+					<para>
+						Accepted:{
+						<emphasis role="mandatory">action_id</emphasis>
+						}
+					</para>
+				</section>
+				<section id="FAULT_MSG_DETAIL">
+					<title>Fault</title>
+					<para>This message is composed by an optional action identifier associated with the message who cause the error , a mandatory fault code, a mandatory fault message, and an optional fault-detail.</para>
+					<para>
+						Fault: {action_id,
+						<emphasis role="mandatory">fault_code</emphasis>
+						,
+						<emphasis role="mandatory">fault_message</emphasis>
+						, fault_detail}
+					</para>
+				</section>
+				<section id="PING_MSG_DETAIL">
+					<title>Ping </title>
+					<para>A Ping message contains an action identifier used to correlate with the response message.</para>
+					<para>
+						Ping: {
+						<emphasis role="mandatory">action_id</emphasis>
+						}
+					</para>
+				</section>
+				<section id="PONG_MSG_DETAIL">
+					<title>Pong</title>
+					<para>Pong messages contain the action identifier contained in the Ping message.</para>
+					<para>
+						Pong: {
+						<emphasis role="mandatory">action_id</emphasis>
+						}
+					</para>
+				</section>
+				<section id="AUTHENTICATION_MSG_DETAIL">
+					<title>Authentication</title>
+					<para>The Authentication message is used in the process of establishing client's identity in order to comply to role based authorization. This message is composed by an authentication type (such as "SapoSTS" or "BrokerRolesDB"), a mandatory binary token which may be a password or a third trusted party token, an user identifier, such as an user identifier, an unbounded set of roles and and an action identifier.</para>
+					<para>
+						Authentication: {action_id,  authentication_type,
+						<emphasis role="mandatory">token</emphasis>
+						, user_id, role}
+					</para>
+				</section>
+			</section>
+			<section>
+				<title>A "graphical" sample</title>
+				<para>An example on how the messages relate to each other is presented in a "graphical" format.</para>
+				<para>In the sample, a client C wants to subscribe too (consume) all messages under the topic /topic/xpto, so he sends a subscription to agent A. When another client P publishes (produces) a message to topic /topic/xpto/foo, client A will be notified. Client C uses ProtoBufs encoding while client P uses Thrift encoding.</para>
+				<section>
+					<title>Topic Subscription</title>
+					<para>
+						Client C subscribes to the intended messages using the
+						<emphasis>/topic/xpto/.* </emphasis>
+						subscription.
+					</para>
+					<screen>
+Header:
+   Type: 1
+   Verion: 0
+   Length: xxx
+Payload:
+   Atom:
+      Action:
+ ActionType: Subscription
+ SubscribeMessage:
+    destination: /topic/xpto/.*
+    subscription_type: TOPIC</screen>
+				</section>
+				<section>
+					<title>Message publishing</title>
+					<para>
+						Client P publishes a message to topic
+						<emphasis>/topic/xpto/foo</emphasis>
+						.
+					</para>
+					<screen>
+Header:
+   Type: 2
+   Verion: 0
+   Length: xxx
+Payload:
+   Atom:
+      Action:
+ ActionType: Publish
+ PublishMessage:
+    detination_type: TOPIC
+    detination: /topic/xpto/foo
+    BrokerMessage:
+       payload: 01010101010101001...</screen>
+				</section>
+				<section>
+					<title>Client Notification</title>
+					<para>
+						Client C, the subscriber, is notified of the message published by P to topic
+						<emphasis>/topic/xpto/foo</emphasis>
+						matching
+						<emphasis>/topic/xpto/.*</emphasis>
+						subscription.
+					</para>
+					<screen>
+Header:
+   Type: 1
+   Verion: 0
+   Length: xxx
+Payload:
+   Atom:
+      Action:
+ ActionType: Notification
+ NotificationMessage:
+    destination: /topic/xpto/foo
+    subscription: /topic/xpto/.*
+    detination_type: TOPIC
+    BrokerMessage:
+       payload: 01010101010101001...</screen>
+				</section>
+			</section>
+		</section>
+	</section>
+	<section>
+		<title>Error handling</title>
+		<para>There are several cases that result in errors. Things such as IO errors, messaging errors or security related errors are likely to occur. In most of the cases a Fault message is sent by the agent to the producer of the message that originated the error. Some errors however do not result in error messages, they are just logged. Examples of this are unknown encoding or version protocol and the reason is simple: If the message encoding or version are unknown there is no way to know how to encode the Fault message.</para>
+		<section>
+			<title>Logging</title>
+			<para>
+				Some agent occurrences don't lead to Fault messages, but represent error or warning events. In these cases logging is performed. Internally Sapo-Broker uses Simple Logging Facade for Java (SLF4J) (
+				<ulink url="http://www.slf4j.org/">http://www.slf4j.org/</ulink>
+				).
+			</para>
+		</section>
+		<section>
+			<title>Fault messages</title>
+			<section>
+				<title>I/O Errors</title>
+				<table frame="all" id="Table8">
+					<title>Message format faults</title>
+					<tgroup cols="3">
+						<colspec colnum="1" colname="c1" />
+						<colspec colnum="2" colname="c2" />
+						<colspec colnum="3" colname="c3" />
+						<tbody>
+							<row>
+								<entry>Fault code</entry>
+								<entry>Fault description</entry>
+								<entry>Observations</entry>
+							</row>
+							<row>
+								<entry>1101</entry>
+								<entry>Invalid message size</entry>
+								<entry>
+
+								</entry>
+							</row>
+							<row>
+								<entry>1102</entry>
+								<entry>Unknown encoding protocol</entry>
+								<entry>Message not sent</entry>
+							</row>
+							<row>
+								<entry>1103</entry>
+								<entry>Unknown encoding version</entry>
+								<entry>Message not sent</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				<table frame="all" id="Table9">
+					<title>Payload encoding faults</title>
+					<tgroup cols="3">
+						<colspec colnum="1" colname="c1" />
+						<colspec colnum="2" colname="c2" />
+						<colspec colnum="3" colname="c3" />
+						<tbody>
+							<row>
+								<entry>Fault code</entry>
+								<entry>Fault description</entry>
+								<entry>Observations</entry>
+							</row>
+							<row>
+								<entry>1201</entry>
+								<entry>Invalid message format</entry>
+								<entry>
+
+								</entry>
+							</row>
+							<row>
+								<entry>1202</entry>
+								<entry>Unexpected message type</entry>
+								<entry>e.g., when Agent receives a Notification message</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</section>
+			<section>
+				<table frame="all" id="Table10">
+					<title>Messaging errors faults</title>
+					<tgroup cols="3">
+						<colspec colnum="1" colname="c1" />
+						<colspec colnum="2" colname="c2" />
+						<colspec colnum="3" colname="c3" />
+						<tbody>
+							<row>
+								<entry>Fault code</entry>
+								<entry>Fault description</entry>
+								<entry>Observations</entry>
+							</row>
+							<row>
+								<entry>2001</entry>
+								<entry>Invalid destination name</entry>
+								<entry>e.g., VIRTUAL_QUEUE without "@" in name</entry>
+							</row>
+							<row>
+								<entry>2002</entry>
+								<entry>Invalid destination type</entry>
+								<entry>e.g., publications to VIRTUAL_QUEUE</entry>
+							</row>
+							<row>
+								<entry>2003</entry>
+								<entry>Maximum number of queues reached</entry>
+								<entry>
+
+								</entry>
+							</row>
+							<row>
+								<entry>2004</entry>
+								<entry>Maximum distinct subscriptions reached</entry>
+								<entry>
+
+								</entry>
+							</row>
+							<row>
+								<entry>2005</entry>
+								<entry>Message poll timeout</entry>
+								<entry>
+									Message sent after the timeout specified by the consumer has elapsed. Timeout of zero means that the client is willing to wait forever.
+                </entry>
+							</row>
+							<row>
+								<entry>2006</entry>
+								<entry>No message in local agent queue</entry>
+								<entry>
+									Message sent if a poll request cannot be immediately satisfied because there are no available messages in local agent queue. Clients denote the intention of not waiting by sending a negative timeout.
+                </entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</section>
+			<section>
+				<title>Security fault types</title>
+				<table frame="all" id="Table11">
+					<title>Authentication faults</title>
+					<tgroup cols="3">
+						<colspec colnum="1" colname="c1" />
+						<colspec colnum="2" colname="c2" />
+						<colspec colnum="3" colname="c3" />
+						<tbody>
+							<row>
+								<entry>Fault code</entry>
+								<entry>Fault description</entry>
+								<entry>Observations</entry>
+							</row>
+							<row>
+								<entry>3101</entry>
+								<entry>Authentication failed</entry>
+								<entry>The supplied credentials were invalid</entry>
+							</row>
+							<row>
+								<entry>3102</entry>
+								<entry>Unknown authentication type</entry>
+								<entry>The client tried to use an unsupported authentication schema</entry>
+							</row>
+							<row>
+								<entry>3103</entry>
+								<entry>Invalid authentication channel type</entry>
+								<entry>The client tried to send/receive messages using an unsecured port on a Destination that only allows SSL connections</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				<table frame="all" id="Table12">
+					<title>Authorization faults</title>
+					<tgroup cols="3">
+						<colspec colnum="1" colname="c1" />
+						<colspec colnum="2" colname="c2" />
+						<colspec colnum="3" colname="c3" />
+						<tbody>
+							<row>
+								<entry>Fault code</entry>
+								<entry>Fault description</entry>
+								<entry>Observations</entry>
+							</row>
+							<row>
+								<entry>3201</entry>
+								<entry>Access denied</entry>
+								<entry></entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</section>
+		</section>
+	</section>
+	<section>
+		<title id="TYPICAL HEADERS">Typical headers</title>
+		<para>Most messages carry some well-known message headers. This section describes its format and meaning.</para>
+		<section>
+			<title>Action type</title>
+			<para>Messages sent to clients may be of several types, witch represent an intended action. This parameter explicits the action and message id. This information is now redundant and may be suppressed.</para>
+			<itemizedlist>
+				<listitem>
+					Name:
+					<emphasis>ACTION</emphasis>
+				</listitem>
+				<listitem>
+					Example:
+					<emphasis>http://services.sapo.pt/broker/notification/864a7e2ae1d1ff4c383095c5a0dd87ef#59</emphasis>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Message origin</title>
+			<para>
+				Clients may desire to know the name of the application that published the message, if any. To obtain that information exists the
+				<emphasis>FROM</emphasis>
+				parameter. The format may change in the future.
+			</para>
+			<itemizedlist>
+				<listitem>
+					Name:
+					<emphasis>FROM</emphasis>
+				</listitem>
+				<listitem>
+					Example:
+					<emphasis>topic@broker1:///topic/foo?app=broker://agent/broker1/</emphasis>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Publishing agent</title>
+			<para>Messages published by clients enter the messaging system through a Broker agent, denominated publishing agent. To know the name of that agent check this parameter.</para>
+			<itemizedlist>
+				<listitem>
+					Name:
+					<emphasis>PUBLISHING_AGENT</emphasis>
+				</listitem>
+				<listitem>
+					Example:
+					<emphasis>agent1</emphasis>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Acknowledge required</title>
+			<para>When subscribing to Queues or Virtual Queues destination types clients can specify the ACK_REQUIRED header set to false, meaning that they don't wish to acknowledge received messages. Messages will automatically be removed once delivered to the clients who specify this header set to false.</para>
+			<para>When delivering a message to a client who set the ACK_REQUIRED to false, the agent also sets ACK_REQUIRED header to false.</para>
+			<itemizedlist>
+				<listitem>
+					Name:
+					<emphasis>ACK_REQUIRED</emphasis>
+				</listitem>
+				<listitem>
+					Example:
+					<emphasis>false</emphasis>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Reserve time</title>
+			<para>
+				When a queue message is delivered to a client a reserve time is set. Asynchronous clients have their messages reserved for two minutes, meaning that they have two minutes to acknowledge the message or it will be redelivered. By default, messages delivered to synchronous consumers, the ones who send Poll messages, will have a reserve time of 15 minutes. However, the reserve time can be specified using
+				<emphasis>RESERVE_TIME</emphasis>
+				header. The time is specified in milliseconds.
+			</para>
+			<para>This header is specific to Poll messages.</para>
+			<itemizedlist>
+				<listitem>
+					Name:
+					<emphasis>RESERVE_TIME</emphasis>
+				</listitem>
+				<listitem>
+					Example (for 25mn) :
+					<emphasis>1500000</emphasis>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+</chapter>
+

@@ -1,0 +1,304 @@
+// !$*UTF8*$!
+{
+	089C1669FE841209C02AAC07 /* Project object */ = {
+		activeArchitecturePreference = i386;
+		activeBuildConfigurationName = Debug;
+		activeExecutable = 23E90CA60A83C53500A6A40A /* Quartz Composer */;
+		activeSDKPreference = macosx10.6;
+		activeTarget = 233E2C640A83C768005A62DF /* Build & Copy */;
+		addToTargets = (
+			8D5B49AC048680CD000E48DA /* QCBroker */,
+		);
+		breakpoints = (
+			478A21100F896F3000F8D372 /* QCBrokerPlugIn.m:34 */,
+		);
+		codeSenseManager = 23E90CA50A83C4F400A6A40A /* Code sense */;
+		executables = (
+			23E90CA60A83C53500A6A40A /* Quartz Composer */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					22,
+					300,
+					400,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXExecutablesDataSource_ActiveFlagID,
+					PBXExecutablesDataSource_NameID,
+					PBXExecutablesDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					1086,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXSymbolsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXSymbolsDataSource_SymbolNameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					16,
+					200,
+					50,
+					1026,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXSymbolsDataSource_SymbolTypeIconID,
+					PBXSymbolsDataSource_SymbolNameID,
+					PBXSymbolsDataSource_SymbolTypeID,
+					PBXSymbolsDataSource_ReferenceNameID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.XCSCMDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					756,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_SCM_ColumnID,
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					999,
+					60,
+					20,
+					48,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 315768140;
+			PBXWorkspaceStateSaveDate = 315768140;
+		};
+		perUserProjectItems = {
+			4744E2AF12D23C1C00CF5F48 /* PBXTextBookmark */ = 4744E2AF12D23C1C00CF5F48 /* PBXTextBookmark */;
+			47D5653B12D24DFE00A57D47 /* XCBuildMessageTextBookmark */ = 47D5653B12D24DFE00A57D47 /* XCBuildMessageTextBookmark */;
+			47D5654012D251C200A57D47 /* PBXTextBookmark */ = 47D5654012D251C200A57D47 /* PBXTextBookmark */;
+		};
+		sourceControlManager = 23E90CA40A83C4F400A6A40A /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	16AA5C440A7EEE7300888E31 /* QCBroker_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {519, 253}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 50}";
+			sepNavWindowFrame = "{{107, 163}, {902, 776}}";
+		};
+	};
+	16BA95400A7EB2EB001E4983 /* QCBrokerPlugIn.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1264, 697}}";
+			sepNavSelRange = "{260, 25}";
+			sepNavVisRange = "{0, 788}";
+			sepNavVisRect = "{{0, 0}, {839, 550}}";
+			sepNavWindowFrame = "{{147, 69}, {902, 774}}";
+		};
+	};
+	16BA95410A7EB2EB001E4983 /* QCBrokerPlugIn.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1264, 2925}}";
+			sepNavSelRange = "{4566, 0}";
+			sepNavVisRange = "{3530, 1287}";
+			sepNavWindowFrame = "{{124, 177}, {902, 733}}";
+		};
+	};
+	233E2C640A83C768005A62DF /* Build & Copy */ = {
+		activeExec = 0;
+	};
+	23E90CA40A83C4F400A6A40A /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryName = "Softwarelivre Mac";
+			repositoryNamesForRoots = {
+				"" = "Softwarelivre Mac";
+			};
+		};
+		scmType = "";
+	};
+	23E90CA50A83C4F400A6A40A /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	23E90CA60A83C53500A6A40A /* Quartz Composer */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		launchableReference = 23E90CA70A83C53500A6A40A /* Quartz Composer.app */;
+		libgmallocEnabled = 0;
+		name = "Quartz Composer";
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+	};
+	23E90CA70A83C53500A6A40A /* Quartz Composer.app */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = wrapper.application;
+		name = "Quartz Composer.app";
+		path = "/Developer/Applications/Quartz Composer.app";
+		sourceTree = "<absolute>";
+	};
+	4744E2AF12D23C1C00CF5F48 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 16BA95400A7EB2EB001E4983 /* QCBrokerPlugIn.h */;
+		name = "QCBrokerPlugIn.h: 16";
+		rLen = 25;
+		rLoc = 260;
+		rType = 0;
+		vrLen = 788;
+		vrLoc = 0;
+	};
+	4765EF560F8EB79500F9BDB3 /* sapo_broker.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1264, 8541}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1354}";
+		};
+	};
+	4765EF570F8EB79500F9BDB3 /* sapo_broker.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1264, 1235}}";
+			sepNavSelRange = "{1633, 13}";
+			sepNavVisRange = "{940, 1312}";
+			sepNavWindowFrame = "{{15, 45}, {902, 733}}";
+		};
+	};
+	4765EF580F8EB79500F9BDB3 /* sapo_broker_xml.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1264, 2600}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1852}";
+		};
+	};
+	4765EF590F8EB79500F9BDB3 /* sapo_broker_xml.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {958, 770}}";
+			sepNavSelRange = "{142, 0}";
+			sepNavVisRange = "{0, 620}";
+			sepNavWindowFrame = "{{15, 45}, {902, 733}}";
+		};
+	};
+	478A21100F896F3000F8D372 /* QCBrokerPlugIn.m:34 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 16BA95410A7EB2EB001E4983 /* QCBrokerPlugIn.m */;
+		functionName = "+attributesForPropertyPortWithKey:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 34;
+		location = QCBroker;
+		modificationTime = 260665190.115715;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+	};
+	47B037FB0F8F99B700852843 /* sapo_broker_xml_templates.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {958, 637}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1200}";
+		};
+	};
+	47D5653B12D24DFE00A57D47 /* XCBuildMessageTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "Expected ‘:’ before ‘]’ token";
+		fRef = 16BA95410A7EB2EB001E4983 /* QCBrokerPlugIn.m */;
+		fallbackIsa = XCBuildMessageTextBookmark;
+		rLen = 1;
+		rLoc = 93;
+		rType = 1;
+	};
+	47D5654012D251C200A57D47 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 16BA95410A7EB2EB001E4983 /* QCBrokerPlugIn.m */;
+		name = "QCBrokerPlugIn.m: 184";
+		rLen = 0;
+		rLoc = 4566;
+		rType = 0;
+		vrLen = 1287;
+		vrLoc = 3530;
+	};
+	8D5B49AC048680CD000E48DA /* QCBroker */ = {
+		activeExec = 0;
+	};
+	8D5B49B7048680CD000E48DA /* Info.plist */ = {
+		uiCtxt = {
+			sepNavWindowFrame = "{{132, 171}, {902, 776}}";
+		};
+	};
+}

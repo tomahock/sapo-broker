@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+
+#get the execution path
+use FindBin qw($Bin);
+use File::Spec::Functions;
+use File::Temp;
+
+use strict;
+
+my $pc_config = catfile( $Bin, 'perlcritic_config' );
+my $tmp = File::Temp->new( UNLINK => 1 );
+
+open my $pc_file, '<:raw', $pc_config or die $@;
+
+while ( my $line = <$pc_file> ) {
+
+    #try and resolve the perltidy rc file into absolute terms
+    $line =~ s{^\s*(perltidyrc\s*=\s*)QA/(\S*)\s*$}{$1$Bin/$2};
+    print $tmp $line;
+}
+
+system( 'perlcritic', '--profile', $tmp->filename(), '--theme', 'sapo_broker', @ARGV );
