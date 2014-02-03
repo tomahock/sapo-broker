@@ -10,3 +10,4 @@
 /test/broker/target/
 /test/performance/target/
 /monitorization/collector/target/
+/client/exec/java/consumer/target/

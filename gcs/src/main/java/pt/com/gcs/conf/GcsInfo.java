@@ -1,6 +1,7 @@
 package pt.com.gcs.conf;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -24,11 +25,12 @@ import pt.com.gcs.conf.global.BrokerSecurityPolicy;
  */
 public class GcsInfo
 {
+	private final static Logger log = LoggerFactory.getLogger(GcsInfo.class);
+	
 	private static final GcsInfo instance = new GcsInfo();
 
 	// public static final String VERSION = "3.0";
 
-	private static Logger log = LoggerFactory.getLogger(GcsInfo.class);
 
 	public static String constructAgentName(String ip, int port)
 	{
@@ -366,14 +368,15 @@ public class GcsInfo
 			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf.agent");
 			Unmarshaller u = jc.createUnmarshaller();
 
-			File f = new File(filePath);
-			boolean b = f.exists();
-			if (!b)
+//			File f = new File(filePath);
+			log.info("getting file path "  + filePath);
+			InputStream stream = GcsInfo.class.getResourceAsStream(filePath);
+			if (stream == null)
 			{
 				log.error("Agent configuration file missing - " + filePath);
 				Shutdown.now();
 			}
-			conf = (AgentConfig) u.unmarshal(f);
+			conf = (AgentConfig) u.unmarshal(stream);
 
 			String prop = constructAgentName(conf.getNet().getIp(), conf.getNet().getPort());
 			if (StringUtils.isBlank(prop))

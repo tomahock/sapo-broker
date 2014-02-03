@@ -32,7 +32,7 @@ public class BrokerHttpService
 	{
 		try
 		{       /* TODO TEMP CHANGE brsantos */
-			NettyHttpServer server = new NettyHttpServer(null, _portNumber, false, tpeIo, tpeWorkers);
+			NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber, false, tpeIo, tpeWorkers);
 //			server.setPort(_portNumber);
                         /* TEMP CHANGE brsantos */
 			server.setRouter(new BrokerRequestRouter());
