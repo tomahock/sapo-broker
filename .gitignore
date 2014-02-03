@@ -1,0 +1,12 @@
+/binding/protobuf/target/
+/comm-types/target/
+/gcs/target/
+/binding/json/target/
+/binding/thrift/target/
+/agent/target/
+/binding/xml/target/
+/client/java/target/
+/client/javascript/target/
+/test/broker/target/
+/test/performance/target/
+/monitorization/collector/target/
