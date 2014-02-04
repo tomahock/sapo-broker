@@ -1,0 +1,8 @@
+# Sapo Broker - Maven Edition
+### Here will be documented variables and goals used to build and execute broker agents and clients, and their dependencies.
+1. **Clean and Build** - in order to build all components please execute **_mvn install_** on the root of the project. If you need to clean all previous builds before a new build execute **_mvn clean_**. You can combine both goals by executing **_mvn clean install_**. You can run these goals on each submodule separately if you only need to update or bundle one of these submodules.
+1. **Jar with dependencies** - if you include a file named **_with-deps_** on the root of your submodule, a jar with all dependencies is created on the target folder.
+1. **Configurable properties (inside the POM)**
+	1. mainClass - class that will be included on the jar manifest as main Class. In conjunction with jar with dependencies feature you can then execute the resulting jar by calling **_mvn exec:exec_** or **_java -jar [jar-with-dependencies]_**
+	1. className - on some submodules the mainClass can already be defined, sapo-broker-java-client for example, as _<mainClass>pt.com.broker.client.sample.${className}</mainClass>_, being then possible to execute different client types through the command line using the option **_-DclassName=[class name]_**
+	1. extraArgs - extra JVM options specific to each module. They will be concatenated with the default JVM options defined on Sapo's parent POM (-server -Xverify:none -Xms32M -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dfile.encoding=UTF-8)
