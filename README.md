@@ -1,5 +1,5 @@
 # Sapo Broker - Maven Edition
-### Here will be documented variables and goals used to build and execute broker agents and clients, and their dependencies.
+#### Here will be documented variables and goals used to build and execute broker agents and clients, and their dependencies.
 1. **Clean and Build** - in order to build all components please execute **_mvn install_** on the root of the project. If you need to clean all previous builds before a new build execute **_mvn clean_**. You can combine both goals by executing **_mvn clean install_**. You can run these goals on each submodule separately if you only need to update or bundle one of these submodules.
 1. **Jar with dependencies** - if you include a file named **_with-deps_** on the root of your submodule, a jar with all dependencies is created on the target folder.
 1. **Configurable properties (inside the POM)**
