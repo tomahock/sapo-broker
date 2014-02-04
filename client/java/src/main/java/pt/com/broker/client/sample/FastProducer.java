@@ -152,7 +152,7 @@ public class FastProducer
 
 	public static void main(String[] args) throws Throwable
 	{
-		final String host = "172.17.1.102";
+		final String host = "127.0.0.1";
 		final int port = 3323;
 
 		FastProducer fpb = new FastProducer(host, port);

@@ -22,13 +22,13 @@ import pt.com.gcs.conf.global.BrokerSecurityPolicy;
  * GcsInfo contains several information about the agent.
  * 
  */
-public class GcsInfo
-{
+public class GcsInfo {
+
+	private final static Logger log = LoggerFactory.getLogger(GcsInfo.class);
+
 	private static final GcsInfo instance = new GcsInfo();
 
 	// public static final String VERSION = "3.0";
-
-	private static Logger log = LoggerFactory.getLogger(GcsInfo.class);
 
 	public static String constructAgentName(String ip, int port)
 	{

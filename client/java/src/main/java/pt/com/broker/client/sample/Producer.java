@@ -11,10 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
-import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetProtocolType;
 
 /**
