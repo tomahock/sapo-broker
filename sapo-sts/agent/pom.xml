@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>pt.sapo.oss.broker</groupId>
+		<artifactId>sapo-broker-parent</artifactId>
+		<version>4.0.46</version>
+	</parent>
+	<artifactId>sapo-broker-sts-agent</artifactId>
+	<name>sapo-broker-sts-agent</name>
+	<packaging>jar</packaging>
+	<properties>
+		<mainClass>pt.com.broker.Start</mainClass>
+		<extraArgs>-Xmx256M -Dagent-config-path=/conf/agent_example.config -Dbroker-global-config-path=target/conf/broker_global.config -Dproject-version=${project.version}</extraArgs>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+			<artifactId>sapo-broker-agent</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+			<artifactId>sapo-broker-sts-client</artifactId>
+		</dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,8 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartArguments>-hn:alertastest.dyndns-at-work.com -sslPort:3390 -dt:TOPIC -cer:c:\agent.cer -dn:/secret/foo</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <StartArguments>-hn:alertastest.dyndns-at-work.com -sslPort:3390 -dt:TOPIC -cer:c:\testCert.cer -dn:/topic/secret</StartArguments>
+  </PropertyGroup>
+</Project>

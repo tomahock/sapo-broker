@@ -1,0 +1,7 @@
+<section>
+  <title>Sapo STS</title>
+  <para>Sapo STS authentication module is divided in two parts, one regathering client validation and the other client authentication. Client authentication is the process of obtaining a SapoSTS security token. To obtain this token clients must provide their user name and password. Once obtained, the token is sent to the agent in an authentication message indicating "SapoSTS" as the authentication type. Both clients and agents use client authentication: clients because they need to supply a token to the agent; and agents need to authenticate themselves in order to extract user roles from the clients.</para>
+  <para>Client validation, and subsequent roles extraction, is performed by an agent specific module complying to what was described before. <link linkend="CODE_AUTH_PROV_CONF">Here</link> a configuration sample is presented. In case the agent is not using SapoSTS validation it can be removed from the configuration file. This validation module specifies three configuration parameters: Sapo STS location and agent's user name and password.</para>
+  <para>SapoSTS validation and authentication are available from sapo-broker-validation-saposts.jar and sapo-broker-clientauth-saposts.jar, respectively.</para>
+</section>
+

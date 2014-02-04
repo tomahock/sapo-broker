@@ -24,7 +24,9 @@
         <module>test/broker</module>
         <module>test/performance</module>
         <module>monitorization/collector</module>
+		<module>sapo-sts/agent</module>
         <!--<module>monitorization/console</module>-->
+        <module>sapo-sts/client/java</module>
     </modules>
     <repositories>
         <repository>
