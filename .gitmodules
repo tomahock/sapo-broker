@@ -1,0 +1,18 @@
+[submodule "vagrant/puppet/modules/git"]
+	path = vagrant/puppet/modules/git
+	url = https://github.com/nesi/puppet-git
+[submodule "vagrant/puppet/modules/stdlib"]
+	path = vagrant/puppet/modules/stdlib
+	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+[submodule "vagrant/puppet/modules/wget"]
+	path = vagrant/puppet/modules/wget
+	url = https://github.com/maestrodev/puppet-wget.git
+[submodule "vagrant/puppet/modules/nodejs"]
+	path = vagrant/puppet/modules/nodejs
+	url = https://github.com/willdurand/puppet-nodejs.git
+[submodule "vagrant/puppet/modules/puppet-thrift"]
+	path = vagrant/puppet/modules/puppet-thrift
+	url = https://github.com/Adcade/puppet-thrift.git
+[submodule "vagrant/puppet/modules/thrift"]
+	path = vagrant/puppet/modules/thrift
+	url = git@github.com:luissantos/puppet-thrift.git
