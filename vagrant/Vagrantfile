@@ -50,7 +50,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   #   # Use VBoxManage to customize the VM. For example to change memory:
       vb.customize ["modifyvm", :id, "--memory", "1024"]
-      vb.cpus = 4
+
+      if not RUBY_PLATFORM.downcase.include?("mswin")
+            vb.customize ["modifyvm", :id, "--cpus", `grep "^processor" /proc/cpuinfo | wc -l`.chomp ]
+      end
+
   end
   #
   # View the documentation for the provider you're using for more
