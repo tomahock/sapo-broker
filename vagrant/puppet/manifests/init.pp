@@ -1,3 +1,15 @@
+class forceupdate {
+  exec { "apt-update":
+    command => "/usr/bin/apt-get update"
+  }
+
+  # Ensure apt-get update has been run before installing any packages
+  Exec["apt-update"] -> Package <| |>
+}
+
+class { 'forceupdate': }
+
+
 class { 'apt':
   always_apt_update    => true
 }
@@ -24,13 +36,21 @@ import 'includes/*.pp'
 class { 'java': }
 class { 'misc': }
 class { 'protobuf': }
+class { 'python': }
 
 include thrift
 
-file { "/home/vagrant/.m2/settings.xml":
+file { "/home/vagrant/.m2/":
+
+    ensure    => "directory",
+    owner     => "vagrant",
+    group => "vagrant"
+
+}->file { "/home/vagrant/.m2/settings.xml":
     owner => vagrant,
     group => vagrant,
-    source => "puppet:///modules/maven-sapo/settings.xml"
+    source => "puppet:///modules/sapo-maven/settings.xml"
 }
 
+Class['python']->Class['thrift']
 
