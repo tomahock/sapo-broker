@@ -1,19 +1,29 @@
-
-class apt {
-  exec { "apt-update":
-    command => "/usr/bin/apt-get update"
-  }
-
-  # Ensure apt-get update has been run before installing any packages
-  Exec["apt-update"] -> Package <| |>
+class { 'apt':
+  always_apt_update    => true
 }
 
-class { 'apt': }
+include apt
+
+apt::key { 'sapodebiankey':
+  key        => '29607E3913BD8AC6',
+  key_source => 'http://mirrors.bk.sapo.pt/debian/sapo/gpg-key-sapo-packages',
+}
+
+apt::source { 'debianmirror':
+  location   => 'http://mirrors.bk.sapo.pt/debian/sapo',
+  release    => 'wheezy',
+  repos      => 'sapo'
+}
+
+ 
+
 
 #import box modules
 import 'includes/*.pp'
 
 class { 'java': }
+class { 'misc': }
+class { 'protobuf': }
 
 include thrift
 
@@ -22,3 +32,5 @@ file { "/home/vagrant/.m2/settings.xml":
     group => vagrant,
     source => "puppet:///modules/maven-sapo/settings.xml"
 }
+
+
