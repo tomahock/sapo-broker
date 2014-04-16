@@ -1,0 +1,16 @@
+@startuml
+
+title Ping usage example
+
+
+
+subscriber -> server: PING (actionID)
+activate server
+
+|||
+
+subscriber <- server: PONG (actionID)
+deactivate server
+
+
+@enduml
