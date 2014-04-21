@@ -6,6 +6,7 @@
 /agent/target/
 /binding/xml/target/
 /client/java/target/
+/client/java-netty/target/
 /client/javascript/target/
 /test/broker/target/
 /test/performance/target/
