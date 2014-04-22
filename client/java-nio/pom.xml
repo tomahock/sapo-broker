@@ -6,8 +6,8 @@
         <artifactId>sapo-broker-parent</artifactId>
         <version>4.0.46</version>
     </parent>
-    <artifactId>sapo-broker-java-client-nio</artifactId>
-    <name>sapo-broker-java-client-nio</name>
+    <artifactId>sapo-broker-java-client-netty</artifactId>
+    <name>sapo-broker-java-client-netty</name>
     <packaging>jar</packaging>
     <properties>
         <extraArgs>-Xmx32M -Dproject-version=${project.version}</extraArgs>
@@ -66,6 +66,16 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>../../comm-types/target/classes</additionalClasspathElement>
+                    </additionalClasspathElements>
+                </configuration>
+            </plugin>
             <!--
             <plugin>
                 <groupId>net.alchim31.maven</groupId>

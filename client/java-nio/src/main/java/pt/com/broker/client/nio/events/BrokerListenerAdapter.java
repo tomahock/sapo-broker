@@ -46,4 +46,6 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
         onMessage(netNotification);
         postOnMessage(netNotification);
     }
+
+    public abstract void onMessage(NetNotification message);
 }

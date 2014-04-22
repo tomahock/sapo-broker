@@ -26,6 +26,10 @@ public class ConsumerManager {
 
     }
 
+    public void addSubscription(NetSubscribe subscribe, BrokerListener listener){
+        addSubscription(new BrokerAsyncConsumer(subscribe, listener));
+    }
+
     public void addSubscription(BrokerAsyncConsumer consumer){
 
         NetSubscribe subscribe = consumer.getSubscription();
@@ -72,10 +76,7 @@ public class ConsumerManager {
         DestinationType dtype = netMessage.getAction().getNotificationMessage().getDestinationType();
         String destination = netMessage.getAction().getNotificationMessage().getSubscription();
 
-
-
         BrokerAsyncConsumer consumer = getConsumer(dtype,destination);
-
 
         consumer.deliver(netMessage.getAction().getNotificationMessage());
 

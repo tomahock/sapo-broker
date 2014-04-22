@@ -13,7 +13,7 @@ public interface BrokerListener extends BrokerEventHandler {
     *
     * @param message The message.
     */
-    public void onMessage(NetNotification message);
+    public void deliverMessage(NetNotification message)  throws Throwable;
 
 
     public void setBrokerClient(BrokerClient client);

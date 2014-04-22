@@ -22,13 +22,7 @@ public class BrokerAsyncConsumer {
     }
 
     public boolean deliver(NetNotification msg) throws Throwable {
-
-        if(listener instanceof BrokerListenerAdapter){
-            ((BrokerListenerAdapter) listener).deliverMessage(msg);
-        }else{
-            listener.onMessage(msg);
-        }
-
+        listener.deliverMessage(msg);
 
         return true;
     }

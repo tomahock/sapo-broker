@@ -72,9 +72,12 @@ public class BrokerClient {
 
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
+
+                            /* add Message <> byte encode decoder */
                             ch.pipeline().addLast(new BrokerMessageDecoder(getProtocolType()));
                             ch.pipeline().addLast(new BrokerMessageEncoder(getProtocolType()));
 
+                            /* add message receive handler */
                             ch.pipeline().addLast(new ReceiveMessageHandler(consumerManager));
 
                         }
@@ -84,43 +87,55 @@ public class BrokerClient {
 
     }
 
+
+
     public ChannelFuture enqueueMessage(String brokerMessage, String destinationName){
+
+      return enqueueMessage(brokerMessage.getBytes(), destinationName);
+    }
+
+    public ChannelFuture enqueueMessage(byte[] brokerMessage, String destinationName){
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
         return enqueueMessage(msg,destinationName);
     }
 
-    public ChannelFuture enqueueMessage(NetBrokerMessage brokerMessage, String destinationName)
+    public ChannelFuture enqueueMessage(NetBrokerMessage brokerMessage, String destination)
     {
+        return publishOrEnqueueMessage(brokerMessage,destination, NetAction.DestinationType.QUEUE);
+    }
 
-        if ((brokerMessage == null) ||  StringUtils.isBlank(destinationName)){
+
+    public ChannelFuture  publishMessage(NetBrokerMessage brokerMessage, String destination){
+        return publishOrEnqueueMessage(brokerMessage,destination, NetAction.DestinationType.TOPIC);
+    }
+
+    private ChannelFuture publishOrEnqueueMessage(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype){
+
+        if ((brokerMessage == null) ||  StringUtils.isBlank(destination)){
             throw new IllegalArgumentException("Mal-formed Enqueue request");
         }
 
 
-        NetPublish publish = new NetPublish(destinationName, NetAction.DestinationType.QUEUE, brokerMessage);
+        NetPublish publish = new NetPublish(destination, dtype, brokerMessage);
 
-        NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
+        NetMessage netMessage = buildMessage(new NetAction(publish),brokerMessage.getHeaders());
 
-        action.setPublishMessage(publish);
-
-        return sendNetMessage(new NetMessage(action,brokerMessage.getHeaders()));
+        return sendNetMessage(netMessage);
 
     }
 
+
     public ChannelFuture subscribe(NetSubscribe subscribe, BrokerListener listener){
 
-        getConsumerManager().addSubscription(new BrokerAsyncConsumer(subscribe, listener));
+        getConsumerManager().addSubscription(subscribe, listener);
 
         log.info("Created new async consumer for '{}'", subscribe.getDestination());
 
         listener.setBrokerClient(this);
 
-        NetAction netAction = new NetAction(NetAction.ActionType.SUBSCRIBE);
-        netAction.setSubscribeMessage(subscribe);
-
-        NetMessage netMessage = buildMessage(netAction,subscribe.getHeaders());
+        NetMessage netMessage = buildMessage(new NetAction(subscribe),subscribe.getHeaders());
 
         return sendNetMessage(netMessage);
     }
@@ -129,27 +144,23 @@ public class BrokerClient {
 
     public ChannelFuture acknowledge(NetNotification notification) throws Throwable
     {
-
-        if( (notification==null ) || (notification.getMessage() == null) || StringUtils.isBlank(notification.getMessage().getMessageId())){
-            throw new IllegalArgumentException("Can't acknowledge invalid message.");
-        }
-
-        /* there is no acknnowledge for topic  */
+        /* there is no acknowledge action for topics  */
         if (notification.getDestinationType() == NetAction.DestinationType.TOPIC)
         {
             return null;
         }
 
 
+        if( (notification==null ) || (notification.getMessage() == null) || StringUtils.isBlank(notification.getMessage().getMessageId())){
+            throw new IllegalArgumentException("Can't acknowledge invalid message.");
+        }
+
 
         NetBrokerMessage brkMsg = notification.getMessage();
         String ackDestination = notification.getSubscription();
         NetAcknowledge ackMsg = new NetAcknowledge(ackDestination, brkMsg.getMessageId());
 
-        NetAction action = new NetAction(NetAction.ActionType.ACKNOWLEDGE);
-        action.setAcknowledgeMessage(ackMsg);
-
-        NetMessage msg = buildMessage(action);
+        NetMessage msg = buildMessage(new NetAction(ackMsg));
 
         return sendNetMessage(msg);
 

@@ -37,6 +37,27 @@ public final class NetAction
 		this.actionType = actionType;
 	}
 
+
+    public NetAction(NetSubscribe netSubscribe)
+    {
+        this.actionType = ActionType.SUBSCRIBE;
+        setSubscribeMessage(netSubscribe);
+    }
+
+
+    public NetAction(NetPublish netPublish)
+    {
+        this.actionType = ActionType.PUBLISH;
+        setPublishMessage(netPublish);
+    }
+
+    public NetAction(NetAcknowledge netAction){
+        this.actionType = ActionType.ACKNOWLEDGE;
+        setAcknowledgeMessage(netAction);
+    }
+
+
+
 	public ActionType getActionType()
 	{
 		return actionType;
