@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio.events;
 
+import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.types.NetNotification;
 
 /**
@@ -12,9 +13,10 @@ public interface BrokerListener extends BrokerEventHandler {
     *
     * @param message The message.
     */
-    void onMessage(NetNotification message);
+    public void onMessage(NetNotification message);
 
 
+    public void setBrokerClient(BrokerClient client);
 
 
 }

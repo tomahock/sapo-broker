@@ -73,6 +73,7 @@ public class BrokerMessageDecoder extends ByteToMessageDecoder{
                 out.add(msg);
 
                 state = State.Header;
+
             break;
         }
 

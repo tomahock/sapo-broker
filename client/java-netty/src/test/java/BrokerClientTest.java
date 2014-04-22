@@ -1,8 +1,22 @@
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.embedded.EmbeddedChannel;
+import org.caudexorigo.concurrent.Sleep;
+import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
+import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
+import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.types.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Timer;
 
 /**
@@ -11,14 +25,14 @@ import java.util.Timer;
 public class BrokerClientTest {
 
 
+    private static final Logger log = LoggerFactory.getLogger(BrokerClientTest.class);
+
     @Test
     public void testClientConnect() throws Exception{
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
         ChannelFuture f = bk.connect();
-
-
 
 
         f.addListener(new ChannelFutureListener() {
@@ -29,13 +43,207 @@ public class BrokerClientTest {
         });
 
 
-
-
-
         f.sync();
+
+    }
+
+    @Test
+    public void testEncoding() throws Exception{
+
+        EmbeddedChannel channel = null;
+
+        channel = new EmbeddedChannel(new BrokerMessageEncoder(NetProtocolType.JSON));
+
+        NetMessage nmsg = createNewMessage();
+
+        Assert.assertTrue(channel.writeOutbound(nmsg));
+
+        ByteBuf out = (ByteBuf) channel.readOutbound();
+
+        log.debug(ByteBufUtil.hexDump(out));
+
+        byte[] data = new byte[out.readableBytes()];
+
+        out.readBytes(data);
+
+        Assert.assertTrue(data.length > 0);
+
 
 
 
     }
 
-}
+
+    @Test
+    public void testDecoding()  throws Exception{
+
+        EmbeddedChannel channel = null;
+
+        channel = new EmbeddedChannel(new BrokerMessageDecoder(NetProtocolType.JSON));
+
+        NetMessage net = createNewMessage();
+
+        byte[] data = MessageToByte(net);
+
+        ByteBuf buf =  Unpooled.buffer();
+
+        buf.writeBytes(data);
+
+        channel.writeInbound(buf);
+
+        channel.finish();
+
+        NetMessage msg = (NetMessage)channel.readInbound();
+
+        Assert.assertTrue(msg instanceof  NetMessage);
+
+        log.debug(new String(msg.getAction().getPublishMessage().getMessage().getPayload(), "UTF-8"));
+
+    }
+
+
+    protected NetMessage createNewMessage(){
+
+
+        NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
+
+        NetBrokerMessage msg = new NetBrokerMessage(new String("Olá Mundo"));
+
+        NetPublish publish = new NetPublish("/teste/", NetAction.DestinationType.QUEUE, msg);
+
+        action.setPublishMessage(publish);
+
+        NetMessage nmsg = new NetMessage(action);
+
+        return nmsg;
+    }
+
+
+    protected byte[] MessageToByte(NetMessage nmsg) throws Exception{
+
+        EmbeddedChannel channel = null;
+
+        channel = new EmbeddedChannel(new BrokerMessageEncoder(NetProtocolType.JSON));
+
+        Assert.assertTrue(channel.writeOutbound(nmsg));
+
+        ByteBuf out = (ByteBuf) channel.readOutbound();
+
+        byte[] data = new byte[out.readableBytes()];
+
+        out.readBytes(data);
+
+        return data;
+    }
+
+
+    @Test
+    public void testClientEnqueueMessage() throws Exception{
+
+        BrokerClient bk = new BrokerClient("localhost",3323);
+
+        ChannelFuture f = bk.connect();
+
+        f.sync();
+
+        ChannelFuture future = bk.enqueueMessage("Olá Mundo","/teste/");
+
+
+        future.sync();
+
+
+    }
+
+    @Test
+    public void testSubscribe(){
+
+
+        BrokerClient bk = new BrokerClient("localhost",3323);
+
+        ChannelFuture f = bk.connect();
+
+        try {
+            f.sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        NetSubscribe netSubscribe = new NetSubscribe("/teste/", NetAction.DestinationType.QUEUE);
+
+
+        log.debug("Subscribe");
+
+        ChannelFuture fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
+            @Override
+            public void onMessage(NetNotification message) {
+
+                try {
+
+                    log.debug(new String(message.getMessage().getPayload(),"UTF-8"));
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        try {
+            fs.sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Test
+    public void testSubscribeAndReceive() throws Throwable{
+
+        this.testClientEnqueueMessage();
+
+        BrokerClient bk = new BrokerClient("localhost",3323);
+
+        ChannelFuture f = bk.connect();
+
+        try {
+            f.sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        NetSubscribe netSubscribe = new NetSubscribe("/teste/", NetAction.DestinationType.QUEUE);
+
+
+        log.debug("Subscribe");
+
+        ChannelFuture fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
+
+            @Override
+            public void onMessage(NetNotification message) {
+
+                try {
+
+                    log.debug(new String(message.getMessage().getPayload(),"UTF-8"));
+
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        try {
+            fs.sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        Thread.sleep(5000);
+
+    }
+
+
+    }
