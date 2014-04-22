@@ -10,7 +10,7 @@
 	<name>sapo-broker-java-client</name>
 	<packaging>jar</packaging>
 	<properties>
-		<extraArgs>-Xmx32M -Dproject-version=${project.version}</extraArgs>
+		<extraJvmArgs>-Xmx32M -Dproject-version=${project.version}</extraJvmArgs>
 	</properties>
 	<dependencies>
 		<dependency>
