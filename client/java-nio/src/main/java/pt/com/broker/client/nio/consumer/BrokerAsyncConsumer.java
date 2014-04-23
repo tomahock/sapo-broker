@@ -14,11 +14,11 @@ public class BrokerAsyncConsumer {
 
     private final BrokerListener listener;
 
-    public BrokerAsyncConsumer(NetSubscribe subscrition, BrokerListener listener)
+    public BrokerAsyncConsumer(NetSubscribe subscription, BrokerListener listener)
     {
         super();
         this.listener = listener;
-        this.subscription = subscrition;
+        this.subscription = subscription;
     }
 
     public boolean deliver(NetNotification msg) throws Throwable {

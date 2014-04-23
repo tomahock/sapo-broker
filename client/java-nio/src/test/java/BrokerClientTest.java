@@ -45,6 +45,8 @@ public class BrokerClientTest {
 
         f.sync();
 
+        Thread.sleep(5000);
+
     }
 
     @Test

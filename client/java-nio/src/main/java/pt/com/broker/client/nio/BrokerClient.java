@@ -1,6 +1,6 @@
 package pt.com.broker.client.nio;
 
-import io.netty.bootstrap.Bootstrap;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -12,6 +12,7 @@ import io.netty.util.concurrent.Future;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
@@ -54,38 +55,23 @@ public class BrokerClient {
         this.host = host;
         this.port = port;
 
-        setBootstrap(new Bootstrap());
+        ConsumerManager cm = new ConsumerManager();
+
+        setBootstrap(new Bootstrap(ptype,cm));
 
         setProtocolType(ptype);
+        setConsumerManager(cm);
 
-        setConsumerManager(new ConsumerManager());
     }
 
     public ChannelFuture connect(){
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        future = getBootstrap().connect(new HostInfo(host,port));
 
-        getBootstrap().group(group)
-                    .channel(NioSocketChannel.class)
-                    .remoteAddress(new InetSocketAddress(host, port))
-                    .handler(new ChannelInitializer<SocketChannel>() {
-
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-
-                            /* add Message <> byte encode decoder */
-                            ch.pipeline().addLast(new BrokerMessageDecoder(getProtocolType()));
-                            ch.pipeline().addLast(new BrokerMessageEncoder(getProtocolType()));
-
-                            /* add message receive handler */
-                            ch.pipeline().addLast(new ReceiveMessageHandler(consumerManager));
-
-                        }
-                    });
-
-        return future = getBootstrap().connect();
+        return future = getBootstrap().connect(new HostInfo(host,port));
 
     }
+
 
 
 
@@ -120,9 +106,11 @@ public class BrokerClient {
 
         NetPublish publish = new NetPublish(destination, dtype, brokerMessage);
 
-        NetMessage netMessage = buildMessage(new NetAction(publish),brokerMessage.getHeaders());
+        NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
 
-        return sendNetMessage(netMessage);
+        action.setPublishMessage(publish);
+
+        return sendNetMessage(new NetMessage(action,brokerMessage.getHeaders()));
 
     }
 
@@ -135,7 +123,10 @@ public class BrokerClient {
 
         listener.setBrokerClient(this);
 
-        NetMessage netMessage = buildMessage(new NetAction(subscribe),subscribe.getHeaders());
+        NetAction netAction = new NetAction(NetAction.ActionType.SUBSCRIBE);
+        netAction.setSubscribeMessage(subscribe);
+
+        NetMessage netMessage = buildMessage(netAction,subscribe.getHeaders());
 
         return sendNetMessage(netMessage);
     }
@@ -150,23 +141,32 @@ public class BrokerClient {
             return null;
         }
 
-
         if( (notification==null ) || (notification.getMessage() == null) || StringUtils.isBlank(notification.getMessage().getMessageId())){
             throw new IllegalArgumentException("Can't acknowledge invalid message.");
         }
+
 
 
         NetBrokerMessage brkMsg = notification.getMessage();
         String ackDestination = notification.getSubscription();
         NetAcknowledge ackMsg = new NetAcknowledge(ackDestination, brkMsg.getMessageId());
 
-        NetMessage msg = buildMessage(new NetAction(ackMsg));
+        NetAction action = new NetAction(NetAction.ActionType.ACKNOWLEDGE);
+        action.setAcknowledgeMessage(ackMsg);
+
+        NetMessage msg = buildMessage(action);
 
         return sendNetMessage(msg);
 
     }
 
     protected ChannelFuture sendNetMessage(NetMessage msg){
+
+        Channel channel = getChannel();
+
+        if(!channel.isActive()){
+
+        }
 
         return  getChannel().writeAndFlush(msg);
 
@@ -186,7 +186,7 @@ public class BrokerClient {
     }
 
     public Future close(){
-        return getBootstrap().group().shutdownGracefully();
+        return getBootstrap().getBootstrap().group().shutdownGracefully();
     }
 
     public Bootstrap getBootstrap() {
