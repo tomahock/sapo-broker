@@ -1,0 +1,31 @@
+@startuml
+
+title Queue usage example
+
+== Subscribe Queue ==
+
+subscriber -> server: SUBSCRIBE
+
+
+== Receive Messages ==
+
+publisher -> server: PUBLISH (Payload)
+
+
+|||
+
+server -> subscriber : NOTIFICATION (Payload)
+activate subscriber
+
+|||
+
+subscriber -> server : ACK(message_id)
+deactivate subscriber
+
+
+== Unsubscribe Queue ==
+
+
+subscriber -> server: UNSUBSCRIBE
+
+@enduml
