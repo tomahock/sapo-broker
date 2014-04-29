@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio.events;
 
+import io.netty.channel.Channel;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.types.NetNotification;
 
@@ -13,7 +14,7 @@ public interface BrokerListener extends BrokerEventHandler {
     *
     * @param message The message.
     */
-    public void deliverMessage(NetNotification message)  throws Throwable;
+    public void deliverMessage(NetNotification message,Channel channel)  throws Throwable;
 
 
     public void setBrokerClient(BrokerClient client);

@@ -13,11 +13,15 @@ public final class HostInfo
 {
     public static final int DEFAULT_CONNECT_TIMEOUT = 15 * 1000; // 15 seconds
     public static final int DEFAULT_READ_TIMEOUT = 0; // forever
+    public static final int DEFAULT_RECONNECT_LIMIT = 10; // 10 tentativas
+
     private String hostname;
     private int port;
     private final int udpPort;
     private final int connectTimeout;
     private final int readTimeout;
+
+    private int reconnectLimit = DEFAULT_RECONNECT_LIMIT;
 
     private ChannelFuture channelFuture;
 
@@ -135,10 +139,26 @@ public final class HostInfo
 
     public boolean isActive(){
 
-        return null == this.getChannelFuture() && getChannel().isActive();
+        return this.getChannelFuture() != null && (getChannel().isActive() ||  getChannel().isOpen() );
     }
 
     public Channel getChannel(){
         return this.getChannelFuture().channel();
+    }
+
+    public synchronized int getReconnectLimit() {
+        return reconnectLimit;
+    }
+
+    public  synchronized void setReconnectLimit(int reconnectLimit) {
+        this.reconnectLimit = reconnectLimit;
+    }
+
+    public  synchronized void resetReconnectLimit(){
+        setReconnectLimit(DEFAULT_RECONNECT_LIMIT);
+    }
+
+    public synchronized void reconnectAttempt(){
+          reconnectLimit--;
     }
 }

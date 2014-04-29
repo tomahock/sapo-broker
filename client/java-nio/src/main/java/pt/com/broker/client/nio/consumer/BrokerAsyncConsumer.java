@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio.consumer;
 
+import io.netty.channel.Channel;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.types.NetNotification;
@@ -21,8 +22,8 @@ public class BrokerAsyncConsumer {
         this.subscription = subscription;
     }
 
-    public boolean deliver(NetNotification msg) throws Throwable {
-        listener.deliverMessage(msg);
+    public boolean deliver(NetNotification msg,Channel channel) throws Throwable {
+        listener.deliverMessage(msg,channel);
 
         return true;
     }

@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio.events;
 
+import io.netty.channel.Channel;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
@@ -13,15 +14,15 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
     private BrokerClient brokerClient = null;
 
 
-    public void preOnMessage(NetNotification netNotification){
+    public void preOnMessage(NetNotification netNotification,Channel channel){
 
 
     }
 
-    public void postOnMessage(NetNotification netNotification) throws Throwable {
+    public void postOnMessage(NetNotification netNotification,Channel channel) throws Throwable {
 
         if(getBrokerClient() instanceof  BrokerClient){
-            this.ackMessage(netNotification);
+            this.ackMessage(netNotification,channel);
         }
 
     }
@@ -34,17 +35,17 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
         this.brokerClient = brokerClient;
     }
 
-    protected void ackMessage(NetNotification netNotification) throws Throwable {
+    protected void ackMessage(NetNotification netNotification,Channel channel) throws Throwable {
 
-        this.getBrokerClient().acknowledge(netNotification);
+        this.getBrokerClient().acknowledge(netNotification,channel);
 
     }
 
-    public final void deliverMessage(NetNotification netNotification) throws Throwable {
+    public final void deliverMessage(NetNotification netNotification,Channel channel) throws Throwable {
 
-        preOnMessage(netNotification);
+        preOnMessage(netNotification,channel);
         onMessage(netNotification);
-        postOnMessage(netNotification);
+        postOnMessage(netNotification,channel);
     }
 
     public abstract void onMessage(NetNotification message);

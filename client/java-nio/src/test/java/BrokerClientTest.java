@@ -10,14 +10,18 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.future.ConnectFuture;
 import pt.com.broker.types.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Timer;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 21-04-2014.
@@ -32,18 +36,25 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
-        ChannelFuture f = bk.connect();
+        bk.addServer("localhost",3323);
+        bk.addServer("localhost",3324);
+        bk.addServer("localhost",3323);
+        bk.addServer("localhost",3323);
+
+        Future<HostInfo> f = bk.connect();
 
 
-        f.addListener(new ChannelFutureListener() {
+        /*f.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 System.out.println("Connected");
             }
-        });
+        });*/
+        log.debug("Connecting....");
 
+        f.get();
 
-        f.sync();
+        log.debug("Connected to 1 Host");
 
         Thread.sleep(5000);
 
@@ -144,13 +155,20 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
-        ChannelFuture f = bk.connect();
+        log.debug("connecting....");
+        Future<HostInfo> f = bk.connect();
 
-        f.sync();
 
+        log.debug("Waiting for connection....");
+        f.get();
+        log.debug("Connected....");
+
+        log.debug("sending message....");
         ChannelFuture future = bk.enqueueMessage("Olá Mundo","/teste/");
 
 
+
+        log.debug("waiting for message be delivered....");
         future.sync();
 
 
@@ -162,11 +180,15 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
-        ChannelFuture f = bk.connect();
+        Future<HostInfo> f= bk.connect();
 
         try {
-            f.sync();
+
+            f.get();
+
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
 
@@ -205,11 +227,13 @@ public class BrokerClientTest {
         this.testClientEnqueueMessage();
 
         BrokerClient bk = new BrokerClient("localhost",3323);
+        bk.addServer("localhost",3323);
 
-        ChannelFuture f = bk.connect();
+
+        Future<HostInfo> f = bk.connect();
 
         try {
-            f.sync();
+            f.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -227,6 +251,7 @@ public class BrokerClientTest {
 
                 try {
 
+                    log.debug(message.getMessage().getMessageId());
                     log.debug(new String(message.getMessage().getPayload(),"UTF-8"));
 
 
@@ -234,6 +259,7 @@ public class BrokerClientTest {
                     e.printStackTrace();
                 }
             }
+
         });
 
         try {
@@ -243,9 +269,57 @@ public class BrokerClientTest {
         }
 
 
+
+        ChannelFuture future = bk.enqueueMessage("Olá Mundo","/teste/");
+
+        future = bk.enqueueMessage("Olá Mundo","/teste/");
+        future = bk.enqueueMessage("Olá Mundo","/teste/");
+        future = bk.enqueueMessage("Olá Mundo","/teste/");
+
+
         Thread.sleep(5000);
 
     }
 
+
+    @Test
+    public void testConnectionError() throws Throwable{
+
+        this.testClientEnqueueMessage();
+
+        BrokerClient bk = new BrokerClient("localhost",3323);
+        bk.addServer("localhost",3324);
+
+
+        Future<HostInfo> f = bk.connect();
+
+        try {
+
+            f.get();
+
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+
+        }
+
+
+
+
+
+        int i = 1000;
+
+        while (--i > 0){
+
+            ChannelFuture future = bk.enqueueMessage("Olá Mundo","/teste/");
+
+            Thread.sleep(1000);
+        }
+
+
+
+        Thread.sleep(5000);
+
+    }
 
     }

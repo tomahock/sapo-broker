@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio.consumer;
 
+import io.netty.channel.Channel;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -71,14 +72,14 @@ public class ConsumerManager {
     }
 
 
-    public void deliverMessage(NetMessage netMessage) throws Throwable {
+    public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
 
         DestinationType dtype = netMessage.getAction().getNotificationMessage().getDestinationType();
         String destination = netMessage.getAction().getNotificationMessage().getSubscription();
 
         BrokerAsyncConsumer consumer = getConsumer(dtype,destination);
 
-        consumer.deliver(netMessage.getAction().getNotificationMessage());
+        consumer.deliver(netMessage.getAction().getNotificationMessage(),channel);
 
     }
 }

@@ -30,6 +30,8 @@ public class Bootstrap {
 
         setBootstrap(new io.netty.bootstrap.Bootstrap());
 
+        this.consumerManager = consumerManager;
+
         init();
     }
 
@@ -37,7 +39,6 @@ public class Bootstrap {
 
 
         EventLoopGroup group = new NioEventLoopGroup();
-
 
 
         getBootstrap().group(group).channel(NioSocketChannelBroker.class);
@@ -87,9 +88,13 @@ public class Bootstrap {
 
 
     public ChannelFuture connect(HostInfo hostInfo){
+
         ChannelFuture f = getBootstrap().connect(hostInfo.getSocketAddress());
 
         hostInfo.setChannelFuture(f);
+
+
+
 
         return f;
     }
