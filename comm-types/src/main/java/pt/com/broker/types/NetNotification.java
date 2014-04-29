@@ -4,56 +4,61 @@ import java.util.Map;
 
 /**
  * Represents a Notification message.
- * 
+ *
  */
-
 public final class NetNotification
 {
-	private String destination;
-	private String subscription;
-	private NetAction.DestinationType destinationType;
-	private NetBrokerMessage message;
 
-	private Map<String, String> headers;
+    private final String destination;
+    private final String subscription;
+    private final NetAction.DestinationType destinationType;
+    private final NetBrokerMessage message;
 
-	public NetNotification(String destination, NetAction.DestinationType destinationType, NetBrokerMessage message, String subscription)
-	{
-		this.destination = destination;
-		this.destinationType = destinationType;
-		this.message = message;
-		if (subscription == null)
-			this.subscription = "";
-		else
-			this.subscription = subscription;
-	}
+    private Map<String, String> headers;
 
-	public String getDestination()
-	{
-		return destination;
-	}
+    public NetNotification(String destination, NetAction.DestinationType destinationType, NetBrokerMessage message, String subscription)
+    {
+        this.destination = destination;
+        this.destinationType = destinationType;
+        this.message = message;
+        if (subscription == null)
+        {
+            this.subscription = "";
+        }
+        else
+        {
+            this.subscription = subscription;
+        }
+    }
 
-	public String getSubscription()
-	{
-		return subscription;
-	}
+    public String getDestination()
+    {
+        return destination;
+    }
 
-	public NetAction.DestinationType getDestinationType()
-	{
-		return destinationType;
-	}
+    public String getSubscription()
+    {
+        return subscription;
+    }
 
-	public NetBrokerMessage getMessage()
-	{
-		return message;
-	}
+    public NetAction.DestinationType getDestinationType()
+    {
+        return destinationType;
+    }
 
-	public void setHeaders(Map<String, String> headers)
-	{
-		this.headers = headers;
-	}
+    public NetBrokerMessage getMessage()
+    {
+        return message;
+    }
 
-	public Map<String, String> getHeaders()
-	{
-		return headers;
-	}
+    public void setHeaders(Map<String, String> headers)
+    {
+        this.headers = headers;
+    }
+
+    public Map<String, String> getHeaders()
+    {
+        return headers;
+    }
+
 }

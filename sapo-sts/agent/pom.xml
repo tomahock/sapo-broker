@@ -11,7 +11,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<mainClass>pt.com.broker.Start</mainClass>
-		<extraArgs>-Xmx256M -Dagent-config-path=/conf/agent_example.config -Dbroker-global-config-path=target/conf/broker_global.config -Dproject-version=${project.version}</extraArgs>
+		<extraJvmArgs>-Xmx256M -Dagent-config-path=/conf/agent_example.config -Dbroker-global-config-path=target/conf/broker_global.config -Dproject-version=${project.version}</extraJvmArgs>
 	</properties>
 	<dependencies>
 		<dependency>

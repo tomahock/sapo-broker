@@ -18,7 +18,7 @@
                         <id>generate-sources</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <echo message="Running Thrift compiler" />
                                 <exec executable="thrift">
                                     <arg value="-gen"/>
@@ -34,7 +34,7 @@
                                     <exclude name="Thrift*.java"/>
                                 </replace>
                                 <delete dir="gen-java" />
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

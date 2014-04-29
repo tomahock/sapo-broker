@@ -31,7 +31,7 @@
     <repositories>
         <repository>
             <id>central</id>
-            <url>http://10.135.66.173/mvn/content/repositories/public</url>
+            <url>http://repository.sl.pt/mvn/content/repositories/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

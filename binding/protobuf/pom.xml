@@ -18,13 +18,13 @@
                         <id>generate-sources</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <exec executable="protoc">
                                     <arg value="--java_out=src/main/java"/>
                                     <arg value="src/main/protobuf/broker.proto"/>
                                 </exec>
                                 <replace file="src/main/java/pt/com/broker/codec/protobuf/PBMessage.java" token="public final class" value="final class"/>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
