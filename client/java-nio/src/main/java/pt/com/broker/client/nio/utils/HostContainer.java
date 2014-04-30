@@ -88,32 +88,14 @@ public class HostContainer {
 
                                                        activeHosts.add(host);
 
-                                                       try {
+                                                       f.awaitUninterruptibly();
 
-                                                           f.get();
-
-                                                           if(f.isSuccess()){
-
-                                                               host.resetReconnectLimit();
-
-                                                           }else{
-                                                               host.reconnectAttempt();
-                                                               log.debug("Error connecting host");
-                                                           }
-
-
-
-                                                       } catch (Throwable throwable) {
-
-                                                           log.debug("Error connecting");
-
-                                                           host.reconnectAttempt();
-
+                                                       if(f.isSuccess()){
+                                                           return host;
+                                                       }else{
                                                            return null;
                                                        }
 
-
-                                                       return host;
                                                    }
 
                                             });

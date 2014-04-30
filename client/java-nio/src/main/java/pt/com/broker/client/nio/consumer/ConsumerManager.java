@@ -79,7 +79,7 @@ public class ConsumerManager {
 
         BrokerAsyncConsumer consumer = getConsumer(dtype,destination);
 
-        consumer.deliver(netMessage.getAction().getNotificationMessage(),channel);
+        consumer.deliver(netMessage, channel);
 
     }
 }

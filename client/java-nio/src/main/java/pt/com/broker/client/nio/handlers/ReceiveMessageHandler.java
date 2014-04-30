@@ -4,7 +4,10 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;
@@ -16,6 +19,8 @@ import java.net.InetSocketAddress;
  * Created by luissantos on 22-04-2014.
  */
 public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessage> {
+
+    private static final Logger log = LoggerFactory.getLogger(ReceiveMessageHandler.class);
 
     ConsumerManager manager;
 
@@ -33,25 +38,28 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
         }
 
         try {
-            Channel channel = ctx.channel();
 
-            if(msg.getAction().getNotificationMessage() != null){
 
-                NetBrokerMessage bmsg = msg.getAction().getNotificationMessage().getMessage();
+            NetAction action = msg.getAction();
 
-                String oldmsgid = bmsg.getMessageId();
+            switch (action.getActionType()) {
 
-                InetSocketAddress socketAddress =  (InetSocketAddress)channel.remoteAddress();
+                case NOTIFICATION:
 
-                String newmsgid = socketAddress.getAddress().getCanonicalHostName()+":"+socketAddress.getPort()+"#"+oldmsgid;
+                    this.deliverNotification(ctx,msg);
 
-                bmsg.setMessageId(newmsgid);
+                    ctx.fireChannelReadComplete();
+
+                break;
+
+                default:
+
+                    log.debug("Got a message that was not for me");
+
+                    ctx.fireChannelRead(msg);
+                break;
 
             }
-
-            manager.deliverMessage(msg,channel);
-
-            System.out.println("Message Received");
 
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -62,6 +70,30 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
 
     public ConsumerManager getManager() {
         return manager;
+    }
+
+    protected void deliverNotification(ChannelHandlerContext ctx, NetMessage msg) throws Throwable {
+
+        Channel channel = ctx.channel();
+
+        if(msg.getAction().getNotificationMessage() != null){
+
+            NetBrokerMessage bmsg = msg.getAction().getNotificationMessage().getMessage();
+
+            String oldmsgid = bmsg.getMessageId();
+
+            InetSocketAddress socketAddress =  (InetSocketAddress)channel.remoteAddress();
+
+            String newmsgid = socketAddress.getAddress().getCanonicalHostName()+":"+socketAddress.getPort()+"#"+oldmsgid;
+
+            bmsg.setMessageId(newmsgid);
+
+        }
+
+        manager.deliverMessage(msg,channel);
+
+        System.out.println("Message Received");
+
     }
 
 

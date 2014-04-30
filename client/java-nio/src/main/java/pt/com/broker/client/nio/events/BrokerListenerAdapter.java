@@ -41,11 +41,14 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
 
     }
 
-    public final void deliverMessage(NetNotification netNotification,Channel channel) throws Throwable {
+    public final void deliverMessage(NetMessage netMessage,Channel channel) throws Throwable {
 
-        preOnMessage(netNotification,channel);
-        onMessage(netNotification);
-        postOnMessage(netNotification,channel);
+        NetNotification notification = netMessage.getAction().getNotificationMessage();
+
+        preOnMessage(notification,channel);
+        onMessage(notification);
+        postOnMessage(notification,channel);
+
     }
 
     public abstract void onMessage(NetNotification message);

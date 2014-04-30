@@ -15,6 +15,7 @@ import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.client.nio.future.ConnectFuture;
 import pt.com.broker.types.*;
 
@@ -34,7 +35,7 @@ public class BrokerClientTest {
     @Test
     public void testClientConnect() throws Exception{
 
-        BrokerClient bk = new BrokerClient("localhost",3323);
+        BrokerClient bk = new BrokerClient("localhost",3323,false);
 
         bk.addServer("localhost",3323);
         bk.addServer("localhost",3324);
@@ -153,7 +154,7 @@ public class BrokerClientTest {
     @Test
     public void testClientEnqueueMessage() throws Exception{
 
-        BrokerClient bk = new BrokerClient("localhost",3323);
+        BrokerClient bk = new BrokerClient("localhost",3323,false);
 
         log.debug("connecting....");
         Future<HostInfo> f = bk.connect();
@@ -164,7 +165,7 @@ public class BrokerClientTest {
         log.debug("Connected....");
 
         log.debug("sending message....");
-        ChannelFuture future = bk.enqueueMessage("Olá Mundo","/teste/");
+        ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
 
 
 
@@ -178,7 +179,7 @@ public class BrokerClientTest {
     public void testSubscribe(){
 
 
-        BrokerClient bk = new BrokerClient("localhost",3323);
+        BrokerClient bk = new BrokerClient("localhost",3323, false);
 
         Future<HostInfo> f= bk.connect();
 
@@ -226,7 +227,7 @@ public class BrokerClientTest {
 
         this.testClientEnqueueMessage();
 
-        BrokerClient bk = new BrokerClient("localhost",3323);
+        BrokerClient bk = new BrokerClient("localhost",3323,false);
         bk.addServer("localhost",3323);
 
 
@@ -270,11 +271,11 @@ public class BrokerClientTest {
 
 
 
-        ChannelFuture future = bk.enqueueMessage("Olá Mundo","/teste/");
+        ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
 
-        future = bk.enqueueMessage("Olá Mundo","/teste/");
-        future = bk.enqueueMessage("Olá Mundo","/teste/");
-        future = bk.enqueueMessage("Olá Mundo","/teste/");
+        future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+        future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+        future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
 
 
         Thread.sleep(5000);
@@ -287,8 +288,8 @@ public class BrokerClientTest {
 
         this.testClientEnqueueMessage();
 
-        BrokerClient bk = new BrokerClient("localhost",3323);
-        bk.addServer("localhost",3324);
+        BrokerClient bk = new BrokerClient("localhost",3323,false);
+
 
 
         Future<HostInfo> f = bk.connect();
@@ -311,7 +312,7 @@ public class BrokerClientTest {
 
         while (--i > 0){
 
-            ChannelFuture future = bk.enqueueMessage("Olá Mundo","/teste/");
+            ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
 
             Thread.sleep(1000);
         }
@@ -321,5 +322,52 @@ public class BrokerClientTest {
         Thread.sleep(5000);
 
     }
+
+    @Test
+    public void testDeferedDelivery() throws Throwable {
+
+
+        BrokerClient bk = new BrokerClient("localhost", 3323, false);
+
+
+        NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
+
+        // Specify the delivery interval (in milliseconds)
+        brokerMessage.addHeader(Headers.DEFERRED_DELIVERY, "1000" );
+
+        ChannelFuture f = bk.publishMessage(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+
+
+        f.get();
+
+
+    }
+
+
+    @Test
+    public void testPingPong() throws Throwable {
+
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323, false);
+
+        bk.checkStatus(new PongListenerAdapter() {
+            @Override
+            public void onMessage(NetPong message) {
+
+                log.debug("Got pong message");
+
+            }
+
+            @Override
+            public void setBrokerClient(BrokerClient client) {
+
+            }
+        });
+
+
+        Thread.sleep(10000);
+
+    }
+
+
 
     }

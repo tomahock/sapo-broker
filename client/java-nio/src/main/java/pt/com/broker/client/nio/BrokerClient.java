@@ -17,6 +17,7 @@ import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
+import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.future.ConnectFuture;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
@@ -26,6 +27,7 @@ import pt.com.broker.types.*;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -45,41 +47,44 @@ public class BrokerClient {
 
     private NetProtocolType protocolType;
 
+    private ConsumerManager consumerManager = new ConsumerManager();
 
-    private ConsumerManager consumerManager;
+    private PongConsumerManager pongConsumerManager = new PongConsumerManager();
 
     protected HostContainer hosts;
 
-    public BrokerClient(NetProtocolType ptype) {
+    protected boolean oldframing;
+
+
+    public BrokerClient(NetProtocolType ptype, boolean oldframing) {
 
         setProtocolType(ptype);
 
-        ConsumerManager cm = new ConsumerManager();
+        this.oldframing = oldframing;
 
-        setBootstrap(new Bootstrap(ptype, cm));
+        setBootstrap(new Bootstrap(ptype, consumerManager, pongConsumerManager,oldframing));
 
-        setConsumerManager(cm);
 
         hosts = new HostContainer(getBootstrap());
     }
 
-    public BrokerClient(String host, int port) {
+    public BrokerClient(String host, int port, boolean oldframing) {
 
-        this(new HostInfo(host, port), NetProtocolType.JSON);
-
-
-    }
-
-    public BrokerClient(String host, int port, NetProtocolType ptype) {
-
-        this(new HostInfo(host, port), ptype);
+        this(new HostInfo(host, port), NetProtocolType.JSON,oldframing);
 
 
     }
 
-    public BrokerClient(HostInfo host, NetProtocolType ptype) {
+    public BrokerClient(String host, int port, NetProtocolType ptype , boolean oldframing) {
 
-        this(ptype);
+        this(new HostInfo(host, port), ptype, oldframing);
+
+
+    }
+
+    public BrokerClient(HostInfo host, NetProtocolType ptype,boolean oldframing) {
+
+        this(ptype,oldframing);
 
         hosts.add(host);
     }
@@ -101,28 +106,19 @@ public class BrokerClient {
     }
 
 
-    public ChannelFuture enqueueMessage(String brokerMessage, String destinationName) {
+    public ChannelFuture publishMessage(String brokerMessage, String destinationName,NetAction.DestinationType dtype) {
 
-        return enqueueMessage(brokerMessage.getBytes(), destinationName);
+        return publishMessage(brokerMessage.getBytes(), destinationName, dtype);
     }
 
-    public ChannelFuture enqueueMessage(byte[] brokerMessage, String destinationName) {
+    public ChannelFuture publishMessage(byte[] brokerMessage, String destinationName , NetAction.DestinationType dtype) {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
-        return enqueueMessage(msg, destinationName);
+        return publishMessage(msg, destinationName, dtype);
     }
 
-    public ChannelFuture enqueueMessage(NetBrokerMessage brokerMessage, String destination) {
-        return publishOrEnqueueMessage(brokerMessage, destination, NetAction.DestinationType.QUEUE);
-    }
-
-
-    public ChannelFuture publishMessage(NetBrokerMessage brokerMessage, String destination) {
-        return publishOrEnqueueMessage(brokerMessage, destination, NetAction.DestinationType.TOPIC);
-    }
-
-    private ChannelFuture publishOrEnqueueMessage(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
+    public ChannelFuture publishMessage(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
 
         if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
             throw new IllegalArgumentException("Mal-formed Enqueue request");
@@ -194,6 +190,26 @@ public class BrokerClient {
 
         return sendNetMessage(msg,channel);
 
+    }
+
+
+    public ChannelFuture checkStatus(BrokerListener listener) throws Throwable {
+
+        String actionId = UUID.randomUUID().toString();
+
+        NetPing ping = new NetPing(actionId);
+
+        pongConsumerManager.addSubscription(ping,listener);
+
+        NetAction action = new NetAction(NetAction.ActionType.PING);
+        action.setPingMessage(ping);
+
+        NetMessage message = buildMessage(action);
+
+
+        ChannelFuture f = sendNetMessage(message);
+
+        return f;
     }
 
 
