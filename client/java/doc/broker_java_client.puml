@@ -1,0 +1,54 @@
+@startuml
+
+
+abstract class BaseBrokerClient{
+ + void addAsyncConsumer()
+ + NetPong checkStatus()
+ + void enqueueMessage()
+ + NetNotification poll()
+ + void publishMessage()
+ + void unsubscribe()
+}
+
+class BrokerClient{
+
+}
+
+BaseBrokerClient <|-- BrokerClient
+
+
+class BrokerProtocolHandler{
+
+}
+
+abstract class  ProtocolHandler<NetMessage>{
+    + void sendMessage()
+    + {abstract} void encode()
+    + {abstract} <T> decode()
+
+}
+
+ProtocolHandler <|-- BrokerProtocolHandler
+
+BaseBrokerClient *-left- BrokerProtocolHandler
+
+class NetBrokerMessage{
+
+}
+
+class BaseNetworkConnector{
+
+
+}
+class NetworkConnector{
+
+
+}
+
+NetworkConnector -up-|> BaseNetworkConnector
+SslNetworkConnector -up-|> BaseNetworkConnector
+
+
+ProtocolHandler o-left- BaseNetworkConnector
+
+@enduml

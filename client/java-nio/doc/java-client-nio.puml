@@ -1,0 +1,23 @@
+@startuml
+
+
+abstract class BaseBrokerClient{
+ + void addAsyncConsumer()
+ + NetPong checkStatus()
+ + void enqueueMessage()
+ + NetNotification poll()
+ + void publishMessage()
+ + void unsubscribe()
+}
+
+class BrokerClient{
+
+}
+
+BaseBrokerClient <|-- BrokerClient
+
+
+
+
+
+@enduml
