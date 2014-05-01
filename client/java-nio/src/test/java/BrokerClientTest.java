@@ -347,7 +347,10 @@ public class BrokerClientTest {
     @Test
     public void testPingPong() throws Throwable {
 
-        BrokerClient bk = new BrokerClient("192.168.100.1", 3323, false);
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.SOAP_v0 ,false);
+
+
+
 
         bk.checkStatus(new PongListenerAdapter() {
             @Override
