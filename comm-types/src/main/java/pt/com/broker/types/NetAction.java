@@ -32,6 +32,14 @@ public final class NetAction
 	private NetPong pongMessage;
 	private NetAuthentication authenticationMessage;
 
+
+    public NetAction(NetPing ping)
+    {
+        pingMessage = ping;
+
+        this.actionType = ActionType.PING;
+    }
+
 	public NetAction(ActionType actionType)
 	{
 		this.actionType = actionType;

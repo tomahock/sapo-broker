@@ -91,7 +91,9 @@
 		<value name="MessageId" field="messageId" usage="required" ns="http://services.sapo.pt/broker" />
 	</mapping>
 	
-	<mapping name="CheckStatus" class="pt.com.broker.codec.xml.CheckStatus" ns="http://services.sapo.pt/broker" />
+	<mapping name="CheckStatus" class="pt.com.broker.codec.xml.CheckStatus" ns="http://services.sapo.pt/broker" >
+        <value name="action-id" field="actionId" usage="optional" ns="http://services.sapo.pt/broker" style="attribute"/>
+    </mapping>
 	
 	<mapping name="Status" class="pt.com.broker.codec.xml.Status" ns="http://services.sapo.pt/broker" ordered="false">
 		<value name="Message" field="message" usage="optional" ns="http://services.sapo.pt/broker" />

@@ -186,7 +186,18 @@ public class Builder
 		else if (msg.body.checkStatus != null)
 		{
 			NetAction netAction = new NetAction(NetAction.ActionType.PING);
-			NetPing netPing = new NetPing(NetPong.getUniversalActionId());
+
+            String pingactionId = null;
+
+            if(msg.body.checkStatus.actionId !=null){
+                pingactionId = msg.body.checkStatus.actionId;
+
+            }else{
+                pingactionId = NetPong.getUniversalActionId();
+            }
+
+			NetPing netPing = new NetPing(pingactionId);
+
 			message = new NetMessage(netAction);
 			message.getAction().setPingMessage(netPing);
 		}
@@ -311,6 +322,8 @@ public class Builder
 			break;
 		case PING:
 			soap.body.checkStatus = new CheckStatus();
+            NetPing ping = netMessage.getAction().getPingMessage();
+            soap.body.checkStatus.actionId = ping.getActionId();
 			break;
 		case PONG:
 			NetPong pong = netMessage.getAction().getPongMessage();

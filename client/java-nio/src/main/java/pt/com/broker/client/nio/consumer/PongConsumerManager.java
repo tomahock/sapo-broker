@@ -7,9 +7,11 @@ import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPing;
+import pt.com.broker.types.NetPong;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by luissantos on 30-04-2014.
@@ -18,7 +20,7 @@ public class PongConsumerManager {
 
     private static final Logger log = LoggerFactory.getLogger(PongConsumerManager.class);
 
-    Map<String,BrokerListener> pongMessages  = new HashMap<String, BrokerListener>();
+    ConcurrentHashMap<String,BrokerListener> pongMessages  = new ConcurrentHashMap<String, BrokerListener>();
 
 
     public PongConsumerManager() {
@@ -28,8 +30,9 @@ public class PongConsumerManager {
 
     public void addSubscription(NetPing ping, BrokerListener listener){
 
-        pongMessages.put(ping.getActionId(),listener);
+        String actionid = (ping.getActionId()==null) ? NetPong.getUniversalActionId() : ping.getActionId();
 
+        pongMessages.put(actionid, listener);
     }
 
     public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
@@ -38,7 +41,10 @@ public class PongConsumerManager {
 
         BrokerListener listener = pongMessages.get(actionid);
 
-        if(listener==null){
+
+
+
+        if(listener==null) {
             log.error("Invalid action id: "+actionid+". Pong handler not found");
             return;
         }
@@ -48,6 +54,8 @@ public class PongConsumerManager {
         listener.deliverMessage(netMessage,channel);
 
     }
+
+
 
 
 }

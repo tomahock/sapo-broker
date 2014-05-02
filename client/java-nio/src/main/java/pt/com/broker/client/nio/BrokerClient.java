@@ -195,19 +195,34 @@ public class BrokerClient {
 
     public ChannelFuture checkStatus(BrokerListener listener) throws Throwable {
 
-        String actionId = UUID.randomUUID().toString();
+
+
+        NetProtocolType type = getProtocolType();
+
+
+        String actionId = null;
+
+
+        //actionId = UUID.randomUUID().toString();
+
+
 
         NetPing ping = new NetPing(actionId);
 
         pongConsumerManager.addSubscription(ping,listener);
 
-        NetAction action = new NetAction(NetAction.ActionType.PING);
+        NetAction action = new NetAction(ping);
         action.setPingMessage(ping);
 
         NetMessage message = buildMessage(action);
 
 
         ChannelFuture f = sendNetMessage(message);
+
+
+        EventLoopGroup group = getBootstrap().getBootstrap().group();
+
+
 
         return f;
     }
