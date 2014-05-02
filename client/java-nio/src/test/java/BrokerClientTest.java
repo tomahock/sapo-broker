@@ -327,7 +327,7 @@ public class BrokerClientTest {
     public void testDeferedDelivery() throws Throwable {
 
 
-        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.SOAP_v0 ,false);
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.THRIFT ,false);
 
 
         NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
@@ -347,7 +347,7 @@ public class BrokerClientTest {
     @Test
     public void testPingPong() throws Throwable {
 
-        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.SOAP ,false);
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.PROTOCOL_BUFFER ,false);
 
 
 

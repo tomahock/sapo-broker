@@ -5,8 +5,9 @@ local f_encoding_version = ProtoField.uint16("broker.encoding_version", "Encodin
 local f_size = ProtoField.uint32("broker.size", "Size", base.DEC)
 local f_data = ProtoField.string("broker.data", "Data", FT_STRING)
 local f_raw_data = ProtoField.string("broker.data_raw", "Raw Data", FT_STRING)
+local f_raw_data_hex = ProtoField.string("broker.data_raw_hex", "Raw Data", base.HEX)
 
-p_brokerproto.fields = {f_encoding, f_encoding_version, f_size, f_data, f_raw_data}
+p_brokerproto.fields = {f_encoding, f_encoding_version, f_size, f_data, f_raw_data, f_raw_data_hex}
 
 
 -- myproto dissector function
@@ -49,10 +50,13 @@ function p_brokerproto.dissector (buf, pkt, root)
     data = buf(8,size:int())
 
 
-    datatree = subtree:add(f_data)
 
 
-    datatree:add(f_raw_data, data)
+    if enc_type == 3 or enc_type == 0 then
+        datatree = subtree:add(f_data)
+        datatree:add(f_raw_data, data)
+
+    end
 
     if enc_type == 3 then
         Dissector.get("json"):call(data:tvb(), pkt, datatree)
@@ -63,7 +67,14 @@ function p_brokerproto.dissector (buf, pkt, root)
         Dissector.get("xml"):call(data:tvb(), pkt, datatree)
     end
 
+    if enc_type == 1 then
+        pkt.cols.protocol = p_brokerproto.name .. "/PROTOBUF"
+    end
 
+
+    if enc_type == 2 then
+        pkt.cols.protocol = p_brokerproto.name .. "/THRIFT"
+    end
 
     -- description of payload
     -- subtree:append_text(", Command details here or in the tree below")
