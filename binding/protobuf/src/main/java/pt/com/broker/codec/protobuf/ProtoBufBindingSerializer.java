@@ -584,6 +584,9 @@ public class ProtoBufBindingSerializer implements BindingSerializer
 		}
 		catch (Throwable e)
 		{
+
+            e.printStackTrace();
+
 			log.error("Error parsing Protocol Buffer message.", e.getMessage());
 		}
 

@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.events;
 
 import io.netty.channel.Channel;
+import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPong;
 
@@ -19,6 +20,11 @@ public abstract class PongListenerAdapter implements BrokerListener {
 
     }
 
+    public void setBrokerClient(BrokerClient client){
+
+    }
 
     public abstract void onMessage(NetPong message);
+
+
 }

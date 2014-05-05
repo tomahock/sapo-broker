@@ -200,11 +200,7 @@ public class BrokerClient {
         NetProtocolType type = getProtocolType();
 
 
-        String actionId = null;
-
-
-        //actionId = UUID.randomUUID().toString();
-
+        String actionId = UUID.randomUUID().toString();
 
 
         NetPing ping = new NetPing(actionId);

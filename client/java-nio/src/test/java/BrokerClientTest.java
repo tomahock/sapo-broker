@@ -360,10 +360,6 @@ public class BrokerClientTest {
 
             }
 
-            @Override
-            public void setBrokerClient(BrokerClient client) {
-
-            }
         });
 
 
