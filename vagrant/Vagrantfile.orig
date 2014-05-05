@@ -24,6 +24,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
   config.vm.network :private_network, ip: "192.168.100.10"
+  # Broker Ports redirect
+  config.vm.network "forwarded_port", guest: 3323, host: 3323, protocol: 'tcp', host_ip: '192.168.100.1'
+  config.vm.network "forwarded_port", guest: 3323, host: 3323, protocol: 'udp', host_ip: '192.168.100.1'
+
+  # Broker Legacy Ports redirect
+  config.vm.network "forwarded_port", guest: 3322, host: 3322, protocol: 'tcp', host_ip: '192.168.100.1'
+  config.vm.network "forwarded_port", guest: 3366, host: 3366, protocol: 'udp', host_ip: '192.168.100.1'
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
