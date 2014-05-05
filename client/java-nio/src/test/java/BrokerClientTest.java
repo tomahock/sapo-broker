@@ -35,7 +35,7 @@ public class BrokerClientTest {
     @Test
     public void testClientConnect() throws Exception{
 
-        BrokerClient bk = new BrokerClient("localhost",3323,false);
+        BrokerClient bk = new BrokerClient("localhost",3323);
 
         bk.addServer("localhost",3323);
         bk.addServer("localhost",3324);
@@ -154,7 +154,7 @@ public class BrokerClientTest {
     @Test
     public void testClientEnqueueMessage() throws Exception{
 
-        BrokerClient bk = new BrokerClient("localhost",3323,false);
+        BrokerClient bk = new BrokerClient("localhost",3323);
 
         log.debug("connecting....");
         Future<HostInfo> f = bk.connect();
@@ -179,7 +179,7 @@ public class BrokerClientTest {
     public void testSubscribe(){
 
 
-        BrokerClient bk = new BrokerClient("localhost",3323, false);
+        BrokerClient bk = new BrokerClient("localhost",3323);
 
         Future<HostInfo> f= bk.connect();
 
@@ -227,7 +227,7 @@ public class BrokerClientTest {
 
         this.testClientEnqueueMessage();
 
-        BrokerClient bk = new BrokerClient("localhost",3323,false);
+        BrokerClient bk = new BrokerClient("localhost",3323);
         bk.addServer("localhost",3323);
 
 
@@ -288,7 +288,7 @@ public class BrokerClientTest {
 
         this.testClientEnqueueMessage();
 
-        BrokerClient bk = new BrokerClient("localhost",3323,false);
+        BrokerClient bk = new BrokerClient("localhost",3323);
 
 
 
@@ -327,7 +327,7 @@ public class BrokerClientTest {
     public void testDeferedDelivery() throws Throwable {
 
 
-        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.THRIFT ,false);
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.THRIFT);
 
 
         NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
@@ -347,7 +347,7 @@ public class BrokerClientTest {
     @Test
     public void testPingPong() throws Throwable {
 
-        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.PROTOCOL_BUFFER ,false);
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.PROTOCOL_BUFFER);
 
 
 
@@ -367,6 +367,26 @@ public class BrokerClientTest {
 
     }
 
+    @Test
+    public void testDeferedDeliveryOldFrame() throws Throwable {
+
+
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3322,NetProtocolType.SOAP_v0);
+
+
+
+        NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
+
+        // Specify the delivery interval (in milliseconds)
+        brokerMessage.addHeader(Headers.DEFERRED_DELIVERY, "1000" );
+
+        ChannelFuture f = bk.publishMessage(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+
+
+        f.get();
 
 
     }
+
+
+}

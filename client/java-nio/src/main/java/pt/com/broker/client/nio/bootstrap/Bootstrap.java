@@ -20,9 +20,9 @@ import pt.com.broker.types.NetProtocolType;
 /**
  * Created by luissantos on 23-04-2014.
  */
-public class Bootstrap {
+public class Bootstrap extends BaseBootstrap {
 
-    io.netty.bootstrap.Bootstrap bootstrap;
+
 
     private NetProtocolType protocolType;
 
@@ -57,7 +57,7 @@ public class Bootstrap {
             public void initChannel(SocketChannel ch) throws Exception {
 
 
-                if(oldFraming){
+                if(isOldFraming()){
 
                     /* add Message <> byte encode decoder */
                     ch.pipeline().addLast("broker_message_decoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(getProtocolType()));
@@ -115,21 +115,5 @@ public class Bootstrap {
         this.pongConsumerManager = pongConsumerManager;
     }
 
-    public ChannelFuture connect(HostInfo hostInfo){
 
-        io.netty.bootstrap.Bootstrap boot = getBootstrap().clone();
-
-        boot.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,hostInfo.getConnectTimeout());
-
-        ChannelFuture f = boot.connect(hostInfo.getSocketAddress());
-
-
-
-        hostInfo.setChannelFuture(f);
-
-
-
-
-        return f;
-    }
 }

@@ -7,6 +7,7 @@ import io.netty.channel.EventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 
 
@@ -25,19 +26,19 @@ public class HostContainer {
 
     private CircularContainer<HostInfo> activeHosts;
 
-    private Bootstrap bootstrap;
+    private BaseBootstrap bootstrap;
 
-    public HostContainer(Bootstrap bootstrap) {
+    public HostContainer(BaseBootstrap bootstrap) {
         this(1, bootstrap);
     }
 
-    public HostContainer(int capacity, Bootstrap bootstrap) {
+    public HostContainer(int capacity, BaseBootstrap bootstrap) {
         innerContainer = new CircularContainer<HostInfo>(capacity);
         activeHosts = new CircularContainer<HostInfo>(capacity);
         this.bootstrap = bootstrap;
     }
 
-    public HostContainer(Collection<HostInfo> elements, Bootstrap bootstrap) {
+    public HostContainer(Collection<HostInfo> elements, BaseBootstrap bootstrap) {
         innerContainer = new CircularContainer<HostInfo>(elements);
         activeHosts = new CircularContainer<HostInfo>(elements);
         this.bootstrap = bootstrap;

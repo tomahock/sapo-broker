@@ -92,3 +92,9 @@ dissector = tcp_dissector_table:get_dissector(3323)
 -- you can call dissector from function p_myproto.dissector above
 -- so that the previous dissector gets called
 tcp_dissector_table:add(3323, p_brokerproto)
+
+local udp_dissector_table = DissectorTable.get("udp.port")
+dissector = udp_dissector_table:get_dissector(3323)
+-- you can call dissector from function p_myproto.dissector above
+-- so that the previous dissector gets called
+udp_dissector_table:add(3323, p_brokerproto)

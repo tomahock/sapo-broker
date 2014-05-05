@@ -36,7 +36,7 @@ import java.util.concurrent.Future;
 /**
  * Created by luissantos on 21-04-2014.
  */
-public class BrokerClient {
+public class BrokerClient extends BaseClient {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);
 
@@ -53,38 +53,35 @@ public class BrokerClient {
 
     protected HostContainer hosts;
 
-    protected boolean oldframing;
 
-
-    public BrokerClient(NetProtocolType ptype, boolean oldframing) {
+    public BrokerClient(NetProtocolType ptype) {
 
         setProtocolType(ptype);
 
-        this.oldframing = oldframing;
 
-        setBootstrap(new Bootstrap(ptype, consumerManager, pongConsumerManager,oldframing));
+        setBootstrap(new Bootstrap(ptype, consumerManager, pongConsumerManager,isOldframing()));
 
 
         hosts = new HostContainer(getBootstrap());
     }
 
-    public BrokerClient(String host, int port, boolean oldframing) {
+    public BrokerClient(String host, int port) {
 
-        this(new HostInfo(host, port), NetProtocolType.JSON,oldframing);
-
-
-    }
-
-    public BrokerClient(String host, int port, NetProtocolType ptype , boolean oldframing) {
-
-        this(new HostInfo(host, port), ptype, oldframing);
+        this(new HostInfo(host, port), NetProtocolType.JSON);
 
 
     }
 
-    public BrokerClient(HostInfo host, NetProtocolType ptype,boolean oldframing) {
+    public BrokerClient(String host, int port, NetProtocolType ptype) {
 
-        this(ptype,oldframing);
+        this(new HostInfo(host, port), ptype);
+
+
+    }
+
+    public BrokerClient(HostInfo host, NetProtocolType ptype) {
+
+        this(ptype);
 
         hosts.add(host);
     }
@@ -224,41 +221,7 @@ public class BrokerClient {
     }
 
 
-    protected ChannelFuture sendNetMessage(NetMessage msg) {
-        return this.sendNetMessage(msg,null);
-    }
 
-    protected ChannelFuture sendNetMessage(NetMessage msg, Channel c) {
-
-        Channel channel = null;
-
-        if(c==null){
-            channel = getChannel();
-        }else{
-            channel = c;
-        }
-
-
-
-
-        return channel.writeAndFlush(msg);
-
-    }
-
-    private NetMessage buildMessage(NetAction action, Map<String, String> headers) {
-        NetMessage message = new NetMessage(action, headers);
-
-        return message;
-    }
-
-
-    private NetMessage buildMessage(NetAction action) {
-        return this.buildMessage(action, new HashMap<String, String>());
-    }
-
-    public Future close() {
-        return getBootstrap().getBootstrap().group().shutdownGracefully();
-    }
 
     public Bootstrap getBootstrap() {
         return bootstrap;
@@ -269,21 +232,6 @@ public class BrokerClient {
     }
 
 
-
-
-
-    protected Channel getChannel() {
-
-        Channel c = getHosts().getActiveChannel();
-
-        log.debug("Selected channel is: "+c.toString());
-
-        if(c==null){
-            throw new RuntimeException("Was not possible to get an active channel");
-        }
-
-        return c;
-    }
 
     public ChannelFuture getFuture() {
         return future;
