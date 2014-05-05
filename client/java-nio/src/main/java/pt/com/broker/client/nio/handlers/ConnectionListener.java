@@ -10,6 +10,7 @@ import pt.com.broker.client.nio.utils.HostContainer;
 /**
  * Created by luissantos on 29-04-2014.
  */
+@SuppressWarnings("deprecation")
 public class ConnectionListener implements ChannelFutureListener {
 
     HostContainer hostContainer;

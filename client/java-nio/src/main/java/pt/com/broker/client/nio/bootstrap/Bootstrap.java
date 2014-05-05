@@ -1,12 +1,10 @@
 package pt.com.broker.client.nio.bootstrap;
 
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
+
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslHandler;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.NioSocketChannelBroker;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
@@ -16,6 +14,13 @@ import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
 import pt.com.broker.types.NetProtocolType;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 /**
  * Created by luissantos on 23-04-2014.
@@ -30,6 +35,7 @@ public class Bootstrap extends BaseBootstrap {
 
     PongConsumerManager pongConsumerManager;
 
+
     public Bootstrap(NetProtocolType protocolType , ConsumerManager consumerManager, PongConsumerManager pongConsumerManager, boolean oldFraming) {
 
         setProtocolType(protocolType);
@@ -39,46 +45,59 @@ public class Bootstrap extends BaseBootstrap {
         setPongConsumerManager(pongConsumerManager);
         setConsumerManager(consumerManager);
 
-        init(oldFraming);
+
+        init();
     }
 
-    public void init(final boolean oldFraming){
+    public void init(){
 
 
         EventLoopGroup group = new NioEventLoopGroup();
 
 
-
         getBootstrap().group(group).channel(NioSocketChannelBroker.class);
 
-        getBootstrap().handler(new ChannelInitializer<SocketChannel>() {
+
+        ChannelInitializer channelInitializer = new ChannelInitializer(getProtocolType(),getConsumerManager(),getPongConsumerManager());
+
+        channelInitializer.setContext(getDefaultSslContext());
+
+
+        getBootstrap().handler(channelInitializer);
+
+    }
+
+    private static SSLContext getDefaultSslContext()
+    {
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
+        {
+            public X509Certificate[] getAcceptedIssuers()
+            {
+                return new X509Certificate[0];
+            }
 
             @Override
-            public void initChannel(SocketChannel ch) throws Exception {
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
+            {
+            }
 
-
-                if(isOldFraming()){
-
-                    /* add Message <> byte encode decoder */
-                    ch.pipeline().addLast("broker_message_decoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(getProtocolType()));
-                    ch.pipeline().addLast("broker_message_encoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder(getProtocolType()));
-
-                }else{
-                    /* add Message <> byte encode decoder */
-                    ch.pipeline().addLast("broker_message_decoder",new BrokerMessageDecoder(getProtocolType()));
-                    ch.pipeline().addLast("broker_message_encoder",new BrokerMessageEncoder(getProtocolType()));
-                }
-
-
-
-                /* add message receive handler */
-                ch.pipeline().addLast("broker_notification_handler",new ReceiveMessageHandler(getConsumerManager()));
-
-                ch.pipeline().addLast("broker_pong_handler",new PongMessageHandler(getPongConsumerManager()));
+            @Override
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
+            {
 
             }
-        });
+        } };
+        try
+        {
+            SSLContext sc = SSLContext.getInstance("SSLv3");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
 
+            return sc;
+        }
+        catch (Throwable t)
+        {
+            throw new RuntimeException(t);
+        }
     }
 
 

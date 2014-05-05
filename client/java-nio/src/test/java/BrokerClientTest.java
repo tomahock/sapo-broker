@@ -349,6 +349,9 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.PROTOCOL_BUFFER);
 
+        Future f = bk.connect();
+
+        f.get();
 
 
 

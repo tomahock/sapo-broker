@@ -34,13 +34,7 @@ public class BaseBootstrap {
         this.protocolType = protocolType;
     }
 
-    public boolean isOldFraming() {
-        return oldFraming;
-    }
 
-    public void setOldFraming(boolean oldFraming) {
-        this.oldFraming = oldFraming;
-    }
 
     public ChannelFuture connect(HostInfo hostInfo){
 
@@ -49,7 +43,6 @@ public class BaseBootstrap {
         boot.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,hostInfo.getConnectTimeout());
 
         ChannelFuture f = boot.connect(hostInfo.getSocketAddress());
-
 
 
         hostInfo.setChannelFuture(f);

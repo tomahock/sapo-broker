@@ -32,7 +32,6 @@ public class DatagramBootstrap extends BaseBootstrap {
 
         setBootstrap(new Bootstrap());
 
-        setOldFraming(oldFraming);
 
         init();
     }
@@ -52,7 +51,7 @@ public class DatagramBootstrap extends BaseBootstrap {
             @Override
             protected void initChannel(Channel ch) throws Exception {
 
-                if(isOldFraming()){
+                if(getProtocolType() == NetProtocolType.SOAP_v0){
 
                     /* add Message <> byte encode decoder */
                     ch.pipeline().addLast("broker_message_decoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(getProtocolType()));
