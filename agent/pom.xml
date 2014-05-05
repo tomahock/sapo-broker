@@ -10,8 +10,10 @@
 	<name>sapo-broker-agent</name>
 	<packaging>jar</packaging>
 	<properties>
-		<mainClass>pt.com.broker.Start</mainClass>
-		<extraJvmArgs>-Xmx256M -Dagent-config-path=target/conf/agent_example.config -Dbroker-global-config-path=target/conf/broker_global.config -Dproject-version=${project.version}</extraJvmArgs>
+		<mainClass>pt.com.broker.Start</mainClass>   
+		<executable>/usr/lib/jvm/jdk1.8.0/bin/java</executable>
+		<workingDirectory>package</workingDirectory>  
+		<appArgs>-Xmx256M -Dagent-config-path=conf/agent_example.config -Dbroker-global-config-path=conf/broker_global.config -Dproject-version=${project.version} -classpath %classpath ${mainClass}</appArgs>
 	</properties>
 	<dependencies>
 		<dependency>
