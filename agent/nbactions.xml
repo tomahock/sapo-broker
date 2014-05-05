@@ -6,14 +6,11 @@
                 <packaging>jar</packaging>
             </packagings>
             <goals>
-                <goal>process-classes</goal>
-                <goal>exec:java</goal>
+                <goal>install</goal>
+                <goal>exec:exec</goal>
                 
                 
             </goals>
-            <activatedProfiles>
-                <activatedProfile>exec-app</activatedProfile>
-            </activatedProfiles>
         </action>
         <action>
             <actionName>debug</actionName>
