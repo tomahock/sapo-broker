@@ -27,24 +27,13 @@ public class BrokerMessageDecoder extends ByteToMessageDecoder{
 
     private State state = State.Header;
 
-
     private Integer bodyLen;
 
-    private BindingSerializer serializer;
+    private final BindingSerializer serializer;
 
-    public BrokerMessageDecoder(NetProtocolType type) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public BrokerMessageDecoder(BindingSerializer serializer){
 
-        try {
-
-            serializer = BindingSerializerFactory.getInstance(type);
-
-        } catch (Exception e) {
-
-            log.error("Was not possible to find the serializer");
-
-            throw e;
-
-        }
+        this.serializer = serializer;
     }
 
     @Override

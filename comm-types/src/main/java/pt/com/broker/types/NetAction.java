@@ -33,12 +33,7 @@ public final class NetAction
 	private NetAuthentication authenticationMessage;
 
 
-    public NetAction(NetPing ping)
-    {
-        pingMessage = ping;
 
-        this.actionType = ActionType.PING;
-    }
 
 	public NetAction(ActionType actionType)
 	{
@@ -46,23 +41,33 @@ public final class NetAction
 	}
 
 
+    public NetAction(NetPing ping)
+    {
+        this(ActionType.PING);
+
+        setPingMessage(ping);
+    }
     public NetAction(NetSubscribe netSubscribe)
     {
-        this.actionType = ActionType.SUBSCRIBE;
+        this(ActionType.SUBSCRIBE);
+
         setSubscribeMessage(netSubscribe);
     }
 
 
     public NetAction(NetPublish netPublish)
     {
-        this.actionType = ActionType.PUBLISH;
+        this(ActionType.PUBLISH);
+
         setPublishMessage(netPublish);
     }
 
     public NetAction(NetAcknowledge netAction){
-        this.actionType = ActionType.ACKNOWLEDGE;
+        this(ActionType.ACKNOWLEDGE);
+
         setAcknowledgeMessage(netAction);
     }
+
 
 
 

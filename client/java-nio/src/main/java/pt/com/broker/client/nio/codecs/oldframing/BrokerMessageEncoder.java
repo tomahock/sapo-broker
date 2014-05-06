@@ -16,29 +16,14 @@ import pt.com.broker.types.NetProtocolType;
 public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
 
-
     private static final Logger log = LoggerFactory.getLogger(BrokerMessageEncoder.class);
 
-    private BindingSerializer serializer;
-
-    private NetProtocolType type;
+    private final BindingSerializer serializer;
 
 
-    public BrokerMessageEncoder(NetProtocolType type) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public BrokerMessageEncoder(BindingSerializer serializer){
 
-        try {
-
-            serializer = BindingSerializerFactory.getInstance(type);
-
-        } catch (Exception e) {
-
-            log.error("Was not possible to find the serializer");
-
-            throw e;
-
-        }
-
-        this.type = type;
+        this.serializer = serializer;
     }
 
 

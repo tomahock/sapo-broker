@@ -61,7 +61,9 @@ public class HostContainer {
     public Future<HostInfo> connect() {
 
 
-        final EventLoopGroup eventLoop = bootstrap.getBootstrap().group();
+
+
+        final EventLoopGroup eventLoop = bootstrap.getGroup();
 
         final ArrayList<HostInfo> hosts = notConnectedHosts();
 

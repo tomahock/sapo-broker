@@ -21,26 +21,12 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerMessageEncoder.class);
 
-    private BindingSerializer serializer;
-
-    private NetProtocolType type;
+    private final BindingSerializer serializer;
 
 
-    public BrokerMessageEncoder(NetProtocolType type) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public BrokerMessageEncoder(BindingSerializer serializer){
 
-        try {
-
-            serializer = BindingSerializerFactory.getInstance(type);
-
-        } catch (Exception e) {
-
-            log.error("Was not possible to find the serializer");
-
-            throw e;
-
-        }
-
-        this.type = type;
+        this.serializer = serializer;
     }
 
 
@@ -51,7 +37,7 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
         int size = data.length;
 
-        short enc_type = getProtocolType(this.type);
+        short enc_type = getProtocolType();
 
         short enc_version = 0;
 
@@ -64,11 +50,12 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
     }
 
-    protected short getProtocolType(NetProtocolType ptype) throws Exception{
+    protected short getProtocolType() throws Exception{
 
         short proto_type = 0;
 
-        switch (ptype)
+
+        switch (serializer.getProtocolType())
         {
             case SOAP:
                 proto_type = 0;
@@ -86,7 +73,7 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
                 proto_type = 0;
                 break;
             default:
-                throw new Exception("Invalid Protocol Type: " + ptype);
+                throw new Exception("Invalid Protocol Type: " + serializer.getProtocolType());
         }
 
         return proto_type;

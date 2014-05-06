@@ -3,42 +3,32 @@ package pt.com.broker.client.nio.bootstrap;
 import io.netty.bootstrap.*;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.types.NetProtocolType;
 
 /**
  * Created by luissantos on 05-05-2014.
  */
-public class BaseBootstrap {
+public abstract class BaseBootstrap {
+
+    private final BaseChannelInitializer channelInitializer;
+
+    private final EventLoopGroup group = new NioEventLoopGroup();
 
 
-    io.netty.bootstrap.Bootstrap bootstrap;
 
-    private NetProtocolType protocolType;
+    public BaseBootstrap(BaseChannelInitializer channelInitializer) {
 
-    protected boolean oldFraming = false;
+        this.channelInitializer = channelInitializer;
 
-    public io.netty.bootstrap.Bootstrap getBootstrap() {
-        return bootstrap;
     }
-
-    public void setBootstrap(io.netty.bootstrap.Bootstrap bootstrap) {
-        this.bootstrap = bootstrap;
-    }
-
-    public NetProtocolType getProtocolType() {
-        return protocolType;
-    }
-
-    public void setProtocolType(NetProtocolType protocolType) {
-        this.protocolType = protocolType;
-    }
-
 
 
     public ChannelFuture connect(HostInfo hostInfo){
 
-        io.netty.bootstrap.Bootstrap boot = getBootstrap().clone();
+        io.netty.bootstrap.Bootstrap boot = getNewInstance();
 
         boot.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,hostInfo.getConnectTimeout());
 
@@ -47,9 +37,18 @@ public class BaseBootstrap {
 
         hostInfo.setChannelFuture(f);
 
-
-
-
         return f;
     }
+
+
+    public BaseChannelInitializer getChannelInitializer() {
+        return channelInitializer;
+    }
+
+    public EventLoopGroup getGroup() {
+        return group;
+    }
+
+    public abstract io.netty.bootstrap.Bootstrap getNewInstance();
+
 }

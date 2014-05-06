@@ -20,7 +20,7 @@ public class BrokerSslClientTest {
     @Test
     public void testPingPong() throws Throwable {
 
-        SslBrokerClient bk = new SslBrokerClient("192.168.100.1", 3390, NetProtocolType.JSON);
+        SslBrokerClient bk = new SslBrokerClient("broker.wallet.pt", 3390, NetProtocolType.JSON);
 
         Future f = bk.connect();
 

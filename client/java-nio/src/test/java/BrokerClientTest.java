@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.client.nio.events.BrokerListener;
@@ -66,7 +67,9 @@ public class BrokerClientTest {
 
         EmbeddedChannel channel = null;
 
-        channel = new EmbeddedChannel(new BrokerMessageEncoder(NetProtocolType.JSON));
+
+
+        channel = new EmbeddedChannel(new BrokerMessageEncoder(BindingSerializerFactory.getInstance(NetProtocolType.JSON)));
 
         NetMessage nmsg = createNewMessage();
 
@@ -93,7 +96,7 @@ public class BrokerClientTest {
 
         EmbeddedChannel channel = null;
 
-        channel = new EmbeddedChannel(new BrokerMessageDecoder(NetProtocolType.JSON));
+        channel = new EmbeddedChannel(new BrokerMessageDecoder(BindingSerializerFactory.getInstance(NetProtocolType.JSON)));
 
         NetMessage net = createNewMessage();
 
@@ -137,7 +140,7 @@ public class BrokerClientTest {
 
         EmbeddedChannel channel = null;
 
-        channel = new EmbeddedChannel(new BrokerMessageEncoder(NetProtocolType.JSON));
+        channel = new EmbeddedChannel(new BrokerMessageEncoder(BindingSerializerFactory.getInstance(NetProtocolType.JSON)));
 
         Assert.assertTrue(channel.writeOutbound(nmsg));
 
@@ -176,7 +179,7 @@ public class BrokerClientTest {
     }
 
     @Test
-    public void testSubscribe(){
+    public void testSubscribe() throws Exception {
 
 
         BrokerClient bk = new BrokerClient("localhost",3323);
@@ -347,7 +350,7 @@ public class BrokerClientTest {
     @Test
     public void testPingPong() throws Throwable {
 
-        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.PROTOCOL_BUFFER);
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
 
         Future f = bk.connect();
 

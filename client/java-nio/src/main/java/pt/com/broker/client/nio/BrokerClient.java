@@ -3,34 +3,23 @@ package pt.com.broker.client.nio;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
-import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
-import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
-import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
+import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
+
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.future.ConnectFuture;
-import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
+
 import pt.com.broker.client.nio.utils.HostContainer;
 import pt.com.broker.types.*;
 
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
 
 /**
@@ -40,66 +29,35 @@ public class BrokerClient extends BaseClient {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);
 
+    private ConsumerManager consumerManager;
 
-    private Bootstrap bootstrap;
-
-    private ChannelFuture future;
-
-    private NetProtocolType protocolType;
-
-    private ConsumerManager consumerManager = new ConsumerManager();
-
-    private PongConsumerManager pongConsumerManager = new PongConsumerManager();
-
-    protected HostContainer hosts;
-
+    private PongConsumerManager pongConsumerManager;
 
     public BrokerClient(NetProtocolType ptype) {
-
-        setProtocolType(ptype);
-
-
-        setBootstrap(new Bootstrap(ptype, consumerManager, pongConsumerManager,isOldframing()));
-
-
-        hosts = new HostContainer(getBootstrap());
+        super(ptype);
     }
 
     public BrokerClient(String host, int port) {
-
-        this(new HostInfo(host, port), NetProtocolType.JSON);
-
-
+        super(host, port);
     }
 
     public BrokerClient(String host, int port, NetProtocolType ptype) {
-
-        this(new HostInfo(host, port), ptype);
-
-
+        super(host, port, ptype);
     }
 
     public BrokerClient(HostInfo host, NetProtocolType ptype) {
-
-        this(ptype);
-
-        hosts.add(host);
+        super(host, ptype);
     }
 
 
-    public Future<HostInfo> connect() {
+    protected void init(NetProtocolType ptype){
 
-        return hosts.connect();
+        setPongConsumerManager(new PongConsumerManager());
+        setConsumerManager(new ConsumerManager());
 
-    }
+        setBootstrap(new Bootstrap(new ChannelInitializer(ptype, getConsumerManager(), getPongConsumerManager())));
 
-    public void addServer(HostInfo host) {
-        getHosts().add(host);
-    }
-
-    public void addServer(String hostname, int port) {
-
-        this.addServer(new HostInfo(hostname, port));
+        setHosts(new HostContainer(getBootstrap()));
     }
 
 
@@ -124,9 +82,8 @@ public class BrokerClient extends BaseClient {
 
         NetPublish publish = new NetPublish(destination, dtype, brokerMessage);
 
-        NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
+        NetAction action = new NetAction(publish);
 
-        action.setPublishMessage(publish);
 
         return sendNetMessage(new NetMessage(action, brokerMessage.getHeaders()));
 
@@ -141,8 +98,7 @@ public class BrokerClient extends BaseClient {
 
         listener.setBrokerClient(this);
 
-        NetAction netAction = new NetAction(NetAction.ActionType.SUBSCRIBE);
-        netAction.setSubscribeMessage(subscribe);
+        NetAction netAction = new NetAction(subscribe);
 
         NetMessage netMessage = buildMessage(netAction, subscribe.getHeaders());
 
@@ -150,7 +106,6 @@ public class BrokerClient extends BaseClient {
     }
 
     public ChannelFuture acknowledge(NetNotification notification) throws Throwable {
-
 
         return  this.acknowledge(notification,null);
 
@@ -180,8 +135,7 @@ public class BrokerClient extends BaseClient {
 
         NetAcknowledge ackMsg = new NetAcknowledge(ackDestination, msgid);
 
-        NetAction action = new NetAction(NetAction.ActionType.ACKNOWLEDGE);
-        action.setAcknowledgeMessage(ackMsg);
+        NetAction action = new NetAction(ackMsg);
 
         NetMessage msg = buildMessage(action);
 
@@ -192,62 +146,24 @@ public class BrokerClient extends BaseClient {
 
     public ChannelFuture checkStatus(BrokerListener listener) throws Throwable {
 
-
-
-        NetProtocolType type = getProtocolType();
-
-
         String actionId = UUID.randomUUID().toString();
-
 
         NetPing ping = new NetPing(actionId);
 
-        pongConsumerManager.addSubscription(ping,listener);
+
+        getPongConsumerManager().addSubscription(ping,listener);
+
 
         NetAction action = new NetAction(ping);
-        action.setPingMessage(ping);
 
         NetMessage message = buildMessage(action);
 
 
         ChannelFuture f = sendNetMessage(message);
 
-
-        EventLoopGroup group = getBootstrap().getBootstrap().group();
-
-
-
         return f;
     }
 
-
-
-
-    public Bootstrap getBootstrap() {
-        return bootstrap;
-    }
-
-    public void setBootstrap(Bootstrap bootstrap) {
-        this.bootstrap = bootstrap;
-    }
-
-
-
-    public ChannelFuture getFuture() {
-        return future;
-    }
-
-    public void setFuture(ChannelFuture future) {
-        this.future = future;
-    }
-
-    public NetProtocolType getProtocolType() {
-        return protocolType;
-    }
-
-    public void setProtocolType(NetProtocolType protocolType) {
-        this.protocolType = protocolType;
-    }
 
 
     public ConsumerManager getConsumerManager() {
@@ -256,6 +172,14 @@ public class BrokerClient extends BaseClient {
 
     public void setConsumerManager(ConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
+    }
+
+    public PongConsumerManager getPongConsumerManager() {
+        return pongConsumerManager;
+    }
+
+    public void setPongConsumerManager(PongConsumerManager pongConsumerManager) {
+        this.pongConsumerManager = pongConsumerManager;
     }
 
     public HostContainer getHosts() {

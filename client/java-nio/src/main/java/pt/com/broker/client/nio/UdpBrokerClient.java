@@ -3,6 +3,7 @@ package pt.com.broker.client.nio;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import pt.com.broker.client.nio.bootstrap.DatagramBootstrap;
+import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
 import pt.com.broker.client.nio.utils.HostContainer;
 import pt.com.broker.types.*;
 
@@ -14,43 +15,23 @@ import java.util.concurrent.Future;
  */
 public class UdpBrokerClient extends BaseClient {
 
-    private DatagramBootstrap bootstrap;
-
-
-    protected ChannelFuture channelFuture;
-
     public UdpBrokerClient(NetProtocolType ptype) {
 
-        setProtocolType(ptype);
-
-        setBootstrap(new DatagramBootstrap(ptype,false));
-
-
-        hosts = new HostContainer(getBootstrap());
-
+        super(ptype);
     }
 
     public UdpBrokerClient(String host, int port) {
-
-        this(new HostInfo(host, port), NetProtocolType.JSON);
-
-
+        super(host, port);
     }
 
     public UdpBrokerClient(String host, int port, NetProtocolType ptype) {
-
-        this(new HostInfo(host, port), ptype);
-
+        super(host, port, ptype);
 
     }
 
     public UdpBrokerClient(HostInfo host, NetProtocolType ptype) {
-
-        this(ptype);
-
-        getHosts().add(host);
+        super(host, ptype);
     }
-
 
     @Override
     public ChannelFuture publishMessage(NetPublish message, String destination, NetAction.DestinationType dtype) {
@@ -66,15 +47,9 @@ public class UdpBrokerClient extends BaseClient {
 
 
     @Override
-    public void setProtocolType(NetProtocolType protocolType) {
+    protected void init(NetProtocolType ptype) {
+        setBootstrap(new DatagramBootstrap(new DatagramChannelInitializer(ptype)));
 
-        if(! (protocolType == NetProtocolType.PROTOCOL_BUFFER || protocolType == NetProtocolType.THRIFT) ){
-            log.warn("Using non-binary encoding with datagram transport will add some overhead ");
-        }
-
-
-        super.setProtocolType(protocolType);
+        setHosts(new HostContainer(bootstrap));
     }
-
-
 }

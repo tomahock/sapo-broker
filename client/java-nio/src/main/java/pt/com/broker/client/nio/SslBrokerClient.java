@@ -1,17 +1,12 @@
 package pt.com.broker.client.nio;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.ssl.SslHandler;
+
+import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.types.NetProtocolType;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import javax.net.ssl.*;
+import java.security.KeyStore;
+import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 05-05-2014.
@@ -24,9 +19,6 @@ public class SslBrokerClient extends BrokerClient  {
         super(ptype);
     }
 
-
-
-
     public SslBrokerClient(String host, int port) {
         super(host, port);
     }
@@ -37,5 +29,53 @@ public class SslBrokerClient extends BrokerClient  {
 
     public SslBrokerClient(HostInfo host, NetProtocolType ptype) {
         super(host, ptype);
+    }
+
+    public SSLContext getContext() {
+        return context;
+    }
+
+    public void setContext(SSLContext context) {
+
+        this.context = context;
+
+        ChannelInitializer channelInitializer = (ChannelInitializer)getBootstrap().getChannelInitializer();
+
+        channelInitializer.setContext(context);
+    }
+
+    @Override
+    public Future<HostInfo> connect() throws Exception {
+
+        if(getContext()==null){
+            setContext(getDefaultSslContext());
+        }
+
+        return super.connect();
+    }
+
+
+    private SSLContext getDefaultSslContext()
+    {
+
+        try
+        {
+
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+            tmf.init((KeyStore) null);
+
+            SSLContext sc = SSLContext.getInstance("TLS");
+
+            sc.init(null, tmf.getTrustManagers(), new java.security.SecureRandom());
+
+
+            return sc;
+        }
+        catch (Throwable t)
+        {
+            throw new RuntimeException(t);
+        }
+
     }
 }

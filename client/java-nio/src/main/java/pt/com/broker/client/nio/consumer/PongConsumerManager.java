@@ -20,7 +20,7 @@ public class PongConsumerManager {
 
     private static final Logger log = LoggerFactory.getLogger(PongConsumerManager.class);
 
-    ConcurrentHashMap<String,BrokerListener> pongMessages  = new ConcurrentHashMap<String, BrokerListener>();
+    volatile ConcurrentHashMap<String,BrokerListener> pongMessages  = new ConcurrentHashMap<String, BrokerListener>();
 
 
     public PongConsumerManager() {
@@ -30,7 +30,11 @@ public class PongConsumerManager {
 
     public void addSubscription(NetPing ping, BrokerListener listener){
 
-        String actionid = (ping.getActionId()==null) ? NetPong.getUniversalActionId() : ping.getActionId();
+        String actionid = ping.getActionId();
+
+        if(actionid==null){
+            throw new RuntimeException("Invalid actionID null");
+        }
 
         pongMessages.put(actionid, listener);
     }

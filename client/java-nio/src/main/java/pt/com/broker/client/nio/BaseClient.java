@@ -6,6 +6,8 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
+import pt.com.broker.client.nio.bootstrap.Bootstrap;
+import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.utils.HostContainer;
 import pt.com.broker.types.*;
 
@@ -21,21 +23,37 @@ public abstract class BaseClient {
 
     protected static final Logger log = LoggerFactory.getLogger(BaseClient.class);
 
-    private NetProtocolType protocolType;
-
-
     protected HostContainer hosts;
 
     BaseBootstrap bootstrap;
 
-    public NetProtocolType getProtocolType() {
-        return protocolType;
+
+
+    public BaseClient(NetProtocolType ptype) {
+        init(ptype);
     }
 
-    public void setProtocolType(NetProtocolType protocolType) {
+    public BaseClient(String host, int port) {
 
-        this.protocolType = protocolType;
+        this(new HostInfo(host, port), NetProtocolType.JSON);
+
+
     }
+
+    public BaseClient(String host, int port, NetProtocolType ptype) {
+
+        this(new HostInfo(host, port), ptype);
+
+
+    }
+
+    public BaseClient(HostInfo host, NetProtocolType ptype) {
+
+        this(ptype);
+
+        this.addServer(host);
+    }
+
 
     protected ChannelFuture sendNetMessage(NetMessage msg) {
         return this.sendNetMessage(msg,null);
@@ -87,9 +105,7 @@ public abstract class BaseClient {
 
     public ChannelFuture publishMessage(NetPublish message, String destination, NetAction.DestinationType dtype) {
 
-        NetAction action = new NetAction(NetAction.ActionType.PUBLISH);
-
-        action.setPublishMessage(message);
+        NetAction action = new NetAction(message);
 
         return sendNetMessage(new NetMessage(action, message.getMessage().getHeaders()));
 
@@ -108,7 +124,7 @@ public abstract class BaseClient {
         return c;
     }
 
-    public Future<HostInfo> connect() {
+    public Future<HostInfo> connect() throws Exception {
 
         return hosts.connect();
 
@@ -131,13 +147,22 @@ public abstract class BaseClient {
     }
 
     public Future close() {
-        return getBootstrap().getBootstrap().group().shutdownGracefully();
+        return getBootstrap().getGroup().shutdownGracefully();
     }
 
 
-    public boolean isOldframing() {
-        return getProtocolType() == NetProtocolType.SOAP_v0;
+    public void addServer(HostInfo host) {
+        getHosts().add(host);
     }
+
+    public void addServer(String hostname, int port) {
+
+        this.addServer(new HostInfo(hostname, port));
+    }
+
+
+    protected  abstract void init(NetProtocolType ptype);
+
 
 
 }
