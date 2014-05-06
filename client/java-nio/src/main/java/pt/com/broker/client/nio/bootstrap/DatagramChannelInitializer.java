@@ -1,8 +1,6 @@
 package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.channel.Channel;
-import io.netty.channel.socket.SocketChannel;
-import pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder;
 import pt.com.broker.types.NetProtocolType;
 
