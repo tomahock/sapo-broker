@@ -21,6 +21,9 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
     private final BindingSerializer serializer;
 
 
+    protected boolean useFrame;
+
+
     public BrokerMessageEncoder(BindingSerializer serializer){
 
         this.serializer = serializer;
@@ -32,12 +35,23 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
         byte[] data = serializer.marshal(msg);
 
-        int size = data.length;
 
-        out.writeInt(size);
+        if(getUseFrame()) {
+
+            int size = data.length;
+            out.writeInt(size);
+        }
+
         out.writeBytes(data);
 
 
     }
 
+    public boolean getUseFrame() {
+        return useFrame;
+    }
+
+    public void setUseFrame(boolean useFrame) {
+        this.useFrame = useFrame;
+    }
 }

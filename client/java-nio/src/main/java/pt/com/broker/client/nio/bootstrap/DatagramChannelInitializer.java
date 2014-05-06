@@ -2,6 +2,8 @@ package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.channel.Channel;
 import io.netty.channel.socket.SocketChannel;
+import pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder;
+import pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder;
 import pt.com.broker.types.NetProtocolType;
 
 /**
@@ -19,6 +21,15 @@ public class DatagramChannelInitializer extends BaseChannelInitializer {
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
+
         super.initChannel(ch);
+
+        if(isOldFraming()){
+
+            BrokerMessageEncoder encoder =  (BrokerMessageEncoder) ch.pipeline().get("broker_message_encoder");
+
+            encoder.setUseFrame(false);
+        }
+
     }
 }

@@ -383,8 +383,6 @@ public class BrokerClientTest {
 
         NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
 
-        // Specify the delivery interval (in milliseconds)
-        brokerMessage.addHeader(Headers.DEFERRED_DELIVERY, "1000" );
 
         ChannelFuture f = bk.publishMessage(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
 
