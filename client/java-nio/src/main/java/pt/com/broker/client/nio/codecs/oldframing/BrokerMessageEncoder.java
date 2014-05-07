@@ -20,7 +20,6 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
     private final BindingSerializer serializer;
 
-
     protected boolean useFrame;
 
 

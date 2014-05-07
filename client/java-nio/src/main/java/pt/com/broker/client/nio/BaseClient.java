@@ -21,7 +21,7 @@ import java.util.concurrent.Future;
  */
 public abstract class BaseClient {
 
-    protected static final Logger log = LoggerFactory.getLogger(BaseClient.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseClient.class);
 
     protected HostContainer hosts;
 
@@ -147,11 +147,12 @@ public abstract class BaseClient {
     }
 
     public Future close() {
-        return getBootstrap().getGroup().shutdownGracefully();
+        return getBootstrap().shutdownGracefully();
     }
 
 
     public void addServer(HostInfo host) {
+
         getHosts().add(host);
     }
 

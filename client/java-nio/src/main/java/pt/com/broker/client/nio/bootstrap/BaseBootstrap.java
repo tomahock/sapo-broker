@@ -5,8 +5,11 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.Future;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.types.NetProtocolType;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by luissantos on 05-05-2014.
@@ -51,4 +54,12 @@ public abstract class BaseBootstrap {
 
     public abstract io.netty.bootstrap.Bootstrap getNewInstance();
 
+
+    public Future<?> shutdownGracefully() {
+        return group.shutdownGracefully();
+    }
+
+    public Future<?> shutdownGracefully(long quietPeriod, long timeout, TimeUnit unit) {
+        return group.shutdownGracefully(quietPeriod, timeout, unit);
+    }
 }
