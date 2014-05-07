@@ -62,10 +62,17 @@ public final class NetAction
         setPublishMessage(netPublish);
     }
 
-    public NetAction(NetAcknowledge netAction){
+    public NetAction(NetAcknowledge netAcknowledge){
         this(ActionType.ACKNOWLEDGE);
 
-        setAcknowledgeMessage(netAction);
+        setAcknowledgeMessage(netAcknowledge);
+    }
+
+
+    public NetAction(NetPoll netPoll){
+        this(ActionType.POLL);
+
+        setPollMessage(netPoll);
     }
 
 

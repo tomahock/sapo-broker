@@ -1,6 +1,6 @@
 package pt.com.broker.types;
 
-public final class NetPoll
+public final class NetPoll implements NetSubscribeAction
 {
 	private String actionId;
 	private String destination;
@@ -43,4 +43,9 @@ public final class NetPoll
 	{
 		return System.currentTimeMillis() > expires;
 	}
+
+    @Override
+    public NetAction.DestinationType getDestinationType() {
+        return NetAction.DestinationType.QUEUE;
+    }
 }

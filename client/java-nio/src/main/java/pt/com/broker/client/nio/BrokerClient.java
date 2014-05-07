@@ -165,6 +165,29 @@ public class BrokerClient extends BaseClient {
     }
 
 
+    public ChannelFuture pool(String name , BrokerListener listener){
+
+        NetPoll netPoll = new NetPoll(name, 1000);
+
+        return this.pool(netPoll,listener);
+    }
+
+    public ChannelFuture pool(NetPoll netPoll , BrokerListener listener){
+
+        getConsumerManager().addSubscription(netPoll, listener);
+
+        listener.setBrokerClient(this);
+
+        NetAction netAction = new NetAction(netPoll);
+
+        NetMessage netMessage = buildMessage(netAction);
+
+        ChannelFuture f = sendNetMessage(netMessage);
+
+        return f;
+    }
+
+
 
     public ConsumerManager getConsumerManager() {
         return consumerManager;

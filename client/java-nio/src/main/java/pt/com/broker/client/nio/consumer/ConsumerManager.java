@@ -2,10 +2,8 @@ package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetSubscribe;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -27,28 +25,31 @@ public class ConsumerManager {
 
     }
 
-    public void addSubscription(NetSubscribe subscribe, BrokerListener listener){
-        addSubscription(new BrokerAsyncConsumer(subscribe, listener));
+
+    public void addSyncSubscription(NetPoll netPoll, BrokerListener listener){
+        addSubscription(new BrokerAsyncConsumer(netPoll.getDestination(), DestinationType.QUEUE, listener));
+    }
+
+    public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener){
+        addSubscription(new BrokerAsyncConsumer(subscribe.getDestination(), subscribe.getDestinationType() , listener));
     }
 
     public void addSubscription(BrokerAsyncConsumer consumer){
 
-        NetSubscribe subscribe = consumer.getSubscription();
-        BrokerListener listener = consumer.getListener();
+        synchronized (_consumerList){
 
-        Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(subscribe.getDestinationType());
+                Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(consumer.getDestinationType());
 
+                String destination = consumer.getDestinationName();
 
-        String destination = subscribe.getDestination();
+                if (subscriptions.containsKey(destination))
+                {
+                    throw new IllegalArgumentException("A listener for the destination "+destination+" already exists");
+                }
 
-        if (subscriptions.containsKey(destination))
-        {
+                subscriptions.put(destination,consumer);
 
-            throw new IllegalStateException("A listener for that Destination already exists");
         }
-
-
-        subscriptions.put(destination,consumer);
 
     }
 
@@ -74,12 +75,22 @@ public class ConsumerManager {
 
     public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
 
-        DestinationType dtype = netMessage.getAction().getNotificationMessage().getDestinationType();
-        String destination = netMessage.getAction().getNotificationMessage().getSubscription();
+        DestinationType dtype = null;
+        String destination = null;
 
-        BrokerAsyncConsumer consumer = getConsumer(dtype,destination);
+        if(netMessage.getAction().getNotificationMessage()!=null) {
 
-        consumer.deliver(netMessage, channel);
+            dtype = netMessage.getAction().getNotificationMessage().getDestinationType();
+            destination = netMessage.getAction().getNotificationMessage().getSubscription();
+
+            BrokerAsyncConsumer consumer = getConsumer(dtype,destination);
+
+            consumer.deliver(netMessage, channel);
+        }
+
+
+
+
 
     }
 }

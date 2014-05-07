@@ -3,24 +3,29 @@ package pt.com.broker.client.nio.consumer;
 import io.netty.channel.Channel;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.*;
 
 /**
  * Created by luissantos on 22-04-2014.
  */
 public class BrokerAsyncConsumer {
 
-    private final NetSubscribe subscription;
+
+    private final NetAction.DestinationType destinationType;
+
+    private final String destinationName;
 
     private final BrokerListener listener;
 
-    public BrokerAsyncConsumer(NetSubscribe subscription, BrokerListener listener)
+    public BrokerAsyncConsumer(String destinationName, NetAction.DestinationType destinationType,  BrokerListener listener)
     {
-        super();
+
+        this.destinationType = destinationType;
         this.listener = listener;
-        this.subscription = subscription;
+        this.destinationName = destinationName;
+
+
+
     }
 
     public boolean deliver(NetMessage msg,Channel channel) throws Throwable {
@@ -30,11 +35,11 @@ public class BrokerAsyncConsumer {
         return true;
     }
 
-    public NetSubscribe getSubscription() {
-        return subscription;
+    public NetAction.DestinationType getDestinationType() {
+        return destinationType;
     }
 
-    public BrokerListener getListener() {
-        return listener;
+    public String getDestinationName() {
+        return destinationName;
     }
 }

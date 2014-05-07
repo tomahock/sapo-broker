@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  */
 
-public final class NetSubscribe
+public final class NetSubscribe implements NetSubscribeAction
 {
 	private String actionId;
 	private String destination;

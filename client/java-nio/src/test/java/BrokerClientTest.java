@@ -203,17 +203,19 @@ public class BrokerClientTest {
         log.debug("Subscribe");
 
         ChannelFuture fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
+
             @Override
-            public void onMessage(NetNotification message) {
+            public void onMessage(NetMessage message) {
 
                 try {
 
-                    log.debug(new String(message.getMessage().getPayload(),"UTF-8"));
+                    log.debug(new String(message.getAction().getNotificationMessage().getMessage().getPayload(),"UTF-8"));
 
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
             }
+
         });
 
         try {
@@ -251,12 +253,12 @@ public class BrokerClientTest {
         ChannelFuture fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
 
             @Override
-            public void onMessage(NetNotification message) {
+            public void onMessage(NetMessage message) {
 
                 try {
 
-                    log.debug(message.getMessage().getMessageId());
-                    log.debug(new String(message.getMessage().getPayload(),"UTF-8"));
+                    log.debug(message.getAction().getNotificationMessage().getMessage().getMessageId());
+                    log.debug(new String(message.getAction().getNotificationMessage().getMessage().getPayload(),"UTF-8"));
 
 
                 } catch (UnsupportedEncodingException e) {
@@ -392,5 +394,23 @@ public class BrokerClientTest {
 
     }
 
+
+    @Test
+    public void testPool() throws Throwable{
+
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
+
+        bk.pool("/teste", new BrokerListenerAdapter() {
+            @Override
+            public void onMessage(NetMessage message) {
+
+                log.debug("Action.Type: " + message.getAction().getActionType().name());
+
+            }
+        });
+
+
+        Thread.sleep(40000);
+    }
 
 }

@@ -6,6 +6,7 @@ import io.netty.handler.ssl.SslHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
+import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
 import pt.com.broker.types.NetProtocolType;
 
@@ -54,6 +55,8 @@ public class ChannelInitializer extends BaseChannelInitializer {
         ch.pipeline().addLast("broker_notification_handler",new ReceiveMessageHandler(getConsumerManager()));
 
         ch.pipeline().addLast("broker_pong_handler",new PongMessageHandler(getPongConsumerManager()));
+
+        ch.pipeline().addLast("broker_fault_handler",new ReceiveFaultHandler(getConsumerManager()));
     }
 
 
