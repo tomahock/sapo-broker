@@ -2,6 +2,7 @@ package pt.com.broker.client.nio;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.util.concurrent.GenericFutureListener;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,17 +55,26 @@ public abstract class BaseClient {
         this.addServer(host);
     }
 
-
     protected ChannelFuture sendNetMessage(NetMessage msg) {
         return this.sendNetMessage(msg,null);
     }
 
-    protected ChannelFuture sendNetMessage(NetMessage msg, Channel c) {
+    protected ChannelFuture sendNetMessage(NetMessage msg, GenericFutureListener future) {
+        return this.sendNetMessage(msg,null,future);
+    }
+
+    protected ChannelFuture sendNetMessage(NetMessage msg, Channel c,GenericFutureListener future) {
 
         Channel channel = (c == null) ? getChannel() : c;
 
-        return channel.writeAndFlush(msg);
+        ChannelFuture f =  channel.writeAndFlush(msg);
 
+        if(future!=null){
+            f.addListener(future);
+        }
+
+
+        return f;
     }
 
     protected NetMessage buildMessage(NetAction action, Map<String, String> headers) {
@@ -107,7 +117,7 @@ public abstract class BaseClient {
 
         NetAction action = new NetAction(message);
 
-        return sendNetMessage(new NetMessage(action, message.getMessage().getHeaders()));
+        return sendNetMessage(new NetMessage(action, message.getMessage().getHeaders()),null);
 
     }
 

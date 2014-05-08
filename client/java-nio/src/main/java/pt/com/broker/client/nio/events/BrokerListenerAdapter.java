@@ -57,10 +57,16 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
 
 
         preOnMessage(netMessage,channel);
-        onMessage(netMessage);
+        if(isFault(netMessage)){
+            onFault(netMessage);
+        }else{
+            onMessage(netMessage);
+        }
         postOnMessage(netMessage,channel);
 
     }
 
     public abstract void onMessage(NetMessage message);
+
+    public abstract void onFault(NetMessage message);
 }

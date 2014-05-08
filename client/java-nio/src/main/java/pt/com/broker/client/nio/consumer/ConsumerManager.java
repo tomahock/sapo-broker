@@ -1,14 +1,19 @@
 package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
+import org.caudexorigo.text.StringUtils;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.types.DestinationDataFactory;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by luissantos on 22-04-2014.
@@ -16,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConsumerManager {
 
     protected final EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>> _consumerList = new EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>>(NetAction.DestinationType.class);
+
 
 
     public ConsumerManager() {
@@ -26,21 +32,27 @@ public class ConsumerManager {
     }
 
 
-    public void addSyncSubscription(NetPoll netPoll, BrokerListener listener){
-        addSubscription(new BrokerAsyncConsumer(netPoll.getDestination(), DestinationType.QUEUE, listener));
-    }
-
     public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener){
         addSubscription(new BrokerAsyncConsumer(subscribe.getDestination(), subscribe.getDestinationType() , listener));
     }
 
     public void addSubscription(BrokerAsyncConsumer consumer){
 
+        DestinationType destinationType = consumer.getDestinationType();
+
+        if(destinationType==null){
+            throw new IllegalArgumentException("Invalid Destination Type");
+        }
+
+        String destination = consumer.getDestinationName();
+        if(StringUtils.isEmpty(destination)){
+            throw new IllegalArgumentException("Invalid Destination");
+        }
+
         synchronized (_consumerList){
 
-                Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(consumer.getDestinationType());
+                Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(destinationType);
 
-                String destination = consumer.getDestinationName();
 
                 if (subscriptions.containsKey(destination))
                 {
@@ -53,11 +65,31 @@ public class ConsumerManager {
 
     }
 
-    public BrokerAsyncConsumer getConsumer(DestinationType dtype , String destination){
+    public BrokerAsyncConsumer removeSubscription(DestinationType destinationType, String destination){
 
-        Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(dtype);
+        Map<String, BrokerAsyncConsumer> subscriptions  = getSubscriptions(destinationType);
+
+
+        return subscriptions.remove(destination);
+    }
+
+
+    public BrokerAsyncConsumer getConsumer(DestinationType destinationType , String destination){
+
+        Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(destinationType);
 
         return subscriptions.get(destination);
+
+    }
+
+    protected BrokerAsyncConsumer getConsumer(NetMessage netMessage){
+
+        DestinationDataFactory factory = new DestinationDataFactory();
+
+        String destination = factory.getDestination(netMessage);
+        DestinationType dtype = factory.getDestinationType(netMessage);
+
+        return getConsumer(dtype,destination);
 
     }
 
@@ -75,22 +107,17 @@ public class ConsumerManager {
 
     public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
 
-        DestinationType dtype = null;
-        String destination = null;
+        BrokerAsyncConsumer consumer = getConsumer(netMessage);
 
-        if(netMessage.getAction().getNotificationMessage()!=null) {
 
-            dtype = netMessage.getAction().getNotificationMessage().getDestinationType();
-            destination = netMessage.getAction().getNotificationMessage().getSubscription();
-
-            BrokerAsyncConsumer consumer = getConsumer(dtype,destination);
-
-            consumer.deliver(netMessage, channel);
+        if(consumer == null){
+            throw new RuntimeException("No consumer found for this message");
         }
 
 
-
-
+        consumer.deliver(netMessage, channel);
 
     }
+
+
 }

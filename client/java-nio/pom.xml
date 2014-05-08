@@ -76,6 +76,9 @@
                     <additionalClasspathElements>
                         <additionalClasspathElement>../../comm-types/target/classes</additionalClasspathElement>
                     </additionalClasspathElements>
+                    <excludes>
+                        <exclude>unit/pt/com/broker/client/nio/ignore/**/*.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <!--
@@ -101,4 +104,20 @@
             </plugin>
         </plugins>
     </build>
+  <reporting>
+  <plugins>
+
+    <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+            <formats>
+                <format>html</format>
+            </formats>
+        </configuration>
+    </plugin>
+ 
+   </plugins>
+</reporting>
 </project>

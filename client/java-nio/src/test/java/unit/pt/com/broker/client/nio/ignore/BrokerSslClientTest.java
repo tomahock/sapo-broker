@@ -1,7 +1,8 @@
+package unit.pt.com.broker.client.nio.ignore;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.types.NetPong;

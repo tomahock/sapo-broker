@@ -17,6 +17,7 @@ public class BrokerAsyncConsumer {
 
     private final BrokerListener listener;
 
+
     public BrokerAsyncConsumer(String destinationName, NetAction.DestinationType destinationType,  BrokerListener listener)
     {
 
@@ -42,4 +43,7 @@ public class BrokerAsyncConsumer {
     public String getDestinationName() {
         return destinationName;
     }
+
+
+
 }

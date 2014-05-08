@@ -1,10 +1,10 @@
+package unit.pt.com.broker.client.nio.ignore;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.embedded.EmbeddedChannel;
-import org.caudexorigo.concurrent.Sleep;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -14,14 +14,12 @@ import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
-import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
-import pt.com.broker.client.nio.future.ConnectFuture;
 import pt.com.broker.types.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Timer;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -157,7 +155,7 @@ public class BrokerClientTest {
     @Test
     public void testClientEnqueueMessage() throws Exception{
 
-        BrokerClient bk = new BrokerClient("localhost",3323);
+        BrokerClient bk = new BrokerClient("192.168.100.1",3323);
 
         log.debug("connecting....");
         Future<HostInfo> f = bk.connect();
@@ -216,6 +214,10 @@ public class BrokerClientTest {
                 }
             }
 
+            @Override
+            public void onFault(NetMessage message) {
+
+            }
         });
 
         try {
@@ -232,8 +234,8 @@ public class BrokerClientTest {
 
         this.testClientEnqueueMessage();
 
-        BrokerClient bk = new BrokerClient("localhost",3323);
-        bk.addServer("localhost",3323);
+        BrokerClient bk = new BrokerClient("192.168.100.1",3323,NetProtocolType.JSON);
+
 
 
         Future<HostInfo> f = bk.connect();
@@ -260,12 +262,28 @@ public class BrokerClientTest {
                     log.debug(message.getAction().getNotificationMessage().getMessage().getMessageId());
                     log.debug(new String(message.getAction().getNotificationMessage().getMessage().getPayload(),"UTF-8"));
 
+                    for(Map.Entry<String, String> entry : message.getHeaders().entrySet()){
+                        System.out.println(entry.getKey() + "/" + entry.getValue());
+                    }
+
+                    System.out.println("---------------------------------");
+
+                    if(message.getAction().getNotificationMessage().getHeaders() != null) {
+                        for (Map.Entry<String, String> entry : message.getAction().getNotificationMessage().getHeaders().entrySet()) {
+                            System.out.println(entry.getKey() + "/" + entry.getValue());
+                        }
+                    }
+
 
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
             }
 
+            @Override
+            public void onFault(NetMessage message) {
+
+            }
         });
 
         try {
@@ -276,14 +294,14 @@ public class BrokerClientTest {
 
 
 
-        ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+        //ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
 
+        /*future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
         future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
-        future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
-        future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+        future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);*/
 
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
 
     }
 
@@ -332,13 +350,14 @@ public class BrokerClientTest {
     public void testDeferedDelivery() throws Throwable {
 
 
-        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.THRIFT);
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
 
 
         NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
 
         // Specify the delivery interval (in milliseconds)
         brokerMessage.addHeader(Headers.DEFERRED_DELIVERY, "1000" );
+
 
         ChannelFuture f = bk.publishMessage(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
 
@@ -400,17 +419,17 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
 
-        bk.pool("/teste", new BrokerListenerAdapter() {
-            @Override
-            public void onMessage(NetMessage message) {
-
-                log.debug("Action.Type: " + message.getAction().getActionType().name());
-
-            }
-        });
 
 
-        Thread.sleep(40000);
+        int counter = 10;
+
+        while (counter-- > 0){
+
+            NetMessage netMessage = bk.poll("/teste/", 2000);
+
+            System.out.println("Action Type:" + netMessage.getAction().getActionType().name());
+        }
+
     }
 
 }
