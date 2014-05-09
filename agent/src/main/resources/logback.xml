@@ -5,19 +5,19 @@
 
 	<appender class="ch.qos.logback.core.ConsoleAppender" name="ConsoleAppender">
 		<encoder>
-			<pattern>%5p #%C# [%t] - %m%n</pattern>
+			<pattern>%5p [%t,%C{0},%F,%L] - %m%n</pattern>
 		</encoder>
 	</appender>
 
 	<appender class="ch.qos.logback.core.ConsoleAppender" name="Broker-ConsoleAppender">
 		<encoder>
-			<pattern>%5p #BROKER#%C# [%t] - %m%n</pattern>
+			<pattern>%5p #BROKER# [%t,%C{0},%F,%L] - %m%n</pattern>
 		</encoder>
 	</appender>
 
 	<appender class="ch.qos.logback.core.ConsoleAppender" name="GCS-ConsoleAppender">
 		<encoder>
-			<pattern>%5p #GCS#%C# [%t] - %m%n</pattern>
+			<pattern>%5p #GCS# [%t,%C{0},%F,%L] - %m%n</pattern>
 		</encoder>
 	</appender>
 
