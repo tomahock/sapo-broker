@@ -1,23 +1,23 @@
 -- create myproto protocol and its fields
-p_brokerproto = Proto ("broker_legacy","Sapo Broker Legacy")
+p_brokerproto_legacy = Proto ("broker_legacy","Sapo Broker Legacy")
 local f_size = ProtoField.uint32("broker.size", "Size", base.DEC)
 local f_data = ProtoField.string("broker.data", "Data", FT_STRING)
 local f_raw_data = ProtoField.string("broker.data_raw", "Raw Data", FT_STRING)
 local f_raw_data_hex = ProtoField.string("broker.data_raw_hex", "Raw Data", base.HEX)
 
-p_brokerproto.fields = {f_size, f_data, f_raw_data, f_raw_data_hex}
+p_brokerproto_legacy.fields = {f_size, f_data, f_raw_data, f_raw_data_hex}
 
 
 -- myproto dissector function
-function p_brokerproto.dissector (buf, pkt, root)
+function p_brokerproto_legacy.dissector (buf, pkt, root)
 
     -- validate packet length is adequate, otherwise quit
     if buf:len() == 0 then return end
 
-    pkt.cols.protocol = p_brokerproto.name
+    pkt.cols.protocol = p_brokerproto_legacy.name
 
     -- create subtree for myproto
-    subtree = root:add(p_brokerproto, buf(0))
+    subtree = root:add(p_brokerproto_legacy, buf(0))
 
 
 
@@ -69,7 +69,7 @@ function p_brokerproto.dissector (buf, pkt, root)
 end
 
 -- Initialization routine
-function p_brokerproto.init()
+function p_brokerproto_legacy.init()
 
 end
 
@@ -78,10 +78,10 @@ local tcp_dissector_table = DissectorTable.get("tcp.port")
 dissector = tcp_dissector_table:get_dissector(3322)
 -- you can call dissector from function p_myproto.dissector above
 -- so that the previous dissector gets called
-tcp_dissector_table:add(3322, p_brokerproto)
+tcp_dissector_table:add(3322, p_brokerproto_legacy)
 
 local udp_dissector_table = DissectorTable.get("udp.port")
 dissector = udp_dissector_table:get_dissector(3366)
 -- you can call dissector from function p_myproto.dissector above
 -- so that the previous dissector gets called
-udp_dissector_table:add(3366, p_brokerproto)
+udp_dissector_table:add(3366, p_brokerproto_legacy)

@@ -1,13 +1,19 @@
+
+local path = persconffile_path('plugins') .. "/sapobroker/"
+
+JSON = (loadfile(path.."JSON.lua") )()
+
 -- create myproto protocol and its fields
 p_brokerproto = Proto ("broker","Sapo Broker")
 local f_encoding = ProtoField.uint16("broker.encoding", "Encoding Type", base.DEC)
 local f_encoding_version = ProtoField.uint16("broker.encoding_version", "Encoding Version", base.DEC)
 local f_size = ProtoField.uint32("broker.size", "Size", base.DEC)
 local f_data = ProtoField.string("broker.data", "Data", FT_STRING)
+local f_action_type = ProtoField.string("broker.action_type", "Action Type", FT_STRING)
 local f_raw_data = ProtoField.string("broker.data_raw", "Raw Data", FT_STRING)
 local f_raw_data_hex = ProtoField.string("broker.data_raw_hex", "Raw Data", base.HEX)
 
-p_brokerproto.fields = {f_encoding, f_encoding_version, f_size, f_data, f_raw_data, f_raw_data_hex}
+p_brokerproto.fields = {f_encoding, f_encoding_version, f_size, f_data, f_raw_data, f_raw_data_hex,f_action_type}
 
 
 -- myproto dissector function
@@ -40,6 +46,7 @@ function p_brokerproto.dissector (buf, pkt, root)
 
 
 
+
     size = buf(4,4)
     enc_type = buf(0,2):int()
     -- add protocol fields to subtree
@@ -59,6 +66,12 @@ function p_brokerproto.dissector (buf, pkt, root)
     end
 
     if enc_type == 3 then
+
+
+        local package = JSON:decode(data:string())
+
+        subtree:add(f_action_type, package.action.action_type)
+
         Dissector.get("json"):call(data:tvb(), pkt, datatree)
         pkt.cols.protocol = p_brokerproto.name .. "/JSON"
     end
@@ -98,3 +111,4 @@ dissector = udp_dissector_table:get_dissector(3323)
 -- you can call dissector from function p_myproto.dissector above
 -- so that the previous dissector gets called
 udp_dissector_table:add(3323, p_brokerproto)
+udp_dissector_table:add(3366, p_brokerproto)
