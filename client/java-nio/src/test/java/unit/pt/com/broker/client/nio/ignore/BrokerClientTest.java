@@ -9,17 +9,20 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.types.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -430,6 +433,37 @@ public class BrokerClientTest {
             System.out.println("Action Type:" + netMessage.getAction().getActionType().name());
         }
 
+    }
+
+
+    @Test
+    public void testAcceptMessage() throws InterruptedException {
+
+        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
+
+        NetBrokerMessage message = new NetBrokerMessage("teste");
+
+        AcceptRequest acceptRequest = new AcceptRequest(UUID.randomUUID().toString(),new MessageAcceptedAdapter(){
+
+            @Override
+            public void onMessage(NetMessage message) {
+                System.out.println("Message: "+message.getAction().getAcceptedMessage().getActionId());
+            }
+
+            @Override
+            public void onFault(NetMessage message) {
+                System.out.println("Fault: "+message.getAction().getFaultMessage().getDetail());
+            }
+
+            @Override
+            public void onTimeout(String actionID) {
+                System.out.println("Timeout: "+actionID);
+            }
+        },2000);
+
+        bk.publishMessage(message,"/teste/", NetAction.DestinationType.QUEUE, acceptRequest);
+
+        Thread.sleep(10000);
     }
 
 }

@@ -1,5 +1,7 @@
 package pt.com.broker.types;
 
+import java.util.Objects;
+
 /**
  * Represents an Action.
  * 
@@ -32,6 +34,8 @@ public final class NetAction
 	private NetPong pongMessage;
 	private NetAuthentication authenticationMessage;
 
+
+    private Object netActionMessage;
 
 
 
@@ -86,6 +90,7 @@ public final class NetAction
 	public void setPublishMessage(NetPublish publishMessage)
 	{
 		this.publishMessage = publishMessage;
+        setNetActionMessage(publishMessage);
 	}
 
 	public NetPublish getPublishMessage()
@@ -96,6 +101,7 @@ public final class NetAction
 	public void setPollMessage(NetPoll pollMessage)
 	{
 		this.pollMessage = pollMessage;
+        setNetActionMessage(pollMessage);
 	}
 
 	public NetPoll getPollMessage()
@@ -106,6 +112,7 @@ public final class NetAction
 	public void setAcceptedMessage(NetAccepted acceptedMessage)
 	{
 		this.acceptedMessage = acceptedMessage;
+        setNetActionMessage(acceptedMessage);
 	}
 
 	public NetAccepted getAcceptedMessage()
@@ -116,6 +123,7 @@ public final class NetAction
 	public void setAcknowledgeMessage(NetAcknowledge acknowledgeMessage)
 	{
 		this.acknowledgeMessage = acknowledgeMessage;
+        setNetActionMessage(acknowledgeMessage);
 	}
 
 	public NetAcknowledge getAcknowledgeMessage()
@@ -126,6 +134,7 @@ public final class NetAction
 	public void setSubscribeMessage(NetSubscribe subscribeMessage)
 	{
 		this.subscribeMessage = subscribeMessage;
+        setNetActionMessage(subscribeMessage);
 	}
 
 	public NetSubscribe getSubscribeMessage()
@@ -136,6 +145,7 @@ public final class NetAction
 	public void setUnsbuscribeMessage(NetUnsubscribe unsbuscribeMessage)
 	{
 		this.unsbuscribeMessage = unsbuscribeMessage;
+        setNetActionMessage(unsbuscribeMessage);
 	}
 
 	public NetUnsubscribe getUnsbuscribeMessage()
@@ -156,6 +166,7 @@ public final class NetAction
 	public void setFaultMessage(NetFault faultMessage)
 	{
 		this.faultMessage = faultMessage;
+        setNetActionMessage(faultMessage);
 	}
 
 	public NetFault getFaultMessage()
@@ -166,6 +177,7 @@ public final class NetAction
 	public void setPingMessage(NetPing pingMessage)
 	{
 		this.pingMessage = pingMessage;
+        setNetActionMessage(pingMessage);
 	}
 
 	public NetPing getPingMessage()
@@ -176,6 +188,7 @@ public final class NetAction
 	public void setPongMessage(NetPong pongMessage)
 	{
 		this.pongMessage = pongMessage;
+        setNetActionMessage(pongMessage);
 	}
 
 	public NetPong getPongMessage()
@@ -186,10 +199,21 @@ public final class NetAction
 	public void setAuthenticationMessage(NetAuthentication authenticationMessage)
 	{
 		this.authenticationMessage = authenticationMessage;
+        setNetActionMessage(authenticationMessage);
 	}
 
 	public NetAuthentication getAuthenticationMessage()
 	{
 		return authenticationMessage;
 	}
+
+
+    public Object getNetActionMessage(){
+
+        return netActionMessage;
+    }
+
+    private void setNetActionMessage(Object netActionMessage){
+        this.netActionMessage = netActionMessage;
+    }
 }

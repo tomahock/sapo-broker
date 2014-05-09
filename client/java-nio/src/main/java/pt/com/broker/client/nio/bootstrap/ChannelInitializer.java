@@ -4,7 +4,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
+import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
+import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
@@ -23,6 +25,8 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     protected PongConsumerManager pongConsumerManager;
 
+    protected PendingAcceptRequestsManager acceptRequestsManager;
+
     protected SSLContext context;
 
 
@@ -34,6 +38,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
         setConsumerManager(consumerManager);
 
         setPongConsumerManager(pongConsumerManager);
+
     }
 
     @Override
@@ -57,6 +62,11 @@ public class ChannelInitializer extends BaseChannelInitializer {
         ch.pipeline().addLast("broker_pong_handler",new PongMessageHandler(getPongConsumerManager()));
 
         ch.pipeline().addLast("broker_fault_handler",new ReceiveFaultHandler(getConsumerManager()));
+
+        if(getAcceptRequestsManager()!=null){
+            ch.pipeline().addLast("broker_accept_handler",new AcceptMessageHandler(getAcceptRequestsManager()));
+        }
+
     }
 
 
@@ -76,6 +86,13 @@ public class ChannelInitializer extends BaseChannelInitializer {
         this.pongConsumerManager = pongConsumerManager;
     }
 
+    public PendingAcceptRequestsManager getAcceptRequestsManager() {
+        return acceptRequestsManager;
+    }
+
+    public void setAcceptRequestsManager(PendingAcceptRequestsManager acceptRequestsManager) {
+        this.acceptRequestsManager = acceptRequestsManager;
+    }
 
     public SSLContext getContext() {
         return context;

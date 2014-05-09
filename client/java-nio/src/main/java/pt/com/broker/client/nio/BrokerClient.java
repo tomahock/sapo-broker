@@ -13,10 +13,13 @@ import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 
 import pt.com.broker.client.nio.consumer.ConsumerManager;
+import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
 
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.MessageAcceptedListener;
+import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
 import pt.com.broker.client.nio.utils.HostContainer;
 import pt.com.broker.types.*;
 
@@ -39,6 +42,8 @@ public class BrokerClient extends BaseClient {
     private ConsumerManager consumerManager;
 
     private PongConsumerManager pongConsumerManager;
+
+    private PendingAcceptRequestsManager acceptRequestsManager;
 
 
 
@@ -65,7 +70,13 @@ public class BrokerClient extends BaseClient {
         setPongConsumerManager(new PongConsumerManager());
         setConsumerManager(new ConsumerManager());
 
-        setBootstrap(new Bootstrap(new ChannelInitializer(ptype, getConsumerManager(), getPongConsumerManager())));
+        ChannelInitializer channelInitializer  = new ChannelInitializer(ptype, getConsumerManager(), getPongConsumerManager());
+
+        setBootstrap(new Bootstrap(channelInitializer));
+
+        setAcceptRequestsManager(new PendingAcceptRequestsManager(getBootstrap().getGroup()));
+
+        channelInitializer.setAcceptRequestsManager(getAcceptRequestsManager());
 
         setHosts(new HostContainer(getBootstrap()));
     }
@@ -84,13 +95,22 @@ public class BrokerClient extends BaseClient {
     }
 
     public ChannelFuture publishMessage(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
+        return publishMessage(brokerMessage,destination,dtype,null);
+    }
+
+    public ChannelFuture publishMessage(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype , AcceptRequest request) {
+
 
         if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
             throw new IllegalArgumentException("Mal-formed Enqueue request");
         }
 
-
         NetPublish publish = new NetPublish(destination, dtype, brokerMessage);
+
+        if(request!=null){
+            publish.setActionId(request.getActionId());
+            addAcceptMessageHandler(request);
+        }
 
         NetAction action = new NetAction(publish);
 
@@ -99,11 +119,22 @@ public class BrokerClient extends BaseClient {
 
     }
 
-
     public ChannelFuture subscribe(final NetSubscribe subscribe, final BrokerListener listener) {
+        return subscribe(subscribe,listener,null);
+    }
+
+    public ChannelFuture subscribe(final NetSubscribe subscribe, final BrokerListener listener , AcceptRequest request) {
 
 
         NetAction netAction = new NetAction(subscribe);
+
+
+
+        if(request!=null) {
+            subscribe.setActionId(request.getActionId());
+            addAcceptMessageHandler(request);
+        }
+
 
         NetMessage netMessage = buildMessage(netAction, subscribe.getHeaders());
 
@@ -172,10 +203,6 @@ public class BrokerClient extends BaseClient {
 
         final NetPing ping = new NetPing(actionId);
 
-
-
-
-
         NetAction action = new NetAction(ping);
 
         NetMessage message = buildMessage(action);
@@ -204,10 +231,16 @@ public class BrokerClient extends BaseClient {
 
         NetPoll netPoll = new NetPoll(name, timeout);
 
-        return this.poll(netPoll);
+        return this.poll(netPoll,null);
     }
 
-    public NetMessage poll(final NetPoll netPoll){
+    public NetMessage poll(final NetPoll netPoll, AcceptRequest request){
+
+
+        if(request!=null){
+            addAcceptMessageHandler(request);
+            netPoll.setActionId(request.getActionId());
+        }
 
         NetAction netAction = new NetAction(netPoll);
 
@@ -215,9 +248,6 @@ public class BrokerClient extends BaseClient {
 
 
         final CountDownLatch latch = new CountDownLatch(1);
-
-
-
 
         final NetMessage[] response = {null};
 
@@ -284,6 +314,27 @@ public class BrokerClient extends BaseClient {
         return hosts;
     }
 
+    public PendingAcceptRequestsManager getAcceptRequestsManager() {
+        return acceptRequestsManager;
+    }
 
+    public void setAcceptRequestsManager(PendingAcceptRequestsManager acceptRequestsManager) {
+        this.acceptRequestsManager = acceptRequestsManager;
+    }
+
+
+    protected void addAcceptMessageHandler(AcceptRequest request){
+
+        String actionID = request.getActionId();
+        long timeout = request.getTimeout();
+        MessageAcceptedListener listener = request.getListener();
+
+        try {
+            getAcceptRequestsManager().addAcceptRequest(actionID, timeout, listener);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+
+    }
 }
 

@@ -128,6 +128,10 @@ public class PendingAcceptRequestsManager
 	{
 		AcceptRequest request = null;
 
+        if(!"teste".equals(actionId)){
+            return;
+        }
+
 		synchronized (requests)
 		{
 			request = requests.get(actionId);
