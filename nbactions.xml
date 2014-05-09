@@ -16,9 +16,9 @@
                 <packaging>*</packaging>
             </packagings>
             <goals>
-                <goal>-X</goal>
                 <goal>clean</goal>
                 <goal>install</goal>
+                
             </goals>
         </action>
     </actions>
