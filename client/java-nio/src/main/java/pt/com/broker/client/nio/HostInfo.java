@@ -143,7 +143,12 @@ public final class HostInfo
     }
 
     public Channel getChannel(){
-        return this.getChannelFuture().channel();
+
+        if(this.getChannelFuture()!=null){
+            return this.getChannelFuture().channel();
+        }
+
+        return null;
     }
 
     public synchronized int getReconnectLimit() {

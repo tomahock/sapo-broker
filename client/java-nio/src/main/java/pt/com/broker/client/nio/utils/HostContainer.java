@@ -94,8 +94,10 @@ public class HostContainer {
                                                        f.awaitUninterruptibly();
 
                                                        if(f.isSuccess()){
+                                                           log.debug("Connected to host: "+host.getHostname() +":"+host.getPort());
                                                            return host;
                                                        }else{
+                                                           log.debug("Error connecting to host: "+host.getHostname() +":"+host.getPort());
                                                            return null;
                                                        }
 
@@ -137,7 +139,13 @@ public class HostContainer {
                 list.add(host);
 
             }
+
+           /* if(host!=null && host.getChannel() !=null && !host.getChannel().isOpen()){
+                list.add(host);
+            }*/
         }
+
+
 
 
         return list;

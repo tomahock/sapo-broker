@@ -1,8 +1,6 @@
 package pt.com.broker.client.nio.consumer;
 
-import io.netty.channel.EventLoopGroup;
 import org.caudexorigo.text.StringUtils;
-import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.MessageAcceptedListener;
 import pt.com.broker.client.nio.types.ActionIdDecorator;
 import pt.com.broker.types.NetAction;
@@ -11,6 +9,7 @@ import pt.com.broker.types.NetMessage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -22,13 +21,13 @@ public class PendingAcceptRequestsManager {
 
     private final Map<String, MessageAcceptedListener> requests = new HashMap<String, MessageAcceptedListener>();
 
-    private final EventLoopGroup eventLoopGroup;
+    private final ScheduledExecutorService eventLoopGroup;
 
     private final Map<String, ScheduledFuture> schedules = new HashMap<String, ScheduledFuture>();
 
 
 
-    public PendingAcceptRequestsManager(EventLoopGroup eventLoopGroup) {
+    public PendingAcceptRequestsManager(ScheduledExecutorService eventLoopGroup) {
         this.eventLoopGroup = eventLoopGroup;
     }
 
@@ -53,7 +52,7 @@ public class PendingAcceptRequestsManager {
 
                     synchronized (requests) {
 
-                        MessageAcceptedListener _listener = getListner(actionID);
+                        MessageAcceptedListener _listener = getListener(actionID);
 
                         removeAcceptRequest(actionID);
 
@@ -75,8 +74,6 @@ public class PendingAcceptRequestsManager {
 
     public MessageAcceptedListener removeAcceptRequest(String actionID){
 
-
-
         MessageAcceptedListener b =  requests.remove(actionID);
 
         if(b!=null){
@@ -88,7 +85,7 @@ public class PendingAcceptRequestsManager {
     }
 
 
-    protected MessageAcceptedListener getListner(String actionID){
+    protected MessageAcceptedListener getListener(String actionID){
 
         return requests.get(actionID);
 
@@ -125,12 +122,11 @@ public class PendingAcceptRequestsManager {
 
         synchronized (requests) {
 
-            MessageAcceptedListener listener = getListner(actionID);
+            MessageAcceptedListener listener = getListener(actionID);
 
             if (listener == null) {
                 throw new Exception("No listener was found actionID: " + actionID);
             }
-
 
 
             if (netMessage.getAction().getActionType() == NetAction.ActionType.FAULT) {
@@ -146,6 +142,8 @@ public class PendingAcceptRequestsManager {
             removeAcceptRequest(actionID);
 
         }
+
+
     }
 
 }

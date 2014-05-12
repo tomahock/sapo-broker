@@ -77,7 +77,7 @@
                         <additionalClasspathElement>../../comm-types/target/classes</additionalClasspathElement>
                     </additionalClasspathElements>
                     <excludes>
-                        <exclude>unit/pt/com/broker/client/nio/ignore/**/*.java</exclude>
+                        <exclude>pt/com/broker/client/nio/ignore/**/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
