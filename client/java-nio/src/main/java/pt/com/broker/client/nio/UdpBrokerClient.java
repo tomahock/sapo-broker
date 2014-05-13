@@ -1,14 +1,12 @@
 package pt.com.broker.client.nio;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import pt.com.broker.client.nio.bootstrap.DatagramBootstrap;
 import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
-import pt.com.broker.client.nio.utils.HostContainer;
+import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.types.*;
 
 import java.security.InvalidParameterException;
-import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 05-05-2014.

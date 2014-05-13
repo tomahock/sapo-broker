@@ -4,7 +4,6 @@ package pt.com.broker.client.nio;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.EventLoopGroup;
 
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
@@ -19,18 +18,12 @@ import pt.com.broker.client.nio.events.BrokerListener;
 
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.MessageAcceptedListener;
-import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
-import pt.com.broker.client.nio.utils.HostContainer;
+import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.types.*;
 
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
 
 /**
  * Created by luissantos on 21-04-2014.

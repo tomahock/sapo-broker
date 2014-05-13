@@ -25,6 +25,9 @@ public class SocketServer {
 
     private ChannelFuture future;
 
+    EventLoopGroup bossGroup = new NioEventLoopGroup();
+    EventLoopGroup workerGroup = new NioEventLoopGroup();
+    ServerBootstrap b = new ServerBootstrap();
 
     public SocketServer() {
         this(0);
@@ -78,11 +81,11 @@ public class SocketServer {
     private ChannelFuture run() throws Exception {
 
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+
         try {
 
-            ServerBootstrap b = new ServerBootstrap(); // (2)
+
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class) // (3)
                     .childHandler(new ChannelInitializer< SocketChannel>() { // (4)
@@ -92,6 +95,8 @@ public class SocketServer {
                             ch.pipeline().addLast(new Handler());
 
                             log.debug("Remote client connected");
+
+
 
                         }
                     })
@@ -136,16 +141,13 @@ public class SocketServer {
 
     public Future shutdown(){
 
-        try {
+        return b.childGroup().shutdownGracefully();
+    }
 
 
-            getFuture().channel().close().awaitUninterruptibly();
+    public void badShutdown(){
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return getFuture().channel().eventLoop().shutdownGracefully();
+        b.childGroup().shutdown();
     }
 }

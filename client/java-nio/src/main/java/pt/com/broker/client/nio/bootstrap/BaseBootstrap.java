@@ -38,8 +38,6 @@ public abstract class BaseBootstrap {
         ChannelFuture f = boot.connect(hostInfo.getSocketAddress());
 
 
-        hostInfo.setChannelFuture(f);
-
         return f;
     }
 

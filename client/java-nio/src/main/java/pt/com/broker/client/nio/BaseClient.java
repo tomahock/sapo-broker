@@ -7,12 +7,9 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
-import pt.com.broker.client.nio.bootstrap.Bootstrap;
-import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
-import pt.com.broker.client.nio.utils.HostContainer;
+import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.types.*;
 
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -123,7 +120,7 @@ public abstract class BaseClient {
 
     protected Channel getChannel() {
 
-        Channel c = getHosts().getActiveChannel();
+        Channel c = getHosts().getAvailableChannel();
 
         log.debug("Selected channel is: "+c.toString());
 

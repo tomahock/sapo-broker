@@ -6,7 +6,7 @@ import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.mocks.ServerFactory;
 import pt.com.broker.client.nio.mocks.SocketServer;
-import pt.com.broker.client.nio.utils.HostContainer;
+import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.types.NetProtocolType;
 
 import java.util.ArrayList;
@@ -93,12 +93,10 @@ public class TestServerConnection {
 
         Future f = s.shutdown();
 
-        System.out.println("--------- CLOSE --------");
 
         f.get(5000,TimeUnit.MILLISECONDS);
 
 
-        Thread.sleep(10000);
         Assert.assertEquals(connected_servers+1,container.notConnectedHosts().size());
 
     }

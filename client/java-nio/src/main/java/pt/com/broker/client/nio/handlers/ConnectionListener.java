@@ -5,7 +5,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.AttributeKey;
 import pt.com.broker.client.nio.HostInfo;
-import pt.com.broker.client.nio.utils.HostContainer;
+import pt.com.broker.client.nio.server.HostContainer;
 
 /**
  * Created by luissantos on 29-04-2014.

@@ -98,6 +98,7 @@ public class CircularContainer<T>
 
             if ((++index) >= innerContainer.size())
                 index = 0;
+
             return innerContainer.get(index);
         }
     }
