@@ -37,7 +37,6 @@ public abstract class BaseBootstrap {
 
         ChannelFuture f = boot.connect(hostInfo.getSocketAddress());
 
-
         return f;
     }
 

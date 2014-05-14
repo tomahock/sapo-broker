@@ -30,6 +30,8 @@ public class HostContainer {
 
     private BaseBootstrap bootstrap;
 
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
+
     private final CompletionService<HostInfo> service;
 
     public HostContainer(BaseBootstrap bootstrap) {
@@ -42,7 +44,7 @@ public class HostContainer {
         connectedHosts = new CircularContainer<HostInfo>(capacity);
         this.bootstrap = bootstrap;
 
-        service = new ExecutorCompletionService<HostInfo>(bootstrap.getGroup());
+        service = new ExecutorCompletionService<HostInfo>(executorService);
     }
 
     public ArrayList<HostInfo> getInnerContainer() {
@@ -62,7 +64,8 @@ public class HostContainer {
 
         final EventLoopGroup eventLoop = bootstrap.getGroup();
 
-        final ServerConnectedListener listener = new ServerConnectedListener(this);
+
+        final  HostContainer hostContainer = this;
 
         return eventLoop.submit(new Callable<HostInfo>() {
 
@@ -79,16 +82,23 @@ public class HostContainer {
                         @Override
                         public HostInfo call() throws Exception {
 
-                            ChannelFuture f = connectToHost(host).addListener(listener);
+                            log.debug("Connetecting...."+host);
+
+                            ChannelFuture f = connectToHost(host);
 
                             f.awaitUninterruptibly();
 
                             if (!f.isSuccess()) {
+                                log.debug("Error");
                                 return null;
                             }
 
+                            log.debug("Success");
+
 
                             host.setChannelFuture(f);
+
+                            registerSuccessfulConnect(f.channel(),host);
 
                             return host;
 
@@ -100,19 +110,23 @@ public class HostContainer {
                 }
 
 
-                int total = hosts.size();
 
-                while (total-- > 0) {
+                HostInfo host = null;
 
-                    HostInfo host = service.take().get();
+                int count = hosts.size();
 
-                    if (host != null && host.isActive()) {
-                        return host;
-                    }
-                }
+                do{
+
+                    host = service.take().get();
+
+                    count--;
+                }while ( (host == null || !host.isActive()) && count > 0 );
 
 
-                return null;
+
+
+
+                return host;
 
 
             }
@@ -122,14 +136,58 @@ public class HostContainer {
 
     }
 
+    private void registerSuccessfulConnect(Channel channel, final HostInfo hostInfo) throws Exception {
+
+        final HostContainer hostContainer = this;
+
+        this.addConnectedHost(hostInfo);
+
+        channel.closeFuture().addListener(new ChannelFutureListener() {
+
+            @Override
+            public void operationComplete(ChannelFuture future2) throws Exception {
+
+                SocketAddress address = future2.channel().remoteAddress();
+
+                log.debug("Server disconnected: " + address);
+
+                hostContainer.inactiveHost(hostInfo);
+
+            }
+
+        });
+
+    }
+
     public ArrayList<HostInfo> notConnectedHosts() {
+
+        if(connectedHosts.size() == 0 ){
+            return  new ArrayList<HostInfo>(hosts.getInnerContainer());
+        }
 
         ArrayList<HostInfo> list = new ArrayList<HostInfo>(hosts.getInnerContainer());
 
         list.removeAll(connectedHosts.getInnerContainer());
 
+        log.debug("Not Connected Size:"+list.size());
 
         return list;
+    }
+
+
+
+    protected HostInfo getHost(SocketAddress socketAddress){
+
+
+        for(HostInfo host : hosts.getInnerContainer()){
+
+            if(host.getChannel().remoteAddress().equals(socketAddress)){
+                return host;
+            }
+
+        }
+
+        return null;
     }
 
 
@@ -137,7 +195,7 @@ public class HostContainer {
 
         for (HostInfo host : connectedHosts.getInnerContainer()) {
 
-            if (host.getChannel().remoteAddress().equals(socketAddress)) {
+            if (host!=null  && host.getChannel().remoteAddress().equals(socketAddress)) {
                 return host;
             }
 
@@ -151,16 +209,25 @@ public class HostContainer {
         return getActiveHost(new InetSocketAddress(hostname, port));
     }
 
-    protected HostInfo inactiveHost(SocketAddress socketAddress) {
 
-        HostInfo host = getActiveHost(socketAddress);
+    protected HostInfo inactiveHost(HostInfo host) {
+
+
+        log.debug("Disabling: "+host);
 
         if (host != null) {
             connectedHosts.remove(host);
         }
 
-
         return host;
+
+    }
+
+    protected HostInfo inactiveHost(SocketAddress socketAddress) {
+
+        HostInfo host = getActiveHost(socketAddress);
+
+        return inactiveHost(host);
     }
 
 
@@ -211,8 +278,17 @@ public class HostContainer {
     }
 
 
-    protected void addConnectedHost(HostInfo host) {
+    protected void addConnectedHost(HostInfo host) throws Exception {
+
+        if(host == null){
+            throw new Exception("Invalid host");
+        }
+
         connectedHosts.add(host);
+    }
+
+    public Collection<HostInfo> getConnectedHosts(){
+        return connectedHosts.getInnerContainer();
     }
 
 }
