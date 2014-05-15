@@ -51,6 +51,13 @@ public final class NetAction
 
         setPingMessage(ping);
     }
+
+    public NetAction(NetPong pong)
+    {
+        this(ActionType.PONG);
+
+        setPongMessage(pong);
+    }
     public NetAction(NetSubscribe netSubscribe)
     {
         this(ActionType.SUBSCRIBE);

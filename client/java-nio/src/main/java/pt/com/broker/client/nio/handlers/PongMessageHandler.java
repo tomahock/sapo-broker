@@ -21,6 +21,8 @@ import java.net.InetSocketAddress;
  */
 public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> {
 
+    public static final String HEART_BEAT_ACTION_ID = "24bb963d-6d6c-441e-ab4d-999d73578452";
+
     private static final Logger log = LoggerFactory.getLogger(PongMessageHandler.class);
 
     PongConsumerManager manager;
@@ -51,6 +53,14 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
             switch (action.getActionType()) {
 
                 case PONG:
+
+
+
+                    if(action.getPongMessage().getActionId().equals(HEART_BEAT_ACTION_ID)){
+                        log.debug("Got a heart beat pong response");
+                        ctx.fireChannelReadComplete();
+                        return;
+                    }
 
                     log.debug("Got a pong message");
 

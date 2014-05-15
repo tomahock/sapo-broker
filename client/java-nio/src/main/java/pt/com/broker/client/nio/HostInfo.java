@@ -11,6 +11,10 @@ import java.net.InetSocketAddress;
 
 public final class HostInfo
 {
+    public static enum STATUS {
+        OPEN, CONNECTING, CLOSED
+    }
+
     public static final int DEFAULT_CONNECT_TIMEOUT = 15 * 1000; // 15 seconds
     public static final int DEFAULT_READ_TIMEOUT = 0; // forever
     public static final int DEFAULT_RECONNECT_LIMIT = 10; // 10 tentativas
@@ -18,12 +22,16 @@ public final class HostInfo
     private String hostname;
     private int port;
     private final int udpPort;
-    private final int connectTimeout;
+    private int connectTimeout;
     private final int readTimeout;
 
     private int reconnectLimit = DEFAULT_RECONNECT_LIMIT;
 
     private ChannelFuture channelFuture;
+
+    private Channel channel;
+
+    private STATUS status = STATUS.CLOSED;
 
     /**
      * Creates a HostInfo instance.
@@ -91,9 +99,14 @@ public final class HostInfo
         return udpPort;
     }
 
-    public int getConnectTimeout()
+    public synchronized int getConnectTimeout()
     {
         return connectTimeout;
+    }
+
+    public synchronized void setConnectTimeout(int connectTimeout)
+    {
+        this.connectTimeout = connectTimeout;
     }
 
     public int getReadTimeout()
@@ -129,26 +142,18 @@ public final class HostInfo
         return socketAddress;
     }
 
-    public ChannelFuture getChannelFuture() {
-        return channelFuture;
-    }
-
-    public void setChannelFuture(ChannelFuture channelFuture) {
-        this.channelFuture = channelFuture;
-    }
 
     public boolean isActive(){
 
-        return this.getChannelFuture() != null && (getChannel().isActive() ||  getChannel().isOpen() );
+        return this.getChannel() != null && (getChannel().isActive() ||  getChannel().isOpen() );
     }
 
     public Channel getChannel(){
+        return channel;
+    }
 
-        if(this.getChannelFuture()!=null){
-            return this.getChannelFuture().channel();
-        }
-
-        return null;
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public synchronized int getReconnectLimit() {
@@ -165,5 +170,14 @@ public final class HostInfo
 
     public synchronized void reconnectAttempt(){
           reconnectLimit--;
+    }
+
+
+    public synchronized STATUS getStatus() {
+        return status;
+    }
+
+    public synchronized void setStatus(STATUS status) {
+        this.status = status;
     }
 }

@@ -6,10 +6,16 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.MessageToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
+import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
+import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
+import pt.com.broker.types.*;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.concurrent.Future;
 
 
@@ -36,12 +42,25 @@ public class SocketServer {
         this.port = port;
     }
 
-    private class Handler extends ChannelInboundHandlerAdapter{
+    private class InputHandler extends ChannelInboundHandlerAdapter{
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
-            // Discard the received data silently.
-            ((ByteBuf) msg).release(); // (3)
+
+            if(msg instanceof NetMessage){
+
+                NetMessage _msg = (NetMessage)msg;
+
+                if(_msg.getAction().getActionType() == NetAction.ActionType.PING) {
+
+                    NetMessage netMessage = new NetMessage(new NetAction(new NetPong(_msg.getAction().getPingMessage().getActionId())));
+
+                    ctx.writeAndFlush(netMessage);
+                }
+
+            }
+
+            ctx.fireChannelReadComplete();
         }
 
         @Override
@@ -51,11 +70,8 @@ public class SocketServer {
             ctx.close();
         }
 
-
-
-
-
     }
+
 
     protected int bind() throws Exception {
 
@@ -88,14 +104,20 @@ public class SocketServer {
 
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class) // (3)
-                    .childHandler(new ChannelInitializer< SocketChannel>() { // (4)
+                    .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
 
-                            ch.pipeline().addLast(new Handler());
+
+                            BindingSerializer binding = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
+
+
+                            ch.pipeline().addLast("broker_message_decoder", new BrokerMessageDecoder(binding));
+                            ch.pipeline().addLast("broker_message_encoder", new BrokerMessageEncoder(binding));
+                            ch.pipeline().addLast("server_handler", new InputHandler());
+
 
                             log.debug("Remote client connected");
-
 
 
                         }

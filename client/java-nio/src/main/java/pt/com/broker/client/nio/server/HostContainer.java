@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
+import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
+import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
 import pt.com.broker.client.nio.utils.CircularContainer;
 
 
@@ -15,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -24,15 +27,20 @@ public class HostContainer {
 
     private static final Logger log = LoggerFactory.getLogger(HostContainer.class);
 
-    private CircularContainer<HostInfo> hosts;
+    private List<HostInfo> hosts;
 
-    private CircularContainer<HostInfo> connectedHosts;
+    private List<HostInfo> connectedHosts;
 
     private BaseBootstrap bootstrap;
 
     ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-    private final CompletionService<HostInfo> service;
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
+
+    SelectServerStrategy strategy = new RoundRobinStrategy();
+
 
     public HostContainer(BaseBootstrap bootstrap) {
         this(1, bootstrap);
@@ -40,16 +48,16 @@ public class HostContainer {
 
     public HostContainer(int capacity, BaseBootstrap bootstrap) {
 
-        hosts = new CircularContainer<HostInfo>(capacity);
-        connectedHosts = new CircularContainer<HostInfo>(capacity);
         this.bootstrap = bootstrap;
 
-        service = new ExecutorCompletionService<HostInfo>(executorService);
+        hosts = new ArrayList<HostInfo>(capacity);
+
+        connectedHosts = new ArrayList<HostInfo>(capacity);
+
+        strategy.setCollection(connectedHosts);
+
     }
 
-    public ArrayList<HostInfo> getInnerContainer() {
-        return connectedHosts.getInnerContainer();
-    }
 
     public void add(HostInfo host) {
         hosts.add(host);
@@ -60,76 +68,76 @@ public class HostContainer {
     }
 
 
+    private Future<HostInfo> connect(HostInfo server) {
+
+        Collection<HostInfo> servers = new ArrayList<HostInfo>();
+
+        servers.add(server);
+
+        return connect(servers);
+    }
+
     public Future<HostInfo> connect() {
+
+        ArrayList<HostInfo> hosts = notConnectedHosts();
+
+        Future f = connect(hosts);
+
+        startReconnectThread();
+
+        return f;
+    }
+
+    private Future<HostInfo> connect(final Collection<HostInfo> servers) {
 
         final EventLoopGroup eventLoop = bootstrap.getGroup();
 
-
-        final  HostContainer hostContainer = this;
 
         return eventLoop.submit(new Callable<HostInfo>() {
 
             @Override
             public HostInfo call() throws Exception {
 
-                ArrayList<HostInfo> hosts = notConnectedHosts();
-
-                for (final HostInfo host : hosts) {
 
 
-                    service.submit(new Callable<HostInfo>() {
+                    for (final HostInfo host : servers) {
 
-                        @Override
-                        public HostInfo call() throws Exception {
+                        service.submit(new Callable<HostInfo>() {
 
-                            log.debug("Connetecting...."+host);
+                            @Override
+                            public HostInfo call() throws Exception {
 
-                            ChannelFuture f = connectToHost(host);
+                                ChannelFuture f = connectToHost(host);
 
-                            f.awaitUninterruptibly();
+                                f.awaitUninterruptibly();
 
-                            if (!f.isSuccess()) {
-                                log.debug("Error");
-                                return null;
+                                return f.isSuccess() ? host : null;
+
+
                             }
 
-                            log.debug("Success");
+                        });
+
+                    }
 
 
-                            host.setChannelFuture(f);
+                    HostInfo host = null;
 
-                            registerSuccessfulConnect(f.channel(),host);
+                    int count = servers.size();
 
-                            return host;
+                    do {
+
+                        host = service.take().get();
+
+                        count--;
+                    } while ((host == null || !host.isActive()) && count > 0);
 
 
-                        }
-
-                    });
+                    return host;
 
                 }
 
 
-
-                HostInfo host = null;
-
-                int count = hosts.size();
-
-                do{
-
-                    host = service.take().get();
-
-                    count--;
-                }while ( (host == null || !host.isActive()) && count > 0 );
-
-
-
-
-
-                return host;
-
-
-            }
 
         });
 
@@ -138,18 +146,19 @@ public class HostContainer {
 
     private void registerSuccessfulConnect(Channel channel, final HostInfo hostInfo) throws Exception {
 
+
         final HostContainer hostContainer = this;
+
+        hostInfo.setChannel(channel);
 
         this.addConnectedHost(hostInfo);
 
         channel.closeFuture().addListener(new ChannelFutureListener() {
 
             @Override
-            public void operationComplete(ChannelFuture future2) throws Exception {
+            public void operationComplete(ChannelFuture future) throws Exception {
 
-                SocketAddress address = future2.channel().remoteAddress();
-
-                log.debug("Server disconnected: " + address);
+                log.debug("Server disconnected: " + hostInfo);
 
                 hostContainer.inactiveHost(hostInfo);
 
@@ -161,122 +170,142 @@ public class HostContainer {
 
     public ArrayList<HostInfo> notConnectedHosts() {
 
-        if(connectedHosts.size() == 0 ){
-            return  new ArrayList<HostInfo>(hosts.getInnerContainer());
+        ArrayList<HostInfo> list = new ArrayList<HostInfo>(hosts.size());
+
+        for(HostInfo host : hosts){
+            if(host.getStatus() == HostInfo.STATUS.CLOSED){
+                list.add(host);
+            }
         }
-
-        ArrayList<HostInfo> list = new ArrayList<HostInfo>(hosts.getInnerContainer());
-
-        list.removeAll(connectedHosts.getInnerContainer());
-
-        log.debug("Not Connected Size:"+list.size());
 
         return list;
     }
 
 
-
-    protected HostInfo getHost(SocketAddress socketAddress){
-
-
-        for(HostInfo host : hosts.getInnerContainer()){
-
-            if(host.getChannel().remoteAddress().equals(socketAddress)){
-                return host;
-            }
-
-        }
-
-        return null;
+    protected boolean isConnected(HostInfo hostInfo) {
+        return hostInfo!=null && hostInfo.getStatus() == HostInfo.STATUS.OPEN && connectedHosts.contains(hostInfo);
     }
-
-
-    protected HostInfo getActiveHost(SocketAddress socketAddress) {
-
-        for (HostInfo host : connectedHosts.getInnerContainer()) {
-
-            if (host!=null  && host.getChannel().remoteAddress().equals(socketAddress)) {
-                return host;
-            }
-
-        }
-
-        return null;
-    }
-
-    protected HostInfo getActiveHost(String hostname, int port) {
-
-        return getActiveHost(new InetSocketAddress(hostname, port));
-    }
-
 
     protected HostInfo inactiveHost(HostInfo host) {
 
-
-        log.debug("Disabling: "+host);
-
         if (host != null) {
-            connectedHosts.remove(host);
+            synchronized (hosts) {
+                connectedHosts.remove(host);
+                host.setChannel(null);
+                host.setStatus(HostInfo.STATUS.CLOSED);
+            }
         }
 
         return host;
 
     }
 
-    protected HostInfo inactiveHost(SocketAddress socketAddress) {
-
-        HostInfo host = getActiveHost(socketAddress);
-
-        return inactiveHost(host);
-    }
-
-
-    public Channel getActiveChannel(String hostname, int port) {
-
-        HostInfo host = getActiveHost(hostname, port);
-
-        if (host == null) {
-            return null;
-        }
-
-
-        return host.getChannel();
-    }
 
     public Channel getAvailableChannel() {
 
-        HostInfo host = connectedHosts.get();
+        HostInfo host = strategy.next();
 
-        Channel c = host.getChannel();
-
-        if (c != null) {
-            return c;
-        }
-
-        Future<HostInfo> future = connect();
-
-
-        try {
-
-            return future.get().getChannel();
-
-        } catch (Throwable e) {
-
-            e.printStackTrace();
-
+        if (host != null) {
+            return host.getChannel();
         }
 
         return null;
 
     }
 
-    protected ChannelFuture connectToHost(final HostInfo host) {
+    public ChannelFuture disconnect(HostInfo host){
 
-        ChannelFuture f = bootstrap.connect(host);
+        if(!isConnected(host)){
+            return null;
+        }
+
+        Channel channel = host.getChannel();
+
+        if(channel == null){
+            return null;
+        }
+
+        host.setChannel(null);
+
+        return channel.disconnect();
+
+    }
+
+    private ChannelFuture connectToHost(final HostInfo host) throws Exception {
+
+        final ChannelFuture f = bootstrap.connect(host);
+
+        host.setStatus(HostInfo.STATUS.CONNECTING);
+
+        f.addListener( new ChannelFutureListener() {
+
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+
+                if(future.isSuccess()){
+
+                    log.debug("Connected to server: "+ host);
+
+                    registerSuccessfulConnect(f.channel(), host);
+                    host.setStatus(HostInfo.STATUS.OPEN);
+
+
+                }else{
+                    host.setStatus(HostInfo.STATUS.CLOSED);
+                    log.debug("Error connecting to server: "+ host);
+                }
+
+            }
+
+        });
+
+
 
         return f;
     }
 
+
+    private void startReconnectThread(){
+
+        scheduler.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+
+                synchronized (hosts) {
+
+                    List<HostInfo> notConnectedHosts = notConnectedHosts();
+
+                    if (notConnectedHosts.size()>0) {
+
+                        log.debug("CONNECT ALL THE SERVERS");
+
+
+
+                        for (HostInfo host : notConnectedHosts ) {
+
+                            Future f = connect(host);
+
+                            try {
+                                f.get();
+
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+
+                            log.debug("connected");
+
+                        }
+                    }
+
+                }
+
+
+            }
+        }, 2000, 1000, TimeUnit.MILLISECONDS);
+
+    }
 
     protected void addConnectedHost(HostInfo host) throws Exception {
 
@@ -288,7 +317,7 @@ public class HostContainer {
     }
 
     public Collection<HostInfo> getConnectedHosts(){
-        return connectedHosts.getInnerContainer();
+        return connectedHosts;
     }
 
 }

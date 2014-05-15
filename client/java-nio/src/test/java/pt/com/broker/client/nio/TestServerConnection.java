@@ -3,6 +3,7 @@ package pt.com.broker.client.nio;
 import org.junit.*;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
+import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.iptables.IpTables;
 import pt.com.broker.client.nio.mocks.ServerFactory;
 import pt.com.broker.client.nio.mocks.SocketServer;
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class TestServerConnection {
 
-    int totalServers = 10;
+    int totalServers = 50;
 
     static  IpTables ipTables = new IpTables();
 
@@ -43,7 +44,7 @@ public class TestServerConnection {
             if(!ipTables.addChain(currentChainName())){
                 System.out.println("Error adding chain:"+currentChainName());
             }else{
-                ipTables.addChaintoChain("INPUT",currentChainName());
+                ipTables.addChaintoChain("OUTPUT",currentChainName());
             }
 
         }
@@ -62,7 +63,7 @@ public class TestServerConnection {
 
         if(ipTables.hasPermission()) {
 
-            ipTables.removeChainfromChain("INPUT",currentChainName());
+            ipTables.removeChainfromChain("OUTPUT",currentChainName());
 
             ipTables.deleteChain(currentChainName());
 
@@ -162,23 +163,132 @@ public class TestServerConnection {
 
 
     @Test()
-    public void testWindows() throws IOException, InterruptedException {
+    public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException {
 
         Assume.assumeTrue(userHasPermissions());
 
-        if(!ipTables.blockPort(currentChainName(),3323)){
-            System.out.println("Error blocking port");
+        List<SocketServer> servers = getServers();
+
+
+        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(NetProtocolType.JSON,null,new PongConsumerManager()));
+
+        HostContainer container = new HostContainer(bootstrap);
+
+
+        for(SocketServer server : servers){
+            container.add(new HostInfo("127.0.0.1",server.getPort()));
         }
 
+        Future<HostInfo> future = container.connect();
+
+        HostInfo host = future.get(20000L,TimeUnit.MILLISECONDS);
+
+        // Wait for a bit for the client to get connected with all the servers
+        Thread.sleep(2000);
 
 
+        Collection<SocketServer> random_servers = getRandomServers(servers);
 
+        for(SocketServer s : random_servers){
 
+            if(!ipTables.blockPort(currentChainName(),s.getPort())){
+                System.out.println("Error blocking port");
+            }
 
-        if(!ipTables.removePortBlock(currentChainName(),3323)){
-
+            System.out.println("Blocking server: "+s.getPort());
 
         }
+
+        int blockedservers = random_servers.size();
+
+        Thread.sleep(15000);
+
+        int connected_servers = container.getConnectedHosts().size();
+
+
+        System.out.println("Connected Servers: "+connected_servers);
+        System.out.println("Blocked Servers: "+blockedservers);
+
+
+        Assert.assertEquals(container.size(), connected_servers + blockedservers);
+
+
+    }
+
+
+    @Test()
+    public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException {
+
+        Assume.assumeTrue(userHasPermissions());
+
+        List<SocketServer> servers = getServers();
+
+
+        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(NetProtocolType.JSON,null,new PongConsumerManager()));
+
+        HostContainer container = new HostContainer(bootstrap);
+
+
+        for(SocketServer server : servers){
+            container.add(new HostInfo("127.0.0.1",server.getPort()));
+        }
+
+        Future<HostInfo> future = container.connect();
+
+        HostInfo host = future.get(20000L,TimeUnit.MILLISECONDS);
+
+        // Wait for a bit for the client to get connected with all the servers
+        Thread.sleep(2000);
+
+
+        Collection<SocketServer> random_servers = getRandomServers(servers);
+
+        for(SocketServer s : random_servers){
+
+            if(!ipTables.blockPort(currentChainName(),s.getPort())){
+                System.out.println("Error blocking port");
+            }
+
+            System.out.println("Blocking server: "+s.getPort());
+
+        }
+
+        int blockedservers = random_servers.size();
+
+        Thread.sleep(10000);
+
+        int connected_servers = container.getConnectedHosts().size();
+
+
+        System.out.println("Connected Servers: "+connected_servers);
+        System.out.println("Blocked Servers: "+blockedservers);
+
+        Assert.assertEquals(container.size(), connected_servers + blockedservers);
+
+
+        for(SocketServer s : random_servers){
+
+            if(!ipTables.removePortBlock(currentChainName(),s.getPort())){
+                System.out.println("Error ublocking port");
+            }
+
+            System.out.println("Unblocking server: "+s.getPort());
+
+        }
+
+        Thread.sleep(10000);
+
+        connected_servers = container.getConnectedHosts().size();
+
+
+        System.out.println("Total Servers: "+servers.size());
+        System.out.println("Connected Servers: "+connected_servers);
+
+
+        Assert.assertEquals(container.size(), connected_servers);
+
+
+
     }
 
 

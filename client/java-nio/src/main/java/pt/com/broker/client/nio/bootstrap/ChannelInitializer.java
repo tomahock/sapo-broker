@@ -3,6 +3,8 @@ package pt.com.broker.client.nio.bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.timeout.IdleStateHandler;
+import pt.com.broker.client.nio.codecs.HeartbeatHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
@@ -55,6 +57,10 @@ public class ChannelInitializer extends BaseChannelInitializer {
             ch.pipeline().addFirst("ssl", new SslHandler(engine, false) );
 
         }
+
+        ch.pipeline().addLast("idle_state_handler", new IdleStateHandler(10, 2, 0));
+        ch.pipeline().addLast("heartbeat_handler", new HeartbeatHandler());
+
 
         /* add message receive handler */
         ch.pipeline().addLast("broker_notification_handler",new ReceiveMessageHandler(getConsumerManager()));
