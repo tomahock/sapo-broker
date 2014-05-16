@@ -132,7 +132,7 @@ public final class HostInfo
     @Override
     public String toString()
     {
-        return String.format("HostInfo [hostname=%s, port=%s, udpPort=%s, connectTimeout=%s, readTimeout=%s]", hostname, port, udpPort, connectTimeout, readTimeout);
+        return String.format("HostInfo [hostname=%s, port=%s, udpPort=%s, connectTimeout=%s, readTimeout=%s, status=%s]", hostname, port, udpPort, connectTimeout, readTimeout,getStatus());
     }
 
 

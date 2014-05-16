@@ -56,6 +56,8 @@ public class HostContainer {
 
         strategy.setCollection(connectedHosts);
 
+
+
     }
 
 
@@ -70,22 +72,26 @@ public class HostContainer {
 
     private Future<HostInfo> connect(HostInfo server) {
 
-        Collection<HostInfo> servers = new ArrayList<HostInfo>();
+        synchronized (hosts) {
 
-        servers.add(server);
+            Collection<HostInfo> servers = new ArrayList<HostInfo>();
 
-        return connect(servers);
+            servers.add(server);
+
+            return connect(servers);
+        }
     }
 
     public Future<HostInfo> connect() {
 
-        ArrayList<HostInfo> hosts = notConnectedHosts();
+        synchronized (hosts) {
 
-        Future f = connect(hosts);
+            ArrayList<HostInfo> hosts = notConnectedHosts();
 
-        startReconnectThread();
+            Future f = connect(hosts);
 
-        return f;
+            return f;
+        }
     }
 
     private Future<HostInfo> connect(final Collection<HostInfo> servers) {
@@ -144,6 +150,21 @@ public class HostContainer {
 
     }
 
+    private void reconnect(final HostInfo host){
+
+        if(!scheduler.isShutdown()) {
+            scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+
+                    connect(host);
+
+                }
+            }, 4000, TimeUnit.MILLISECONDS);
+        }
+
+    }
+
     private void registerSuccessfulConnect(Channel channel, final HostInfo hostInfo) throws Exception {
 
 
@@ -158,9 +179,14 @@ public class HostContainer {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
 
-                log.debug("Server disconnected: " + hostInfo);
 
-                hostContainer.inactiveHost(hostInfo);
+                    hostContainer.inactiveHost(hostInfo);
+                    log.debug("Server disconnected: " + hostInfo);
+
+
+                    if(!future.isCancelled()) {
+                       reconnect(hostInfo);
+                    }
 
             }
 
@@ -170,15 +196,24 @@ public class HostContainer {
 
     public ArrayList<HostInfo> notConnectedHosts() {
 
-        ArrayList<HostInfo> list = new ArrayList<HostInfo>(hosts.size());
+        synchronized (hosts) {
 
-        for(HostInfo host : hosts){
-            if(host.getStatus() == HostInfo.STATUS.CLOSED){
-                list.add(host);
+            ArrayList<HostInfo> list = new ArrayList<HostInfo>(0);
+
+            for (HostInfo host : hosts) {
+
+                synchronized (host) {
+
+                    if (host.getStatus().equals(HostInfo.STATUS.CLOSED)) {
+                        list.add(host);
+                    }
+                }
             }
+
+            return list;
         }
 
-        return list;
+
     }
 
 
@@ -186,15 +221,19 @@ public class HostContainer {
         return hostInfo!=null && hostInfo.getStatus() == HostInfo.STATUS.OPEN && connectedHosts.contains(hostInfo);
     }
 
-    protected HostInfo inactiveHost(HostInfo host) {
+    protected HostInfo inactiveHost(final HostInfo host) {
 
         if (host != null) {
-            synchronized (hosts) {
+
+            synchronized (connectedHosts) {
                 connectedHosts.remove(host);
-                host.setChannel(null);
-                host.setStatus(HostInfo.STATUS.CLOSED);
             }
+
+            host.setChannel(null);
+            host.setStatus(HostInfo.STATUS.CLOSED);
+
         }
+
 
         return host;
 
@@ -242,17 +281,25 @@ public class HostContainer {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
 
-                if(future.isSuccess()){
+                synchronized (host) {
 
-                    log.debug("Connected to server: "+ host);
+                    if (future.isSuccess()) {
 
-                    registerSuccessfulConnect(f.channel(), host);
-                    host.setStatus(HostInfo.STATUS.OPEN);
+                        registerSuccessfulConnect(f.channel(), host);
+                        host.setStatus(HostInfo.STATUS.OPEN);
+
+                        log.debug("Connected to server: " + host);
 
 
-                }else{
-                    host.setStatus(HostInfo.STATUS.CLOSED);
-                    log.debug("Error connecting to server: "+ host);
+                    } else {
+
+                        host.setStatus(HostInfo.STATUS.CLOSED);
+                        log.debug("Error connecting to server: " + host);
+
+                        reconnect(host);
+
+
+                    }
                 }
 
             }
@@ -264,60 +311,41 @@ public class HostContainer {
         return f;
     }
 
-
-    private void startReconnectThread(){
-
-        scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-
-                synchronized (hosts) {
-
-                    List<HostInfo> notConnectedHosts = notConnectedHosts();
-
-                    if (notConnectedHosts.size()>0) {
-
-                        log.debug("CONNECT ALL THE SERVERS");
-
-
-
-                        for (HostInfo host : notConnectedHosts ) {
-
-                            Future f = connect(host);
-
-                            try {
-                                f.get();
-
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
-                            }
-
-                            log.debug("connected");
-
-                        }
-                    }
-
-                }
-
-
-            }
-        }, 2000, 1000, TimeUnit.MILLISECONDS);
-
-    }
-
     protected void addConnectedHost(HostInfo host) throws Exception {
 
         if(host == null){
             throw new Exception("Invalid host");
         }
 
-        connectedHosts.add(host);
+        synchronized (connectedHosts){
+            connectedHosts.add(host);
+        }
+
     }
 
     public Collection<HostInfo> getConnectedHosts(){
         return connectedHosts;
     }
+
+    public int getHostsSize(){
+        synchronized (hosts){
+            return hosts.size();
+        }
+    }
+
+    public int getConnectedSize(){
+
+        synchronized (connectedHosts){
+            return connectedHosts.size();
+        }
+
+    }
+
+    public void shutdown(){
+        scheduler.shutdown();
+        executorService.shutdown();
+    }
+
+
 
 }

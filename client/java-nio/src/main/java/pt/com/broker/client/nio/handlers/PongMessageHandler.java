@@ -57,7 +57,7 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
 
 
                     if(action.getPongMessage().getActionId().equals(HEART_BEAT_ACTION_ID)){
-                        log.debug("Got a heart beat pong response");
+                        log.debug("Got a heartbeat pong response");
                         ctx.fireChannelReadComplete();
                         return;
                     }

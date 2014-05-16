@@ -5,6 +5,8 @@ import pt.com.broker.client.nio.HostInfo;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by luissantos on 15-05-2014.
@@ -12,34 +14,49 @@ import java.util.List;
 public class RoundRobinStrategy implements SelectServerStrategy {
 
 
-    Collection<HostInfo> hosts;
+    private  List<HostInfo> hosts;
 
-    Iterator iterator = null;
+    private  int position = 0;
+
+    public RoundRobinStrategy() {
+
+    }
+
+    public RoundRobinStrategy(List<HostInfo> hosts) {
+        setCollection(hosts);
+    }
 
     @Override
-    public void setCollection(Collection<HostInfo> servers) {
+    public void setCollection(List<HostInfo> servers) {
         this.hosts = servers;
     }
 
     @Override
     public HostInfo next() {
 
+
         synchronized (hosts) {
 
-            if (iterator!= null && iterator.hasNext()){
+            int size = hosts.size();
 
-                return (HostInfo) iterator.next();
+            while (position < size){
 
-            }else{
+                HostInfo host = hosts.get(position);
 
-                iterator = hosts.iterator();
+                position ++;
 
-                if(iterator.hasNext()){
-                    return (HostInfo) iterator.next();
-                }
+                return host;
+            }
 
+            position = 0;
+
+            if(size == 0){
                 return null;
             }
+
+
+            return next();
+
         }
 
     }

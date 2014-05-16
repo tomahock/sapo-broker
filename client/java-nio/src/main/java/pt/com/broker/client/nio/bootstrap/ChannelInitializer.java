@@ -58,7 +58,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         }
 
-        ch.pipeline().addLast("idle_state_handler", new IdleStateHandler(10, 2, 0));
+        ch.pipeline().addLast("idle_state_handler", new IdleStateHandler(4, 2, 0));
         ch.pipeline().addLast("heartbeat_handler", new HeartbeatHandler());
 
 

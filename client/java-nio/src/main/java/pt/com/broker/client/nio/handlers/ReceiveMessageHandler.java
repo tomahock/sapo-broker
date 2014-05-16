@@ -54,8 +54,6 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
 
                 default:
 
-                    log.debug("Got a message that was not for me");
-
                     ctx.fireChannelRead(msg);
                 break;
 
@@ -90,9 +88,11 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
 
         }
 
+        log.debug("Message Received");
+        
         manager.deliverMessage(msg,channel);
 
-        System.out.println("Message Received");
+
 
     }
 

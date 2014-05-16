@@ -66,7 +66,7 @@ public class SocketServer {
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
             // Close the connection when an exception is raised.
-            cause.printStackTrace();
+            //cause.printStackTrace();
             ctx.close();
         }
 
@@ -163,13 +163,15 @@ public class SocketServer {
 
     public Future shutdown(){
 
-        return b.childGroup().shutdownGracefully();
+            try {
+                bossGroup.shutdownGracefully();
+                return workerGroup.shutdownGracefully();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
     }
 
 
-    public void badShutdown(){
 
-
-        b.childGroup().shutdown();
-    }
 }
