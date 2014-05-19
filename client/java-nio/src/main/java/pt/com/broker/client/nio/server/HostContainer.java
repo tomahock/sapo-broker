@@ -1,5 +1,8 @@
 package pt.com.broker.client.nio.server;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -33,9 +36,10 @@ public class HostContainer {
 
     private BaseBootstrap bootstrap;
 
-    ExecutorService executorService = Executors.newFixedThreadPool(10);
+    ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
 
     private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
 
@@ -70,7 +74,7 @@ public class HostContainer {
     }
 
 
-    private Future<HostInfo> connect(HostInfo server) {
+    private ListenableFuture<HostInfo> connect(HostInfo server) {
 
         synchronized (hosts) {
 
@@ -82,24 +86,26 @@ public class HostContainer {
         }
     }
 
-    public Future<HostInfo> connect() {
+    public ListenableFuture<HostInfo> connect() {
 
         synchronized (hosts) {
 
             ArrayList<HostInfo> hosts = notConnectedHosts();
 
-            Future f = connect(hosts);
+            ListenableFuture f = connect(hosts);
 
             return f;
         }
     }
 
-    private Future<HostInfo> connect(final Collection<HostInfo> servers) {
+    private ListenableFuture<HostInfo> connect(final Collection<HostInfo> servers) {
 
-        final EventLoopGroup eventLoop = bootstrap.getGroup();
+        //final EventLoopGroup eventLoop = bootstrap.getGroup();
 
 
-        return eventLoop.submit(new Callable<HostInfo>() {
+
+
+        return (ListenableFuture<HostInfo>) service.submit(new Callable<HostInfo>() {
 
             @Override
             public HostInfo call() throws Exception {

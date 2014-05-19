@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -131,7 +132,7 @@ public abstract class BaseClient {
         return c;
     }
 
-    public Future<HostInfo> connect() throws Exception {
+    public ListenableFuture<HostInfo> connect() throws Exception {
 
         return hosts.connect();
 

@@ -1,5 +1,7 @@
 package pt.com.broker.client.nio.ignore;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -44,18 +46,35 @@ public class BrokerClientTest {
         bk.addServer("localhost",3323);
         bk.addServer("localhost",3323);
 
-        Future<HostInfo> f = bk.connect();
+        final ListenableFuture<HostInfo> f = bk.connect();
 
 
-        /*f.addListener(new ChannelFutureListener() {
+        f.addListener(new Runnable() {
             @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                System.out.println("Connected");
-            }
-        });*/
-        log.debug("Connecting....");
+            public void run() {
 
-        f.get();
+                try {
+
+                    HostInfo host = f.get();
+
+                    if(host == null){
+                        log.debug("Not Connected");
+                    }else{
+                        log.debug("Connected");
+                    }
+
+
+
+                } catch (Throwable t) {
+
+                    t.printStackTrace();
+                }
+
+
+
+
+            }
+        }, MoreExecutors.sameThreadExecutor());
 
         log.debug("Connected to 1 Host");
 

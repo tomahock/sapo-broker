@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio;
 
 
+import com.google.common.util.concurrent.ListenableFuture;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.types.NetProtocolType;
 
@@ -45,7 +46,7 @@ public class SslBrokerClient extends BrokerClient  {
     }
 
     @Override
-    public Future<HostInfo> connect() throws Exception {
+    public ListenableFuture<HostInfo> connect() throws Exception {
 
         if(getContext()==null){
             setContext(getDefaultSslContext());
