@@ -1,6 +1,27 @@
 # Sapo Broker Java nio client
 
 
+## Connecting synchronously
+```java
+
+        BrokerClient bk = new BrokerClient();
+       
+        bk.addServer("localhost",3323);
+        
+        final ListenableFuture<HostInfo> f = bk.connect();
+        
+        HostInfo host = f.get(); //blocks
+        
+        if( host == null){
+            //not connected
+        }else{
+            //connected
+        }
+        
+```
+
+
+## Connecting asynchronously
 ```java
 
         BrokerClient bk = new BrokerClient();
@@ -34,6 +55,5 @@
            }
         }, MoreExecutors.sameThreadExecutor());
 
-        
         
 ```
