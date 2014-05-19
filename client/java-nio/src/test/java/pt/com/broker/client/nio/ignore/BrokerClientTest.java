@@ -224,8 +224,11 @@ public class BrokerClientTest {
         Future fs = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
 
             @Override
-            public void onMessage(NetMessage message) {
-               // do something on message
+            public boolean onMessage(NetMessage message) {
+
+                // do something
+
+                return true; // return true or false to acknowledge or not
             }
 
         });

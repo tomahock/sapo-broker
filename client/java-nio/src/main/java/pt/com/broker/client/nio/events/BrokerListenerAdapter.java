@@ -22,16 +22,6 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
 
     public void postOnMessage(NetMessage message,Channel channel) throws Throwable {
 
-        if(getBrokerClient() instanceof  BrokerClient){
-
-            NetNotification netNotification = message.getAction().getNotificationMessage();
-
-            if(netNotification!=null){
-
-               this.ackMessage(message.getAction().getNotificationMessage(),channel);
-            }
-
-        }
 
     }
 
@@ -60,13 +50,27 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
         if(isFault(netMessage)){
             onFault(netMessage);
         }else{
-            onMessage(netMessage);
+            if(onMessage(netMessage)){
+
+                if(getBrokerClient() instanceof  BrokerClient){
+
+                    NetNotification netNotification = netMessage.getAction().getNotificationMessage();
+
+                    if(netNotification!=null){
+
+                        this.ackMessage(netMessage.getAction().getNotificationMessage(),channel);
+                    }
+
+                }
+
+
+            };
         }
         postOnMessage(netMessage,channel);
 
     }
 
-    public abstract void onMessage(NetMessage message);
+    public abstract boolean onMessage(NetMessage message);
 
     public void onFault(NetMessage message){
 

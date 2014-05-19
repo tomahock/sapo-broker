@@ -67,13 +67,16 @@
        
         // ... connecting ...
         
-        bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
-        
-                    @Override
-                    public void onMessage(NetMessage message) {
-                        // do something with the message
-                    }
-        
-         });
+       bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
+       
+                   @Override
+                   public boolean onMessage(NetMessage message) {
+       
+                       // do something
+                       
+                       return true; // return true or false to acknowledge or not 
+                   }
+       
+       });
 
 ```
