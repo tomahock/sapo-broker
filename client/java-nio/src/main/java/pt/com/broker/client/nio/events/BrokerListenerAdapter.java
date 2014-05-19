@@ -68,5 +68,7 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
 
     public abstract void onMessage(NetMessage message);
 
-    public abstract void onFault(NetMessage message);
+    public void onFault(NetMessage message){
+
+    }
 }

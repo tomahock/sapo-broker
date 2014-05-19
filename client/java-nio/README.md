@@ -57,3 +57,23 @@
 
         
 ```
+
+
+##  subscribe a queue
+
+```java
+
+        BrokerClient bk = new BrokerClient();
+       
+        // ... connecting ...
+        
+        bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
+        
+                    @Override
+                    public void onMessage(NetMessage message) {
+                        // do something with the message
+                    }
+        
+         });
+
+```

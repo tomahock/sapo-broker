@@ -53,6 +53,7 @@ public class BrokerClientTest {
             @Override
             public void run() {
 
+
                 try {
 
                     HostInfo host = f.get();
@@ -217,33 +218,22 @@ public class BrokerClientTest {
         }
 
 
-        NetSubscribe netSubscribe = new NetSubscribe("/teste/", NetAction.DestinationType.QUEUE);
-
-
         log.debug("Subscribe");
 
-        ChannelFuture fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
+
+        Future fs = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
 
             @Override
             public void onMessage(NetMessage message) {
-
-                try {
-
-                    log.debug(new String(message.getAction().getNotificationMessage().getMessage().getPayload(),"UTF-8"));
-
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+               // do something on message
             }
 
-            @Override
-            public void onFault(NetMessage message) {
-
-            }
         });
 
+
         try {
-            fs.sync();
+            fs.get();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -274,7 +264,7 @@ public class BrokerClientTest {
 
         log.debug("Subscribe");
 
-        ChannelFuture fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
+        Future fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
 
             @Override
             public void onMessage(NetMessage message) {
@@ -309,7 +299,7 @@ public class BrokerClientTest {
         });
 
         try {
-            fs.sync();
+            fs.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

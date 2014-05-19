@@ -24,6 +24,7 @@ import pt.com.broker.types.*;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 21-04-2014.
@@ -112,11 +113,15 @@ public class BrokerClient extends BaseClient {
 
     }
 
-    public ChannelFuture subscribe(final NetSubscribe subscribe, final BrokerListener listener) {
+    public Future subscribe(String destination, NetAction.DestinationType destinationType, final BrokerListener listener) {
+        return subscribe( new NetSubscribe(destination, destinationType),listener,null);
+    }
+
+    public Future subscribe(final NetSubscribe subscribe, final BrokerListener listener) {
         return subscribe(subscribe,listener,null);
     }
 
-    public ChannelFuture subscribe(final NetSubscribe subscribe, final BrokerListener listener , AcceptRequest request) {
+    public Future subscribe(final NetSubscribe subscribe, final BrokerListener listener , AcceptRequest request) {
 
 
         NetAction netAction = new NetAction(subscribe);
