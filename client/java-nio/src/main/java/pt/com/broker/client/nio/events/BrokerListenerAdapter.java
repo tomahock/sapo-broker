@@ -56,7 +56,8 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
 
                     NetNotification netNotification = netMessage.getAction().getNotificationMessage();
 
-                    if(netNotification!=null){
+                    // acknowledge if not a topic
+                    if(netNotification!=null && !(netNotification.getDestinationType().equals(NetAction.DestinationType.TOPIC))){
 
                         this.ackMessage(netMessage.getAction().getNotificationMessage(),channel);
                     }

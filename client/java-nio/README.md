@@ -59,7 +59,7 @@
 ```
 
 
-##  subscribe a queue
+##  subscribe a queue or topic
 
 ```java
 
@@ -79,4 +79,32 @@
        
        });
 
+```
+
+## publish a message
+
+```java
+
+        BrokerClient bk = new BrokerClient();
+       
+        // ... connecting ...
+        
+       NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
+
+       Future future = bk.publishMessage("Olá Mundo", "/teste/", dstType);
+       
+```
+
+## Publishing messages via UDP
+```java
+
+       UdpBrokerClient bk = new UdpBrokerClient();
+       
+       bk.addServer("localhost",3323); 
+       
+       bk.connect().get(); // There is no connection when publishing over UDP but we still need this for compatibility  
+        
+       NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
+
+       Future future = bk.publishMessage("Olá Mundo", "/teste/", dstType);
 ```

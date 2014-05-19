@@ -262,10 +262,12 @@ public class BrokerClient extends BaseClient {
 
             getConsumerManager().addSubscription(netPoll, new BrokerListenerAdapter() {
                 @Override
-                public void onMessage(NetMessage message) {
+                public boolean onMessage(NetMessage message) {
 
                     response[0] = message;
                     latch.countDown();
+
+                    return true;
                 }
 
                 @Override

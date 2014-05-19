@@ -270,7 +270,7 @@ public class BrokerClientTest {
         Future fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
 
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
 
                 try {
 
@@ -289,10 +289,13 @@ public class BrokerClientTest {
                         }
                     }
 
+                    return true;
 
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+
+                return false;
             }
 
             @Override
@@ -343,14 +346,15 @@ public class BrokerClientTest {
         }
 
 
-
-
+        NetAction.DestinationType destinationType = NetAction.DestinationType.QUEUE;
 
         int i = 1000;
 
         while (--i > 0){
 
-            ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+            ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", destinationType);
+
+
 
             Thread.sleep(1000);
         }
