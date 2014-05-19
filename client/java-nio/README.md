@@ -6,7 +6,7 @@
 
         BrokerClient bk = new BrokerClient();
        
-        bk.addServer("localhost",3323);
+        bk.addServer("broker.wallet.pt",3323);
         
         final ListenableFuture<HostInfo> f = bk.connect();
         
@@ -26,7 +26,7 @@
 
         BrokerClient bk = new BrokerClient();
        
-        bk.addServer("localhost",3323);
+        bk.addServer("broker.wallet.pt",3323);
         
         final ListenableFuture<HostInfo> f = bk.connect();
         
@@ -100,11 +100,27 @@
 
        UdpBrokerClient bk = new UdpBrokerClient();
        
-       bk.addServer("localhost",3323); 
+       bk.addServer("broker.wallet.pt",3323); 
        
        bk.connect().get(); // There is no connection when publishing over UDP but we still need this for compatibility  
         
        NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
 
        Future future = bk.publishMessage("Olá Mundo", "/teste/", dstType);
+```
+
+
+## SSL Support
+```java
+
+       SslBrokerClient bk = new SslBrokerClient();
+       
+       bk.addServer("broker.wallet.pt",3390); // 3390 broker SSL port
+       
+       // by default it uses the jvm certificate authorities but you can change it
+       bk.setContext( ... );
+       
+       // ... connecting ... 
+       
+
 ```

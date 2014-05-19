@@ -23,7 +23,11 @@ public class BrokerSslClientTest {
 
         SslBrokerClient bk = new SslBrokerClient("broker.wallet.pt", 3390, NetProtocolType.JSON);
 
+
+
         Future f = bk.connect();
+
+
 
         f.get();
 
