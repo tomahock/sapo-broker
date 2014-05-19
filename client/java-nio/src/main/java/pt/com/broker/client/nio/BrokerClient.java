@@ -59,12 +59,12 @@ public class BrokerClient extends BaseClient {
     }
 
 
-    protected void init(NetProtocolType ptype){
+    protected void init(){
 
         setPongConsumerManager(new PongConsumerManager());
         setConsumerManager(new ConsumerManager());
 
-        ChannelInitializer channelInitializer  = new ChannelInitializer(ptype, getConsumerManager(), getPongConsumerManager());
+        ChannelInitializer channelInitializer  = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager());
 
         setBootstrap(new Bootstrap(channelInitializer));
 

@@ -12,6 +12,7 @@ import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
+import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
 
 import javax.net.ssl.SSLContext;
@@ -33,9 +34,9 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
 
 
-    public ChannelInitializer(NetProtocolType protocolType, ConsumerManager consumerManager, PongConsumerManager pongConsumerManager) {
+    public ChannelInitializer(BindingSerializer serializer, ConsumerManager consumerManager, PongConsumerManager pongConsumerManager) {
 
-        super(protocolType);
+        super(serializer);
 
         setConsumerManager(consumerManager);
 

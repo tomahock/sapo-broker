@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.BrokerOption;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
@@ -45,6 +46,8 @@ public class BrokerClientTest {
         bk.addServer("localhost",3324);
         bk.addServer("localhost",3323);
         bk.addServer("localhost",3323);
+
+
 
         final ListenableFuture<HostInfo> f = bk.connect();
 

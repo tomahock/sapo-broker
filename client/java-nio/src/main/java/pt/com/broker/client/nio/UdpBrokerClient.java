@@ -45,8 +45,8 @@ public class UdpBrokerClient extends BaseClient {
 
 
     @Override
-    protected void init(NetProtocolType ptype) {
-        setBootstrap(new DatagramBootstrap(new DatagramChannelInitializer(ptype)));
+    protected void init() {
+        setBootstrap(new DatagramBootstrap(new DatagramChannelInitializer(getSerializer())));
 
         setHosts(new HostContainer(bootstrap));
     }

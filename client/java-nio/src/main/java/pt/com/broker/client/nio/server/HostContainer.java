@@ -100,11 +100,6 @@ public class HostContainer {
 
     private ListenableFuture<HostInfo> connect(final Collection<HostInfo> servers) {
 
-        //final EventLoopGroup eventLoop = bootstrap.getGroup();
-
-
-
-
         return (ListenableFuture<HostInfo>) service.submit(new Callable<HostInfo>() {
 
             @Override

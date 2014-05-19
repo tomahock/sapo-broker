@@ -26,34 +26,29 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
 
     protected static final Logger log = LoggerFactory.getLogger(BaseChannelInitializer.class);
 
+    protected final BindingSerializer serializer;
 
-    protected final NetProtocolType protocolType;
 
-
-    public BaseChannelInitializer(NetProtocolType protocolType) {
-        this.protocolType = protocolType;
+    public BaseChannelInitializer(BindingSerializer serializer) {
+        this.serializer= serializer;
     }
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
 
 
-
-        BindingSerializer binding = BindingSerializerFactory.getInstance(getProtocolType());
-
-
         if(isOldFraming()){
 
             /* add Message <> byte encode decoder */
-            ch.pipeline().addLast("broker_message_decoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(binding));
-            ch.pipeline().addLast("broker_message_encoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder(binding));
+            ch.pipeline().addLast("broker_message_decoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(serializer));
+            ch.pipeline().addLast("broker_message_encoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder(serializer));
 
 
         }else{
 
             /* add Message <> byte encode decoder */
-            ch.pipeline().addLast("broker_message_decoder",new BrokerMessageDecoder(binding));
-            ch.pipeline().addLast("broker_message_encoder",new BrokerMessageEncoder(binding));
+            ch.pipeline().addLast("broker_message_decoder",new BrokerMessageDecoder(serializer));
+            ch.pipeline().addLast("broker_message_encoder",new BrokerMessageEncoder(serializer));
         }
 
 
@@ -66,8 +61,8 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
         return getProtocolType() == NetProtocolType.SOAP_v0;
     }
 
-    public NetProtocolType getProtocolType() {
-        return protocolType;
+    private NetProtocolType getProtocolType() {
+        return serializer.getProtocolType();
     }
 
 }

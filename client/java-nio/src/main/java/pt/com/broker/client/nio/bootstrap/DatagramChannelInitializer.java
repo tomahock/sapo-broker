@@ -2,6 +2,7 @@ package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.channel.Channel;
 import pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder;
+import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
 
 /**
@@ -9,10 +10,10 @@ import pt.com.broker.types.NetProtocolType;
  */
 public class DatagramChannelInitializer extends BaseChannelInitializer {
 
-    public DatagramChannelInitializer(NetProtocolType protocolType) {
-        super(protocolType);
+    public DatagramChannelInitializer(BindingSerializer serializer) {
+        super(serializer);
 
-        if(! (protocolType == NetProtocolType.PROTOCOL_BUFFER || protocolType == NetProtocolType.THRIFT) ){
+        if(! (serializer.getProtocolType().equals(NetProtocolType.PROTOCOL_BUFFER) || serializer.getProtocolType().equals(NetProtocolType.THRIFT)) ){
             log.warn("Using non-binary encoding with datagram transport will add some overhead ");
         }
     }

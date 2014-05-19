@@ -8,6 +8,7 @@ import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
+import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.types.*;
 
@@ -26,10 +27,15 @@ public abstract class BaseClient {
 
     BaseBootstrap bootstrap;
 
+    BindingSerializer serializer = null;
+    NetProtocolType protocolType = NetProtocolType.JSON;
 
 
     public BaseClient(NetProtocolType ptype) {
-        init(ptype);
+
+        setProtocolType(ptype);
+        init();
+
     }
 
     public BaseClient(String host, int port) {
@@ -171,10 +177,30 @@ public abstract class BaseClient {
     }
 
 
-    protected  abstract void init(NetProtocolType ptype);
+    protected  abstract void init();
 
 
+    public NetProtocolType getProtocolType() {
+        return protocolType;
+    }
 
+    public void setProtocolType(NetProtocolType protocolType) {
+        this.protocolType = protocolType;
+
+        try {
+            serializer = BindingSerializerFactory.getInstance(protocolType);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public BindingSerializer getSerializer() {
+        return serializer;
+    }
 }
 
 
