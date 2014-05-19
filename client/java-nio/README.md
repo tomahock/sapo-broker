@@ -1,7 +1,26 @@
 # Sapo Broker Java nio client
 
 
-```javascript
-var s = "JavaScript syntax highlighting";
-alert(s);
+```java
+
+        BrokerClient bk = new BrokerClient();
+        
+        bk.addServer("localhost",3323);
+        
+        
+        Future<HostInfo> f = bk.connect();
+        
+        f.addListener(new ChannelFutureListener() {
+        
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+            
+                System.out.println("Connected");
+                
+            }
+            
+        });
+ 
+        
+        
 ```
