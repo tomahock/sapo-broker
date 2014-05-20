@@ -120,12 +120,13 @@ public class Main
 
 			if (runAll || runPositive || runTopic)
 			{
-				new TopicNameSpecified().run(numberOfTests, testResults);
+				//new TopicNameSpecified().run(numberOfTests, testResults);
 
+
+
+				new TopicPubSubWithActionId().run(numberOfTests, testResults);
                 break;
-
-				/*new TopicPubSubWithActionId().run(numberOfTests, testResults);
-				new TopicNameWildcard().run(numberOfTests, testResults);
+				/*new TopicNameWildcard().run(numberOfTests, testResults);
 
 				new TopicNameWildcardDist().run(numberOfTests, testResults);
 				new TopicNameSpecifiedDist().run(numberOfTests, testResults);

@@ -2,9 +2,13 @@ package pt.com.broker.functests.positive;
 
 import org.caudexorigo.concurrent.Sleep;
 
-import pt.com.broker.client.AcceptRequest;
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.messaging.MessageAcceptedListener;
+
+
+
+import pt.com.broker.client.nio.AcceptRequest;
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.MessageAcceptedListener;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Epilogue;
@@ -14,11 +18,10 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.SetValueFuture;
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetFault;
-import pt.com.broker.types.NetSubscribe;
+
+import java.util.concurrent.Future;
 
 public class TopicPubSubWithActionId extends BrokerTest
 {
@@ -27,7 +30,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 	private DestinationType destinationType = DestinationType.TOPIC;
 
-	private GenericBrokerListener brokerListener;
+	private BrokerListenerAdapter brokerListener;
 
 	private BrokerClient infoConsumer;
 	private BrokerClient infoProducer;
@@ -42,8 +45,13 @@ public class TopicPubSubWithActionId extends BrokerTest
 		super("GenericPubSubTest");
 		try
 		{
-			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
-			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port() , getEncodingProtocolType());
+
+            infoConsumer.connect().get();
+
+			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port() , getEncodingProtocolType());
+
+            infoProducer.connect().get();
 		}
 		catch (Throwable t)
 		{
@@ -58,7 +66,12 @@ public class TopicPubSubWithActionId extends BrokerTest
 		if (constructionFailed)
 			throw reasonForFailure;
 
-		brokerListener = new GenericBrokerListener(destinationType);
+		brokerListener = new BrokerListenerAdapter() {
+            @Override
+            public boolean onMessage(NetMessage message) {
+                return true;
+            }
+        };
 
 		addPrerequisites();
 
@@ -87,30 +100,32 @@ public class TopicPubSubWithActionId extends BrokerTest
 					AcceptRequest accReq = new AcceptRequest("123456789", new MessageAcceptedListener()
 					{
 
-						@Override
-						public void messageAccepted(String actionId)
-						{
-							future.set(Boolean.TRUE);
-						}
+                        @Override
+                        public boolean onMessage(NetMessage message) {
+                            future.set(Boolean.TRUE);
+                            return true;
+                        }
 
-						@Override
-						public void messageTimedout(String actionId)
-						{
-							future.set(Boolean.FALSE);
-						}
+                        @Override
+                        public void onFault(NetMessage message) {
+                            future.set(Boolean.FALSE);
+                        }
 
-						@Override
-						public void messageFailed(NetFault fault)
-						{
-							future.set(Boolean.FALSE);
-						}
+                        @Override
+                        public void onTimeout(String actionID) {
+                            future.set(Boolean.FALSE);
+                        }
 
-					}, 1000);
+
+					}, 2000);
 
 					NetSubscribe subscribe = new NetSubscribe(subscriptionName, destinationType);
-					infoConsumer.addAsyncConsumer(subscribe, brokerListener, accReq);
+					Future f = infoConsumer.subscribe(subscribe, brokerListener, accReq);
 
-					Sleep.time(1000);
+
+                    f.get();
+
+
 					setDone(true);
 					setSucess(true);
 				}
@@ -136,14 +151,14 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					if (destinationType.equals(DestinationType.TOPIC))
-					{
-						infoProducer.publishMessage(brokerMessage, destinationName);
-					}
-					else
-					{
-						infoProducer.enqueueMessage(brokerMessage, destinationName);
-					}
+
+                    Future f = infoProducer.publishMessage(brokerMessage, destinationName, destinationType);
+
+                    f.get();
+
+
+                    Thread.sleep(2000);
+
 
 					infoProducer.close();
 
@@ -189,7 +204,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 				try
 				{
-					infoConsumer.unsubscribe(NetAction.DestinationType.TOPIC, subscriptionName);
+					//infoConsumer.unsubscribe(NetAction.DestinationType.TOPIC, subscriptionName);
 
 					Sleep.time(1000);
 					infoConsumer.close();

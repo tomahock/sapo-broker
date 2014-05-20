@@ -29,7 +29,7 @@ public class NotificationConsequence extends Consequence
 	{
 
         Thread.sleep(1000);
-        
+
         NetNotification netNotification = notifications[0];
 
         if(netNotification == null){
