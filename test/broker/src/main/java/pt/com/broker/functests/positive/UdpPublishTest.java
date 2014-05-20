@@ -8,6 +8,7 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 
 public class UdpPublishTest extends GenericPubSubTest
@@ -20,7 +21,9 @@ public class UdpPublishTest extends GenericPubSubTest
 
 		try
 		{
-			client = new UdpClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1UdpPort());
+            boolean isOldFramming =  getEncodingProtocolType().equals(NetProtocolType.SOAP_v0);
+
+			client = new UdpClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1UdpPort(),isOldFramming);
 		}
 		catch (Throwable e)
 		{
@@ -48,6 +51,8 @@ public class UdpPublishTest extends GenericPubSubTest
 					NetPublish netPublish = new NetPublish(getDestinationName(), getDestinationType(), brokerMessage);
 
 					uclient.publish(netPublish);
+
+                    System.out.println("cenas");
 
 					//getInfoProducer().close();
 

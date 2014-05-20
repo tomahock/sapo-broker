@@ -88,8 +88,7 @@ public class Main
 			return;
 		}
 
-		//boolean runAll = cargs.getAll() == 1;
-        boolean runAll = true;
+		boolean runAll = cargs.getAll() == 1;
 		boolean runPositive = cargs.getPositive() == 1;
 		boolean runNegative = cargs.getNegative() == 1;
 		boolean runTopic = cargs.getTopic() == 1;
@@ -121,8 +120,8 @@ public class Main
 			if (runAll || runPositive || runTopic)
 			{
 				new TopicNameSpecified().run(numberOfTests, testResults);
-                //@todo fix test
-				//new TopicPubSubWithActionId().run(numberOfTests, testResults);
+                
+				new TopicPubSubWithActionId().run(numberOfTests, testResults);
 				new TopicNameWildcard().run(numberOfTests, testResults);
 
 				new TopicNameWildcardDist().run(numberOfTests, testResults);
@@ -164,9 +163,8 @@ public class Main
 
 			if (runAll || runPositive || runUdp)
 			{
-                // @todo fix tests
-				//new UdpTopicPublishTest().run(numberOfTests, testResults);
-				//new UdpQueuePublishTest().run(numberOfTests, testResults);
+				new UdpTopicPublishTest().run(numberOfTests, testResults);
+				new UdpQueuePublishTest().run(numberOfTests, testResults);
 			}
 
 			// Negative Tests
