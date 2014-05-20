@@ -2,6 +2,7 @@ package pt.com.broker.functests.helpers;
 
 import java.util.Arrays;
 
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.types.NetAction;
@@ -10,7 +11,7 @@ import pt.com.broker.types.NetNotification;
 
 public class NotificationConsequence extends Consequence
 {
-	private GenericBrokerListener brokerListener;
+    NetNotification[] notifications;
 
 	// Comparation fields
 	private String destination;
@@ -18,15 +19,24 @@ public class NotificationConsequence extends Consequence
 	private NetAction.DestinationType destinationType;
 	private byte[] messagePayload;
 
-	public NotificationConsequence(String name, String actorName, GenericBrokerListener brokerListener)
+	public NotificationConsequence(String name, String actorName, NetNotification[] netNotification)
 	{
 		super(name, actorName);
-		this.brokerListener = brokerListener;
+		this.notifications = netNotification;
 	}
 
 	public Step run() throws Exception
 	{
-		NetNotification netNotification = brokerListener.getFuture().get();
+
+        Thread.sleep(1000);
+        
+        NetNotification netNotification = notifications[0];
+
+        if(netNotification == null){
+            setDone(true);
+            setSucess(false);
+            return this;
+        }
 
 		if (destinationType != null)
 		{

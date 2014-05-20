@@ -6,7 +6,7 @@
         <artifactId>sapo-broker-parent</artifactId>
         <version>4.0.46</version>
     </parent>
-    <artifactId>sapo-broker-java-client-netty</artifactId>
+    <artifactId>sapo-broker-java-client-nio</artifactId>
     <name>sapo-broker-java-client-netty</name>
     <packaging>jar</packaging>
     <properties>

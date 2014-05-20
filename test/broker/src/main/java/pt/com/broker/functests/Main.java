@@ -113,15 +113,18 @@ public class Main
 
 			if (runAll || runPositive)
 			{
-				new PingTest().run(numberOfTests, testResults);
-				new DeferredDeliveryQueueTest().run(numberOfTests, testResults);
+				/*new PingTest().run(numberOfTests, testResults);
+                new DeferredDeliveryQueueTest().run(numberOfTests, testResults);*/
+
 			}
 
 			if (runAll || runPositive || runTopic)
 			{
 				new TopicNameSpecified().run(numberOfTests, testResults);
 
-				new TopicPubSubWithActionId().run(numberOfTests, testResults);
+                break;
+
+				/*new TopicPubSubWithActionId().run(numberOfTests, testResults);
 				new TopicNameWildcard().run(numberOfTests, testResults);
 
 				new TopicNameWildcardDist().run(numberOfTests, testResults);
@@ -132,7 +135,7 @@ public class Main
 				new MultipleNNTopic().run(numberOfTests, testResults);
 				new MultipleN1TopicRemote().run(numberOfTests, testResults);
 				new Multiple1NTopicRemote().run(numberOfTests, testResults);
-				new MultipleNNTopicRemote().run(numberOfTests, testResults);
+				new MultipleNNTopicRemote().run(numberOfTests, testResults);*/
 			}
 
 			if (runAll || runPositive || runQueue)

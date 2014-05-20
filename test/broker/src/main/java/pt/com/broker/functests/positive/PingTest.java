@@ -1,14 +1,22 @@
 package pt.com.broker.functests.positive;
 
-import pt.com.broker.client.BrokerClient;
+
+import io.netty.channel.ChannelFuture;
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPong;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class PingTest extends BrokerTest
 {
+    private final CountDownLatch latch = new CountDownLatch(1);
 
 	public PingTest()
 	{
@@ -27,19 +35,46 @@ public class PingTest extends BrokerTest
 				try
 				{
 
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
 
-					NetPong pong = bk.checkStatus();
+                    BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(),getEncodingProtocolType());
 
-					System.out.println("Pong: " + pong.getActionId());
+                    bk.connect().get();
 
+
+
+
+					ChannelFuture f = bk.checkStatus(new BrokerListenerAdapter() {
+                        @Override
+                        public boolean onMessage(NetMessage message) {
+
+                            NetPong  pong = message.getAction().getPongMessage();
+
+                            System.out.println("Pong: " + pong.getActionId());
+
+                            setSucess(pong != null);
+
+                            latch.countDown();
+
+                            return true;
+
+                        }
+
+
+                    });
+
+
+                    latch.await(2000, TimeUnit.MILLISECONDS);
+
+                    setDone(true);
 					bk.close();
 
-					setDone(true);
-					setSucess(pong != null);
+
+
+
 				}
 				catch (Throwable t)
 				{
+                    t.printStackTrace();
 					setFailure(t);
 				}
 				return this;

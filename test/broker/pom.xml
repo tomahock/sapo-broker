@@ -11,6 +11,8 @@
 	<packaging>jar</packaging>
 	<properties>
 		<mainClass>pt.com.broker.functests.simulation.MainAll</mainClass>
+        <agent-config-path>package/conf/agent_example.config</agent-config-path>
+        <broker-global-config-path>package/conf/broker_global.config</broker-global-config-path>
 	</properties>
 	<build>
 		<plugins>
@@ -35,11 +37,11 @@
                         </systemProperty>
                         <systemProperty>
                             <key>agent-config-path</key>
-                            <value>package/conf/agent_example.config</value>
+                            <value>${agent-config-path}</value>
                         </systemProperty>
                         <systemProperty>
                             <key>broker-global-config-path</key>
-                            <value>package/conf/broker_global.config</value>
+                            <value>${broker-global-config-path}</value>
                         </systemProperty>
                     </systemProperties>
                 </configuration>
@@ -68,9 +70,9 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<version>${project.version}</version>
+            <version>${project.version}</version>
 			<artifactId>sapo-broker-java-client-nio</artifactId>
-		</dependency>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <version>${project.version}</version>
@@ -81,5 +83,10 @@
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-agent</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.18.Final</version>
+        </dependency>
 	</dependencies>
 </project>

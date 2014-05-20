@@ -2,17 +2,18 @@ package pt.com.broker.functests.helpers;
 
 import org.caudexorigo.concurrent.Sleep;
 
-import pt.com.broker.client.BaseBrokerClient;
-import pt.com.broker.client.BrokerClient;
+
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetSubscribe;
+
+import java.util.concurrent.Future;
 
 public class GenericPubSubTest extends BrokerTest
 {
@@ -21,10 +22,10 @@ public class GenericPubSubTest extends BrokerTest
 
 	private DestinationType destinationType = DestinationType.TOPIC;
 
-	private GenericBrokerListener brokerListener;
+	private BrokerListenerAdapter brokerListener;
 
-	private BaseBrokerClient infoConsumer;
-	private BaseBrokerClient infoProducer;
+	private BrokerClient infoConsumer;
+	private BrokerClient infoProducer;
 
 	protected boolean constructionFailed = false;
 	protected Throwable reasonForFailure;
@@ -34,13 +35,23 @@ public class GenericPubSubTest extends BrokerTest
 		this("GenericPubSubTest");
 	}
 
+    NetNotification[] last = {null};
+
+
 	public GenericPubSubTest(String testName)
 	{
 		super(testName);
 		try
 		{
-			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
-			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port() , this.getEncodingProtocolType());
+            Future f = infoConsumer.connect();
+            f.get();
+
+			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port() , this.getEncodingProtocolType());
+            f = infoProducer.connect();
+            f.get();
+
+
 		}
 		catch (Throwable t)
 		{
@@ -58,7 +69,19 @@ public class GenericPubSubTest extends BrokerTest
 
 		if (getBrokerListener() == null)
 		{
-			brokerListener = new GenericBrokerListener(getDestinationType());
+			brokerListener = new BrokerListenerAdapter() {
+                @Override
+                public boolean onMessage(NetMessage message) {
+
+                    System.out.println(Thread.currentThread().getName());
+
+                    System.out.println("Message: "+message.getAction().getNotificationMessage());
+
+                    last[0] = message.getAction().getNotificationMessage();
+
+                    return true;
+                }
+            };
 		}
 
 		addPrerequisites();
@@ -85,7 +108,8 @@ public class GenericPubSubTest extends BrokerTest
 				try
 				{
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getDestinationType());
-					getInfoConsumer().addAsyncConsumer(subscribe, getBrokerListener());
+
+					getInfoConsumer().subscribe(subscribe,getBrokerListener()).get();
 
 					Sleep.time(250);
 					setDone(true);
@@ -113,17 +137,14 @@ public class GenericPubSubTest extends BrokerTest
 
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					if (getDestinationType().equals(DestinationType.TOPIC))
-					{
-						getInfoProducer().publishMessage(brokerMessage, getDestinationName());
-					}
-					else
-					{
-						getInfoProducer().enqueueMessage(brokerMessage, getDestinationName());
-					}
+					Future f = getInfoProducer().publishMessage(brokerMessage, getDestinationName(),getDestinationType());
+
+                    f.get();
 
 
-					getInfoProducer().close();
+                    Thread.sleep(2000);
+
+					//getInfoProducer().close();
 
 					setDone(true);
 					setSucess(true);
@@ -140,7 +161,10 @@ public class GenericPubSubTest extends BrokerTest
 
 	protected void addConsequences()
 	{
-		NotificationConsequence notConsequence = new NotificationConsequence("Consume", "consumer", getBrokerListener());
+
+
+
+		NotificationConsequence notConsequence = new NotificationConsequence("Consume", "consumer", last);
 		notConsequence.setDestination(getDestinationName());
 		notConsequence.setSubscription(getSubscriptionName());
 		notConsequence.setDestinationType(getDestinationType());
@@ -158,7 +182,7 @@ public class GenericPubSubTest extends BrokerTest
 
 				try
 				{
-					getInfoConsumer().unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
+					//getInfoConsumer().unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
 
 					Sleep.time(250);
 					getInfoConsumer().close();
@@ -196,32 +220,32 @@ public class GenericPubSubTest extends BrokerTest
 		return subscriptionName;
 	}
 
-	public void setBrokerListener(GenericBrokerListener brokerListener)
+	public void setBrokerListener(BrokerListenerAdapter brokerListener)
 	{
 		this.brokerListener = brokerListener;
 	}
 
-	public GenericBrokerListener getBrokerListener()
+	public BrokerListenerAdapter getBrokerListener()
 	{
 		return brokerListener;
 	}
 
-	public void setInfoConsumer(BaseBrokerClient infoConsumer)
+	public void setInfoConsumer(BrokerClient infoConsumer)
 	{
 		this.infoConsumer = infoConsumer;
 	}
 
-	public BaseBrokerClient getInfoConsumer()
+	public BrokerClient getInfoConsumer()
 	{
 		return infoConsumer;
 	}
 
-	public void setInfoProducer(BaseBrokerClient infoProducer)
+	public void setInfoProducer(BrokerClient infoProducer)
 	{
 		this.infoProducer = infoProducer;
 	}
 
-	public BaseBrokerClient getInfoProducer()
+	public BrokerClient getInfoProducer()
 	{
 		return infoProducer;
 	}
