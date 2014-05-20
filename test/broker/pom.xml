@@ -69,8 +69,13 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<version>${project.version}</version>
-			<artifactId>sapo-broker-java-client</artifactId>
+			<artifactId>sapo-broker-java-client-nio</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <version>${project.version}</version>
+            <artifactId>sapo-broker-java-client</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<version>${project.version}</version>

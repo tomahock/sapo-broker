@@ -120,7 +120,7 @@ public class Main
 			if (runAll || runPositive || runTopic)
 			{
 				new TopicNameSpecified().run(numberOfTests, testResults);
-                
+
 				new TopicPubSubWithActionId().run(numberOfTests, testResults);
 				new TopicNameWildcard().run(numberOfTests, testResults);
 
