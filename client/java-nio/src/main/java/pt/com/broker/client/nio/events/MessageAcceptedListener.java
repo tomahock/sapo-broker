@@ -7,7 +7,7 @@ import pt.com.broker.types.NetMessage;
  */
 public interface MessageAcceptedListener {
 
-    public void onMessage(NetMessage message);
+    public boolean onMessage(NetMessage message);
 
     public void onFault(NetMessage message);
 

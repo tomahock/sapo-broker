@@ -4,11 +4,13 @@ import org.junit.*;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
+import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.iptables.IpTables;
 import pt.com.broker.client.nio.mocks.ServerFactory;
 import pt.com.broker.client.nio.mocks.SocketServer;
 import pt.com.broker.client.nio.server.HostContainer;
+import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
 
 import java.io.IOException;
@@ -98,6 +100,9 @@ public class TestServerConnection {
 
 
         List<SocketServer> servers = getServers();
+
+        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
+
 
         Bootstrap b = new Bootstrap(new ChannelInitializer(NetProtocolType.JSON,null,null));
 

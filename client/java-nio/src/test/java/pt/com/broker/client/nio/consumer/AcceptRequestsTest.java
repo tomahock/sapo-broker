@@ -35,8 +35,9 @@ public class AcceptRequestsTest {
         MessageAcceptedListener acceptedListener = new MessageAcceptedAdapter() {
 
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
 
+                return true;
             }
 
             @Override
@@ -96,8 +97,9 @@ public class AcceptRequestsTest {
         MessageAcceptedListener acceptedListener = new MessageAcceptedAdapter() {
 
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
 
+                return true;
             }
 
             @Override
@@ -152,7 +154,7 @@ public class AcceptRequestsTest {
         MessageAcceptedListener acceptedListener = new MessageAcceptedAdapter() {
 
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
 
                 ActionIdDecorator decorator = new ActionIdDecorator(message);
 
@@ -161,6 +163,7 @@ public class AcceptRequestsTest {
                 }
 
 
+                return true;
             }
 
             @Override
