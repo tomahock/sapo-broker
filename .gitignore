@@ -14,7 +14,7 @@
 /client/exec/java/consumer/target/
 /sapo-sts/agent/target/
 /sapo-sts/client/java/target/
-/agent/persistent/
+/agent/persistent*
 
 
 # Created by http://www.gitignore.io
