@@ -122,6 +122,7 @@ public class GenericPubSubTest extends BrokerTest
 						getInfoProducer().enqueueMessage(brokerMessage, getDestinationName());
 					}
 
+
 					getInfoProducer().close();
 
 					setDone(true);

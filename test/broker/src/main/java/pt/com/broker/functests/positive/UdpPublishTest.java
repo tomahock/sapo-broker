@@ -49,7 +49,7 @@ public class UdpPublishTest extends GenericPubSubTest
 
 					uclient.publish(netPublish);
 
-					getInfoProducer().close();
+					//getInfoProducer().close();
 
 					setDone(true);
 					setSucess(true);

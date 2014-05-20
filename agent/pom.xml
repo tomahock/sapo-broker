@@ -63,7 +63,7 @@
                     <systemProperties>
                         <systemProperty>
                             <key>agent-config-path</key>
-                            <value>package/conf/agent_example.config</value>
+                            <value>package/conf/agent2_example.config</value>
                         </systemProperty>
                         <systemProperty>
                             <key>broker-global-config-path</key>
