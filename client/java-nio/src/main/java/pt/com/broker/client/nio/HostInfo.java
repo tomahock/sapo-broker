@@ -110,11 +110,11 @@ public final class HostInfo
     public String toString()
     {
         return com.google.common.base.Objects.toStringHelper(this)
-                .addValue(this.hostname)
-                .addValue(this.port)
-                .addValue(this.connectTimeout)
-                .addValue(this.readTimeout)
-                .addValue(this.status)
+                .add("hostname",this.hostname)
+                .add("port",this.port)
+                .add("connectTimeout",this.connectTimeout)
+                .add("readTimeout",this.readTimeout)
+                .add("status",this.status)
                 .toString();
 
     }

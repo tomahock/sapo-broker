@@ -27,8 +27,9 @@ public class ConsumerManagerTest {
 
         BrokerListener brokerListener = new BrokerListenerAdapter() {
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
 
+                return true;
             }
 
             @Override
@@ -64,8 +65,9 @@ public class ConsumerManagerTest {
 
         BrokerListener brokerListener = new BrokerListenerAdapter() {
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
 
+                return true;
             }
 
             @Override
@@ -107,8 +109,9 @@ public class ConsumerManagerTest {
 
         BrokerListener brokerListener = new BrokerListenerAdapter() {
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
 
+                return true;
             }
 
             @Override
@@ -138,8 +141,9 @@ public class ConsumerManagerTest {
 
         BrokerListener brokerListener = new BrokerListenerAdapter() {
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
 
+                return true;
             }
 
             @Override

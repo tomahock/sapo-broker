@@ -4,11 +4,13 @@ import org.junit.*;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
+import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.iptables.IpTables;
 import pt.com.broker.client.nio.mocks.ServerFactory;
 import pt.com.broker.client.nio.mocks.SocketServer;
 import pt.com.broker.client.nio.server.HostContainer;
+import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
 
 import java.io.IOException;
@@ -94,12 +96,15 @@ public class TestServerConnection {
     }
 
     @Test()
-    public void testConnection() throws ExecutionException, InterruptedException, TimeoutException {
+    public void testConnection() throws ExecutionException, InterruptedException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
 
         List<SocketServer> servers = getServers();
 
-        Bootstrap b = new Bootstrap(new ChannelInitializer(NetProtocolType.JSON,null,null));
+        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
+
+
+        Bootstrap b = new Bootstrap(new ChannelInitializer(serializer,null,null));
 
         HostContainer container = new HostContainer(b);
 
@@ -126,11 +131,13 @@ public class TestServerConnection {
 
 
     @Test()
-    public void testClosedServers() throws InterruptedException, TimeoutException, ExecutionException {
+    public void testClosedServers() throws InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         List<SocketServer> servers = getServers();
 
-        HostContainer container = new HostContainer(new Bootstrap(new ChannelInitializer(NetProtocolType.JSON,null,null)));
+        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
+
+        HostContainer container = new HostContainer(new Bootstrap(new ChannelInitializer( serializer,null,null)));
 
         for(SocketServer server : servers){
             container.add(new HostInfo("127.0.0.1",server.getPort()));
@@ -169,14 +176,15 @@ public class TestServerConnection {
 
 
     @Test()
-    public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException {
+    public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         Assume.assumeTrue(userHasPermissions());
 
         List<SocketServer> servers = getServers();
 
+        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(NetProtocolType.JSON,null,new PongConsumerManager()));
+        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager()));
 
         HostContainer container = new HostContainer(bootstrap);
 
@@ -226,14 +234,15 @@ public class TestServerConnection {
 
 
     @Test()
-    public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException {
+    public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         Assume.assumeTrue(userHasPermissions());
 
         List<SocketServer> servers = getServers();
 
+        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(NetProtocolType.JSON,null,new PongConsumerManager()));
+        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager()));
 
         HostContainer container = new HostContainer(bootstrap);
 

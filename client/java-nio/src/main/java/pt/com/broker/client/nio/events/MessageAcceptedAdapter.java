@@ -8,7 +8,7 @@ import pt.com.broker.types.NetMessage;
 abstract public class MessageAcceptedAdapter extends BrokerListenerAdapter implements MessageAcceptedListener {
 
 
-    abstract public void onMessage(NetMessage message);
+    abstract public boolean onMessage(NetMessage message);
 
     abstract public void onFault(NetMessage message);
 
