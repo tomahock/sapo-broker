@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.BrokerOption;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
@@ -465,8 +464,10 @@ public class BrokerClientTest {
         AcceptRequest acceptRequest = new AcceptRequest(UUID.randomUUID().toString(),new MessageAcceptedAdapter(){
 
             @Override
-            public void onMessage(NetMessage message) {
+            public boolean onMessage(NetMessage message) {
                 System.out.println("Message: "+message.getAction().getAcceptedMessage().getActionId());
+
+                return true;
             }
 
             @Override
