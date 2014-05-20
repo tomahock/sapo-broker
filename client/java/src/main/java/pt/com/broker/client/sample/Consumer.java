@@ -2,7 +2,6 @@ package pt.com.broker.client.sample;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -10,13 +9,13 @@ import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.AcceptRequest;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.messaging.BrokerListener;
-import pt.com.broker.client.messaging.MessageAcceptedListener;
-import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
 import ch.qos.logback.classic.Logger;
 
 /**
@@ -44,22 +43,14 @@ public class Consumer implements BrokerListener
 
 		Consumer consumer = new Consumer();
 
-		/*consumer.host = cargs.getHost();
+		consumer.host = cargs.getHost();
 		consumer.port = cargs.getPort();
 		consumer.dtype = DestinationType.valueOf(cargs.getDestinationType());
 		consumer.dname = cargs.getDestination();
 		consumer.waitTime = cargs.getDelay();
 		consumer.protocolType = NetProtocolType.valueOf(cargs.getProtocolType());
 		consumer.isRaw = cargs.getOutput().equals("raw");
-		consumer.strip = cargs.stripNewlines();*/
-
-        consumer.host = "192.168.100.1";
-        consumer.port = 3323;
-        consumer.dtype = DestinationType.QUEUE;
-        consumer.dname = "/teste/";
-        consumer.waitTime = 1000;
-        consumer.protocolType = NetProtocolType.JSON;
-
+		consumer.strip = cargs.stripNewlines();
 
 		if (consumer.isRaw)
 		{
@@ -82,54 +73,7 @@ public class Consumer implements BrokerListener
 
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 
-
-
-
-        AcceptRequest request = new AcceptRequest(UUID.randomUUID().toString(),new pt.com.broker.client.messaging.MessageAcceptedListener() {
-            @Override
-            public void messageAccepted(String actionId) {
-                System.out.println("ActionID: "+actionId);
-            }
-
-            @Override
-            public void messageTimedout(String actionId) {
-                System.out.println("TimeOut: "+actionId);
-            }
-
-            @Override
-            public void messageFailed(NetFault fault) {
-                System.out.println("Fault: "+fault);
-            }
-        },1000);
-
-
-        AcceptRequest request2 = new AcceptRequest(UUID.randomUUID().toString(),new pt.com.broker.client.messaging.MessageAcceptedListener() {
-            @Override
-            public void messageAccepted(String actionId) {
-                System.out.println("ActionID: "+actionId);
-            }
-
-            @Override
-            public void messageTimedout(String actionId) {
-                System.out.println("TimeOut: "+actionId);
-            }
-
-            @Override
-            public void messageFailed(NetFault fault) {
-                System.out.println("Fault: "+fault);
-            }
-        },1000);
-
-
-
-        bk.addAsyncConsumer(subscribe, consumer,request);
-
-        NetBrokerMessage message = new NetBrokerMessage("teste");
-
-        NetMessage netMessage = new NetMessage(new NetAction(NetAction.ActionType.PUBLISH));
-
-
-        bk.publishMessage(message,"/system/teste",request2);
+		bk.addAsyncConsumer(subscribe, consumer);
 
 		if (!consumer.isRaw)
 		{
