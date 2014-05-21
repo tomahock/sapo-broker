@@ -443,6 +443,11 @@ public class BrokerClientTest {
 
             NetMessage netMessage = bk.poll("/teste/", 2000);
 
+            if(netMessage.getAction().getActionType().equals(NetAction.ActionType.FAULT)
+                    && netMessage.getAction().getFaultMessage().getCode().equals(NetFault.PollTimeoutErrorCode)){
+
+            }
+
             System.out.println("Action Type:" + netMessage.getAction().getActionType().name());
         }
 

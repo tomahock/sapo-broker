@@ -87,12 +87,13 @@
       
                   NetMessage netMessage = bk.poll("/teste/",timeout);
                   
-                  if(netMessage == null){
-                        // timeout 
-                  }
+                   if(netMessage.getAction().getActionType().equals(NetAction.ActionType.FAULT)
+                                      && netMessage.getAction().getFaultMessage().getCode().equals(NetFault.PollTimeoutErrorCode)){
+                                      
+                        // timeout
+                        
+                   }
                   
-                  
-      
                   if( ... ){ // break cycle on some condition
                         break;
                   }
