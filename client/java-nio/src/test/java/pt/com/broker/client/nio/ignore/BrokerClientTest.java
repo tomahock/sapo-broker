@@ -37,7 +37,7 @@ public class BrokerClientTest {
     private static final Logger log = LoggerFactory.getLogger(BrokerClientTest.class);
 
     @Test
-    public void testClientConnect() throws Exception{
+    public void testClientConnect(){
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
@@ -47,43 +47,38 @@ public class BrokerClientTest {
         bk.addServer("localhost",3323);
 
 
+        HostInfo f = bk.connect();
 
-        final ListenableFuture<HostInfo> f = bk.connect();
-
-
-        f.addListener(new Runnable() {
-            @Override
-            public void run() {
-
-
-                try {
-
-                    HostInfo host = f.get();
-
-                    if(host == null){
-                        log.debug("Not Connected");
-                    }else{
-                        log.debug("Connected");
-                    }
-
-
-
-                } catch (Throwable t) {
-
-                    t.printStackTrace();
-                }
-
-
-
-
-            }
-        }, MoreExecutors.sameThreadExecutor());
 
         log.debug("Connected to 1 Host");
 
-        Thread.sleep(5000);
+        //Thread.sleep(5000);
 
     }
+
+    @Test
+    public void testClientConnectAsync() throws ExecutionException, InterruptedException {
+
+        BrokerClient bk = new BrokerClient("localhost",3323);
+
+        bk.addServer("localhost",3323);
+        bk.addServer("localhost",3324);
+        bk.addServer("localhost",3323);
+        bk.addServer("localhost",3323);
+
+
+        Future<HostInfo> f = bk.connectAsync();
+
+
+        f.get();
+
+
+        log.debug("Connected to 1 Host");
+
+        //Thread.sleep(5000);
+
+    }
+
 
     @Test
     public void testEncoding() throws Exception{
@@ -183,7 +178,7 @@ public class BrokerClientTest {
         BrokerClient bk = new BrokerClient("192.168.100.1",3323);
 
         log.debug("connecting....");
-        Future<HostInfo> f = bk.connect();
+        Future<HostInfo> f = bk.connectAsync();
 
 
         log.debug("Waiting for connection....");
@@ -207,7 +202,7 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
-        Future<HostInfo> f= bk.connect();
+        Future<HostInfo> f= bk.connectAsync();
 
         try {
 
@@ -255,7 +250,7 @@ public class BrokerClientTest {
 
 
 
-        Future<HostInfo> f = bk.connect();
+        Future<HostInfo> f = bk.connectAsync();
 
         try {
             f.get();
@@ -335,7 +330,7 @@ public class BrokerClientTest {
 
 
 
-        Future<HostInfo> f = bk.connect();
+        Future<HostInfo> f = bk.connectAsync();
 
         try {
 
@@ -394,7 +389,7 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
 
-        Future f = bk.connect();
+        Future f = bk.connectAsync();
 
         f.get();
 

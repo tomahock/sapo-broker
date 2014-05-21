@@ -139,11 +139,18 @@ public abstract class BaseClient {
         return c;
     }
 
-    public ListenableFuture<HostInfo> connect() throws Exception {
+    public HostInfo connect(){
 
         return hosts.connect();
 
     }
+
+    public Future<HostInfo> connectAsync(){
+
+        return hosts.connectAsync();
+
+    }
+
 
     public HostContainer getHosts() {
         return hosts;

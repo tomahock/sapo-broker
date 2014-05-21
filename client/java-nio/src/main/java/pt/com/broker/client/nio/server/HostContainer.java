@@ -36,7 +36,7 @@ public class HostContainer {
 
     private BaseBootstrap bootstrap;
 
-    ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -73,8 +73,35 @@ public class HostContainer {
         return hosts.size();
     }
 
+    public HostInfo connect() {
 
-    private ListenableFuture<HostInfo> connect(HostInfo server) {
+        Future f = connectAsync();
+
+        try {
+
+            return (HostInfo) f.get();
+
+        } catch (Exception e) {
+
+            throw  new RuntimeException("Could not connect",e);
+
+        }
+
+    }
+
+    public Future<HostInfo> connectAsync() {
+
+        synchronized (hosts) {
+
+            ArrayList<HostInfo> hosts = notConnectedHosts();
+
+            Future f = connect(hosts);
+
+            return f;
+        }
+    }
+
+    private Future<HostInfo> connect(HostInfo server) {
 
         synchronized (hosts) {
 
@@ -86,21 +113,9 @@ public class HostContainer {
         }
     }
 
-    public ListenableFuture<HostInfo> connect() {
+    private Future<HostInfo> connect(final Collection<HostInfo> servers) {
 
-        synchronized (hosts) {
-
-            ArrayList<HostInfo> hosts = notConnectedHosts();
-
-            ListenableFuture f = connect(hosts);
-
-            return f;
-        }
-    }
-
-    private ListenableFuture<HostInfo> connect(final Collection<HostInfo> servers) {
-
-        return (ListenableFuture<HostInfo>) service.submit(new Callable<HostInfo>() {
+        return executorService.submit(new Callable<HostInfo>() {
 
             @Override
             public HostInfo call() throws Exception {
@@ -139,6 +154,10 @@ public class HostContainer {
                         count--;
                     } while ((host == null || !host.isActive()) && count > 0);
 
+
+                    if(host == null){
+                        throw new Exception("Could not connect");
+                    }
 
                     return host;
 
