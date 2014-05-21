@@ -50,6 +50,58 @@
 
 ```
 
+
+##  subscribe a queue using polling 
+
+```java
+
+        BrokerClient bk = new BrokerClient();
+             
+        // ... connecting ...
+
+        while (true){
+      
+                  NetMessage netMessage = bk.poll("/teste/");
+                  
+                  
+      
+                    if( ... ){ // break cycle on some condition
+                        break;
+                    }
+      
+        }
+
+```
+
+
+##  subscribe a queue using polling with timeout 
+
+```java
+
+        BrokerClient bk = new BrokerClient();
+             
+        // ... connecting ...
+
+        long timeout = 5000;
+        while (true){
+      
+                  NetMessage netMessage = bk.poll("/teste/",timeout);
+                  
+                   if(netMessage.getAction().getActionType().equals(NetAction.ActionType.FAULT)
+                                      && netMessage.getAction().getFaultMessage().getCode().equals(NetFault.PollTimeoutErrorCode)){
+                                      
+                        // timeout
+                        
+                   }
+                  
+                  if( ... ){ // break cycle on some condition
+                        break;
+                  }
+      
+        }
+
+```
+  
 ## publish a message
 
 ```java
