@@ -63,7 +63,7 @@
       
                   NetMessage netMessage = bk.poll("/teste/");
       
-                    if(  ... ){ // break cycle on some condition
+                    if( ... ){ // break cycle on some condition
                         break;
                     }
       
