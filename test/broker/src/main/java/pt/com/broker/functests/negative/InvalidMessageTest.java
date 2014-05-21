@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
@@ -36,7 +37,12 @@ public class InvalidMessageTest extends GenericNegativeTest
 			{
 				try
 				{
-					getBrokerClient().checkStatus();
+					getBrokerClient().checkStatus(new BrokerListenerAdapter() {
+                        @Override
+                        public boolean onMessage(NetMessage message) {
+                            return true;
+                        }
+                    });
 					setSucess(true);
 					setDone(true);
 				}

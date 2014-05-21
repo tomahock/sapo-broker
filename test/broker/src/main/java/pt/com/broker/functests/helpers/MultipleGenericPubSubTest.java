@@ -6,8 +6,9 @@ import java.util.List;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 
-import pt.com.broker.client.BaseBrokerClient;
-import pt.com.broker.client.BrokerClient;
+
+
+import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
@@ -22,7 +23,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 {
 	public static class TestClientInfo
 	{
-		public BaseBrokerClient brokerClient;
+		public BrokerClient brokerClient;
 		public MultipleNotificationsBrokerListener brokerListenter;
 		public int numberOfExecutions;
 	}
@@ -76,7 +77,8 @@ public class MultipleGenericPubSubTest extends BrokerTest
 
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), this.getEncodingProtocolType());
+            tci.brokerClient.connect();
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), numberOfExecutions);
 			tci.numberOfExecutions = numberOfExecutions;
 
@@ -95,7 +97,9 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", this.getEncodingProtocolType());
+			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), this.getEncodingProtocolType());
+            tci.brokerClient.connect();
+
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;
 
@@ -118,7 +122,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getConsumerDestinationType());
 					for (TestClientInfo tci : getInfoConsumers())
 					{
-						tci.brokerClient.addAsyncConsumer(subscribe, tci.brokerListenter);
+						tci.brokerClient.subscribe(subscribe, tci.brokerListenter);
 					}
 
 					Sleep.time(250);
@@ -148,14 +152,8 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					{
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-						if (getDestinationType().equals(DestinationType.TOPIC))
-						{
-							tci.brokerClient.publishMessage(brokerMessage, getDestinationName());
-						}
-						else
-						{
-							tci.brokerClient.enqueueMessage(brokerMessage, getDestinationName());
-						}
+
+						tci.brokerClient.publishMessage(brokerMessage, getDestinationName(),getDestinationType());
 
 					}
 
@@ -206,7 +204,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 
 					for (TestClientInfo tci : getInfoConsumers())
 					{
-						tci.brokerClient.unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
+						//tci.brokerClient.unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
 						Sleep.time(250);
 						tci.brokerClient.close();
 					}

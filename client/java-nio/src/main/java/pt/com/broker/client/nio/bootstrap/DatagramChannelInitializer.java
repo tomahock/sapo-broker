@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
@@ -9,6 +10,9 @@ import pt.com.broker.types.NetProtocolType;
  * Created by luissantos on 06-05-2014.
  */
 public class DatagramChannelInitializer extends BaseChannelInitializer {
+
+    private boolean isOldFraming;
+
 
     public DatagramChannelInitializer(BindingSerializer serializer) {
         super(serializer);
@@ -23,16 +27,17 @@ public class DatagramChannelInitializer extends BaseChannelInitializer {
 
         super.initChannel(ch);
 
-        log.debug("Init");
 
-        if(isOldFraming()){
 
-            log.debug("Old framing");
+         ChannelHandler encoder =   ch.pipeline().get("broker_message_encoder");
+         if(encoder instanceof  BrokerMessageEncoder){
+             ((BrokerMessageEncoder)encoder).setUseFrame(false);
+         }
 
-            BrokerMessageEncoder encoder =  (BrokerMessageEncoder) ch.pipeline().get("broker_message_encoder");
-            encoder.setUseFrame(false);
-        }
+
 
 
     }
+
+
 }

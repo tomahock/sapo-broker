@@ -45,6 +45,15 @@ public final class NetAction
 	}
 
 
+
+    public NetAction(NetUnsubscribe netUnsubscribe){
+
+        this(ActionType.UNSUBSCRIBE);
+
+        setUnsbuscribeMessage(netUnsubscribe);
+    }
+
+
     public NetAction(NetPing ping)
     {
         this(ActionType.PING);

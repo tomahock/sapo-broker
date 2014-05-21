@@ -59,7 +59,7 @@ public class UdpPublishTest extends GenericPubSubTest
 
                     f.get();
 
-                    Thread.sleep(4000);
+                    Thread.sleep(2000);
 
                     System.out.println("cenas");
 

@@ -3,6 +3,8 @@ package pt.com.broker.client.nio.handlers;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
+import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 
@@ -14,10 +16,12 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
     ConsumerManager manager;
 
+    BrokerListener faultListenerAdapter = null;
+
     public ReceiveFaultHandler(ConsumerManager manager) {
         super();
 
-        this.manager = manager;
+       setManager(manager);
     }
 
     public ConsumerManager getManager() {
@@ -41,6 +45,7 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
             String faultCode = fault.getCode();
 
+
             try {
 
                 deliverFaultMessage(ctx,msg);
@@ -55,8 +60,20 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
     protected void deliverFaultMessage(ChannelHandlerContext ctx, NetMessage msg) throws Throwable {
 
-        getManager().deliverMessage(msg,ctx.channel());
+        //getManager().deliverMessage(msg,ctx.channel());
+
+        if(getFaultListenerAdapter()!=null){
+            getFaultListenerAdapter().deliverMessage(msg,ctx.channel());
+        }
+
+    }
 
 
+    public BrokerListener getFaultListenerAdapter() {
+        return faultListenerAdapter;
+    }
+
+    public void setFaultListenerAdapter(BrokerListener faultListenerAdapter) {
+        this.faultListenerAdapter = faultListenerAdapter;
     }
 }

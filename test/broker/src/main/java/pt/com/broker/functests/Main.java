@@ -75,6 +75,8 @@ public class Main
 
         //NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP_v0 };
 
+        //NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.THRIFT };
+
 		TestsResults testResults = new TestsResults();
 
 		CliArgs cargs = null;
@@ -113,30 +115,30 @@ public class Main
 
 			if (runAll || runPositive)
 			{
-				/*new PingTest().run(numberOfTests, testResults);
-                new DeferredDeliveryQueueTest().run(numberOfTests, testResults);*/
+				new PingTest().run(numberOfTests, testResults);
+                new DeferredDeliveryQueueTest().run(numberOfTests, testResults);
 
 			}
 
 			if (runAll || runPositive || runTopic)
 			{
-				//new TopicNameSpecified().run(numberOfTests, testResults);
+				new TopicNameSpecified().run(numberOfTests, testResults);
 
 
+                // @todo fix
+				//new TopicPubSubWithActionId().run(numberOfTests, testResults);
 
-				new TopicPubSubWithActionId().run(numberOfTests, testResults);
-                break;
-				/*new TopicNameWildcard().run(numberOfTests, testResults);
 
+				new TopicNameWildcard().run(numberOfTests, testResults);
 				new TopicNameWildcardDist().run(numberOfTests, testResults);
-				new TopicNameSpecifiedDist().run(numberOfTests, testResults);
-
-				new MultipleN1Topic().run(numberOfTests, testResults);
-				new Multiple1NTopic().run(numberOfTests, testResults);
-				new MultipleNNTopic().run(numberOfTests, testResults);
+                new TopicNameSpecifiedDist().run(numberOfTests, testResults);
+                new MultipleN1Topic().run(numberOfTests, testResults);
+                new Multiple1NTopic().run(numberOfTests, testResults);
+                new MultipleNNTopic().run(numberOfTests, testResults);
 				new MultipleN1TopicRemote().run(numberOfTests, testResults);
 				new Multiple1NTopicRemote().run(numberOfTests, testResults);
-				new MultipleNNTopicRemote().run(numberOfTests, testResults);*/
+                new MultipleNNTopicRemote().run(numberOfTests, testResults);
+
 			}
 
 			if (runAll || runPositive || runQueue)
@@ -147,14 +149,13 @@ public class Main
 				new PollNoWaitTest().run(numberOfTests, testResults);
 
 				new QueueTestDist().run(numberOfTests, testResults);
-
 				new MultipleN1Queue().run(numberOfTests, testResults);
-				new MultipleNNQueue().run(numberOfTests, testResults);
 
+				new MultipleNNQueue().run(numberOfTests, testResults);
 				new MultipleN1QueueRemote().run(numberOfTests, testResults);
 				new MultipleNNQueueRemote().run(numberOfTests, testResults);
-
 				new MultipleGenericVirtualQueuePubSubTest().run(numberOfTests, testResults);
+
 			}
 
 			if (runAll || runPositive || runVirtualQueue)
@@ -163,12 +164,14 @@ public class Main
 				new VirtualQueueTopicNameWildcard().run(numberOfTests, testResults);
 				new VirtualQueueNameSpecifiedRemote().run(numberOfTests, testResults);
 				new VirtualQueueTopicNameWildcardRemote().run(numberOfTests, testResults);
+
 			}
 
 			if (runAll || runPositive || runUdp)
 			{
 				new UdpTopicPublishTest().run(numberOfTests, testResults);
 				new UdpQueuePublishTest().run(numberOfTests, testResults);
+
 			}
 
 			// Negative Tests
@@ -176,6 +179,8 @@ public class Main
 			if (runAll || runNegative)
 			{
 				new MessegeOversizedTest().run(numberOfTests, testResults);
+
+
 				new BadEncodingTypeTest().run(numberOfTests, testResults);
 				new BadEncodingVersionTest().run(numberOfTests, testResults);
 
@@ -189,8 +194,12 @@ public class Main
 				new TotallyInvalidRandomMessageTest().run(numberOfTests, testResults);
 				new MessageSizeBiggerThanMessageTest().run(numberOfTests, testResults);
 				new NotificationTest().run(numberOfTests, testResults);
+
 				new PongTest().run(numberOfTests, testResults);
+
 				new FaultTest().run(numberOfTests, testResults);
+
+
 				new AcceptedTest().run(numberOfTests, testResults);
 				new InvalidDestinationName().run(numberOfTests, testResults);
 				new InvalidDestinationType().run(numberOfTests, testResults);
@@ -198,6 +207,8 @@ public class Main
 				new AccessDeniedTest().run(numberOfTests, testResults);
 				new InvalidAuthChannelTypeTest().run(numberOfTests, testResults);
 				new TimeoutPollTest().run(numberOfTests, testResults);
+
+
 			}
 			// for(Class testClass : ConfigurationInfo.getTestClasses())
 			// {

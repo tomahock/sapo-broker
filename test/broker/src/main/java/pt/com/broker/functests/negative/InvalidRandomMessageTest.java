@@ -3,9 +3,11 @@ package pt.com.broker.functests.negative;
 import java.util.Arrays;
 import java.util.Random;
 
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
 
 public class InvalidRandomMessageTest extends GenericNegativeTest
@@ -49,7 +51,17 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 			{
 				try
 				{
-					getBrokerClient().checkStatus();
+					getBrokerClient().checkStatus(new BrokerListenerAdapter() {
+                        @Override
+                        public boolean onMessage(NetMessage message) {
+
+                            return true;
+
+                        }
+                    }).get();
+
+                    Thread.sleep(1000);
+
 					setSucess(true);
 					setDone(true);
 				}

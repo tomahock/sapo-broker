@@ -8,9 +8,11 @@ import io.netty.channel.ChannelFutureListener;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.com.broker.client.nio.bootstrap.BaseChannelInitializer;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 
+import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
@@ -39,8 +41,7 @@ public class BrokerClient extends BaseClient {
 
     private PendingAcceptRequestsManager acceptRequestsManager;
 
-
-
+    private ChannelInitializer channelInitializer;
 
     public BrokerClient(NetProtocolType ptype) {
         super(ptype);
@@ -64,7 +65,10 @@ public class BrokerClient extends BaseClient {
         setPongConsumerManager(new PongConsumerManager());
         setConsumerManager(new ConsumerManager());
 
-        ChannelInitializer channelInitializer  = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager());
+        channelInitializer  = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager());
+
+
+        channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
 
         setBootstrap(new Bootstrap(channelInitializer));
 
@@ -155,6 +159,15 @@ public class BrokerClient extends BaseClient {
             }
         });
     }
+    public Future unsubscribe(NetAction.DestinationType destinationType, String dstName){
+
+        NetUnsubscribe unsubscribe = new NetUnsubscribe(dstName,destinationType);
+
+        NetMessage netMessage = new NetMessage(new NetAction(unsubscribe));
+
+        return sendNetMessage(netMessage);
+    }
+
 
     public ChannelFuture acknowledge(NetNotification notification) throws Throwable {
 
@@ -335,6 +348,10 @@ public class BrokerClient extends BaseClient {
             throwable.printStackTrace();
         }
 
+    }
+
+    public void setFaultListner(BrokerListener adapter){
+        channelInitializer.setFaultHandler(adapter);
     }
 }
 

@@ -2,6 +2,8 @@ package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.types.DestinationDataFactory;
 import pt.com.broker.types.*;
@@ -19,6 +21,9 @@ import java.util.concurrent.TimeUnit;
  * Created by luissantos on 22-04-2014.
  */
 public class ConsumerManager {
+
+
+    private static final Logger log = LoggerFactory.getLogger(ConsumerManager.class);
 
     protected final EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>> _consumerList = new EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>>(NetAction.DestinationType.class);
 
@@ -86,8 +91,9 @@ public class ConsumerManager {
 
         DestinationDataFactory factory = new DestinationDataFactory();
 
-        String destination = factory.getDestination(netMessage);
+        String destination = factory.getSubscription(netMessage);
         DestinationType dtype = factory.getDestinationType(netMessage);
+
 
         return getConsumer(dtype,destination);
 
@@ -108,7 +114,6 @@ public class ConsumerManager {
     public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
 
         BrokerAsyncConsumer consumer = getConsumer(netMessage);
-
 
         if(consumer == null){
             throw new RuntimeException("No consumer found for this message");

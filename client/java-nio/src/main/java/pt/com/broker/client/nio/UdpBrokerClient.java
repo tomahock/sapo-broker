@@ -1,6 +1,8 @@
 package pt.com.broker.client.nio;
 
 import io.netty.channel.ChannelFuture;
+import pt.com.broker.client.nio.bootstrap.BaseChannelInitializer;
+import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.bootstrap.DatagramBootstrap;
 import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
 import pt.com.broker.client.nio.server.HostContainer;
@@ -47,7 +49,11 @@ public class UdpBrokerClient extends BaseClient {
     @Override
     protected void init() {
 
-        setBootstrap(new DatagramBootstrap(new DatagramChannelInitializer(getSerializer())));
+        BaseChannelInitializer channelInitializer = new DatagramChannelInitializer(getSerializer());
+
+        channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
+
+        setBootstrap(new DatagramBootstrap(channelInitializer));
 
         setHosts(new HostContainer(bootstrap));
     }

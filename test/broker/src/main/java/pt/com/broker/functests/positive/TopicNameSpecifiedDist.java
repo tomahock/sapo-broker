@@ -16,7 +16,11 @@ public class TopicNameSpecifiedDist extends TopicNameSpecified
 		super(testName);
 		try
 		{
-			setInfoConsumer(new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(),  getEncodingProtocolType()));
+            BrokerClient client = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(),  getEncodingProtocolType());
+
+            client.connect();
+
+			setInfoConsumer(client);
 		}
 		catch (Throwable t)
 		{

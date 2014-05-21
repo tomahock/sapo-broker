@@ -8,6 +8,8 @@ import pt.com.broker.client.nio.codecs.HeartbeatHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
+import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
@@ -32,6 +34,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     protected SSLContext context;
 
+    protected ReceiveFaultHandler faultHandler;
 
 
     public ChannelInitializer(BindingSerializer serializer, ConsumerManager consumerManager, PongConsumerManager pongConsumerManager) {
@@ -68,7 +71,9 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         ch.pipeline().addLast("broker_pong_handler",new PongMessageHandler(getPongConsumerManager()));
 
-        ch.pipeline().addLast("broker_fault_handler",new ReceiveFaultHandler(getConsumerManager()));
+        faultHandler = new ReceiveFaultHandler(getConsumerManager());
+
+        ch.pipeline().addLast("broker_fault_handler",faultHandler);
 
         if(getAcceptRequestsManager()!=null){
             ch.pipeline().addLast("broker_accept_handler",new AcceptMessageHandler(getAcceptRequestsManager()));
@@ -107,5 +112,12 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     public void setContext(SSLContext context) {
         this.context = context;
+    }
+
+
+    public void setFaultHandler(BrokerListener adapter){
+
+        faultHandler.setFaultListenerAdapter(adapter);
+
     }
 }

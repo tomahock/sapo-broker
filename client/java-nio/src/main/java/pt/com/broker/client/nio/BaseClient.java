@@ -192,6 +192,7 @@ public abstract class BaseClient {
     }
 
     public void setProtocolType(NetProtocolType protocolType) {
+
         this.protocolType = protocolType;
 
         try {

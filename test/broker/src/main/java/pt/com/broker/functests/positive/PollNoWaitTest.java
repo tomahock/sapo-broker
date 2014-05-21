@@ -2,12 +2,13 @@ package pt.com.broker.functests.positive;
 
 import org.caudexorigo.text.RandomStringUtils;
 
-import pt.com.broker.client.BrokerClient;
+import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 
@@ -44,9 +45,12 @@ public class PollNoWaitTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
+                    bk.connect();
 
-					NetNotification msg = bk.poll(queueName, -1, null);
+					NetMessage netMessage = bk.poll(queueName,-1);
+
+                    NetNotification msg = (netMessage == null) ? null : netMessage.getAction().getNotificationMessage();
 
 					if (msg == null)
 					{
@@ -59,7 +63,7 @@ public class PollNoWaitTest extends BrokerTest
 						return this;
 					}
 
-					bk.close();
+					//bk.close();
 				}
 				catch (Throwable t)
 				{

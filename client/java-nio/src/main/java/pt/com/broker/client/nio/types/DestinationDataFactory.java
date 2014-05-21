@@ -9,6 +9,32 @@ import pt.com.broker.types.NetMessage;
  */
 public class DestinationDataFactory {
 
+
+    public String getSubscription(NetMessage netMessage){
+
+        NetAction netAction = netMessage.getAction();
+
+        NetAction.ActionType actionType = netAction.getActionType();
+
+        String destination = null;
+
+        switch (actionType){
+
+            case NOTIFICATION:
+                destination = netAction.getNotificationMessage().getSubscription();
+                break;
+
+            case FAULT:
+                destination = getDestination(netMessage);
+                break;
+        }
+
+
+        return destination;
+
+
+    }
+
     public String getDestination(NetMessage netMessage){
 
         NetAction netAction = netMessage.getAction();

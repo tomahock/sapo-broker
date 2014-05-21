@@ -1,19 +1,22 @@
 package pt.com.broker.functests.positive;
 
 import java.util.Arrays;
+import java.util.concurrent.Future;
 
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
+
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
 
@@ -42,32 +45,34 @@ public class PollVirtualQueueTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
+                    bk.connect();
 
 					NetSubscribe subscribe = new NetSubscribe(queueName, DestinationType.VIRTUAL_QUEUE);
-					bk.addAsyncConsumer(subscribe, new BrokerListener()
-					{
-						@Override
-						public boolean isAutoAck()
-						{
-							return false;
-						}
+					Future f = bk.subscribe(subscribe, new BrokerListenerAdapter() {
 
-						@Override
-						public void onMessage(NetNotification message)
-						{
-						}
+                        @Override
+                        public boolean onMessage(NetMessage message) {
+                            return false;
+                        }
 
-					});
-					Sleep.time(150);
 
-					bk.unsubscribe(DestinationType.VIRTUAL_QUEUE, queueName);
+                    });
 
-					Sleep.time(150);
+                    f.get();
 
-					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
-					bk.publishMessage(brokerMessage, topicName);
-					bk.close();
+					f = bk.unsubscribe(DestinationType.VIRTUAL_QUEUE, queueName);
+
+					f.get();
+
+
+                    NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
+
+					bk.publishMessage(brokerMessage,topicName,DestinationType.TOPIC);
+
+                    Thread.sleep(3000);
+
+					//bk.close().get();
 
 					setDone(true);
 					setSucess(true);
@@ -88,13 +93,19 @@ public class PollVirtualQueueTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host") , BrokerTest.getAgent1Port() , getEncodingProtocolType());
 
-					NetNotification msg = bk.poll(queueName);
+                    bk.connect();
 
-					bk.acknowledge(msg);
+					NetMessage netMessage = bk.poll(queueName);
 
-					bk.close();
+                    NetNotification msg = netMessage.getAction().getNotificationMessage();
+
+					bk.acknowledge(msg).get();
+
+
+
+					//bk.close().get();
 
 					if (msg.getMessage() == null)
 					{
@@ -112,6 +123,8 @@ public class PollVirtualQueueTest extends BrokerTest
 						setReasonForFailure("Message payload is different from expected");
 						return this;
 					}
+
+                    Thread.sleep(3000);
 
 					setDone(true);
 					setSucess(true);

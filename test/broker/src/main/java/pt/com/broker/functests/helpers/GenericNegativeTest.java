@@ -1,34 +1,37 @@
 package pt.com.broker.functests.helpers;
 
-import pt.com.broker.client.BaseBrokerClient;
-import pt.com.broker.client.BrokerClient;
+
 import pt.com.broker.client.messaging.BrokerErrorListenter;
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetMessage;
+
+import java.util.concurrent.Future;
 
 public class GenericNegativeTest extends BrokerTest
 {
 
-	private BaseBrokerClient brokerClient = null;
+	private BrokerClient brokerClient = null;
 
 	private boolean okToTimeout = false;
 
-	private BrokerErrorListenter defaultErrorListener = new BrokerErrorListenter()
-	{
-		@Override
-		public void onError(Throwable throwable)
-		{
-			System.err.println("Unexpected exception occurred. " + throwable);
-		}
+	private BrokerListener defaultErrorListener = new BrokerListenerAdapter() {
+        @Override
+        public boolean onMessage(NetMessage message) {
+            return true;
+        }
 
-		@Override
-		public void onFault(NetFault fault)
-		{
-			faultFuture.set(fault);
-		}
-	};
+        @Override
+        public void onFault(NetMessage message) {
+            faultFuture.set(message.getAction().getFaultMessage());
+        }
+    };
+
 
 	private byte[] dataToSend = new byte[] {};
 
@@ -45,7 +48,8 @@ public class GenericNegativeTest extends BrokerTest
 
 		try
 		{
-			brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+			brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
+            brokerClient.connect();
 		}
 		catch (Throwable e)
 		{
@@ -82,9 +86,22 @@ public class GenericNegativeTest extends BrokerTest
 				{
 					brokerClient = getBrokerClient();
 
-					brokerClient.setErrorListener(getErrorListener());
+					brokerClient.setFaultListner(getErrorListener());
 
-					brokerClient.getNetHandler().getConnector().getOutput().write(getDataToSend());
+					//brokerClient.getNetHandler().getConnector().getOutput().write(getDataToSend());
+
+                    byte[] data = getDataToSend();
+
+                    Byte[] byteObjects = new Byte[data.length];
+
+                    int i=0;
+
+                    for(byte b: data)
+                        byteObjects[i++] = b;  // Autoboxing.
+
+                    Future f = brokerClient.getHosts().getAvailableChannel().writeAndFlush(byteObjects);
+
+                    f.get();
 
 					setDone(true);
 					setSucess(true);
@@ -100,12 +117,12 @@ public class GenericNegativeTest extends BrokerTest
 
 	}
 
-	public void setBrokerClient(BaseBrokerClient brokerClient)
+	public void setBrokerClient(BrokerClient brokerClient)
 	{
 		this.brokerClient = brokerClient;
 	}
 
-	public BaseBrokerClient getBrokerClient()
+	public BrokerClient getBrokerClient()
 	{
 		return brokerClient;
 	}
@@ -140,12 +157,12 @@ public class GenericNegativeTest extends BrokerTest
 		return faultMessage;
 	}
 
-	public void setErrorListener(BrokerErrorListenter defaultErrorListener)
+	public void setErrorListener(BrokerListener defaultErrorListener)
 	{
 		this.defaultErrorListener = defaultErrorListener;
 	}
 
-	public BrokerErrorListenter getErrorListener()
+	public BrokerListener getErrorListener()
 	{
 		return defaultErrorListener;
 	}

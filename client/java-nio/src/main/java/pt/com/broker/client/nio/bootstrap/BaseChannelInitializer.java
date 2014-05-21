@@ -1,7 +1,10 @@
 package pt.com.broker.client.nio.bootstrap;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.ssl.SslHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +31,7 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
 
     protected final BindingSerializer serializer;
 
+    private boolean oldFraming = false;
 
     public BaseChannelInitializer(BindingSerializer serializer) {
         this.serializer= serializer;
@@ -52,17 +56,33 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
         }
 
 
+        ch.pipeline().addLast("byte_message_encoder",new MessageToByteEncoder<Byte[]>(){
+
+            @Override
+            protected void encode(ChannelHandlerContext ctx, Byte[] msg, ByteBuf out) throws Exception {
+
+                byte[] data = new byte[msg.length];
+
+                int pos = 0;
+                for(Byte bye : msg){
+                    data[pos++] = bye.byteValue();
+                }
+
+                out.writeBytes(data);
+            }
+        });
+
+
 
 
     }
 
 
     protected boolean isOldFraming(){
-        return getProtocolType().equals(NetProtocolType.SOAP_v0);
+        return  oldFraming;
     }
 
-    private NetProtocolType getProtocolType() {
-        return serializer.getProtocolType();
+    public void setOldFraming(boolean oldFraming) {
+        this.oldFraming = oldFraming;
     }
-
 }

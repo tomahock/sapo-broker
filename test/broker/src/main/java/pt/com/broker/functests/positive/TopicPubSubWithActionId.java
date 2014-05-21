@@ -49,7 +49,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
             infoConsumer.connect();
 
-			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port() , getEncodingProtocolType());
+			infoProducer = new BrokerClient("192.168.100.1", BrokerTest.getAgent1Port() , getEncodingProtocolType());
 
             infoProducer.connect();
 		}
@@ -103,6 +103,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
                         @Override
                         public boolean onMessage(NetMessage message) {
+
                             future.set(Boolean.TRUE);
                             return true;
                         }
@@ -118,11 +119,10 @@ public class TopicPubSubWithActionId extends BrokerTest
                         }
 
 
-					}, 2000);
+					}, 4000);
 
 					NetSubscribe subscribe = new NetSubscribe(subscriptionName, destinationType);
 
-                    System.out.println(infoConsumer);
 
 					Future f = infoConsumer.subscribe(subscribe, brokerListener, accReq);
 
@@ -130,7 +130,7 @@ public class TopicPubSubWithActionId extends BrokerTest
                     f.get();
 
 
-                    Thread.sleep(2000);
+                    Thread.sleep(4000);
 					setDone(true);
 					setSucess(true);
 				}

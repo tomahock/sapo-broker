@@ -4,13 +4,15 @@ import java.util.Arrays;
 
 import org.caudexorigo.text.RandomStringUtils;
 
-import pt.com.broker.client.BrokerClient;
+import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 
 public class PollTest extends BrokerTest
@@ -34,10 +36,11 @@ public class PollTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
+                    bk.connect();
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					bk.enqueueMessage(brokerMessage, queueName);
+					bk.publishMessage(brokerMessage, queueName, NetAction.DestinationType.QUEUE);
 
 					bk.close();
 
@@ -60,9 +63,12 @@ public class PollTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
+                    bk.connect();
 
-					NetNotification msg = bk.poll(queueName);
+					 NetMessage netMessage = bk.poll(queueName);
+
+                    NetNotification msg  = netMessage.getAction().getNotificationMessage();
 
 					bk.acknowledge(msg);
 
