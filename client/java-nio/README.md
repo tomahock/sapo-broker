@@ -62,10 +62,40 @@
         while (true){
       
                   NetMessage netMessage = bk.poll("/teste/");
+                  
+                  
       
                     if( ... ){ // break cycle on some condition
                         break;
                     }
+      
+        }
+
+```
+
+
+##  subscribe a queue using polling with timeout 
+
+```java
+
+        BrokerClient bk = new BrokerClient();
+             
+        // ... connecting ...
+
+        long timeout = 5000;
+        while (true){
+      
+                  NetMessage netMessage = bk.poll("/teste/",timeout);
+                  
+                  if(netMessage == null){
+                        // timeout 
+                  }
+                  
+                  
+      
+                  if( ... ){ // break cycle on some condition
+                        break;
+                  }
       
         }
 
