@@ -25,7 +25,7 @@ public class BrokerSslClientTest {
 
 
 
-        Future f = bk.connect();
+        Future f = bk.connectAsync();
 
 
 

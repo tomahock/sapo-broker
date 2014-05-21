@@ -24,7 +24,7 @@ public class UdpBrokerClientTest {
         UdpBrokerClient bk = new UdpBrokerClient("192.168.100.1", 3323, NetProtocolType.JSON);
 
 
-        Future f = bk.connect();
+        Future f = bk.connectAsync();
 
         f.get();
 
@@ -42,7 +42,7 @@ public class UdpBrokerClientTest {
         UdpBrokerClient bk = new UdpBrokerClient("192.168.100.1", 3366, NetProtocolType.SOAP_v0);
 
 
-        Future f = bk.connect();
+        Future f = bk.connectAsync();
 
         f.get();
 

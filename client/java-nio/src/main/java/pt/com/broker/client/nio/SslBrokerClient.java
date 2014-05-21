@@ -45,16 +45,16 @@ public class SslBrokerClient extends BrokerClient  {
         channelInitializer.setContext(context);
     }
 
+
     @Override
-    public ListenableFuture<HostInfo> connect() throws Exception {
+    public Future<HostInfo> connectAsync() {
 
         if(getContext()==null){
             setContext(getDefaultSslContext());
         }
 
-        return super.connect();
+        return super.connectAsync();
     }
-
 
     private SSLContext getDefaultSslContext()
     {

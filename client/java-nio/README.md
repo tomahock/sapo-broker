@@ -8,16 +8,8 @@
        
         bk.addServer("broker.wallet.pt",3323);
         
-        final ListenableFuture<HostInfo> f = bk.connect();
-        
-        HostInfo host = f.get(); //blocks
-        
-        if( host == null){
-            //not connected
-        }else{
-            //connected
-        }
-        
+        bk.connect(); // if connection is not possible a runtime exception will be thrown 
+               
 ```
 
 
@@ -28,33 +20,10 @@
        
         bk.addServer("broker.wallet.pt",3323);
         
-        final ListenableFuture<HostInfo> f = bk.connect();
+        Future<HostInfo> f = bk.connectAsync();
         
-        
-        f.addListener(new Runnable() {
-        
-           @Override
-           public void run() {
-        
-               try {
-        
-                   HostInfo host = f.get();
-        
-                   if(host == null){
-                       log.debug("Not Connected");
-                   }else{
-                       log.debug("Connected");
-                   }
-        
-        
-               } catch (Throwable t) {
-                   
-                   t.printStackTrace();
-               }
-        
-           }
-        }, MoreExecutors.sameThreadExecutor());
-
+       
+        f.get(); if connection is not possible a runtime exception will be thrown 
         
 ```
 

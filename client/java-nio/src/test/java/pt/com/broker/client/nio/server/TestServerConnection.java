@@ -113,7 +113,7 @@ public class TestServerConnection {
             container.add(new HostInfo("127.0.0.1",server.getPort()));
         }
 
-        Future<HostInfo> future = container.connect();
+        Future<HostInfo> future = container.connectAsync();
 
 
         HostInfo hostInfo = future.get(10000,TimeUnit.MILLISECONDS);
@@ -146,7 +146,7 @@ public class TestServerConnection {
 
         int total_servers = container.size();
 
-        Future<HostInfo> future = container.connect();
+        Future<HostInfo> future = container.connectAsync();
 
         HostInfo host = future.get(20000L,TimeUnit.MILLISECONDS);
 
@@ -195,7 +195,7 @@ public class TestServerConnection {
             container.add(hostInfo);
         }
 
-        Future<HostInfo> future = container.connect();
+        Future<HostInfo> future = container.connectAsync();
 
         HostInfo host = future.get(20000L,TimeUnit.MILLISECONDS);
 
@@ -253,7 +253,7 @@ public class TestServerConnection {
             container.add(host);
         }
 
-        Future<HostInfo> future = container.connect();
+        Future<HostInfo> future = container.connectAsync();
 
         HostInfo host = future.get(20000L,TimeUnit.MILLISECONDS);
 
