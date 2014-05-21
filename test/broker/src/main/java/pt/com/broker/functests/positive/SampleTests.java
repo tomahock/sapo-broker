@@ -1,6 +1,8 @@
 package pt.com.broker.functests.positive;
 
-import pt.com.broker.client.BrokerClient;
+
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
@@ -10,17 +12,25 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.NotificationConsequence;
-import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.*;
 
 public class SampleTests
 {
 
+
+
+
 	public static Test t = new BrokerTest("simple pub/sub test")
 	{
+        NetNotification[] notifications = {null};
+
 		String topicName = "/topic/foo";
-		GenericBrokerListener brokerListener = new GenericBrokerListener(NetAction.DestinationType.TOPIC);
+        BrokerListenerAdapter brokerListener = new BrokerListenerAdapter() {
+            @Override
+            public boolean onMessage(NetMessage message) {
+                return true;
+            }
+        };
 
 		BrokerClient consumer;
 
@@ -33,10 +43,13 @@ public class SampleTests
 				{
 					try
 					{
-						consumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+						consumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
 
 						NetSubscribe subscribe = new NetSubscribe("/topic/.*", NetAction.DestinationType.TOPIC);
-						consumer.addAsyncConsumer(subscribe, brokerListener);
+						consumer.subscribe(subscribe, brokerListener);
+
+
+                        Thread.sleep(2000);
 
 						setDone(true);
 						setSucess(true);
@@ -57,10 +70,10 @@ public class SampleTests
 
 					try
 					{
-						BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+						BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-						bk.publishMessage(brokerMessage, topicName);
+						bk.publishMessage(brokerMessage, topicName, NetAction.DestinationType.TOPIC);
 
 						bk.close();
 
@@ -76,7 +89,7 @@ public class SampleTests
 				}
 			});
 
-			NotificationConsequence notConsequence = new NotificationConsequence("Consume", "consumer", brokerListener);
+			NotificationConsequence notConsequence = new NotificationConsequence("Consume", "consumer", notifications );
 			notConsequence.setDestination(topicName);
 			notConsequence.setSubscription("/topic/.*");
 			notConsequence.setDestinationType(NetAction.DestinationType.TOPIC);
@@ -91,8 +104,8 @@ public class SampleTests
 
 					try
 					{
-						consumer.unsubscribe(NetAction.DestinationType.TOPIC, "/topic/.*");
-						consumer.close();
+						//consumer.unsubscribe(NetAction.DestinationType.TOPIC, "/topic/.*");
+						//consumer.close();
 
 						setDone(true);
 						setSucess(true);

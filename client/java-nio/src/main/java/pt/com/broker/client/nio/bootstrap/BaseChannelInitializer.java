@@ -58,7 +58,7 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
 
 
     protected boolean isOldFraming(){
-        return getProtocolType() == NetProtocolType.SOAP_v0;
+        return getProtocolType().equals(NetProtocolType.SOAP_v0);
     }
 
     private NetProtocolType getProtocolType() {

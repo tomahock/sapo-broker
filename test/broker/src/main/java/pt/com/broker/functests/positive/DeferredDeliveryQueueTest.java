@@ -43,8 +43,7 @@ public class DeferredDeliveryQueueTest extends BrokerTest
 		try
 		{
 			this.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
-            Future f = this.brokerClient.connect();
-            f.get();
+            this.brokerClient.connect();
 		}
 		catch (Throwable e)
 		{

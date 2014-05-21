@@ -264,6 +264,7 @@ public class HostContainer {
 
         HostInfo host = strategy.next();
 
+
         if (host != null) {
             return host.getChannel();
         }

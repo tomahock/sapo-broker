@@ -6,7 +6,7 @@ import org.caudexorigo.concurrent.Sleep;
 //import pt.com.broker.auth.CredentialsProvider;
 //import pt.com.broker.auth.jdbc.JdbcProvider;
 /* TEMP CHANGE brsantos */
-import pt.com.broker.client.SslBrokerClient;
+import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
@@ -30,7 +30,7 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 			SslBrokerClient bk = null;
 			try
 			{
-				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
 			}
 			catch (Throwable e)
 			{

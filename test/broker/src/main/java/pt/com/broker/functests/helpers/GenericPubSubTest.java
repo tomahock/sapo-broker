@@ -44,12 +44,11 @@ public class GenericPubSubTest extends BrokerTest
 		try
 		{
 			infoConsumer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port() , this.getEncodingProtocolType());
-            Future f = infoConsumer.connect();
-            f.get();
+            infoConsumer.connect();
+
 
 			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port() , this.getEncodingProtocolType());
-            f = infoProducer.connect();
-            f.get();
+            infoProducer.connect();
 
 
 		}
@@ -111,7 +110,7 @@ public class GenericPubSubTest extends BrokerTest
 
 					getInfoConsumer().subscribe(subscribe,getBrokerListener()).get();
 
-					Sleep.time(250);
+					Sleep.time(1000);
 					setDone(true);
 					setSucess(true);
 				}

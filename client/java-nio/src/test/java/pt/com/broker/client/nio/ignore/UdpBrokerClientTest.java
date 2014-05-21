@@ -21,7 +21,7 @@ public class UdpBrokerClientTest {
     @Test
     public void testSendPacket() throws Exception{
 
-        UdpBrokerClient bk = new UdpBrokerClient("192.168.100.1", 3323, NetProtocolType.JSON);
+        UdpBrokerClient bk = new UdpBrokerClient("127.0.0.1", 3323, NetProtocolType.JSON);
 
 
         Future f = bk.connectAsync();
@@ -39,7 +39,7 @@ public class UdpBrokerClientTest {
     @Test
     public void testSendPacketOldFrame() throws Exception{
 
-        UdpBrokerClient bk = new UdpBrokerClient("192.168.100.1", 3366, NetProtocolType.SOAP_v0);
+        UdpBrokerClient bk = new UdpBrokerClient("127.0.0.1", 3366, NetProtocolType.SOAP_v0);
 
 
         Future f = bk.connectAsync();

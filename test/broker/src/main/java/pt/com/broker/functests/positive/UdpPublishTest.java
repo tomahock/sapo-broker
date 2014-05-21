@@ -1,7 +1,8 @@
 package pt.com.broker.functests.positive;
 
-import pt.com.broker.client.BaseBrokerClient;
-import pt.com.broker.client.UdpClient;
+
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.UdpBrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
@@ -11,9 +12,11 @@ import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
 
+import java.util.concurrent.Future;
+
 public class UdpPublishTest extends GenericPubSubTest
 {
-	private  UdpClient client;
+	private UdpBrokerClient client;
 
 	public UdpPublishTest(String testName)
 	{
@@ -21,9 +24,12 @@ public class UdpPublishTest extends GenericPubSubTest
 
 		try
 		{
-            boolean isOldFramming =  getEncodingProtocolType().equals(NetProtocolType.SOAP_v0);
 
-			client = new UdpClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1UdpPort(),isOldFramming);
+			client = new UdpBrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1UdpPort(),getEncodingProtocolType());
+
+            client.connect();
+
+
 		}
 		catch (Throwable e)
 		{
@@ -37,7 +43,7 @@ public class UdpPublishTest extends GenericPubSubTest
 	@Override
 	public Action getAction()
 	{
-		final UdpClient uclient = client;
+		final UdpBrokerClient uclient = client;
 		
 		return new Action("Publish", "producer")
 		{
@@ -48,13 +54,15 @@ public class UdpPublishTest extends GenericPubSubTest
 
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					NetPublish netPublish = new NetPublish(getDestinationName(), getDestinationType(), brokerMessage);
+					Future f = uclient.publishMessage(brokerMessage, getDestinationName(), getDestinationType());
 
-					uclient.publish(netPublish);
+
+                    f.get();
+
+                    Thread.sleep(4000);
 
                     System.out.println("cenas");
 
-					//getInfoProducer().close();
 
 					setDone(true);
 					setSucess(true);
@@ -69,7 +77,7 @@ public class UdpPublishTest extends GenericPubSubTest
 	}
 
 	@Override
-	public BaseBrokerClient getInfoProducer()
+	public BrokerClient getInfoProducer()
 	{
 		// return client;
 		return null;

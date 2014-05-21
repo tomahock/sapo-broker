@@ -23,7 +23,11 @@ public class DatagramChannelInitializer extends BaseChannelInitializer {
 
         super.initChannel(ch);
 
+        log.debug("Init");
+
         if(isOldFraming()){
+
+            log.debug("Old framing");
 
             BrokerMessageEncoder encoder =  (BrokerMessageEncoder) ch.pipeline().get("broker_message_encoder");
             encoder.setUseFrame(false);

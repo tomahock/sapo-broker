@@ -38,7 +38,7 @@ public class PingTest extends BrokerTest
 
                     BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(),getEncodingProtocolType());
 
-                    bk.connect().get();
+                    bk.connect();
 
 
 
