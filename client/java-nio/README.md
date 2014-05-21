@@ -50,6 +50,27 @@
 
 ```
 
+
+##  subscribe a queue using polling 
+
+```java
+
+        BrokerClient bk = new BrokerClient();
+             
+        // ... connecting ...
+
+        while (true){
+      
+                  NetMessage netMessage = bk.poll("/teste/");
+      
+                    if(  ... ){ // break cycle on some condition
+                        break;
+                    }
+      
+        }
+
+```
+  
 ## publish a message
 
 ```java
