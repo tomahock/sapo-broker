@@ -72,6 +72,10 @@ public class ConsumerManager{
 
     }
 
+    public BrokerAsyncConsumer removeSubscription(NetSubscribeAction netSubscribeAction){
+        return removeSubscription(netSubscribeAction.getDestinationType(),netSubscribeAction.getDestination());
+    }
+
     public BrokerAsyncConsumer removeSubscription(DestinationType destinationType, String destination){
 
         Map<String, BrokerAsyncConsumer> subscriptions  = getSubscriptions(destinationType);

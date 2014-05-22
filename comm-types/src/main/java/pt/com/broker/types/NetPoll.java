@@ -1,5 +1,8 @@
 package pt.com.broker.types;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class NetPoll implements NetSubscribeAction
 {
 	private String actionId;
@@ -47,5 +50,10 @@ public final class NetPoll implements NetSubscribeAction
     @Override
     public NetAction.DestinationType getDestinationType() {
         return NetAction.DestinationType.QUEUE;
+    }
+
+    @Override
+    public Map<String, String> getHeaders() {
+        return new HashMap<>();
     }
 }

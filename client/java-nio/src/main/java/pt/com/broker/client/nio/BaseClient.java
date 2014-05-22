@@ -75,6 +75,7 @@ public abstract class BaseClient{
         ChannelFuture f =  channel.writeAndFlush(msg);
 
 
+
         if(future!=null){
             f.addListener(future);
         }

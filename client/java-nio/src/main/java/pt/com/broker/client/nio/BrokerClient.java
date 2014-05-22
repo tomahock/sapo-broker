@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
@@ -127,15 +129,21 @@ public class BrokerClient extends BaseClient implements Observer {
         return subscribe( new NetSubscribe(destination, destinationType),listener,null);
     }
 
-    public Future subscribe(final NetSubscribe subscribe, final BrokerListener listener) {
+    public Future subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) {
         return subscribe(subscribe,listener,null);
     }
 
-    public Future subscribe(final NetSubscribe subscribe, final BrokerListener listener , AcceptRequest request) {
+    public Future subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , AcceptRequest request) {
 
+        NetAction netAction = null;
 
-        NetAction netAction = new NetAction(subscribe);
+        if(subscribe instanceof NetPoll){
+            netAction = new NetAction((NetPoll)subscribe);
+        }
 
+        if(subscribe instanceof NetSubscribe){
+            netAction = new NetAction((NetSubscribe)subscribe);
+        }
 
 
         if(request!=null) {
@@ -144,7 +152,7 @@ public class BrokerClient extends BaseClient implements Observer {
         }
 
 
-        NetMessage netMessage = buildMessage(netAction, subscribe.getHeaders());
+        NetMessage netMessage = buildMessage(netAction,subscribe.getHeaders());
 
         return sendNetMessage(netMessage, new ChannelFutureListener() {
 
@@ -205,7 +213,7 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
 
-    public ChannelFuture checkStatus(final BrokerListener listener) throws Throwable {
+    public Future checkStatus(final BrokerListener listener) throws Throwable {
 
         String actionId = UUID.randomUUID().toString();
 
@@ -231,72 +239,65 @@ public class BrokerClient extends BaseClient implements Observer {
         return f;
     }
 
-    public NetMessage poll(String name){
+    public NetMessage poll(String name) throws Exception {
         return poll(name,0);
     }
 
-    public NetMessage poll(String name ,int timeout){
+    public NetMessage poll(String name ,int timeout) throws Exception {
 
         NetPoll netPoll = new NetPoll(name, timeout);
 
         return this.poll(netPoll,null);
     }
 
-    public NetMessage poll(final NetPoll netPoll, AcceptRequest request){
-
+    public NetMessage poll(final NetPoll netPoll, AcceptRequest request) throws Exception{
 
         if(request!=null){
             addAcceptMessageHandler(request);
             netPoll.setActionId(request.getActionId());
         }
 
-        NetAction netAction = new NetAction(netPoll);
 
-        NetMessage netMessage = buildMessage(netAction);
-
-
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        final NetMessage[] response = {null};
-
-        ChannelFuture f = sendNetMessage(netMessage);
+        final BlockingQueue<NetMessage> queue = new ArrayBlockingQueue<NetMessage>(1);
 
 
         try {
 
-            f.get();
+            subscribe(netPoll, new BrokerListenerAdapter() {
 
-            if(!f.isSuccess()){
-                return null;
-            }
-
-            getConsumerManager().addSubscription(netPoll, new BrokerListenerAdapter() {
                 @Override
                 public boolean onMessage(NetMessage message) {
 
-                    response[0] = message;
-                    latch.countDown();
 
-                    return true;
+                    try {
+
+                        queue.put(message);
+
+                        return true;
+
+                    } catch (InterruptedException e) {
+
+                        e.printStackTrace();
+
+                        return false;
+
+                    }finally {
+                        getConsumerManager().removeSubscription(netPoll);
+                    }
+
                 }
 
-                @Override
-                public void onFault(NetMessage message) {
-                    onMessage(message);
-                }
             });
 
 
-            latch.await();
 
-            getConsumerManager().removeSubscription(netPoll.getDestinationType(),netPoll.getDestination());
-
-            return response[0];
+            return queue.take();
 
 
         } catch (Throwable e) {
-            e.printStackTrace();
-            return null;
+
+            throw new Exception("There was an unexpected error",e);
+
         }
 
 
