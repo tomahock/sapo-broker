@@ -5,12 +5,14 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 
+import io.netty.util.AttributeKey;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 
+import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
@@ -19,9 +21,13 @@ import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.MessageAcceptedListener;
 import pt.com.broker.client.nio.server.HostContainer;
+import pt.com.broker.client.nio.server.ReconnectEvent;
 import pt.com.broker.types.*;
 
 
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -29,7 +35,7 @@ import java.util.concurrent.Future;
 /**
  * Created by luissantos on 21-04-2014.
  */
-public class BrokerClient extends BaseClient {
+public class BrokerClient extends BaseClient implements Observer {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);
 
@@ -72,7 +78,11 @@ public class BrokerClient extends BaseClient {
 
         channelInitializer.setAcceptRequestsManager(getAcceptRequestsManager());
 
-        setHosts(new HostContainer(getBootstrap()));
+        HostContainer hostContainer = new HostContainer(getBootstrap());
+
+        hostContainer.addObserver(this);
+
+        setHosts(hostContainer);
     }
 
 
@@ -136,33 +146,33 @@ public class BrokerClient extends BaseClient {
 
         NetMessage netMessage = buildMessage(netAction, subscribe.getHeaders());
 
-        return sendNetMessage(netMessage, new ChannelFutureListener(){
+        return sendNetMessage(netMessage, new ChannelFutureListener() {
 
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
 
-                if(future.isSuccess()){
+                if (future.isSuccess()) {
 
                     log.info("Created new async consumer for '{}'", subscribe.getDestination());
 
-                    getConsumerManager().addSubscription(subscribe, listener);
+                    HostInfo host = (HostInfo) future.channel().attr(HostContainer.ATTRIBUTE_HOST_INFO).get();
+
+                    getConsumerManager().addSubscription(subscribe, listener, host);
 
                     /* @todo ver o auto acknolage */
                     //listener.setBrokerClient(this);
 
+                }else{
+                    log.debug("Error creating async consumer");
                 }
 
             }
         });
     }
 
-    public ChannelFuture acknowledge(NetNotification notification) throws Throwable {
-
-        return  this.acknowledge(notification,null);
-
-    }
 
     public ChannelFuture acknowledge(NetNotification notification, Channel channel) throws Throwable {
+
         /* there is no acknowledge action for topics  */
         if (notification.getDestinationType() == NetAction.DestinationType.TOPIC) {
             return null;
@@ -336,5 +346,46 @@ public class BrokerClient extends BaseClient {
         }
 
     }
+
+
+    /**
+     * Every time a host reconnect the ConsumerManager is notified
+     *
+     * @param observable
+     * @param o
+     */
+    @Override
+    public void update(Observable observable, Object o) {
+
+
+        if(observable instanceof HostContainer && o instanceof ReconnectEvent){
+
+                HostInfo host = ((ReconnectEvent) o).getHost();
+
+                resubscribe(host);
+        }
+
+    }
+
+
+    private void resubscribe(HostInfo host){
+
+        log.debug("Resubscribing : "+host);
+
+        Map<String,BrokerAsyncConsumer> map =  consumerManager.removeSubscriptions(NetAction.DestinationType.QUEUE, host);
+
+        for(Map.Entry<String, BrokerAsyncConsumer> entry : map.entrySet() ){
+            BrokerListener listener = entry.getValue().getListener();
+
+            log.debug("Destination: "+entry.getKey());
+            this.subscribe(entry.getKey(),NetAction.DestinationType.QUEUE,listener);
+        }
+
+
+    }
+
+
+
+
 }
 

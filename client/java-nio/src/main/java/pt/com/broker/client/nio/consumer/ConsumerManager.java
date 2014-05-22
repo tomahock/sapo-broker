@@ -2,15 +2,14 @@ package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.types.DestinationDataFactory;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by luissantos on 22-04-2014.
  */
-public class ConsumerManager {
+public class ConsumerManager{
 
     protected final EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>> _consumerList = new EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>>(NetAction.DestinationType.class);
 
@@ -31,9 +30,17 @@ public class ConsumerManager {
 
     }
 
-
     public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener){
-        addSubscription(new BrokerAsyncConsumer(subscribe.getDestination(), subscribe.getDestinationType() , listener));
+        this.addSubscription(subscribe,listener,null);
+    }
+
+    public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener, HostInfo hostInfo){
+
+        BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(subscribe.getDestination(), subscribe.getDestinationType() , listener);
+
+        consumer.setHost(hostInfo);
+
+        addSubscription(consumer);
     }
 
     public void addSubscription(BrokerAsyncConsumer consumer){
@@ -117,6 +124,40 @@ public class ConsumerManager {
 
         consumer.deliver(netMessage, channel);
 
+    }
+
+
+    public Map<String, BrokerAsyncConsumer> getSubscriptions(NetAction.DestinationType dtype, HostInfo host){
+
+        Map<String, BrokerAsyncConsumer> map = new HashMap<String, BrokerAsyncConsumer>();
+
+        for(Map.Entry<String, BrokerAsyncConsumer> entry  : getSubscriptions(dtype).entrySet()){
+            String key = entry.getKey();
+            BrokerAsyncConsumer consumer = entry.getValue();
+
+            if(consumer.getHost().equals(host)){
+                map.put(key,consumer);
+            }
+        }
+
+        return map;
+    }
+
+    public Map<String, BrokerAsyncConsumer> removeSubscriptions(NetAction.DestinationType dtype, HostInfo host){
+
+        Map<String, BrokerAsyncConsumer> map =  getSubscriptions(dtype,host);
+
+        for(Map.Entry<String, BrokerAsyncConsumer> entry  : getSubscriptions(dtype).entrySet()){
+            String key = entry.getKey();
+            BrokerAsyncConsumer consumer = entry.getValue();
+
+            removeSubscription(dtype,consumer.getDestinationName());
+
+            map.put(key,consumer);
+
+        }
+
+        return map;
     }
 
 

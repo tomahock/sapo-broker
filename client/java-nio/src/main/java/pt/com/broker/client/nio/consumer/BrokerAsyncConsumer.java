@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.types.*;
@@ -16,6 +17,8 @@ public class BrokerAsyncConsumer {
     private final String destinationName;
 
     private final BrokerListener listener;
+
+    private HostInfo host;
 
 
     public BrokerAsyncConsumer(String destinationName, NetAction.DestinationType destinationType,  BrokerListener listener)
@@ -45,5 +48,15 @@ public class BrokerAsyncConsumer {
     }
 
 
+    public HostInfo getHost() {
+        return host;
+    }
 
+    public void setHost(HostInfo host) {
+        this.host = host;
+    }
+
+    public BrokerListener getListener() {
+        return listener;
+    }
 }

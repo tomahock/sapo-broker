@@ -137,7 +137,9 @@ public final class HostInfo
     }
 
     public void setChannel(Channel channel) {
+
         this.channel = channel;
+
     }
 
     public synchronized int getReconnectLimit() {
