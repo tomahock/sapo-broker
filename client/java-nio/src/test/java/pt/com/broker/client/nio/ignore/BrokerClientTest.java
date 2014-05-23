@@ -23,6 +23,7 @@ import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.types.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -175,7 +176,7 @@ public class BrokerClientTest {
     @Test
     public void testClientEnqueueMessage() throws Exception{
 
-        BrokerClient bk = new BrokerClient("192.168.100.1",3323);
+        BrokerClient bk = new BrokerClient("192.168.100.1",3323, NetProtocolType.JSON);
 
         log.debug("connecting....");
         Future<HostInfo> f = bk.connectAsync();
@@ -185,13 +186,32 @@ public class BrokerClientTest {
         f.get();
         log.debug("Connected....");
 
+
+
+         bk.subscribe("/teste/", NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
+             @Override
+             public boolean onMessage(NetMessage message) {
+
+                 System.out.println("Message");
+
+                 return true;
+             }
+         }).get();
+
         log.debug("sending message....");
-        ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+        NetBrokerMessage netBrokerMessage = new NetBrokerMessage("Teste2");
+        netBrokerMessage.setExpiration(System.currentTimeMillis()-30000);
+
+        ChannelFuture future = bk.publishMessage(netBrokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+        //ChannelFuture future = bk.publishMessage("Teste3", "/teste/", NetAction.DestinationType.QUEUE);
 
 
 
         log.debug("waiting for message be delivered....");
         future.sync();
+
+
+        Thread.sleep(10000);
 
 
     }

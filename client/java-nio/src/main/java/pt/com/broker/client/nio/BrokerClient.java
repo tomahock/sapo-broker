@@ -160,6 +160,8 @@ public class BrokerClient extends BaseClient implements Observer {
 
         NetMessage netMessage = buildMessage(netAction,subscribe.getHeaders());
 
+        final BrokerClient client = this;
+
         return sendNetMessage(netMessage, new ChannelFutureListener() {
 
             @Override
@@ -174,7 +176,7 @@ public class BrokerClient extends BaseClient implements Observer {
                     getConsumerManager().addSubscription(subscribe, listener, host);
 
                     /* @todo ver o auto acknolage */
-                    //listener.setBrokerClient(this);
+                    listener.setBrokerClient(client);
 
                 }else{
                     log.debug("Error creating async consumer");
