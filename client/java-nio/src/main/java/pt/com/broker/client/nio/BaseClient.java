@@ -14,12 +14,13 @@ import pt.com.broker.types.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observer;
 import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 05-05-2014.
  */
-public abstract class BaseClient {
+public abstract class BaseClient{
 
     private static final Logger log = LoggerFactory.getLogger(BaseClient.class);
 
@@ -72,6 +73,7 @@ public abstract class BaseClient {
         Channel channel = (c == null) ? getChannel() : c;
 
         ChannelFuture f =  channel.writeAndFlush(msg);
+
 
 
         if(future!=null){
@@ -128,13 +130,21 @@ public abstract class BaseClient {
 
     protected Channel getChannel() {
 
-        Channel c = getHosts().getAvailableChannel();
+        Channel c = null;
 
-        log.debug("Selected channel is: "+c.toString());
+        try {
+
+            c = getHosts().getAvailableChannel();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if(c==null){
             throw new RuntimeException("Was not possible to get an active channel");
         }
+
+        log.debug("Selected channel is: "+c.toString());
 
         return c;
     }

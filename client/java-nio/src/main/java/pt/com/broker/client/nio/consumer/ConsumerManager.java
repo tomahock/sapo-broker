@@ -2,9 +2,9 @@ package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.types.DestinationDataFactory;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -22,9 +22,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ConsumerManager {
 
-
-    private static final Logger log = LoggerFactory.getLogger(ConsumerManager.class);
-
     protected final EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>> _consumerList = new EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>>(NetAction.DestinationType.class);
 
 
@@ -38,7 +35,16 @@ public class ConsumerManager {
 
 
     public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener){
-        addSubscription(new BrokerAsyncConsumer(subscribe.getDestination(), subscribe.getDestinationType() , listener));
+        this.addSubscription(subscribe,listener,null);
+    }
+
+    public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener, HostInfo hostInfo){
+
+        BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(subscribe.getDestination(), subscribe.getDestinationType() , listener);
+
+        consumer.setHost(hostInfo);
+
+        addSubscription(consumer);
     }
 
     public void addSubscription(BrokerAsyncConsumer consumer){
@@ -70,6 +76,10 @@ public class ConsumerManager {
 
     }
 
+    public BrokerAsyncConsumer removeSubscription(NetSubscribeAction netSubscribeAction){
+        return removeSubscription(netSubscribeAction.getDestinationType(),netSubscribeAction.getDestination());
+    }
+
     public BrokerAsyncConsumer removeSubscription(DestinationType destinationType, String destination){
 
         Map<String, BrokerAsyncConsumer> subscriptions  = getSubscriptions(destinationType);
@@ -94,7 +104,6 @@ public class ConsumerManager {
         String destination = factory.getSubscription(netMessage);
         DestinationType dtype = factory.getDestinationType(netMessage);
 
-
         return getConsumer(dtype,destination);
 
     }
@@ -115,6 +124,7 @@ public class ConsumerManager {
 
         BrokerAsyncConsumer consumer = getConsumer(netMessage);
 
+
         if(consumer == null){
             throw new RuntimeException("No consumer found for this message");
         }
@@ -122,6 +132,40 @@ public class ConsumerManager {
 
         consumer.deliver(netMessage, channel);
 
+    }
+
+
+    public Map<String, BrokerAsyncConsumer> getSubscriptions(NetAction.DestinationType dtype, HostInfo host){
+
+        Map<String, BrokerAsyncConsumer> map = new HashMap<String, BrokerAsyncConsumer>();
+
+        for(Map.Entry<String, BrokerAsyncConsumer> entry  : getSubscriptions(dtype).entrySet()){
+            String key = entry.getKey();
+            BrokerAsyncConsumer consumer = entry.getValue();
+
+            if(consumer.getHost().equals(host)){
+                map.put(key,consumer);
+            }
+        }
+
+        return map;
+    }
+
+    public Map<String, BrokerAsyncConsumer> removeSubscriptions(NetAction.DestinationType dtype, HostInfo host){
+
+        Map<String, BrokerAsyncConsumer> map =  getSubscriptions(dtype,host);
+
+        for(Map.Entry<String, BrokerAsyncConsumer> entry  : getSubscriptions(dtype).entrySet()){
+            String key = entry.getKey();
+            BrokerAsyncConsumer consumer = entry.getValue();
+
+            removeSubscription(dtype,consumer.getDestinationName());
+
+            map.put(key,consumer);
+
+        }
+
+        return map;
     }
 
 

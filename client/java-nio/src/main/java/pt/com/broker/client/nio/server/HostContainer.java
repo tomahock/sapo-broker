@@ -7,6 +7,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
+import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.HostInfo;
@@ -21,14 +22,17 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Observable;
 import java.util.concurrent.*;
 
 /**
  * Created by luissantos on 29-04-2014.
  */
-public class HostContainer {
+public class HostContainer extends Observable {
 
     private static final Logger log = LoggerFactory.getLogger(HostContainer.class);
+
+    public static final AttributeKey<HostInfo> ATTRIBUTE_HOST_INFO  = AttributeKey.valueOf("HOST-INFO");
 
     private List<HostInfo> hosts;
 
@@ -172,36 +176,41 @@ public class HostContainer {
 
     private void reconnect(final HostInfo host){
 
-        if(!scheduler.isShutdown()) {
+        if(!scheduler.isShutdown() && !bootstrap.getGroup().isShuttingDown()) {
+
+            final HostContainer hostContainer = this;
+
             scheduler.schedule(new Runnable() {
                 @Override
                 public void run() {
 
-                    connect(host);
+                    try {
 
-                }
-            }, 4000, TimeUnit.MILLISECONDS);
-        }
+                        connectToHost(host).addListener(new ChannelFutureListener() {
 
-    }
+                            @Override
+                            public void operationComplete(ChannelFuture future) throws Exception {
 
-    private void registerSuccessfulConnect(Channel channel, final HostInfo hostInfo) throws Exception {
+                                if(!future.isSuccess()){
+                                    return;
+                                }
 
+                                synchronized (hostContainer) {
+                                    log.debug("NotifyObservers: " + host);
 
-        final HostContainer hostContainer = this;
+                                    hostContainer.setChanged();
+                                    hostContainer.notifyObservers(new ReconnectEvent(host));
 
-        hostInfo.setChannel(channel);
+                                }
 
         this.addConnectedHost(hostInfo);
 
-        channel.closeFuture().addListener(new ChannelFutureListener() {
+                            }
 
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
+                        });
 
 
-                    hostContainer.inactiveHost(hostInfo);
-                    log.debug("Server disconnected: " + hostInfo);
+                    } catch (Exception e) {
 
 
                     if(!future.isCancelled()) {
@@ -210,7 +219,10 @@ public class HostContainer {
 
             }
 
-        });
+
+                }
+            }, 2000, TimeUnit.MILLISECONDS);
+        }
 
     }
 
@@ -251,6 +263,7 @@ public class HostContainer {
 
             host.setChannel(null);
             host.setStatus(HostInfo.STATUS.CLOSED);
+            log.debug("Server disconnected: " + host);
 
         }
 
@@ -260,16 +273,41 @@ public class HostContainer {
     }
 
 
-    public Channel getAvailableChannel() {
+    /**
+     * Gets an available channel. If there are no available channel it will loop until no server is available.
+     * If its not possible to write in channel for a while the server will be disconnected.
+     * @see  pt.com.broker.client.nio.codecs.HeartbeatHandler
+     *
+     * @return Channel
+     * @throws InterruptedException
+     */
+    public synchronized Channel getAvailableChannel() throws InterruptedException {
 
-        HostInfo host = strategy.next();
+        HostInfo host = null;
+
+        int total = connectedHosts.size();
+
+        do {
+
+            host = strategy.next();
+
+            if(host == null && total-- < 1){
+
+                Thread.sleep(500);
+
+                total = connectedHosts.size();
+
+                if(total==0){
+                    return null;
+                }
+
+            }
+
+        } while (host == null || (host != null && !host.getChannel().isWritable()));
 
 
-        if (host != null) {
-            return host.getChannel();
-        }
+        return host.getChannel();
 
-        return null;
 
     }
 
@@ -306,10 +344,9 @@ public class HostContainer {
 
                     if (future.isSuccess()) {
 
-                        registerSuccessfulConnect(f.channel(), host);
-                        host.setStatus(HostInfo.STATUS.OPEN);
+                    if (!future.isSuccess()) {
 
-                        log.debug("Connected to server: " + host);
+                        host.setStatus(HostInfo.STATUS.CLOSED);
 
 
                     } else {
@@ -319,8 +356,38 @@ public class HostContainer {
 
                         reconnect(host);
 
+                        return ;
 
                     }
+
+                    Channel channel = f.channel();
+                    channel.attr(ATTRIBUTE_HOST_INFO).set(host);
+
+                    host.setChannel(channel);
+
+                    host.setStatus(HostInfo.STATUS.OPEN);
+                    addConnectedHost(host);
+
+                    log.debug("Connected to server: " + host);
+
+                    channel.closeFuture().addListener(new ChannelFutureListener() {
+
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+
+                            inactiveHost(host);
+
+                            if(!future.isCancelled()) {
+                                reconnect(host);
+                            }
+
+                        }
+
+                    });
+
+
+
+
                 }
 
             }
@@ -366,6 +433,8 @@ public class HostContainer {
         scheduler.shutdown();
         executorService.shutdown();
     }
+
+
 
 
 
