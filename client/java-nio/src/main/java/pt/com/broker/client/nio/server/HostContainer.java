@@ -203,7 +203,7 @@ public class HostContainer extends Observable {
 
                                 }
 
-        this.addConnectedHost(hostInfo);
+                                addConnectedHost(host);
 
                             }
 
@@ -212,12 +212,7 @@ public class HostContainer extends Observable {
 
                     } catch (Exception e) {
 
-
-                    if(!future.isCancelled()) {
-                       reconnect(hostInfo);
                     }
-
-            }
 
 
                 }
@@ -342,7 +337,7 @@ public class HostContainer extends Observable {
 
                 synchronized (host) {
 
-                    if (future.isSuccess()) {
+
 
                     if (!future.isSuccess()) {
 
@@ -398,6 +393,7 @@ public class HostContainer extends Observable {
 
         return f;
     }
+
 
     protected void addConnectedHost(HostInfo host) throws Exception {
 

@@ -138,6 +138,7 @@ public class Main
 				new MultipleN1TopicRemote().run(numberOfTests, testResults);
 				new Multiple1NTopicRemote().run(numberOfTests, testResults);
                 new MultipleNNTopicRemote().run(numberOfTests, testResults);
+                break;
 
 			}
 

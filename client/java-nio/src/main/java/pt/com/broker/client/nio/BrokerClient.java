@@ -50,6 +50,7 @@ public class BrokerClient extends BaseClient implements Observer {
     private PendingAcceptRequestsManager acceptRequestsManager;
 
 
+    private ChannelInitializer channelInitializer;
 
 
     public BrokerClient(NetProtocolType ptype) {
@@ -275,7 +276,6 @@ public class BrokerClient extends BaseClient implements Observer {
             netPoll.setActionId(request.getActionId());
         }
 
-        NetAction netAction = new NetAction(netPoll);
 
         final BlockingQueue<NetMessage> queue = new ArrayBlockingQueue<NetMessage>(1);
 
@@ -306,18 +306,14 @@ public class BrokerClient extends BaseClient implements Observer {
 
                 }
 
-                @Override
-                public void onFault(NetMessage message) {
-                    onMessage(message);
-                }
+
             });
 
 
-            latch.await();
+
 
             return queue.take();
 
-            return response[0];
 
         } catch (Throwable e) {
 
