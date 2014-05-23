@@ -72,7 +72,7 @@ public class PollVirtualQueueTest extends BrokerTest
 
                     Thread.sleep(3000);
 
-					//bk.close().get();
+				    bk.close().get();
 
 					setDone(true);
 					setSucess(true);
@@ -105,7 +105,7 @@ public class PollVirtualQueueTest extends BrokerTest
 
 
 
-					//bk.close().get();
+
 
 					if (msg.getMessage() == null)
 					{
@@ -124,7 +124,7 @@ public class PollVirtualQueueTest extends BrokerTest
 						return this;
 					}
 
-                    Thread.sleep(3000);
+                    bk.close().get();
 
 					setDone(true);
 					setSucess(true);

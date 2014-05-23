@@ -21,6 +21,7 @@ import pt.com.broker.functests.helpers.SetValueFuture;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class TopicPubSubWithActionId extends BrokerTest
@@ -226,4 +227,21 @@ public class TopicPubSubWithActionId extends BrokerTest
 			}
 		});
 	}
+
+    @Override
+    protected void end() {
+
+        try {
+
+            infoConsumer.close().get();
+            infoProducer.close().get();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 }

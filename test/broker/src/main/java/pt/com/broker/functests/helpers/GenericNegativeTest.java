@@ -11,6 +11,7 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class GenericNegativeTest extends BrokerTest
@@ -23,11 +24,15 @@ public class GenericNegativeTest extends BrokerTest
 	private BrokerListener defaultErrorListener = new BrokerListenerAdapter() {
         @Override
         public boolean onMessage(NetMessage message) {
+
+            System.out.println("Error Message");
+
             return true;
         }
 
         @Override
         public void onFault(NetMessage message) {
+            System.out.println("Error Message Fault");
             faultFuture.set(message.getAction().getFaultMessage());
         }
     };
@@ -63,6 +68,7 @@ public class GenericNegativeTest extends BrokerTest
 		addAction();
 		addConsequece();
 	}
+
 
 	protected void addConsequece()
 	{
@@ -117,7 +123,20 @@ public class GenericNegativeTest extends BrokerTest
 
 	}
 
-	public void setBrokerClient(BrokerClient brokerClient)
+    @Override
+    protected void end() {
+        try {
+
+            brokerClient.close().get();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setBrokerClient(BrokerClient brokerClient)
 	{
 		this.brokerClient = brokerClient;
 	}

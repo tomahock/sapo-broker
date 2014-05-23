@@ -42,7 +42,7 @@ public class PollTest extends BrokerTest
 
 					bk.publishMessage(brokerMessage, queueName, NetAction.DestinationType.QUEUE);
 
-					bk.close();
+					bk.close().get();
 
 					setDone(true);
 					setSucess(true);
@@ -72,7 +72,7 @@ public class PollTest extends BrokerTest
 
 					bk.acknowledge(msg);
 
-					bk.close();
+					bk.close().get();
 
 					if (msg.getMessage() == null)
 					{

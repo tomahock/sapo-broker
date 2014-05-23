@@ -109,9 +109,12 @@ public class Main
 
 			testResults.addProperty("Encoding", protoType.toString());
 
-			BrokerTest.setDefaultimeout(12 * 1000);
+			BrokerTest.setDefaultimeout(20 * 1000);
 			BrokerTest.setDefaultEncodingProtocolType(protoType);
 			BrokerTest.setDefaultDataLenght(512);
+
+
+
 
 			if (runAll || runPositive)
 			{
@@ -138,7 +141,7 @@ public class Main
 				new MultipleN1TopicRemote().run(numberOfTests, testResults);
 				new Multiple1NTopicRemote().run(numberOfTests, testResults);
                 new MultipleNNTopicRemote().run(numberOfTests, testResults);
-                break;
+
 
 			}
 

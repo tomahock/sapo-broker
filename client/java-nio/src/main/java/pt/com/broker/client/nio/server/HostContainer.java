@@ -195,6 +195,7 @@ public class HostContainer extends Observable {
                                     return;
                                 }
 
+                                addConnectedHost(host);
                                 synchronized (hostContainer) {
                                     log.debug("NotifyObservers: " + host);
 
@@ -203,7 +204,7 @@ public class HostContainer extends Observable {
 
                                 }
 
-                                addConnectedHost(host);
+
 
                             }
 
@@ -337,14 +338,7 @@ public class HostContainer extends Observable {
 
                 synchronized (host) {
 
-
-
                     if (!future.isSuccess()) {
-
-                        host.setStatus(HostInfo.STATUS.CLOSED);
-
-
-                    } else {
 
                         host.setStatus(HostInfo.STATUS.CLOSED);
                         log.debug("Error connecting to server: " + host);
@@ -352,7 +346,6 @@ public class HostContainer extends Observable {
                         reconnect(host);
 
                         return ;
-
                     }
 
                     Channel channel = f.channel();

@@ -13,6 +13,7 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class GenericPubSubTest extends BrokerTest
@@ -60,6 +61,18 @@ public class GenericPubSubTest extends BrokerTest
 
 	}
 
+    @Override
+    protected void end() {
+        try {
+            infoConsumer.close().get();
+            infoProducer.close().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
 	@Override
 	public void build() throws Throwable
 	{
@@ -71,10 +84,6 @@ public class GenericPubSubTest extends BrokerTest
 			brokerListener = new BrokerListenerAdapter() {
                 @Override
                 public boolean onMessage(NetMessage message) {
-
-                    System.out.println(Thread.currentThread().getName());
-
-                    System.out.println("Message: "+message.getAction().getNotificationMessage());
 
                     last[0] = message.getAction().getNotificationMessage();
 

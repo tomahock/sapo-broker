@@ -61,8 +61,6 @@ public class UdpPublishTest extends GenericPubSubTest
 
                     Thread.sleep(2000);
 
-                    System.out.println("cenas");
-
 
 					setDone(true);
 					setSucess(true);

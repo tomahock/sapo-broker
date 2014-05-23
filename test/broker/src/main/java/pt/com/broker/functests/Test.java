@@ -64,7 +64,6 @@ public abstract class Test
 		boolean result = true;
 		if (skipTest())
 		{
-			System.out.println("test skiped");
 			testResults.addSkipedTest(getNameAndEncoding(testResults));
 			return true;
 		}
@@ -90,6 +89,8 @@ public abstract class Test
 			int count = nrOfRuns;
 			do
 			{
+                log.info("Timeout: "+getTimeout());
+
 				executionResults = executer.invokeAll(activities, getTimeout(), TimeUnit.MILLISECONDS);
 
 				for (Future<Step> executionResult : executionResults)
@@ -165,8 +166,14 @@ public abstract class Test
 		else
 			testResults.addFailedTest(getNameAndEncoding(testResults));
 
+        end();
+
 		return result;
 	}
+
+    protected void end(){
+
+    }
 
 	private String getNameAndEncoding(TestsResults testResults)
 	{

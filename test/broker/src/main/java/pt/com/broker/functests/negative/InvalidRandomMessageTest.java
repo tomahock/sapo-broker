@@ -20,7 +20,6 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 		byte[] randomData = new byte[msgSize];
 		new Random().nextBytes(randomData);
 
-		setTimeout(10 * 1000);
 		byte[] header = null;
 		if (getEncodingProtocolType() != NetProtocolType.SOAP_v0)
 		{
@@ -58,15 +57,15 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
                             return true;
 
                         }
-                    }).get();
+                    });
 
-                    Thread.sleep(1000);
 
 					setSucess(true);
 					setDone(true);
 				}
 				catch (Throwable e)
 				{
+                    e.printStackTrace();
 					setReasonForFailure(e.getMessage());
 				}
 				return this;
@@ -77,6 +76,6 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 	@Override
 	public boolean skipTest()
 	{
-		return (getEncodingProtocolType() == NetProtocolType.JSON);
+		return (getEncodingProtocolType() == NetProtocolType.JSON || getEncodingProtocolType() == NetProtocolType.SOAP_v0 );
 	}
 }

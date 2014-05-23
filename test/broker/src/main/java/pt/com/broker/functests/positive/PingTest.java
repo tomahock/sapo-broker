@@ -12,6 +12,7 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPong;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class PingTest extends BrokerTest
@@ -43,13 +44,12 @@ public class PingTest extends BrokerTest
 
 
 
-					ChannelFuture f = bk.checkStatus(new BrokerListenerAdapter() {
+					Future f = bk.checkStatus(new BrokerListenerAdapter() {
                         @Override
                         public boolean onMessage(NetMessage message) {
 
                             NetPong  pong = message.getAction().getPongMessage();
 
-                            System.out.println("Pong: " + pong.getActionId());
 
                             setSucess(pong != null);
 

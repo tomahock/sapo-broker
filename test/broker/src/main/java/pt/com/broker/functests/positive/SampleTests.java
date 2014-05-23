@@ -49,6 +49,8 @@ public class SampleTests
 						consumer.subscribe(subscribe, brokerListener);
 
 
+
+                        consumer.close().get();
                         Thread.sleep(2000);
 
 						setDone(true);
@@ -75,7 +77,7 @@ public class SampleTests
 
 						bk.publishMessage(brokerMessage, topicName, NetAction.DestinationType.TOPIC);
 
-						bk.close();
+						bk.close().get();
 
 						setDone(true);
 						setSucess(true);

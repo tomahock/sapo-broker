@@ -251,7 +251,10 @@ public class BrokerClient extends BaseClient implements Observer {
             public void operationComplete(ChannelFuture future) throws Exception {
 
                 if(future.isSuccess()){
+                    System.out.println("Check Status OK");
                     getPongConsumerManager().addSubscription(ping,listener);
+                }else{
+                   System.out.println("Check Status Fail");
                 }
 
             }
