@@ -5,29 +5,24 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 
-import io.netty.util.AttributeKey;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.bootstrap.BaseChannelInitializer;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 
-import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
 
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.MessageAcceptedListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
-import pt.com.broker.client.nio.handlers.timeout.*;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.ReconnectEvent;
-import pt.com.broker.client.nio.utils.NetNotificationChannelDecorator;
+import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
 
 
@@ -195,17 +190,23 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
 
+    /**
+     * Acknowledge and NetNotification received from the server. This method should only be used
+     * in
+     *
+     *
+     * @param notification
+     * @return
+     * @throws Throwable
+     */
     public ChannelFuture acknowledge(NetNotification notification) throws Throwable {
 
-        if(!(notification instanceof NetNotificationChannelDecorator)){
+        if(!(notification instanceof NetNotificationDecorator)){
             throw new Exception("Invalid NetNotification");
         }
 
-        return  this.acknowledge(notification,((NetNotificationChannelDecorator) notification).getChannel());
+        Channel channel = ((NetNotificationDecorator) notification).getChannel();
 
-    }
-
-    private ChannelFuture acknowledge(NetNotification notification, Channel channel) throws Throwable {
         /* there is no acknowledge action for topics  */
         if (notification.getDestinationType() == NetAction.DestinationType.TOPIC) {
             return null;
@@ -220,12 +221,6 @@ public class BrokerClient extends BaseClient implements Observer {
         String ackDestination = notification.getSubscription();
 
         String msgid = brkMsg.getMessageId();
-
-        String[] parts = msgid.split("#",2);
-
-        if(parts.length > 1){
-            msgid = parts[1];
-        }
 
         NetAcknowledge ackMsg = new NetAcknowledge(ackDestination, msgid);
 
@@ -255,10 +250,9 @@ public class BrokerClient extends BaseClient implements Observer {
             public void operationComplete(ChannelFuture future) throws Exception {
 
                 if(future.isSuccess()){
-                    System.out.println("Check Status OK");
                     getPongConsumerManager().addSubscription(ping,listener);
                 }else{
-                   System.out.println("Check Status Fail");
+                    throw new Exception("Was not possible to check Status");
                 }
 
             }
@@ -267,6 +261,12 @@ public class BrokerClient extends BaseClient implements Observer {
         return f;
     }
 
+    /**
+     * @see pt.com.broker.client.nio.BrokerClient#poll(pt.com.broker.types.NetPoll, AcceptRequest)
+     *
+     * @param name
+     * @return
+     */
     public NetNotification poll(String name) {
 
         try {
@@ -282,6 +282,15 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
+    /**
+     *
+     * @see pt.com.broker.client.nio.BrokerClient#poll(pt.com.broker.types.NetPoll, AcceptRequest)
+     *
+     * @param name
+     * @param timeout
+     * @return
+     * @throws TimeoutException
+     */
     public NetNotification poll(String name ,int timeout) throws TimeoutException {
 
         NetPoll netPoll = new NetPoll(name, timeout);
@@ -289,6 +298,15 @@ public class BrokerClient extends BaseClient implements Observer {
         return this.poll(netPoll,null);
     }
 
+    /**
+     *  Blocks until a message is received.
+     *
+     * @param netPoll
+     * @param request
+     * @return
+     * @throws TimeoutException
+     *
+     */
     public NetNotification poll(final NetPoll netPoll, AcceptRequest request) throws TimeoutException{
 
         if(request!=null){
@@ -321,9 +339,7 @@ public class BrokerClient extends BaseClient implements Observer {
                 @Override
                 public boolean onMessage(NetNotification message) {
 
-
                     try {
-
 
                         queue.put(message);
 

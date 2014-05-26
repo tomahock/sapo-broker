@@ -1,12 +1,9 @@
 package pt.com.broker.client.nio.server;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.EventLoopGroup;
+
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +11,7 @@ import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
-import pt.com.broker.client.nio.utils.CircularContainer;
 
-
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

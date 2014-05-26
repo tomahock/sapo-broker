@@ -2,16 +2,14 @@ package pt.com.broker.client.nio.handlers;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
-import pt.com.broker.client.nio.utils.NetNotificationChannelDecorator;
+import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetPublish;
 
 import java.net.InetSocketAddress;
 
@@ -48,7 +46,7 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
                 case NOTIFICATION:
 
                     // Modifies the NetNotification to identify the channel
-                    NetNotificationChannelDecorator decorator = new NetNotificationChannelDecorator(msg.getAction().getNotificationMessage(),ctx.channel());
+                    NetNotificationDecorator decorator = new NetNotificationDecorator(msg.getAction().getNotificationMessage(),ctx.channel());
 
                     msg.getAction().setNotificationMessage(decorator);
 
@@ -79,20 +77,6 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
     protected void deliverNotification(ChannelHandlerContext ctx, NetMessage msg) throws Throwable {
 
         Channel channel = ctx.channel();
-
-        if(msg.getAction().getNotificationMessage() != null){
-
-            NetBrokerMessage bmsg = msg.getAction().getNotificationMessage().getMessage();
-
-            String oldmsgid = bmsg.getMessageId();
-
-            InetSocketAddress socketAddress =  (InetSocketAddress)channel.remoteAddress();
-
-            String newmsgid = socketAddress.getAddress().getCanonicalHostName()+":"+socketAddress.getPort()+"#"+oldmsgid;
-
-            bmsg.setMessageId(newmsgid);
-
-        }
 
         log.debug("Message Received");
         

@@ -28,7 +28,7 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
 
                     if(brokerClient != null){
 
-                        brokerClient.acknowledge(netNotification,channel);
+                        brokerClient.acknowledge(netNotification);
 
                     }
 

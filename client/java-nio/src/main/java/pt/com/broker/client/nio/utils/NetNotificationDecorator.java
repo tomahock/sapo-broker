@@ -5,26 +5,23 @@ import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.Locale;
 import java.util.Map;
 
 /**
  * Created by luissantos on 26-05-2014.
  */
-public class NetNotificationChannelDecorator extends NetNotification {
+public class NetNotificationDecorator extends NetNotification {
 
     private final NetNotification instance;
 
     protected Channel channel;
 
-    public NetNotificationChannelDecorator(NetNotification instance) {
+    public NetNotificationDecorator(NetNotification instance) {
         this(instance, null);
     }
 
 
-    public NetNotificationChannelDecorator(NetNotification instance, Channel channel) {
+    public NetNotificationDecorator(NetNotification instance, Channel channel) {
         super(null,null,null,null);
         this.instance = instance;
         setChannel(channel);
