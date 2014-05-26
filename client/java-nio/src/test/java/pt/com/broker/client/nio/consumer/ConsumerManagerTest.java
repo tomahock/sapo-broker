@@ -7,6 +7,7 @@ import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.types.*;
 
 /**
@@ -25,17 +26,13 @@ public class ConsumerManagerTest {
         NetPoll netPoll = new NetPoll(destination, 1000);
 
 
-        BrokerListener brokerListener = new BrokerListenerAdapter() {
-            @Override
-            public boolean onMessage(NetMessage message) {
+        BrokerListener brokerListener = new NotificationListenerAdapter() {
 
+            @Override
+            public boolean onMessage(NetNotification notification) {
                 return true;
             }
 
-            @Override
-            public void onFault(NetMessage message) {
-
-            }
         };
 
         consumerManager.addSubscription(netPoll, brokerListener);
@@ -63,16 +60,11 @@ public class ConsumerManagerTest {
         NetPoll netPoll = new NetPoll(destination, 1000);
 
 
-        BrokerListener brokerListener = new BrokerListenerAdapter() {
-            @Override
-            public boolean onMessage(NetMessage message) {
+        BrokerListener brokerListener = new NotificationListenerAdapter() {
 
+            @Override
+            public boolean onMessage(NetNotification notification) {
                 return true;
-            }
-
-            @Override
-            public void onFault(NetMessage message) {
-
             }
         };
 
@@ -107,16 +99,11 @@ public class ConsumerManagerTest {
         NetPoll netPoll = new NetPoll(destination, 1000);
 
 
-        BrokerListener brokerListener = new BrokerListenerAdapter() {
-            @Override
-            public boolean onMessage(NetMessage message) {
+        BrokerListener brokerListener = new NotificationListenerAdapter() {
 
+            @Override
+            public boolean onMessage(NetNotification notification) {
                 return true;
-            }
-
-            @Override
-            public void onFault(NetMessage message) {
-
             }
         };
 
@@ -140,15 +127,10 @@ public class ConsumerManagerTest {
 
 
         BrokerListener brokerListener = new BrokerListenerAdapter() {
+
             @Override
             public boolean onMessage(NetMessage message) {
-
                 return true;
-            }
-
-            @Override
-            public void onFault(NetMessage message) {
-
             }
         };
 

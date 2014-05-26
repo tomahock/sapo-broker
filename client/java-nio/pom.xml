@@ -5,6 +5,7 @@
         <groupId>pt.sapo.oss.broker</groupId>
         <artifactId>sapo-broker-parent</artifactId>
         <version>4.0.46</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>sapo-broker-java-client-nio</artifactId>
     <name>sapo-broker-java-client-netty</name>
@@ -128,10 +129,11 @@
     <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.6</version>
+        <version>2.5.2</version>
         <configuration>
             <formats>
                 <format>html</format>
+                <format>xml</format>
             </formats>
         </configuration>
     </plugin>

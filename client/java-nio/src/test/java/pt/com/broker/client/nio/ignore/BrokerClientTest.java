@@ -19,11 +19,15 @@ import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
+import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.types.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -174,19 +178,21 @@ public class BrokerClientTest {
     @Test
     public void testClientEnqueueMessage() throws Exception{
 
-        BrokerClient bk = new BrokerClient("127.0.0.1",3323, NetProtocolType.PROTOCOL_BUFFER);
+        BrokerClient bk = new BrokerClient("192.168.100.1",3323, NetProtocolType.JSON);
 
         log.debug("connecting....");
-        bk.connect();
+        Future<HostInfo> f = bk.connectAsync();
+
+
+        log.debug("Waiting for connection....");
+        f.get();
         log.debug("Connected....");
 
-        Thread.sleep(2000);
 
 
-
-         bk.subscribe("/teste/", NetAction.DestinationType.VIRTUAL_QUEUE,new BrokerListenerAdapter() {
+         bk.subscribe("/teste/", NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
              @Override
-             public boolean onMessage(NetMessage message) {
+             public boolean onMessage(NetNotification message) {
 
                  System.out.println("Message");
 
@@ -196,14 +202,9 @@ public class BrokerClientTest {
 
         log.debug("sending message....");
         NetBrokerMessage netBrokerMessage = new NetBrokerMessage("Teste2");
+        netBrokerMessage.setExpiration(System.currentTimeMillis()-30000);
 
-
-
-        netBrokerMessage.addHeader(Headers.DEFERRED_DELIVERY, String.valueOf(3598933));
-
-        //netBrokerMessage.setExpiration(System.currentTimeMillis()-30000);
-
-        ChannelFuture future = bk.publishMessage(netBrokerMessage, "/teste/", NetAction.DestinationType.TOPIC);
+        ChannelFuture future = bk.publishMessage(netBrokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
         //ChannelFuture future = bk.publishMessage("Teste3", "/teste/", NetAction.DestinationType.QUEUE);
 
 
@@ -239,10 +240,10 @@ public class BrokerClientTest {
         log.debug("Subscribe");
 
 
-        Future fs = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
+        Future fs = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetMessage message) {
+            public boolean onMessage(NetNotification message) {
 
                 // do something
 
@@ -285,15 +286,15 @@ public class BrokerClientTest {
 
         log.debug("Subscribe");
 
-        Future fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
+        Future fs = bk.subscribe(netSubscribe,new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetMessage message) {
+            public boolean onMessage(NetNotification message) {
 
                 try {
 
-                    log.debug(message.getAction().getNotificationMessage().getMessage().getMessageId());
-                    log.debug(new String(message.getAction().getNotificationMessage().getMessage().getPayload(),"UTF-8"));
+                    log.debug(message.getMessage().getMessageId());
+                    log.debug(new String(message.getMessage().getPayload(),"UTF-8"));
 
                     for(Map.Entry<String, String> entry : message.getHeaders().entrySet()){
                         System.out.println(entry.getKey() + "/" + entry.getValue());
@@ -301,8 +302,8 @@ public class BrokerClientTest {
 
                     System.out.println("---------------------------------");
 
-                    if(message.getAction().getNotificationMessage().getHeaders() != null) {
-                        for (Map.Entry<String, String> entry : message.getAction().getNotificationMessage().getHeaders().entrySet()) {
+                    if(message.getHeaders() != null) {
+                        for (Map.Entry<String, String> entry : message.getHeaders().entrySet()) {
                             System.out.println(entry.getKey() + "/" + entry.getValue());
                         }
                     }
@@ -316,10 +317,7 @@ public class BrokerClientTest {
                 return false;
             }
 
-            @Override
-            public void onFault(NetMessage message) {
 
-            }
         });
 
         try {
@@ -462,14 +460,21 @@ public class BrokerClientTest {
 
         while (counter-- > 0){
 
-            NetMessage netMessage = bk.poll("/teste/", 2000);
 
-            if(netMessage.getAction().getActionType().equals(NetAction.ActionType.FAULT)
-                    && netMessage.getAction().getFaultMessage().getCode().equals(NetFault.PollTimeoutErrorCode)){
+            try{
+
+                NetNotification netNotification = bk.poll("/teste/", 2000);
+
+                System.out.println("Notification: " + netNotification);
+
+            }catch (TimeoutException e){
+
+                // there was a timeout
 
             }
 
-            System.out.println("Action Type:" + netMessage.getAction().getActionType().name());
+
+
         }
 
     }

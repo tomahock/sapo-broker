@@ -19,8 +19,8 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
     private BrokerListener faultListenerAdapter;
 
     public ReceiveFaultHandler(ConsumerManager manager) {
-       super();
-       this.manager = manager;
+        super();
+        this.manager = manager;
     }
 
     public ConsumerManager getManager() {
@@ -32,24 +32,24 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception {
 
-            NetFault fault = msg.getAction().getFaultMessage();
+        NetFault fault = msg.getAction().getFaultMessage();
 
-            if(fault == null){
-                ctx.fireChannelRead(msg);
-                return;
-            }
+        if(fault == null){
+            ctx.fireChannelRead(msg);
+            return;
+        }
 
-            String faultCode = fault.getCode();
+        String faultCode = fault.getCode();
 
 
-            try {
+        try {
 
-                deliverFaultMessage(ctx,msg);
+            deliverFaultMessage(ctx,msg);
 
-            } catch (Throwable throwable) {
+        } catch (Throwable throwable) {
 
-                 throw new Exception(throwable);
-            }
+            throw new Exception(throwable);
+        }
 
 
     }

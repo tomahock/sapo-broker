@@ -87,6 +87,8 @@ public class Consumer implements BrokerListener
 		return dtype != DestinationType.TOPIC;
 	}
 
+
+
 	@Override
 	public void onMessage(NetNotification notification)
 	{

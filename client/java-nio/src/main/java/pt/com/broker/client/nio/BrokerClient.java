@@ -22,6 +22,9 @@ import pt.com.broker.client.nio.events.BrokerListener;
 
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.MessageAcceptedListener;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.handlers.timeout.*;
+import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.ReconnectEvent;
 import pt.com.broker.types.*;
@@ -31,10 +34,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Created by luissantos on 21-04-2014.
@@ -178,7 +178,7 @@ public class BrokerClient extends BaseClient implements Observer {
                     /* @todo ver o auto acknolage */
                     listener.setBrokerClient(client);
 
-                }else{
+                } else {
                     log.debug("Error creating async consumer");
                 }
 
@@ -263,18 +263,29 @@ public class BrokerClient extends BaseClient implements Observer {
         return f;
     }
 
-    public NetMessage poll(String name) throws Exception {
-        return poll(name,0);
+    public NetNotification poll(String name) {
+
+        try {
+
+            return poll(name, 0);
+
+        } catch (TimeoutException e) {
+
+            //there is no timeout exception
+
+            throw  new RuntimeException(e);
+        }
+
     }
 
-    public NetMessage poll(String name ,int timeout) throws Exception {
+    public NetNotification poll(String name ,int timeout) throws TimeoutException {
 
         NetPoll netPoll = new NetPoll(name, timeout);
 
         return this.poll(netPoll,null);
     }
 
-    public NetMessage poll(final NetPoll netPoll, AcceptRequest request) throws Exception{
+    public NetNotification poll(final NetPoll netPoll, AcceptRequest request) throws TimeoutException{
 
         if(request!=null){
             addAcceptMessageHandler(request);
@@ -282,15 +293,30 @@ public class BrokerClient extends BaseClient implements Observer {
         }
 
 
-        final BlockingQueue<NetMessage> queue = new ArrayBlockingQueue<NetMessage>(1);
+        final BlockingQueue<NetNotification> queue = new ArrayBlockingQueue<NetNotification>(1);
 
 
         try {
 
-            subscribe(netPoll, new BrokerListenerAdapter() {
+            subscribe(netPoll, new NotificationListenerAdapter() {
+
 
                 @Override
-                public boolean onMessage(NetMessage message) {
+                public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+
+                    if(message.getAction().getActionType().equals(NetAction.ActionType.FAULT)
+                            && message.getAction().getFaultMessage().getCode().equals(NetFault.PollTimeoutErrorCode)){
+
+                        throw new TimeoutException("Poll timeout");
+
+                    }
+
+
+                        super.deliverMessage(message, channel);
+                }
+
+                @Override
+                public boolean onMessage(NetNotification message) {
 
 
                     try {
@@ -322,7 +348,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
         } catch (Throwable e) {
 
-            throw new Exception("There was an unexpected error",e);
+            throw new RuntimeException("There was an unexpected error",e);
 
         }
 
