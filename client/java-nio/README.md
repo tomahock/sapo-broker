@@ -36,10 +36,10 @@
        
         // ... connecting ...
         
-       bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
+       bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
        
                    @Override
-                   public boolean onMessage(NetMessage message) {
+                   public boolean onMessage(NetNotification message) {
        
                        // do something
                        
@@ -61,13 +61,17 @@
 
         while (true){
       
-                  NetMessage netMessage = bk.poll("/teste/");
+                    
+                  NetNotification notification = bk.poll("/teste/"); //blocks!!!
                   
-                  
+                  // ... do some work ... 
+                
+                  bk.acknowledge(notification); //acknowledge the message
+                     
       
-                    if( ... ){ // break cycle on some condition
+                  if( ... ){ // step out on some condition
                         break;
-                    }
+                  }
       
         }
 
@@ -85,18 +89,25 @@
         long timeout = 5000;
         while (true){
       
-                  NetMessage netMessage = bk.poll("/teste/",timeout);
-                  
-                   if(netMessage.getAction().getActionType().equals(NetAction.ActionType.FAULT)
-                                      && netMessage.getAction().getFaultMessage().getCode().equals(NetFault.PollTimeoutErrorCode)){
-                                      
-                        // timeout
+                   try{
                         
-                   }
+                        NetNotification notification = bk.poll("/teste/",timeout); //blocks!!!
+                        
+                        // ... do some work ... 
+                                        
+                        bk.acknowledge(notification); //acknowledge the message
+                        
                   
-                  if( ... ){ // break cycle on some condition
+                   }catch (TimeoutException e){
+
+                        // there was a timeout
+
+                    }
+                
+                  
+                    if( ... ){ // step out on some condition
                         break;
-                  }
+                    }
       
         }
 

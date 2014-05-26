@@ -27,6 +27,7 @@ import pt.com.broker.client.nio.handlers.timeout.*;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.ReconnectEvent;
+import pt.com.broker.client.nio.utils.NetNotificationChannelDecorator;
 import pt.com.broker.types.*;
 
 
@@ -48,7 +49,6 @@ public class BrokerClient extends BaseClient implements Observer {
     private PongConsumerManager pongConsumerManager;
 
     private PendingAcceptRequestsManager acceptRequestsManager;
-
 
     private ChannelInitializer channelInitializer;
 
@@ -136,7 +136,7 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
     public Future subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) {
-        return subscribe(subscribe,listener,null);
+        return subscribe(subscribe, listener, null);
     }
 
     public Future subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , AcceptRequest request) {
@@ -158,7 +158,7 @@ public class BrokerClient extends BaseClient implements Observer {
         }
 
 
-        NetMessage netMessage = buildMessage(netAction,subscribe.getHeaders());
+        NetMessage netMessage = buildMessage(netAction, subscribe.getHeaders());
 
         final BrokerClient client = this;
 
@@ -197,11 +197,15 @@ public class BrokerClient extends BaseClient implements Observer {
 
     public ChannelFuture acknowledge(NetNotification notification) throws Throwable {
 
-        return  this.acknowledge(notification,null);
+        if(!(notification instanceof NetNotificationChannelDecorator)){
+            throw new Exception("Invalid NetNotification");
+        }
+
+        return  this.acknowledge(notification,((NetNotificationChannelDecorator) notification).getChannel());
 
     }
 
-    public ChannelFuture acknowledge(NetNotification notification, Channel channel) throws Throwable {
+    private ChannelFuture acknowledge(NetNotification notification, Channel channel) throws Throwable {
         /* there is no acknowledge action for topics  */
         if (notification.getDestinationType() == NetAction.DestinationType.TOPIC) {
             return null;
@@ -311,7 +315,6 @@ public class BrokerClient extends BaseClient implements Observer {
 
                     }
 
-
                         super.deliverMessage(message, channel);
                 }
 
@@ -321,15 +324,14 @@ public class BrokerClient extends BaseClient implements Observer {
 
                     try {
 
+
                         queue.put(message);
 
-                        return true;
+                        return false;
 
                     } catch (InterruptedException e) {
 
-                        e.printStackTrace();
-
-                        return false;
+                        throw new RuntimeException(e);
 
                     }finally {
                         getConsumerManager().removeSubscription(netPoll);
@@ -400,7 +402,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
-   public void setFaultListner(BrokerListener adapter){
+   public void setFaultListener(BrokerListener adapter){
         channelInitializer.setFaultHandler(adapter);
     }
 

@@ -6,7 +6,7 @@ import java.util.Map;
  * Represents a Notification message.
  *
  */
-public final class NetNotification
+public class NetNotification
 {
 
     private final String destination;

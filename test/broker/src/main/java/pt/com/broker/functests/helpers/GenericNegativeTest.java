@@ -92,7 +92,7 @@ public class GenericNegativeTest extends BrokerTest
 				{
 					brokerClient = getBrokerClient();
 
-					brokerClient.setFaultListner(getErrorListener());
+					brokerClient.setFaultListener(getErrorListener());
 
 					//brokerClient.getNetHandler().getConnector().getOutput().write(getDataToSend());
 
