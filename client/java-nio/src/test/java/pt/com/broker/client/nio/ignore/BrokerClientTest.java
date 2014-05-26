@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Assert;
@@ -17,10 +18,7 @@ import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
-import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
-import pt.com.broker.client.nio.events.NotificationListenerAdapter;
-import pt.com.broker.client.nio.events.PongListenerAdapter;
+import pt.com.broker.client.nio.events.*;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.types.*;
 
@@ -510,6 +508,31 @@ public class BrokerClientTest {
         bk.publishMessage(message,"/teste/", NetAction.DestinationType.QUEUE, acceptRequest);
 
         Thread.sleep(10000);
+    }
+
+    public void test(){
+
+
+        final BrokerClient bk = new BrokerClient(NetProtocolType.JSON);
+
+        // ... connecting ...
+
+        bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListener() {
+
+
+            @Override
+            public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+
+                bk.acknowledge(message.getAction().getNotificationMessage());
+            }
+
+            @Override
+            public void setBrokerClient(BrokerClient client) {
+
+            }
+        });
+
+
     }
 
 }
