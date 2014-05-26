@@ -10,11 +10,9 @@ import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.mocks.SocketServer;
-import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -60,9 +58,9 @@ public class TestServerReconnect extends BaseTest {
             String name = "/teste/"+server.getPort();
 
             System.out.println(name);
-            bk.subscribe( name , NetAction.DestinationType.QUEUE , new BrokerListenerAdapter() {
+            bk.subscribe( name , NetAction.DestinationType.QUEUE , new NotificationListenerAdapter() {
                 @Override
-                public boolean onMessage(NetMessage message) {
+                public boolean onMessage(NetNotification message) {
 
                     return true;
 

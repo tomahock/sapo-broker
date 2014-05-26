@@ -19,7 +19,9 @@ import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
+import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.types.*;
 
 import java.io.UnsupportedEncodingException;
@@ -188,9 +190,9 @@ public class BrokerClientTest {
 
 
 
-         bk.subscribe("/teste/", NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
+         bk.subscribe("/teste/", NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
              @Override
-             public boolean onMessage(NetMessage message) {
+             public boolean onMessage(NetNotification message) {
 
                  System.out.println("Message");
 
@@ -238,10 +240,10 @@ public class BrokerClientTest {
         log.debug("Subscribe");
 
 
-        Future fs = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListenerAdapter() {
+        Future fs = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetMessage message) {
+            public boolean onMessage(NetNotification message) {
 
                 // do something
 
@@ -284,15 +286,15 @@ public class BrokerClientTest {
 
         log.debug("Subscribe");
 
-        Future fs = bk.subscribe(netSubscribe,new BrokerListenerAdapter() {
+        Future fs = bk.subscribe(netSubscribe,new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetMessage message) {
+            public boolean onMessage(NetNotification message) {
 
                 try {
 
-                    log.debug(message.getAction().getNotificationMessage().getMessage().getMessageId());
-                    log.debug(new String(message.getAction().getNotificationMessage().getMessage().getPayload(),"UTF-8"));
+                    log.debug(message.getMessage().getMessageId());
+                    log.debug(new String(message.getMessage().getPayload(),"UTF-8"));
 
                     for(Map.Entry<String, String> entry : message.getHeaders().entrySet()){
                         System.out.println(entry.getKey() + "/" + entry.getValue());
@@ -300,8 +302,8 @@ public class BrokerClientTest {
 
                     System.out.println("---------------------------------");
 
-                    if(message.getAction().getNotificationMessage().getHeaders() != null) {
-                        for (Map.Entry<String, String> entry : message.getAction().getNotificationMessage().getHeaders().entrySet()) {
+                    if(message.getHeaders() != null) {
+                        for (Map.Entry<String, String> entry : message.getHeaders().entrySet()) {
                             System.out.println(entry.getKey() + "/" + entry.getValue());
                         }
                     }
@@ -315,10 +317,7 @@ public class BrokerClientTest {
                 return false;
             }
 
-            @Override
-            public void onFault(NetMessage message) {
 
-            }
         });
 
         try {
@@ -461,14 +460,21 @@ public class BrokerClientTest {
 
         while (counter-- > 0){
 
-            NetMessage netMessage = bk.poll("/teste/", 2000);
 
-            if(netMessage.getAction().getActionType().equals(NetAction.ActionType.FAULT)
-                    && netMessage.getAction().getFaultMessage().getCode().equals(NetFault.PollTimeoutErrorCode)){
+            try{
+
+                NetNotification netNotification = bk.poll("/teste/", 2000);
+
+                System.out.println("Notification: " + netNotification);
+
+            }catch (TimeoutException e){
+
+                // there was a timeout
 
             }
 
-            System.out.println("Action Type:" + netMessage.getAction().getActionType().name());
+
+
         }
 
     }
