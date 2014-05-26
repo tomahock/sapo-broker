@@ -9,6 +9,32 @@ import pt.com.broker.types.NetMessage;
  */
 public class DestinationDataFactory {
 
+
+    public String getSubscription(NetMessage netMessage){
+
+        NetAction netAction = netMessage.getAction();
+
+        NetAction.ActionType actionType = netAction.getActionType();
+
+        String destination = null;
+
+        switch (actionType){
+
+            case NOTIFICATION:
+                destination = netAction.getNotificationMessage().getSubscription();
+                break;
+
+            case FAULT:
+                destination = getDestination(netMessage);
+                break;
+        }
+
+
+        return destination;
+
+
+    }
+
     public String getDestination(NetMessage netMessage){
 
         NetAction netAction = netMessage.getAction();
@@ -21,11 +47,11 @@ public class DestinationDataFactory {
 
             case NOTIFICATION:
                 destination = netAction.getNotificationMessage().getDestination();
-            break;
+                break;
 
             case FAULT:
-                destination = getDestintation(netAction.getFaultMessage());
-            break;
+                destination = getDestination(netAction.getFaultMessage());
+                break;
 
         }
 
@@ -48,11 +74,11 @@ public class DestinationDataFactory {
 
             case NOTIFICATION:
                 destinationType = netAction.getNotificationMessage().getDestinationType();
-            break;
+                break;
 
             case FAULT:
                 destinationType = getDestinationType(netAction.getFaultMessage());
-            break;
+                break;
 
         }
 
@@ -60,7 +86,7 @@ public class DestinationDataFactory {
         return destinationType;
     }
 
-    protected String getDestintation(NetFault fault){
+    protected String getDestination(NetFault fault){
 
         if(NetFault.PollTimeoutErrorCode.equals(fault.getCode())){
 
