@@ -50,7 +50,7 @@ public class DestinationDataFactory {
             break;
 
             case FAULT:
-                destination = getDestintation(netAction.getFaultMessage());
+                destination = getDestination(netAction.getFaultMessage());
             break;
 
         }
@@ -86,7 +86,7 @@ public class DestinationDataFactory {
         return destinationType;
     }
 
-    protected String getDestintation(NetFault fault){
+    protected String getDestination(NetFault fault){
 
         if(NetFault.PollTimeoutErrorCode.equals(fault.getCode())){
 
