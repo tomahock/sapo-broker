@@ -28,7 +28,12 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
 
                     if(brokerClient != null){
 
-                        brokerClient.acknowledge(netNotification);
+                        // acknowledge if not a topic
+                        if(netNotification.getDestinationType().equals(NetAction.DestinationType.TOPIC)){
+
+                            brokerClient.acknowledge(netNotification);
+                        }
+
 
                     }
 
@@ -36,6 +41,7 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
                 }
 
             }
+
         }
 
 

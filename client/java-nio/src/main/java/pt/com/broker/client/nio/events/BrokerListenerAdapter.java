@@ -35,7 +35,7 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
 
     protected void ackMessage(NetNotification netNotification,Channel channel) throws Throwable {
 
-        this.getBrokerClient().acknowledge(netNotification,channel);
+        this.getBrokerClient().acknowledge(netNotification);
 
     }
 
@@ -48,7 +48,9 @@ abstract  public class BrokerListenerAdapter implements BrokerListener {
 
         preOnMessage(netMessage,channel);
         if(isFault(netMessage)){
+
             onFault(netMessage);
+
         }else{
             if(onMessage(netMessage)){
 

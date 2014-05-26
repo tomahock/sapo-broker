@@ -65,16 +65,14 @@ public abstract class BaseClient{
     }
 
     protected ChannelFuture sendNetMessage(NetMessage msg, GenericFutureListener future) {
-        return this.sendNetMessage(msg,null,future);
+        return this.sendNetMessage(msg,future,null);
     }
 
-    protected ChannelFuture sendNetMessage(NetMessage msg, Channel c,GenericFutureListener future) {
+    protected ChannelFuture sendNetMessage(NetMessage msg, GenericFutureListener future, Channel c) {
 
         Channel channel = (c == null) ? getChannel() : c;
 
         ChannelFuture f =  channel.writeAndFlush(msg);
-
-
 
         if(future!=null){
             f.addListener(future);

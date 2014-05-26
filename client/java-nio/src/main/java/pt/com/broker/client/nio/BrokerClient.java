@@ -17,7 +17,8 @@ import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
 
-import pt.com.broker.client.nio.events.MessageAcceptedListener;
+
+import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
@@ -46,6 +47,11 @@ public class BrokerClient extends BaseClient implements Observer {
     private PendingAcceptRequestsManager acceptRequestsManager;
 
     private ChannelInitializer channelInitializer;
+
+
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+    private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
 
 
     public BrokerClient(NetProtocolType ptype) {
@@ -126,59 +132,86 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
-    public Future subscribe(String destination, NetAction.DestinationType destinationType, final BrokerListener listener) {
+    public Future<HostInfo> subscribe(String destination, NetAction.DestinationType destinationType, final BrokerListener listener) throws InterruptedException {
         return subscribe( new NetSubscribe(destination, destinationType),listener,null);
     }
 
-    public Future subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) {
+    public Future<HostInfo> subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) throws InterruptedException {
         return subscribe(subscribe, listener, null);
     }
 
-    public Future subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , AcceptRequest request) {
+    public Future<HostInfo> subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
 
-        NetAction netAction = null;
-
-        if(subscribe instanceof NetPoll){
-            netAction = new NetAction((NetPoll)subscribe);
-        }
-
-        if(subscribe instanceof NetSubscribe){
-            netAction = new NetAction((NetSubscribe)subscribe);
-        }
+        for(final HostInfo host : getHosts().getConnectedHosts()){
 
 
-        if(request!=null) {
-            subscribe.setActionId(request.getActionId());
-            addAcceptMessageHandler(request);
-        }
+            final BrokerClient client = this;
 
+            NetAction netAction = null;
 
-        NetMessage netMessage = buildMessage(netAction, subscribe.getHeaders());
-
-        final BrokerClient client = this;
-
-        return sendNetMessage(netMessage, new ChannelFutureListener() {
-
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-
-                if (future.isSuccess()) {
-
-                    log.info("Created new async consumer for '{}'", subscribe.getDestination());
-
-                    HostInfo host = (HostInfo) future.channel().attr(HostContainer.ATTRIBUTE_HOST_INFO).get();
-
-                    getConsumerManager().addSubscription(subscribe, listener, host);
-
-                    /* @todo ver o auto acknolage */
-                    listener.setBrokerClient(client);
-
-                } else {
-                    log.debug("Error creating async consumer");
-                }
-
+            if(subscribe instanceof NetPoll){
+                netAction = new NetAction((NetPoll)subscribe);
             }
-        });
+
+            if(subscribe instanceof NetSubscribe){
+                netAction = new NetAction((NetSubscribe)subscribe);
+            }
+
+
+            if(request!=null) {
+                subscribe.setActionId(request.getActionId());
+                addAcceptMessageHandler(request);
+            }
+
+
+            final NetMessage netMessage = buildMessage(netAction, subscribe.getHeaders());
+
+
+            service.submit(new Callable<HostInfo>() {
+
+                @Override
+                public HostInfo call() throws Exception {
+
+
+                    ChannelFuture future = sendNetMessage(netMessage, new ChannelFutureListener() {
+
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+
+                            if (future.isSuccess()) {
+
+                                log.info("Created new async consumer for '{}'", subscribe.getDestination());
+
+                                HostInfo h = (HostInfo) future.channel().attr(HostContainer.ATTRIBUTE_HOST_INFO).get();
+
+                                getConsumerManager().addSubscription(subscribe, listener, h);
+
+                                /* @todo ver o auto acknolage */
+                                listener.setBrokerClient(client);
+
+                            } else {
+
+                                log.debug("Error creating async consumer");
+
+                            }
+
+                        }
+
+                    });
+
+
+                    future.get();
+
+                    return host;
+
+                }
+            });
+
+
+        }
+
+        return service.take();
+
     }
     public Future unsubscribe(NetAction.DestinationType destinationType, String dstName){
 
@@ -228,7 +261,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
         NetMessage msg = buildMessage(action);
 
-        return sendNetMessage(msg,channel,null);
+        return sendNetMessage(msg,null,channel);
 
     }
 
@@ -408,7 +441,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
         String actionID = request.getActionId();
         long timeout = request.getTimeout();
-        MessageAcceptedListener listener = request.getListener();
+        BrokerListener listener = request.getListener();
 
         try {
             getAcceptRequestsManager().addAcceptRequest(actionID, timeout, listener);
@@ -452,7 +485,13 @@ public class BrokerClient extends BaseClient implements Observer {
             BrokerListener listener = entry.getValue().getListener();
 
             log.debug("Destination: "+entry.getKey());
-            this.subscribe(entry.getKey(),NetAction.DestinationType.QUEUE,listener);
+
+            try {
+                //@todo see Exception
+                this.subscribe(entry.getKey(),NetAction.DestinationType.QUEUE,listener);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
 

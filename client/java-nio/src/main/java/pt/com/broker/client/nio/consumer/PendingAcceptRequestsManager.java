@@ -1,7 +1,9 @@
 package pt.com.broker.client.nio.consumer;
 
+import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
-import pt.com.broker.client.nio.events.MessageAcceptedListener;
+import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.MessageAcceptedAdapter;;
 import pt.com.broker.client.nio.types.ActionIdDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
@@ -19,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class PendingAcceptRequestsManager {
 
 
-    private final Map<String, MessageAcceptedListener> requests = new HashMap<String, MessageAcceptedListener>();
+    private final Map<String, BrokerListener> requests = new HashMap<String, BrokerListener>();
 
     private final ScheduledExecutorService eventLoopGroup;
 
@@ -31,7 +33,7 @@ public class PendingAcceptRequestsManager {
         this.eventLoopGroup = eventLoopGroup;
     }
 
-    public void addAcceptRequest(final String actionID, long timeout , MessageAcceptedListener listener) throws Throwable{
+    public void addAcceptRequest(final String actionID, long timeout , BrokerListener listener) throws Throwable{
 
         if(StringUtils.isEmpty(actionID)){
             throw new Exception("Invalid actionID");
@@ -52,7 +54,7 @@ public class PendingAcceptRequestsManager {
 
                     synchronized (requests) {
 
-                        MessageAcceptedListener _listener = getListener(actionID);
+                        MessageAcceptedAdapter _listener = (MessageAcceptedAdapter) getListener(actionID);
 
                         removeAcceptRequest(actionID);
 
@@ -72,9 +74,9 @@ public class PendingAcceptRequestsManager {
     }
 
 
-    public MessageAcceptedListener removeAcceptRequest(String actionID){
+    public MessageAcceptedAdapter removeAcceptRequest(String actionID){
 
-        MessageAcceptedListener b =  requests.remove(actionID);
+        MessageAcceptedAdapter b = (MessageAcceptedAdapter) requests.remove(actionID);
 
         if(b!=null){
             cancelTimeout(actionID);
@@ -85,7 +87,7 @@ public class PendingAcceptRequestsManager {
     }
 
 
-    protected MessageAcceptedListener getListener(String actionID){
+    protected BrokerListener getListener(String actionID){
 
         return requests.get(actionID);
 
@@ -110,34 +112,39 @@ public class PendingAcceptRequestsManager {
     }
 
 
-    public void deliverMessage(NetMessage netMessage) throws Exception {
+    public void deliverMessage(NetMessage netMessage, Channel channel) throws Exception {
 
         ActionIdDecorator decorator = new ActionIdDecorator(netMessage);
 
-        String actionID = decorator.getActiondId();
+        String actionID = decorator.getActionId();
 
         if(StringUtils.isEmpty(actionID)){
+
             throw new Exception("Invalid actionID");
+
         }
 
         synchronized (requests) {
 
-            MessageAcceptedListener listener = getListener(actionID);
+            BrokerListener listener = getListener(actionID);
 
             if (listener == null) {
+
                 throw new Exception("No listener was found actionID: " + actionID);
-            }
-
-
-            if (netMessage.getAction().getActionType() == NetAction.ActionType.FAULT) {
-
-                listener.onFault(netMessage);
-
-            }else{
-
-                listener.onMessage(netMessage);
 
             }
+
+
+            try {
+
+                listener.deliverMessage(netMessage,channel);
+
+            } catch (Throwable throwable) {
+
+                throwable.printStackTrace();
+
+            }
+
 
             removeAcceptRequest(actionID);
 

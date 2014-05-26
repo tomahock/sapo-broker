@@ -33,7 +33,7 @@ public class ActionIdDecorator extends NetMessage {
     }
 
 
-    public String getActiondId(){
+    public String getActionId(){
 
         String actionid = null;
 

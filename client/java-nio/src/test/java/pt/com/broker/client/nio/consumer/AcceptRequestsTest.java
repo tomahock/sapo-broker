@@ -3,11 +3,13 @@ package pt.com.broker.client.nio.consumer;
 
 import org.junit.Assert;
 import org.junit.Test;
+import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
-import pt.com.broker.client.nio.events.MessageAcceptedListener;
 import pt.com.broker.client.nio.types.ActionIdDecorator;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 
 import java.util.UUID;
@@ -32,16 +34,15 @@ public class AcceptRequestsTest {
 
         String actionID = UUID.randomUUID().toString();
 
-        MessageAcceptedListener acceptedListener = new MessageAcceptedAdapter() {
+        MessageAcceptedAdapter acceptedListener = new MessageAcceptedAdapter() {
 
             @Override
-            public boolean onMessage(NetMessage message) {
+            public void onMessage(NetAccepted message, HostInfo host) {
 
-                return true;
             }
 
             @Override
-            public void onFault(NetMessage message) {
+            public void onFault(NetFault fault, HostInfo host) {
 
             }
 
@@ -62,18 +63,18 @@ public class AcceptRequestsTest {
 
         }
 
-        MessageAcceptedListener listener1 = manager.getListener(actionID);
+        BrokerListener listener1 = manager.getListener(actionID);
 
         Assert.assertSame(acceptedListener,listener1);
 
 
-        MessageAcceptedListener listener2 =  manager.removeAcceptRequest(actionID);
+        MessageAcceptedAdapter listener2 =  manager.removeAcceptRequest(actionID);
 
         Assert.assertNotNull(listener2);
 
 
 
-        MessageAcceptedListener listener3 = manager.getListener(actionID);
+        BrokerListener listener3 = manager.getListener(actionID);
 
         Assert.assertNull(listener3);
 
@@ -94,16 +95,16 @@ public class AcceptRequestsTest {
         final AtomicBoolean isTimeout = new AtomicBoolean(false);
 
 
-        MessageAcceptedListener acceptedListener = new MessageAcceptedAdapter() {
+        MessageAcceptedAdapter acceptedListener = new MessageAcceptedAdapter() {
+
 
             @Override
-            public boolean onMessage(NetMessage message) {
+            public void onMessage(NetAccepted message, HostInfo host) {
 
-                return true;
             }
 
             @Override
-            public void onFault(NetMessage message) {
+            public void onFault(NetFault fault, HostInfo host) {
 
             }
 
@@ -151,28 +152,23 @@ public class AcceptRequestsTest {
         final AtomicBoolean onMessage = new AtomicBoolean(false);
 
 
-        MessageAcceptedListener acceptedListener = new MessageAcceptedAdapter() {
+        MessageAcceptedAdapter acceptedListener = new MessageAcceptedAdapter() {
+
 
             @Override
-            public boolean onMessage(NetMessage message) {
+            public void onMessage(NetAccepted message, HostInfo host) {
 
-                ActionIdDecorator decorator = new ActionIdDecorator(message);
-
-                if(actionID.equals(decorator.getActiondId())){
-                    onMessage.set(true);
-                }
-
-
-                return true;
-            }
-
-            @Override
-            public void onFault(NetMessage message) {
 
             }
 
             @Override
-            public void onTimeout(String _actionID) {
+            public void onFault(NetFault fault, HostInfo host) {
+
+
+            }
+
+            @Override
+            public void onTimeout(String actionID) {
 
 
             }
@@ -199,7 +195,7 @@ public class AcceptRequestsTest {
         NetMessage netMessage = new NetMessage(netAction);
 
 
-        manager.deliverMessage(netMessage);
+        manager.deliverMessage(netMessage,null);
 
         Assert.assertTrue(onMessage.get());
 

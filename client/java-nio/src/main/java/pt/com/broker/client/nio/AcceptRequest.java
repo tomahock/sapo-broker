@@ -1,6 +1,6 @@
 package pt.com.broker.client.nio;
 
-import pt.com.broker.client.nio.events.MessageAcceptedListener;
+import pt.com.broker.client.nio.events.BrokerListener;
 
 /**
  * Created by luissantos on 09-05-2014.
@@ -8,7 +8,7 @@ import pt.com.broker.client.nio.events.MessageAcceptedListener;
 public class AcceptRequest {
 
     private String actionId;
-    private MessageAcceptedListener listner;
+    private BrokerListener listner;
     private long timeout;
 
     /**
@@ -21,7 +21,7 @@ public class AcceptRequest {
      * @param timeout
      *            A time interval, in milliseconds, during witch the Accept message is expected.
      */
-    public AcceptRequest(String actionId, MessageAcceptedListener listner, long timeout)
+    public AcceptRequest(String actionId, BrokerListener listner, long timeout)
     {
         if (actionId == null)
             throw new IllegalArgumentException("actionId is null");
@@ -40,7 +40,7 @@ public class AcceptRequest {
         return actionId;
     }
 
-    public MessageAcceptedListener getListener()
+    public BrokerListener getListener()
     {
         return listner;
     }
