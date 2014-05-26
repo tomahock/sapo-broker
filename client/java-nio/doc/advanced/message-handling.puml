@@ -1,0 +1,15 @@
+@startuml
+
+
+interface BrokerListener {
+    +deliverMessage(NetMessage message,Channel channel)
+
+}
+
+BrokerListener <|-- NotificationListenerAdapter
+
+abstract class NotificationListenerAdapter{
+    +onMessage(NetNotification notification)
+}
+
+@enduml
