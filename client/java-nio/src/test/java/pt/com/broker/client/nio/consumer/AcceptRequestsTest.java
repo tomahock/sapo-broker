@@ -159,7 +159,7 @@ public class AcceptRequestsTest {
             @Override
             public void onMessage(NetAccepted message, HostInfo host) {
 
-
+                onMessage.set(true);
             }
 
             @Override

@@ -42,6 +42,10 @@ abstract public class MessageAcceptedAdapter implements BrokerListener {
 
     private HostInfo getHostFromChannel(Channel channel){
 
+        if(channel==null){
+            return null;
+        }
+
         HostInfo h = (HostInfo) channel.attr(HostContainer.ATTRIBUTE_HOST_INFO).get();
 
 

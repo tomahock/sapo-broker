@@ -488,15 +488,14 @@ public class BrokerClientTest {
         AcceptRequest acceptRequest = new AcceptRequest(UUID.randomUUID().toString(),new MessageAcceptedAdapter(){
 
             @Override
-            public boolean onMessage(NetMessage message) {
-                System.out.println("Message: "+message.getAction().getAcceptedMessage().getActionId());
+            public void onMessage(NetAccepted message,HostInfo host) {
+                System.out.println("Message: " + message.getActionId());
 
-                return true;
             }
 
             @Override
-            public void onFault(NetMessage message) {
-                System.out.println("Fault: "+message.getAction().getFaultMessage().getDetail());
+            public void onFault(NetFault message,HostInfo host) {
+                System.out.println("Fault: " + message.getDetail());
             }
 
             @Override
@@ -510,7 +509,7 @@ public class BrokerClientTest {
         Thread.sleep(10000);
     }
 
-    public void test(){
+    public void test() throws InterruptedException {
 
 
         final BrokerClient bk = new BrokerClient(NetProtocolType.JSON);
