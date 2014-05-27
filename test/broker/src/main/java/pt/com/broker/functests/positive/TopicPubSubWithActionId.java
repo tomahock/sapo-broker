@@ -7,8 +7,9 @@ import org.caudexorigo.concurrent.Sleep;
 
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
-import pt.com.broker.client.nio.events.MessageAcceptedListener;
+import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Epilogue;
@@ -99,20 +100,19 @@ public class TopicPubSubWithActionId extends BrokerTest
 			{
 				try
 				{
-					AcceptRequest accReq = new AcceptRequest("123456789", new MessageAcceptedListener()
+					AcceptRequest accReq = new AcceptRequest("123456789", new MessageAcceptedAdapter()
 					{
 
                         @Override
-                        public boolean onMessage(NetMessage message) {
-
+                        public void onMessage(NetAccepted message, HostInfo host) {
                             future.set(Boolean.TRUE);
-                            return true;
                         }
 
                         @Override
-                        public void onFault(NetMessage message) {
-                            future.set(Boolean.FALSE);
+                        public void onFault(NetFault fault, HostInfo host) {
+                                future.set(Boolean.FALSE);
                         }
+
 
                         @Override
                         public void onTimeout(String actionID) {

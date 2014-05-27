@@ -116,6 +116,7 @@ public class AcceptRequestsTest {
                 }
 
             }
+
         };
 
 
@@ -132,7 +133,7 @@ public class AcceptRequestsTest {
         scheduledExecutorService.shutdown();
         scheduledExecutorService.awaitTermination(timeout*2, TimeUnit.MILLISECONDS);
 
-        Assert.assertTrue("Timout failed",isTimeout.get());
+        Assert.assertTrue("Timeout failed",isTimeout.get());
 
     }
 
