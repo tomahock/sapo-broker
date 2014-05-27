@@ -2,7 +2,7 @@ package pt.com.broker.auth.saposts.tests;
 
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
-import pt.com.broker.client.SslBrokerClient;
+import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetProtocolType;
@@ -32,7 +32,7 @@ public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 			SslBrokerClient bk = null;
 			try
 			{
-				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
+				bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), getEncodingProtocolType());
 
 				bk.setCredentialsProvider(cp);
 

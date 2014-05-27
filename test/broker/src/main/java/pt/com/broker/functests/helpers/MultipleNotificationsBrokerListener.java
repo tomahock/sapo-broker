@@ -6,12 +6,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 
-public class MultipleNotificationsBrokerListener extends BrokerListenerAdapter
+public class MultipleNotificationsBrokerListener extends NotificationListenerAdapter
 {
 
 	private NetAction.DestinationType destinationType;
@@ -28,14 +29,13 @@ public class MultipleNotificationsBrokerListener extends BrokerListenerAdapter
 	}
 
     @Override
-	public boolean onMessage(NetMessage message)
+	public boolean onMessage(NetNotification message)
 	{
 
-        NetNotification netNotification = message.getAction().getNotificationMessage();
 
 		synchronized (list)
 		{
-			list.add( netNotification);
+			list.add( message);
 			if (list.size() == expectedNotifications)
 			{
 				value.set(list);

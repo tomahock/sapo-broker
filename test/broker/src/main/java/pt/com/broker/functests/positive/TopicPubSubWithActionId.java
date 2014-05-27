@@ -10,6 +10,7 @@ import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Epilogue;
@@ -32,7 +33,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 	private DestinationType destinationType = DestinationType.TOPIC;
 
-	private BrokerListenerAdapter brokerListener;
+	private NotificationListenerAdapter brokerListener;
 
 	private BrokerClient infoConsumer;
 	private BrokerClient infoProducer;
@@ -69,9 +70,9 @@ public class TopicPubSubWithActionId extends BrokerTest
 		if (constructionFailed)
 			throw reasonForFailure;
 
-		brokerListener = new BrokerListenerAdapter() {
+		brokerListener = new NotificationListenerAdapter() {
             @Override
-            public boolean onMessage(NetMessage message) {
+            public boolean onMessage(NetNotification message) {
                 return true;
             }
         };

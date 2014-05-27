@@ -1,6 +1,6 @@
 package pt.com.broker.auth.saposts.tests;
 
-import pt.com.broker.client.SslBrokerClient;
+import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
 import pt.com.broker.types.NetAction;
@@ -28,7 +28,7 @@ public class AuthenticationFailedTest extends GenericNetMessageNegativeTest
 			setFaultMessage("Authentication failed");
 			try
 			{
-				SslBrokerClient bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
+				SslBrokerClient bk = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), getEncodingProtocolType());
 
 				setBrokerClient(bk);
 			}

@@ -4,7 +4,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 

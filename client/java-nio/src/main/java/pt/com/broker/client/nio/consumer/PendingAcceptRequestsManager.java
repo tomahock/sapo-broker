@@ -56,9 +56,12 @@ public class PendingAcceptRequestsManager {
 
                         MessageAcceptedAdapter _listener = (MessageAcceptedAdapter) getListener(actionID);
 
-                        removeAcceptRequest(actionID);
+                        if(_listener!=null) {
 
-                        _listener.onTimeout(actionID);
+                            removeAcceptRequest(actionID);
+
+                            _listener.onTimeout(actionID);
+                        }
 
                     }
 
@@ -128,26 +131,24 @@ public class PendingAcceptRequestsManager {
 
             BrokerListener listener = getListener(actionID);
 
-            if (listener == null) {
+            if (listener != null) {
 
-                throw new Exception("No listener was found actionID: " + actionID);
+                try {
 
+                    listener.deliverMessage(netMessage,channel);
+
+                } catch (Throwable throwable) {
+
+                    throwable.printStackTrace();
+
+                }
+
+
+                removeAcceptRequest(actionID);
+            }else
+            {
+                //@todo log information
             }
-
-
-            try {
-
-                listener.deliverMessage(netMessage,channel);
-
-            } catch (Throwable throwable) {
-
-                throwable.printStackTrace();
-
-            }
-
-
-            removeAcceptRequest(actionID);
-
         }
 
 

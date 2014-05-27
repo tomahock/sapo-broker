@@ -6,7 +6,6 @@ import org.junit.Test;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.types.*;
 
@@ -126,10 +125,10 @@ public class ConsumerManagerTest {
         NetPoll netPoll = new NetPoll(destination, 1000);
 
 
-        BrokerListener brokerListener = new BrokerListenerAdapter() {
+        BrokerListener brokerListener = new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetMessage message) {
+            public boolean onMessage(NetNotification message) {
                 return true;
             }
         };

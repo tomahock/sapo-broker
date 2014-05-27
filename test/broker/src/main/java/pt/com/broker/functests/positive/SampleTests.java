@@ -3,6 +3,7 @@ package pt.com.broker.functests.positive;
 
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
@@ -25,9 +26,9 @@ public class SampleTests
         NetNotification[] notifications = {null};
 
 		String topicName = "/topic/foo";
-        BrokerListenerAdapter brokerListener = new BrokerListenerAdapter() {
+        NotificationListenerAdapter brokerListener = new NotificationListenerAdapter() {
             @Override
-            public boolean onMessage(NetMessage message) {
+            public boolean onMessage(NetNotification message) {
                 return true;
             }
         };

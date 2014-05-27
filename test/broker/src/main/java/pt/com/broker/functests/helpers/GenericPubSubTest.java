@@ -5,6 +5,7 @@ import org.caudexorigo.concurrent.Sleep;
 
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
@@ -23,7 +24,7 @@ public class GenericPubSubTest extends BrokerTest
 
 	private DestinationType destinationType = DestinationType.TOPIC;
 
-	private BrokerListenerAdapter brokerListener;
+	private NotificationListenerAdapter brokerListener;
 
 	private BrokerClient infoConsumer;
 	private BrokerClient infoProducer;
@@ -81,11 +82,11 @@ public class GenericPubSubTest extends BrokerTest
 
 		if (getBrokerListener() == null)
 		{
-			brokerListener = new BrokerListenerAdapter() {
+			brokerListener = new NotificationListenerAdapter() {
                 @Override
-                public boolean onMessage(NetMessage message) {
+                public boolean onMessage(NetNotification message) {
 
-                    last[0] = message.getAction().getNotificationMessage();
+                    last[0] = message;
 
                     return true;
                 }
@@ -228,12 +229,12 @@ public class GenericPubSubTest extends BrokerTest
 		return subscriptionName;
 	}
 
-	public void setBrokerListener(BrokerListenerAdapter brokerListener)
+	public void setBrokerListener(NotificationListenerAdapter brokerListener)
 	{
 		this.brokerListener = brokerListener;
 	}
 
-	public BrokerListenerAdapter getBrokerListener()
+	public NotificationListenerAdapter getBrokerListener()
 	{
 		return brokerListener;
 	}

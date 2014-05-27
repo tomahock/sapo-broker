@@ -2,7 +2,9 @@ package pt.com.broker.auth.saposts.tests;
 
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
-import pt.com.broker.client.SslBrokerClient;
+import pt.com.broker.client.nio.SslBrokerClient;
+
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
@@ -37,7 +39,7 @@ public class AclUnAuthWildcardSubscriptionTest extends GenericPubSubTest
 			try
 			{
 
-				bk_producer = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), "tcp://mycompany.com/test", getEncodingProtocolType());
+				bk_producer = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")),  getEncodingProtocolType());
 
 				bk_producer.setCredentialsProvider(cp);
 
@@ -59,16 +61,18 @@ public class AclUnAuthWildcardSubscriptionTest extends GenericPubSubTest
 			// Not authenticated - So, it shouldn't receive a message.
 			setOkToTimeOut(true);
 
-			this.setBrokerListener(new GenericBrokerListener(DestinationType.TOPIC)
+			this.setBrokerListener(new NotificationListenerAdapter()
 			{
 				@Override
-				public void onMessage(NetNotification message)
+				public boolean onMessage(NetNotification message)
 				{
 					System.out.println("ERROR: Should not receive message");
 
 					setFailure(new RuntimeException("Message received. No message should be received."));
 
 					setOkToTimeOut(false);
+
+                    return true;
 				}
 			});
 		}

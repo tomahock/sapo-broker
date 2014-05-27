@@ -95,6 +95,11 @@ public final class NetAction
         setPollMessage(netPoll);
     }
 
+    public NetAction(NetAuthentication netAuthentication){
+        this(ActionType.AUTH);
+
+        setAuthenticationMessage(netAuthentication);
+    }
 
 
 

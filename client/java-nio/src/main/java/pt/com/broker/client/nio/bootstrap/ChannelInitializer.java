@@ -9,7 +9,6 @@ import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;

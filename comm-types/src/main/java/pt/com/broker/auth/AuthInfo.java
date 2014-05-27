@@ -1,6 +1,7 @@
 package pt.com.broker.auth;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
 public class AuthInfo
 {
 	private String userId;
-	private List<String> roles;
+	private List<String> roles = new ArrayList<String>(0);
 	private byte[] token;
 	private final String authenticationType;
 
