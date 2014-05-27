@@ -1,6 +1,6 @@
 # Advanced usage
 
-* [Message Handling](#messagehandling)
+* [Message Handling](./#messagehandling)
 
 
 
@@ -30,8 +30,3 @@ This class gives you simple message acknowledge.
 
  
  ```
-  
-  
-  
-
- 
