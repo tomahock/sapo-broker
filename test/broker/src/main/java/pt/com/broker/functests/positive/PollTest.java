@@ -66,11 +66,10 @@ public class PollTest extends BrokerTest
 					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
                     bk.connect();
 
-					 NetMessage netMessage = bk.poll(queueName);
+                    NetNotification msg = bk.poll(queueName);
 
-                    NetNotification msg  = netMessage.getAction().getNotificationMessage();
 
-					bk.acknowledge(msg);
+					bk.acknowledge(msg).get();
 
 					bk.close().get();
 

@@ -48,9 +48,7 @@ public class PollNoWaitTest extends BrokerTest
 					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
                     bk.connect();
 
-					NetMessage netMessage = bk.poll(queueName,-1);
-
-                    NetNotification msg = (netMessage == null) ? null : netMessage.getAction().getNotificationMessage();
+                    NetNotification msg = bk.poll(queueName,-1);
 
 					if (msg == null)
 					{

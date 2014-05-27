@@ -97,9 +97,8 @@ public class PollVirtualQueueTest extends BrokerTest
 
                     bk.connect();
 
-					NetMessage netMessage = bk.poll(queueName);
+                    NetNotification msg = bk.poll(queueName);
 
-                    NetNotification msg = netMessage.getAction().getNotificationMessage();
 
 					bk.acknowledge(msg).get();
 
