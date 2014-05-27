@@ -509,12 +509,16 @@ public class BrokerClientTest {
         Thread.sleep(10000);
     }
 
-    public void test() throws InterruptedException {
+    @Test()
+    public void testMultipleSubscribe() throws InterruptedException {
 
 
         final BrokerClient bk = new BrokerClient(NetProtocolType.JSON);
 
-        // ... connecting ...
+        bk.addServer("127.0.0.1" , 3323);
+        bk.addServer("127.0.0.1" , 3423);
+
+        bk.connect();
 
         bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListener() {
 
@@ -531,6 +535,8 @@ public class BrokerClientTest {
             }
         });
 
+
+        Thread.sleep(10000);
 
     }
 

@@ -70,9 +70,9 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         ch.pipeline().addLast("broker_pong_handler",new PongMessageHandler(getPongConsumerManager()));
 
-        faultHandler = new ReceiveFaultHandler(getConsumerManager());
 
-        ch.pipeline().addLast("broker_fault_handler",faultHandler);
+
+        ch.pipeline().addLast("broker_fault_handler",new ReceiveFaultHandler(getConsumerManager()));
 
         if(getAcceptRequestsManager()!=null){
             ch.pipeline().addLast("broker_accept_handler",new AcceptMessageHandler(getAcceptRequestsManager()));
@@ -116,7 +116,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     public void setFaultHandler(BrokerListener adapter){
 
-        faultHandler.setFaultListenerAdapter(adapter);
+        //faultHandler.setFaultListenerAdapter(adapter);
 
     }
 }

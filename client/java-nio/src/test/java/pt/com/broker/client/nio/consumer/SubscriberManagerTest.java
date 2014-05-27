@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
@@ -44,7 +45,7 @@ public class SubscriberManagerTest {
 
         ConsumerManager consumerManager = new ConsumerManager();
 
-        consumerManager.addSubscription(new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
+        BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
             @Override
             public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
 
@@ -54,7 +55,11 @@ public class SubscriberManagerTest {
             public void setBrokerClient(BrokerClient client) {
 
             }
-        }));
+        });
+
+        consumer.setHost(new HostInfo("127.0.0.1",3323));
+
+        consumerManager.addSubscription(consumer);
 
     }
 
@@ -63,7 +68,7 @@ public class SubscriberManagerTest {
 
         ConsumerManager consumerManager = new ConsumerManager();
 
-        consumerManager.addSubscription(new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
+        BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
             @Override
             public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
 
@@ -73,27 +78,34 @@ public class SubscriberManagerTest {
             public void setBrokerClient(BrokerClient client) {
 
             }
-        }));
+        });
+
+        consumer.setHost(new HostInfo("127.0.0.1",3323));
+
+        consumerManager.addSubscription(consumer);
 
 
         try{
 
+            BrokerAsyncConsumer consumer2 = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
+                @Override
+                public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
 
-        consumerManager.addSubscription(new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
-            @Override
-            public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+                }
 
-            }
+                @Override
+                public void setBrokerClient(BrokerClient client) {
 
-            @Override
-            public void setBrokerClient(BrokerClient client) {
+                }
+            });
+            consumer2.setHost(new HostInfo("127.0.0.1",3323));
 
-            }
-        }));
+            consumerManager.addSubscription(consumer2);
 
         }catch (IllegalArgumentException ex){
 
-            Assert.assertEquals("Invalid message", "A listener for the destination /teste/ already exists",ex.getMessage());
+            System.out.println(ex.getMessage());
+            Assert.assertEquals("Invalid message", "A listener for the destination localhost:3323#/teste/ already exists",ex.getMessage());
 
             throw ex;
         }
@@ -122,17 +134,21 @@ public class SubscriberManagerTest {
             }
         });
 
+
+        HostInfo host = new HostInfo("123.0.0.1",3323);
+        consumer.setHost(host);
+
         consumerManager.addSubscription(consumer);
 
 
-        BrokerAsyncConsumer asyncConsumer = consumerManager.removeSubscription(destinationType,destinationName);
+        BrokerAsyncConsumer asyncConsumer = consumerManager.removeSubscription(destinationType,destinationName,host.getSocketAddress());
 
         Assert.assertNotNull(asyncConsumer);
 
         Assert.assertSame(consumer,asyncConsumer);
 
 
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(destinationType,destinationName);
+        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(destinationType,destinationName,host.getSocketAddress());
 
         Assert.assertNull(consumer2);
 

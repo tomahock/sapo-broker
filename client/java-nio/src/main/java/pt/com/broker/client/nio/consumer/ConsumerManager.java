@@ -2,6 +2,8 @@ package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.server.HostContainer;
@@ -9,6 +11,7 @@ import pt.com.broker.client.nio.types.DestinationDataFactory;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
+import java.net.InetSocketAddress;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +25,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ConsumerManager {
 
+    private static final Logger log = LoggerFactory.getLogger(ConsumerManager.class);
+
     protected final EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>> _consumerList = new EnumMap<NetAction.DestinationType, Map<String, BrokerAsyncConsumer>>(NetAction.DestinationType.class);
 
 
@@ -34,9 +39,7 @@ public class ConsumerManager {
     }
 
 
-    public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener){
-        this.addSubscription(subscribe,listener,null);
-    }
+
 
     public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener, HostInfo hostInfo){
 
@@ -47,18 +50,26 @@ public class ConsumerManager {
         addSubscription(consumer);
     }
 
+    private String getDestinationKey(String destination , InetSocketAddress socketAddress){
+
+        if(StringUtils.isEmpty(destination)){
+            throw new IllegalArgumentException("Invalid Destination");
+        }
+        String hostname = socketAddress.getHostName();
+        int port = socketAddress.getPort();
+        return hostname + ":" + port +"#"+ destination;
+    }
+
     public void addSubscription(BrokerAsyncConsumer consumer){
 
         DestinationType destinationType = consumer.getDestinationType();
 
-        if(destinationType==null){
+
+        if(destinationType == null){
             throw new IllegalArgumentException("Invalid Destination Type");
         }
 
-        String destination = consumer.getDestinationName();
-        if(StringUtils.isEmpty(destination)){
-            throw new IllegalArgumentException("Invalid Destination");
-        }
+        String destination = getDestinationKey(consumer.getDestinationName(),consumer.getHost().getSocketAddress());
 
         synchronized (_consumerList){
 
@@ -71,40 +82,49 @@ public class ConsumerManager {
                 }
 
                 subscriptions.put(destination,consumer);
-
+                log.info("Added Async Consumer for {} {} ", consumer.getHost().getSocketAddress(), consumer.getDestinationName());
         }
 
     }
 
-    public BrokerAsyncConsumer removeSubscription(NetSubscribeAction netSubscribeAction){
-        return removeSubscription(netSubscribeAction.getDestinationType(),netSubscribeAction.getDestination());
+    public BrokerAsyncConsumer removeSubscription(NetSubscribeAction netSubscribeAction, InetSocketAddress socketAddress){
+        return removeSubscription(netSubscribeAction.getDestinationType(),netSubscribeAction.getDestination(), socketAddress);
     }
 
-    public BrokerAsyncConsumer removeSubscription(DestinationType destinationType, String destination){
+    public BrokerAsyncConsumer removeSubscription(DestinationType destinationType, String destination , InetSocketAddress socketAddress ){
 
-        Map<String, BrokerAsyncConsumer> subscriptions  = getSubscriptions(destinationType);
+        synchronized (_consumerList) {
+            Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(destinationType);
 
+            String key = getDestinationKey(destination, socketAddress);
 
-        return subscriptions.remove(destination);
+            BrokerAsyncConsumer brokerAsyncConsumer =  subscriptions.remove(key);
+
+            if(brokerAsyncConsumer!=null){
+                log.debug("Removing key: "+key);
+            }
+
+            return brokerAsyncConsumer;
+        }
     }
 
 
-    public BrokerAsyncConsumer getConsumer(DestinationType destinationType , String destination){
+    public BrokerAsyncConsumer getConsumer(DestinationType destinationType , String destination ,  InetSocketAddress socketAddress){
 
         Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(destinationType);
 
-        return subscriptions.get(destination);
+        return subscriptions.get(getDestinationKey(destination,socketAddress));
 
     }
 
-    protected BrokerAsyncConsumer getConsumer(NetMessage netMessage){
+    protected BrokerAsyncConsumer getConsumer(NetMessage netMessage, InetSocketAddress socketAddress){
 
         DestinationDataFactory factory = new DestinationDataFactory();
 
         String destination = factory.getSubscription(netMessage);
         DestinationType dtype = factory.getDestinationType(netMessage);
 
-        return getConsumer(dtype,destination);
+        return getConsumer(dtype,destination,socketAddress);
 
     }
 
@@ -122,7 +142,7 @@ public class ConsumerManager {
 
     public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
 
-        BrokerAsyncConsumer consumer = getConsumer(netMessage);
+        BrokerAsyncConsumer consumer = getConsumer(netMessage, (InetSocketAddress) channel.remoteAddress());
 
 
         if(consumer == null){
@@ -153,19 +173,23 @@ public class ConsumerManager {
 
     public Map<String, BrokerAsyncConsumer> removeSubscriptions(NetAction.DestinationType dtype, HostInfo host){
 
-        Map<String, BrokerAsyncConsumer> map =  getSubscriptions(dtype,host);
+        synchronized (_consumerList) {
 
-        for(Map.Entry<String, BrokerAsyncConsumer> entry  : getSubscriptions(dtype).entrySet()){
-            String key = entry.getKey();
-            BrokerAsyncConsumer consumer = entry.getValue();
+            Map<String, BrokerAsyncConsumer> map = new HashMap<>(2);
 
-            removeSubscription(dtype,consumer.getDestinationName());
+            for (Map.Entry<String, BrokerAsyncConsumer> entry : getSubscriptions(dtype).entrySet()) {
 
-            map.put(key,consumer);
+                String key = entry.getKey();
+                BrokerAsyncConsumer consumer = entry.getValue();
 
+                if(removeSubscription(dtype, consumer.getDestinationName(), host.getSocketAddress())!=null){
+                    map.put(key, consumer);
+                }
+
+            }
+
+            return map;
         }
-
-        return map;
     }
 
 

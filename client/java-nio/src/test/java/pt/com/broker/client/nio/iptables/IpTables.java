@@ -23,7 +23,7 @@ public class IpTables {
 
     java.lang.Runtime rt;
 
-    String iptablesPath = "sudo /sbin/iptables";
+    String iptablesPath = "/sbin/iptables";
 
     Pattern find_chains_pattern = Pattern.compile("Chain ([\\w-]+) .*");
 

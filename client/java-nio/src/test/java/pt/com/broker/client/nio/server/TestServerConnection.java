@@ -54,6 +54,7 @@ public class TestServerConnection extends BaseTest {
         Future<HostInfo> future = container.connectAsync();
 
 
+
         HostInfo hostInfo = future.get(10000,TimeUnit.MILLISECONDS);
 
 

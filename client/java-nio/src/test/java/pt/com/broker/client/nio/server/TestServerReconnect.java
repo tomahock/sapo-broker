@@ -37,7 +37,7 @@ public class TestServerReconnect extends BaseTest {
 
         for(SocketServer server : servers){
             HostInfo host = new HostInfo("127.0.0.1",server.getPort());
-            host.setConnectTimeout(500);
+            host.setConnectTimeout(2000);
             bk.addServer(host);
         }
 
@@ -48,22 +48,22 @@ public class TestServerReconnect extends BaseTest {
         Thread.sleep(2000);
 
 
-        for(SocketServer server : servers){
 
-            String name = "/teste/"+server.getPort();
+        String name = "/teste/";
 
-            System.out.println(name);
-            bk.subscribe( name , NetAction.DestinationType.QUEUE , new NotificationListenerAdapter() {
-                @Override
-                public boolean onMessage(NetNotification message) {
+        System.out.println(name);
+        bk.subscribe( name , NetAction.DestinationType.QUEUE , new NotificationListenerAdapter() {
+            @Override
+            public boolean onMessage(NetNotification message) {
 
-                    return true;
+                return true;
 
-                }
-            });
+            }
+        });
 
 
-        }
+
+
 
 
 

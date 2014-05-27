@@ -188,16 +188,11 @@ public class HostContainer extends Observable {
                                     return;
                                 }
 
-                                addConnectedHost(host);
                                 synchronized (hostContainer) {
                                     log.debug("NotifyObservers: " + host);
-
                                     hostContainer.setChanged();
                                     hostContainer.notifyObservers(new ReconnectEvent(host));
-
                                 }
-
-
 
                             }
 
@@ -247,7 +242,9 @@ public class HostContainer extends Observable {
         if (host != null) {
 
             synchronized (connectedHosts) {
-                connectedHosts.remove(host);
+                if(!connectedHosts.remove(host)){
+                    throw new RuntimeException("invalid host removed");
+                }
             }
 
             host.setChannel(null);

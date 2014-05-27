@@ -2,6 +2,8 @@ package pt.com.broker.client.nio.events;
 
 import io.netty.channel.Channel;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
@@ -23,6 +25,8 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
             if(netAction.getActionType() == NetAction.ActionType.NOTIFICATION){
 
                 NetNotification netNotification = netAction.getNotificationMessage();
+
+                HostInfo h = (HostInfo) channel.attr(HostContainer.ATTRIBUTE_HOST_INFO).get();
 
                 if(onMessage(netNotification)){
 
@@ -55,7 +59,10 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
     }
 
 
+
     public abstract boolean onMessage(NetNotification notification);
+
+
 
 
 

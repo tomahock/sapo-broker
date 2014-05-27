@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 public abstract class BaseTest {
 
 
-    int totalServers = 10;
+    int totalServers = 20;
 
     static  IpTables ipTables = new IpTables();
 
@@ -57,9 +57,9 @@ public abstract class BaseTest {
 
         Collections.shuffle(_servers);
 
-        //return _servers.subList(0, (int) (Math.random() *  _servers.size()));
+        return _servers.subList(0, (int) (Math.random() *  _servers.size()));
 
-        return _servers.subList(0, _servers.size()-2);
+        //return _servers.subList(0, _servers.size()-2);
     }
 
 

@@ -3,6 +3,7 @@ package pt.com.broker.client.nio.consumer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
@@ -34,13 +35,15 @@ public class ConsumerManagerTest {
 
         };
 
-        consumerManager.addSubscription(netPoll, brokerListener);
+        HostInfo host = new HostInfo("127.0.0.1",3323);
 
-        BrokerAsyncConsumer consumer = consumerManager.getConsumer(NetAction.DestinationType.QUEUE, destination);
+        consumerManager.addSubscription(netPoll, brokerListener,host);
+
+        BrokerAsyncConsumer consumer = consumerManager.getConsumer(NetAction.DestinationType.QUEUE, destination, host.getSocketAddress());
 
         Assert.assertNotNull(consumer);
 
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC, destination);
+        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC, destination, host.getSocketAddress());
 
         Assert.assertNull(consumer2);
 
@@ -67,17 +70,20 @@ public class ConsumerManagerTest {
             }
         };
 
+        HostInfo host = new HostInfo("127.0.0.1",3323);
+
+
         NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
 
-        consumerManager.addSubscription(netSubscribeAction, brokerListener);
+        consumerManager.addSubscription(netSubscribeAction, brokerListener,host);
 
 
-        BrokerAsyncConsumer consumer = consumerManager.getConsumer(destinationType,destination);
+        BrokerAsyncConsumer consumer = consumerManager.getConsumer(destinationType, destination, host.getSocketAddress());
 
         Assert.assertNotNull(consumer);
 
 
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC,destination);
+        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC,destination, host.getSocketAddress());
 
 
         Assert.assertNull(consumer2);
@@ -108,7 +114,9 @@ public class ConsumerManagerTest {
 
         NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
 
-        consumerManager.addSubscription(netSubscribeAction, brokerListener);
+        HostInfo host = new HostInfo("127.0.0.1",3323);
+
+        consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
 
     }
 
@@ -124,6 +132,7 @@ public class ConsumerManagerTest {
 
         NetPoll netPoll = new NetPoll(destination, 1000);
 
+        HostInfo host = new HostInfo("127.0.0.1",3323);
 
         BrokerListener brokerListener = new NotificationListenerAdapter() {
 
@@ -135,7 +144,7 @@ public class ConsumerManagerTest {
 
         NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
 
-        consumerManager.addSubscription(netSubscribeAction, brokerListener);
+        consumerManager.addSubscription(netSubscribeAction, brokerListener,host);
 
     }
 
