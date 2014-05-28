@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.server;
 
-import org.junit.*;
+
+import junit.framework.Assert;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
@@ -33,7 +34,7 @@ public class TestServerConnection extends BaseTest {
 
 
 
-    @Test()
+
     public void testConnection() throws ExecutionException, InterruptedException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
 
@@ -69,7 +70,7 @@ public class TestServerConnection extends BaseTest {
     }
 
 
-    @Test()
+
     public void testClosedServers() throws InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         List<SocketServer> servers = getServers();
@@ -114,10 +115,12 @@ public class TestServerConnection extends BaseTest {
     }
 
 
-    @Test()
+
     public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        Assume.assumeTrue(userHasPermissions());
+        if(!userHasPermissions()){
+            return;
+        }
 
         List<SocketServer> servers = getServers();
 
@@ -172,10 +175,12 @@ public class TestServerConnection extends BaseTest {
     }
 
 
-    @Test()
+
     public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        Assume.assumeTrue(userHasPermissions());
+        if(!userHasPermissions()){
+            return;
+        }
 
         List<SocketServer> servers = getServers();
 
@@ -253,6 +258,9 @@ public class TestServerConnection extends BaseTest {
         ShutDownServers(servers);
     }
 
+    public void testError(){
+     Assert.assertFalse("Dalvik".equals(System.getProperty("java.vm.name")));
+    }
 
 
 

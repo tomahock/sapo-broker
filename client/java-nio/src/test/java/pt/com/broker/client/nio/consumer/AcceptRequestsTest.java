@@ -1,8 +1,9 @@
 package pt.com.broker.client.nio.consumer;
 
 
-import org.junit.Assert;
-import org.junit.Test;
+import junit.framework.TestCase;
+import junit.framework.Assert;
+
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
@@ -21,12 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by luissantos on 12-05-2014.
  */
-public class AcceptRequestsTest {
+public class AcceptRequestsTest extends TestCase {
 
 
 
-    @Test()
-    public void addRemove(){
+
+    public void testAddRemove(){
 
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
 
@@ -81,7 +82,7 @@ public class AcceptRequestsTest {
 
     }
 
-    @Test()
+
     public void testTimeout() throws InterruptedException {
 
         long timeout = 2000L;
@@ -138,7 +139,7 @@ public class AcceptRequestsTest {
     }
 
 
-    @Test()
+
     public void testDeliver() throws Exception {
 
 

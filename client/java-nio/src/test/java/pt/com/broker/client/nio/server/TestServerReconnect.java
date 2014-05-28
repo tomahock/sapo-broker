@@ -1,8 +1,7 @@
 package pt.com.broker.client.nio.server;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Test;
+
+import junit.framework.Assert;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
@@ -24,10 +23,12 @@ public class TestServerReconnect extends BaseTest {
 
 
 
-    @Test()
+
     public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        Assume.assumeTrue(userHasPermissions());
+        if(!userHasPermissions()){
+            return;
+        }
 
         List<SocketServer> servers = getServers();
 

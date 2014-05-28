@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="pt.com.broker.client.nio.android.test" android:versionCode="1" android:versionName="1.0-SNAPSHOT">
+
+  <application android:label="Broker NIO Broker IT">
+    <uses-library android:name="android.test.runner" />
+  </application>
+
+  <instrumentation android:targetPackage="pt.com.broker.client.nio.android.test" android:name="android.test.InstrumentationTestRunner" />
+
+</manifest>
+

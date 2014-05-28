@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>pt.sapo.oss.broker</groupId>
+        <artifactId>sapo-broker-parent</artifactId>
+        <version>4.0.46</version>
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <platform.version> 4.1.1.4 </platform.version>
+        <android.plugin.version>3.6.0</android.plugin.version>
+    </properties>
+
+	<groupId>pt.sapo.oss.broker</groupId>
+	<artifactId>sapo-broker-java-client-nio-android-integration-tests</artifactId>
+	<packaging>apk</packaging>
+	<name>Broker Java-NIO - Integration tests</name>
+    <version>4.0.46</version>
+
+	<dependencies>
+
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>${platform.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android-test</artifactId>
+            <version>${platform.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>pt.sapo.oss.broker</groupId>
+            <version>4.0.46</version>
+            <artifactId>sapo-broker-java-client-nio</artifactId>
+            <exclusions>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>pt.sapo.oss.broker</groupId>
+                    <artifactId>sapo-broker-binding-xml</artifactId>
+                </exclusion>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>pt.sapo.oss.broker</groupId>
+                    <artifactId>sapo-broker-binding-thrift</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty</artifactId>
+                </exclusion>
+
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>pt.sapo.oss.broker</groupId>
+            <version>4.0.46</version>
+            <artifactId>sapo-broker-java-client-nio</artifactId>
+            <type>test-jar</type>
+            <exclusions>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>pt.sapo.oss.broker</groupId>
+                    <artifactId>sapo-broker-binding-xml</artifactId>
+                </exclusion>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>pt.sapo.oss.broker</groupId>
+                    <artifactId>sapo-broker-binding-thrift</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty</artifactId>
+                </exclusion>
+
+
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.18.Final</version>
+        </dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<configuration>
+					<test>
+						<!--<skip>true|false|auto</skip> -->
+						<!--<instrumentationPackage>packageName</instrumentationPackage> -->
+
+						<!--<instrumentationRunner>class</instrumentationRunner>-->
+						<debug>false</debug>
+						<coverage>false</coverage>
+						<!--<logonly>true|false</logonly> avd -->
+						<!--<testsize>small|medium|large</testsize> -->
+						<createReport>true</createReport>
+						<!--<classes> -->
+						<!--<class>your.package.name.YourTestClass</class> -->
+						<!--</classes> -->
+						<packages>
+					        <package>pt.com.broker.client.nio</package>
+						</packages>
+
+					</test>
+					<sdk>
+						<platform>19</platform>
+					</sdk>
+									</configuration>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+
+
+         <pluginManagement>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-jarsigner-plugin</artifactId>
+                        <version>1.2</version>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                        <artifactId>android-maven-plugin</artifactId>
+                        <version>${android.plugin.version}</version>
+                        <configuration>
+                            <sdk>
+                                <path>/home/luissantos/Develop/android-sdk-linux/</path>
+                                <platform>19</platform>
+                            </sdk>
+                            <zipalign>
+                                <verbose>true</verbose>
+                            </zipalign>
+                            <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                            <dex>
+                                <coreLibrary>true</coreLibrary>
+                            </dex>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>1.8</version>
+                    </plugin>
+                </plugins>
+          </pluginManagement>
+
+	</build>
+</project>

@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio.server;
 
+import junit.framework.TestCase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import pt.com.broker.client.nio.iptables.IpTables;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by luissantos on 22-05-2014.
  */
-public abstract class BaseTest {
+public abstract class BaseTest extends TestCase {
 
 
     int totalServers = 20;

@@ -30,7 +30,6 @@
             <groupId>${project.groupId}</groupId>
             <version>${project.version}</version>
             <artifactId>sapo-broker-binding-xml</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

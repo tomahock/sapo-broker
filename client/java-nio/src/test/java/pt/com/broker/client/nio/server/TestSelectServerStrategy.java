@@ -1,7 +1,8 @@
 package pt.com.broker.client.nio.server;
 
 
-import org.junit.Assert;
+import junit.framework.Assert;
+import junit.framework.TestCase;
 import org.junit.Test;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
@@ -12,11 +13,12 @@ import java.util.List;
 /**
  * Created by luissantos on 16-05-2014.
  */
-public class TestSelectServerStrategy {
+public class TestSelectServerStrategy extends TestCase{
+
 
 
     @Test()
-    public void testRoundRobinLoop(){
+    public void RoundRobinLoop(){
 
 
         List<HostInfo> list = new ArrayList<HostInfo>();
@@ -46,7 +48,7 @@ public class TestSelectServerStrategy {
     }
 
 
-    @Test()
+
     public void testRoundRobinLoopWithRemove(){
 
 
@@ -80,7 +82,7 @@ public class TestSelectServerStrategy {
     }
 
 
-    @Test()
+
     public void testRoundRobinLoopWithRemoveAndAdd(){
 
 
