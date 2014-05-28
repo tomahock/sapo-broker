@@ -258,9 +258,9 @@ public class TestServerConnection extends BaseTest {
         ShutDownServers(servers);
     }
 
-    public void testError(){
+    /* public void testError(){
      Assert.assertFalse("Dalvik".equals(System.getProperty("java.vm.name")));
-    }
+    }*/
 
 
 
