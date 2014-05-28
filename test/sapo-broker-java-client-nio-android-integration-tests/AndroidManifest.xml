@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="pt.com.broker.client.nio.android.test" android:versionCode="1" android:versionName="1.0-SNAPSHOT">
 
+   <uses-permission android:name="android.permission.INTERNET" />
+
   <application android:label="Broker NIO Broker IT">
     <uses-library android:name="android.test.runner" />
   </application>
