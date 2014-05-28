@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <platform.version> 4.1.1.4 </platform.version>
         <android.plugin.version>3.6.0</android.plugin.version>
-        <sdk.path>/home/luissantos/Develop/android-sdk-linux/</sdk.path>
+        <sdk.path>/var/lib/jenkins/tools/android-sdk/</sdk.path>
     </properties>
 
 	<groupId>pt.sapo.oss.broker</groupId>
