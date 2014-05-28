@@ -67,7 +67,7 @@ public abstract class BaseTest extends TestCase {
         if(condition){
 
             StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
-            StackTraceElement e = stacktrace[2];//maybe this number needs to be corrected
+            StackTraceElement e = stacktrace[3];//maybe this number needs to be corrected
             String methodName = e.getMethodName();
             String className = e.getClassName();
 
