@@ -118,7 +118,7 @@
 
 					</test>
 					<sdk>
-						<platform>19</platform>
+						<platform>18</platform>
 					</sdk>
 									</configuration>
 				<extensions>true</extensions>
@@ -147,7 +147,7 @@
                         <configuration>
                             <sdk>
                                 <path>${sdk.path}</path>
-                                <platform>19</platform>
+                                <platform>18</platform>
                             </sdk>
                             <zipalign>
                                 <verbose>true</verbose>
