@@ -2,6 +2,7 @@ package pt.com.broker.client.nio.server;
 
 
 import junit.framework.Assert;
+import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
@@ -19,14 +20,18 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by luissantos on 22-05-2014.
  */
-public class TestServerReconnect extends BaseTest {
+public class TestServerReconnect extends ServerBaseTest {
 
 
 
 
     public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        if(!userHasPermissions()){
+        if(skipTest(isAndroid())){
+            return;
+        }
+
+        if(skipTest(!userHasPermissions())){
             return;
         }
 
@@ -61,10 +66,6 @@ public class TestServerReconnect extends BaseTest {
 
             }
         });
-
-
-
-
 
 
 

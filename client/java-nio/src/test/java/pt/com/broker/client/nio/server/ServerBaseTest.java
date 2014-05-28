@@ -1,8 +1,8 @@
 package pt.com.broker.client.nio.server;
 
-import junit.framework.TestCase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.iptables.IpTables;
 import pt.com.broker.client.nio.mocks.ServerFactory;
 import pt.com.broker.client.nio.mocks.SocketServer;
@@ -19,14 +19,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Created by luissantos on 22-05-2014.
+ * Created by luissantos on 28-05-2014.
  */
-public abstract class BaseTest extends TestCase {
+public class ServerBaseTest extends BaseTest {
+
 
 
     int totalServers = 20;
 
-    static  IpTables ipTables = new IpTables();
+    static IpTables ipTables = new IpTables();
 
     static  String chainName = "java-nio-tests";
 
@@ -134,9 +135,4 @@ public abstract class BaseTest extends TestCase {
 
 
     }
-
-
-
-
-
 }

@@ -4,6 +4,7 @@ package pt.com.broker.client.nio.consumer;
 import junit.framework.TestCase;
 import junit.framework.Assert;
 
+import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
@@ -22,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by luissantos on 12-05-2014.
  */
-public class AcceptRequestsTest extends TestCase {
+public class AcceptRequestsTest extends BaseTest {
 
 
 

@@ -2,6 +2,7 @@ package pt.com.broker.client.nio.server;
 
 
 import junit.framework.Assert;
+import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by luissantos on 12-05-2014.
  */
-public class TestServerConnection extends BaseTest {
+public class TestServerConnection extends ServerBaseTest {
 
 
 
@@ -72,6 +73,10 @@ public class TestServerConnection extends BaseTest {
 
 
     public void testClosedServers() throws InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+
+        if(skipTest(isAndroid())){
+            return;
+        }
 
         List<SocketServer> servers = getServers();
 
@@ -117,6 +122,10 @@ public class TestServerConnection extends BaseTest {
 
 
     public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+
+        if(skipTest(isAndroid())){
+            return;
+        }
 
         if(!userHasPermissions()){
             return;
@@ -179,6 +188,7 @@ public class TestServerConnection extends BaseTest {
     public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         if(!userHasPermissions()){
+
             return;
         }
 
@@ -258,9 +268,7 @@ public class TestServerConnection extends BaseTest {
         ShutDownServers(servers);
     }
 
-    /* public void testError(){
-     Assert.assertFalse("Dalvik".equals(System.getProperty("java.vm.name")));
-    }*/
+
 
 
 

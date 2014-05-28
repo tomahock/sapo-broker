@@ -4,6 +4,7 @@ package pt.com.broker.client.nio.server;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Test;
+import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by luissantos on 16-05-2014.
  */
-public class TestSelectServerStrategy extends TestCase{
+public class TestSelectServerStrategy extends BaseTest{
 
 
 

@@ -1,8 +1,8 @@
 package pt.com.broker.client.nio.consumer;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import junit.framework.Assert;
+import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
@@ -13,10 +13,10 @@ import pt.com.broker.types.*;
 /**
  * Created by luissantos on 08-05-2014.
  */
-public class ConsumerManagerTest {
+public class ConsumerManagerTest extends BaseTest {
 
 
-    @Test()
+
     public void testNetPoolAddedAsQueue(){
 
         ConsumerManager consumerManager = new ConsumerManager();
@@ -50,7 +50,7 @@ public class ConsumerManagerTest {
 
     }
 
-    @Test()
+
     public void testNetSubribeQueue(){
 
         ConsumerManager consumerManager = new ConsumerManager();
@@ -91,7 +91,7 @@ public class ConsumerManagerTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
+
     public void testSubscriptionInvalidDestinationType(){
 
 
@@ -116,11 +116,17 @@ public class ConsumerManagerTest {
 
         HostInfo host = new HostInfo("127.0.0.1",3323);
 
-        consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
+        try {
+
+            consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
+
+            fail("Expecting Exception");
+        }catch (IllegalArgumentException e){
+
+        }
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
     public void testSubscriptionInvalidDestination(){
 
 
@@ -144,7 +150,14 @@ public class ConsumerManagerTest {
 
         NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
 
-        consumerManager.addSubscription(netSubscribeAction, brokerListener,host);
+        try {
+
+            consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
+
+            fail("Expecting Exception");
+        }catch (IllegalArgumentException e){
+
+        }
 
     }
 
