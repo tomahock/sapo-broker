@@ -97,6 +97,7 @@
                     <excludes>
                         <exclude>pt/com/broker/client/nio/ignore/**/*.java</exclude>
                     </excludes>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
             <!--
