@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.handlers;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import java.net.InetSocketAddress;
 /**
  * Created by luissantos on 22-04-2014.
  */
+@ChannelHandler.Sharable
 public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessage> {
 
     private static final Logger log = LoggerFactory.getLogger(ReceiveMessageHandler.class);

@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio.handlers;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
@@ -10,6 +11,7 @@ import pt.com.broker.types.NetMessage;
 /**
  * Created by luissantos on 09-05-2014.
  */
+@ChannelHandler.Sharable()
 public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage> {
 
 
@@ -23,16 +25,23 @@ public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception {
 
-
         NetAction action = msg.getAction();
 
 
-        if(action.getActionType() != NetAction.ActionType.ACCEPTED) {
+        if(action.getActionType() != NetAction.ActionType.ACCEPTED || manager == null) {
             ctx.fireChannelRead(msg);
             return;
         }
 
-       // manager.deliverMessage(msg);
+        manager.deliverMessage(msg,ctx.channel());
 
+    }
+
+    public PendingAcceptRequestsManager getManager() {
+        return manager;
+    }
+
+    public void setManager(PendingAcceptRequestsManager manager) {
+        this.manager = manager;
     }
 }

@@ -27,7 +27,10 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by luissantos on 21-04-2014.
@@ -537,6 +540,55 @@ public class BrokerClientTest {
 
 
         Thread.sleep(10000);
+
+    }
+
+    @Test()
+    public void testVirtualQueue() throws InterruptedException, ExecutionException {
+
+
+        final BrokerClient bk = new BrokerClient(NetProtocolType.JSON);
+
+        bk.addServer("192.168.100.1" , 3323);
+
+
+        bk.connect();
+
+
+
+
+        final AtomicInteger counter = new AtomicInteger(3);
+
+        final Future f = bk.subscribe("localhost@/teste/", NetAction.DestinationType.VIRTUAL_QUEUE ,new NotificationListenerAdapter(){
+
+            @Override
+            public boolean onMessage(NetNotification notification) {
+
+                if(counter.getAndDecrement() > 1){
+
+                    System.out.println("Got a Message. Not Ackcepted");
+
+                    return false;
+                }else{
+
+                    System.out.println("Got a Message and ackcepted");
+
+                    return true;
+                }
+
+
+
+            }
+
+        });
+
+        f.get();
+
+
+         bk.publishMessage("teste","/teste/", NetAction.DestinationType.TOPIC);
+
+
+        Thread.sleep(100000);
 
     }
 

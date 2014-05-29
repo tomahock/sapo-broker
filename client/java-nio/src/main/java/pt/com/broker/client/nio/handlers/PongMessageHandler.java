@@ -1,9 +1,6 @@
 package pt.com.broker.client.nio.handlers;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
@@ -19,6 +16,7 @@ import java.net.InetSocketAddress;
 /**
  * Created by luissantos on 22-04-2014.
  */
+@ChannelHandler.Sharable
 public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> {
 
     public static final String HEART_BEAT_ACTION_ID = "24bb963d-6d6c-441e-ab4d-999d73578452";
@@ -82,7 +80,11 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
 
     }
 
+    public PongConsumerManager getManager() {
+        return manager;
+    }
 
-
-
+    public void setManager(PongConsumerManager manager) {
+        this.manager = manager;
+    }
 }

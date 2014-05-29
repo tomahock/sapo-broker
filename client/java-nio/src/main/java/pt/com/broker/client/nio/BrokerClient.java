@@ -142,6 +142,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
     public Future<HostInfo> subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
 
+
         for(final HostInfo host : getHosts().getConnectedHosts()){
 
 
@@ -183,6 +184,17 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
     private ChannelFuture subscribeToHost(final NetSubscribeAction subscribe , final BrokerListener listener , Channel channel){
+
+
+        if(subscribe.getDestinationType() == NetAction.DestinationType.VIRTUAL_QUEUE){
+
+            String destination = subscribe.getDestination();
+
+            if(!destination.contains("@")){
+                throw new IllegalArgumentException("Invalid name format for virtual queue");
+            }
+
+        }
 
         NetAction netAction = null;
 
@@ -250,6 +262,7 @@ public class BrokerClient extends BaseClient implements Observer {
         }
 
         Channel channel = ((NetNotificationDecorator) notification).getChannel();
+
 
         /* there is no acknowledge action for topics  */
         if (notification.getDestinationType() == NetAction.DestinationType.TOPIC) {

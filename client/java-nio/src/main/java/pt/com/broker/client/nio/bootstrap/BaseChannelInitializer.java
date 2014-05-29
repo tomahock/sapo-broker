@@ -3,6 +3,7 @@ package pt.com.broker.client.nio.bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.ssl.SslHandler;
@@ -40,23 +41,24 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
     @Override
     protected void initChannel(Channel ch) throws Exception {
 
+        ChannelPipeline pipeline = ch.pipeline();
 
         if(isOldFraming()){
 
             /* add Message <> byte encode decoder */
-            ch.pipeline().addLast("broker_message_decoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(serializer));
-            ch.pipeline().addLast("broker_message_encoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder(serializer));
+            pipeline.addLast("broker_message_decoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(serializer));
+            pipeline.addLast("broker_message_encoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder(serializer));
 
 
         }else{
 
             /* add Message <> byte encode decoder */
-            ch.pipeline().addLast("broker_message_decoder",new BrokerMessageDecoder(serializer));
-            ch.pipeline().addLast("broker_message_encoder",new BrokerMessageEncoder(serializer));
+            pipeline.addLast("broker_message_decoder",new BrokerMessageDecoder(serializer));
+            pipeline.addLast("broker_message_encoder",new BrokerMessageEncoder(serializer));
         }
 
 
-        ch.pipeline().addLast("byte_message_encoder",new MessageToByteEncoder<Byte[]>(){
+        /*ch.pipeline().addLast("byte_message_encoder",new MessageToByteEncoder<Byte[]>(){
 
             @Override
             protected void encode(ChannelHandlerContext ctx, Byte[] msg, ByteBuf out) throws Exception {
@@ -70,7 +72,7 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
 
                 out.writeBytes(data);
             }
-        });
+        });*/
 
 
 

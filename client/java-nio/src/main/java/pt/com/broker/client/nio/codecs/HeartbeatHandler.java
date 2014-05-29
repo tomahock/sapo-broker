@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.codecs;
 
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -16,6 +17,7 @@ import java.util.UUID;
 /**
  * Created by luissantos on 15-05-2014.
  */
+@ChannelHandler.Sharable()
 public class HeartbeatHandler extends ChannelDuplexHandler {
 
     public static final String HEART_BEAT_ACTION_ID = "24bb963d-6d6c-441e-ab4d-999d73578452";

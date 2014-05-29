@@ -1,5 +1,8 @@
 package pt.com.broker.client.nio.iptables;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +17,8 @@ import java.util.regex.Pattern;
  * Created by luissantos on 14-05-2014.
  */
 public class IpTables {
+
+    private static final Logger log = LoggerFactory.getLogger(IpTables.class);
 
 
     public enum  TCP_DENY{
@@ -178,6 +183,8 @@ public class IpTables {
         command.addAll(parameters);
 
         ProcessBuilder pb = new ProcessBuilder(command);
+
+        log.debug("Commnad: "+command);
 
         Process p = pb.start();
 

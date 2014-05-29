@@ -12,6 +12,7 @@ import pt.com.broker.client.nio.iptables.IpTables;
 import pt.com.broker.client.nio.mocks.ServerFactory;
 import pt.com.broker.client.nio.mocks.SocketServer;
 import pt.com.broker.client.nio.server.HostContainer;
+import pt.com.broker.client.nio.tests.Utils;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
 
@@ -74,7 +75,7 @@ public class TestServerConnection extends ServerBaseTest {
 
     public void testClosedServers() throws InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        if(skipTest(isAndroid())){
+        if(skipTest(Utils.isAndroid())){
             return;
         }
 
@@ -123,7 +124,7 @@ public class TestServerConnection extends ServerBaseTest {
 
     public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        if(skipTest(isAndroid())){
+        if(skipTest(Utils.isAndroid())){
             return;
         }
 

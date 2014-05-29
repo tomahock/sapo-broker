@@ -1,7 +1,8 @@
 package pt.com.broker.client.nio.server;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.iptables.IpTables;
 import pt.com.broker.client.nio.mocks.ServerFactory;
@@ -21,9 +22,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by luissantos on 28-05-2014.
  */
-public class ServerBaseTest extends BaseTest {
+public abstract class ServerBaseTest extends BaseTest {
 
-
+    private static final Logger log = LoggerFactory.getLogger(ServerBaseTest.class);
 
     int totalServers = 20;
 
@@ -31,12 +32,16 @@ public class ServerBaseTest extends BaseTest {
 
     static  String chainName = "java-nio-tests";
 
-
     protected List<SocketServer> getServers() {
 
-        List<SocketServer> servers = new ArrayList<SocketServer>();
-
         int count = (int) (1 + (Math.random() *  totalServers));
+
+        return getServers(count);
+    }
+
+    protected List<SocketServer> getServers(int count) {
+
+        List<SocketServer> servers = new ArrayList<SocketServer>();
 
         while (count-- > 0){
 
@@ -45,7 +50,6 @@ public class ServerBaseTest extends BaseTest {
             servers.add(server);
 
         }
-
 
         return servers;
     }
@@ -97,8 +101,11 @@ public class ServerBaseTest extends BaseTest {
 
     }
 
-    @BeforeClass()
-    public static void setup() throws IOException, InterruptedException {
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
 
 
 
@@ -115,15 +122,9 @@ public class ServerBaseTest extends BaseTest {
 
     }
 
-    public static String currentChainName(){
-
-        String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
-
-        return chainName+"-"+pid;
-    }
-
-    @AfterClass()
-    public static void cleanup() throws IOException, InterruptedException {
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
 
         if(ipTables.hasPermission()) {
 
@@ -132,7 +133,14 @@ public class ServerBaseTest extends BaseTest {
             ipTables.deleteChain(currentChainName());
 
         }
-
-
     }
+
+    public static String currentChainName(){
+
+        String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+
+        return chainName+"-"+pid;
+    }
+
+
 }

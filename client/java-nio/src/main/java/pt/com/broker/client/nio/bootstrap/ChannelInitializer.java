@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -18,22 +19,28 @@ import pt.com.broker.types.NetProtocolType;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by luissantos on 06-05-2014.
  */
 public class ChannelInitializer extends BaseChannelInitializer {
 
+    
+    private final HeartbeatHandler heartbeatHandler = new HeartbeatHandler();
+    private final PongMessageHandler pongMessageHandler;
+    private final ReceiveFaultHandler faultHandler;
+    private final AcceptMessageHandler acceptMessageHandler;
+    private final ReceiveMessageHandler receiveMessageHandler;
+
 
     protected ConsumerManager consumerManager;
-
     protected PongConsumerManager pongConsumerManager;
-
     protected PendingAcceptRequestsManager acceptRequestsManager;
 
     protected SSLContext context;
 
-    protected ReceiveFaultHandler faultHandler;
+
 
 
     public ChannelInitializer(BindingSerializer serializer, ConsumerManager consumerManager, PongConsumerManager pongConsumerManager) {
@@ -44,6 +51,14 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         setPongConsumerManager(pongConsumerManager);
 
+        pongMessageHandler =  new PongMessageHandler(getPongConsumerManager());
+
+        faultHandler = new ReceiveFaultHandler(getConsumerManager());
+
+        acceptMessageHandler = new AcceptMessageHandler(null);
+
+        receiveMessageHandler = new ReceiveMessageHandler(getConsumerManager());
+
     }
 
     @Override
@@ -51,32 +66,31 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         super.initChannel(ch);
 
-        if(getContext()!=null){
+        ChannelPipeline pipeline = ch.pipeline();
 
-            SSLEngine engine = getContext().createSSLEngine();
+        SSLContext sslContext = getContext();
+
+        if( sslContext !=null ){
+
+            SSLEngine engine = sslContext.createSSLEngine();
 
             engine.setUseClientMode(true);
 
-            ch.pipeline().addFirst("ssl", new SslHandler(engine, false) );
+            pipeline.addFirst("ssl", new SslHandler(engine, false) );
 
         }
 
-        ch.pipeline().addLast("idle_state_handler", new IdleStateHandler(4, 2, 0));
-        ch.pipeline().addLast("heartbeat_handler", new HeartbeatHandler());
+        IdleStateHandler idleStateHandler = new IdleStateHandler(4000, 2000, 0, TimeUnit.MILLISECONDS);
 
+        pipeline.addLast("idle_state_handler", idleStateHandler );
+        pipeline.addLast("heartbeat_handler", heartbeatHandler);
 
         /* add message receive handler */
-        ch.pipeline().addLast("broker_notification_handler",new ReceiveMessageHandler(getConsumerManager()));
+        pipeline.addLast("broker_notification_handler",receiveMessageHandler);
 
-        ch.pipeline().addLast("broker_pong_handler",new PongMessageHandler(getPongConsumerManager()));
-
-
-
-        ch.pipeline().addLast("broker_fault_handler",new ReceiveFaultHandler(getConsumerManager()));
-
-        if(getAcceptRequestsManager()!=null){
-            ch.pipeline().addLast("broker_accept_handler",new AcceptMessageHandler(getAcceptRequestsManager()));
-        }
+        pipeline.addLast("broker_pong_handler",pongMessageHandler);
+        pipeline.addLast("broker_fault_handler", faultHandler);
+        pipeline.addLast("broker_accept_handler",acceptMessageHandler);
 
     }
 
@@ -94,7 +108,13 @@ public class ChannelInitializer extends BaseChannelInitializer {
     }
 
     public void setPongConsumerManager(PongConsumerManager pongConsumerManager) {
+
         this.pongConsumerManager = pongConsumerManager;
+
+        if(pongMessageHandler!=null){
+            pongMessageHandler.setManager(pongConsumerManager);
+        }
+
     }
 
     public PendingAcceptRequestsManager getAcceptRequestsManager() {
@@ -103,6 +123,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     public void setAcceptRequestsManager(PendingAcceptRequestsManager acceptRequestsManager) {
         this.acceptRequestsManager = acceptRequestsManager;
+        acceptMessageHandler.setManager(acceptRequestsManager);
     }
 
     public SSLContext getContext() {
@@ -116,7 +137,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     public void setFaultHandler(BrokerListener adapter){
 
-        //faultHandler.setFaultListenerAdapter(adapter);
+        faultHandler.setFaultListenerAdapter(adapter);
 
     }
 }
