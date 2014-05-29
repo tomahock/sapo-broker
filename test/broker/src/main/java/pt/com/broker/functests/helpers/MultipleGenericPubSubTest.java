@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 
 
@@ -193,7 +192,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 
-						tci.brokerClient.publishMessage(brokerMessage, getDestinationName(),getDestinationType()).get();
+						tci.brokerClient.publish(brokerMessage, getDestinationName(), getDestinationType()).get();
 
 					}
 

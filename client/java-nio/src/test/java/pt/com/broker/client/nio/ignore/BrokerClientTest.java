@@ -1,7 +1,5 @@
 package pt.com.broker.client.nio.ignore;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -23,12 +21,9 @@ import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.types.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -205,8 +200,8 @@ public class BrokerClientTest {
         NetBrokerMessage netBrokerMessage = new NetBrokerMessage("Teste2");
         netBrokerMessage.setExpiration(System.currentTimeMillis()-30000);
 
-        ChannelFuture future = bk.publishMessage(netBrokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
-        //ChannelFuture future = bk.publishMessage("Teste3", "/teste/", NetAction.DestinationType.QUEUE);
+        ChannelFuture future = bk.publish(netBrokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+        //ChannelFuture future = bk.publish("Teste3", "/teste/", NetAction.DestinationType.QUEUE);
 
 
 
@@ -329,11 +324,11 @@ public class BrokerClientTest {
 
 
 
-        //ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+        //ChannelFuture future = bk.publish("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
 
-        /*future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
-        future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
-        future = bk.publishMessage("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);*/
+        /*future = bk.publish("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+        future = bk.publish("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
+        future = bk.publish("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);*/
 
 
         Thread.sleep(10000);
@@ -369,7 +364,7 @@ public class BrokerClientTest {
 
         while (--i > 0){
 
-            ChannelFuture future = bk.publishMessage("Olá Mundo", "/teste/", destinationType);
+            ChannelFuture future = bk.publish("Olá Mundo", "/teste/", destinationType);
 
 
 
@@ -395,7 +390,7 @@ public class BrokerClientTest {
         brokerMessage.addHeader(Headers.DEFERRED_DELIVERY, "1000" );
 
 
-        ChannelFuture f = bk.publishMessage(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+        ChannelFuture f = bk.publish(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
 
 
         f.get();
@@ -441,7 +436,7 @@ public class BrokerClientTest {
         NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
 
 
-        ChannelFuture f = bk.publishMessage(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+        ChannelFuture f = bk.publish(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
 
 
         f.get();
@@ -507,7 +502,7 @@ public class BrokerClientTest {
             }
         },2000);
 
-        bk.publishMessage(message,"/teste/", NetAction.DestinationType.QUEUE, acceptRequest);
+        bk.publish(message, "/teste/", NetAction.DestinationType.QUEUE, acceptRequest);
 
         Thread.sleep(10000);
     }
@@ -585,7 +580,7 @@ public class BrokerClientTest {
         f.get();
 
 
-         bk.publishMessage("teste","/teste/", NetAction.DestinationType.TOPIC);
+         bk.publish("teste", "/teste/", NetAction.DestinationType.TOPIC);
 
 
         Thread.sleep(100000);

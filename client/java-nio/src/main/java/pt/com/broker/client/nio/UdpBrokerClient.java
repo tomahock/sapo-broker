@@ -2,7 +2,6 @@ package pt.com.broker.client.nio;
 
 import io.netty.channel.ChannelFuture;
 import pt.com.broker.client.nio.bootstrap.BaseChannelInitializer;
-import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.bootstrap.DatagramBootstrap;
 import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
 import pt.com.broker.client.nio.server.HostContainer;
@@ -34,14 +33,14 @@ public class UdpBrokerClient extends BaseClient {
     }
 
     @Override
-    public ChannelFuture publishMessage(NetPublish message, String destination, NetAction.DestinationType dtype) {
+    public ChannelFuture publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
 
         if (message.getActionId() != null)
         {
             throw new InvalidParameterException("Messages published over UDP are not allowed to carry a message identifier.");
         }
 
-        return super.publishMessage(message, destination, dtype);
+        return super.publish(message, destination, dtype);
     }
 
 

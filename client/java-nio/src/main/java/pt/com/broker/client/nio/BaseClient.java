@@ -1,6 +1,5 @@
 package pt.com.broker.client.nio;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -15,7 +14,6 @@ import pt.com.broker.types.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observer;
 import java.util.concurrent.Future;
 
 /**
@@ -106,19 +104,19 @@ public abstract class BaseClient{
         return this.buildMessage(action, new HashMap<String, String>());
     }
 
-    public ChannelFuture publishMessage(String brokerMessage, String destinationName,NetAction.DestinationType dtype) {
+    public Future publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
-        return publishMessage(brokerMessage.getBytes(), destinationName, dtype);
+        return publish(brokerMessage.getBytes(), destinationName, dtype);
     }
 
-    public ChannelFuture publishMessage(byte[] brokerMessage, String destinationName , NetAction.DestinationType dtype) {
+    public Future publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
-        return publishMessage(msg, destinationName, dtype);
+        return publish(msg, destinationName, dtype);
     }
 
-    public ChannelFuture publishMessage(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
+    public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
 
         if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
             throw new IllegalArgumentException("Mal-formed Enqueue request");
@@ -127,11 +125,11 @@ public abstract class BaseClient{
         NetPublish publish = new NetPublish(destination, dtype, brokerMessage);
 
 
-        return publishMessage(publish,destination,dtype);
+        return publish(publish, destination, dtype);
 
     }
 
-    public ChannelFuture publishMessage(NetPublish message, String destination, NetAction.DestinationType dtype) {
+    public Future publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
 
         NetAction action = new NetAction(message);
 
@@ -181,7 +179,7 @@ public abstract class BaseClient{
         this.hosts = hosts;
     }
 
-    public BaseBootstrap getBootstrap() {
+    protected BaseBootstrap getBootstrap() {
         return bootstrap;
     }
 
@@ -227,7 +225,7 @@ public abstract class BaseClient{
         }
     }
 
-    public BindingSerializer getSerializer() {
+    protected BindingSerializer getSerializer() {
         return serializer;
     }
 }

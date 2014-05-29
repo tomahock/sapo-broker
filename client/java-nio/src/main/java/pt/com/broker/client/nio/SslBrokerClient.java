@@ -158,7 +158,7 @@ public class SslBrokerClient extends BrokerClient  {
 
     }
 
-    protected ChannelFuture sendAuthMessage(NetAuthentication authentication, MessageAcceptedAdapter acceptedListener , long timeout ){
+    protected Future sendAuthMessage(NetAuthentication authentication, MessageAcceptedAdapter acceptedListener , long timeout ){
 
 
         if(acceptedListener!=null) {

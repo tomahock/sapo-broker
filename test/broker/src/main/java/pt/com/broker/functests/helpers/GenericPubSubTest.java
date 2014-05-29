@@ -4,7 +4,6 @@ import org.caudexorigo.concurrent.Sleep;
 
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
@@ -146,7 +145,7 @@ public class GenericPubSubTest extends BrokerTest
 
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					Future f = getInfoProducer().publishMessage(brokerMessage, getDestinationName(),getDestinationType());
+					Future f = getInfoProducer().publish(brokerMessage, getDestinationName(), getDestinationType());
 
                     f.get();
 

@@ -28,7 +28,7 @@ public class UdpBrokerClientTest {
 
         f.get();
 
-        bk.publishMessage(RandomStringUtils.randomAlphanumeric(10), "/teste/", NetAction.DestinationType.QUEUE);
+        bk.publish(RandomStringUtils.randomAlphanumeric(10), "/teste/", NetAction.DestinationType.QUEUE);
 
 
 
@@ -46,7 +46,7 @@ public class UdpBrokerClientTest {
 
         f.get();
 
-        bk.publishMessage(RandomStringUtils.randomAlphanumeric(10), "/teste/", NetAction.DestinationType.QUEUE);
+        bk.publish(RandomStringUtils.randomAlphanumeric(10), "/teste/", NetAction.DestinationType.QUEUE);
 
 
 

@@ -12,7 +12,6 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 
 public class PollTest extends BrokerTest
@@ -40,7 +39,7 @@ public class PollTest extends BrokerTest
                     bk.connect();
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					bk.publishMessage(brokerMessage, queueName, NetAction.DestinationType.QUEUE);
+					bk.publish(brokerMessage, queueName, NetAction.DestinationType.QUEUE);
 
 					bk.close().get();
 

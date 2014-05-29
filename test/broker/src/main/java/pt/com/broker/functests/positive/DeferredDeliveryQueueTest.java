@@ -113,7 +113,7 @@ public class DeferredDeliveryQueueTest extends BrokerTest
 
 				message.addHeader(DEFERRED_DELIVERY_HEADER, deferredDeliveryTime + "");
 
-				Future f = brokerClient.publishMessage(message, queueName, DestinationType.QUEUE);
+				Future f = brokerClient.publish(message, queueName, DestinationType.QUEUE);
 
                 f.get();
 

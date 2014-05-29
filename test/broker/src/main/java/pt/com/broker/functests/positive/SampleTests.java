@@ -2,7 +2,6 @@ package pt.com.broker.functests.positive;
 
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
@@ -11,7 +10,6 @@ import pt.com.broker.functests.Step;
 import pt.com.broker.functests.Test;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
-import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.NotificationConsequence;
 import pt.com.broker.types.*;
 
@@ -76,7 +74,7 @@ public class SampleTests
 						BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-						bk.publishMessage(brokerMessage, topicName, NetAction.DestinationType.TOPIC);
+						bk.publish(brokerMessage, topicName, NetAction.DestinationType.TOPIC);
 
 						bk.close().get();
 

@@ -8,7 +8,6 @@ import org.caudexorigo.concurrent.Sleep;
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.HostInfo;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
@@ -18,7 +17,6 @@ import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
-import pt.com.broker.functests.helpers.GenericBrokerListener;
 import pt.com.broker.functests.helpers.SetValueFuture;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -159,7 +157,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 
-                    Future f = infoProducer.publishMessage(brokerMessage, destinationName, destinationType);
+                    Future f = infoProducer.publish(brokerMessage, destinationName, destinationType);
 
                     f.get();
 

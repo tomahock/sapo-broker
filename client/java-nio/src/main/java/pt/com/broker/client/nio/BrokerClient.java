@@ -18,8 +18,6 @@ import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
 
 
-import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
-import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.ReconnectEvent;
@@ -95,23 +93,23 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
 
-    public ChannelFuture publishMessage(String brokerMessage, String destinationName,NetAction.DestinationType dtype) {
+    public Future publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
-        return publishMessage(brokerMessage.getBytes(), destinationName, dtype);
+        return publish(brokerMessage.getBytes(), destinationName, dtype);
     }
 
-    public ChannelFuture publishMessage(byte[] brokerMessage, String destinationName , NetAction.DestinationType dtype) {
+    public Future publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
-        return publishMessage(msg, destinationName, dtype);
+        return publish(msg, destinationName, dtype);
     }
 
-    public ChannelFuture publishMessage(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
-        return publishMessage(brokerMessage,destination,dtype,null);
+    public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
+        return publish(brokerMessage, destination, dtype, null);
     }
 
-    public ChannelFuture publishMessage(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype , AcceptRequest request) {
+    public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype, AcceptRequest request) {
 
 
         if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
@@ -132,15 +130,15 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
-    public Future<HostInfo> subscribe(String destination, NetAction.DestinationType destinationType, final BrokerListener listener) throws InterruptedException {
+    public Future subscribe(String destination, NetAction.DestinationType destinationType, final BrokerListener listener) throws InterruptedException {
         return subscribe( new NetSubscribe(destination, destinationType),listener,null);
     }
 
-    public Future<HostInfo> subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) throws InterruptedException {
+    public Future subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) throws InterruptedException {
         return subscribe(subscribe, listener, null);
     }
 
-    public Future<HostInfo> subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
+    public Future subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
 
 
         for(final HostInfo host : getHosts().getConnectedHosts()){
@@ -255,7 +253,7 @@ public class BrokerClient extends BaseClient implements Observer {
      * @return
      * @throws Throwable
      */
-    public ChannelFuture acknowledge(NetNotification notification) throws Throwable {
+    public Future acknowledge(NetNotification notification) throws Throwable {
 
         if(!(notification instanceof NetNotificationDecorator)){
             throw new Exception("Invalid NetNotification");

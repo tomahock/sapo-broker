@@ -3,7 +3,6 @@ package pt.com.broker.functests.positive;
 import java.util.Arrays;
 import java.util.concurrent.Future;
 
-import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.client.nio.BrokerClient;
@@ -68,7 +67,7 @@ public class PollVirtualQueueTest extends BrokerTest
 
                     NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					bk.publishMessage(brokerMessage,topicName,DestinationType.TOPIC);
+					bk.publish(brokerMessage, topicName, DestinationType.TOPIC);
 
                     Thread.sleep(3000);
 
