@@ -8,7 +8,7 @@ import org.caudexorigo.concurrent.Sleep;
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.HostInfo;
-import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
+import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
@@ -70,7 +70,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 		brokerListener = new NotificationListenerAdapter() {
             @Override
-            public boolean onMessage(NetNotification message) {
+            public boolean onMessage(NetNotification message, HostInfo host) {
                 return true;
             }
         };
@@ -99,7 +99,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 			{
 				try
 				{
-					AcceptRequest accReq = new AcceptRequest("123456789", new MessageAcceptedAdapter()
+					AcceptRequest accReq = new AcceptRequest("123456789", new AcceptResponseListener()
 					{
 
                         @Override
