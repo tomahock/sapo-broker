@@ -1,14 +1,13 @@
 package pt.com.broker.client.nio.bootstrap;
 
-import io.netty.bootstrap.*;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.Future;
-import pt.com.broker.client.nio.HostInfo;
-import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.client.nio.server.HostInfo;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,7 +34,9 @@ public abstract class BaseBootstrap {
 
         boot.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,hostInfo.getConnectTimeout());
 
-        ChannelFuture f = boot.connect(hostInfo.getSocketAddress());
+        InetSocketAddress socketAddress = new InetSocketAddress(hostInfo.getHostname(),hostInfo.getPort());
+
+        ChannelFuture f = boot.connect(socketAddress);
 
         return f;
     }

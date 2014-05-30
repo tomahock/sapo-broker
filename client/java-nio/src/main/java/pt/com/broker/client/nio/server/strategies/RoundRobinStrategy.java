@@ -1,12 +1,8 @@
 package pt.com.broker.client.nio.server.strategies;
 
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by luissantos on 15-05-2014.

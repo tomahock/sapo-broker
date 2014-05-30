@@ -1,10 +1,7 @@
-package pt.com.broker.client.nio;
+package pt.com.broker.client.nio.server;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import pt.com.broker.client.nio.utils.ChannelDecorator;
 
-import java.net.InetSocketAddress;
 
 /**
  * Immutable class that represents an Agent host.
@@ -13,7 +10,7 @@ import java.net.InetSocketAddress;
 public final class HostInfo
 {
     public static enum STATUS {
-        OPEN, CONNECTING, CLOSED
+        OPEN, CONNECTING, CLOSED, DISABLE
     }
 
     public static final int DEFAULT_CONNECT_TIMEOUT = 15 * 1000; // 15 seconds
@@ -24,12 +21,9 @@ public final class HostInfo
     private int port;
 
     private int connectTimeout;
-    private final int readTimeout;
-
     private int reconnectLimit = DEFAULT_RECONNECT_LIMIT;
 
-    private ChannelDecorator channel;
-
+    private Channel channel;
     private STATUS status = STATUS.CLOSED;
 
     /**
@@ -42,7 +36,7 @@ public final class HostInfo
      */
     public HostInfo(String hostname, int port)
     {
-        this(hostname, port, DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT);
+        this(hostname, port, DEFAULT_CONNECT_TIMEOUT);
     }
 
 
@@ -56,15 +50,12 @@ public final class HostInfo
      *            Connection port.
      * @param connectTimeout
      *            Connection Timeout
-     * @param readTimeout
-     *            Read Timeout
      */
-    public HostInfo(String hostname, int port, int connectTimeout, int readTimeout)
+    public HostInfo(String hostname, int port, int connectTimeout)
     {
         this.hostname = hostname;
         this.port = port;
         this.connectTimeout = connectTimeout;
-        this.readTimeout = readTimeout;
     }
 
     public String getHostname()
@@ -87,10 +78,6 @@ public final class HostInfo
         this.connectTimeout = connectTimeout;
     }
 
-    public int getReadTimeout()
-    {
-        return readTimeout;
-    }
 
     @Override
     public boolean equals(Object obj)
@@ -109,29 +96,19 @@ public final class HostInfo
     @Override
     public String toString()
     {
-
-        return String.format("HostInfo [hostname=%s, port=%s, connectTimeout=%s, readTimeout=%s]", hostname, port, connectTimeout, readTimeout);
-
-    }
-
-
-    public InetSocketAddress getSocketAddress(){
-        InetSocketAddress socketAddress = new InetSocketAddress(getHostname(),getPort());
-
-        return socketAddress;
+        return String.format("HostInfo [hostname=%s, port=%s]", hostname, port);
     }
 
 
     public boolean isActive(){
-
         return this.getChannel() != null && (getChannel().isActive() ||  getChannel().isOpen() );
     }
 
-    public ChannelDecorator getChannel() {
+    public Channel getChannel() {
         return channel;
     }
 
-    public void setChannel(ChannelDecorator channel) {
+    public void setChannel(Channel channel) {
         this.channel = channel;
     }
 
@@ -139,16 +116,21 @@ public final class HostInfo
         return reconnectLimit;
     }
 
-    public  synchronized void setReconnectLimit(int reconnectLimit) {
+    public synchronized void setReconnectLimit(int reconnectLimit) {
         this.reconnectLimit = reconnectLimit;
     }
 
-    public  synchronized void resetReconnectLimit(){
+    protected synchronized void resetReconnectLimit(){
+
         setReconnectLimit(DEFAULT_RECONNECT_LIMIT);
+
+        setStatus(STATUS.CLOSED);
     }
 
-    public synchronized void reconnectAttempt(){
-          reconnectLimit--;
+    protected synchronized void reconnectAttempt(){
+        if(reconnectLimit-- <= 0){
+            setStatus(STATUS.DISABLE);
+        }
     }
 
 

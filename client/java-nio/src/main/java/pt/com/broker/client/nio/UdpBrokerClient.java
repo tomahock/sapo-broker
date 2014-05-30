@@ -1,10 +1,10 @@
 package pt.com.broker.client.nio;
 
-import io.netty.channel.ChannelFuture;
 import pt.com.broker.client.nio.bootstrap.BaseChannelInitializer;
 import pt.com.broker.client.nio.bootstrap.DatagramBootstrap;
 import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
 import pt.com.broker.client.nio.server.HostContainer;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.*;
 
 import java.security.InvalidParameterException;
@@ -16,21 +16,23 @@ import java.util.concurrent.Future;
 public class UdpBrokerClient extends BaseClient {
 
     public UdpBrokerClient(NetProtocolType ptype) {
-
         super(ptype);
+        connect();
     }
 
     public UdpBrokerClient(String host, int port) {
         super(host, port);
+        connect();
     }
 
     public UdpBrokerClient(String host, int port, NetProtocolType ptype) {
         super(host, port, ptype);
-
+        connect();
     }
 
     public UdpBrokerClient(HostInfo host, NetProtocolType ptype) {
         super(host, ptype);
+        connect();
     }
 
     @Override

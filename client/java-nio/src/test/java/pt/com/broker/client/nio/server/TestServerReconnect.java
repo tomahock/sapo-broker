@@ -2,9 +2,7 @@ package pt.com.broker.client.nio.server;
 
 
 import junit.framework.Assert;
-import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.mocks.SocketServer;
 import pt.com.broker.client.nio.tests.Utils;
@@ -14,8 +12,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**

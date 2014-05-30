@@ -4,10 +4,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 
-import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
@@ -25,7 +23,6 @@ import java.util.concurrent.*;
 public class HostContainer extends Observable {
 
     private static final Logger log = LoggerFactory.getLogger(HostContainer.class);
-
 
     private List<HostInfo> hosts;
 
@@ -92,23 +89,16 @@ public class HostContainer extends Observable {
 
             ArrayList<HostInfo> hosts = notConnectedHosts();
 
+            if(hosts.size() == 0){
+                throw new RuntimeException("There are no available hosts to connect");
+            }
+
             Future<HostInfo> f = connect(hosts);
 
             return f;
         }
     }
 
-    private Future<HostInfo> connect(HostInfo server) {
-
-        synchronized (hosts) {
-
-            Collection<HostInfo> servers = new ArrayList<HostInfo>();
-
-            servers.add(server);
-
-            return connect(servers);
-        }
-    }
 
     private Future<HostInfo> connect(final Collection<HostInfo> servers) {
 
@@ -269,6 +259,8 @@ public class HostContainer extends Observable {
      */
     public synchronized Channel getAvailableChannel() throws InterruptedException {
 
+
+
         HostInfo host = null;
 
         int total = connectedHosts.size();
@@ -279,17 +271,17 @@ public class HostContainer extends Observable {
 
             if(host == null && total-- < 1){
 
-                Thread.sleep(500);
+
 
                 total = connectedHosts.size();
 
                 if(total==0){
-                    return null;
+                     return null;
                 }
 
             }
 
-        } while (host == null || (host != null && !host.getChannel().isWritable()));
+        } while (host == null || !host.getChannel().isWritable());
 
 
         return host.getChannel();
@@ -331,7 +323,10 @@ public class HostContainer extends Observable {
                     if (!future.isSuccess()) {
 
                         host.setStatus(HostInfo.STATUS.CLOSED);
+                        host.reconnectAttempt();
+
                         log.debug("Error connecting to server: " + host);
+
 
                         reconnect(host);
 
@@ -344,6 +339,7 @@ public class HostContainer extends Observable {
                     host.setChannel(channel);
 
                     host.setStatus(HostInfo.STATUS.OPEN);
+                    host.resetReconnectLimit();
 
                     addConnectedHost(host);
 

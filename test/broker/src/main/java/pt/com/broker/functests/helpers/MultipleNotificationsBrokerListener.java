@@ -4,13 +4,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
-import pt.com.broker.client.nio.HostInfo;
-import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.server.HostInfo;
 
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 
 public class MultipleNotificationsBrokerListener extends NotificationListenerAdapter

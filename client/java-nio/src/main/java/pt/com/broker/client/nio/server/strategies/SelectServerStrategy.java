@@ -1,6 +1,6 @@
 package pt.com.broker.client.nio.server.strategies;
 
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 
 import java.util.List;
 

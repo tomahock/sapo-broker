@@ -4,7 +4,7 @@ import org.caudexorigo.concurrent.Sleep;
 
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;

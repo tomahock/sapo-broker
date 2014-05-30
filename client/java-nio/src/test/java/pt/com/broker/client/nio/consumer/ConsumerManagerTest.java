@@ -3,9 +3,7 @@ package pt.com.broker.client.nio.consumer;
 
 import junit.framework.Assert;
 import pt.com.broker.client.nio.BaseTest;
-import pt.com.broker.client.nio.HostInfo;
-import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
-import pt.com.broker.client.nio.consumer.ConsumerManager;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.types.*;
@@ -39,11 +37,11 @@ public class ConsumerManagerTest extends BaseTest {
 
         consumerManager.addSubscription(netPoll, brokerListener,host);
 
-        BrokerAsyncConsumer consumer = consumerManager.getConsumer(NetAction.DestinationType.QUEUE, destination, host.getSocketAddress());
+        BrokerAsyncConsumer consumer = consumerManager.getConsumer(NetAction.DestinationType.QUEUE, destination, host);
 
         Assert.assertNotNull(consumer);
 
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC, destination, host.getSocketAddress());
+        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC, destination, host);
 
         Assert.assertNull(consumer2);
 
@@ -78,12 +76,12 @@ public class ConsumerManagerTest extends BaseTest {
         consumerManager.addSubscription(netSubscribeAction, brokerListener,host);
 
 
-        BrokerAsyncConsumer consumer = consumerManager.getConsumer(destinationType, destination, host.getSocketAddress());
+        BrokerAsyncConsumer consumer = consumerManager.getConsumer(destinationType, destination, host);
 
         Assert.assertNotNull(consumer);
 
 
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC,destination, host.getSocketAddress());
+        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC,destination, host);
 
 
         Assert.assertNull(consumer2);

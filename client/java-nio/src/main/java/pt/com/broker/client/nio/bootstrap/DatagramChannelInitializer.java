@@ -11,9 +11,6 @@ import pt.com.broker.types.NetProtocolType;
  */
 public class DatagramChannelInitializer extends BaseChannelInitializer {
 
-    private boolean isOldFraming;
-
-
     public DatagramChannelInitializer(BindingSerializer serializer) {
         super(serializer);
 
@@ -26,8 +23,6 @@ public class DatagramChannelInitializer extends BaseChannelInitializer {
     protected void initChannel(Channel ch) throws Exception {
 
         super.initChannel(ch);
-
-
 
          ChannelHandler encoder =   ch.pipeline().get("broker_message_encoder");
          if(encoder instanceof  BrokerMessageEncoder){

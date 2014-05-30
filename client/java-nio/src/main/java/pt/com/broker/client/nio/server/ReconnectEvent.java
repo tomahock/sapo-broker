@@ -1,7 +1,5 @@
 package pt.com.broker.client.nio.server;
 
-import pt.com.broker.client.nio.HostInfo;
-
 /**
  * Created by luissantos on 22-05-2014.
  */

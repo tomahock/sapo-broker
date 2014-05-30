@@ -3,7 +3,7 @@ package pt.com.broker.functests.positive;
 
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;

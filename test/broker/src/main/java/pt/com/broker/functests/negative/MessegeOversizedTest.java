@@ -1,6 +1,6 @@
 package pt.com.broker.functests.negative;
 
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;

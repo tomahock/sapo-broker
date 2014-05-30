@@ -2,10 +2,8 @@ package pt.com.broker.client.nio.server;
 
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.junit.Test;
 import pt.com.broker.client.nio.BaseTest;
-import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 
 import java.util.ArrayList;

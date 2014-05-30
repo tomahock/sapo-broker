@@ -1,7 +1,7 @@
 package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.types.*;
 

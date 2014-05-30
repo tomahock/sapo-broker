@@ -21,16 +21,14 @@ import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.server.ReconnectEvent;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
 
 
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -143,7 +141,18 @@ public class BrokerClient extends BaseClient implements Observer {
     public Future subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
 
 
-        for(final HostInfo host : getHosts().getConnectedHosts()){
+        Collection<HostInfo> servers  = null;
+
+        if(subscribe.getDestinationType() == NetAction.DestinationType.TOPIC){
+            servers = new ArrayList<HostInfo>();
+            servers.add( ((ChannelDecorator)getChannel()).getHost());
+        }else{
+            servers = getHosts().getConnectedHosts();
+        }
+
+
+
+        for(final HostInfo host : servers){
 
 
             if(request!=null) {
@@ -277,7 +286,7 @@ public class BrokerClient extends BaseClient implements Observer {
             return null;
         }
 
-        if ((notification == null) || (notification.getMessage() == null) || StringUtils.isBlank(notification.getMessage().getMessageId())) {
+        if ((notification.getMessage() == null) || StringUtils.isBlank(notification.getMessage().getMessageId())) {
             throw new IllegalArgumentException("Can't acknowledge invalid message.");
         }
 
@@ -393,11 +402,11 @@ public class BrokerClient extends BaseClient implements Observer {
                 @Override
                 public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
 
-                    if (message.getAction().getActionType().equals(NetAction.ActionType.FAULT)
-                            && message.getAction().getFaultMessage().getCode().equals(NetFault.PollTimeoutErrorCode)) {
 
+                    NetFault netFault = message.getAction().getFaultMessage();
+
+                    if (netFault != null  && netFault.getCode().equals(NetFault.PollTimeoutErrorCode)) {
                         throw new TimeoutException("Poll timeout");
-
                     }
 
                     try {
@@ -414,7 +423,9 @@ public class BrokerClient extends BaseClient implements Observer {
                         throw new RuntimeException(e);
 
                     } finally {
-                        getConsumerManager().removeSubscription(netPoll, (java.net.InetSocketAddress) channel.remoteAddress());
+
+                        getConsumerManager().removeSubscription(netPoll, ((ChannelDecorator)channel).getHost());
+
                     }
 
 

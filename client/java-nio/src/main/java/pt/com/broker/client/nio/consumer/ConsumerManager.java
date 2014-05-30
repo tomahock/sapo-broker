@@ -4,10 +4,10 @@ import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.types.DestinationDataFactory;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -15,10 +15,7 @@ import java.net.InetSocketAddress;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by luissantos on 22-04-2014.
@@ -50,13 +47,30 @@ public class ConsumerManager {
         addSubscription(consumer);
     }
 
-    private String getDestinationKey(String destination , InetSocketAddress socketAddress){
+
+    private InetSocketAddress getSocket(HostInfo host){
+        InetSocketAddress socketAddress = new InetSocketAddress(host.getHostname(),host.getPort());
+
+        return socketAddress;
+    }
+
+    private String getDestinationKey(String destination , DestinationType destinationType  , HostInfo host ){
+
+        if(destinationType == DestinationType.TOPIC){
+            return destination;
+        }
+
+
+        InetSocketAddress socketAddress = getSocket(host);
 
         if(StringUtils.isEmpty(destination)){
             throw new IllegalArgumentException("Invalid Destination");
         }
+
         String hostname = socketAddress.getHostName();
+
         int port = socketAddress.getPort();
+
         return hostname + ":" + port +"#"+ destination;
     }
 
@@ -69,7 +83,7 @@ public class ConsumerManager {
             throw new IllegalArgumentException("Invalid Destination Type");
         }
 
-        String destination = getDestinationKey(consumer.getDestinationName(),consumer.getHost().getSocketAddress());
+        String destination = getDestinationKey(consumer.getDestinationName(),consumer.getDestinationType(),consumer.getHost());
 
         synchronized (_consumerList){
 
@@ -82,21 +96,22 @@ public class ConsumerManager {
                 }
 
                 subscriptions.put(destination,consumer);
-                log.info("Added Async Consumer for {} {} ", consumer.getHost().getSocketAddress(), consumer.getDestinationName());
+                log.info("Added Async Consumer for {} {} ", consumer.getHost(), consumer.getDestinationName());
         }
 
     }
 
-    public BrokerAsyncConsumer removeSubscription(NetSubscribeAction netSubscribeAction, InetSocketAddress socketAddress){
-        return removeSubscription(netSubscribeAction.getDestinationType(),netSubscribeAction.getDestination(), socketAddress);
+    public BrokerAsyncConsumer removeSubscription(NetSubscribeAction netSubscribeAction, HostInfo host ){
+        return removeSubscription(netSubscribeAction.getDestinationType(),netSubscribeAction.getDestination(), host);
     }
 
-    public BrokerAsyncConsumer removeSubscription(DestinationType destinationType, String destination , InetSocketAddress socketAddress ){
+    public BrokerAsyncConsumer removeSubscription(DestinationType destinationType, String destination , HostInfo host ){
 
         synchronized (_consumerList) {
+
             Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(destinationType);
 
-            String key = getDestinationKey(destination, socketAddress);
+            String key = getDestinationKey(destination,destinationType, host);
 
             BrokerAsyncConsumer brokerAsyncConsumer =  subscriptions.remove(key);
 
@@ -109,22 +124,22 @@ public class ConsumerManager {
     }
 
 
-    public BrokerAsyncConsumer getConsumer(DestinationType destinationType , String destination ,  InetSocketAddress socketAddress){
+    public BrokerAsyncConsumer getConsumer(DestinationType destinationType , String destination ,  HostInfo host){
 
         Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(destinationType);
 
-        return subscriptions.get(getDestinationKey(destination,socketAddress));
+        return subscriptions.get(getDestinationKey(destination,destinationType,host));
 
     }
 
-    protected BrokerAsyncConsumer getConsumer(NetMessage netMessage, InetSocketAddress socketAddress){
+    protected BrokerAsyncConsumer getConsumer(NetMessage netMessage, HostInfo host){
 
         DestinationDataFactory factory = new DestinationDataFactory();
 
         String destination = factory.getSubscription(netMessage);
         DestinationType dtype = factory.getDestinationType(netMessage);
 
-        return getConsumer(dtype,destination,socketAddress);
+        return getConsumer(dtype,destination,host);
 
     }
 
@@ -142,7 +157,10 @@ public class ConsumerManager {
 
     public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
 
-        BrokerAsyncConsumer consumer = getConsumer(netMessage, (InetSocketAddress) channel.remoteAddress());
+        ChannelDecorator decorator = new ChannelDecorator(channel);
+
+
+        BrokerAsyncConsumer consumer = getConsumer(netMessage, decorator.getHost());
 
 
         if(consumer == null){
@@ -175,14 +193,14 @@ public class ConsumerManager {
 
         synchronized (_consumerList) {
 
-            Map<String, BrokerAsyncConsumer> map = new HashMap<>(2);
+            Map<String, BrokerAsyncConsumer> map = new HashMap<String, BrokerAsyncConsumer>(2);
 
             for (Map.Entry<String, BrokerAsyncConsumer> entry : getSubscriptions(dtype).entrySet()) {
 
                 String key = entry.getKey();
                 BrokerAsyncConsumer consumer = entry.getValue();
 
-                if(removeSubscription(dtype, consumer.getDestinationName(), host.getSocketAddress())!=null){
+                if(removeSubscription(dtype, consumer.getDestinationName(), host)!=null){
                     map.put(key, consumer);
                 }
 

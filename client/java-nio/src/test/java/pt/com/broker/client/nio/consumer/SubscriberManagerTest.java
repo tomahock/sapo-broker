@@ -5,10 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.HostInfo;
-import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
-import pt.com.broker.client.nio.consumer.ConsumerManager;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
@@ -125,14 +122,14 @@ public class SubscriberManagerTest {
         consumerManager.addSubscription(consumer);
 
 
-        BrokerAsyncConsumer asyncConsumer = consumerManager.removeSubscription(destinationType,destinationName,host.getSocketAddress());
+        BrokerAsyncConsumer asyncConsumer = consumerManager.removeSubscription(destinationType,destinationName,host);
 
         Assert.assertNotNull(asyncConsumer);
 
         Assert.assertSame(consumer,asyncConsumer);
 
 
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(destinationType,destinationName,host.getSocketAddress());
+        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(destinationType,destinationName,host);
 
         Assert.assertNull(consumer2);
 

@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;

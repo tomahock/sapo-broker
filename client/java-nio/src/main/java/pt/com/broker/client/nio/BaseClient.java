@@ -3,13 +3,13 @@ package pt.com.broker.client.nio;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.util.concurrent.GenericFutureListener;
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.server.HostContainer;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.*;
 
 import java.util.HashMap;

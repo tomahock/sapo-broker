@@ -2,14 +2,13 @@ package pt.com.broker.client.nio;
 
 
 
-import io.netty.channel.ChannelFuture;
-import org.caudexorigo.text.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.*;
 
 import javax.net.ssl.*;

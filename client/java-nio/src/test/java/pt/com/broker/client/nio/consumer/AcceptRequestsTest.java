@@ -1,13 +1,11 @@
 package pt.com.broker.client.nio.consumer;
 
 
-import io.netty.channel.Channel;
 import io.netty.channel.local.LocalChannel;
-import junit.framework.TestCase;
 import junit.framework.Assert;
 
 import pt.com.broker.client.nio.BaseTest;
-import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
 
