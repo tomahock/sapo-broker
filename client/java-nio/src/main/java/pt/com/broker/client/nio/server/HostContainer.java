@@ -11,6 +11,7 @@ import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +26,6 @@ public class HostContainer extends Observable {
 
     private static final Logger log = LoggerFactory.getLogger(HostContainer.class);
 
-    public static final AttributeKey<HostInfo> ATTRIBUTE_HOST_INFO  = AttributeKey.valueOf("HOST-INFO");
 
     private List<HostInfo> hosts;
 
@@ -72,11 +72,11 @@ public class HostContainer extends Observable {
 
     public HostInfo connect() {
 
-        Future f = connectAsync();
+        Future<HostInfo> f = connectAsync();
 
         try {
 
-            return (HostInfo) f.get();
+            return f.get();
 
         } catch (Exception e) {
 
@@ -92,7 +92,7 @@ public class HostContainer extends Observable {
 
             ArrayList<HostInfo> hosts = notConnectedHosts();
 
-            Future f = connect(hosts);
+            Future<HostInfo> f = connect(hosts);
 
             return f;
         }
@@ -338,12 +338,13 @@ public class HostContainer extends Observable {
                         return ;
                     }
 
-                    Channel channel = f.channel();
-                    channel.attr(ATTRIBUTE_HOST_INFO).set(host);
+                    ChannelDecorator channel = new ChannelDecorator(f.channel());
+                    channel.setHost(host);
 
                     host.setChannel(channel);
 
                     host.setStatus(HostInfo.STATUS.OPEN);
+
                     addConnectedHost(host);
 
                     log.debug("Connected to server: " + host);

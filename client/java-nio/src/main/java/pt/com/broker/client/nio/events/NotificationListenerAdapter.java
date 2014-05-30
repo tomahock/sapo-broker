@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.server.HostContainer;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
@@ -17,22 +18,18 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationListenerAdapter.class);
 
-
     BrokerClient brokerClient;
 
     @Override
-    public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
-
-        if(message!=null){
+    public final void deliverMessage(NetMessage message, Channel channel) throws Throwable {
 
             NetAction netAction = message.getAction();
 
-            if(netAction.getActionType() == NetAction.ActionType.NOTIFICATION){
+            NetNotification netNotification = netAction.getNotificationMessage();
 
-                NetNotification netNotification = netAction.getNotificationMessage();
+            if(netNotification != null){
 
-
-                if(onMessage(netNotification)) {
+                if(onMessage(netNotification, ((ChannelDecorator)channel).getHost())) {
 
                     if (brokerClient != null) {
 
@@ -41,6 +38,7 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
 
                             brokerClient.acknowledge(netNotification);
                         }
+
 
                     } else{
 
@@ -53,24 +51,14 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
 
             }
 
-        }
-
-
     }
 
-    @Override
-    public void setBrokerClient(BrokerClient client) {
 
+    public final void setBrokerClient(BrokerClient client) {
         brokerClient = client;
-
     }
 
-
-
-    public abstract boolean onMessage(NetNotification notification);
-
-
-
+    public abstract boolean onMessage(NetNotification notification, HostInfo host);
 
 
 }

@@ -2,7 +2,6 @@ package pt.com.broker.functests.helpers;
 
 import java.util.Arrays;
 
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.types.NetAction;

@@ -18,9 +18,11 @@ import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
 
 
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.ReconnectEvent;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
 
@@ -169,7 +171,9 @@ public class BrokerClient extends BaseClient implements Observer {
 
         }
 
+
         return service.take();
+
 
     }
 
@@ -208,19 +212,23 @@ public class BrokerClient extends BaseClient implements Observer {
 
         final BrokerClient client = this;
 
-        return sendNetMessage(netMessage, new ChannelFutureListener() {
+        ChannelFuture f =  sendNetMessage(netMessage,channel);
+
+        f.addListener(new ChannelFutureListener() {
 
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
 
                 if (future.isSuccess()) {
 
-                    HostInfo h = (HostInfo) future.channel().attr(HostContainer.ATTRIBUTE_HOST_INFO).get();
+                    ChannelDecorator channel = new ChannelDecorator(future.channel());
 
-                    getConsumerManager().addSubscription(netMessage.getAction().getSubscribeMessage(), listener, h);
+                    getConsumerManager().addSubscription(netMessage.getAction().getSubscribeMessage(), listener, channel.getHost());
 
-                    /* @todo ver o auto acknolage */
-                    listener.setBrokerClient(client);
+                    if(listener instanceof NotificationListenerAdapter){
+                        ((NotificationListenerAdapter)listener).setBrokerClient(client);
+                    }
+
 
                 } else {
 
@@ -230,8 +238,10 @@ public class BrokerClient extends BaseClient implements Observer {
 
             }
 
-        },channel);
+        });
 
+
+        return f;
     }
 
     public Future unsubscribe(NetAction.DestinationType destinationType, String dstName){
@@ -283,7 +293,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
         NetMessage msg = buildMessage(action);
 
-        return sendNetMessage(msg,null,channel);
+        return sendNetMessage(msg,channel);
 
     }
 
@@ -299,7 +309,9 @@ public class BrokerClient extends BaseClient implements Observer {
         NetMessage message = buildMessage(action);
 
 
-        final ChannelFuture f = sendNetMessage(message, new ChannelFutureListener(){
+        final ChannelFuture f = sendNetMessage(message);
+
+        f.addListener( new ChannelFutureListener(){
 
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
@@ -377,10 +389,6 @@ public class BrokerClient extends BaseClient implements Observer {
 
             subscribeToHost(netPoll, new BrokerListener() {
 
-                @Override
-                public void setBrokerClient(BrokerClient client) {
-
-                }
 
                 @Override
                 public void deliverMessage(NetMessage message, Channel channel) throws Throwable {

@@ -1,14 +1,17 @@
 package pt.com.broker.client.nio.consumer;
 
 
+import io.netty.channel.Channel;
+import io.netty.channel.local.LocalChannel;
 import junit.framework.TestCase;
 import junit.framework.Assert;
 
 import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
-import pt.com.broker.client.nio.types.ActionIdDecorator;
+
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetFault;
@@ -36,7 +39,7 @@ public class AcceptRequestsTest extends BaseTest {
 
         String actionID = UUID.randomUUID().toString();
 
-        MessageAcceptedAdapter acceptedListener = new MessageAcceptedAdapter() {
+        AcceptResponseListener acceptedListener = new AcceptResponseListener() {
 
             @Override
             public void onMessage(NetAccepted message, HostInfo host) {
@@ -70,7 +73,7 @@ public class AcceptRequestsTest extends BaseTest {
         Assert.assertSame(acceptedListener,listener1);
 
 
-        MessageAcceptedAdapter listener2 =  manager.removeAcceptRequest(actionID);
+        AcceptResponseListener listener2 =  manager.removeAcceptRequest(actionID);
 
         Assert.assertNotNull(listener2);
 
@@ -97,7 +100,7 @@ public class AcceptRequestsTest extends BaseTest {
         final AtomicBoolean isTimeout = new AtomicBoolean(false);
 
 
-        MessageAcceptedAdapter acceptedListener = new MessageAcceptedAdapter() {
+        AcceptResponseListener acceptedListener = new AcceptResponseListener() {
 
 
             @Override
@@ -155,7 +158,7 @@ public class AcceptRequestsTest extends BaseTest {
         final AtomicBoolean onMessage = new AtomicBoolean(false);
 
 
-        MessageAcceptedAdapter acceptedListener = new MessageAcceptedAdapter() {
+        AcceptResponseListener acceptedListener = new AcceptResponseListener() {
 
 
             @Override
@@ -198,7 +201,9 @@ public class AcceptRequestsTest extends BaseTest {
         NetMessage netMessage = new NetMessage(netAction);
 
 
-        manager.deliverMessage(netMessage,null);
+        ChannelDecorator channel = new ChannelDecorator(new LocalChannel());
+
+        manager.deliverMessage(netMessage,channel);
 
         Assert.assertTrue(onMessage.get());
 

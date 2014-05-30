@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Assert;
 import org.junit.Test;
@@ -188,7 +187,7 @@ public class BrokerClientTest {
 
          bk.subscribe("/teste/", NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
              @Override
-             public boolean onMessage(NetNotification message) {
+             public boolean onMessage(NetNotification message,HostInfo host) {
 
                  System.out.println("Message");
 
@@ -200,13 +199,13 @@ public class BrokerClientTest {
         NetBrokerMessage netBrokerMessage = new NetBrokerMessage("Teste2");
         netBrokerMessage.setExpiration(System.currentTimeMillis()-30000);
 
-        ChannelFuture future = bk.publish(netBrokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+        Future future = bk.publish(netBrokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
         //ChannelFuture future = bk.publish("Teste3", "/teste/", NetAction.DestinationType.QUEUE);
 
 
 
         log.debug("waiting for message be delivered....");
-        future.sync();
+        future.get();
 
 
         Thread.sleep(10000);
@@ -239,7 +238,7 @@ public class BrokerClientTest {
         Future fs = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetNotification message) {
+            public boolean onMessage(NetNotification message, HostInfo host) {
 
                 // do something
 
@@ -285,7 +284,7 @@ public class BrokerClientTest {
         Future fs = bk.subscribe(netSubscribe,new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetNotification message) {
+            public boolean onMessage(NetNotification message, HostInfo host) {
 
                 try {
 
@@ -364,7 +363,7 @@ public class BrokerClientTest {
 
         while (--i > 0){
 
-            ChannelFuture future = bk.publish("Olá Mundo", "/teste/", destinationType);
+            Future future = bk.publish("Olá Mundo", "/teste/", destinationType);
 
 
 
@@ -390,7 +389,7 @@ public class BrokerClientTest {
         brokerMessage.addHeader(Headers.DEFERRED_DELIVERY, "1000" );
 
 
-        ChannelFuture f = bk.publish(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+        Future f = bk.publish(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
 
 
         f.get();
@@ -412,7 +411,7 @@ public class BrokerClientTest {
 
         bk.checkStatus(new PongListenerAdapter() {
             @Override
-            public void onMessage(NetPong message) {
+            public void onMessage(NetPong message, HostInfo host) {
 
                 log.debug("Got pong message");
 
@@ -436,7 +435,7 @@ public class BrokerClientTest {
         NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
 
 
-        ChannelFuture f = bk.publish(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
+        Future f = bk.publish(brokerMessage, "/teste/", NetAction.DestinationType.QUEUE);
 
 
         f.get();
@@ -483,7 +482,7 @@ public class BrokerClientTest {
 
         NetBrokerMessage message = new NetBrokerMessage("teste");
 
-        AcceptRequest acceptRequest = new AcceptRequest(UUID.randomUUID().toString(),new MessageAcceptedAdapter(){
+        AcceptRequest acceptRequest = new AcceptRequest(UUID.randomUUID().toString(),new  AcceptResponseListener(){
 
             @Override
             public void onMessage(NetAccepted message,HostInfo host) {
@@ -527,10 +526,7 @@ public class BrokerClientTest {
                 bk.acknowledge(message.getAction().getNotificationMessage());
             }
 
-            @Override
-            public void setBrokerClient(BrokerClient client) {
 
-            }
         });
 
 
@@ -557,7 +553,7 @@ public class BrokerClientTest {
         final Future f = bk.subscribe("localhost@/teste/", NetAction.DestinationType.VIRTUAL_QUEUE ,new NotificationListenerAdapter(){
 
             @Override
-            public boolean onMessage(NetNotification notification) {
+            public boolean onMessage(NetNotification notification,HostInfo host) {
 
                 if(counter.getAndDecrement() > 1){
 

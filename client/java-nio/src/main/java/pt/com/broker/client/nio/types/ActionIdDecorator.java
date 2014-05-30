@@ -35,31 +35,27 @@ public class ActionIdDecorator extends NetMessage {
 
     public String getActionId(){
 
-        String actionid = null;
-
         NetAction netAction = getAction();
 
-
-
-        if(netAction.getActionType() != NetAction.ActionType.NOTIFICATION){
-
-            Object object = netAction.getNetActionMessage();
-
-            try {
-
-                Method method = object.getClass().getMethod("getActionId");
-
-
-                return (String)method.invoke(object,null);
-
-
-            } catch (Throwable e) {
-                return null;
-            }
-
+        if(netAction.getActionType() == NetAction.ActionType.NOTIFICATION){
+            return null;
         }
 
 
-        return actionid;
+        Object object = netAction.getNetActionMessage();
+
+        try {
+
+            Method method = object.getClass().getMethod("getActionId");
+
+
+            return (String)method.invoke(object);
+
+
+        } catch (Throwable e) {
+            return null;
+        }
+
+
     }
 }

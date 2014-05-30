@@ -2,6 +2,8 @@ package pt.com.broker.client.nio.events;
 
 import io.netty.channel.Channel;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPong;
 
@@ -12,19 +14,17 @@ public abstract class PongListenerAdapter implements BrokerListener {
 
 
     @Override
-    public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+    public final void deliverMessage(NetMessage message, Channel channel) throws Throwable {
 
         NetPong netPong = message.getAction().getPongMessage();
 
-        this.onMessage(netPong);
+        if(netPong!=null){
+            this.onMessage(netPong,((ChannelDecorator)channel).getHost());
+        }
 
     }
 
-    public void setBrokerClient(BrokerClient client){
-
-    }
-
-    public abstract void onMessage(NetPong message);
+    public abstract void onMessage(NetPong message, HostInfo hostInfo);
 
 
 }

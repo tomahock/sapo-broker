@@ -2,14 +2,32 @@
 
 
 interface BrokerListener {
-    +deliverMessage(NetMessage message,Channel channel)
+    + void deliverMessage(NetMessage message,Channel channel)
 
 }
 
 BrokerListener <|-- NotificationListenerAdapter
+BrokerListener <|-- AcceptResponseListener
+BrokerListener <|-- PongListenerAdapter
+BrokerListener <|-- ErrorListenerAdapter
 
 abstract class NotificationListenerAdapter{
-    +onMessage(NetNotification notification)
+     + {abstract} bool onMessage(NetNotification notification , HostInfo host)
 }
+
+abstract class AcceptResponseListener{
+    + {abstract} void onMessage(NetAccepted message, HostInfo host);
+    + {abstract} void onFault(NetFault fault, HostInfo host);
+    + {abstract} void onTimeout(String actionID);
+}
+
+abstract class PongListenerAdapter{
+    + {abstract} void onMessage(NetPong message, HostInfo host);
+}
+
+abstract class ErrorListenerAdapter{
+    + {abstract} void onMessage(NetFault message, HostInfo host);
+}
+
 
 @enduml

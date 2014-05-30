@@ -51,10 +51,6 @@ public class SubscriberManagerTest {
 
             }
 
-            @Override
-            public void setBrokerClient(BrokerClient client) {
-
-            }
         });
 
         consumer.setHost(new HostInfo("127.0.0.1",3323));
@@ -74,10 +70,6 @@ public class SubscriberManagerTest {
 
             }
 
-            @Override
-            public void setBrokerClient(BrokerClient client) {
-
-            }
         });
 
         consumer.setHost(new HostInfo("127.0.0.1",3323));
@@ -93,10 +85,6 @@ public class SubscriberManagerTest {
 
                 }
 
-                @Override
-                public void setBrokerClient(BrokerClient client) {
-
-                }
             });
             consumer2.setHost(new HostInfo("127.0.0.1",3323));
 
@@ -128,10 +116,6 @@ public class SubscriberManagerTest {
 
             }
 
-            @Override
-            public void setBrokerClient(BrokerClient client) {
-
-            }
         });
 
 

@@ -4,7 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
@@ -12,12 +13,8 @@ import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
-import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.ActionType;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetPing;
-import pt.com.broker.types.NetProtocolType;
 
 public class InvalidMessageTest extends GenericNegativeTest
 {
@@ -37,10 +34,10 @@ public class InvalidMessageTest extends GenericNegativeTest
 			{
 				try
 				{
-					getBrokerClient().checkStatus(new BrokerListenerAdapter() {
+					getBrokerClient().checkStatus(new PongListenerAdapter() {
                         @Override
-                        public boolean onMessage(NetMessage message) {
-                            return true;
+                        public void onMessage(NetPong message, HostInfo hostInfo) {
+
                         }
                     });
 					setSucess(true);

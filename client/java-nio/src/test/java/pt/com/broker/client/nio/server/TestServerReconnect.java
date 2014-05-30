@@ -61,7 +61,7 @@ public class TestServerReconnect extends ServerBaseTest {
         System.out.println(name);
         bk.subscribe( name , NetAction.DestinationType.QUEUE , new NotificationListenerAdapter() {
             @Override
-            public boolean onMessage(NetNotification message) {
+            public boolean onMessage(NetNotification message, HostInfo host) {
 
                 return true;
 

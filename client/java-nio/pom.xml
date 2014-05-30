@@ -12,6 +12,7 @@
     <packaging>jar</packaging>
     <properties>
         <extraArgs>-Xmx32M -Dproject-version=${project.version}</extraArgs>
+        <skipTests>true</skipTests>
     </properties>
 
     <dependencies>
@@ -37,11 +38,6 @@
             <artifactId>sapo-broker-binding-thrift</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>17.0</version>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -97,28 +93,18 @@
                     <excludes>
                         <exclude>pt/com/broker/client/nio/ignore/**/*.java</exclude>
                     </excludes>
-                    <skipTests>true</skipTests>
+                    <skipTests>${skipTests}</skipTests>
                 </configuration>
             </plugin>
-            <!--
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.1.6</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <!--<compilerArgument>-Xlint:all</compilerArgument>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>-->
                 </configuration>
             </plugin>
         </plugins>

@@ -1,7 +1,7 @@
 package pt.com.broker.client.nio;
 
 
-import com.google.common.util.concurrent.ListenableFuture;
+
 import io.netty.channel.ChannelFuture;
 import org.caudexorigo.text.RandomStringUtils;
 import org.slf4j.Logger;
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
-import pt.com.broker.client.nio.events.MessageAcceptedAdapter;
+import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.types.*;
 
 import javax.net.ssl.*;
@@ -125,7 +125,7 @@ public class SslBrokerClient extends BrokerClient  {
         final BlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
 
 
-        MessageAcceptedAdapter acceptedListener = new MessageAcceptedAdapter(){
+       AcceptResponseListener acceptedListener = new AcceptResponseListener(){
 
             @Override
             public void onMessage(NetAccepted message, HostInfo host) {
@@ -158,16 +158,16 @@ public class SslBrokerClient extends BrokerClient  {
 
     }
 
-    protected Future sendAuthMessage(NetAuthentication authentication, MessageAcceptedAdapter acceptedListener , long timeout ){
+    protected Future<Void> sendAuthMessage(NetAuthentication authentication, AcceptResponseListener acceptResponseListener , long timeout ){
 
 
-        if(acceptedListener!=null) {
+        if(acceptResponseListener!=null) {
 
             String actionId = UUID.randomUUID().toString();
 
             authentication.setActionId(actionId);
 
-            AcceptRequest acceptRequest = new AcceptRequest(actionId, acceptedListener, timeout);
+            AcceptRequest acceptRequest = new AcceptRequest(actionId, acceptResponseListener, timeout);
 
             addAcceptMessageHandler(acceptRequest);
         }

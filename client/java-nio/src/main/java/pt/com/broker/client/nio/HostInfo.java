@@ -2,6 +2,7 @@ package pt.com.broker.client.nio;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 
 import java.net.InetSocketAddress;
 
@@ -27,9 +28,7 @@ public final class HostInfo
 
     private int reconnectLimit = DEFAULT_RECONNECT_LIMIT;
 
-    private ChannelFuture channelFuture;
-
-    private Channel channel;
+    private ChannelDecorator channel;
 
     private STATUS status = STATUS.CLOSED;
 
@@ -96,26 +95,22 @@ public final class HostInfo
     @Override
     public boolean equals(Object obj)
     {
-        if (!obj.getClass().equals(this.getClass())){
-            return false;
-        }
-
+        if (!obj.getClass().equals(this.getClass()))
+        return false;
         HostInfo other = (HostInfo) obj;
+        if (!hostname.equals(other.hostname))
+            return false;
+        if (port != other.port)
+            return false;
 
-        return   com.google.common.base.Objects.equal(this.hostname, other.getHostname())
-                && com.google.common.base.Objects.equal(this.port, other.getPort());
+        return true;
     }
 
     @Override
     public String toString()
     {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("hostname",this.hostname)
-                .add("port",this.port)
-                .add("connectTimeout",this.connectTimeout)
-                .add("readTimeout",this.readTimeout)
-                .add("status",this.status)
-                .toString();
+
+        return String.format("HostInfo [hostname=%s, port=%s, connectTimeout=%s, readTimeout=%s]", hostname, port, connectTimeout, readTimeout);
 
     }
 
@@ -132,14 +127,12 @@ public final class HostInfo
         return this.getChannel() != null && (getChannel().isActive() ||  getChannel().isOpen() );
     }
 
-    public Channel getChannel(){
+    public ChannelDecorator getChannel() {
         return channel;
     }
 
-    public void setChannel(Channel channel) {
-
+    public void setChannel(ChannelDecorator channel) {
         this.channel = channel;
-
     }
 
     public synchronized int getReconnectLimit() {

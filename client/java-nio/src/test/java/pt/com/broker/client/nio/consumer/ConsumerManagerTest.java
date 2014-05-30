@@ -29,7 +29,7 @@ public class ConsumerManagerTest extends BaseTest {
         BrokerListener brokerListener = new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetNotification notification) {
+            public boolean onMessage(NetNotification notification, HostInfo host) {
                 return true;
             }
 
@@ -65,7 +65,7 @@ public class ConsumerManagerTest extends BaseTest {
         BrokerListener brokerListener = new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetNotification notification) {
+            public boolean onMessage(NetNotification notification, HostInfo host) {
                 return true;
             }
         };
@@ -107,7 +107,7 @@ public class ConsumerManagerTest extends BaseTest {
         BrokerListener brokerListener = new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetNotification notification) {
+            public boolean onMessage(NetNotification notification, HostInfo host) {
                 return true;
             }
         };
@@ -143,7 +143,7 @@ public class ConsumerManagerTest extends BaseTest {
         BrokerListener brokerListener = new NotificationListenerAdapter() {
 
             @Override
-            public boolean onMessage(NetNotification message) {
+            public boolean onMessage(NetNotification message, HostInfo host) {
                 return true;
             }
         };

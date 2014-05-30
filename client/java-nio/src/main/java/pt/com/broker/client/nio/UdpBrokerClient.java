@@ -8,6 +8,7 @@ import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.types.*;
 
 import java.security.InvalidParameterException;
+import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 05-05-2014.
@@ -33,7 +34,7 @@ public class UdpBrokerClient extends BaseClient {
     }
 
     @Override
-    public ChannelFuture publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
+    public Future publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
 
         if (message.getActionId() != null)
         {

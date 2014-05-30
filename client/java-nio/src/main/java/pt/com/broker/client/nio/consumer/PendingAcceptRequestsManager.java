@@ -2,8 +2,8 @@ package pt.com.broker.client.nio.consumer;
 
 import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
+import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.MessageAcceptedAdapter;;
 import pt.com.broker.client.nio.types.ActionIdDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
@@ -54,7 +54,7 @@ public class PendingAcceptRequestsManager {
 
                     synchronized (requests) {
 
-                        MessageAcceptedAdapter _listener = (MessageAcceptedAdapter) getListener(actionID);
+                        AcceptResponseListener _listener = (AcceptResponseListener) getListener(actionID);
 
                         if(_listener!=null) {
 
@@ -77,9 +77,9 @@ public class PendingAcceptRequestsManager {
     }
 
 
-    public MessageAcceptedAdapter removeAcceptRequest(String actionID){
+    public AcceptResponseListener removeAcceptRequest(String actionID){
 
-        MessageAcceptedAdapter b = (MessageAcceptedAdapter) requests.remove(actionID);
+        AcceptResponseListener b = (AcceptResponseListener) requests.remove(actionID);
 
         if(b!=null){
             cancelTimeout(actionID);

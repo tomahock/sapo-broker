@@ -3,6 +3,7 @@ package pt.com.broker.client.nio.ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.types.NetPong;
@@ -35,7 +36,7 @@ public class BrokerSslClientTest {
 
         bk.checkStatus(new PongListenerAdapter() {
             @Override
-            public void onMessage(NetPong message) {
+            public void onMessage(NetPong message, HostInfo host) {
 
                 log.debug("Got pong message");
 

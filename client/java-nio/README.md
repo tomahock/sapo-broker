@@ -39,7 +39,7 @@
        bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
        
                    @Override
-                   public boolean onMessage(NetNotification message) {
+                   public boolean onMessage(NetNotification message, HostInfo host) {
        
                        // do something
                        

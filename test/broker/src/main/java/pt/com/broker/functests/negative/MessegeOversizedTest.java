@@ -1,10 +1,11 @@
 package pt.com.broker.functests.negative;
 
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
-import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPong;
 import pt.com.broker.types.NetProtocolType;
 
 public class MessegeOversizedTest extends GenericNegativeTest
@@ -34,11 +35,10 @@ public class MessegeOversizedTest extends GenericNegativeTest
 			{
 				try
 				{
-					getBrokerClient().checkStatus(new BrokerListenerAdapter() {
+					getBrokerClient().checkStatus(new PongListenerAdapter() {
                         @Override
-                        public boolean onMessage(NetMessage message) {
+                        public void onMessage(NetPong message, HostInfo hostInfo) {
 
-                            return true;
                         }
                     });
 

@@ -63,20 +63,11 @@ public abstract class BaseClient{
         return this.sendNetMessage(msg,null);
     }
 
-    protected ChannelFuture sendNetMessage(NetMessage msg, GenericFutureListener future) {
-        return this.sendNetMessage(msg,future,null);
-    }
-
-    protected ChannelFuture sendNetMessage(NetMessage msg, GenericFutureListener future, Channel c) {
+    protected ChannelFuture sendNetMessage(NetMessage msg, Channel c) {
 
         Channel channel = (c == null) ? getChannel() : c;
 
         ChannelFuture f =  channel.writeAndFlush(msg);
-
-
-        if(future!=null){
-            f.addListener(future);
-        }
 
         f.addListener(new ChannelFutureListener() {
 
@@ -133,7 +124,7 @@ public abstract class BaseClient{
 
         NetAction action = new NetAction(message);
 
-        return sendNetMessage(new NetMessage(action, message.getMessage().getHeaders()),null);
+        return sendNetMessage(new NetMessage(action, message.getMessage().getHeaders()));
 
     }
 

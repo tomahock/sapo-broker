@@ -1,14 +1,14 @@
 package pt.com.broker.functests.positive;
 
 
-import io.netty.channel.ChannelFuture;
+
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
-import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPong;
 
 import java.util.concurrent.CountDownLatch;
@@ -44,18 +44,14 @@ public class PingTest extends BrokerTest
 
 
 
-					Future f = bk.checkStatus(new BrokerListenerAdapter() {
+					Future f = bk.checkStatus(new PongListenerAdapter() {
                         @Override
-                        public boolean onMessage(NetMessage message) {
+                        public void onMessage(NetPong message, HostInfo host) {
 
-                            NetPong  pong = message.getAction().getPongMessage();
-
-
-                            setSucess(pong != null);
+                            setSucess(message != null);
 
                             latch.countDown();
 
-                            return true;
 
                         }
 

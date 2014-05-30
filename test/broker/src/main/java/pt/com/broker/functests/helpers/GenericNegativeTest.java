@@ -3,8 +3,9 @@ package pt.com.broker.functests.helpers;
 
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.events.ErrorListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
@@ -21,19 +22,13 @@ public class GenericNegativeTest extends BrokerTest
 
 	private boolean okToTimeout = false;
 
-	private BrokerListener defaultErrorListener = new BrokerListenerAdapter() {
-        @Override
-        public boolean onMessage(NetMessage message) {
+	private BrokerListener defaultErrorListener = new ErrorListenerAdapter() {
 
-            System.out.println("Error Message");
-
-            return true;
-        }
 
         @Override
-        public void onFault(NetMessage message) {
+        public void onMessage(NetFault message,HostInfo host) {
             System.out.println("Error Message Fault");
-            faultFuture.set(message.getAction().getFaultMessage());
+            faultFuture.set(message);
         }
     };
 

@@ -4,7 +4,8 @@ import org.caudexorigo.text.RandomStringUtils;
 
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.events.BrokerListenerAdapter;
+import pt.com.broker.client.nio.HostInfo;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
@@ -63,10 +64,11 @@ public class DeferredDeliveryQueueTest extends BrokerTest
 				{
 					System.out.println("DeferredDeliveryQueueTest.build().new Prerequisite() {...}.run()");
 
-                    brokerClient.subscribe(new NetSubscribe(queueName, DestinationType.QUEUE), new BrokerListenerAdapter() {
+                    brokerClient.subscribe(new NetSubscribe(queueName, DestinationType.QUEUE), new NotificationListenerAdapter() {
+
 
                         @Override
-                        public boolean onMessage(NetMessage message) {
+                        public boolean onMessage(NetNotification message, HostInfo host) {
 
 
                             long now = System.currentTimeMillis();
