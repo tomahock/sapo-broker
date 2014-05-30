@@ -2,6 +2,7 @@ package pt.com.broker.auth.saposts.tests;
 
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
+import pt.com.broker.client.nio.HostInfo;
 import pt.com.broker.client.nio.SslBrokerClient;
 
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
@@ -64,7 +65,7 @@ public class AclUnAuthWildcardSubscriptionTest extends GenericPubSubTest
 			this.setBrokerListener(new NotificationListenerAdapter()
 			{
 				@Override
-				public boolean onMessage(NetNotification message)
+				public boolean onMessage(NetNotification message , HostInfo host)
 				{
 					System.out.println("ERROR: Should not receive message");
 
