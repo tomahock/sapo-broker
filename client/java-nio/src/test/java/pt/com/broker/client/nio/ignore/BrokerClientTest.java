@@ -173,7 +173,7 @@ public class BrokerClientTest {
     @Test
     public void testClientEnqueueMessage() throws Exception{
 
-        BrokerClient bk = new BrokerClient("192.168.100.1",3323, NetProtocolType.JSON);
+        BrokerClient bk = new BrokerClient("192.168.100.1",3322, NetProtocolType.SOAP_v0);
 
         log.debug("connecting....");
         Future<HostInfo> f = bk.connectAsync();
@@ -261,9 +261,8 @@ public class BrokerClientTest {
     @Test
     public void testSubscribeAndReceive() throws Throwable{
 
-        this.testClientEnqueueMessage();
 
-        BrokerClient bk = new BrokerClient("192.168.100.1",3323,NetProtocolType.JSON);
+        BrokerClient bk = new BrokerClient("192.168.100.1",3322,NetProtocolType.SOAP_v0);
 
 
 
@@ -275,9 +274,12 @@ public class BrokerClientTest {
             e.printStackTrace();
         }
 
+        bk.publish("Teste3", "/teste/", NetAction.DestinationType.QUEUE).get();
+
 
         NetSubscribe netSubscribe = new NetSubscribe("/teste/", NetAction.DestinationType.QUEUE);
 
+        final AtomicInteger messages = new AtomicInteger(0);
 
         log.debug("Subscribe");
 
@@ -291,8 +293,10 @@ public class BrokerClientTest {
                     log.debug(message.getMessage().getMessageId());
                     log.debug(new String(message.getMessage().getPayload(),"UTF-8"));
 
-                    for(Map.Entry<String, String> entry : message.getHeaders().entrySet()){
-                        System.out.println(entry.getKey() + "/" + entry.getValue());
+                    if(message.getHeaders()!=null) {
+                        for (Map.Entry<String, String> entry : message.getHeaders().entrySet()) {
+                            System.out.println(entry.getKey() + "/" + entry.getValue());
+                        }
                     }
 
                     System.out.println("---------------------------------");
@@ -302,6 +306,8 @@ public class BrokerClientTest {
                             System.out.println(entry.getKey() + "/" + entry.getValue());
                         }
                     }
+
+                    messages.incrementAndGet();
 
                     return true;
 
@@ -323,14 +329,15 @@ public class BrokerClientTest {
 
 
 
-        //ChannelFuture future = bk.publish("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
 
-        /*future = bk.publish("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
-        future = bk.publish("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);
-        future = bk.publish("Olá Mundo", "/teste/", NetAction.DestinationType.QUEUE);*/
 
 
         Thread.sleep(10000);
+
+        Assert.assertNotEquals("Message not received",messages.get(),0);
+
+
+
 
     }
 

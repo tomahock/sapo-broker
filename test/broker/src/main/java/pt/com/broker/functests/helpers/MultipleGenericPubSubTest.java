@@ -17,6 +17,7 @@ import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
 
 public class MultipleGenericPubSubTest extends BrokerTest
@@ -81,7 +82,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                            info.brokerClient.close().get();
+                            info.brokerClient.close();
 
                     }
                 }
@@ -93,16 +94,14 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                        info.brokerClient.close().get();
+                        info.brokerClient.close();
 
                     }
                 }
 
             }
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -117,6 +116,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 			TestClientInfo tci = new TestClientInfo();
 
 			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), this.getEncodingProtocolType());
+
             tci.brokerClient.connect();
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), numberOfExecutions);
 			tci.numberOfExecutions = numberOfExecutions;
@@ -136,7 +136,15 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), this.getEncodingProtocolType());
+            if(this.getEncodingProtocolType() == NetProtocolType.SOAP_v0){
+
+            }
+
+            int port = BrokerTest.getAgent1Port();
+
+           System.out.println("Agent port: "+port);
+
+            tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), port, this.getEncodingProtocolType());
             tci.brokerClient.connect();
 
 			tci.brokerListenter = null;

@@ -152,8 +152,9 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
 
-        for(final HostInfo host : servers){
 
+
+        for(final HostInfo host : servers){
 
             if(request!=null) {
                 subscribe.setActionId(request.getActionId());
