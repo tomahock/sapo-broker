@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 
@@ -59,7 +60,10 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
         NetFault fault = msg.getAction().getFaultMessage();
 
         if(fault.getCode().equals(NetFault.PollTimeoutErrorCode)){
-            getManager().deliverMessage(msg,ctx.channel());
+
+            ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
+
+            getManager().deliverMessage(msg,decorator);
             return;
         }
 

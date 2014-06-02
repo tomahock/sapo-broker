@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
@@ -62,7 +63,9 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
 
                     log.debug("Got a pong message");
 
-                    manager.deliverMessage(msg,ctx.channel());
+                    ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
+
+                    manager.deliverMessage(msg,decorator);
 
                     ctx.fireChannelReadComplete();
                     break;

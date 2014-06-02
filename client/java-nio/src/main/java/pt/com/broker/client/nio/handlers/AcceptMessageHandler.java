@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.types.ActionIdDecorator;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 
@@ -33,7 +34,8 @@ public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage
             return;
         }
 
-        manager.deliverMessage(msg,ctx.channel());
+        ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
+        manager.deliverMessage(msg,decorator);
 
     }
 

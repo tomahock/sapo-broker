@@ -58,7 +58,7 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
         }
 
 
-        /*ch.pipeline().addLast("byte_message_encoder",new MessageToByteEncoder<Byte[]>(){
+        ch.pipeline().addLast("byte_message_encoder",new MessageToByteEncoder<Byte[]>(){
 
             @Override
             protected void encode(ChannelHandlerContext ctx, Byte[] msg, ByteBuf out) throws Exception {
@@ -72,7 +72,7 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
 
                 out.writeBytes(data);
             }
-        });*/
+        });
 
 
 

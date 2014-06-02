@@ -157,10 +157,10 @@ public class ConsumerManager {
 
     public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
 
-        ChannelDecorator decorator = new ChannelDecorator(channel);
 
 
-        BrokerAsyncConsumer consumer = getConsumer(netMessage, decorator.getHost());
+
+        BrokerAsyncConsumer consumer = getConsumer(netMessage, ((ChannelDecorator)channel).getHost());
 
 
         if(consumer == null){
