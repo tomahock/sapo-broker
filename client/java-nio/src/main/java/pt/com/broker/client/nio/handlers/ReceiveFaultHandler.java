@@ -59,9 +59,11 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
         NetFault fault = msg.getAction().getFaultMessage();
 
+        ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
+
         if(fault.getCode().equals(NetFault.PollTimeoutErrorCode)){
 
-            ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
+
 
             getManager().deliverMessage(msg,decorator);
             return;
@@ -71,7 +73,7 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
         BrokerListener listener = getFaultListenerAdapter();
 
         if(listener!=null){
-            getFaultListenerAdapter().deliverMessage(msg,ctx.channel());
+            getFaultListenerAdapter().deliverMessage(msg,decorator);
         }
 
     }

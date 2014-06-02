@@ -196,6 +196,9 @@ public class BrokerClient extends BaseClient implements Observer {
 
     private ChannelFuture subscribeToHost(final NetSubscribeAction subscribe , final BrokerListener listener , Channel channel){
 
+        if(listener == null){
+            throw new IllegalArgumentException("Invalid Listener");
+        }
 
         if(subscribe.getDestinationType() == NetAction.DestinationType.VIRTUAL_QUEUE){
 
