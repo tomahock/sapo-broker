@@ -164,6 +164,9 @@ public class ConsumerManager {
 
 
         if(consumer == null){
+
+            System.out.println("Action Type:" +netMessage.getAction().getActionType().name());
+
             throw new RuntimeException("No consumer found for this message");
         }
 

@@ -82,7 +82,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                            info.brokerClient.close();
+                            info.brokerClient.close().get();
 
                     }
                 }
@@ -94,7 +94,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                        info.brokerClient.close();
+                        info.brokerClient.close().get();
 
                     }
                 }
@@ -136,13 +136,9 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-            if(this.getEncodingProtocolType() == NetProtocolType.SOAP_v0){
-
-            }
 
             int port = BrokerTest.getAgent1Port();
 
-           System.out.println("Agent port: "+port);
 
             tci.brokerClient = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), port, this.getEncodingProtocolType());
             tci.brokerClient.connect();

@@ -236,7 +236,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
                     ChannelDecorator channel = new ChannelDecorator(future.channel());
 
-                    getConsumerManager().addSubscription(netMessage.getAction().getSubscribeMessage(), listener, channel.getHost());
+                    getConsumerManager().addSubscription(subscribe, listener, channel.getHost());
 
                     if(listener instanceof NotificationListenerAdapter){
                         ((NotificationListenerAdapter)listener).setBrokerClient(client);

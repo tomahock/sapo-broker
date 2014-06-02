@@ -101,7 +101,7 @@ public final class HostInfo
 
 
     public boolean isActive(){
-        return this.getChannel() != null && (getChannel().isActive() ||  getChannel().isOpen() );
+        return this.getChannel() != null && (getChannel().isActive() &&  getChannel().isOpen() && getChannel().isWritable() );
     }
 
     public Channel getChannel() {

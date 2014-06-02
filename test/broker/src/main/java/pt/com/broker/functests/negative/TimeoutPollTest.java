@@ -4,7 +4,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.caudexorigo.text.RandomStringUtils;
 
-import pt.com.broker.client.BrokerClient;
+import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
@@ -49,14 +49,14 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 				boolean success = false;
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), "tcp://mycompany.com/test", getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
 
-					bk.poll(queueName, 500, null);
+					bk.poll(queueName, 500);
 
-					bk.close();
+					bk.close().get();
 
 				}
-				catch (TimeoutException t)
+				catch (pt.com.broker.client.nio.handlers.timeout.TimeoutException t)
 				{
 					success = true;
 				}

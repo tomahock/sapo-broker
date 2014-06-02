@@ -454,9 +454,15 @@ public class BrokerClientTest {
     @Test
     public void testPool() throws Throwable{
 
-        BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
+        //BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
+        BrokerClient bk = new BrokerClient(NetProtocolType.JSON);
+
+        bk.addServer("192.168.100.1", 3323);
+        bk.addServer("192.168.100.1", 3323);
 
 
+
+        bk.connect();
 
         int counter = 10;
 

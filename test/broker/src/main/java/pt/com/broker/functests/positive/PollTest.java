@@ -39,9 +39,8 @@ public class PollTest extends BrokerTest
                     bk.connect();
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-					bk.publish(brokerMessage, queueName, NetAction.DestinationType.QUEUE);
+					bk.publish(brokerMessage, queueName, NetAction.DestinationType.QUEUE).get();
 
-					bk.close().get();
 
 					setDone(true);
 					setSucess(true);
@@ -65,12 +64,13 @@ public class PollTest extends BrokerTest
 					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
                     bk.connect();
 
+
                     NetNotification msg = bk.poll(queueName);
 
 
 					bk.acknowledge(msg).get();
 
-					bk.close().get();
+                    bk.close().get();
 
 					if (msg.getMessage() == null)
 					{

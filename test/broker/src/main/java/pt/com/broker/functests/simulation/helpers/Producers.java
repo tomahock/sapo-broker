@@ -11,8 +11,9 @@ import org.caudexorigo.text.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.HostInfo;
+import pt.com.broker.client.nio.BrokerClient;
+
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetProtocolType;
@@ -117,7 +118,7 @@ public class Producers
 			ProducerInfo pi = new ProducerInfo();
 			try
 			{
-				pi.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), String.format("Producer:%s:%s", destinatination, i), protocolType);
+				pi.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), protocolType);
 
 				pi.producerName = appName + i;
 
@@ -152,14 +153,9 @@ public class Producers
 					{
 						try
 						{
-							if (destinationType == DestinationType.TOPIC)
-							{
-								producerInfo.brokerClient.publishMessage(brokerMessage, destinatination);
-							}
-							else
-							{
-								producerInfo.brokerClient.enqueueMessage(brokerMessage, destinatination);
-							}
+
+							producerInfo.brokerClient.publish(brokerMessage, destinatination,destinationType);
+
 							++producerInfo.messagesSend;
 							if (stop)
 								return;
@@ -183,14 +179,8 @@ public class Producers
 					{
 						try
 						{
-							if (destinationType == DestinationType.TOPIC)
-							{
-								producerInfo.brokerClient.publishMessage(brokerMessage, destinatination);
-							}
-							else
-							{
-								producerInfo.brokerClient.enqueueMessage(brokerMessage, destinatination);
-							}
+                            producerInfo.brokerClient.publish(brokerMessage, destinatination,destinationType);
+
 							++producerInfo.messagesSend;
 							if (stop)
 								return;

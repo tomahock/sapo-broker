@@ -9,9 +9,11 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.HostInfo;
-import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.client.nio.BrokerClient;
+
+import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
@@ -110,7 +112,7 @@ public class Consumers
 			try
 			{
 				ci.consumerName = appName + i;
-				ci.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), String.format("Consumer:%s:%s", destinationName, i), protocolType);
+				ci.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), protocolType);
 
 				consumers.add(ci);
 			}
@@ -131,10 +133,10 @@ public class Consumers
 		{
 			final ConsumerInfo consumerInfo = ci;
 
-			BrokerListener listener = new BrokerListener()
+			NotificationListenerAdapter listener = new NotificationListenerAdapter()
 			{
 				@Override
-				public void onMessage(NetNotification message)
+				public boolean onMessage(NetNotification message, HostInfo host)
 				{
 					++consumerInfo.messagesReceived;
 					if (ackDelay != 0)
@@ -152,18 +154,16 @@ public class Consumers
 					{
 						e.printStackTrace();
 					}
+
+                    return false;
 				}
 
-				@Override
-				public boolean isAutoAck()
-				{
-					return false;
-				}
+
 			};
 
 			try
 			{
-				ci.brokerClient.addAsyncConsumer(subscribeMsg, listener);
+				ci.brokerClient.subscribe(subscribeMsg, listener);
 				ci.listener = listener;
 
 				if (subscriptionDuration != 0 && unsubscribedDuration != 0)
@@ -194,7 +194,7 @@ public class Consumers
 							{
 								try
 								{
-									ci.brokerClient.addAsyncConsumer(subscribeMsg, ci.listener);
+									ci.brokerClient.subscribe(subscribeMsg, ci.listener);
 									ci.nextAction = ConsumerInfo.SubscriptionAction.Unsubscribe;
 									ci.actionTime = now + subscriptionDuration;
 								}

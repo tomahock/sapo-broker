@@ -1,5 +1,6 @@
 package pt.com.broker.functests.helpers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -22,8 +23,8 @@ public class MultipleNotificationsBrokerListener extends NotificationListenerAda
 	{
 		this.destinationType = destinationType;
 		this.expectedNotifications = expectedNotifications;
-		// this.list = new ArrayList<NetNotification>(expectedNotifications);
-		this.list = new CopyOnWriteArrayList<NetNotification>();
+		this.list = new ArrayList<>(expectedNotifications);
+		//this.list = new CopyOnWriteArrayList<NetNotification>();
 	}
 
     @Override

@@ -67,9 +67,8 @@ public class GenericPubSubTest extends BrokerTest
         try {
             infoConsumer.close().get();
             infoProducer.close().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -153,7 +152,7 @@ public class GenericPubSubTest extends BrokerTest
 
                     Thread.sleep(2000);
 
-					//getInfoProducer().close();
+					getInfoProducer().close().get();
 
 					setDone(true);
 					setSucess(true);
@@ -191,10 +190,10 @@ public class GenericPubSubTest extends BrokerTest
 
 				try
 				{
-					//getInfoConsumer().unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName());
+					getInfoConsumer().unsubscribe(NetAction.DestinationType.TOPIC, getSubscriptionName()).get();
 
 					Sleep.time(250);
-					getInfoConsumer().close();
+					getInfoConsumer().close().get();
 
 					setDone(true);
 					setSucess(true);

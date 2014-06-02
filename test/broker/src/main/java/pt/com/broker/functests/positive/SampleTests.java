@@ -75,7 +75,7 @@ public class SampleTests
 						BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-						bk.publish(brokerMessage, topicName, NetAction.DestinationType.TOPIC);
+						bk.publish(brokerMessage, topicName, NetAction.DestinationType.TOPIC).get();
 
 						bk.close().get();
 
@@ -106,8 +106,8 @@ public class SampleTests
 
 					try
 					{
-						//consumer.unsubscribe(NetAction.DestinationType.TOPIC, "/topic/.*");
-						//consumer.close();
+						consumer.unsubscribe(NetAction.DestinationType.TOPIC, "/topic/.*");
+						consumer.close().get();
 
 						setDone(true);
 						setSucess(true);

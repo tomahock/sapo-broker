@@ -73,7 +73,7 @@ public class Main
 		
 		//NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.JSON };
 
-        NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP_v0 };
+        NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP };
 
         //NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.THRIFT };
 
@@ -118,36 +118,34 @@ public class Main
 
 			if (runAll || runPositive)
 			{
-				//new PingTest().run(numberOfTests, testResults);
-                //new DeferredDeliveryQueueTest().run(numberOfTests, testResults);
+				new PingTest().run(numberOfTests, testResults);
+                new DeferredDeliveryQueueTest().run(numberOfTests, testResults);
 
 			}
 
 			if (runAll || runPositive || runTopic)
 			{
-				//new TopicNameSpecified().run(numberOfTests, testResults);
+				new TopicNameSpecified().run(numberOfTests, testResults);
 
 
                 // @todo fix
 				//new TopicPubSubWithActionId().run(numberOfTests, testResults);
 
 
-				/*new TopicNameWildcard().run(numberOfTests, testResults);
+				new TopicNameWildcard().run(numberOfTests, testResults);
 				new TopicNameWildcardDist().run(numberOfTests, testResults);
                 new TopicNameSpecifiedDist().run(numberOfTests, testResults);
                 new MultipleN1Topic().run(numberOfTests, testResults);
                 new Multiple1NTopic().run(numberOfTests, testResults);
                 new MultipleNNTopic().run(numberOfTests, testResults);
-				new MultipleN1TopicRemote().run(numberOfTests, testResults);*/
-
+				new MultipleN1TopicRemote().run(numberOfTests, testResults);
 				new Multiple1NTopicRemote().run(numberOfTests, testResults);
-
-                //new MultipleNNTopicRemote().run(numberOfTests, testResults);
+                new MultipleNNTopicRemote().run(numberOfTests, testResults);
 
 
 			}
 
-			/*if (runAll || runPositive || runQueue)
+			if (runAll || runPositive || runQueue)
 			{
 				new QueueTest().run(numberOfTests, testResults);
 				new PollTest().run(numberOfTests, testResults);
@@ -215,7 +213,7 @@ public class Main
 				new TimeoutPollTest().run(numberOfTests, testResults);
 
 
-			}*/
+			}
 			// for(Class testClass : ConfigurationInfo.getTestClasses())
 			// {
 			// Test t = createInstance(testClass);

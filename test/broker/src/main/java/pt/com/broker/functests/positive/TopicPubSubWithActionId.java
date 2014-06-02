@@ -161,11 +161,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
                     f.get();
 
-
-                    Thread.sleep(2000);
-
-
-					infoProducer.close();
+					infoProducer.close().get();
 
 					setDone(true);
 					setSucess(true);
@@ -209,10 +205,10 @@ public class TopicPubSubWithActionId extends BrokerTest
 
 				try
 				{
-					//infoConsumer.unsubscribe(NetAction.DestinationType.TOPIC, subscriptionName);
+					infoConsumer.unsubscribe(NetAction.DestinationType.TOPIC, subscriptionName).get();
 
 					Sleep.time(1000);
-					infoConsumer.close();
+					infoConsumer.close().get();
 
 					setDone(true);
 					setSucess(true);

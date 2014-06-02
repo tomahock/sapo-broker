@@ -24,6 +24,8 @@ public class HostContainer extends Observable {
 
     private static final Logger log = LoggerFactory.getLogger(HostContainer.class);
 
+    private static final Object channelLocker = new Object();
+
     private List<HostInfo> hosts;
 
     private List<HostInfo> connectedHosts;
@@ -134,6 +136,8 @@ public class HostContainer extends Observable {
 
                     int count = servers.size();
 
+
+                    /* @todo server connected and isWritable */
                     do {
 
                         host = service.take().get();
@@ -144,6 +148,10 @@ public class HostContainer extends Observable {
 
                     if(host == null){
                         throw new Exception("Could not connect");
+                    }
+
+                    while(!host.isActive()){
+                        Thread.sleep(500);
                     }
 
                     return host;
@@ -257,9 +265,7 @@ public class HostContainer extends Observable {
      * @return Channel
      * @throws InterruptedException
      */
-    public synchronized Channel getAvailableChannel() throws InterruptedException {
-
-
+    public Channel getAvailableChannel() throws InterruptedException {
 
         HostInfo host = null;
 
@@ -281,7 +287,7 @@ public class HostContainer extends Observable {
 
             }
 
-        } while (host == null || !host.getChannel().isWritable());
+        } while (host == null || (host != null && !host.getChannel().isOpen()));
 
 
         return host.getChannel();

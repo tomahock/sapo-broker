@@ -10,8 +10,9 @@ import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.HostInfo;
+import pt.com.broker.client.nio.BrokerClient;
+
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.gcs.messaging.GcsExecutor;
@@ -96,7 +97,7 @@ public class SyncConsumers
 			try
 			{
 				ci.consumerName = appName + i;
-				ci.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), String.format("Consumer:%s:%s", queueName, i), protocolType);
+				ci.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), protocolType);
 
 				consumers.add(ci);
 			}
