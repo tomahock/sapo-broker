@@ -88,7 +88,8 @@ public class DestinationDataFactory {
 
     protected String getDestination(NetFault fault){
 
-        if(NetFault.PollTimeoutErrorCode.equals(fault.getCode())){
+        if(NetFault.PollTimeoutErrorCode.equals(fault.getCode())
+            || NetFault.NoMessageInQueueErrorCode.equals(fault.getCode())    ){
 
             return fault.getDetail();
 

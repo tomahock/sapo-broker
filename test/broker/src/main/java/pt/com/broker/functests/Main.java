@@ -73,7 +73,7 @@ public class Main
 		
 		//NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.JSON };
 
-        //NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP };
+        //NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.SOAP_v0 };
 
         //NetProtocolType[] protoTypes = new NetProtocolType[] { NetProtocolType.THRIFT };
 
@@ -127,9 +127,7 @@ public class Main
 			{
 				new TopicNameSpecified().run(numberOfTests, testResults);
 
-
-                // @todo fix
-				//new TopicPubSubWithActionId().run(numberOfTests, testResults);
+				new TopicPubSubWithActionId().run(numberOfTests, testResults);
 
 
 				new TopicNameWildcard().run(numberOfTests, testResults);

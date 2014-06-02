@@ -394,8 +394,9 @@ public class BrokerClient extends BaseClient implements Observer {
             netPoll.setActionId(request.getActionId());
         }
 
+        final CountDownLatch latch = new CountDownLatch(1);
 
-        final BlockingQueue<NetNotification> queue = new ArrayBlockingQueue<NetNotification>(1);
+        final List<NetNotification> notifications = new ArrayList<>(1);
 
 
         try {
@@ -406,18 +407,22 @@ public class BrokerClient extends BaseClient implements Observer {
                 @Override
                 public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
 
-
-                    NetFault netFault = message.getAction().getFaultMessage();
-
-                    if (netFault != null  && netFault.getCode().equals(NetFault.PollTimeoutErrorCode)) {
-                        throw new TimeoutException("Poll timeout");
-                    }
-
                     try {
+
+                        NetFault netFault = message.getAction().getFaultMessage();
+
+
+                        if (netFault != null && netFault.getCode().equals(NetFault.PollTimeoutErrorCode)) {
+                            throw new TimeoutException("Poll timeout");
+                        }
+
+                        if (netFault != null && netFault.getCode().equals(NetFault.NoMessageInQueueErrorCode)) {
+                            return;
+                        }
 
                         NetNotification netNotification = message.getAction().getNotificationMessage();
 
-                        queue.put(netNotification);
+                        notifications.add(netNotification);
 
                         acknowledge(netNotification);
 
@@ -426,10 +431,13 @@ public class BrokerClient extends BaseClient implements Observer {
 
                         throw new RuntimeException(e);
 
-                    } finally {
+                    } catch (TimeoutException e){
+                            throw e;
+                    }
+                    finally {
 
                         getConsumerManager().removeSubscription(netPoll, ((ChannelDecorator)channel).getHost());
-
+                        latch.countDown();
                     }
 
 
@@ -438,11 +446,13 @@ public class BrokerClient extends BaseClient implements Observer {
 
             });
 
+            latch.await();
 
+            if(notifications.isEmpty()){
+                return null;
+            }
 
-
-            return queue.take();
-
+            return notifications.get(0);
 
         } catch (Throwable e) {
 

@@ -61,9 +61,7 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
         ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
 
-        if(fault.getCode().equals(NetFault.PollTimeoutErrorCode)){
-
-
+        if(fault.getCode().equals(NetFault.PollTimeoutErrorCode) || fault.getCode().equals(NetFault.NoMessageInQueueErrorCode) ){
 
             getManager().deliverMessage(msg,decorator);
             return;
