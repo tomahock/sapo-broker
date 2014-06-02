@@ -82,7 +82,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                            info.brokerClient.close().get();
+                            info.brokerClient.close();
 
                     }
                 }
@@ -94,7 +94,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                        info.brokerClient.close().get();
+                        info.brokerClient.close();
 
                     }
                 }

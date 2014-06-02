@@ -50,7 +50,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
             infoConsumer.connect();
 
-			infoProducer = new BrokerClient("192.168.100.1", BrokerTest.getAgent1Port() , getEncodingProtocolType());
+			infoProducer = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port() , getEncodingProtocolType());
 
             infoProducer.connect();
 		}
@@ -161,7 +161,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 
                     f.get();
 
-					infoProducer.close().get();
+					infoProducer.close();
 
 					setDone(true);
 					setSucess(true);
@@ -208,7 +208,7 @@ public class TopicPubSubWithActionId extends BrokerTest
 					infoConsumer.unsubscribe(NetAction.DestinationType.TOPIC, subscriptionName).get();
 
 					Sleep.time(1000);
-					infoConsumer.close().get();
+					infoConsumer.close();
 
 					setDone(true);
 					setSucess(true);
@@ -228,12 +228,10 @@ public class TopicPubSubWithActionId extends BrokerTest
 
         try {
 
-            infoConsumer.close().get();
-            infoProducer.close().get();
+            infoConsumer.close();
+            infoProducer.close();
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -120,11 +120,9 @@ public class GenericNegativeTest extends BrokerTest
     protected void end() {
         try {
 
-            brokerClient.close().get();
+            brokerClient.close();
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

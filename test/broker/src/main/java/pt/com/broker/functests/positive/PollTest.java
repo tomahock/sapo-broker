@@ -70,7 +70,7 @@ public class PollTest extends BrokerTest
 
 					bk.acknowledge(msg).get();
 
-                    bk.close().get();
+                    bk.close();
 
 					if (msg.getMessage() == null)
 					{

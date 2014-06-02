@@ -53,7 +53,7 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 
 					bk.poll(queueName, 500);
 
-					bk.close().get();
+					bk.close();
 
 				}
 				catch (pt.com.broker.client.nio.handlers.timeout.TimeoutException t)
