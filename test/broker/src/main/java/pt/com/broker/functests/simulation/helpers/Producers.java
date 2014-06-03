@@ -2,6 +2,7 @@ package pt.com.broker.functests.simulation.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -213,8 +214,12 @@ public class Producers
 
 		for (ProducerInfo pi : producers)
 		{
-			pi.brokerClient.close();
-		}
+            try {
+                pi.brokerClient.close().get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
 		activeProducers.remove(this);
 	}

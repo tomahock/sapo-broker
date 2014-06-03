@@ -27,8 +27,9 @@ public class MultipleNotificationConsequence extends Consequence
 
 	public Step run() throws Exception
 	{
+        System.out.println("Start - Waiting for List NetNotification");
 		List<NetNotification> notifications = brokerListener.getFuture().get();
-
+        System.out.println("Done - Waiting for List NetNotification");
 		for (NetNotification netNotification : notifications)
 		{
 

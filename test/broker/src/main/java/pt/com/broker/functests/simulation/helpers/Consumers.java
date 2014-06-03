@@ -3,6 +3,7 @@ package pt.com.broker.functests.simulation.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.caudexorigo.concurrent.Sleep;
@@ -232,8 +233,12 @@ public class Consumers
 	{
 		for (ConsumerInfo ci : consumers)
 		{
-			ci.brokerClient.close();
-		}
+            try {
+                ci.brokerClient.close().get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 		consumers.clear();
 		activeConsumers.remove(this);
 	}

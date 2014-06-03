@@ -143,7 +143,7 @@ public class DeferredDeliveryQueueTest extends BrokerTest
 		// public Step run() throws Exception
 		// {
 		// System.out.println("DeferredDeliveryQueueTest.build().new Consequence() {...}.run()");
-		// //brokerClient.close();
+		// //brokerClient.close().get();
 		//
 		//
 		// return this;

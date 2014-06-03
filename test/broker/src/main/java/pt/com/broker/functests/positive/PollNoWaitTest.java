@@ -61,7 +61,7 @@ public class PollNoWaitTest extends BrokerTest
 						return this;
 					}
 
-					bk.close();
+					bk.close().get();
 				}
 				catch (Throwable t)
 				{

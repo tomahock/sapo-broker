@@ -82,7 +82,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                            info.brokerClient.close();
+                           // info.brokerClient.close().get();
 
                     }
                 }
@@ -94,7 +94,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                        info.brokerClient.close();
+                        //info.brokerClient.close().get();
 
                     }
                 }
@@ -166,6 +166,8 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					for (TestClientInfo tci : getInfoConsumers())
 					{
 						tci.brokerClient.subscribe(subscribe, tci.brokerListenter).get();
+
+                        Thread.sleep(500);
 					}
 
 

@@ -87,6 +87,8 @@ public class HostContainer extends Observable {
 
     public Future<HostInfo> connectAsync() {
 
+
+
         synchronized (hosts) {
 
             ArrayList<HostInfo> hosts = notConnectedHosts();
@@ -120,7 +122,18 @@ public class HostContainer extends Observable {
 
                                 ChannelFuture f = connectToHost(host);
 
-                                f.awaitUninterruptibly();
+                                final CountDownLatch latch = new CountDownLatch(1);
+
+                                f.addListener(new ChannelFutureListener() {
+                                    @Override
+                                    public void operationComplete(ChannelFuture future) throws Exception {
+
+                                        latch.countDown();
+
+                                    }
+                                });
+
+                                latch.countDown();
 
                                 return f.isSuccess() ? host : null;
 

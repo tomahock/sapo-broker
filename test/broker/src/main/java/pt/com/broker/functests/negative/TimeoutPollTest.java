@@ -1,16 +1,18 @@
 package pt.com.broker.functests.negative;
 
-import java.util.concurrent.TimeoutException;
+
 
 import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
+import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 
 public class TimeoutPollTest extends GenericNetMessageNegativeTest
@@ -47,23 +49,33 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 			public Step run() throws Exception
 			{
 				boolean success = false;
+
+                BrokerClient bk = null;
 				try
 				{
-					BrokerClient bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
+					bk = new BrokerClient(ConfigurationInfo.getParameter("agent1-host"), BrokerTest.getAgent1Port(), getEncodingProtocolType());
+                    bk.connect();
 
-					bk.poll(queueName, 500);
+					NetNotification netNotification = bk.poll(queueName, 500);
 
-					bk.close();
+                    System.out.println("Message");
+
+					bk.close().get();
 
 				}
-				catch (pt.com.broker.client.nio.handlers.timeout.TimeoutException t)
+				catch (TimeoutException t)
 				{
+                    System.out.println("Timeout");
 					success = true;
-				}
-				catch (Throwable t)
-				{
-				}
-				setDone(true);
+
+				}finally {
+                    if(bk!=null){
+                        bk.close().get();
+                    }
+
+
+                }
+                setDone(true);
 				setSucess(success);
 				return this;
 			}
@@ -75,6 +87,6 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 	@Override
 	public boolean skipTest()
 	{
-		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0) || (getEncodingProtocolType() == NetProtocolType.JSON);
+		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0);
 	}
 }

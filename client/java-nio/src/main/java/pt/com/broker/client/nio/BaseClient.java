@@ -75,7 +75,8 @@ public abstract class BaseClient{
             public void operationComplete(ChannelFuture future) throws Exception {
 
                 if(!future.isSuccess()){
-                    log.error("Error sending message!!! Message lost");
+
+                    log.error("Error sending message!!! Message lost",future.cause());
                 }
             }
         });

@@ -2,6 +2,7 @@ package pt.com.broker.functests.simulation.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -148,8 +149,12 @@ public class SyncConsumers
 	{
 		for (ConsumerInfo ci : consumers)
 		{
-			ci.brokerClient.close();
-		}
+            try {
+                ci.brokerClient.close().get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
 		activeConsumers.remove(this);
 	}

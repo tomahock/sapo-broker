@@ -30,6 +30,7 @@ import pt.com.broker.types.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by luissantos on 21-04-2014.
@@ -138,7 +139,7 @@ public class BrokerClient extends BaseClient implements Observer {
         return subscribe(subscribe, listener, null);
     }
 
-    public Future subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
+    public Future<HostInfo> subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
 
 
         Collection<HostInfo> servers  = null;
@@ -167,11 +168,20 @@ public class BrokerClient extends BaseClient implements Observer {
                 @Override
                 public HostInfo call() throws Exception {
 
-
                     ChannelFuture future = subscribeToHost(subscribe,listener,host.getChannel());
 
+                    final CountDownLatch latch = new CountDownLatch(1);
 
-                    future.get();
+                    future.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+                            latch.countDown();
+                        }
+                    });
+
+
+                    latch.await();
+
 
                     return host;
 
@@ -227,10 +237,12 @@ public class BrokerClient extends BaseClient implements Observer {
 
         ChannelFuture f =  sendNetMessage(netMessage,channel);
 
-        f.addListener(new ChannelFutureListener() {
+
+        return f.addListener(new ChannelFutureListener() {
 
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
+
 
                 if (future.isSuccess()) {
 
@@ -253,8 +265,6 @@ public class BrokerClient extends BaseClient implements Observer {
 
         });
 
-
-        return f;
     }
 
     public Future unsubscribe(NetAction.DestinationType destinationType, String dstName){
@@ -394,6 +404,8 @@ public class BrokerClient extends BaseClient implements Observer {
             netPoll.setActionId(request.getActionId());
         }
 
+        final AtomicBoolean timeout = new AtomicBoolean(false);
+
         final CountDownLatch latch = new CountDownLatch(1);
 
         final List<NetNotification> notifications = new ArrayList<>(1);
@@ -413,7 +425,8 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
                         if (netFault != null && netFault.getCode().equals(NetFault.PollTimeoutErrorCode)) {
-                            throw new TimeoutException("Poll timeout");
+                            timeout.set(true);
+                            return;
                         }
 
                         if (netFault != null && netFault.getCode().equals(NetFault.NoMessageInQueueErrorCode)) {
@@ -448,11 +461,6 @@ public class BrokerClient extends BaseClient implements Observer {
 
             latch.await();
 
-            if(notifications.isEmpty()){
-                return null;
-            }
-
-            return notifications.get(0);
 
         } catch (Throwable e) {
 
@@ -460,6 +468,15 @@ public class BrokerClient extends BaseClient implements Observer {
 
         }
 
+        if(timeout.get()){
+            throw new TimeoutException("Poll timeout");
+        }
+
+        if(notifications.isEmpty()){
+            return null;
+        }
+
+        return notifications.get(0);
 
     }
 

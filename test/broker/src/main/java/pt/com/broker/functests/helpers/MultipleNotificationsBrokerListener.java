@@ -31,6 +31,8 @@ public class MultipleNotificationsBrokerListener extends NotificationListenerAda
 	public boolean onMessage(NetNotification message, HostInfo host)
 	{
 
+        System.out.println("OnMessage :"+message.getMessage().getMessageId());
+
 
 		synchronized (list)
 		{
@@ -41,7 +43,7 @@ public class MultipleNotificationsBrokerListener extends NotificationListenerAda
 			}
 		}
 
-        return true;
+        return false;
 	}
 
 	public SetValueFuture<List<NetNotification>> getFuture()
