@@ -2,23 +2,24 @@ package pt.com.broker.functests.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 import org.caudexorigo.text.RandomStringUtils;
 
 
-
+import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.AcceptResponseListener;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetSubscribe;
 
 public class MultipleGenericPubSubTest extends BrokerTest
 {
@@ -82,7 +83,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                           // info.brokerClient.close().get();
+                           info.brokerClient.close();
 
                     }
                 }
@@ -94,7 +95,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                 if(info != null){
                     if(info.brokerClient!=null){
 
-                        //info.brokerClient.close().get();
+                        info.brokerClient.close();
 
                     }
                 }
@@ -165,10 +166,29 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getConsumerDestinationType());
 					for (TestClientInfo tci : getInfoConsumers())
 					{
-						tci.brokerClient.subscribe(subscribe, tci.brokerListenter).get();
+                        final CountDownLatch latch = new CountDownLatch(1);
 
-                        Thread.sleep(500);
+						tci.brokerClient.subscribe(subscribe, tci.brokerListenter, new AcceptRequest(UUID.randomUUID().toString(), new AcceptResponseListener() {
+                            @Override
+                            public void onMessage(NetAccepted message, HostInfo host) {
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onFault(NetFault fault, HostInfo host) {
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onTimeout(String actionID) {
+                                latch.countDown();
+                            }
+                        },2000)).get();
+
+                        latch.await();
 					}
+
+
 
 
 					setDone(true);
@@ -197,9 +217,26 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					{
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
+                        final CountDownLatch latch = new CountDownLatch(1);
 
-						tci.brokerClient.publish(brokerMessage, getDestinationName(), getDestinationType()).get();
+						tci.brokerClient.publish(brokerMessage, getDestinationName(), getDestinationType(), new AcceptRequest(UUID.randomUUID().toString(), new AcceptResponseListener() {
+                            @Override
+                            public void onMessage(NetAccepted message, HostInfo host) {
+                                latch.countDown();
+                            }
 
+                            @Override
+                            public void onFault(NetFault fault, HostInfo host) {
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onTimeout(String actionID) {
+                                latch.countDown();
+                            }
+                        },2000)).get();
+
+                        latch.await();
 					}
 
 

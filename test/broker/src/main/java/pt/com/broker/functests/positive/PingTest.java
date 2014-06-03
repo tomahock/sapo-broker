@@ -62,7 +62,7 @@ public class PingTest extends BrokerTest
                     latch.await(2000, TimeUnit.MILLISECONDS);
 
                     setDone(true);
-					bk.close().get();
+					bk.close();
 
 
 

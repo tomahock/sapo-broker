@@ -150,7 +150,7 @@ public class SyncConsumers
 		for (ConsumerInfo ci : consumers)
 		{
             try {
-                ci.brokerClient.close().get();
+                ci.brokerClient.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -51,6 +51,7 @@ public class BrokerClient extends BaseClient implements Observer {
     ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
+    private final CompletionService<HostInfo> unsubcribeService = new ExecutorCompletionService<HostInfo>(executorService);
 
 
     public BrokerClient(NetProtocolType ptype) {
@@ -154,14 +155,12 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
 
+        if(request!=null) {
+            subscribe.setActionId(request.getActionId());
+            addAcceptMessageHandler(request);
+        }
 
         for(final HostInfo host : servers){
-
-            if(request!=null) {
-                subscribe.setActionId(request.getActionId());
-                addAcceptMessageHandler(request);
-            }
-
 
             service.submit(new Callable<HostInfo>() {
 
@@ -175,7 +174,7 @@ public class BrokerClient extends BaseClient implements Observer {
                     future.addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
-                            latch.countDown();
+                                latch.countDown();
                         }
                     });
 
@@ -267,13 +266,89 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
-    public Future unsubscribe(NetAction.DestinationType destinationType, String dstName){
+    public Future unsubscribe(final NetAction.DestinationType destinationType, final String dstName)  throws InterruptedException {
+
+
+        Map<String,BrokerAsyncConsumer> consumers = getConsumerManager().getSubscriptions(destinationType);
+
+
+        int total_unsubscribe = 0;
+        for(Map.Entry<String,BrokerAsyncConsumer> entry: consumers.entrySet()){
+
+            BrokerAsyncConsumer consumer = entry.getValue();
+
+
+            if(consumer.getDestinationName().equals(dstName) && consumer.getHost()!=null){
+
+                final HostInfo host = consumer.getHost();
+
+                total_unsubscribe++;
+
+                unsubcribeService.submit(new Callable<HostInfo>() {
+                    @Override
+                    public HostInfo call() throws Exception {
+
+                        ChannelFuture f = unsubscribeHost(destinationType,dstName,host);
+
+                        final CountDownLatch latch = new CountDownLatch(1);
+
+                        f.addListener(new ChannelFutureListener() {
+                            @Override
+                            public void operationComplete(ChannelFuture future) throws Exception {
+
+                                latch.countDown();
+
+                            }
+                        });
+
+                        latch.await();
+
+                        return  host;
+
+                    }
+                });
+
+            }
+
+        }
+
+
+        if(total_unsubscribe  == 0){
+            throw new IllegalArgumentException("No subscriptions found");
+        }
+
+        return unsubcribeService.take();
+
+    }
+
+    private ChannelFuture unsubscribeHost(final NetAction.DestinationType destinationType, final String dstName, final HostInfo host){
 
         NetUnsubscribe unsubscribe = new NetUnsubscribe(dstName,destinationType);
 
         NetMessage netMessage = new NetMessage(new NetAction(unsubscribe));
 
-        return sendNetMessage(netMessage);
+
+        ChannelFuture f = sendNetMessage(netMessage,host.getChannel());
+
+        f.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+
+                if(future.isSuccess()){
+
+                    getConsumerManager().removeSubscription(destinationType,dstName,host);
+
+                }else{
+
+                    log.error("was not possible to unsubscribe",future.cause());
+
+                }
+
+            }
+        });
+
+
+        return f;
     }
 
 

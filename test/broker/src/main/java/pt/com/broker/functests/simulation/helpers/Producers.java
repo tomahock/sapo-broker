@@ -215,7 +215,7 @@ public class Producers
 		for (ProducerInfo pi : producers)
 		{
             try {
-                pi.brokerClient.close().get();
+                pi.brokerClient.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }

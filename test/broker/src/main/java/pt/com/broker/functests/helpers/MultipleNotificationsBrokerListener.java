@@ -43,7 +43,7 @@ public class MultipleNotificationsBrokerListener extends NotificationListenerAda
 			}
 		}
 
-        return false;
+        return true;
 	}
 
 	public SetValueFuture<List<NetNotification>> getFuture()

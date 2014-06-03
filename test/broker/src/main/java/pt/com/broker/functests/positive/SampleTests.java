@@ -50,7 +50,7 @@ public class SampleTests
 
 
 
-                        consumer.close().get();
+                        consumer.close();
                         Thread.sleep(2000);
 
 						setDone(true);
@@ -77,7 +77,7 @@ public class SampleTests
 
 						bk.publish(brokerMessage, topicName, NetAction.DestinationType.TOPIC).get();
 
-						bk.close().get();
+						bk.close();
 
 						setDone(true);
 						setSucess(true);
@@ -107,7 +107,7 @@ public class SampleTests
 					try
 					{
 						consumer.unsubscribe(NetAction.DestinationType.TOPIC, "/topic/.*");
-						consumer.close().get();
+						consumer.close();
 
 						setDone(true);
 						setSucess(true);

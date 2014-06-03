@@ -133,9 +133,9 @@ public class HostContainer extends Observable {
                                     }
                                 });
 
-                                latch.countDown();
+                                latch.await();
 
-                                return f.isSuccess() ? host : null;
+                                return host;
 
 
                             }

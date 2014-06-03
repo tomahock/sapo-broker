@@ -60,7 +60,7 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 
                     System.out.println("Message");
 
-					bk.close().get();
+					bk.close();
 
 				}
 				catch (TimeoutException t)
@@ -70,7 +70,7 @@ public class TimeoutPollTest extends GenericNetMessageNegativeTest
 
 				}finally {
                     if(bk!=null){
-                        bk.close().get();
+                        bk.close();
                     }
 
 
