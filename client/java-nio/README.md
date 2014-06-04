@@ -36,7 +36,7 @@
        
         // ... connecting ...
         
-       bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
+       Future f = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
        
                    @Override
                    public boolean onMessage(NetNotification message, HostInfo host) {
@@ -47,6 +47,9 @@
                    }
        
        });
+       
+       
+       f.get(); //wait for subscription message to be sent
 
 ```
 
@@ -87,6 +90,7 @@
         // ... connecting ...
 
         long timeout = 5000;
+        
         while (true){
       
                    try{
@@ -134,29 +138,14 @@
        
        bk.addServer("broker.wallet.pt",3323); 
        
-       bk.connect().get(); // There is no connection when publishing over UDP but we still need this for compatibility  
         
        NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
 
        Future future = bk.publish("Olá Mundo", "/teste/", dstType);
 ```
 
-
-## SSL Support
-```java
-
-       SslBrokerClient bk = new SslBrokerClient();
-       
-       bk.addServer("broker.wallet.pt",3390); // 3390 broker SSL port
-       
-       // by default it uses the jvm certificate authorities but you can change it
-       bk.setContext( ... );
-       
-       // ... connecting ... 
-       
-```
-
 # Advanced Topics
 
+* [Advanced Acknowledge Request](./doc/advanced/acknowledge.md)
 * [Advanced Message Handling](./doc/advanced/message-handling.md)
 * [SSL Advanced Usage](./doc/advanced/ssl.md)
