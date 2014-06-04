@@ -78,6 +78,9 @@ public class ConsumerManager {
 
         DestinationType destinationType = consumer.getDestinationType();
 
+        if(StringUtils.isEmpty(consumer.getDestinationName())){
+            throw new IllegalArgumentException("Invalid Destination name");
+        }
 
         if(destinationType == null){
             throw new IllegalArgumentException("Invalid Destination Type");
