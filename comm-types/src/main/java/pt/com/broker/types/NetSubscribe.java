@@ -10,6 +10,7 @@ import java.util.Map;
 
 public final class NetSubscribe implements NetSubscribeAction
 {
+	private final static Logger log = LoggerFactory.getLogger(NetSubscribe.class);
 	private String actionId;
 	private String destination;
 	private NetAction.DestinationType destinationType;
