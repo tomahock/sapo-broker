@@ -158,4 +158,5 @@
 
 # Advanced Topics
 
-* [Advanced Message Handling](./doc/advanced/)
+* [Advanced Message Handling](doc/advanced/message-handling.md)
+* [SSL Advanced Usage](doc/advanced/ssl.md)

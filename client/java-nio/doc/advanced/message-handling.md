@@ -1,10 +1,4 @@
-# Advanced usage
-
-* [Message Handling](./#messagehandling)
-
-
-
-## Message Handling
+# Message Handling
 
 ![BrokerListener Class Diagram](message-handling.png)
 
