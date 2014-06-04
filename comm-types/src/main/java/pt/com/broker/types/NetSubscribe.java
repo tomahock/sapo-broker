@@ -1,7 +1,10 @@
 package pt.com.broker.types;
 
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Represents a Subscription message.
@@ -10,7 +13,7 @@ import java.util.Map;
 
 public final class NetSubscribe implements NetSubscribeAction
 {
-	private final static Logger log = LoggerFactory.getLogger(NetSubscribe.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(NetSubscribe.class);
 	private String actionId;
 	private String destination;
 	private NetAction.DestinationType destinationType;
