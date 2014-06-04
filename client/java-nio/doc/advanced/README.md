@@ -6,8 +6,7 @@
 
 ## Message Handling
 
-<img src="message-handling.png" />
-
+![BrokerListener Class Diagram](message-handling.png)
 
 When subscribing to a message queue you must extend [NotificationListenerAdapter]().
 This class gives you simple message acknowledge.
