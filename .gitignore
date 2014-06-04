@@ -14,7 +14,7 @@
 /client/exec/java/consumer/target/
 /sapo-sts/agent/target/
 /sapo-sts/client/java/target/
-/agent/persistent*
+agent/persistent*
 
 
 # Created by http://www.gitignore.io
@@ -68,3 +68,13 @@ com_crashlytics_export_strings.xml
 ### Vagrant ###
 .vagrant/
 Vagrantfile
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
