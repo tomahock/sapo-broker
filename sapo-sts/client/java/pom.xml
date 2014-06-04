@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>pt.sapo.oss.broker</groupId>
 		<artifactId>sapo-broker-parent</artifactId>
-		<version>4.0.48</version>
+		<version>4.0.49.Alpha1</version>
 	</parent>
 	<artifactId>sapo-broker-sts-client</artifactId>
 	<name>sapo-broker-sts-client</name>
