@@ -534,7 +534,7 @@ public class BrokerClientTest {
 
 
             @Override
-            public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
                 bk.acknowledge(message.getAction().getNotificationMessage());
             }

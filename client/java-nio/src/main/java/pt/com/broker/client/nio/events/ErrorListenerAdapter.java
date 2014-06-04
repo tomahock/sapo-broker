@@ -12,13 +12,13 @@ import pt.com.broker.types.NetMessage;
 public abstract class ErrorListenerAdapter implements BrokerListener {
 
     @Override
-    public final void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+    public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
 
         NetFault netFault = message.getAction().getFaultMessage();
 
         if(netFault != null){
-            onMessage(netFault,((ChannelDecorator)channel).getHost());
+            onMessage(netFault,host);
         }
 
 

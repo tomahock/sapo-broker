@@ -20,22 +20,23 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
     BrokerClient brokerClient;
 
     @Override
-    public final void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+    public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
             NetAction netAction = message.getAction();
 
             NetNotification netNotification = netAction.getNotificationMessage();
 
+
             if(netNotification != null){
 
-                if(onMessage(netNotification, ((ChannelDecorator)channel).getHost())) {
+                if(onMessage(netNotification,host)){
 
                     if (brokerClient != null) {
 
                         // acknowledge if not a topic
                         if (netNotification.getDestinationType() != NetAction.DestinationType.TOPIC ) {
 
-                            brokerClient.acknowledge(netNotification);
+                            brokerClient.acknowledge(netNotification,host);
                         }
 
 

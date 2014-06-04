@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.consumer;
 
 
+import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.channel.local.LocalChannel;
 import junit.framework.Assert;
 
@@ -199,9 +200,13 @@ public class AcceptRequestsTest extends BaseTest {
         NetMessage netMessage = new NetMessage(netAction);
 
 
-        ChannelDecorator channel = new ChannelDecorator(new LocalChannel());
+        ChannelDecorator channel = new ChannelDecorator(new EmbeddedChannel());
 
-        manager.deliverMessage(netMessage,channel);
+        HostInfo host = new HostInfo("127.0.0.1",3323);
+
+        channel.setHost(host);
+
+        manager.deliverMessage(netMessage, host);
 
         Assert.assertTrue(onMessage.get());
 

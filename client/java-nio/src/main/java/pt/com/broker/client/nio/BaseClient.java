@@ -10,6 +10,7 @@ import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.*;
 
 import java.util.HashMap;
@@ -60,14 +61,14 @@ public abstract class BaseClient{
     }
 
     protected ChannelFuture sendNetMessage(NetMessage msg) {
-        return this.sendNetMessage(msg,null);
+
+        return this.sendNetMessage(msg, getAvailableHost());
+
     }
 
-    protected ChannelFuture sendNetMessage(NetMessage msg, Channel c) {
+    protected ChannelFuture sendNetMessage(NetMessage msg, HostInfo host) {
 
-        Channel channel = (c == null) ? getChannel() : c;
-
-        ChannelFuture f =  channel.writeAndFlush(msg);
+        ChannelFuture f =  host.getChannel().writeAndFlush(msg);
 
         f.addListener(new ChannelFutureListener() {
 
@@ -83,7 +84,10 @@ public abstract class BaseClient{
 
 
         return f;
+
     }
+
+
 
     protected NetMessage buildMessage(NetAction action, Map<String, String> headers) {
         NetMessage message = new NetMessage(action, headers);
@@ -130,24 +134,31 @@ public abstract class BaseClient{
     }
 
     protected Channel getChannel() {
+        return getAvailableHost().getChannel();
+    }
 
-        Channel c = null;
+
+
+
+    protected HostInfo getAvailableHost(){
+
+       HostInfo h = null;
 
         try {
 
-            c = getHosts().getAvailableChannel();
+            h = getHosts().getAvailableHost();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        if(c==null){
+        if(h==null){
             throw new RuntimeException("Was not possible to get an active channel");
         }
 
-        log.debug("Selected channel is: "+c.toString());
+        log.debug("Selected channel is: "+ h);
 
-        return c;
+        return h;
     }
 
     public HostInfo connect(){

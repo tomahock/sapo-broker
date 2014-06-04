@@ -13,13 +13,15 @@ public abstract class PongListenerAdapter implements BrokerListener {
 
 
     @Override
-    public final void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+    public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
         NetPong netPong = message.getAction().getPongMessage();
 
-        if(netPong!=null){
-            this.onMessage(netPong,((ChannelDecorator)channel).getHost());
+        if(netPong==null) {
+            return;
         }
+
+        this.onMessage(netPong, host);
 
     }
 

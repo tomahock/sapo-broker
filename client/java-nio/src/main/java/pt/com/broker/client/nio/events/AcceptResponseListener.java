@@ -13,13 +13,14 @@ import pt.com.broker.types.NetMessage;
 public abstract class AcceptResponseListener implements BrokerListener {
 
     @Override
-    public final void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+    public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
 
         NetAccepted accepted = message.getAction().getAcceptedMessage();
 
+
         if(accepted!=null){
-            onMessage(accepted,((ChannelDecorator)channel).getHost());
+            onMessage(accepted,host);
             return;
         }
 
@@ -27,7 +28,7 @@ public abstract class AcceptResponseListener implements BrokerListener {
         NetFault fault = message.getAction().getFaultMessage();
 
         if(fault!=null){
-            onFault(fault,((ChannelDecorator)channel).getHost());
+            onFault(fault,host);
             return;
         }
 

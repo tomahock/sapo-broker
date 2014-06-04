@@ -7,6 +7,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.NetAction;
@@ -49,7 +50,7 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
                 case NOTIFICATION:
 
                     // Modifies the NetNotification to identify the channel
-                    NetNotificationDecorator decorator = new NetNotificationDecorator(msg.getAction().getNotificationMessage(),ctx.channel());
+                    NetNotificationDecorator decorator = new NetNotificationDecorator(msg.getAction().getNotificationMessage(),getHost(ctx.channel()));
 
                     msg.getAction().setNotificationMessage(decorator);
 
@@ -78,17 +79,16 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
     }
 
     protected void deliverNotification(ChannelHandlerContext ctx, NetMessage msg) throws Throwable {
-
-
-
         log.debug("Message Received");
 
-        ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
-        
-        manager.deliverMessage(msg,decorator);
+        manager.deliverMessage(msg,getHost(ctx.channel()));
 
+    }
 
+    private HostInfo getHost(Channel channel){
+        ChannelDecorator decorator = new ChannelDecorator(channel);
 
+        return decorator.getHost();
     }
 
 

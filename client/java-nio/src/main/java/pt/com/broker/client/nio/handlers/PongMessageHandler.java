@@ -65,7 +65,7 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
 
                     ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
 
-                    manager.deliverMessage(msg,decorator);
+                    manager.deliverMessage(msg,decorator.getHost());
 
                     ctx.fireChannelReadComplete();
                     break;

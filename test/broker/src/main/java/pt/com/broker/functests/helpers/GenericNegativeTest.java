@@ -98,7 +98,7 @@ public class GenericNegativeTest extends BrokerTest
                     for(byte b: data)
                         byteObjects[i++] = b;  // Autoboxing.
 
-                    Future f = brokerClient.getHosts().getAvailableChannel().writeAndFlush(byteObjects);
+                    Future f = brokerClient.getHosts().getAvailableHost().getChannel().writeAndFlush(byteObjects);
 
                     f.get();
 

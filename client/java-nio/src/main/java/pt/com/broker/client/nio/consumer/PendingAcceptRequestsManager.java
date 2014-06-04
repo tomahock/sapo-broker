@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.types.ActionIdDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
@@ -115,7 +116,7 @@ public class PendingAcceptRequestsManager {
     }
 
 
-    public void deliverMessage(NetMessage netMessage, Channel channel) throws Exception {
+    public void deliverMessage(NetMessage netMessage, HostInfo host) throws Exception {
 
         ActionIdDecorator decorator = new ActionIdDecorator(netMessage);
 
@@ -135,7 +136,7 @@ public class PendingAcceptRequestsManager {
 
                 try {
 
-                    listener.deliverMessage(netMessage,channel);
+                    listener.deliverMessage(netMessage,host);
 
                 } catch (Throwable throwable) {
 

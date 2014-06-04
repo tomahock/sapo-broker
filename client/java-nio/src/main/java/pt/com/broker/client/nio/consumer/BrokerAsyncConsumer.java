@@ -31,9 +31,9 @@ public class BrokerAsyncConsumer {
 
     }
 
-    public boolean deliver(NetMessage msg,Channel channel) throws Throwable {
+    public boolean deliver(NetMessage msg,HostInfo host) throws Throwable {
 
-        listener.deliverMessage(msg,channel);
+        listener.deliverMessage(msg,host);
 
         return true;
     }

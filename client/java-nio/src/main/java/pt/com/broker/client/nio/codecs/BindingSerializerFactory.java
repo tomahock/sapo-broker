@@ -1,6 +1,5 @@
 package pt.com.broker.client.nio.codecs;
 
-import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
 

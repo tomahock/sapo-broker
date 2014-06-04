@@ -1,13 +1,12 @@
 package pt.com.broker.client.nio.consumer;
 
-import io.netty.channel.Channel;
+
 import org.caudexorigo.text.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.types.DestinationDataFactory;
-import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -158,12 +157,13 @@ public class ConsumerManager {
     }
 
 
-    public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
+
+    public void deliverMessage(NetMessage netMessage, HostInfo host) throws Throwable {
 
 
 
 
-        BrokerAsyncConsumer consumer = getConsumer(netMessage, ((ChannelDecorator)channel).getHost());
+        BrokerAsyncConsumer consumer = getConsumer(netMessage, host);
 
 
         if(consumer == null){
@@ -174,7 +174,7 @@ public class ConsumerManager {
         }
 
 
-        consumer.deliver(netMessage, channel);
+        consumer.deliver(netMessage, host);
 
     }
 

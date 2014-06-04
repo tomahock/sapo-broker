@@ -44,7 +44,7 @@ public class SubscriberManagerTest {
 
         BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
             @Override
-            public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
             }
 
@@ -63,7 +63,7 @@ public class SubscriberManagerTest {
 
         BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
             @Override
-            public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
             }
 
@@ -78,7 +78,7 @@ public class SubscriberManagerTest {
 
             BrokerAsyncConsumer consumer2 = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
                 @Override
-                public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+                public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
                 }
 
@@ -90,7 +90,13 @@ public class SubscriberManagerTest {
         }catch (IllegalArgumentException ex){
 
             System.out.println(ex.getMessage());
-            Assert.assertEquals("Invalid message", "A listener for the destination localhost:3323#/teste/ already exists",ex.getMessage());
+            if(destinationType == NetAction.DestinationType.TOPIC){
+                Assert.assertEquals("Invalid message", "A listener for the destination /teste/ already exists",ex.getMessage());
+            }else{
+                Assert.assertEquals("Invalid message", "A listener for the destination localhost:3323#/teste/ already exists",ex.getMessage());
+            }
+
+
 
             throw ex;
         }
@@ -109,7 +115,7 @@ public class SubscriberManagerTest {
         BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
 
             @Override
-            public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
             }
 

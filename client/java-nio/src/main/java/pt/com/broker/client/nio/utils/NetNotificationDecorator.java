@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.utils;
 
 import io.netty.channel.Channel;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
@@ -14,26 +15,28 @@ public class NetNotificationDecorator extends NetNotification {
 
     private final NetNotification instance;
 
-    protected Channel channel;
-
-    public NetNotificationDecorator(NetNotification instance) {
-        this(instance, null);
-    }
+    protected HostInfo host;
 
 
-    public NetNotificationDecorator(NetNotification instance, Channel channel) {
+
+    public NetNotificationDecorator(NetNotification instance, HostInfo host) {
         super(null,null,null,null);
         this.instance = instance;
-        setChannel(channel);
+        setHost(host);
+    }
+
+    public HostInfo getHost() {
+        return host;
+    }
+
+    public void setHost(HostInfo host) {
+        this.host = host;
     }
 
     public Channel getChannel() {
-        return channel;
+        return (host != null) ?  host.getChannel() : null;
     }
 
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
 
     @Override
     public String getDestination() {

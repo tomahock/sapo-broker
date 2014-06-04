@@ -147,6 +147,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
         if(subscribe.getDestinationType() == NetAction.DestinationType.TOPIC){
             servers = new ArrayList<HostInfo>();
+
             servers.add( ((ChannelDecorator)getChannel()).getHost());
         }else{
             servers = getHosts().getConnectedHosts();
@@ -167,7 +168,7 @@ public class BrokerClient extends BaseClient implements Observer {
                 @Override
                 public HostInfo call() throws Exception {
 
-                    ChannelFuture future = subscribeToHost(subscribe,listener,host.getChannel());
+                    ChannelFuture future = subscribeToHost(subscribe,listener,host);
 
                     final CountDownLatch latch = new CountDownLatch(1);
 
@@ -197,14 +198,11 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
     private ChannelFuture subscribeToHost(final NetSubscribeAction subscribe , final BrokerListener listener){
-
-            Channel channel = getChannel();
-
-            return subscribeToHost(subscribe,listener,channel);
+            return subscribeToHost(subscribe,listener,getAvailableHost());
     }
 
 
-    private ChannelFuture subscribeToHost(final NetSubscribeAction subscribe , final BrokerListener listener , Channel channel){
+    private ChannelFuture subscribeToHost(final NetSubscribeAction subscribe , BrokerListener listener , final HostInfo host){
 
         if(listener == null){
             throw new IllegalArgumentException("Invalid Listener");
@@ -232,37 +230,34 @@ public class BrokerClient extends BaseClient implements Observer {
 
         final NetMessage netMessage = buildMessage(netAction, subscribe.getHeaders());
 
-        final BrokerClient client = this;
 
-        ChannelFuture f =  sendNetMessage(netMessage,channel);
+        getConsumerManager().addSubscription(subscribe, listener, host);
+
+        if(listener instanceof NotificationListenerAdapter){
+            ((NotificationListenerAdapter)listener).setBrokerClient(this);
+        }
+
+        ChannelFuture f =  sendNetMessage(netMessage,host);
 
 
-        return f.addListener(new ChannelFutureListener() {
+        f.addListener(new ChannelFutureListener() {
 
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
 
+                if (!future.isSuccess()) {
 
-                if (future.isSuccess()) {
+                    getConsumerManager().removeSubscription(subscribe,host);
 
-                    ChannelDecorator channel = new ChannelDecorator(future.channel());
-
-                    getConsumerManager().addSubscription(subscribe, listener, channel.getHost());
-
-                    if(listener instanceof NotificationListenerAdapter){
-                        ((NotificationListenerAdapter)listener).setBrokerClient(client);
-                    }
-
-
-                } else {
-
-                    log.debug("Error creating async consumer");
-
+                    log.debug("Error creating async consumer",future.cause());
                 }
 
             }
 
         });
+
+
+        return f;
 
     }
 
@@ -328,7 +323,7 @@ public class BrokerClient extends BaseClient implements Observer {
         NetMessage netMessage = new NetMessage(new NetAction(unsubscribe));
 
 
-        ChannelFuture f = sendNetMessage(netMessage,host.getChannel());
+        ChannelFuture f = sendNetMessage(netMessage,host);
 
         f.addListener(new ChannelFutureListener() {
             @Override
@@ -352,25 +347,13 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
 
-    /**
-     * Acknowledge and NetNotification received from the server. This method should only be used
-     * in
-     *
-     *
-     * @param notification
-     * @return
-     * @throws Throwable
-     */
-    public Future acknowledge(NetNotification notification) throws Throwable {
+    public Future acknowledge(NetNotification notification, HostInfo host) throws Throwable {
 
         if(!(notification instanceof NetNotificationDecorator)){
             throw new Exception("Invalid NetNotification");
         }
 
-        Channel channel = ((NetNotificationDecorator) notification).getChannel();
-
-
-        /* there is no acknowledge action for topics  */
+         /* there is no acknowledge action for topics  */
         if (notification.getDestinationType() == NetAction.DestinationType.TOPIC) {
             return null;
         }
@@ -391,21 +374,41 @@ public class BrokerClient extends BaseClient implements Observer {
 
         NetMessage msg = buildMessage(action);
 
-        return sendNetMessage(msg,channel);
+        return sendNetMessage(msg,host);
+
+
+    }
+
+    /**
+     * Acknowledge and NetNotification received from the server. This method should only be used
+     * in
+     *
+     *
+     * @param notification
+     * @return
+     * @throws Throwable
+     */
+    public Future acknowledge(NetNotification notification) throws Throwable {
+
+
+        HostInfo host = ((NetNotificationDecorator) notification).getHost();
+
+        return acknowledge(notification,host);
 
     }
 
 
     public Future checkStatus(final BrokerListener listener) throws Throwable {
 
-        String actionId = UUID.randomUUID().toString();
+        final String actionId = UUID.randomUUID().toString();
 
-        final NetPing ping = new NetPing(actionId);
+        NetPing ping = new NetPing(actionId);
 
         NetAction action = new NetAction(ping);
 
         NetMessage message = buildMessage(action);
 
+        getPongConsumerManager().addSubscription(actionId,listener);
 
         final ChannelFuture f = sendNetMessage(message);
 
@@ -414,10 +417,9 @@ public class BrokerClient extends BaseClient implements Observer {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
 
-                if(future.isSuccess()){
-                    getPongConsumerManager().addSubscription(ping,listener);
-                }else{
-                    throw new Exception("Was not possible to check Status");
+                if(!future.isSuccess()){
+                    getPongConsumerManager().removeSubscription(actionId);
+                    log.error("Was not possible to check Status",future.cause());
                 }
 
             }
@@ -492,39 +494,39 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
                 @Override
-                public void deliverMessage(NetMessage message, Channel channel) throws Throwable {
+                public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
                     try {
 
                         NetFault netFault = message.getAction().getFaultMessage();
 
 
-                        if (netFault != null && netFault.getCode().equals(NetFault.PollTimeoutErrorCode)) {
-                            timeout.set(true);
+                        if(netFault!=null){
+
+                            if (netFault.getCode().equals(NetFault.PollTimeoutErrorCode)) {
+                                timeout.set(true);
+                            }
+
                             return;
                         }
 
-                        if (netFault != null && netFault.getCode().equals(NetFault.NoMessageInQueueErrorCode)) {
-                            return;
-                        }
 
                         NetNotification netNotification = message.getAction().getNotificationMessage();
 
                         notifications.add(netNotification);
 
-                        acknowledge(netNotification);
 
 
-                    } catch (InterruptedException e) {
 
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
 
-                    } catch (TimeoutException e){
-                            throw e;
+                        throw e;
+
                     }
                     finally {
 
-                        getConsumerManager().removeSubscription(netPoll, ((ChannelDecorator)channel).getHost());
+                        getConsumerManager().removeSubscription(netPoll, host);
+
                         latch.countDown();
                     }
 
@@ -641,7 +643,7 @@ public class BrokerClient extends BaseClient implements Observer {
             NetSubscribe subscribe = new NetSubscribe(consumer.getDestinationName(),consumer.getDestinationType());
 
             //@todo see Exception
-            this.subscribeToHost(subscribe,listener,host.getChannel());
+            this.subscribeToHost(subscribe,listener,host);
 
         }
 

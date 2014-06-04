@@ -2,7 +2,7 @@
 
 
 interface BrokerListener {
-    + void deliverMessage(NetMessage message,Channel channel)
+    + void deliverMessage(NetMessage message, HostInfo host)
 
 }
 

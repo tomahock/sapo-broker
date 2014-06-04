@@ -239,4 +239,6 @@ public class ChannelDecorator implements Channel {
     public int compareTo(Channel channel) {
         return instance.compareTo(channel);
     }
+
+
 }

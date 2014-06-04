@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPing;
 import pt.com.broker.types.NetPong;
@@ -27,25 +28,29 @@ public class PongConsumerManager {
 
     }
 
+    public BrokerListener removeSubscription(String actionId){
 
-    public void addSubscription(NetPing ping, BrokerListener listener){
-
-        String actionid = ping.getActionId();
-
-        if(actionid==null){
+        if(actionId==null){
             throw new RuntimeException("Invalid actionID null");
         }
 
-        pongMessages.put(actionid, listener);
+        return pongMessages.remove(actionId);
     }
 
-    public void deliverMessage(NetMessage netMessage, Channel channel) throws Throwable {
+    public void addSubscription(String actionId, BrokerListener listener){
+
+        if(actionId==null){
+            throw new RuntimeException("Invalid actionID null");
+        }
+
+        pongMessages.put(actionId, listener);
+    }
+
+    public void deliverMessage(NetMessage netMessage, HostInfo host) throws Throwable {
 
         String actionid =  netMessage.getAction().getPongMessage().getActionId();
 
         BrokerListener listener = pongMessages.get(actionid);
-
-
 
 
         if(listener==null) {
@@ -55,7 +60,7 @@ public class PongConsumerManager {
 
         log.debug("Delivering pong message:  "+actionid);
 
-        listener.deliverMessage(netMessage,channel);
+        listener.deliverMessage(netMessage,host);
 
     }
 

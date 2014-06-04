@@ -112,8 +112,8 @@ public class HostContainer extends Observable {
             public HostInfo call() throws Exception {
 
 
-
                     for (final HostInfo host : servers) {
+
 
                         service.submit(new Callable<HostInfo>() {
 
@@ -271,14 +271,14 @@ public class HostContainer extends Observable {
 
 
     /**
-     * Gets an available channel. If there are no available channel it will loop until no server is available.
+     * Gets an available Host. If there are no available host the code  will loop until no server is available.
      * If its not possible to write in channel for a while the server will be disconnected.
      * @see  pt.com.broker.client.nio.codecs.HeartbeatHandler
      *
      * @return Channel
      * @throws InterruptedException
      */
-    public Channel getAvailableChannel() throws InterruptedException {
+    public HostInfo getAvailableHost() throws InterruptedException {
 
         HostInfo host = null;
 
@@ -303,7 +303,7 @@ public class HostContainer extends Observable {
         } while (host == null || (host != null && !host.getChannel().isOpen()));
 
 
-        return host.getChannel();
+        return host;
 
 
     }
