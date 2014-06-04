@@ -123,7 +123,7 @@
         
        NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
 
-       Future future = bk.publishMessage("Olá Mundo", "/teste/", dstType);
+       Future future = bk.publish("Olá Mundo", "/teste/", dstType);
        
 ```
 
@@ -138,7 +138,7 @@
         
        NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
 
-       Future future = bk.publishMessage("Olá Mundo", "/teste/", dstType);
+       Future future = bk.publish("Olá Mundo", "/teste/", dstType);
 ```
 
 
@@ -156,6 +156,6 @@
        
 ```
 
-# Advanced
+# Advanced Topics
 
-## Broker Message Listener
+* [Advanced Message Handling](./doc/advanced/)

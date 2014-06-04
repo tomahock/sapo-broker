@@ -6,7 +6,9 @@
 
 ## Message Handling
 
-When subscribing to a queue you must extend [NotificationListenerAdapter]().
+![BrokerListener Class Diagram](message-handling.png)
+
+When subscribing to a message queue you must extend [NotificationListenerAdapter]().
 This class gives you simple message acknowledge.
 
 ### Advanced listener acknowledge example 
