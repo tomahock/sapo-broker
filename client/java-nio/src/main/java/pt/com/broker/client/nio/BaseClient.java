@@ -133,11 +133,6 @@ public abstract class BaseClient{
 
     }
 
-    protected Channel getChannel() {
-        return getAvailableHost().getChannel();
-    }
-
-
 
 
     protected HostInfo getAvailableHost(){
@@ -191,7 +186,11 @@ public abstract class BaseClient{
     }
 
     public Future close() {
+
+         getHosts().disconnect();
+
         return getBootstrap().shutdownGracefully();
+
     }
 
 
@@ -200,9 +199,13 @@ public abstract class BaseClient{
         getHosts().add(host);
     }
 
-    public void addServer(String hostname, int port) {
+    public HostInfo addServer(String hostname, int port) {
 
-        this.addServer(new HostInfo(hostname, port));
+        HostInfo host = new HostInfo(hostname, port);
+
+        this.addServer(host);
+
+        return host;
     }
 
 

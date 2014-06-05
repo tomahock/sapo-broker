@@ -124,6 +124,16 @@ public class TestServerConnection extends ServerBaseTest {
 
         ShutDownServers(servers);
 
+
+        container.disconnect().get();
+
+        for(HostInfo chost : container.notConnectedHosts()){
+            System.out.println("Status: "+chost.getStatus());
+        }
+
+        Thread.sleep(4000);
+
+
     }
 
 

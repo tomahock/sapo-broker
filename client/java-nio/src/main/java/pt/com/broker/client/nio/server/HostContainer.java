@@ -11,10 +11,7 @@ import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Observable;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -281,13 +278,15 @@ public class HostContainer extends Observable {
         if (host != null) {
 
             synchronized (connectedHosts) {
+
                 if (!connectedHosts.remove(host)) {
                     throw new RuntimeException("invalid host removed");
                 }
 
+
                 host.setChannel(null);
                 host.setStatus(HostInfo.STATUS.CLOSED);
-                log.debug("Server disconnected: " + host);
+                log.debug("Connection closed: " + host);
             }
 
         }
@@ -335,21 +334,69 @@ public class HostContainer extends Observable {
 
     }
 
-    public ChannelFuture disconnect(HostInfo host) {
+    public Future disconnect() {
 
-        if (!isConnected(host)) {
-            return null;
-        }
 
-        Channel channel = host.getChannel();
+        return executorService.submit(new Runnable() {
 
-        if (channel == null) {
-            return null;
-        }
+            @Override
+            public void run() {
 
-        host.setChannel(null);
+                synchronized (hosts) {
 
-        return channel.disconnect();
+
+                    for (final HostInfo host : hosts) {
+
+                        try {
+
+                            synchronized (host) {
+
+                                if(host.getChannel()!=null){
+
+                                    disconnect(host).get();
+                                }
+
+                                host.setStatus(HostInfo.STATUS.DISABLE);
+
+                            }
+
+                        } catch (Throwable e) {
+                            log.error("Error disconnecting",e);
+                        }
+
+                    }
+
+                }
+
+            }
+        });
+
+
+    }
+
+    public ChannelFuture disconnect(final HostInfo host) {
+
+
+
+            if(host.getStatus() == HostInfo.STATUS.DISABLE){
+                throw new RuntimeException("Server already disconnected");
+            }
+
+            Channel channel = host.getChannel();
+
+            host.setChannel(null);
+
+            ChannelFuture f = channel.disconnect();
+
+            f.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    log.debug("Server disconnected");
+                }
+            });
+
+
+            return f;
 
     }
 
@@ -358,7 +405,7 @@ public class HostContainer extends Observable {
 
         synchronized (host) {
 
-            if (host.getStatus() != HostInfo.STATUS.CLOSED ) {
+            if (host.getStatus() != HostInfo.STATUS.CLOSED) {
                 throw new RuntimeException("Cannot open an host that is not closed");
             }
 

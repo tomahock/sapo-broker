@@ -34,10 +34,8 @@ public class HeartbeatHandler extends ChannelDuplexHandler {
 
                 if (e.state() == IdleState.READER_IDLE) {
 
-
                     //close channel when there is no input messages
                     ctx.close();
-
 
                 } else if (e.state() == IdleState.WRITER_IDLE) {
 

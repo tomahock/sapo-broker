@@ -148,7 +148,7 @@ public class BrokerClient extends BaseClient implements Observer {
         if(subscribe.getDestinationType() == NetAction.DestinationType.TOPIC){
             servers = new ArrayList<HostInfo>();
 
-            servers.add( ((ChannelDecorator)getChannel()).getHost());
+            servers.add( getAvailableHost());
         }else{
             servers = getHosts().getConnectedHosts();
         }
