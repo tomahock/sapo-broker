@@ -418,7 +418,9 @@ public class BrokerClient extends BaseClient implements Observer {
             public void operationComplete(ChannelFuture future) throws Exception {
 
                 if(!future.isSuccess()){
+
                     getPongConsumerManager().removeSubscription(actionId);
+
                     log.error("Was not possible to check Status",future.cause());
                 }
 

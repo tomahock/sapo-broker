@@ -121,10 +121,7 @@ public final class HostInfo
     }
 
     protected synchronized void resetReconnectLimit(){
-
         setReconnectLimit(DEFAULT_RECONNECT_LIMIT);
-
-        setStatus(STATUS.CLOSED);
     }
 
     protected synchronized void reconnectAttempt(){

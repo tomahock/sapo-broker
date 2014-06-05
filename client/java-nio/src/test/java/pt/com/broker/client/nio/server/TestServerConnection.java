@@ -94,17 +94,31 @@ public class TestServerConnection extends ServerBaseTest {
 
         System.out.println("------------------------------------");
 
+        Thread.sleep(4000);
+
+        for(HostInfo chost : container.getConnectedHosts()){
+            System.out.println("Status: "+chost.getStatus());
+        }
+
+        Collection<SocketServer> rservers  = getRandomServers(servers);
+
+        System.out.println("Random servers: "+rservers.size());
+        ShutDownServers(rservers);
 
 
-        ShutDownServers(getRandomServers(servers));
 
-
-
-        Thread.sleep(2000);
+        Thread.sleep(4000);
 
         int not_connected = container.notConnectedHosts().size();
         int connected_servers = container.getConnectedSize();
 
+
+        for(HostInfo chost : container.getConnectedHosts()){
+            System.out.println("Status: "+chost.getStatus());
+        }
+
+        System.out.println("Connected Servers: "+connected_servers);
+        System.out.println("Not Connected Servers: "+not_connected);
 
         Assert.assertEquals(total_servers, (not_connected + connected_servers ));
 

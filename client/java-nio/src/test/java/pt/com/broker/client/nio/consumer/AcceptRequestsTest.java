@@ -200,11 +200,10 @@ public class AcceptRequestsTest extends BaseTest {
         NetMessage netMessage = new NetMessage(netAction);
 
 
-        ChannelDecorator channel = new ChannelDecorator(new EmbeddedChannel());
+
 
         HostInfo host = new HostInfo("127.0.0.1",3323);
 
-        channel.setHost(host);
 
         manager.deliverMessage(netMessage, host);
 

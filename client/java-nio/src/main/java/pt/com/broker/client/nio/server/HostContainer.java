@@ -57,12 +57,20 @@ public class HostContainer extends Observable {
         strategy.setCollection(connectedHosts);
 
 
-
     }
 
 
     public void add(HostInfo host) {
-        hosts.add(host);
+
+        synchronized (hosts) {
+
+            if (hosts.contains(host)) {
+                throw new RuntimeException("Cannot add server twice");
+            }
+
+            hosts.add(host);
+        }
+
     }
 
     public int size() {
@@ -79,7 +87,7 @@ public class HostContainer extends Observable {
 
         } catch (Exception e) {
 
-            throw  new RuntimeException("Could not connect",e);
+            throw new RuntimeException("Could not connect", e);
 
         }
 
@@ -88,12 +96,11 @@ public class HostContainer extends Observable {
     public Future<HostInfo> connectAsync() {
 
 
-
         synchronized (hosts) {
 
-            ArrayList<HostInfo> hosts = notConnectedHosts();
+            ArrayList<HostInfo> hosts = getClosedHosts();
 
-            if(hosts.size() == 0){
+            if (hosts.size() == 0) {
                 throw new RuntimeException("There are no available hosts to connect");
             }
 
@@ -112,65 +119,64 @@ public class HostContainer extends Observable {
             public HostInfo call() throws Exception {
 
 
-                    for (final HostInfo host : servers) {
+                for (final HostInfo host : servers) {
 
 
-                        service.submit(new Callable<HostInfo>() {
+                    service.submit(new Callable<HostInfo>() {
 
-                            @Override
-                            public HostInfo call() throws Exception {
+                        @Override
+                        public HostInfo call() throws Exception {
 
-                                ChannelFuture f = connectToHost(host);
+                            ChannelFuture f = connectToHost(host);
 
-                                final CountDownLatch latch = new CountDownLatch(1);
+                            final CountDownLatch latch = new CountDownLatch(1);
 
-                                f.addListener(new ChannelFutureListener() {
-                                    @Override
-                                    public void operationComplete(ChannelFuture future) throws Exception {
+                            f.addListener(new ChannelFutureListener() {
+                                @Override
+                                public void operationComplete(ChannelFuture future) throws Exception {
 
-                                        latch.countDown();
+                                    latch.countDown();
 
-                                    }
-                                });
+                                }
+                            });
 
-                                latch.await();
+                            latch.await();
 
-                                return host;
-
-
-                            }
-
-                        });
-
-                    }
+                            return host;
 
 
-                    HostInfo host = null;
+                        }
 
-                    int count = servers.size();
-
-
-                    /* @todo server connected and isWritable */
-                    do {
-
-                        host = service.take().get();
-
-                        count--;
-                    } while ((host == null || !host.isActive()) && count > 0);
-
-
-                    if(host == null){
-                        throw new Exception("Could not connect");
-                    }
-
-                    while(!host.isActive()){
-                        Thread.sleep(500);
-                    }
-
-                    return host;
+                    });
 
                 }
 
+
+                HostInfo host = null;
+
+                int count = servers.size();
+
+
+                    /* @todo server connected and isWritable */
+                do {
+
+                    host = service.take().get();
+
+                    count--;
+                } while ((host == null || !host.isActive()) && count > 0);
+
+
+                if (host == null) {
+                    throw new Exception("Could not connect");
+                }
+
+                while (!host.isActive()) {
+                    Thread.sleep(500);
+                }
+
+                return host;
+
+            }
 
 
         });
@@ -178,9 +184,9 @@ public class HostContainer extends Observable {
 
     }
 
-    private void reconnect(final HostInfo host){
+    private void reconnect(final HostInfo host) {
 
-        if(!scheduler.isShutdown() && !bootstrap.getGroup().isShuttingDown()) {
+        if (!scheduler.isShutdown() && !bootstrap.getGroup().isShuttingDown()) {
 
             final HostContainer hostContainer = this;
 
@@ -195,7 +201,7 @@ public class HostContainer extends Observable {
                             @Override
                             public void operationComplete(ChannelFuture future) throws Exception {
 
-                                if(!future.isSuccess()){
+                                if (!future.isSuccess()) {
                                     return;
                                 }
 
@@ -221,6 +227,27 @@ public class HostContainer extends Observable {
 
     }
 
+    public ArrayList<HostInfo> getClosedHosts() {
+
+        synchronized (hosts) {
+
+            ArrayList<HostInfo> list = new ArrayList<HostInfo>(0);
+
+            for (HostInfo host : hosts) {
+
+                synchronized (host) {
+
+                    if (host.getStatus() == HostInfo.STATUS.CLOSED) {
+                        list.add(host);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+    }
+
     public ArrayList<HostInfo> notConnectedHosts() {
 
         synchronized (hosts) {
@@ -231,7 +258,8 @@ public class HostContainer extends Observable {
 
                 synchronized (host) {
 
-                    if (host.getStatus().equals(HostInfo.STATUS.CLOSED)) {
+                    if (host.getStatus() == HostInfo.STATUS.CLOSED || host.getStatus() == HostInfo.STATUS.CONNECTING
+                            || host.getStatus() == HostInfo.STATUS.DISABLE) {
                         list.add(host);
                     }
                 }
@@ -245,7 +273,7 @@ public class HostContainer extends Observable {
 
 
     protected boolean isConnected(HostInfo hostInfo) {
-        return hostInfo!=null && hostInfo.getStatus() == HostInfo.STATUS.OPEN && connectedHosts.contains(hostInfo);
+        return hostInfo != null && hostInfo.getStatus() == HostInfo.STATUS.OPEN && connectedHosts.contains(hostInfo);
     }
 
     protected HostInfo inactiveHost(final HostInfo host) {
@@ -253,14 +281,14 @@ public class HostContainer extends Observable {
         if (host != null) {
 
             synchronized (connectedHosts) {
-                if(!connectedHosts.remove(host)){
+                if (!connectedHosts.remove(host)) {
                     throw new RuntimeException("invalid host removed");
                 }
-            }
 
-            host.setChannel(null);
-            host.setStatus(HostInfo.STATUS.CLOSED);
-            log.debug("Server disconnected: " + host);
+                host.setChannel(null);
+                host.setStatus(HostInfo.STATUS.CLOSED);
+                log.debug("Server disconnected: " + host);
+            }
 
         }
 
@@ -273,10 +301,10 @@ public class HostContainer extends Observable {
     /**
      * Gets an available Host. If there are no available host the code  will loop until no server is available.
      * If its not possible to write in channel for a while the server will be disconnected.
-     * @see  pt.com.broker.client.nio.codecs.HeartbeatHandler
      *
      * @return Channel
      * @throws InterruptedException
+     * @see pt.com.broker.client.nio.codecs.HeartbeatHandler
      */
     public HostInfo getAvailableHost() throws InterruptedException {
 
@@ -288,14 +316,13 @@ public class HostContainer extends Observable {
 
             host = strategy.next();
 
-            if(host == null && total-- < 1){
-
+            if (host == null && total-- < 1) {
 
 
                 total = connectedHosts.size();
 
-                if(total==0){
-                     return null;
+                if (total == 0) {
+                    return null;
                 }
 
             }
@@ -308,15 +335,15 @@ public class HostContainer extends Observable {
 
     }
 
-    public ChannelFuture disconnect(HostInfo host){
+    public ChannelFuture disconnect(HostInfo host) {
 
-        if(!isConnected(host)){
+        if (!isConnected(host)) {
             return null;
         }
 
         Channel channel = host.getChannel();
 
-        if(channel == null){
+        if (channel == null) {
             return null;
         }
 
@@ -328,109 +355,118 @@ public class HostContainer extends Observable {
 
     private ChannelFuture connectToHost(final HostInfo host) throws Exception {
 
-        final ChannelFuture f = bootstrap.connect(host);
 
-        host.setStatus(HostInfo.STATUS.CONNECTING);
+        synchronized (host) {
 
-        f.addListener( new ChannelFutureListener() {
+            if (host.getStatus() != HostInfo.STATUS.CLOSED ) {
+                throw new RuntimeException("Cannot open an host that is not closed");
+            }
 
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
+            host.setStatus(HostInfo.STATUS.CONNECTING);
 
-                synchronized (host) {
-
-                    if (!future.isSuccess()) {
-
-                        host.setStatus(HostInfo.STATUS.CLOSED);
-                        host.reconnectAttempt();
-
-                        log.debug("Error connecting to server: " + host);
+            final ChannelFuture f = bootstrap.connect(host);
 
 
-                        reconnect(host);
+            f.addListener(new ChannelFutureListener() {
 
-                        return ;
-                    }
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
 
-                    ChannelDecorator channel = new ChannelDecorator(f.channel());
-                    channel.setHost(host);
+                    synchronized (host) {
+                        if (!future.isSuccess()) {
 
-                    host.setChannel(channel);
+                            host.setStatus(HostInfo.STATUS.CLOSED);
+                            host.reconnectAttempt();
 
-                    host.setStatus(HostInfo.STATUS.OPEN);
-                    host.resetReconnectLimit();
+                            log.debug("Error connecting to server: " + host);
 
-                    addConnectedHost(host);
 
-                    log.debug("Connected to server: " + host);
+                            reconnect(host);
 
-                    channel.closeFuture().addListener(new ChannelFutureListener() {
-
-                        @Override
-                        public void operationComplete(ChannelFuture future) throws Exception {
-
-                            inactiveHost(host);
-
-                            if(!future.isCancelled()) {
-                                reconnect(host);
-                            }
-
+                            return;
                         }
 
-                    });
+                        ChannelDecorator channel = new ChannelDecorator(f.channel());
+                        channel.setHost(host);
+
+                        host.setChannel(channel);
+
+                        host.setStatus(HostInfo.STATUS.OPEN);
+                        host.resetReconnectLimit();
+
+                        channel.closeFuture().addListener(new ChannelFutureListener() {
+
+                            @Override
+                            public void operationComplete(ChannelFuture future) throws Exception {
+
+                                inactiveHost(host);
+
+                                if (!future.isCancelled()) {
+                                    reconnect(host);
+                                }
+
+                            }
+
+                        });
+
+                        addConnectedHost(host);
+
+                        log.debug("Connected to server: " + host);
 
 
-
+                    }
 
                 }
 
-            }
 
-        });
+            });
+            return f;
 
 
-
-        return f;
+        }
     }
 
 
     protected void addConnectedHost(HostInfo host) throws Exception {
 
-        if(host == null){
+        if (host == null) {
             throw new Exception("Invalid host");
         }
 
-        synchronized (connectedHosts){
+        synchronized (connectedHosts) {
+
+            if (connectedHosts.contains(host)) {
+                throw new RuntimeException("Cannot add connected server twice");
+            }
+
             connectedHosts.add(host);
+
         }
 
     }
 
-    public Collection<HostInfo> getConnectedHosts(){
+    public Collection<HostInfo> getConnectedHosts() {
         return connectedHosts;
     }
 
-    public int getHostsSize(){
-        synchronized (hosts){
+    public int getHostsSize() {
+        synchronized (hosts) {
             return hosts.size();
         }
     }
 
-    public int getConnectedSize(){
+    public int getConnectedSize() {
 
-        synchronized (connectedHosts){
+        synchronized (connectedHosts) {
             return connectedHosts.size();
         }
 
     }
 
-    public void shutdown(){
+    public void shutdown() {
         scheduler.shutdown();
         executorService.shutdown();
     }
-
-
-
 
 
 }
