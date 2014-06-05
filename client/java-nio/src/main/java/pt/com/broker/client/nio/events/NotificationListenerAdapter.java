@@ -49,6 +49,8 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
 
                 }
 
+            }else{
+                log.error("Invalid Message");
             }
 
     }

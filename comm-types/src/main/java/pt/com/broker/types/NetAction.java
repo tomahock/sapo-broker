@@ -54,7 +54,14 @@ public final class NetAction
     }
 
 
-    public NetAction(NetPing ping)
+    public NetAction(NetNotification notification)
+    {
+        this(ActionType.NOTIFICATION);
+
+        setNotificationMessage(notification);
+    }
+
+   public NetAction(NetPing ping)
     {
         this(ActionType.PING);
 

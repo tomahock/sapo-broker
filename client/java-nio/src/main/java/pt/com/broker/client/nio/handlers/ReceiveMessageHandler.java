@@ -49,7 +49,7 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
 
                 case NOTIFICATION:
 
-                    // Modifies the NetNotification to identify the channel
+                    // Modifies the NetNotification to identify the host
                     NetNotificationDecorator decorator = new NetNotificationDecorator(msg.getAction().getNotificationMessage(),getHost(ctx.channel()));
 
                     msg.getAction().setNotificationMessage(decorator);
@@ -78,7 +78,8 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
         return manager;
     }
 
-    protected void deliverNotification(ChannelHandlerContext ctx, NetMessage msg) throws Throwable {
+    private void deliverNotification(ChannelHandlerContext ctx, NetMessage msg) throws Throwable {
+
         log.debug("Message Received");
 
         manager.deliverMessage(msg,getHost(ctx.channel()));

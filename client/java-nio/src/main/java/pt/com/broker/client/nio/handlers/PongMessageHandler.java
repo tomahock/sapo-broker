@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
+import pt.com.broker.client.nio.types.ActionIdDecorator;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
@@ -40,48 +41,44 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg){
 
-        if(ctx==null){
+
+        NetAction action = msg.getAction();
+
+        if(action.getActionType() != NetAction.ActionType.PONG || action.getPongMessage()  == null){
+            ctx.fireChannelRead(msg);
             return;
         }
 
+
+
+
         try {
 
-
-            NetAction action = msg.getAction();
-
-            switch (action.getActionType()) {
-
-                case PONG:
-
-
-
-                    if(action.getPongMessage().getActionId().equals(HEART_BEAT_ACTION_ID)){
-                        log.debug("Got a heartbeat pong response");
-                        ctx.fireChannelReadComplete();
-                        return;
-                    }
-
-                    log.debug("Got a pong message");
-
-                    ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
-
-                    manager.deliverMessage(msg,decorator.getHost());
-
-                    ctx.fireChannelReadComplete();
-                    break;
-
-                default:
-                    ctx.fireChannelRead(msg);
-                    break;
-
+            if(getActionId(msg).equals(HEART_BEAT_ACTION_ID)){
+                log.debug("Got a heartbeat pong response");
+                return;
             }
 
+            log.debug("Got a pong message");
+
+            ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
+
+            manager.deliverMessage( msg, decorator.getHost() );
+
+
+
+
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+
+            log.error("Was not possible to deliver pong message", throwable);
+
+        }finally {
+            ctx.fireChannelReadComplete();
         }
 
 
     }
+
 
     public PongConsumerManager getManager() {
         return manager;
@@ -89,5 +86,14 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
 
     public void setManager(PongConsumerManager manager) {
         this.manager = manager;
+    }
+
+
+    private static String getActionId(NetMessage netMessage){
+
+        ActionIdDecorator decorator = new ActionIdDecorator(netMessage);
+
+        return  decorator.getActionId();
+
     }
 }

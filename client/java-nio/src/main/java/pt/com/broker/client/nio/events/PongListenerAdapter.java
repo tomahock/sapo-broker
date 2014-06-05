@@ -17,7 +17,7 @@ public abstract class PongListenerAdapter implements BrokerListener {
 
         NetPong netPong = message.getAction().getPongMessage();
 
-        if(netPong==null) {
+        if(netPong == null) {
             return;
         }
 

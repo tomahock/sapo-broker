@@ -33,7 +33,7 @@ public class TestErrorListener {
 
 
     @Test()
-    public void testHandlerCallPublic() throws Throwable{
+    public void testHandlerCall() throws Throwable{
 
         ReceiveFaultHandler handler = new ReceiveFaultHandler(consumerManager);
 
@@ -57,42 +57,16 @@ public class TestErrorListener {
 
         channel.writeInbound(error);
 
-        verify(mockListener, times(1)).onMessage(error.getAction().getFaultMessage(), host);
-        verifyZeroInteractions(consumerManager);
-
-
-
-
-    }
-
-    @Test()
-    public void testHandlerCallInternal() throws Throwable {
-
-        ReceiveFaultHandler handler = new ReceiveFaultHandler(consumerManager);
-
-
-        handler.setFaultListenerAdapter(mockListener);
-
-
-        NetMessage error = NetFault.AccessDeniedErrorMessage;
-
-
-        EmbeddedChannel channel = new EmbeddedChannel(handler);
-
-        ChannelDecorator decorator = new ChannelDecorator(channel);
-
-        HostInfo host = new HostInfo("127.0.0.1",3323);
-
-        decorator.setHost(host);
-
-        channel.writeInbound(error);
-
-        channel.finish();
-
         verify(mockListener, times(1)).deliverMessage(error, host);
+        verify(mockListener, times(1)).onMessage(error.getAction().getFaultMessage(), host);
 
         verifyZeroInteractions(consumerManager);
+
+
+
+
     }
+
 
 
     @Test()

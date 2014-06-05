@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.client.nio.types.ActionIdDecorator;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPing;
 import pt.com.broker.types.NetPong;
@@ -48,14 +49,13 @@ public class PongConsumerManager {
 
     public void deliverMessage(NetMessage netMessage, HostInfo host) throws Throwable {
 
-        String actionid =  netMessage.getAction().getPongMessage().getActionId();
+        String actionid = getActionId(netMessage);
 
         BrokerListener listener = pongMessages.get(actionid);
 
 
         if(listener==null) {
-            log.error("Invalid action id: "+actionid+". Pong handler not found");
-            return;
+            throw new IllegalArgumentException("No listener found for the actionId: "+actionid);
         }
 
         log.debug("Delivering pong message:  "+actionid);
@@ -64,6 +64,13 @@ public class PongConsumerManager {
 
     }
 
+    private String getActionId(NetMessage msg){
+
+        ActionIdDecorator decorator = new ActionIdDecorator(msg);
+
+
+        return decorator.getActionId();
+    }
 
 
 
