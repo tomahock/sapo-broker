@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.types.DestinationDataFactory;
+import pt.com.broker.client.nio.types.DestinationDataDelegator;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
@@ -136,10 +136,12 @@ public class ConsumerManager {
 
     protected BrokerAsyncConsumer getConsumer(NetMessage netMessage, HostInfo host){
 
-        DestinationDataFactory factory = new DestinationDataFactory();
 
-        String destination = factory.getSubscription(netMessage);
-        DestinationType dtype = factory.getDestinationType(netMessage);
+        DestinationDataDelegator delegator = new DestinationDataDelegator(netMessage);
+
+
+        String destination = delegator.getSubscription();
+        DestinationType dtype = delegator.getDestinationType();
 
         return getConsumer(dtype,destination,host);
 

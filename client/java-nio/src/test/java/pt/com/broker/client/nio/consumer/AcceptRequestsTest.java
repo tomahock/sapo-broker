@@ -132,8 +132,7 @@ public class AcceptRequestsTest extends BaseTest {
 
         }
 
-        scheduledExecutorService.shutdown();
-        scheduledExecutorService.awaitTermination(timeout*2, TimeUnit.MILLISECONDS);
+        Thread.sleep(timeout+1000);
 
         Assert.assertTrue("Timeout failed",isTimeout.get());
 
