@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Created by luissantos on 26-05-2014.
  */
-public class NetNotificationDecorator extends NetNotification {
+public class NetNotificationDecorator extends NetNotification implements DecoratorInterface<NetNotification> {
 
     private final NetNotification instance;
 
@@ -68,5 +68,7 @@ public class NetNotificationDecorator extends NetNotification {
         return instance.getHeaders();
     }
 
-
+    public NetNotification getInstance() {
+        return instance;
+    }
 }

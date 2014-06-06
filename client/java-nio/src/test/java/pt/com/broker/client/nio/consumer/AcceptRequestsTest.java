@@ -32,9 +32,7 @@ public class AcceptRequestsTest extends BaseTest {
 
     public void testAddRemove(){
 
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
-
-        PendingAcceptRequestsManager manager = new PendingAcceptRequestsManager(scheduledExecutorService);
+        PendingAcceptRequestsManager manager = new PendingAcceptRequestsManager();
 
         String actionID = UUID.randomUUID().toString();
 
@@ -92,7 +90,7 @@ public class AcceptRequestsTest extends BaseTest {
 
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
 
-        PendingAcceptRequestsManager manager = new PendingAcceptRequestsManager(scheduledExecutorService);
+        PendingAcceptRequestsManager manager = new PendingAcceptRequestsManager();
 
         final String actionID = UUID.randomUUID().toString();
 
@@ -150,7 +148,7 @@ public class AcceptRequestsTest extends BaseTest {
 
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
 
-        PendingAcceptRequestsManager manager = new PendingAcceptRequestsManager(scheduledExecutorService);
+        PendingAcceptRequestsManager manager = new PendingAcceptRequestsManager();
 
         final String actionID = UUID.randomUUID().toString();
 

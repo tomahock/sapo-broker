@@ -11,7 +11,7 @@ import pt.com.broker.client.nio.server.HostInfo;
 /**
  * Created by luissantos on 30-05-2014.
  */
-public class ChannelDecorator implements Channel {
+public class ChannelDecorator implements Channel , DecoratorInterface<Channel> {
 
     public static final AttributeKey<HostInfo> ATTRIBUTE_HOST_INFO  = AttributeKey.valueOf("HOST-INFO");
 

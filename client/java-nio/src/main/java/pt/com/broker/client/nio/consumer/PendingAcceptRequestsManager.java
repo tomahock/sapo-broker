@@ -11,10 +11,7 @@ import pt.com.broker.types.NetMessage;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by luissantos on 09-05-2014.
@@ -24,14 +21,14 @@ public class PendingAcceptRequestsManager {
 
     private final Map<String, BrokerListener> requests = new HashMap<String, BrokerListener>();
 
-    private final ScheduledExecutorService eventLoopGroup;
+    private final ScheduledExecutorService schedule = Executors.newScheduledThreadPool(2);
 
     private final Map<String, ScheduledFuture> schedules = new HashMap<String, ScheduledFuture>();
 
 
 
-    public PendingAcceptRequestsManager(ScheduledExecutorService eventLoopGroup) {
-        this.eventLoopGroup = eventLoopGroup;
+    public PendingAcceptRequestsManager() {
+
     }
 
     public void addAcceptRequest(final String actionID, long timeout , BrokerListener listener) throws Throwable{
@@ -69,7 +66,7 @@ public class PendingAcceptRequestsManager {
                 }
             };
 
-            ScheduledFuture f = this.eventLoopGroup.schedule(command,timeout, TimeUnit.MILLISECONDS);
+            ScheduledFuture f = schedule.schedule(command,timeout, TimeUnit.MILLISECONDS);
 
             schedules.put(actionID, f);
 
@@ -91,7 +88,7 @@ public class PendingAcceptRequestsManager {
     }
 
 
-    protected BrokerListener getListener(String actionID){
+    public BrokerListener getListener(String actionID){
 
         return requests.get(actionID);
 

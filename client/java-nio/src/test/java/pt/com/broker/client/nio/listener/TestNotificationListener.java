@@ -4,8 +4,12 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentMatcher;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
@@ -13,7 +17,9 @@ import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
 import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.client.nio.tests.mockito.DecoratorMatcher;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
+import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
 
 import java.util.UUID;
@@ -71,9 +77,9 @@ public class TestNotificationListener {
 
         decorator.setHost(host);
 
-        NetBrokerMessage netBrokerMessage = new NetBrokerMessage("teste");
+        final NetBrokerMessage netBrokerMessage = new NetBrokerMessage("teste");
 
-        NetNotification notification = new NetNotification(subscribe.getDestination(),subscribe.getDestinationType(), netBrokerMessage ,subscribe.getDestination());
+        final NetNotification notification = new NetNotification(subscribe.getDestination(),subscribe.getDestinationType(), netBrokerMessage ,subscribe.getDestination());
 
         NetMessage message = new NetMessage(new NetAction(notification));
 
@@ -83,9 +89,10 @@ public class TestNotificationListener {
         when(listener.onMessage(notification,host)).thenReturn(true);
 
 
-        verify(listener,times(1)).deliverMessage(message, host);
+        verify(listener, times(1)).deliverMessage(message, host);
         verify(consumerManager, times(1)).deliverMessage(message,host);
-        verify(bk, times(1)).acknowledge(notification,host);
+
+        verify(bk).acknowledge((NetNotification) argThat(new DecoratorMatcher(notification)), eq(host));
 
 
     }

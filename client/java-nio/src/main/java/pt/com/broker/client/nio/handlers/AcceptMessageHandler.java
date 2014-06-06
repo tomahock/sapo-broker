@@ -29,10 +29,23 @@ public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage
         NetAction action = msg.getAction();
 
 
-        if(action.getActionType() != NetAction.ActionType.ACCEPTED || manager == null) {
+        if(action.getActionType() != NetAction.ActionType.ACCEPTED && action.getActionType() != NetAction.ActionType.FAULT ) {
             ctx.fireChannelRead(msg);
             return;
         }
+
+        if(action.getActionType() == NetAction.ActionType.FAULT){
+
+            String actionId = action.getFaultMessage().getActionId();
+
+            if(manager.getListener(actionId)==null){
+
+                ctx.fireChannelRead(msg);
+                return;
+
+            }
+        }
+
 
         ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
         manager.deliverMessage(msg,decorator.getHost());

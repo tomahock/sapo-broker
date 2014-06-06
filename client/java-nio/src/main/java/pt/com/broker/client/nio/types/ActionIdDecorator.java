@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio.types;
 
+import pt.com.broker.client.nio.utils.DecoratorInterface;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetMessage;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * Created by luissantos on 09-05-2014.
  */
-public class ActionIdDecorator extends NetMessage {
+public class ActionIdDecorator extends NetMessage implements DecoratorInterface<NetMessage> {
 
     private NetMessage netMessage;
 
@@ -57,5 +58,10 @@ public class ActionIdDecorator extends NetMessage {
         }
 
 
+    }
+
+    @Override
+    public NetMessage getInstance() {
+        return netMessage;
     }
 }

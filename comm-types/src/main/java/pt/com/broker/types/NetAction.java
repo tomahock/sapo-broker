@@ -45,12 +45,25 @@ public final class NetAction
 	}
 
 
+    public NetAction(NetFault fault){
+
+        this(ActionType.FAULT);
+
+        setFaultMessage(fault);
+    }
 
     public NetAction(NetUnsubscribe netUnsubscribe){
 
         this(ActionType.UNSUBSCRIBE);
 
         setUnsbuscribeMessage(netUnsubscribe);
+    }
+
+    public NetAction(NetAccepted accepted)
+    {
+        this(ActionType.ACCEPTED);
+
+        setAcceptedMessage(accepted);
     }
 
 

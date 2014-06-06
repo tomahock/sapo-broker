@@ -83,7 +83,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
         setBootstrap(new Bootstrap(channelInitializer));
 
-        setAcceptRequestsManager(new PendingAcceptRequestsManager(getBootstrap().getGroup()));
+        setAcceptRequestsManager(new PendingAcceptRequestsManager());
 
         channelInitializer.setAcceptRequestsManager(getAcceptRequestsManager());
 
