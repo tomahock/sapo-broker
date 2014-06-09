@@ -68,6 +68,7 @@ public class TestPongListener {
         channel.writeInbound(message);
 
 
+
         verify(pongListenerAdapter, times(1)).deliverMessage(message, host);
         verify(pongListenerAdapter, times(1)).onMessage(message.getAction().getPongMessage(), host);
 
@@ -131,7 +132,6 @@ public class TestPongListener {
         NetMessage message = createPong(actionId);
 
         channel.writeInbound(message);
-
 
     }
 

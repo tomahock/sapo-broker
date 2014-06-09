@@ -1,10 +1,11 @@
 package pt.com.broker.client.nio.consumer;
 
 
-import io.netty.channel.embedded.EmbeddedChannel;
-import io.netty.channel.local.LocalChannel;
-import junit.framework.Assert;
 
+
+
+import org.junit.Assert;
+import org.junit.Test;
 import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
@@ -30,6 +31,7 @@ public class AcceptRequestsTest extends BaseTest {
 
 
 
+    @Test()
     public void testAddRemove(){
 
         PendingAcceptRequestsManager manager = new PendingAcceptRequestsManager();
@@ -67,7 +69,7 @@ public class AcceptRequestsTest extends BaseTest {
 
         BrokerListener listener1 = manager.getListener(actionID);
 
-        Assert.assertSame(acceptedListener,listener1);
+        Assert.assertSame(acceptedListener, listener1);
 
 
         AcceptResponseListener listener2 =  manager.removeAcceptRequest(actionID);
@@ -84,6 +86,7 @@ public class AcceptRequestsTest extends BaseTest {
     }
 
 
+    @Test()
     public void testTimeout() throws InterruptedException {
 
         long timeout = 2000L;
@@ -140,6 +143,7 @@ public class AcceptRequestsTest extends BaseTest {
 
 
 
+    @Test()
     public void testDeliver() throws Exception {
 
 

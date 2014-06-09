@@ -47,16 +47,12 @@ public class TestNotificationListener {
     @Mock() BrokerClient bk;
 
 
+
     @Test()
     public void testHandlerCallPublic() throws Throwable{
 
         ConsumerManager consumerManager = spy(new ConsumerManager());
-        NotificationListenerAdapter listener = spy(new NotificationListenerAdapter() {
-            @Override
-            public boolean onMessage(NetNotification notification, HostInfo host) {
-                return true;
-            }
-        });
+        NotificationListenerAdapter listener = spy(new MyNotificationListener());
 
         HostInfo host = new HostInfo("127.0.0.1",3323);
 
@@ -95,6 +91,14 @@ public class TestNotificationListener {
         verify(bk).acknowledge((NetNotification) argThat(new DecoratorMatcher(notification)), eq(host));
 
 
+    }
+
+
+    public class MyNotificationListener extends   NotificationListenerAdapter {
+        @Override
+        public boolean onMessage(NetNotification notification, HostInfo host) {
+            return true;
+        }
     }
 
 }

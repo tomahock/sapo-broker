@@ -1,7 +1,9 @@
 package pt.com.broker.client.nio;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import pt.com.broker.client.nio.iptables.IpTables;
 import pt.com.broker.client.nio.mocks.ServerFactory;
@@ -22,11 +24,12 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by luissantos on 22-05-2014.
  */
-public abstract class BaseTest extends TestCase {
+public abstract class BaseTest{
 
 
 
     protected boolean skipTest(boolean condition){
+
 
         if(condition){
 
@@ -36,9 +39,27 @@ public abstract class BaseTest extends TestCase {
             String className = e.getClassName();
 
            System.out.println(" Skiping Test "+ className +"#"+methodName);
+
+
         }
 
+        Assume.assumeTrue(!condition);
+
         return condition;
+    }
+
+    protected void setUp() throws Exception {
+
+    }
+
+    protected void tearDown() throws Exception {
+
+    }
+
+
+
+    protected void fail(String msg){
+
     }
 
 

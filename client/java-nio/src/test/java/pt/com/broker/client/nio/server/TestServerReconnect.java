@@ -2,6 +2,7 @@ package pt.com.broker.client.nio.server;
 
 
 import junit.framework.Assert;
+import org.junit.Test;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.mocks.SocketServer;
@@ -22,6 +23,7 @@ public class TestServerReconnect extends ServerBaseTest {
 
 
 
+    @Test()
     public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         if(skipTest(Utils.isAndroid())){

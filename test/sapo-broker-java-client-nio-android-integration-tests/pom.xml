@@ -42,7 +42,7 @@
 
         <dependency>
             <groupId>pt.sapo.oss.broker</groupId>
-            <version>4.0.46</version>
+            <version>4.0.49.Alpha1</version>
             <artifactId>sapo-broker-java-client-nio</artifactId>
             <exclusions>
                 <exclusion>  <!-- declare the exclusion here -->
@@ -64,7 +64,13 @@
 
         <dependency>
             <groupId>pt.sapo.oss.broker</groupId>
-            <version>4.0.46</version>
+            <version>4.0.49.Alpha1</version>
+            <artifactId>sapo-broker-binding-json</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>pt.sapo.oss.broker</groupId>
+            <version>4.0.49.Alpha1</version>
             <artifactId>sapo-broker-java-client-nio</artifactId>
             <type>test-jar</type>
             <exclusions>
@@ -90,7 +96,41 @@
             <artifactId>netty-all</artifactId>
             <version>4.0.18.Final</version>
         </dependency>
-	</dependencies>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.uphyca</groupId>
+            <artifactId>android-junit4</artifactId>
+            <version>0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.dexmaker</groupId>
+            <artifactId>dexmaker-mockito</artifactId>
+            <version>1.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hamcrest-core</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+
+    </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -110,12 +150,13 @@
 						<!--<logonly>true|false</logonly> avd -->
 						<!--<testsize>small|medium|large</testsize> -->
 						<createReport>true</createReport>
-						<!--<classes> -->
-						<!--<class>your.package.name.YourTestClass</class> -->
-						<!--</classes> -->
-						<packages>
+						<classes>
+						<class>pt.com.broker.client.nio.android.test.MyTestSuite</class>
+						</classes>
+						<!--<packages>
 					        <package>pt.com.broker.client.nio</package>
-						</packages>
+						</packages>-->
+
 
 					</test>
 					<sdk>
@@ -157,6 +198,7 @@
                             <dex>
                                 <coreLibrary>true</coreLibrary>
                             </dex>
+                            <extractDuplicates>true</extractDuplicates>
                         </configuration>
                     </plugin>
                     <plugin>

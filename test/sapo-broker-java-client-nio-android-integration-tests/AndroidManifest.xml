@@ -6,9 +6,12 @@
 
   <application android:label="Broker NIO Broker IT">
     <uses-library android:name="android.test.runner" />
+
   </application>
 
-  <instrumentation android:targetPackage="pt.com.broker.client.nio.android.test" android:name="android.test.InstrumentationTestRunner" />
+  <instrumentation android:targetPackage="pt.com.broker.client.nio.android.test" android:name="pt.com.broker.client.nio.android.test.CustomInstrumentationTestRunner" />
+
+
 
 </manifest>
 

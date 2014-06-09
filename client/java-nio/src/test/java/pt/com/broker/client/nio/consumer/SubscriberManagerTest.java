@@ -17,7 +17,7 @@ import java.util.Collection;
  * Created by luissantos on 08-05-2014.
  */
 @RunWith(Parameterized.class)
-public class SubscriberManagerTest {
+public class SubscriberManagerTest  {
 
     protected NetAction.DestinationType destinationType = null;
     protected  String destinationName = null;

@@ -2,6 +2,7 @@ package pt.com.broker.client.nio.server;
 
 
 import junit.framework.Assert;
+import org.junit.Test;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
@@ -29,6 +30,7 @@ public class TestServerConnection extends ServerBaseTest {
 
 
 
+    @Test()
     public void testConnection() throws ExecutionException, InterruptedException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
 
@@ -65,6 +67,7 @@ public class TestServerConnection extends ServerBaseTest {
 
 
 
+    @Test()
     public void testClosedServers() throws InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         if(skipTest(Utils.isAndroid())){
@@ -138,6 +141,7 @@ public class TestServerConnection extends ServerBaseTest {
 
 
 
+    @Test()
     public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         if(skipTest(Utils.isAndroid())){
@@ -202,6 +206,7 @@ public class TestServerConnection extends ServerBaseTest {
 
 
 
+    @Test()
     public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         if(!userHasPermissions()){
