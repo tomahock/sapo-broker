@@ -1,7 +1,8 @@
 package pt.com.broker.client.nio.server;
 
 
-import junit.framework.Assert;
+
+import org.junit.Assert;
 import org.junit.Test;
 import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
@@ -47,7 +48,7 @@ public class TestSelectServerStrategy extends BaseTest{
     }
 
 
-
+    @Test()
     public void testRoundRobinLoopWithRemove(){
 
 
@@ -82,6 +83,7 @@ public class TestSelectServerStrategy extends BaseTest{
 
 
 
+    @Test()
     public void testRoundRobinLoopWithRemoveAndAdd(){
 
 

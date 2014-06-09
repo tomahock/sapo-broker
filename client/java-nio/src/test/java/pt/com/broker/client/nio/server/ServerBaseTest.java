@@ -4,11 +4,10 @@ package pt.com.broker.client.nio.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.BaseTest;
-import pt.com.broker.client.nio.iptables.IpTables;
+import pt.com.broker.client.nio.tests.iptables.IpTables;
 import pt.com.broker.client.nio.mocks.ServerFactory;
 import pt.com.broker.client.nio.mocks.SocketServer;
 
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;

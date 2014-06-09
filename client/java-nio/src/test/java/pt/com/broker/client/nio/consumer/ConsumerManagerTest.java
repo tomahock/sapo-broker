@@ -93,7 +93,7 @@ public class ConsumerManagerTest extends BaseTest {
 
 
 
-    @Test()
+    @Test(expected = IllegalArgumentException.class)
     public void testSubscriptionInvalidDestinationType(){
 
 
@@ -118,18 +118,12 @@ public class ConsumerManagerTest extends BaseTest {
 
         HostInfo host = new HostInfo("127.0.0.1",3323);
 
-        try {
+        consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
 
-            consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
-
-            //fail("Expecting Exception");
-        }catch (IllegalArgumentException e){
-
-        }
 
     }
 
-    @Test()
+    @Test(expected = IllegalArgumentException.class )
     public void testSubscriptionInvalidDestination(){
 
 
@@ -153,14 +147,10 @@ public class ConsumerManagerTest extends BaseTest {
 
         NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
 
-        try {
 
-            consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
 
-            //fail("Expecting Exception");
-        }catch (IllegalArgumentException e){
+        consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
 
-        }
 
     }
 

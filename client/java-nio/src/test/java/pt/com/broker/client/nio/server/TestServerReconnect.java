@@ -1,7 +1,8 @@
 package pt.com.broker.client.nio.server;
 
 
-import junit.framework.Assert;
+
+import org.junit.Assert;
 import org.junit.Test;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
