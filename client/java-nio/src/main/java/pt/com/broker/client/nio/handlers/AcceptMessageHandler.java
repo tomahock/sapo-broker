@@ -11,6 +11,9 @@ import pt.com.broker.types.NetMessage;
 
 /**
  * Created by luissantos on 09-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 @ChannelHandler.Sharable()
 public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage> {
@@ -19,10 +22,16 @@ public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage
     PendingAcceptRequestsManager manager;
 
 
+    /**
+     * <p>Constructor for AcceptMessageHandler.</p>
+     *
+     * @param manager a {@link pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager} object.
+     */
     public AcceptMessageHandler(PendingAcceptRequestsManager manager) {
         this.manager = manager;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception {
 
@@ -52,10 +61,20 @@ public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage
 
     }
 
+    /**
+     * <p>Getter for the field <code>manager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager} object.
+     */
     public PendingAcceptRequestsManager getManager() {
         return manager;
     }
 
+    /**
+     * <p>Setter for the field <code>manager</code>.</p>
+     *
+     * @param manager a {@link pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager} object.
+     */
     public void setManager(PendingAcceptRequestsManager manager) {
         this.manager = manager;
     }

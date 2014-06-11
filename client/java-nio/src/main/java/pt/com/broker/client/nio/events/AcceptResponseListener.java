@@ -9,9 +9,13 @@ import pt.com.broker.types.NetMessage;
 
 /**
  * Created by luissantos on 30-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public abstract class AcceptResponseListener implements BrokerListener {
 
+    /** {@inheritDoc} */
     @Override
     public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
@@ -38,10 +42,27 @@ public abstract class AcceptResponseListener implements BrokerListener {
     }
 
 
+    /**
+     * <p>onMessage.</p>
+     *
+     * @param message a {@link pt.com.broker.types.NetAccepted} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     abstract public void onMessage(NetAccepted message, HostInfo host);
 
+    /**
+     * <p>onFault.</p>
+     *
+     * @param fault a {@link pt.com.broker.types.NetFault} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     abstract public void onFault(NetFault fault, HostInfo host);
 
+    /**
+     * <p>onTimeout.</p>
+     *
+     * @param actionID a {@link java.lang.String} object.
+     */
     abstract public void onTimeout(String actionID);
 
 }

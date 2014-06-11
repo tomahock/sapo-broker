@@ -18,14 +18,27 @@ import java.security.cert.X509Certificate;
 
 /**
  * Created by luissantos on 23-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class Bootstrap extends BaseBootstrap {
 
 
+    /**
+     * <p>Constructor for Bootstrap.</p>
+     *
+     * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
+     */
     public Bootstrap(BaseChannelInitializer channelInitializer) {
         super(channelInitializer);
     }
 
+    /**
+     * <p>getNewInstance.</p>
+     *
+     * @return a {@link io.netty.bootstrap.Bootstrap} object.
+     */
     public io.netty.bootstrap.Bootstrap getNewInstance(){
 
         io.netty.bootstrap.Bootstrap bootstrap = new io.netty.bootstrap.Bootstrap();

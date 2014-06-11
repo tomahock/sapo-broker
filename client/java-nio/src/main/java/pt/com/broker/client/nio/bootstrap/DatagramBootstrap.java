@@ -11,14 +11,23 @@ import pt.com.broker.types.NetProtocolType;
 
 /**
  * Created by luissantos on 05-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class DatagramBootstrap extends BaseBootstrap {
 
 
+    /**
+     * <p>Constructor for DatagramBootstrap.</p>
+     *
+     * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
+     */
     public DatagramBootstrap(BaseChannelInitializer channelInitializer) {
         super(channelInitializer);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Bootstrap getNewInstance() {
 

@@ -16,14 +16,19 @@ import java.util.UUID;
 
 /**
  * Created by luissantos on 15-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 @ChannelHandler.Sharable()
 public class HeartbeatHandler extends ChannelDuplexHandler {
 
+    /** Constant <code>HEART_BEAT_ACTION_ID="24bb963d-6d6c-441e-ab4d-999d73578452"</code> */
     public static final String HEART_BEAT_ACTION_ID = "24bb963d-6d6c-441e-ab4d-999d73578452";
 
     private static final Logger log = LoggerFactory.getLogger(HeartbeatHandler.class);
 
+    /** {@inheritDoc} */
     @Override
     public void  userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 

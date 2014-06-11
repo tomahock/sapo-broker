@@ -12,6 +12,9 @@ import pt.com.broker.types.NetNotification;
 
 /**
  * Created by luissantos on 26-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public abstract class NotificationListenerAdapter implements BrokerListener {
 
@@ -19,6 +22,7 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
 
     BrokerClient brokerClient;
 
+    /** {@inheritDoc} */
     @Override
     public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
@@ -56,10 +60,22 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
     }
 
 
+    /**
+     * <p>Setter for the field <code>brokerClient</code>.</p>
+     *
+     * @param client a {@link pt.com.broker.client.nio.BrokerClient} object.
+     */
     public final void setBrokerClient(BrokerClient client) {
         brokerClient = client;
     }
 
+    /**
+     * <p>onMessage.</p>
+     *
+     * @param notification a {@link pt.com.broker.types.NetNotification} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a boolean.
+     */
     public abstract boolean onMessage(NetNotification notification, HostInfo host);
 
 

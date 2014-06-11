@@ -12,6 +12,9 @@ import pt.com.broker.types.NetProtocolType;
 
 /**
  * Created by luissantos on 21-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
@@ -23,12 +26,18 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
     protected boolean useFrame = true;
 
 
+    /**
+     * <p>Constructor for BrokerMessageEncoder.</p>
+     *
+     * @param serializer a {@link pt.com.broker.types.BindingSerializer} object.
+     */
     public BrokerMessageEncoder(BindingSerializer serializer){
 
         this.serializer = serializer;
     }
 
 
+    /** {@inheritDoc} */
     @Override
     protected void encode(ChannelHandlerContext ctx, NetMessage msg, ByteBuf out) throws Exception {
 
@@ -46,10 +55,20 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
     }
 
+    /**
+     * <p>Getter for the field <code>useFrame</code>.</p>
+     *
+     * @return a boolean.
+     */
     public boolean getUseFrame() {
         return useFrame;
     }
 
+    /**
+     * <p>Setter for the field <code>useFrame</code>.</p>
+     *
+     * @param useFrame a boolean.
+     */
     public void setUseFrame(boolean useFrame) {
         this.useFrame = useFrame;
     }

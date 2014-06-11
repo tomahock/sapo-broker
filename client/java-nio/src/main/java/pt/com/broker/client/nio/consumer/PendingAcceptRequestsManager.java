@@ -15,6 +15,9 @@ import java.util.concurrent.*;
 
 /**
  * Created by luissantos on 09-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class PendingAcceptRequestsManager {
 
@@ -27,10 +30,21 @@ public class PendingAcceptRequestsManager {
 
 
 
+    /**
+     * <p>Constructor for PendingAcceptRequestsManager.</p>
+     */
     public PendingAcceptRequestsManager() {
 
     }
 
+    /**
+     * <p>addAcceptRequest.</p>
+     *
+     * @param actionID a {@link java.lang.String} object.
+     * @param timeout a long.
+     * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     * @throws java.lang.Throwable if any.
+     */
     public void addAcceptRequest(final String actionID, long timeout , BrokerListener listener) throws Throwable{
 
         if(StringUtils.isEmpty(actionID)){
@@ -75,6 +89,12 @@ public class PendingAcceptRequestsManager {
     }
 
 
+    /**
+     * <p>removeAcceptRequest.</p>
+     *
+     * @param actionID a {@link java.lang.String} object.
+     * @return a {@link pt.com.broker.client.nio.events.AcceptResponseListener} object.
+     */
     public AcceptResponseListener removeAcceptRequest(String actionID){
 
         AcceptResponseListener b = (AcceptResponseListener) requests.remove(actionID);
@@ -88,12 +108,24 @@ public class PendingAcceptRequestsManager {
     }
 
 
+    /**
+     * <p>getListener.</p>
+     *
+     * @param actionID a {@link java.lang.String} object.
+     * @return a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     */
     public BrokerListener getListener(String actionID){
 
         return requests.get(actionID);
 
     }
 
+    /**
+     * <p>cancelTimeout.</p>
+     *
+     * @param actionID a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     protected boolean cancelTimeout(String actionID){
 
         boolean cancel_return = false;
@@ -113,6 +145,13 @@ public class PendingAcceptRequestsManager {
     }
 
 
+    /**
+     * <p>deliverMessage.</p>
+     *
+     * @param netMessage a {@link pt.com.broker.types.NetMessage} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @throws java.lang.Exception if any.
+     */
     public void deliverMessage(NetMessage netMessage, HostInfo host) throws Exception {
 
         ActionIdDecorator decorator = new ActionIdDecorator(netMessage);

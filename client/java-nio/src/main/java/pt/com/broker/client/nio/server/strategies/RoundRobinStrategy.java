@@ -6,6 +6,9 @@ import java.util.List;
 
 /**
  * Created by luissantos on 15-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class RoundRobinStrategy implements SelectServerStrategy {
 
@@ -14,19 +17,29 @@ public class RoundRobinStrategy implements SelectServerStrategy {
 
     private  int position = 0;
 
+    /**
+     * <p>Constructor for RoundRobinStrategy.</p>
+     */
     public RoundRobinStrategy() {
 
     }
 
+    /**
+     * <p>Constructor for RoundRobinStrategy.</p>
+     *
+     * @param hosts a {@link java.util.List} object.
+     */
     public RoundRobinStrategy(List<HostInfo> hosts) {
         setCollection(hosts);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setCollection(List<HostInfo> servers) {
         this.hosts = servers;
     }
 
+    /** {@inheritDoc} */
     @Override
     public HostInfo next() {
 

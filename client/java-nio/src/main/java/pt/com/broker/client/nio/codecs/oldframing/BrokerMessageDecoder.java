@@ -14,6 +14,9 @@ import java.util.List;
 
 /**
  * Created by luissantos on 21-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class BrokerMessageDecoder extends ByteToMessageDecoder{
 
@@ -31,11 +34,17 @@ public class BrokerMessageDecoder extends ByteToMessageDecoder{
 
     private final BindingSerializer serializer;
 
+    /**
+     * <p>Constructor for BrokerMessageDecoder.</p>
+     *
+     * @param serializer a {@link pt.com.broker.types.BindingSerializer} object.
+     */
     public BrokerMessageDecoder(BindingSerializer serializer){
 
         this.serializer = serializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 
@@ -71,12 +80,23 @@ public class BrokerMessageDecoder extends ByteToMessageDecoder{
     }
 
 
+    /**
+     * <p>decodeHeader.</p>
+     *
+     * @param in a {@link io.netty.buffer.ByteBuf} object.
+     */
     protected void decodeHeader(ByteBuf in){
 
         bodyLen = in.readInt();
 
     }
 
+    /**
+     * <p>decodeBody.</p>
+     *
+     * @param in a {@link io.netty.buffer.ByteBuf} object.
+     * @return a {@link pt.com.broker.types.NetMessage} object.
+     */
     protected NetMessage decodeBody(ByteBuf in){
 
        byte[] body = new byte[bodyLen];

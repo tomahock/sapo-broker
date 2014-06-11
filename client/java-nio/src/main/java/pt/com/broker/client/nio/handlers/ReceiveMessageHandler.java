@@ -19,6 +19,9 @@ import java.net.InetSocketAddress;
 
 /**
  * Created by luissantos on 22-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 @ChannelHandler.Sharable
 public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessage> {
@@ -27,12 +30,18 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
 
     ConsumerManager manager;
 
+    /**
+     * <p>Constructor for ReceiveMessageHandler.</p>
+     *
+     * @param manager a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     */
     public ReceiveMessageHandler(ConsumerManager manager) {
         super();
 
         this.manager = manager;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg){
 
@@ -74,6 +83,11 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
 
     }
 
+    /**
+     * <p>Getter for the field <code>manager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     */
     public ConsumerManager getManager() {
         return manager;
     }

@@ -24,20 +24,30 @@ import javax.net.ssl.SSLEngine;
 
 /**
  * Created by luissantos on 05-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public abstract class BaseChannelInitializer extends io.netty.channel.ChannelInitializer<Channel> {
 
 
+    /** Constant <code>log</code> */
     protected static final Logger log = LoggerFactory.getLogger(BaseChannelInitializer.class);
 
     protected final BindingSerializer serializer;
 
     private boolean oldFraming = false;
 
+    /**
+     * <p>Constructor for BaseChannelInitializer.</p>
+     *
+     * @param serializer a {@link pt.com.broker.types.BindingSerializer} object.
+     */
     public BaseChannelInitializer(BindingSerializer serializer) {
         this.serializer= serializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void initChannel(Channel ch) throws Exception {
 
@@ -80,10 +90,20 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
     }
 
 
+    /**
+     * <p>isOldFraming.</p>
+     *
+     * @return a boolean.
+     */
     protected boolean isOldFraming(){
         return  oldFraming;
     }
 
+    /**
+     * <p>Setter for the field <code>oldFraming</code>.</p>
+     *
+     * @param oldFraming a boolean.
+     */
     public void setOldFraming(boolean oldFraming) {
         this.oldFraming = oldFraming;
     }

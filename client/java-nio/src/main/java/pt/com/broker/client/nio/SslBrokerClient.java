@@ -20,6 +20,9 @@ import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 05-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class SslBrokerClient extends BrokerClient  {
 
@@ -33,26 +36,60 @@ public class SslBrokerClient extends BrokerClient  {
 
 
 
+    /**
+     * <p>Constructor for SslBrokerClient.</p>
+     *
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public SslBrokerClient(NetProtocolType ptype) {
         super(ptype);
     }
 
+    /**
+     * <p>Constructor for SslBrokerClient.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     */
     public SslBrokerClient(String host, int port) {
         super(host, port);
     }
 
+    /**
+     * <p>Constructor for SslBrokerClient.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public SslBrokerClient(String host, int port, NetProtocolType ptype) {
         super(host, port, ptype);
     }
 
+    /**
+     * <p>Constructor for SslBrokerClient.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public SslBrokerClient(HostInfo host, NetProtocolType ptype) {
         super(host, ptype);
     }
 
+    /**
+     * <p>Getter for the field <code>context</code>.</p>
+     *
+     * @return a {@link javax.net.ssl.SSLContext} object.
+     */
     public SSLContext getContext() {
         return context;
     }
 
+    /**
+     * <p>Setter for the field <code>context</code>.</p>
+     *
+     * @param context a {@link javax.net.ssl.SSLContext} object.
+     */
     public void setContext(SSLContext context) {
 
         this.context = context;
@@ -63,6 +100,7 @@ public class SslBrokerClient extends BrokerClient  {
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public Future<HostInfo> connectAsync() {
 
@@ -97,11 +135,22 @@ public class SslBrokerClient extends BrokerClient  {
 
     }
 
+    /**
+     * <p>Setter for the field <code>credentialsProvider</code>.</p>
+     *
+     * @param credentialsProvider a {@link pt.com.broker.auth.CredentialsProvider} object.
+     */
     public void setCredentialsProvider(CredentialsProvider credentialsProvider)
     {
         this.credentialsProvider = credentialsProvider;
     }
 
+    /**
+     * <p>authenticateClient.</p>
+     *
+     * @return a boolean.
+     * @throws java.lang.Throwable if any.
+     */
     public synchronized boolean authenticateClient() throws Throwable
     {
         if (this.credentialsProvider == null)
@@ -157,6 +206,14 @@ public class SslBrokerClient extends BrokerClient  {
 
     }
 
+    /**
+     * <p>sendAuthMessage.</p>
+     *
+     * @param authentication a {@link pt.com.broker.types.NetAuthentication} object.
+     * @param acceptResponseListener a {@link pt.com.broker.client.nio.events.AcceptResponseListener} object.
+     * @param timeout a long.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     protected Future<Void> sendAuthMessage(NetAuthentication authentication, AcceptResponseListener acceptResponseListener , long timeout ){
 
 

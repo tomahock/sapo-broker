@@ -12,29 +12,57 @@ import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 05-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class UdpBrokerClient extends BaseClient {
 
+    /**
+     * <p>Constructor for UdpBrokerClient.</p>
+     *
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public UdpBrokerClient(NetProtocolType ptype) {
         super(ptype);
         connect();
     }
 
+    /**
+     * <p>Constructor for UdpBrokerClient.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     */
     public UdpBrokerClient(String host, int port) {
         super(host, port);
         connect();
     }
 
+    /**
+     * <p>Constructor for UdpBrokerClient.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public UdpBrokerClient(String host, int port, NetProtocolType ptype) {
         super(host, port, ptype);
         connect();
     }
 
+    /**
+     * <p>Constructor for UdpBrokerClient.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public UdpBrokerClient(HostInfo host, NetProtocolType ptype) {
         super(host, ptype);
         connect();
     }
 
+    /** {@inheritDoc} */
     @Override
     public Future publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
 
@@ -48,6 +76,7 @@ public class UdpBrokerClient extends BaseClient {
 
 
 
+    /** {@inheritDoc} */
     @Override
     protected void init() {
 

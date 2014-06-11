@@ -19,6 +19,9 @@ import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 05-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public abstract class BaseClient{
 
@@ -32,6 +35,11 @@ public abstract class BaseClient{
     NetProtocolType protocolType = NetProtocolType.JSON;
 
 
+    /**
+     * <p>Constructor for BaseClient.</p>
+     *
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public BaseClient(NetProtocolType ptype) {
 
         setProtocolType(ptype);
@@ -39,6 +47,12 @@ public abstract class BaseClient{
 
     }
 
+    /**
+     * <p>Constructor for BaseClient.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     */
     public BaseClient(String host, int port) {
 
         this(new HostInfo(host, port), NetProtocolType.JSON);
@@ -46,6 +60,13 @@ public abstract class BaseClient{
 
     }
 
+    /**
+     * <p>Constructor for BaseClient.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public BaseClient(String host, int port, NetProtocolType ptype) {
 
         this(new HostInfo(host, port), ptype);
@@ -53,6 +74,12 @@ public abstract class BaseClient{
 
     }
 
+    /**
+     * <p>Constructor for BaseClient.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public BaseClient(HostInfo host, NetProtocolType ptype) {
 
         this(ptype);
@@ -60,12 +87,25 @@ public abstract class BaseClient{
         this.addServer(host);
     }
 
+    /**
+     * <p>sendNetMessage.</p>
+     *
+     * @param msg a {@link pt.com.broker.types.NetMessage} object.
+     * @return a {@link io.netty.channel.ChannelFuture} object.
+     */
     protected ChannelFuture sendNetMessage(NetMessage msg) {
 
         return this.sendNetMessage(msg, getAvailableHost());
 
     }
 
+    /**
+     * <p>sendNetMessage.</p>
+     *
+     * @param msg a {@link pt.com.broker.types.NetMessage} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link io.netty.channel.ChannelFuture} object.
+     */
     protected ChannelFuture sendNetMessage(NetMessage msg, HostInfo host) {
 
         ChannelFuture f =  host.getChannel().writeAndFlush(msg);
@@ -89,6 +129,13 @@ public abstract class BaseClient{
 
 
 
+    /**
+     * <p>buildMessage.</p>
+     *
+     * @param action a {@link pt.com.broker.types.NetAction} object.
+     * @param headers a {@link java.util.Map} object.
+     * @return a {@link pt.com.broker.types.NetMessage} object.
+     */
     protected NetMessage buildMessage(NetAction action, Map<String, String> headers) {
         NetMessage message = new NetMessage(action, headers);
 
@@ -96,15 +143,37 @@ public abstract class BaseClient{
     }
 
 
+    /**
+     * <p>buildMessage.</p>
+     *
+     * @param action a {@link pt.com.broker.types.NetAction} object.
+     * @return a {@link pt.com.broker.types.NetMessage} object.
+     */
     protected NetMessage buildMessage(NetAction action) {
         return this.buildMessage(action, new HashMap<String, String>());
     }
 
+    /**
+     * <p>publish.</p>
+     *
+     * @param brokerMessage a {@link java.lang.String} object.
+     * @param destinationName a {@link java.lang.String} object.
+     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         return publish(brokerMessage.getBytes(), destinationName, dtype);
     }
 
+    /**
+     * <p>publish.</p>
+     *
+     * @param brokerMessage an array of byte.
+     * @param destinationName a {@link java.lang.String} object.
+     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
@@ -112,6 +181,14 @@ public abstract class BaseClient{
         return publish(msg, destinationName, dtype);
     }
 
+    /**
+     * <p>publish.</p>
+     *
+     * @param brokerMessage a {@link pt.com.broker.types.NetBrokerMessage} object.
+     * @param destination a {@link java.lang.String} object.
+     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
 
         if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
@@ -125,6 +202,14 @@ public abstract class BaseClient{
 
     }
 
+    /**
+     * <p>publish.</p>
+     *
+     * @param message a {@link pt.com.broker.types.NetPublish} object.
+     * @param destination a {@link java.lang.String} object.
+     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
 
         NetAction action = new NetAction(message);
@@ -135,6 +220,11 @@ public abstract class BaseClient{
 
 
 
+    /**
+     * <p>getAvailableHost.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     protected HostInfo getAvailableHost(){
 
        HostInfo h = null;
@@ -156,12 +246,22 @@ public abstract class BaseClient{
         return h;
     }
 
+    /**
+     * <p>connect.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     public HostInfo connect(){
 
         return hosts.connect();
 
     }
 
+    /**
+     * <p>connectAsync.</p>
+     *
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future<HostInfo> connectAsync(){
 
         return hosts.connectAsync();
@@ -169,22 +269,47 @@ public abstract class BaseClient{
     }
 
 
+    /**
+     * <p>Getter for the field <code>hosts</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.server.HostContainer} object.
+     */
     public HostContainer getHosts() {
         return hosts;
     }
 
+    /**
+     * <p>Setter for the field <code>hosts</code>.</p>
+     *
+     * @param hosts a {@link pt.com.broker.client.nio.server.HostContainer} object.
+     */
     public void setHosts(HostContainer hosts) {
         this.hosts = hosts;
     }
 
+    /**
+     * <p>Getter for the field <code>bootstrap</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.bootstrap.BaseBootstrap} object.
+     */
     protected BaseBootstrap getBootstrap() {
         return bootstrap;
     }
 
+    /**
+     * <p>Setter for the field <code>bootstrap</code>.</p>
+     *
+     * @param bootstrap a {@link pt.com.broker.client.nio.bootstrap.BaseBootstrap} object.
+     */
     public void setBootstrap(BaseBootstrap bootstrap) {
         this.bootstrap = bootstrap;
     }
 
+    /**
+     * <p>close.</p>
+     *
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future close() {
 
          getHosts().disconnect();
@@ -194,11 +319,23 @@ public abstract class BaseClient{
     }
 
 
+    /**
+     * <p>addServer.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     public void addServer(HostInfo host) {
 
         getHosts().add(host);
     }
 
+    /**
+     * <p>addServer.</p>
+     *
+     * @param hostname a {@link java.lang.String} object.
+     * @param port a int.
+     * @return a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     public HostInfo addServer(String hostname, int port) {
 
         HostInfo host = new HostInfo(hostname, port);
@@ -209,13 +346,26 @@ public abstract class BaseClient{
     }
 
 
+    /**
+     * <p>init.</p>
+     */
     protected  abstract void init();
 
 
+    /**
+     * <p>Getter for the field <code>protocolType</code>.</p>
+     *
+     * @return a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public NetProtocolType getProtocolType() {
         return protocolType;
     }
 
+    /**
+     * <p>Setter for the field <code>protocolType</code>.</p>
+     *
+     * @param protocolType a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public void setProtocolType(NetProtocolType protocolType) {
 
         this.protocolType = protocolType;
@@ -231,6 +381,11 @@ public abstract class BaseClient{
         }
     }
 
+    /**
+     * <p>Getter for the field <code>serializer</code>.</p>
+     *
+     * @return a {@link pt.com.broker.types.BindingSerializer} object.
+     */
     protected BindingSerializer getSerializer() {
         return serializer;
     }

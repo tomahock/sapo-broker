@@ -14,6 +14,9 @@ import java.util.List;
 
 /**
  * Created by luissantos on 21-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
@@ -24,12 +27,18 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
     private final BindingSerializer serializer;
 
 
+    /**
+     * <p>Constructor for BrokerMessageEncoder.</p>
+     *
+     * @param serializer a {@link pt.com.broker.types.BindingSerializer} object.
+     */
     public BrokerMessageEncoder(BindingSerializer serializer){
 
         this.serializer = serializer;
     }
 
 
+    /** {@inheritDoc} */
     @Override
     protected void encode(ChannelHandlerContext ctx, NetMessage msg, ByteBuf out) throws Exception {
 
@@ -50,6 +59,12 @@ public class BrokerMessageEncoder extends MessageToByteEncoder<NetMessage> {
 
     }
 
+    /**
+     * <p>getProtocolType.</p>
+     *
+     * @return a short.
+     * @throws java.lang.Exception if any.
+     */
     protected short getProtocolType() throws Exception{
 
         short proto_type = 0;

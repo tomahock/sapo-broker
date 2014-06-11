@@ -8,9 +8,17 @@ import pt.com.broker.types.NetProtocolType;
 
 /**
  * Created by luissantos on 06-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class DatagramChannelInitializer extends BaseChannelInitializer {
 
+    /**
+     * <p>Constructor for DatagramChannelInitializer.</p>
+     *
+     * @param serializer a {@link pt.com.broker.types.BindingSerializer} object.
+     */
     public DatagramChannelInitializer(BindingSerializer serializer) {
         super(serializer);
 
@@ -19,6 +27,7 @@ public class DatagramChannelInitializer extends BaseChannelInitializer {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void initChannel(Channel ch) throws Exception {
 

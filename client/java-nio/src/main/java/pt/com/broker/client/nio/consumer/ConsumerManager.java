@@ -18,6 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by luissantos on 22-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class ConsumerManager {
 
@@ -27,6 +30,9 @@ public class ConsumerManager {
 
 
 
+    /**
+     * <p>Constructor for ConsumerManager.</p>
+     */
     public ConsumerManager() {
 
         _consumerList.put(DestinationType.TOPIC, new ConcurrentHashMap<String, BrokerAsyncConsumer>());
@@ -37,6 +43,13 @@ public class ConsumerManager {
 
 
 
+    /**
+     * <p>addSubscription.</p>
+     *
+     * @param subscribe a {@link pt.com.broker.types.NetSubscribeAction} object.
+     * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     * @param hostInfo a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     public void addSubscription(NetSubscribeAction subscribe, BrokerListener listener, HostInfo hostInfo){
 
         BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(subscribe.getDestination(), subscribe.getDestinationType() , listener);
@@ -73,6 +86,11 @@ public class ConsumerManager {
         return hostname + ":" + port +"#"+ destination;
     }
 
+    /**
+     * <p>addSubscription.</p>
+     *
+     * @param consumer a {@link pt.com.broker.client.nio.consumer.BrokerAsyncConsumer} object.
+     */
     public void addSubscription(BrokerAsyncConsumer consumer){
 
         DestinationType destinationType = consumer.getDestinationType();
@@ -103,10 +121,25 @@ public class ConsumerManager {
 
     }
 
+    /**
+     * <p>removeSubscription.</p>
+     *
+     * @param netSubscribeAction a {@link pt.com.broker.types.NetSubscribeAction} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link pt.com.broker.client.nio.consumer.BrokerAsyncConsumer} object.
+     */
     public BrokerAsyncConsumer removeSubscription(NetSubscribeAction netSubscribeAction, HostInfo host ){
         return removeSubscription(netSubscribeAction.getDestinationType(),netSubscribeAction.getDestination(), host);
     }
 
+    /**
+     * <p>removeSubscription.</p>
+     *
+     * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param destination a {@link java.lang.String} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link pt.com.broker.client.nio.consumer.BrokerAsyncConsumer} object.
+     */
     public BrokerAsyncConsumer removeSubscription(DestinationType destinationType, String destination , HostInfo host ){
 
         synchronized (_consumerList) {
@@ -126,6 +159,14 @@ public class ConsumerManager {
     }
 
 
+    /**
+     * <p>getConsumer.</p>
+     *
+     * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param destination a {@link java.lang.String} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link pt.com.broker.client.nio.consumer.BrokerAsyncConsumer} object.
+     */
     public BrokerAsyncConsumer getConsumer(DestinationType destinationType , String destination ,  HostInfo host){
 
         Map<String, BrokerAsyncConsumer> subscriptions = getSubscriptions(destinationType);
@@ -134,6 +175,13 @@ public class ConsumerManager {
 
     }
 
+    /**
+     * <p>getConsumer.</p>
+     *
+     * @param netMessage a {@link pt.com.broker.types.NetMessage} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link pt.com.broker.client.nio.consumer.BrokerAsyncConsumer} object.
+     */
     protected BrokerAsyncConsumer getConsumer(NetMessage netMessage, HostInfo host){
 
 
@@ -147,6 +195,12 @@ public class ConsumerManager {
 
     }
 
+    /**
+     * <p>getSubscriptions.</p>
+     *
+     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, BrokerAsyncConsumer> getSubscriptions(NetAction.DestinationType dtype){
 
         /* VirtualQueue is also queue so we must test this */
@@ -160,6 +214,13 @@ public class ConsumerManager {
 
 
 
+    /**
+     * <p>deliverMessage.</p>
+     *
+     * @param netMessage a {@link pt.com.broker.types.NetMessage} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @throws java.lang.Throwable if any.
+     */
     public void deliverMessage(NetMessage netMessage, HostInfo host) throws Throwable {
 
 
@@ -179,6 +240,13 @@ public class ConsumerManager {
     }
 
 
+    /**
+     * <p>getSubscriptions.</p>
+     *
+     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, BrokerAsyncConsumer> getSubscriptions(NetAction.DestinationType dtype, HostInfo host){
 
         Map<String, BrokerAsyncConsumer> map = new HashMap<String, BrokerAsyncConsumer>();
@@ -195,6 +263,13 @@ public class ConsumerManager {
         return map;
     }
 
+    /**
+     * <p>removeSubscriptions.</p>
+     *
+     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, BrokerAsyncConsumer> removeSubscriptions(NetAction.DestinationType dtype, HostInfo host){
 
         synchronized (_consumerList) {

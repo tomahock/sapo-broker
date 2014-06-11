@@ -11,6 +11,9 @@ import pt.com.broker.types.NetMessage;
 
 /**
  * Created by luissantos on 07-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 @ChannelHandler.Sharable
 public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage> {
@@ -20,11 +23,21 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
     private BrokerListener faultListenerAdapter;
 
+    /**
+     * <p>Constructor for ReceiveFaultHandler.</p>
+     *
+     * @param manager a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     */
     public ReceiveFaultHandler(ConsumerManager manager) {
         super();
         this.manager = manager;
     }
 
+    /**
+     * <p>Getter for the field <code>manager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     */
     public ConsumerManager getManager() {
         return manager;
     }
@@ -32,6 +45,7 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
 
 
+    /** {@inheritDoc} */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception {
 
@@ -55,6 +69,13 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
     }
 
+    /**
+     * <p>deliverFaultMessage.</p>
+     *
+     * @param ctx a {@link io.netty.channel.ChannelHandlerContext} object.
+     * @param msg a {@link pt.com.broker.types.NetMessage} object.
+     * @throws java.lang.Throwable if any.
+     */
     protected void deliverFaultMessage(ChannelHandlerContext ctx, NetMessage msg) throws Throwable {
 
         NetFault fault = msg.getAction().getFaultMessage();
@@ -80,10 +101,20 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
 
     }
 
+    /**
+     * <p>Getter for the field <code>faultListenerAdapter</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     */
     public BrokerListener getFaultListenerAdapter() {
         return faultListenerAdapter;
     }
 
+    /**
+     * <p>Setter for the field <code>faultListenerAdapter</code>.</p>
+     *
+     * @param faultListenerAdapter a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     */
     public void setFaultListenerAdapter(BrokerListener faultListenerAdapter) {
         this.faultListenerAdapter = faultListenerAdapter;
     }

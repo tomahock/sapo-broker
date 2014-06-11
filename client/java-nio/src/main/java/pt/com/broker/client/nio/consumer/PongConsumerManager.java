@@ -17,6 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by luissantos on 30-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class PongConsumerManager {
 
@@ -25,10 +28,19 @@ public class PongConsumerManager {
     volatile ConcurrentHashMap<String,BrokerListener> pongMessages  = new ConcurrentHashMap<String, BrokerListener>();
 
 
+    /**
+     * <p>Constructor for PongConsumerManager.</p>
+     */
     public PongConsumerManager() {
 
     }
 
+    /**
+     * <p>removeSubscription.</p>
+     *
+     * @param actionId a {@link java.lang.String} object.
+     * @return a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     */
     public BrokerListener removeSubscription(String actionId){
 
         if(actionId==null){
@@ -38,6 +50,12 @@ public class PongConsumerManager {
         return pongMessages.remove(actionId);
     }
 
+    /**
+     * <p>addSubscription.</p>
+     *
+     * @param actionId a {@link java.lang.String} object.
+     * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     */
     public void addSubscription(String actionId, BrokerListener listener){
 
         if(actionId==null){
@@ -47,6 +65,13 @@ public class PongConsumerManager {
         pongMessages.put(actionId, listener);
     }
 
+    /**
+     * <p>deliverMessage.</p>
+     *
+     * @param netMessage a {@link pt.com.broker.types.NetMessage} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @throws java.lang.Throwable if any.
+     */
     public void deliverMessage(NetMessage netMessage, HostInfo host) throws Throwable {
 
         String actionid = getActionId(netMessage);

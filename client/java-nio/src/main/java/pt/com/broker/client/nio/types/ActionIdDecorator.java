@@ -11,11 +11,19 @@ import java.util.Map;
 
 /**
  * Created by luissantos on 09-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class ActionIdDecorator extends NetMessage implements DecoratorInterface<NetMessage> {
 
     private NetMessage netMessage;
 
+    /**
+     * <p>Constructor for ActionIdDecorator.</p>
+     *
+     * @param netMessage a {@link pt.com.broker.types.NetMessage} object.
+     */
     public ActionIdDecorator(NetMessage netMessage) {
         super(null);
         this.netMessage = netMessage;
@@ -23,17 +31,24 @@ public class ActionIdDecorator extends NetMessage implements DecoratorInterface<
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public Map<String, String> getHeaders() {
         return netMessage.getHeaders();
     }
 
+    /** {@inheritDoc} */
     @Override
     public NetAction getAction() {
         return netMessage.getAction();
     }
 
 
+    /**
+     * <p>getActionId.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getActionId(){
 
         NetAction netAction = getAction();
@@ -60,6 +75,7 @@ public class ActionIdDecorator extends NetMessage implements DecoratorInterface<
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public NetMessage getInstance() {
         return netMessage;

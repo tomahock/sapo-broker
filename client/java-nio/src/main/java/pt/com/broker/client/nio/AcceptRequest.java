@@ -5,6 +5,9 @@ import pt.com.broker.client.nio.events.BrokerListener;
 
 /**
  * Created by luissantos on 09-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class AcceptRequest {
 
@@ -36,21 +39,41 @@ public class AcceptRequest {
         this.timeout = timeout;
     }
 
+    /**
+     * <p>Getter for the field <code>actionId</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getActionId()
     {
         return actionId;
     }
 
+    /**
+     * <p>getListener.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     */
     public BrokerListener getListener()
     {
         return listner;
     }
 
+    /**
+     * <p>Setter for the field <code>timeout</code>.</p>
+     *
+     * @param timeout a long.
+     */
     public void setTimeout(long timeout)
     {
         this.timeout = timeout;
     }
 
+    /**
+     * <p>Getter for the field <code>timeout</code>.</p>
+     *
+     * @return a long.
+     */
     public long getTimeout()
     {
         return timeout;

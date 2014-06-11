@@ -34,6 +34,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by luissantos on 21-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class BrokerClient extends BaseClient implements Observer {
 
@@ -54,23 +57,50 @@ public class BrokerClient extends BaseClient implements Observer {
     private final CompletionService<HostInfo> unsubcribeService = new ExecutorCompletionService<HostInfo>(executorService);
 
 
+    /**
+     * <p>Constructor for BrokerClient.</p>
+     *
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public BrokerClient(NetProtocolType ptype) {
         super(ptype);
     }
 
+    /**
+     * <p>Constructor for BrokerClient.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     */
     public BrokerClient(String host, int port) {
         super(host, port);
     }
 
+    /**
+     * <p>Constructor for BrokerClient.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public BrokerClient(String host, int port, NetProtocolType ptype) {
         super(host, port, ptype);
     }
 
+    /**
+     * <p>Constructor for BrokerClient.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
+     */
     public BrokerClient(HostInfo host, NetProtocolType ptype) {
         super(host, ptype);
     }
 
 
+    /**
+     * <p>init.</p>
+     */
     protected void init(){
 
         setPongConsumerManager(new PongConsumerManager());
@@ -95,11 +125,13 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
 
+    /** {@inheritDoc} */
     public Future publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         return publish(brokerMessage.getBytes(), destinationName, dtype);
     }
 
+    /** {@inheritDoc} */
     public Future publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
@@ -107,10 +139,20 @@ public class BrokerClient extends BaseClient implements Observer {
         return publish(msg, destinationName, dtype);
     }
 
+    /** {@inheritDoc} */
     public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
         return publish(brokerMessage, destination, dtype, null);
     }
 
+    /**
+     * <p>publish.</p>
+     *
+     * @param brokerMessage a {@link pt.com.broker.types.NetBrokerMessage} object.
+     * @param destination a {@link java.lang.String} object.
+     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param request a {@link pt.com.broker.client.nio.AcceptRequest} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype, AcceptRequest request) {
 
 
@@ -132,14 +174,40 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
+    /**
+     * <p>subscribe.</p>
+     *
+     * @param destination a {@link java.lang.String} object.
+     * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     * @throws java.lang.InterruptedException if any.
+     */
     public Future subscribe(String destination, NetAction.DestinationType destinationType, final BrokerListener listener) throws InterruptedException {
         return subscribe( new NetSubscribe(destination, destinationType),listener,null);
     }
 
+    /**
+     * <p>subscribe.</p>
+     *
+     * @param subscribe a {@link pt.com.broker.types.NetSubscribeAction} object.
+     * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     * @throws java.lang.InterruptedException if any.
+     */
     public Future subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) throws InterruptedException {
         return subscribe(subscribe, listener, null);
     }
 
+    /**
+     * <p>subscribe.</p>
+     *
+     * @param subscribe a {@link pt.com.broker.types.NetSubscribeAction} object.
+     * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     * @param request a {@link pt.com.broker.client.nio.AcceptRequest} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     * @throws java.lang.InterruptedException if any.
+     */
     public Future<HostInfo> subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
 
 
@@ -261,6 +329,14 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
+    /**
+     * <p>unsubscribe.</p>
+     *
+     * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param dstName a {@link java.lang.String} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     * @throws java.lang.InterruptedException if any.
+     */
     public Future unsubscribe(final NetAction.DestinationType destinationType, final String dstName)  throws InterruptedException {
 
 
@@ -347,6 +423,14 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
 
+    /**
+     * <p>acknowledge.</p>
+     *
+     * @param notification a {@link pt.com.broker.types.NetNotification} object.
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     * @throws java.lang.Throwable if any.
+     */
     public Future acknowledge(NetNotification notification, HostInfo host) throws Throwable {
 
         if(!(notification instanceof NetNotificationDecorator)){
@@ -383,10 +467,9 @@ public class BrokerClient extends BaseClient implements Observer {
      * Acknowledge and NetNotification received from the server. This method should only be used
      * in
      *
-     *
-     * @param notification
-     * @return
-     * @throws Throwable
+     * @param notification a {@link pt.com.broker.types.NetNotification} object.
+     * @throws java.lang.Throwable if any.
+     * @return a {@link java.util.concurrent.Future} object.
      */
     public Future acknowledge(NetNotification notification) throws Throwable {
 
@@ -398,6 +481,13 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
 
+    /**
+     * <p>checkStatus.</p>
+     *
+     * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     * @throws java.lang.Throwable if any.
+     */
     public Future checkStatus(final BrokerListener listener) throws Throwable {
 
         final String actionId = UUID.randomUUID().toString();
@@ -431,10 +521,11 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
     /**
-     * @see pt.com.broker.client.nio.BrokerClient#poll(pt.com.broker.types.NetPoll, AcceptRequest)
+     * <p>poll.</p>
      *
-     * @param name
-     * @return
+     * @see pt.com.broker.client.nio.BrokerClient#poll(pt.com.broker.types.NetPoll, AcceptRequest)
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link pt.com.broker.types.NetNotification} object.
      */
     public NetNotification poll(String name) {
 
@@ -452,13 +543,13 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
     /**
+     * <p>poll.</p>
      *
      * @see pt.com.broker.client.nio.BrokerClient#poll(pt.com.broker.types.NetPoll, AcceptRequest)
-     *
-     * @param name
-     * @param timeout
-     * @return
-     * @throws TimeoutException
+     * @param name a {@link java.lang.String} object.
+     * @param timeout a int.
+     * @throws pt.com.broker.client.nio.handlers.timeout.TimeoutException if any.
+     * @return a {@link pt.com.broker.types.NetNotification} object.
      */
     public NetNotification poll(String name ,int timeout) throws TimeoutException {
 
@@ -470,11 +561,10 @@ public class BrokerClient extends BaseClient implements Observer {
     /**
      *  Blocks until a message is received.
      *
-     * @param netPoll
-     * @param request
-     * @return
-     * @throws TimeoutException
-     *
+     * @param netPoll a {@link pt.com.broker.types.NetPoll} object.
+     * @param request a {@link pt.com.broker.client.nio.AcceptRequest} object.
+     * @throws pt.com.broker.client.nio.handlers.timeout.TimeoutException if any.
+     * @return a {@link pt.com.broker.types.NetNotification} object.
      */
     public NetNotification poll(final NetPoll netPoll, AcceptRequest request) throws TimeoutException{
 
@@ -561,35 +651,75 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
 
+    /**
+     * <p>Getter for the field <code>consumerManager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     */
     public ConsumerManager getConsumerManager() {
         return consumerManager;
     }
 
+    /**
+     * <p>Setter for the field <code>consumerManager</code>.</p>
+     *
+     * @param consumerManager a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     */
     public void setConsumerManager(ConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
     }
 
+    /**
+     * <p>Getter for the field <code>pongConsumerManager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.PongConsumerManager} object.
+     */
     public PongConsumerManager getPongConsumerManager() {
         return pongConsumerManager;
     }
 
+    /**
+     * <p>Setter for the field <code>pongConsumerManager</code>.</p>
+     *
+     * @param pongConsumerManager a {@link pt.com.broker.client.nio.consumer.PongConsumerManager} object.
+     */
     public void setPongConsumerManager(PongConsumerManager pongConsumerManager) {
         this.pongConsumerManager = pongConsumerManager;
     }
 
+    /**
+     * <p>getHosts.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.server.HostContainer} object.
+     */
     public HostContainer getHosts() {
         return hosts;
     }
 
+    /**
+     * <p>Getter for the field <code>acceptRequestsManager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager} object.
+     */
     public PendingAcceptRequestsManager getAcceptRequestsManager() {
         return acceptRequestsManager;
     }
 
+    /**
+     * <p>Setter for the field <code>acceptRequestsManager</code>.</p>
+     *
+     * @param acceptRequestsManager a {@link pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager} object.
+     */
     public void setAcceptRequestsManager(PendingAcceptRequestsManager acceptRequestsManager) {
         this.acceptRequestsManager = acceptRequestsManager;
     }
 
 
+    /**
+     * <p>addAcceptMessageHandler.</p>
+     *
+     * @param request a {@link pt.com.broker.client.nio.AcceptRequest} object.
+     */
     protected void addAcceptMessageHandler(AcceptRequest request){
 
         String actionID = request.getActionId();
@@ -604,15 +734,19 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
+   /**
+    * <p>setFaultListener.</p>
+    *
+    * @param adapter a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+    */
    public void setFaultListener(BrokerListener adapter){
         channelInitializer.setFaultHandler(adapter);
     }
 
     /**
-     * Every time a host reconnect the ConsumerManager is notified
+     * {@inheritDoc}
      *
-     * @param observable
-     * @param o
+     * Every time a host reconnect the ConsumerManager is notified
      */
     @Override
     public void update(Observable observable, Object o) {

@@ -23,6 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by luissantos on 06-05-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class ChannelInitializer extends BaseChannelInitializer {
 
@@ -43,6 +46,13 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
 
 
+    /**
+     * <p>Constructor for ChannelInitializer.</p>
+     *
+     * @param serializer a {@link pt.com.broker.types.BindingSerializer} object.
+     * @param consumerManager a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     * @param pongConsumerManager a {@link pt.com.broker.client.nio.consumer.PongConsumerManager} object.
+     */
     public ChannelInitializer(BindingSerializer serializer, ConsumerManager consumerManager, PongConsumerManager pongConsumerManager) {
 
         super(serializer);
@@ -61,6 +71,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void initChannel(Channel ch) throws Exception {
 
@@ -95,18 +106,38 @@ public class ChannelInitializer extends BaseChannelInitializer {
     }
 
 
+    /**
+     * <p>Getter for the field <code>consumerManager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     */
     public ConsumerManager getConsumerManager() {
         return consumerManager;
     }
 
+    /**
+     * <p>Setter for the field <code>consumerManager</code>.</p>
+     *
+     * @param consumerManager a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
+     */
     public void setConsumerManager(ConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
     }
 
+    /**
+     * <p>Getter for the field <code>pongConsumerManager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.PongConsumerManager} object.
+     */
     public PongConsumerManager getPongConsumerManager() {
         return pongConsumerManager;
     }
 
+    /**
+     * <p>Setter for the field <code>pongConsumerManager</code>.</p>
+     *
+     * @param pongConsumerManager a {@link pt.com.broker.client.nio.consumer.PongConsumerManager} object.
+     */
     public void setPongConsumerManager(PongConsumerManager pongConsumerManager) {
 
         this.pongConsumerManager = pongConsumerManager;
@@ -117,24 +148,49 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     }
 
+    /**
+     * <p>Getter for the field <code>acceptRequestsManager</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager} object.
+     */
     public PendingAcceptRequestsManager getAcceptRequestsManager() {
         return acceptRequestsManager;
     }
 
+    /**
+     * <p>Setter for the field <code>acceptRequestsManager</code>.</p>
+     *
+     * @param acceptRequestsManager a {@link pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager} object.
+     */
     public void setAcceptRequestsManager(PendingAcceptRequestsManager acceptRequestsManager) {
         this.acceptRequestsManager = acceptRequestsManager;
         acceptMessageHandler.setManager(acceptRequestsManager);
     }
 
+    /**
+     * <p>Getter for the field <code>context</code>.</p>
+     *
+     * @return a {@link javax.net.ssl.SSLContext} object.
+     */
     public SSLContext getContext() {
         return context;
     }
 
+    /**
+     * <p>Setter for the field <code>context</code>.</p>
+     *
+     * @param context a {@link javax.net.ssl.SSLContext} object.
+     */
     public void setContext(SSLContext context) {
         this.context = context;
     }
 
 
+    /**
+     * <p>Setter for the field <code>faultHandler</code>.</p>
+     *
+     * @param adapter a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+     */
     public void setFaultHandler(BrokerListener adapter){
 
         faultHandler.setFaultListenerAdapter(adapter);

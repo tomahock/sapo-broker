@@ -16,6 +16,9 @@ import java.util.concurrent.*;
 
 /**
  * Created by luissantos on 29-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public class HostContainer extends Observable {
 
@@ -39,10 +42,21 @@ public class HostContainer extends Observable {
     SelectServerStrategy strategy = new RoundRobinStrategy();
 
 
+    /**
+     * <p>Constructor for HostContainer.</p>
+     *
+     * @param bootstrap a {@link pt.com.broker.client.nio.bootstrap.BaseBootstrap} object.
+     */
     public HostContainer(BaseBootstrap bootstrap) {
         this(1, bootstrap);
     }
 
+    /**
+     * <p>Constructor for HostContainer.</p>
+     *
+     * @param capacity a int.
+     * @param bootstrap a {@link pt.com.broker.client.nio.bootstrap.BaseBootstrap} object.
+     */
     public HostContainer(int capacity, BaseBootstrap bootstrap) {
 
         this.bootstrap = bootstrap;
@@ -57,6 +71,11 @@ public class HostContainer extends Observable {
     }
 
 
+    /**
+     * <p>add.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     public void add(HostInfo host) {
 
         synchronized (hosts) {
@@ -70,10 +89,20 @@ public class HostContainer extends Observable {
 
     }
 
+    /**
+     * <p>size.</p>
+     *
+     * @return a int.
+     */
     public int size() {
         return hosts.size();
     }
 
+    /**
+     * <p>connect.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     public HostInfo connect() {
 
         Future<HostInfo> f = connectAsync();
@@ -90,6 +119,11 @@ public class HostContainer extends Observable {
 
     }
 
+    /**
+     * <p>connectAsync.</p>
+     *
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future<HostInfo> connectAsync() {
 
 
@@ -224,6 +258,11 @@ public class HostContainer extends Observable {
 
     }
 
+    /**
+     * <p>getClosedHosts.</p>
+     *
+     * @return a {@link java.util.ArrayList} object.
+     */
     public ArrayList<HostInfo> getClosedHosts() {
 
         synchronized (hosts) {
@@ -245,6 +284,11 @@ public class HostContainer extends Observable {
 
     }
 
+    /**
+     * <p>notConnectedHosts.</p>
+     *
+     * @return a {@link java.util.ArrayList} object.
+     */
     public ArrayList<HostInfo> notConnectedHosts() {
 
         synchronized (hosts) {
@@ -269,10 +313,22 @@ public class HostContainer extends Observable {
     }
 
 
+    /**
+     * <p>isConnected.</p>
+     *
+     * @param hostInfo a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a boolean.
+     */
     protected boolean isConnected(HostInfo hostInfo) {
         return hostInfo != null && hostInfo.getStatus() == HostInfo.STATUS.OPEN && connectedHosts.contains(hostInfo);
     }
 
+    /**
+     * <p>inactiveHost.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     */
     protected HostInfo inactiveHost(final HostInfo host) {
 
         if (host != null) {
@@ -302,7 +358,7 @@ public class HostContainer extends Observable {
      * If its not possible to write in channel for a while the server will be disconnected.
      *
      * @return Channel
-     * @throws InterruptedException
+     * @throws java.lang.InterruptedException if any.
      * @see pt.com.broker.client.nio.codecs.HeartbeatHandler
      */
     public HostInfo getAvailableHost() throws InterruptedException {
@@ -334,6 +390,11 @@ public class HostContainer extends Observable {
 
     }
 
+    /**
+     * <p>disconnect.</p>
+     *
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future disconnect() {
 
 
@@ -374,6 +435,12 @@ public class HostContainer extends Observable {
 
     }
 
+    /**
+     * <p>disconnect.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link io.netty.channel.ChannelFuture} object.
+     */
     public ChannelFuture disconnect(final HostInfo host) {
 
 
@@ -474,6 +541,12 @@ public class HostContainer extends Observable {
     }
 
 
+    /**
+     * <p>addConnectedHost.</p>
+     *
+     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @throws java.lang.Exception if any.
+     */
     protected void addConnectedHost(HostInfo host) throws Exception {
 
         if (host == null) {
@@ -492,16 +565,31 @@ public class HostContainer extends Observable {
 
     }
 
+    /**
+     * <p>Getter for the field <code>connectedHosts</code>.</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<HostInfo> getConnectedHosts() {
         return connectedHosts;
     }
 
+    /**
+     * <p>getHostsSize.</p>
+     *
+     * @return a int.
+     */
     public int getHostsSize() {
         synchronized (hosts) {
             return hosts.size();
         }
     }
 
+    /**
+     * <p>getConnectedSize.</p>
+     *
+     * @return a int.
+     */
     public int getConnectedSize() {
 
         synchronized (connectedHosts) {
@@ -510,6 +598,9 @@ public class HostContainer extends Observable {
 
     }
 
+    /**
+     * <p>shutdown.</p>
+     */
     public void shutdown() {
         scheduler.shutdown();
         executorService.shutdown();

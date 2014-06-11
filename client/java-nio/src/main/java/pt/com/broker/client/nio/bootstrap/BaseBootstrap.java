@@ -15,7 +15,8 @@ import java.util.concurrent.TimeUnit;
  *  Copyright (c) 2014, SAPO
  *  All rights reserved.
  *
- *
+ * @author vagrant
+ * @version $Id: $Id
  */
 public abstract class BaseBootstrap {
 
@@ -25,6 +26,11 @@ public abstract class BaseBootstrap {
 
 
 
+    /**
+     * <p>Constructor for BaseBootstrap.</p>
+     *
+     * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
+     */
     public BaseBootstrap(BaseChannelInitializer channelInitializer) {
 
         this.channelInitializer = channelInitializer;
@@ -32,6 +38,12 @@ public abstract class BaseBootstrap {
     }
 
 
+    /**
+     * <p>connect.</p>
+     *
+     * @param hostInfo a {@link pt.com.broker.client.nio.server.HostInfo} object.
+     * @return a {@link io.netty.channel.ChannelFuture} object.
+     */
     public ChannelFuture connect(HostInfo hostInfo){
 
         io.netty.bootstrap.Bootstrap boot = getNewInstance();
@@ -46,21 +58,49 @@ public abstract class BaseBootstrap {
     }
 
 
+    /**
+     * <p>Getter for the field <code>channelInitializer</code>.</p>
+     *
+     * @return a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
+     */
     public BaseChannelInitializer getChannelInitializer() {
         return channelInitializer;
     }
 
+    /**
+     * <p>Getter for the field <code>group</code>.</p>
+     *
+     * @return a {@link io.netty.channel.EventLoopGroup} object.
+     */
     public EventLoopGroup getGroup() {
         return group;
     }
 
+    /**
+     * <p>getNewInstance.</p>
+     *
+     * @return a {@link io.netty.bootstrap.Bootstrap} object.
+     */
     public abstract io.netty.bootstrap.Bootstrap getNewInstance();
 
 
+    /**
+     * <p>shutdownGracefully.</p>
+     *
+     * @return a {@link io.netty.util.concurrent.Future} object.
+     */
     public Future<?> shutdownGracefully() {
         return group.shutdownGracefully();
     }
 
+    /**
+     * <p>shutdownGracefully.</p>
+     *
+     * @param quietPeriod a long.
+     * @param timeout a long.
+     * @param unit a {@link java.util.concurrent.TimeUnit} object.
+     * @return a {@link io.netty.util.concurrent.Future} object.
+     */
     public Future<?> shutdownGracefully(long quietPeriod, long timeout, TimeUnit unit) {
         return group.shutdownGracefully(quietPeriod, timeout, unit);
     }

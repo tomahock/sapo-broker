@@ -5,10 +5,23 @@ import pt.com.broker.types.NetProtocolType;
 
 /**
  * Created by luissantos on 21-04-2014.
+ *
+ * @author vagrant
+ * @version $Id: $Id
  */
 final public class BindingSerializerFactory {
 
 
+    /**
+     * <p>getInstance.</p>
+     *
+     * @param type a {@link pt.com.broker.types.NetProtocolType} object.
+     * @return a {@link pt.com.broker.types.BindingSerializer} object.
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.lang.IllegalAccessException if any.
+     * @throws java.lang.InstantiationException if any.
+     * @throws java.lang.RuntimeException if any.
+     */
     public static BindingSerializer getInstance(NetProtocolType type) throws ClassNotFoundException, IllegalAccessException, InstantiationException, RuntimeException {
 
         BindingSerializer serializer;
