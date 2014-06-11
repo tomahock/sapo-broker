@@ -217,7 +217,8 @@ public class BrokerClientTest {
     public void testSubscribe() throws Exception {
 
 
-        BrokerClient bk = new BrokerClient("localhost",3323);
+        BrokerClient bk = new BrokerClient("192.168.100.10",3323,NetProtocolType.SOAP);
+
 
         Future<HostInfo> f= bk.connectAsync();
 

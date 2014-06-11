@@ -84,6 +84,8 @@ public class TestMessageEncoding {
 
         Assert.assertNotNull(buf);
 
+
+
         int encType = buf.readShort();
 
 

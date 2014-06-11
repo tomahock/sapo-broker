@@ -19,3 +19,6 @@
 [submodule "vagrant/puppet/modules/apt"]
 	path = vagrant/puppet/modules/apt
 	url = https://github.com/puppetlabs/puppetlabs-apt
+[submodule "vagrant/puppet/modules/ohmyzsh"]
+	path = vagrant/puppet/modules/ohmyzsh
+	url = https://github.com/acme/puppet-acme-oh-my-zsh.git

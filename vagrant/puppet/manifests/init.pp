@@ -27,7 +27,13 @@ apt::source { 'debianmirror':
   repos      => 'sapo'
 }
 
- 
+class { 'ohmyzsh': }
+
+# for a single user
+ohmyzsh::install { 'vagrant': }
+
+# activate plugins for a user
+ohmyzsh::plugins { 'vagrant': plugins => 'git github z' }
 
 
 #import box modules
