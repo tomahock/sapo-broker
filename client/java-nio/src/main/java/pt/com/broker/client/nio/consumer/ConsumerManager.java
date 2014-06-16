@@ -231,7 +231,8 @@ public class ConsumerManager {
 
         if(consumer == null){
 
-            throw new RuntimeException("No consumer found for this message");
+            log.warn("No consumer found for message: "+netMessage);
+            return;
         }
 
 
