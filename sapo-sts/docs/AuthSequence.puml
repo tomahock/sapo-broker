@@ -1,0 +1,44 @@
+@startuml
+
+participant Client
+participant Broker
+participant SDB
+
+== Broker Boot ==
+
+Broker -> SDB: /STS/GetToken
+activate SDB
+Broker <-- SDB: EsbToken
+deactivate SDB
+
+
+== Client Connects ==
+
+Client -> SDB: /STS/GetToken
+activate SDB
+Client <-- SDB: EsbToken
+deactivate SDB
+
+|||
+
+Client -> Broker: Authenticate(esbToken,userName)
+
+
+
+Broker -> SDB: /STS/GetRoles?ESBToken={esbTokenBroker}&UserToken={esbTokenCliente}
+activate SDB
+
+|||
+
+Broker <- SDB
+deactivate SDB
+
+Client <- Broker: Ok
+
+
+== Client Publishes messages ==
+
+Client -> Broker: Publish(Authenticated Channel)
+
+
+@enduml
