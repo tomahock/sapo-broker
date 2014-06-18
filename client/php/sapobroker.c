@@ -11,7 +11,7 @@
 #define PHP_BROKER_SERVER_T_RES_NAME "Broker Server"
 #define PHP_SAPO_BROKER_T_RES_NAME "Sapo Broker"
 #define PHP_BROKER_MSG_T_RES_NAME "Sapo Broker Message"
-#define PHP_SAPO_BROKER_EXTENSION_VERSION "0.3"
+#define PHP_SAPO_BROKER_EXTENSION_VERSION "0.4"
 
 static int le_sapobroker;
 int le_broker_server_t;
@@ -33,6 +33,7 @@ const zend_function_entry sapobroker_functions[] = {
     PHP_FE(broker_publish, NULL)
     PHP_FE(broker_enqueue, NULL)
     PHP_FE(broker_error, NULL)
+    PHP_FE(broker_msg_decode, NULL)
     {NULL, NULL, NULL} /* Must be the last line in sapobroker_functions[] */
 };
 
@@ -252,6 +253,61 @@ PHP_FUNCTION(broker_publish) {
     ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
     retval = broker_publish(sapo_broker, topic, message, message_len);
     RETURN_LONG(retval);
+}
+
+/* Decode a message */
+PHP_FUNCTION(broker_msg_decode) {
+    int argc = ZEND_NUM_ARGS();
+    int sapo_broker_id = -1;
+
+    zval *zbroker_msg = NULL;
+
+    broker_msg_t *message;
+
+    if (zend_parse_parameters(argc TSRMLS_CC, "r", &zbroker_msg) == FAILURE)
+        RETURN_FALSE;
+
+    if (zbroker_msg == NULL)
+        RETURN_FALSE;
+
+
+    ZEND_FETCH_RESOURCE(message, broker_msg_t*, &zbroker_msg, -1, PHP_BROKER_MSG_T_RES_NAME, le_broker_msg_t);
+
+
+    char *payload = estrndup(message->payload, message->payload_len);
+    char *message_id = estrndup(message->message_id, strlen(message->message_id));
+
+    // alloc return array
+    array_init(return_value);
+    add_assoc_long(return_value, "payload_len", message->payload_len);
+    add_assoc_stringl(return_value, "payload", payload, message->payload_len, 1);
+    add_assoc_stringl(return_value, "message_id", message_id, strlen(message->message_id), 1);
+    add_assoc_bool(return_value, "acked", message->acked);
+
+    zval *destination_arr;
+    zval *origin_arr;
+
+    // again, thank you Zend for such a lame naming scheme. not mentioning CAPS, of course :)
+    ALLOC_INIT_ZVAL(destination_arr);
+    ALLOC_INIT_ZVAL(origin_arr);
+
+    // fill destination array
+    //char *dest_name = estrndup(message->destination.name, strlen(message->destination.name));
+    array_init(destination_arr);
+    //add_assoc_stringl(destination_arr, "name", dest_name, strlen(message->destination.name), 1);
+    add_assoc_long(destination_arr, "type", message->destination.type);
+    add_assoc_bool(destination_arr, "queue_autoack", message->destination.queue_autoack);
+
+    // fill origin array
+    //char *orig_name = estrndup(message->origin.name, strlen(message->origin.name));
+    array_init(origin_arr);
+    //add_assoc_stringl(origin_arr, "name", dest_name, strlen(dest_name), 1);
+    add_assoc_long(origin_arr, "type", message->origin.type);
+    add_assoc_bool(origin_arr, "queue_autoack", message->origin.queue_autoack);
+
+    // add both to message array
+    add_assoc_zval(return_value, "origin", origin_arr);
+    add_assoc_zval(return_value, "destination", destination_arr);
 }
 
 /* RECEIVE A MESSAGE_T WITH A TIMEOUT */

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXT_VERSION=sapobroker-0.3
+EXT_VERSION=sapobroker-0.4
 
 # create
 mkdir -p build/$EXT_VERSION
@@ -21,22 +21,23 @@ tar -czf ../$EXT_VERSION.tgz package.xml $EXT_VERSION
 cd ../
 
 # clean
-# rm -rf build
+rm -rf build
 
 # build deb
 mkdir tmp
 cp $EXT_VERSION.tgz tmp/
 cd tmp/
 
-dh-make-pecl --build-depends libsapo-broker2 --only 5 --maintainer "Filipe Varela <filipe.varela@caixamagica.pt>" $EXT_VERSION.tgz
+dh-make-pecl --build-depends libsapo-broker2  --maintainer "Filipe Varela <filipe.varela@caixamagica.pt>" $EXT_VERSION.tgz
+tar -xf $EXT_VERSION.tgz
 cd php-$EXT_VERSION/
 
 # quick hack for FAIL dh_shlibdeps
-cat debian/rules | grep -v shlibdeps > debian/rulesnew
-mv debian/rulesnew debian/rules
-chmod +x debian/rules
+#cat debian/rules | grep -v shlibdeps > debian/rulesnew
+#mv debian/rulesnew debian/rules
+#chmod +x debian/rules
 dpkg-buildpackage -rfakeroot
 cd ../
 mv *.deb ../
 cd ../
-rm -rf build tmp
+rm -rf tmp

@@ -25,5 +25,6 @@ PHP_FUNCTION(broker_send);
 PHP_FUNCTION(broker_publish);
 PHP_FUNCTION(broker_enqueue);
 PHP_FUNCTION(broker_error);
+PHP_FUNCTION(broker_msg_decode);
 #endif
 

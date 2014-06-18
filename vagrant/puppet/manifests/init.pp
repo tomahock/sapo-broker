@@ -43,6 +43,7 @@ class { 'java': }
 class { 'misc': }
 class { 'protobuf': }
 class { 'python': }
+class { 'php': }
 
 include thrift
 
