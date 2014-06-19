@@ -40,4 +40,4 @@ dpkg-buildpackage -rfakeroot
 cd ../
 mv *.deb ../
 cd ../
-rm -rf tmp
+rm -Rf tmp
