@@ -28,7 +28,7 @@ mkdir tmp
 cp $EXT_VERSION.tgz tmp/
 cd tmp/
 
-dh-make-pecl --build-depends libsapo-broker2  --maintainer "Filipe Varela <filipe.varela@caixamagica.pt>" $EXT_VERSION.tgz
+dh-make-pecl --build-depends libsapo-broker2  --maintainer "Luis Santos <luis.santos@telecom.pt>" $EXT_VERSION.tgz
 tar -xf $EXT_VERSION.tgz
 cd php-$EXT_VERSION/
 
