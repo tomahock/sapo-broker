@@ -1,0 +1,64 @@
+<section id="{{{hash}}}" class="box box-function">
+    <h1 class="fw-300 function-desc">
+    {{~#if isConstructor~}}
+        new {{parent.name~}}
+    {{~else~}}
+        {{~#ifvalue parent.kind value="class"~}}
+            .{{~name~}}
+        {{~else~}}
+            .{{~name~}}
+        {{~/ifvalue~}}
+    {{~/if~}}
+    {{> shortparams}}
+    {{#if isConstructor~}}
+    {{~else~}}
+        {{~#ifvalue parent.kind value="class"~}}
+            <i>method</i>
+        {{~else~}}
+            <i>function</i>
+        {{~/ifvalue~}}
+    {{~/if~}}
+    </h1>
+
+    {{~#if text~}}
+        <p class="text">{{{stripP text}}}</p>
+    {{~/if~}}
+
+    {{~#if params.length}}
+        <h3>Accepts</h3>
+        
+        <ul class="params">
+        {{~#each params}}
+            <li class="level{{~countLevel name~}}">
+                <p> 
+                    {{~stripP name}}
+                    {{#unless isOptional}}<span class="label mandatory"></span>{{/unless}}
+                    {{~#if type~}}{{#each type}}<span class="label {{toLowerCase this}}"></span>{{/each}}{{~/if~}}
+                </p>
+                {{#if defaultValue~}}
+                    {{~defaultValue~}}
+                {{~/if~}}
+                {{#if description~}}
+                    {{~{description}~}}
+                {{~/if~}}
+            </li>
+        {{~/each}}
+        </ul>
+    {{~/if~}}
+    {{~#if return}}
+    <h3>Returns</h3>
+    <ul class="params">
+        <li class="return">
+            <p>{{~#if return.type}}{{#each return.type}}<span class="label {{toLowerCase this}}"></span> {{/each}}
+{{~/if~}}</p>
+        
+            {{~#if return.description~}}
+                {{~{return.description}~}}
+            {{~/if}}
+        </li>
+    </ul>
+    {{/if~}}
+
+    {{~> examples~}}
+    {{~> samples~}}
+</section>

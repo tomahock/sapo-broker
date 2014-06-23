@@ -1,0 +1,7 @@
+{{#if examples}}
+<p class="example-title">Example</p>
+{{#each examples}}  
+{% highlight html %}{% raw %}{{{this}}}{% endraw %}{% endhighlight %}
+{{/each}}
+{{/if}}
+

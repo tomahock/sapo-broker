@@ -1,0 +1,46 @@
+{{#file hash}}---
+layout: js-documentation
+title: {{#if name}}{{name}}{{~/if}}
+description: {{#if text~}}{{~{firstP text}~}}{{/if}}
+site_root:  ../
+---
+    {{#if name~}}
+        <section>
+    {{~/if~}}
+
+    <p><i class="fa fa-leaf"></i> All samples are using <code>Ink.requireModules</code>, please read how to use it at <a href="{{site.url}}/javascript/Ink/#Ink_1-Ink_1-requireModules">Ink.requireModules section</a></p>
+
+    {{~> examples~}}
+    {{~> samples~}}
+    {{#if functions.length~}}
+        <h2>Defined functions:</h2>
+        <ul class="unstyled">
+        {{~#each functions~}}
+            <li><a href="#{{{hash}}}">
+            {{~#if isConstructor~}}
+                {{~parent.name~}}
+            {{~else~}}
+                {{parent.name}}.{{name}}
+            {{~/if~}}
+            {{> shortparams ~}}</a></li>
+        {{/each}}
+        </ul>
+    {{~/if~}}
+    {{~#if attributes.length~}}
+        <h2>Defined attributes:</h2>
+        <ul class="unstyled">
+        {{~#each attributes~}}
+            <li><a href="#{{{hash}}}">{{name}}</a></li>
+        {{/each}}
+        </ul>
+    {{~/if~}}
+    {{~#each classes~}}
+        {{> class}}
+    {{/each}}
+    {{~#each functions~}}
+        {{> function}}
+    {{/each}}
+    {{~#each attributes~}}
+        {{> attribute}}
+    {{/each}}
+{{/file}}

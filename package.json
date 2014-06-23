@@ -1,0 +1,24 @@
+{
+  "name": "ink-documentation",
+  "version": "2.2.0",
+  "devDependencies": {
+    "inkdoc": "mariomc/inkdoc",
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.9",
+    "grunt-jekyll": "~0.3.9",
+    "grunt-shell": "~0.6.1",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-compass": "~0.7.0",
+    "grunt-contrib-cssmin": "~0.7.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-uglify": "~0.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/sapo/Ink.git"
+  },
+  "scripts": {
+    "all": "grunt --verbose"
+  }
+}

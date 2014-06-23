@@ -1,0 +1,31 @@
+{% include document-top.html %}
+{% include top-navigation.html %}
+{% include left-drawer.html %}
+<div  id="page-content" class="ink-grid content-drawer">
+    <div class="page-header">
+        <p class="slab-300 section-title">{{ current_section[1] | replace: '-',' ' | upcase }}</p>
+        <h1 class="slab">{{ page.title }}</h1>
+        <p>{{ page.description }}</p>
+        <div class="border"></div>
+    </div>
+    <div class="column-group gutters">
+        <div class="xlarge-20 large-20 hide-medium hide-small hide-tiny">
+            <nav class="ink-navigation sidebar">
+
+                    <ul class="menu vertical">
+                        <li class="search">
+
+                            {% include search.html %}
+                        </li>
+                    </ul>
+                
+                {% include side-nav.html %}
+            </nav>
+        </div>
+        <div class="xlarge-80 large-80 medium-100 small-100 tiny-100">
+            {{ content }}
+        </div>
+    </div>
+</div>
+{% include footer.html %}
+{% include document-bottom.html %}

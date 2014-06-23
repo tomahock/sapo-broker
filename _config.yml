@@ -1,0 +1,73 @@
+# JEKYLL
+exclude: [".gitignore", ".git", "config.rb", "package.json", "Gruntfile.js", "bower_components", ".travis.yml", "ai", "src", "VERSION", "LICENSE", "README.md", "icon.png", "node_modules"]
+
+destination: ./_site
+
+url: http://0.0.0.0:4000/
+environment: development
+description: Ink is a set of tools for quick development of web interfaces.
+timezone: Europe/Lisbon
+
+# SITE TITLE
+title: Sapo Broker
+
+# INK LATEST VERSION
+version: 3.0.3
+
+# URLS
+download_url: https://github.com/sapo/Ink/releases/download/
+download_src_url: https://github.com/sapo/Ink/archive/
+repo_url: https://github.com/sapo/Ink/
+cdn_url: http://cdn.ink.sapo.pt/
+
+# ASSETS PATHS
+images_path: /assets/img/
+js_path: /assets/js/
+css_path: /assets/css/
+
+sections:
+
+  - title: What is it?
+    url: what-is-it
+  - title: Documentation
+    components:
+      - title: Server
+        topics:
+          - title: Basic principles
+            url: documentation
+      - title: Clients
+        topics:
+          - title: C
+            first: false
+          - title: Java
+          - title: PHP
+          - title: Perl
+          - title: Python
+          - title: ruby
+      - title: Security
+        topics:
+            - title: SSL
+              first: false
+              hash: true
+            - title: Authentication
+              hash: true
+            - title: Authorization
+              hash: true
+
+
+releases:
+  - 3.0.0
+  - 2.3.2
+  - 2.3.1
+  - 2.3.0
+  - 2.2.1
+  - 2.2.0
+  - 2.1.1
+  - 2.1.0
+  - 2.0.0
+  - 1.1.0
+  - 0.1.0
+
+# ANALYTICS
+analytics: FC2C65EF-D60C-4BC2-9D76-251A50DADC3D
+markdown: redcarpet
