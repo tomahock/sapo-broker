@@ -64,7 +64,7 @@ public class UdpBrokerClient extends BaseClient {
 
     /** {@inheritDoc} */
     @Override
-    public Future publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
 
         if (message.getActionId() != null)
         {
