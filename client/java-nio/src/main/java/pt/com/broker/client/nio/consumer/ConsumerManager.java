@@ -136,6 +136,7 @@ public class ConsumerManager {
      * <p>removeSubscription.</p>
      *
      * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @param destination a {@link java.lang.String} object.
      * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
      * @return a {@link pt.com.broker.client.nio.consumer.BrokerAsyncConsumer} object.
@@ -162,6 +163,7 @@ public class ConsumerManager {
     /**
      * <p>getConsumer.</p>
      *
+     * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @param destination a {@link java.lang.String} object.
      * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.

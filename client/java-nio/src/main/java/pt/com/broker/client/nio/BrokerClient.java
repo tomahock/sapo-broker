@@ -24,6 +24,8 @@ import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.server.ReconnectEvent;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
+import pt.com.broker.client.nio.utils.ChannelWrapperFuture;
+import pt.com.broker.client.nio.utils.HostInfoFuture;
 import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
 
@@ -126,13 +128,13 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
     /** {@inheritDoc} */
-    public Future publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         return publish(brokerMessage.getBytes(), destinationName, dtype);
     }
 
     /** {@inheritDoc} */
-    public Future publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
@@ -140,7 +142,7 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
     /** {@inheritDoc} */
-    public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
         return publish(brokerMessage, destination, dtype, null);
     }
 
@@ -153,7 +155,7 @@ public class BrokerClient extends BaseClient implements Observer {
      * @param request a {@link pt.com.broker.client.nio.AcceptRequest} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype, AcceptRequest request) {
+    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype, AcceptRequest request) {
 
 
         if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
@@ -179,11 +181,12 @@ public class BrokerClient extends BaseClient implements Observer {
      *
      * @param destination a {@link java.lang.String} object.
      * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
+     * @param destinationType a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
      * @return a {@link java.util.concurrent.Future} object.
      * @throws java.lang.InterruptedException if any.
      */
-    public Future subscribe(String destination, NetAction.DestinationType destinationType, final BrokerListener listener) throws InterruptedException {
+    public Future<HostInfo> subscribe(String destination, NetAction.DestinationType destinationType, final BrokerListener listener) throws InterruptedException {
         return subscribe( new NetSubscribe(destination, destinationType),listener,null);
     }
 
@@ -195,7 +198,7 @@ public class BrokerClient extends BaseClient implements Observer {
      * @return a {@link java.util.concurrent.Future} object.
      * @throws java.lang.InterruptedException if any.
      */
-    public Future subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) throws InterruptedException {
+    public Future<HostInfo> subscribe(NetSubscribeAction  subscribe, final BrokerListener listener) throws InterruptedException {
         return subscribe(subscribe, listener, null);
     }
 
@@ -221,6 +224,11 @@ public class BrokerClient extends BaseClient implements Observer {
             servers = getHosts().getConnectedHosts();
         }
 
+        if(servers.size()==0) {
+            return new HostNotAvailableFuture<HostInfo>();
+        }
+
+
 
 
 
@@ -236,14 +244,16 @@ public class BrokerClient extends BaseClient implements Observer {
                 @Override
                 public HostInfo call() throws Exception {
 
-                    ChannelFuture future = subscribeToHost(subscribe,listener,host);
+                    ChannelWrapperFuture future = subscribeToHost(subscribe,listener,host);
+
+
 
                     final CountDownLatch latch = new CountDownLatch(1);
 
-                    future.addListener(new ChannelFutureListener() {
+                    future.getInstance().addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
-                                latch.countDown();
+                            latch.countDown();
                         }
                     });
 
@@ -259,18 +269,17 @@ public class BrokerClient extends BaseClient implements Observer {
 
         }
 
-
         return service.take();
 
 
     }
 
-    private ChannelFuture subscribeToHost(final NetSubscribeAction subscribe , final BrokerListener listener){
+    private HostInfoFuture<HostInfo> subscribeToHost(final NetSubscribeAction subscribe , final BrokerListener listener){
             return subscribeToHost(subscribe,listener,getAvailableHost());
     }
 
 
-    private ChannelFuture subscribeToHost(final NetSubscribeAction subscribe , BrokerListener listener , final HostInfo host){
+    private ChannelWrapperFuture subscribeToHost(final NetSubscribeAction subscribe , BrokerListener listener , final HostInfo host){
 
         if(listener == null){
             throw new IllegalArgumentException("Invalid Listener");
@@ -305,24 +314,27 @@ public class BrokerClient extends BaseClient implements Observer {
             ((NotificationListenerAdapter)listener).setBrokerClient(this);
         }
 
-        ChannelFuture f =  sendNetMessage(netMessage,host);
+        ChannelWrapperFuture f =  sendNetMessage(netMessage,host);
 
 
-        f.addListener(new ChannelFutureListener() {
 
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
 
-                if (!future.isSuccess()) {
+            f.getInstance().addListener(new ChannelFutureListener() {
 
-                    getConsumerManager().removeSubscription(subscribe,host);
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
 
-                    log.debug("Error creating async consumer",future.cause());
+                    if (!future.isSuccess()) {
+
+                        getConsumerManager().removeSubscription(subscribe, host);
+
+                        log.debug("Error creating async consumer", future.cause());
+                    }
+
                 }
 
-            }
+            });
 
-        });
 
 
         return f;
@@ -337,7 +349,7 @@ public class BrokerClient extends BaseClient implements Observer {
      * @return a {@link java.util.concurrent.Future} object.
      * @throws java.lang.InterruptedException if any.
      */
-    public Future unsubscribe(final NetAction.DestinationType destinationType, final String dstName)  throws InterruptedException {
+    public Future<HostInfo> unsubscribe(final NetAction.DestinationType destinationType, final String dstName)  throws InterruptedException {
 
 
         Map<String,BrokerAsyncConsumer> consumers = getConsumerManager().getSubscriptions(destinationType);
@@ -359,11 +371,11 @@ public class BrokerClient extends BaseClient implements Observer {
                     @Override
                     public HostInfo call() throws Exception {
 
-                        ChannelFuture f = unsubscribeHost(destinationType,dstName,host);
+                        ChannelWrapperFuture f = unsubscribeHost(destinationType,dstName,host);
 
                         final CountDownLatch latch = new CountDownLatch(1);
 
-                        f.addListener(new ChannelFutureListener() {
+                        f.getInstance().addListener(new ChannelFutureListener() {
                             @Override
                             public void operationComplete(ChannelFuture future) throws Exception {
 
@@ -392,26 +404,26 @@ public class BrokerClient extends BaseClient implements Observer {
 
     }
 
-    private ChannelFuture unsubscribeHost(final NetAction.DestinationType destinationType, final String dstName, final HostInfo host){
+    private ChannelWrapperFuture unsubscribeHost(final NetAction.DestinationType destinationType, final String dstName, final HostInfo host){
 
         NetUnsubscribe unsubscribe = new NetUnsubscribe(dstName,destinationType);
 
         NetMessage netMessage = new NetMessage(new NetAction(unsubscribe));
 
 
-        ChannelFuture f = sendNetMessage(netMessage,host);
+        ChannelWrapperFuture f = sendNetMessage(netMessage,host);
 
-        f.addListener(new ChannelFutureListener() {
+        f.getInstance().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
 
-                if(future.isSuccess()){
+                if (future.isSuccess()) {
 
-                    getConsumerManager().removeSubscription(destinationType,dstName,host);
+                    getConsumerManager().removeSubscription(destinationType, dstName, host);
 
-                }else{
+                } else {
 
-                    log.error("was not possible to unsubscribe",future.cause());
+                    log.error("was not possible to unsubscribe", future.cause());
 
                 }
 
@@ -431,7 +443,7 @@ public class BrokerClient extends BaseClient implements Observer {
      * @return a {@link java.util.concurrent.Future} object.
      * @throws java.lang.Throwable if any.
      */
-    public Future acknowledge(NetNotification notification, HostInfo host) throws Throwable {
+    public Future<HostInfo> acknowledge(NetNotification notification, HostInfo host) throws Throwable {
 
         if(!(notification instanceof NetNotificationDecorator)){
             throw new Exception("Invalid NetNotification");
@@ -471,7 +483,7 @@ public class BrokerClient extends BaseClient implements Observer {
      * @throws java.lang.Throwable if any.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future acknowledge(NetNotification notification) throws Throwable {
+    public Future<HostInfo> acknowledge(NetNotification notification) throws Throwable {
 
 
         HostInfo host = ((NetNotificationDecorator) notification).getHost();
@@ -488,7 +500,7 @@ public class BrokerClient extends BaseClient implements Observer {
      * @return a {@link java.util.concurrent.Future} object.
      * @throws java.lang.Throwable if any.
      */
-    public Future checkStatus(final BrokerListener listener) throws Throwable {
+    public Future<HostInfo> checkStatus(final BrokerListener listener) throws Throwable {
 
         final String actionId = UUID.randomUUID().toString();
 
@@ -500,22 +512,25 @@ public class BrokerClient extends BaseClient implements Observer {
 
         getPongConsumerManager().addSubscription(actionId,listener);
 
-        final ChannelFuture f = sendNetMessage(message);
+        final HostInfoFuture<HostInfo> f = sendNetMessage(message);
 
-        f.addListener( new ChannelFutureListener(){
+        if(f instanceof ChannelWrapperFuture) {
 
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
+            ((ChannelWrapperFuture)f).getInstance().addListener(new ChannelFutureListener() {
 
-                if(!future.isSuccess()){
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
 
-                    getPongConsumerManager().removeSubscription(actionId);
+                    if (!future.isSuccess()) {
 
-                    log.error("Was not possible to check Status",future.cause());
+                        getPongConsumerManager().removeSubscription(actionId);
+
+                        log.error("Was not possible to check Status", future.cause());
+                    }
+
                 }
-
-            }
-        });
+            });
+        }
 
         return f;
     }
@@ -785,6 +800,8 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
     }
+
+
 
 
 

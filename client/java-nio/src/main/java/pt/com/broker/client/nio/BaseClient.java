@@ -11,11 +11,15 @@ import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
+import pt.com.broker.client.nio.utils.ChannelWrapperFuture;
+import pt.com.broker.client.nio.utils.HostInfoFuture;
 import pt.com.broker.types.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by luissantos on 05-05-2014.
@@ -93,9 +97,20 @@ public abstract class BaseClient{
      * @param msg a {@link pt.com.broker.types.NetMessage} object.
      * @return a {@link io.netty.channel.ChannelFuture} object.
      */
-    protected ChannelFuture sendNetMessage(NetMessage msg) {
+    protected HostInfoFuture sendNetMessage(NetMessage msg) {
 
-        return this.sendNetMessage(msg, getAvailableHost());
+        HostInfo host;
+
+        try {
+
+            host = getAvailableHost();
+
+        }catch (Exception e){
+            return new HostNotAvailableFuture<HostInfo>();
+        }
+
+
+        return this.sendNetMessage(msg, host);
 
     }
 
@@ -106,7 +121,7 @@ public abstract class BaseClient{
      * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
      * @return a {@link io.netty.channel.ChannelFuture} object.
      */
-    protected ChannelFuture sendNetMessage(NetMessage msg, HostInfo host) {
+    protected ChannelWrapperFuture sendNetMessage(NetMessage msg, HostInfo host) {
 
         ChannelFuture f =  host.getChannel().writeAndFlush(msg);
 
@@ -123,7 +138,7 @@ public abstract class BaseClient{
         });
 
 
-        return f;
+        return new ChannelWrapperFuture(f);
 
     }
 
@@ -161,7 +176,7 @@ public abstract class BaseClient{
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         return publish(brokerMessage.getBytes(), destinationName, dtype);
     }
@@ -174,7 +189,7 @@ public abstract class BaseClient{
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
@@ -189,7 +204,7 @@ public abstract class BaseClient{
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
 
         if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
             throw new IllegalArgumentException("Mal-formed Enqueue request");
@@ -210,7 +225,7 @@ public abstract class BaseClient{
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
 
         NetAction action = new NetAction(message);
 
@@ -389,6 +404,36 @@ public abstract class BaseClient{
     protected BindingSerializer getSerializer() {
         return serializer;
     }
+
+
+    protected class HostNotAvailableFuture<T extends HostInfo> extends HostInfoFuture {
+
+        @Override
+        public boolean cancel(boolean b) {
+            return false;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return false;
+        }
+
+        @Override
+        public T get() throws InterruptedException, ExecutionException {
+            throw new ExecutionException(new Exception("No Host available to connect"));
+        }
+
+        @Override
+        public T get(long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, java.util.concurrent.TimeoutException {
+            return get();
+        }
+
+    };
 }
 
 

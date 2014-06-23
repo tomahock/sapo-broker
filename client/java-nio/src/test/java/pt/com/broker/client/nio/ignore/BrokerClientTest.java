@@ -39,10 +39,9 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
-        bk.addServer("localhost",3323);
         bk.addServer("localhost",3324);
-        bk.addServer("localhost",3323);
-        bk.addServer("localhost",3323);
+        bk.addServer("localhost",3325);
+        bk.addServer("localhost",3326);
 
 
         HostInfo f = bk.connect();
@@ -59,16 +58,17 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
-        bk.addServer("localhost",3323);
         bk.addServer("localhost",3324);
-        bk.addServer("localhost",3323);
-        bk.addServer("localhost",3323);
+        bk.addServer("localhost",3325);
+        bk.addServer("localhost",3326);
 
 
         Future<HostInfo> f = bk.connectAsync();
 
 
         f.get();
+
+
 
 
         log.debug("Connected to 1 Host");
@@ -173,19 +173,19 @@ public class BrokerClientTest {
     @Test
     public void testClientEnqueueMessage() throws Exception{
 
-        BrokerClient bk = new BrokerClient("192.168.100.1",3322, NetProtocolType.SOAP_v0);
+        BrokerClient bk = new BrokerClient("192.168.100.10",3323, NetProtocolType.JSON);
 
         log.debug("connecting....");
         Future<HostInfo> f = bk.connectAsync();
 
 
         log.debug("Waiting for connection....");
-        f.get();
+        //f.get();
         log.debug("Connected....");
 
 
 
-         bk.subscribe("/teste/", NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
+         Future<HostInfo> fs = bk.subscribe("/teste/", NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
              @Override
              public boolean onMessage(NetNotification message,HostInfo host) {
 
@@ -193,9 +193,13 @@ public class BrokerClientTest {
 
                  return true;
              }
-         }).get();
+         });
+
+
 
         log.debug("sending message....");
+
+
         NetBrokerMessage netBrokerMessage = new NetBrokerMessage("Teste2");
         netBrokerMessage.setExpiration(System.currentTimeMillis()-30000);
 
@@ -205,10 +209,13 @@ public class BrokerClientTest {
 
 
         log.debug("waiting for message be delivered....");
+
+        Thread.sleep(2000);
+
         future.get();
 
 
-        Thread.sleep(10000);
+        Thread.sleep(2000);
 
 
     }

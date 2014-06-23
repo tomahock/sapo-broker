@@ -214,7 +214,7 @@ public class SslBrokerClient extends BrokerClient  {
      * @param timeout a long.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    protected Future<Void> sendAuthMessage(NetAuthentication authentication, AcceptResponseListener acceptResponseListener , long timeout ){
+    protected Future<HostInfo> sendAuthMessage(NetAuthentication authentication, AcceptResponseListener acceptResponseListener , long timeout ){
 
 
         if(acceptResponseListener!=null) {
