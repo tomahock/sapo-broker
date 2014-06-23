@@ -47,7 +47,7 @@
        
         // ... connecting ...
         
-       Future f = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
+       Future<HostInfo> f = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
        
                    @Override
                    public boolean onMessage(NetNotification message, HostInfo host) {
@@ -138,7 +138,7 @@
         
        NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
 
-       Future future = bk.publish("Olá Mundo", "/teste/", dstType);
+       Future<HostInfo> future = bk.publish("Olá Mundo", "/teste/", dstType);
        
 ```
 
@@ -152,7 +152,7 @@
         
        NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
 
-       Future future = bk.publish("Olá Mundo", "/teste/", dstType);
+       Future<HostInfo> future = bk.publish("Olá Mundo", "/teste/", dstType);
 ```
 
 # Advanced Topics

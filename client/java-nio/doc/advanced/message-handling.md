@@ -12,7 +12,7 @@ This class gives you simple message acknowledge.
         
          // ... connecting ...
          
-        bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListener() {
+       Future<HostInfo> future = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new BrokerListener() {
         
         
             @Override

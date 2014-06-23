@@ -44,7 +44,7 @@ Sometimes you need explicit acknowledge from the server.
                     
        },acknowledgeTimeout);
         
-       Future f = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
+       Future<HostInfo> f = bk.subscribe("/teste/",NetAction.DestinationType.QUEUE,new NotificationListenerAdapter() {
        
                    @Override
                    public boolean onMessage(NetNotification message, HostInfo host) {
