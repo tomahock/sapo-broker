@@ -1,22 +1,3 @@
-/binding/protobuf/target/
-/comm-types/target/
-/gcs/target/
-/binding/json/target/
-/binding/thrift/target/
-/agent/target/
-/binding/xml/target/
-/client/java/target/
-/client/java-nio/target/
-/client/javascript/target/
-/test/broker/target/
-/test/performance/target/
-/monitorization/collector/target/
-/client/exec/java/consumer/target/
-/sapo-sts/agent/target/
-/sapo-sts/client/java/target/
-agent/persistent*
-
-
 # Created by http://www.gitignore.io
 
 ### Java ###
@@ -79,4 +60,4 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 
-/target/
+persistent*
