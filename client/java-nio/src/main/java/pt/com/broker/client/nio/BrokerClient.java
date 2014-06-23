@@ -397,7 +397,7 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
         if(total_unsubscribe  == 0){
-            throw new IllegalArgumentException("No subscriptions found");
+            return new ExceptionFuture<HostInfo>(new IllegalArgumentException("No subscriptions found"));
         }
 
         return unsubcribeService.take();

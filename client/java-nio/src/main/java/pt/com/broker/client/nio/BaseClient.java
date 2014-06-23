@@ -406,7 +406,18 @@ public abstract class BaseClient{
     }
 
 
-    protected class HostNotAvailableFuture<T extends HostInfo> extends HostInfoFuture {
+    protected class ExceptionFuture<T extends HostInfo> extends HostInfoFuture {
+
+
+        Exception exception;
+
+        public ExceptionFuture(Exception exception) {
+            this.exception = exception;
+        }
+
+        public Exception getException() {
+            return exception;
+        }
 
         @Override
         public boolean cancel(boolean b) {
@@ -425,12 +436,22 @@ public abstract class BaseClient{
 
         @Override
         public T get() throws InterruptedException, ExecutionException {
-            throw new ExecutionException(new Exception("No Host available to connect"));
+            throw new ExecutionException(getException());
         }
 
         @Override
         public T get(long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, java.util.concurrent.TimeoutException {
             return get();
+        }
+
+
+    }
+
+    protected class HostNotAvailableFuture<T extends HostInfo> extends ExceptionFuture<T> {
+
+
+        public HostNotAvailableFuture() {
+            super(new Exception("No Host available to connect"));
         }
 
     };
