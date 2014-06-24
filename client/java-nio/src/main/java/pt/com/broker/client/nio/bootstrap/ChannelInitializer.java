@@ -14,6 +14,8 @@ import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
+import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
 
@@ -79,6 +81,8 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         ChannelPipeline pipeline = ch.pipeline();
 
+        HostInfo host = getHost(ch);
+
         SSLContext sslContext = getContext();
 
         if( sslContext !=null ){
@@ -91,10 +95,15 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         }
 
-        IdleStateHandler idleStateHandler = new IdleStateHandler(4000, 2000, 0, TimeUnit.MILLISECONDS);
 
-        pipeline.addLast("idle_state_handler", idleStateHandler );
-        pipeline.addLast("heartbeat_handler", heartbeatHandler);
+        /* only if reader and writer time are no ZERO, disabled otherwise  */
+        if(host.getReaderIdleTime()!=0 && host.getWriterIdleTime()!=0) {
+
+            IdleStateHandler idleStateHandler = new IdleStateHandler(host.getReaderIdleTime(), host.getWriterIdleTime(), 0, TimeUnit.MILLISECONDS);
+            pipeline.addLast("idle_state_handler", idleStateHandler);
+            pipeline.addLast("heartbeat_handler", heartbeatHandler);
+
+        }
 
         /* add message receive handler */
         pipeline.addLast("broker_notification_handler",receiveMessageHandler);
@@ -195,6 +204,13 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         faultHandler.setFaultListenerAdapter(adapter);
 
+    }
+
+    private final HostInfo getHost(Channel ch){
+
+        ChannelDecorator decorator = new ChannelDecorator(ch);
+
+        return decorator.getHost();
     }
 
 

@@ -1,6 +1,10 @@
 package pt.com.broker.client.nio.server;
 
 import io.netty.channel.Channel;
+import io.netty.util.UniqueName;
+import io.netty.util.internal.PlatformDependent;
+
+import java.util.concurrent.ConcurrentMap;
 
 
 /**
@@ -30,6 +34,12 @@ public final class HostInfo
 
     private Channel channel;
     private STATUS status = STATUS.CLOSED;
+
+    private long readerIdleTime = 20000;
+    private long writerIdleTime = 40000;
+
+
+
 
     /**
      * Creates a HostInfo instance.
@@ -183,9 +193,11 @@ public final class HostInfo
      * <p>reconnectAttempt.</p>
      */
     protected synchronized void reconnectAttempt(){
+
         if(reconnectLimit-- <= 0){
             setStatus(STATUS.DISABLE);
         }
+
     }
 
 
@@ -205,5 +217,22 @@ public final class HostInfo
      */
     public synchronized void setStatus(STATUS status) {
         this.status = status;
+    }
+
+
+    public long getReaderIdleTime() {
+        return readerIdleTime;
+    }
+
+    public synchronized void setReaderIdleTime(long readerIdleTime) {
+        this.readerIdleTime = readerIdleTime;
+    }
+
+    public long getWriterIdleTime() {
+        return writerIdleTime;
+    }
+
+    public synchronized void setWriterIdleTime(long writerIdleTime) {
+        this.writerIdleTime = writerIdleTime;
     }
 }
