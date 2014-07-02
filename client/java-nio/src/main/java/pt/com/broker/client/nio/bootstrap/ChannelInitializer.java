@@ -2,9 +2,9 @@ package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
+
 import io.netty.handler.ssl.SslHandler;
-import io.netty.handler.timeout.IdleStateHandler;
+
 import pt.com.broker.client.nio.codecs.HeartbeatHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
@@ -14,14 +14,10 @@ import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
-import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.NetProtocolType;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import java.util.concurrent.TimeUnit;
+
 
 /**
  * Created by luissantos on 06-05-2014.
@@ -81,7 +77,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         ChannelPipeline pipeline = ch.pipeline();
 
-        HostInfo host = getHost(ch);
+
 
         SSLContext sslContext = getContext();
 
@@ -95,15 +91,8 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         }
 
+        pipeline.addLast("heartbeat_handler", heartbeatHandler);
 
-        /* only if reader and writer time are no ZERO, disabled otherwise  */
-        if(host.getReaderIdleTime()!=0 && host.getWriterIdleTime()!=0) {
-
-            IdleStateHandler idleStateHandler = new IdleStateHandler(host.getReaderIdleTime(), host.getWriterIdleTime(), 0, TimeUnit.MILLISECONDS);
-            pipeline.addLast("idle_state_handler", idleStateHandler);
-            pipeline.addLast("heartbeat_handler", heartbeatHandler);
-
-        }
 
         /* add message receive handler */
         pipeline.addLast("broker_notification_handler",receiveMessageHandler);
@@ -206,12 +195,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
     }
 
-    private final HostInfo getHost(Channel ch){
 
-        ChannelDecorator decorator = new ChannelDecorator(ch);
-
-        return decorator.getHost();
-    }
 
 
 }

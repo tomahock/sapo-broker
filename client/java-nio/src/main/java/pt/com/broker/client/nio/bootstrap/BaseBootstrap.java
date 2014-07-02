@@ -1,11 +1,14 @@
 package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
@@ -44,15 +47,50 @@ public abstract class BaseBootstrap {
      * @param hostInfo a {@link pt.com.broker.client.nio.server.HostInfo} object.
      * @return a {@link io.netty.channel.ChannelFuture} object.
      */
-    public ChannelFuture connect(HostInfo hostInfo){
+    public ChannelFuture connect(final HostInfo hostInfo){
 
         io.netty.bootstrap.Bootstrap boot = getNewInstance();
 
         boot.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,hostInfo.getConnectTimeout());
 
+
         InetSocketAddress socketAddress = new InetSocketAddress(hostInfo.getHostname(),hostInfo.getPort());
 
         ChannelFuture f = boot.connect(socketAddress);
+
+        f.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture f) throws Exception {
+
+                if (f.isSuccess()) {
+
+                    ChannelDecorator channel = new ChannelDecorator(f.channel());
+                    channel.setHost(hostInfo);
+                    hostInfo.setChannel(channel);
+                    hostInfo.setStatus(HostInfo.STATUS.OPEN);
+
+                    f.channel().closeFuture().addListener(new ChannelFutureListener() {
+
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+
+                            hostInfo.setStatus(HostInfo.STATUS.CLOSED);
+                            hostInfo.setChannel(null);
+                        }
+                    });
+
+                    IdleStateHandler idleStateHandler = new IdleStateHandler(hostInfo.getReaderIdleTime(), hostInfo.getWriterIdleTime(), 0, TimeUnit.MILLISECONDS);
+
+                    f.channel().pipeline().addBefore("heartbeat_handler","idle_state_handler", idleStateHandler);
+
+
+                } else {
+                    hostInfo.setStatus(HostInfo.STATUS.CLOSED);
+                }
+
+
+            }
+        });
 
         return f;
     }

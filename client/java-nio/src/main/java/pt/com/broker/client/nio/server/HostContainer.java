@@ -339,9 +339,6 @@ public class HostContainer extends Observable {
                     throw new RuntimeException("invalid host removed");
                 }
 
-
-                host.setChannel(null);
-                host.setStatus(HostInfo.STATUS.CLOSED);
                 log.debug("Connection closed: " + host);
             }
 
@@ -489,23 +486,17 @@ public class HostContainer extends Observable {
                     synchronized (host) {
                         if (!future.isSuccess()) {
 
-                            host.setStatus(HostInfo.STATUS.CLOSED);
                             host.reconnectAttempt();
 
                             log.debug("Error connecting to server: " + host);
-
-
                             reconnect(host);
 
                             return;
                         }
 
-                        ChannelDecorator channel = new ChannelDecorator(f.channel());
-                        channel.setHost(host);
+                        Channel channel = new ChannelDecorator(f.channel());
 
-                        host.setChannel(channel);
 
-                        host.setStatus(HostInfo.STATUS.OPEN);
                         host.resetReconnectLimit();
 
                         channel.closeFuture().addListener(new ChannelFutureListener() {
@@ -518,7 +509,6 @@ public class HostContainer extends Observable {
                                 if (!future.isCancelled()) {
                                     reconnect(host);
                                 }
-
                             }
 
                         });
