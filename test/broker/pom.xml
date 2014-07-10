@@ -14,6 +14,7 @@
 		<mainClass>MainAll</mainClass>
         <agent-config-path>package/conf/agent_example.config</agent-config-path>
         <broker-global-config-path>package/conf/broker_global.config</broker-global-config-path>
+        <skipTests>true</skipTests>
 	</properties>
 	<build>
 		<plugins>
@@ -84,7 +85,7 @@
                        <include>pt/com/broker/functests/positive/*.java</include>
                        <include>pt/com/broker/functests/negative/*.java</include>
                    </includes>
-
+                    <skipTests>${skipTests}</skipTests>
                 </configuration>
             </plugin>
 		</plugins>
