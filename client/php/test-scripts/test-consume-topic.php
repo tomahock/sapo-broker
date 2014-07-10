@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$broker = broker_init("192.168.100.1", SB_PORT, SB_TCP, SB_PROTOBUF);
+$broker = broker_init("127.0.0.1", 3423, SB_TCP, SB_PROTOBUF);
 
 $ret = broker_subscribe_topic($broker, "/test/foo");
 
@@ -15,8 +15,7 @@ while (1) {
 
     		echo "Got message: " . print_r($msg_data, true) . "\n";
 	}else{
-		var_dump($msg);	
-		 echo broker_error($broker);
+
 	}
 
 }

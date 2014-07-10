@@ -1,10 +1,11 @@
 package pt.com.broker.http;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
-import org.caudexorigo.http.netty.NettyHttpServer;
+import org.caudexorigo.http.netty4.NettyHttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,8 @@ public class BrokerHttpService
 	private final Executor tpeIo;
 	private final Executor tpeWorkers;
 
+    final Executor executor = Executors.newSingleThreadScheduledExecutor();
+
 	public BrokerHttpService(Executor tpe_io, Executor tpe_workers, int portNumber)
 	{
 		tpeIo = tpe_io;
@@ -31,12 +34,24 @@ public class BrokerHttpService
 	public void start()
 	{
 		try
-		{       /* TODO TEMP CHANGE brsantos */
-			NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber, false, tpeIo, tpeWorkers);
-//			server.setPort(_portNumber);
-                        /* TEMP CHANGE brsantos */
-			server.setRouter(new BrokerRequestRouter());
-			server.start();
+		{
+
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+
+                    /* TODO TEMP CHANGE brsantos */
+                    NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber, false);
+
+
+                    /* TEMP CHANGE brsantos */
+                    server.setRouter(new BrokerRequestRouter());
+
+                    server.start();
+
+                }
+            });
+
 		}
 		catch (Throwable ex)
 		{

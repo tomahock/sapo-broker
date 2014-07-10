@@ -20,6 +20,11 @@
 	    <groupId>com.sleepycat</groupId>
 	    <artifactId>je</artifactId>
 	    <version>5.0.84</version>
-	</dependency>            
+	</dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.19.Final</version>
+        </dependency>
     </dependencies>
 </project>

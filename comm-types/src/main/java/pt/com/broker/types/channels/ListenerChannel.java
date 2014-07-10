@@ -1,11 +1,13 @@
 package pt.com.broker.types.channels;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
+
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
+
 
 public class ListenerChannel
 {
@@ -25,7 +27,7 @@ public class ListenerChannel
 	{
 		super();
 		this.context = context;
-		this.channel = context.getChannel();
+		this.channel = context.channel();
 	}
 
 	public ChannelFuture close()
@@ -37,10 +39,14 @@ public class ListenerChannel
 	{
 		return channel.write(obj);
 	}
+    public ChannelFuture writeAndFlush(Object obj)
+    {
+        return channel.writeAndFlush(obj);
+    }
 
 	public boolean isConnected()
 	{
-		return channel.isConnected();
+		return channel.isActive();
 	}
 
 	public boolean isWritable()
@@ -48,10 +54,7 @@ public class ListenerChannel
 		return channel.isWritable();
 	}
 
-	public boolean isReadable()
-	{
-		return channel.isReadable();
-	}
+
 
 	public Channel getChannel()
 	{
@@ -65,12 +68,12 @@ public class ListenerChannel
 
 	public ChannelPipeline getPipeline()
 	{
-		return channel.getPipeline();
+		return channel.pipeline();
 	}
 
 	public String getRemoteAddressAsString()
 	{
-		return channel.getRemoteAddress().toString();
+		return channel.remoteAddress().toString();
 	}
 
 	@Override

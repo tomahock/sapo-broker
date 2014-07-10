@@ -1,15 +1,17 @@
 package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.caudexorigo.Shutdown;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,21 +33,31 @@ public class BrokerServer
 {
 	private static Logger log = LoggerFactory.getLogger(BrokerServer.class);
 
-	private int _portNumber;
-
-	private int _legacyPortNumber;
+    final InetSocketAddress socketAddress;
+    final InetSocketAddress legacySocketAddress;
 
 	public static final int WRITE_BUFFER_HIGH_WATER_MARK = 128 * 1024;
 
-	private final ThreadPoolExecutor tpeIo;
-	private final ThreadPoolExecutor tpeWorkers;
 
-	public BrokerServer(ThreadPoolExecutor tpe_io, ThreadPoolExecutor tpe_workers, int portNumber, int legacyPortNumber)
+    private final SoapDecoder soapDecoder = new SoapDecoder();
+    private final SoapEncoder soapEncoder = new SoapEncoder();
+    protected final AuthorizationFilter authorizationFilter = new AuthorizationFilter();
+    protected final BrokerEncoderRouter brokerEncoderRouter = new BrokerEncoderRouter();
+
+
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
+
+
+
+	public BrokerServer(ThreadFactory tf_io, ThreadFactory tf_workers, int portNumber, int legacyPortNumber)
 	{
-		tpeIo = tpe_io;
-		tpeWorkers = tpe_workers;
-		_portNumber = portNumber;
-		_legacyPortNumber = legacyPortNumber;
+        bossGroup = new NioEventLoopGroup(5,tf_io); // (1)
+        workerGroup = new NioEventLoopGroup(5,tf_workers);
+
+
+        socketAddress = new InetSocketAddress("0.0.0.0", portNumber);
+        legacySocketAddress = new InetSocketAddress("0.0.0.0", legacyPortNumber);
 	}
 
 	public void start()
@@ -53,98 +65,153 @@ public class BrokerServer
 		try
 		{
 
-			ChannelFactory factory0 = new NioServerSocketChannelFactory(tpeIo, tpeWorkers);
-			ServerBootstrap bootstrap0 = new ServerBootstrap(factory0);
+            ChannelFuture futureLegacy = startLegacyTcpServer();
 
-			bootstrap0.setOption("child.tcpNoDelay", false);
-			bootstrap0.setOption("child.keepAlive", true);
-			bootstrap0.setOption("child.receiveBufferSize", 256 * 1024);
-			bootstrap0.setOption("child.sendBufferSize", 256 * 1024);
-			bootstrap0.setOption("child.soLinger", -1);
-			bootstrap0.setOption("reuseAddress", true);
-			bootstrap0.setOption("backlog", 1024);
-			bootstrap0.setOption("writeBufferHighWaterMark", WRITE_BUFFER_HIGH_WATER_MARK); // default=64K
-			// bootstrap0.setOption("writeBufferLowWaterMark", 1024); // default=32K
 
-			// water marks introduction:
-			// http://www.jboss.org/netty/community.html#nabble-td1611593
+            futureLegacy.addListener(new ChannelFutureListener() {
 
-			ChannelPipelineFactory serverPipelineFactory0 = new ChannelPipelineFactory()
-			{
-				@Override
-				public ChannelPipeline getPipeline() throws Exception
-				{
-					ChannelPipeline pipeline = Channels.pipeline();
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    log.info("SAPO-BROKER (legacy protocol)  Listening on: '{}'.", channelFuture.channel().localAddress());
+                }
 
-					pipeline.addLast("broker-legacy-framing-decoder", new SimpleFramingDecoder());
-					pipeline.addLast("broker-legacy-xml-decoder", new SoapDecoder());
+            });
 
-					if (GcsInfo.useAccessControl())
-					{
-						pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
-					}
 
-					pipeline.addLast("broker-legacy-framing-encoder", new SimpleFramingEncoder());
-					pipeline.addLast("broker-legacy-xml-encoder", new SoapEncoder());
 
-					pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
+            ChannelFuture future = startTcpServer();
 
-					return pipeline;
-				}
-			};
 
-			bootstrap0.setPipelineFactory(serverPipelineFactory0);
+            future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    log.info("SAPO-BROKER Listening on: '{}'.", channelFuture.channel().localAddress());
+                }
+            });
 
-			InetSocketAddress inet0 = new InetSocketAddress("0.0.0.0", _legacyPortNumber);
-			bootstrap0.bind(inet0);
-			log.info("SAPO-BROKER (legacy protocol)  Listening on: '{}'.", inet0.toString());
 
-			ChannelFactory factory1 = new NioServerSocketChannelFactory(tpeIo, tpeWorkers);
-			ServerBootstrap bootstrap1 = new ServerBootstrap(factory1);
 
-			ChannelPipelineFactory serverPipelineFactory1 = new ChannelPipelineFactory()
-			{
-				@Override
-				public ChannelPipeline getPipeline() throws Exception
-				{
-					ChannelPipeline pipeline = Channels.pipeline();
-
-					pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
-
-					pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
-
-					if (GcsInfo.useAccessControl())
-					{
-						pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
-					}
-
-					pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
-
-					return pipeline;
-				}
-			};
-
-			bootstrap1.setPipelineFactory(serverPipelineFactory1);
-
-			bootstrap1.setOption("child.tcpNoDelay", false);
-			bootstrap1.setOption("child.keepAlive", true);
-			bootstrap1.setOption("child.receiveBufferSize", 128 * 1024);
-			bootstrap1.setOption("child.sendBufferSize", 128 * 1024);
-			bootstrap1.setOption("child.soLinger", -1);
-			bootstrap1.setOption("reuseAddress", true);
-			bootstrap1.setOption("backlog", 1024);
-			bootstrap1.setOption("writeBufferHighWaterMark", WRITE_BUFFER_HIGH_WATER_MARK); // default=64K
-			// bootstrap1.setOption("writeBufferLowWaterMark", 1024); // default=32K
-
-			InetSocketAddress inet1 = new InetSocketAddress("0.0.0.0", _portNumber);
-			bootstrap1.bind(inet1);
-			log.info("SAPO-BROKER Listening on: '{}'.", inet1.toString());
 
 		}
 		catch (Throwable e)
 		{
 			log.error(e.getMessage(), e);
+
 			Shutdown.now();
 		}
 	}
+    protected ChannelFuture startLegacyTcpServer(){
+
+        ServerBootstrap bootstrap = createBootstrap();
+
+        bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
+
+            @Override
+            protected void initChannel(SocketChannel socketChannel) throws Exception {
+
+                ChannelPipeline pipeline = socketChannel.pipeline();
+
+                pipeline.addLast("broker-legacy-framing-decoder", new SimpleFramingDecoder());
+                pipeline.addLast("broker-legacy-xml-decoder", soapDecoder);
+
+
+                super.initChannel(socketChannel);
+
+
+                pipeline.addBefore("broker-handler","broker-legacy-framing-encoder",new SimpleFramingEncoder());
+                pipeline.addBefore("broker-handler","broker-legacy-xml-encoder", soapEncoder);
+
+            }
+        });
+
+
+
+
+        return bootstrap.bind(legacySocketAddress);
+
+    }
+
+
+    protected ChannelFuture startTcpServer(){
+
+        ServerBootstrap bootstrap = createBootstrap();
+
+
+        bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
+
+            @Override
+            protected void initChannel(SocketChannel socketChannel) throws Exception {
+
+
+                ChannelPipeline pipeline = socketChannel.pipeline();
+
+                pipeline.addLast("broker-encoder", brokerEncoderRouter);
+
+                pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
+
+                super.initChannel(socketChannel);
+
+
+            }
+        });
+
+
+
+
+        return bootstrap.bind(socketAddress);
+
+    }
+
+
+    protected ServerBootstrap createBootstrap(){
+
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.channel(NioServerSocketChannel.class);
+
+
+
+        bootstrap.group(bossGroup,workerGroup);
+
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, false);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
+        bootstrap.childOption(ChannelOption.SO_RCVBUF, 256 * 1024);
+        bootstrap.childOption(ChannelOption.SO_SNDBUF, 256 * 1024);
+        bootstrap.childOption(ChannelOption.SO_LINGER,-1);
+        bootstrap.option(ChannelOption.SO_REUSEADDR, true);
+        bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
+        bootstrap.option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK,WRITE_BUFFER_HIGH_WATER_MARK);// default=64K
+
+        // bootstrap0.setOption("writeBufferLowWaterMark", 1024); // default=32K
+
+        // water marks introduction:
+        // http://www.jboss.org/netty/community.html#nabble-td1611593
+
+
+        return bootstrap;
+    }
+
+    public int getPortNumber() {
+        return socketAddress.getPort();
+    }
+
+
+    protected class ChannelInitializer<T extends Channel> extends io.netty.channel.ChannelInitializer<T>{
+
+        @Override
+        protected void initChannel(T ch) throws Exception {
+
+            ChannelPipeline pipeline = ch.pipeline();
+
+
+            if (GcsInfo.useAccessControl())
+            {
+                pipeline.addLast("broker-auth-filter", authorizationFilter);
+            }
+
+            pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
+
+
+        }
+    }
+
 }

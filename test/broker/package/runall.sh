@@ -23,26 +23,26 @@ java -server \
 -Dfile.encoding=UTF-8 \
 -Dconfig-file=./conf/testparams.xml \
 -cp $classpath \
-pt.com.broker.functests.Main -a 1
+Main -a 1
 
 # all
-#pt.com.broker.functests.Main -a 1
+#Main -a 1
 # all with 5 runs each test
-#pt.com.broker.functests.Main -n 1 -r 5
+#Main -n 1 -r 5
 #just positive tests
-#pt.com.broker.functests.Main -p 1
+#Main -p 1
 # just negative tests
-#pt.com.broker.functests.Main -n 1
+#Main -n 1
 # just postive Topic tests
-#pt.com.broker.functests.Main -t 1
+#Main -t 1
 # just positive Queue tests
-#pt.com.broker.functests.Main -q 1
+#Main -q 1
 # just positive Virtual Queue tests
-#pt.com.broker.functests.Main -v 1
+#Main -v 1
 # just positive SSL and Authentication relatated tests
-#pt.com.broker.functests.Main -s 1
+#Main -s 1
 # just positive UDP tests
-#pt.com.broker.functests.Main -u 1
+#Main -u 1
 
 ps aux | grep BROKER_TEST | grep -v "grep" | awk '{print $2}' | xargs kill
 

@@ -1,5 +1,7 @@
 package pt.com.gcs.messaging;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.caudexorigo.ErrorAnalyser;
@@ -63,6 +65,7 @@ public class BDBStorage
 			dbConfig.setSortedDuplicates(false);
 			dbConfig.setBtreeComparator(BDBMessageComparator.class);
 			messageDb = env.openDatabase(null, primaryDbName, dbConfig);
+
 
 			log.info("Storage for queue '{}' is ready.", queueProcessor.getQueueName());
 		}
@@ -290,6 +293,59 @@ public class BDBStorage
 	}
 
 	protected AtomicBoolean recoveryRunning = new AtomicBoolean(false);
+
+    public List<BDBMessage> getMessages(){
+
+        Cursor msg_cursor = null;
+
+        List<BDBMessage> list = new ArrayList<>(10);
+
+        try {
+
+            msg_cursor = messageDb.openCursor(null, null);
+
+            DatabaseEntry key = new DatabaseEntry();
+            DatabaseEntry data = new DatabaseEntry();
+
+            while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS)) {
+                if (isMarkedForDeletion.get())
+                    break;
+
+
+                byte[] bdata = data.getData();
+
+                BDBMessage bdbm = null;
+
+                try
+                {
+                    bdbm = MessageMarshaller.unmarshallBDBMessage(bdata);
+                    if (bdbm == null)
+                    {
+                        log.info("MessageMarshaller.unmarshallBDBMessage returned null");
+                        continue;
+                    }
+
+                    list.add(bdbm);
+                }
+                catch (Throwable e)
+                {
+
+                    continue;
+                }
+
+            }
+
+        }catch (Exception ex){
+
+            log.error(ex.getMessage(), ex);
+
+        }finally {
+            closeDbCursor(msg_cursor);
+        }
+
+
+        return list;
+    }
 
 	protected long recoverMessages()
 	{

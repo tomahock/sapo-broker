@@ -1,5 +1,8 @@
 package pt.com.broker.types.channels;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.Map;
@@ -7,8 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
+
 
 public class ChannelAttributes
 {
@@ -64,12 +66,12 @@ public class ChannelAttributes
 
 	public static String getChannelId(ChannelHandlerContext ctx)
 	{
-		return getChannelId(ctx.getChannel());
+		return getChannelId(ctx.channel());
 	}
 
 	public static String getChannelId(Channel channel)
 	{
-		InetSocketAddress remoteAddress = (InetSocketAddress) channel.getRemoteAddress();
+		InetSocketAddress remoteAddress = (InetSocketAddress) channel.remoteAddress();
 		if (remoteAddress == null)
 		{
 			return null;

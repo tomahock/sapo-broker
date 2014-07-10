@@ -16,6 +16,16 @@
 		<groupId>org.jibx</groupId>
 		<artifactId>jibx-maven-plugin</artifactId>
 		<version>1.2.5</version>
+
+
+        <dependencies>
+            <!-- Java 8 Suppport -->
+            <dependency>
+                <groupId>org.apache.bcel</groupId>
+                <artifactId>bcel</artifactId>
+                <version>6.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
 		<configuration>
 		    <schemaBindingDirectory>src/main/xml</schemaBindingDirectory>
 		    <includeSchemaBindings>
@@ -38,21 +48,63 @@
 	    <groupId>org.jibx</groupId>
 	    <artifactId>jibx-run</artifactId>
 	    <version>1.2.5</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.apache.bcel</groupId>
+                <artifactId>bcel</artifactId>
+            </exclusion>
+        </exclusions>
 	</dependency>
 	<dependency>
 	    <groupId>org.jibx</groupId>
 	    <artifactId>jibx-extras</artifactId>
 	    <version>1.2.5</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.apache.bcel</groupId>
+                <artifactId>bcel</artifactId>
+            </exclusion>
+        </exclusions>
 	</dependency>
 	<dependency>
 	    <groupId>${project.groupId}</groupId>
 	    <version>${project.version}</version>
 	    <artifactId>sapo-broker-comm-types</artifactId>
 	</dependency>
-	<dependency>
-	    <groupId>org.apache.bcel</groupId>
-	    <artifactId>bcel</artifactId>
-	    <version>5.2</version>
-	</dependency>
+
+    <!-- Java 8 Suppport -->
+    <dependency>
+        <groupId>org.apache.bcel</groupId>
+        <artifactId>bcel</artifactId>
+        <version>6.0-SNAPSHOT</version>
+    </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

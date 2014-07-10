@@ -2,15 +2,14 @@ package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadFactory;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import org.caudexorigo.Shutdown;
-import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.FixedReceiveBufferSizePredictorFactory;
-import org.jboss.netty.channel.socket.DatagramChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,57 +26,48 @@ public class BrokerUdpServer
 
 	private static final int MAX_UDP_MESSAGE_SIZE = 65 * 1024;
 
-	private int _legacyPort;
-	private int _binProtoPort;
-	private final Executor tpeIo;
+	private final ThreadFactory tfIo;
 
-	public BrokerUdpServer(Executor tpe_io, int legacyPort, int binProtoPort)
+    private final InetSocketAddress socketAddress;
+    private final InetSocketAddress legacySocketAddress;
+
+    private final NoFramingEncoder noFramingEncoder = new NoFramingEncoder();
+    private final AuthorizationFilter authorizationFilter =  new AuthorizationFilter();
+    private final UdpFramingDecoder udpFramingDecoder =  new UdpFramingDecoder(GcsInfo.getMessageMaxSize());
+
+	public BrokerUdpServer(ThreadFactory tf_io, int legacyPort, int binProtoPort)
 	{
 		super();
-		tpeIo = tpe_io;
-		_legacyPort = legacyPort;
-		_binProtoPort = binProtoPort;
+
+        socketAddress = new InetSocketAddress("0.0.0.0", binProtoPort);
+        legacySocketAddress = new InetSocketAddress("0.0.0.0", legacyPort);
+
+		this.tfIo = tf_io;
 	}
 
 	public void start()
 	{
+
 		try
 		{
-			// Legacy message format
 
-			DatagramChannelFactory datagramChannelFactory0 = new NioDatagramChannelFactory(tpeIo);
+			ChannelFuture future = startUdpServer();
 
-			ConnectionlessBootstrap bootstrap0 = new ConnectionlessBootstrap(datagramChannelFactory0);
 
-			ChannelPipelineFactory serverPipelineFactory0 = new ChannelPipelineFactory()
-			{
-				@Override
-				public ChannelPipeline getPipeline() throws Exception
-				{
-					ChannelPipeline pipeline = Channels.pipeline();
+            future.addListener(new ChannelFutureListener() {
 
-					pipeline.addLast("broker-encoder", new NoFramingEncoder());
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
 
-					pipeline.addLast("broker-decoder", new UdpFramingDecoder(GcsInfo.getMessageMaxSize()));
+                    if(channelFuture.isSuccess()){
+                        log.info("SAPO-UDP-BROKER BINARY Listening on: '{}'.", channelFuture.channel().localAddress());
+                    }
 
-					if (GcsInfo.useAccessControl())
-					{
-						pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
-					}
+                }
+            });
 
-					pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
 
-					return pipeline;
-				}
-			};
 
-			bootstrap0.setPipelineFactory(serverPipelineFactory0);
-			// bootstrap0.setOption("broadcast", "false");
-			bootstrap0.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(MAX_UDP_MESSAGE_SIZE));
-
-			InetSocketAddress inet0 = new InetSocketAddress("0.0.0.0", _binProtoPort);
-			bootstrap0.bind(inet0);
-			log.info("SAPO-UDP-BROKER BINARY Listening on: '{}'.", inet0.toString());
 		}
 		catch (Throwable t)
 		{
@@ -86,45 +76,119 @@ public class BrokerUdpServer
 
 		try
 		{
-			// Legacy message format
 
-			DatagramChannelFactory datagramChannelFactory1 = new NioDatagramChannelFactory(tpeIo);
+            ChannelFuture future = startUdpLegacyServer();
 
-			ConnectionlessBootstrap bootstrap1 = new ConnectionlessBootstrap(datagramChannelFactory1);
+            future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
 
-			ChannelPipelineFactory serverPipelineFactory1 = new ChannelPipelineFactory()
-			{
-				@Override
-				public ChannelPipeline getPipeline() throws Exception
-				{
-					ChannelPipeline pipeline = Channels.pipeline();
+                    if(channelFuture.isSuccess()){
+                        log.info("SAPO-UDP-BROKER LEGACY Listening on: '{}'.", channelFuture.channel().localAddress());
+                    }
 
-					pipeline.addLast("broker-encoder", new NoFramingEncoder());
 
-					pipeline.addLast("broker-decoder", new NoFramingDecoder());
+                }
+            });
 
-					if (GcsInfo.useAccessControl())
-					{
-						pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
-					}
 
-					pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
 
-					return pipeline;
-				}
-			};
-
-			bootstrap1.setPipelineFactory(serverPipelineFactory1);
-			// bootstrap1.setOption("broadcast", "false");
-			bootstrap1.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(MAX_UDP_MESSAGE_SIZE));
-
-			InetSocketAddress inet1 = new InetSocketAddress("0.0.0.0", _legacyPort);
-			bootstrap1.bind(inet1);
-			log.info("SAPO-UDP-BROKER LEGACY Listening on: '{}'.", inet1.toString());
 		}
 		catch (Throwable t)
 		{
 			Shutdown.now(t);
 		}
 	}
+
+
+    private final ChannelFuture startUdpLegacyServer(){
+
+        // Legacy message format
+
+        Bootstrap legacyBootstrap = createBootstrap();
+
+
+        legacyBootstrap.handler(new ChannelInitializer<DatagramChannel>() {
+
+            @Override
+            protected void initChannel(DatagramChannel datagramChannel) throws Exception {
+
+                super.initChannel(datagramChannel);
+
+                ChannelPipeline pipeline = datagramChannel.pipeline();
+
+                pipeline.addAfter("broker-encoder", "broker-decoder", new NoFramingDecoder());
+
+            }
+        });
+
+
+
+        return legacyBootstrap.bind(legacySocketAddress);
+
+    }
+
+
+    private final ChannelFuture startUdpServer(){
+
+        Bootstrap bootstrap = createBootstrap();
+
+        bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
+
+            @Override
+            protected void initChannel(DatagramChannel datagramChannel) throws Exception {
+
+                super.initChannel(datagramChannel);
+
+                ChannelPipeline pipeline = datagramChannel.pipeline();
+
+                pipeline.addAfter("broker-encoder","broker-decoder", udpFramingDecoder);
+
+            }
+        });
+
+        return bootstrap.bind(socketAddress);
+
+    }
+
+
+    private final Bootstrap createBootstrap(){
+
+        Bootstrap bootstrap = new Bootstrap();
+
+        EventLoopGroup bossGroup = new NioEventLoopGroup(5,this.tfIo); // (1)
+
+        bootstrap.group(bossGroup);
+
+        bootstrap.channel(NioDatagramChannel.class);
+        bootstrap.option(ChannelOption.SO_BROADCAST, true);
+
+
+        /* @todo ver udp package size*/
+        //bootstrap1.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(MAX_UDP_MESSAGE_SIZE));
+
+
+        return bootstrap;
+    }
+
+    private class ChannelInitializer<T extends Channel> extends io.netty.channel.ChannelInitializer<T>{
+
+        @Override
+        protected void initChannel(T ch) throws Exception {
+
+            ChannelPipeline pipeline = ch.pipeline();
+
+            pipeline.addLast("broker-encoder", noFramingEncoder);
+
+            if (GcsInfo.useAccessControl())
+            {
+                pipeline.addLast("broker-auth-filter", authorizationFilter);
+            }
+
+            pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
+
+
+        }
+    }
+
 }

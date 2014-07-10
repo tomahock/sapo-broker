@@ -3,15 +3,12 @@ package pt.com.gcs.messaging;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,111 +27,118 @@ import pt.com.gcs.conf.GlobalConfig;
  * 
  */
 
-@Sharable
-class GcsRemoteProtocolHandler extends SimpleChannelHandler
+@ChannelHandler.Sharable
+class GcsRemoteProtocolHandler extends SimpleChannelInboundHandler<NetMessage>
 {
 	private static Logger log = LoggerFactory.getLogger(GcsRemoteProtocolHandler.class);
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-	{
-		Channel channel = ctx.getChannel();
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
 
-		Throwable rootCause = ErrorAnalyser.findRootCause(e.getCause());
-		CriticalErrors.exitIfCritical(rootCause);
-		log.error("Exception Caught:{}, {}", channel.getRemoteAddress(), rootCause.getMessage());
-		if (channel.isConnected())
-		{
-			log.error("STACKTRACE", rootCause);
-		}
+        Channel channel = ctx.channel();
 
-		try
-		{
-			channel.close();
-		}
-		catch (Throwable t)
-		{
-			log.error("STACKTRACE", t);
-		}
-	}
+        Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+        CriticalErrors.exitIfCritical(rootCause);
+        log.error("Exception Caught:{}, {}", channel.remoteAddress(), rootCause.getMessage());
+        if (channel.isActive())
+        {
+            log.error("STACKTRACE", rootCause);
+        }
 
-	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
-	{
-		final NetMessage m = (NetMessage) e.getMessage();
-		String mtype = m.getHeaders().get("TYPE");
+        try
+        {
+            channel.close();
+        }
+        catch (Throwable t)
+        {
+            log.error("STACKTRACE", t);
+        }
+    }
 
-		NetNotification nnot = m.getAction().getNotificationMessage();
 
-		NetBrokerMessage brkMsg = nnot.getMessage();
 
-		Channel channel = ctx.getChannel();
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception {
 
-		if (log.isDebugEnabled())
-		{
-			log.debug("Message Received from: '{}', Type: '{}'", channel.getRemoteAddress(), mtype);
-		}
+        final NetMessage m = msg;
 
-		if (m.getHeaders() != null)
-		{
-			brkMsg.addAllHeaders(m.getHeaders());
-		}
-		brkMsg.addHeader("IS_REMOTE", "true");
+        String mtype = m.getHeaders().get("TYPE");
 
-		if (mtype.equals("COM_TOPIC"))
-		{
-			NetPublish np = new NetPublish(nnot.getDestination(), DestinationType.TOPIC, brkMsg);
-			TopicProcessorList.notify(np, true);
-		}
-		else if (mtype.equals("COM_QUEUE"))
-		{
-			QueueProcessor queueProcessor = QueueProcessorList.get(nnot.getDestination());
-			if (queueProcessor != null)
-			{
-				if (acknowledgeMessage(queueProcessor.getQueueName(), brkMsg.getMessageId(), channel))
-				{
-					queueProcessor.store(m, GlobalConfig.preferLocalConsumers());
-				}
-			}
-		}
-		else if (mtype.equals("SYSTEM_ACK"))
-		{
-			String msgContent = new String(brkMsg.getPayload(), UTF8);
-			String messageId = extract(msgContent, "<message-id>", "</message-id>");
-			SystemMessagesPublisher.messageAcknowledged(messageId);
-		}
-		else
-		{
-			log.warn("Unkwown message type. Don't know how to handle message. Type: '{}'", mtype);
-		}
-	}
+        NetNotification nnot = m.getAction().getNotificationMessage();
 
-	@Override
-	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
-	{
-		super.channelClosed(ctx, e);
+        NetBrokerMessage brkMsg = nnot.getMessage();
 
-		Channel channel = ctx.getChannel();
+        Channel channel = ctx.channel();
 
-		log.info("Session Closed: '{}'", channel.getRemoteAddress());
+        if (log.isDebugEnabled())
+        {
+            log.debug("Message Received from: '{}', Type: '{}'", channel.remoteAddress(), mtype);
+        }
 
-		Gcs.remoteSessionClosed(channel);
+        if (m.getHeaders() != null)
+        {
+            brkMsg.addAllHeaders(m.getHeaders());
+        }
+        brkMsg.addHeader("IS_REMOTE", "true");
 
-		if (OutboundRemoteChannels.remove(channel))
-		{
-			GcsExecutor.schedule(new Connect(channel.getRemoteAddress()), 5000, TimeUnit.MILLISECONDS);
-		}
-	}
+        if (mtype.equals("COM_TOPIC"))
+        {
+            NetPublish np = new NetPublish(nnot.getDestination(), DestinationType.TOPIC, brkMsg);
+            TopicProcessorList.notify(np, true);
+        }
+        else if (mtype.equals("COM_QUEUE"))
+        {
+            QueueProcessor queueProcessor = QueueProcessorList.get(nnot.getDestination());
+            if (queueProcessor != null)
+            {
+                if (acknowledgeMessage(queueProcessor.getQueueName(), brkMsg.getMessageId(), channel))
+                {
+                    queueProcessor.store(m, GlobalConfig.preferLocalConsumers());
+                }
+            }
+        }
+        else if (mtype.equals("SYSTEM_ACK"))
+        {
+            String msgContent = new String(brkMsg.getPayload(), UTF8);
+            String messageId = extract(msgContent, "<message-id>", "</message-id>");
+            SystemMessagesPublisher.messageAcknowledged(messageId);
+        }
+        else
+        {
+            log.warn("Unkwown message type. Don't know how to handle message. Type: '{}'", mtype);
+        }
 
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
-	{
-		super.channelConnected(ctx, e);
+    }
 
-		log.info("Session Opened: '{}'", ctx.getChannel().getRemoteAddress());
-		sayHello(ctx);
-	}
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+
+        Channel channel = ctx.channel();
+
+        log.info("Session Closed: '{}'", channel.remoteAddress());
+
+        Gcs.remoteSessionClosed(channel);
+
+        if (OutboundRemoteChannels.remove(channel))
+        {
+            GcsExecutor.schedule(new Connect(channel.remoteAddress()), 5000, TimeUnit.MILLISECONDS);
+        }
+    }
+
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+
+        log.info("Session Opened: '{}'", ctx.channel().remoteAddress());
+        sayHello(ctx);
+    }
+
+
 
 	private boolean acknowledgeMessage(String destination, String messageId, Channel channel)
 	{
@@ -160,7 +164,7 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 			nmsg.getHeaders().put("TYPE", "ACK");
 
 			// channel is writable. checked before
-			channel.write(nmsg);
+			channel.writeAndFlush(nmsg);
 		}
 		catch (Throwable ct)
 		{
@@ -181,11 +185,11 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 
 	public void sayHello(ChannelHandlerContext ctx)
 	{
-		Channel channel = ctx.getChannel();
+		Channel channel = ctx.channel();
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("Say Hello: '{}'", channel.getRemoteAddress());
+			log.debug("Say Hello: '{}'", channel.remoteAddress());
 		}
 
 		try
@@ -203,7 +207,7 @@ class GcsRemoteProtocolHandler extends SimpleChannelHandler
 
 			log.info("Send agentId: '{}'", agentId);
 
-			channel.write(nmsg);
+			channel.writeAndFlush(nmsg);
 		}
 		catch (Throwable t)
 		{

@@ -24,8 +24,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.caudexorigo</groupId>
-			<artifactId>org-caudexorigo-http-netty3</artifactId>
-			<version>1.0-SNAPSHOT</version>			
+			<artifactId>org-caudexorigo-http-netty4</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -47,7 +47,47 @@
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-binding-thrift</artifactId>
 		</dependency>
-	</dependencies>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>9.2.1.v20140609</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core"  -->
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <version>${project.version}</version>
+            <artifactId>sapo-broker-java-client-nio</artifactId>
+        </dependency>
+
+
+    </dependencies>
 	<build>
 		<plugins>
             <plugin>

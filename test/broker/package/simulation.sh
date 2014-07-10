@@ -22,6 +22,6 @@ java -server \
 -Dconfig-file=./conf/testparams.xml \
 -Dfile.encoding=UTF-8 \
 -cp $classpath \
-pt.com.broker.functests.simulation.MainAll
+MainAll
 
 ps aux | grep BROKER_TEST | grep -v "grep" | awk '{print $2}' | xargs kill

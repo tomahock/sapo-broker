@@ -9,10 +9,16 @@ $msgs = 0;
 
 
 // consume with auto-ack
-while (($msg = broker_receive($broker, 1000, false)) !== false) {
+while (1){
+
+   $msg = broker_receive($broker, 1000, true);
+   if($msg !== false){
+
+
     echo "Got message: " . print_r($msg, true) . "\n";
       
     $msgs++;
+  }
 }
 
 broker_destroy($broker);

@@ -97,6 +97,11 @@ public class MiscStats
 		return sysMessagesFailed.getAndSet(0);
 	}
 
+    public static long getSystemMessagesFailures()
+    {
+        return sysMessagesFailed.get();
+    }
+
 	// Fault
 	private static final AtomicLong faults = new AtomicLong(0);
 

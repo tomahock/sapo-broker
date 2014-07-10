@@ -2,8 +2,8 @@ package pt.com.gcs.messaging;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,14 +141,14 @@ public class RemoteListener extends MessageListenerBase
 
 			if (lchannel.isWritable())
 			{
-				lchannel.write(nmsg);
+				lchannel.writeAndFlush(nmsg);
 				setReady(true);
 			}
 			else
 			{
 				if (isReady())
 				{
-					ChannelFuture future = lchannel.write(nmsg);
+					ChannelFuture future = lchannel.writeAndFlush(nmsg);
 					setReady(false);
 					if (showSuspendedDeliveryMessage && log.isDebugEnabled())
 					{

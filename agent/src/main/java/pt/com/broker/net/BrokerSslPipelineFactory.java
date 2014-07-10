@@ -1,6 +1,6 @@
 package pt.com.broker.net;
 
-import static org.jboss.netty.channel.Channels.pipeline;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,11 +9,13 @@ import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslHandler;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.handler.ssl.SslHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ import pt.com.broker.codec.BrokerDecoderRouter;
 import pt.com.broker.codec.BrokerEncoderRouter;
 import pt.com.gcs.conf.GcsInfo;
 
-public class BrokerSslPipelineFactory implements ChannelPipelineFactory
+public class BrokerSslPipelineFactory
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerSslPipelineFactory.class);
 
@@ -84,31 +86,42 @@ public class BrokerSslPipelineFactory implements ChannelPipelineFactory
 		}
 	}
 
-	public ChannelPipeline getPipeline() throws Exception
+	public ChannelInitializer<SocketChannel> getInitializer() throws Exception
 	{
-		// Create a default pipeline implementation.
-		ChannelPipeline pipeline = pipeline();
 
-		SSLContext sslContext = getSSLContext();
-		SSLEngine sslEngine = sslContext.createSSLEngine();
-		sslEngine.setUseClientMode(false);
-		SslHandler sslHandler = new SslHandler(sslEngine);
+        ChannelInitializer initializer = new ChannelInitializer<SocketChannel>() {
 
-		pipeline.addLast("ssl", sslHandler);
+            @Override
+            protected void initChannel(SocketChannel socketChannel) throws Exception {
 
-		pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
-		pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
+                // Create a default pipeline implementation.
+                ChannelPipeline pipeline = socketChannel.pipeline();
 
-		if (GcsInfo.useAccessControl())
-		{
-			pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
-		}
+                SSLContext sslContext = getSSLContext();
+                SSLEngine sslEngine = sslContext.createSSLEngine();
+                sslEngine.setUseClientMode(false);
+                SslHandler sslHandler = new SslHandler(sslEngine);
 
-		pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
-		return pipeline;
+                pipeline.addLast("ssl", sslHandler);
+
+                pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
+                pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
+
+                if (GcsInfo.useAccessControl())
+                {
+                    pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
+                }
+
+                pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
+
+            }
+        };
+
+
+		return initializer;
 	}
 
-	private javax.net.ssl.SSLContext getSSLContext() throws Exception
+	public javax.net.ssl.SSLContext getSSLContext() throws Exception
 	{
 		if (sslContext != null)
 		{

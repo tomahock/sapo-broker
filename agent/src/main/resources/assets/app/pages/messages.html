@@ -1,0 +1,42 @@
+<div ng-controller="MessagesCtrl" >
+
+
+    <h2>{{queueName}}</h2>
+    <broker poll="false" >
+        <table class="ink-table" ng-hide="!data.length" >
+            <thead>
+            <tr>
+                <th class="align-left">MessageID</th>
+                <th class="align-left">Payload</th>
+                <th class="align-left">Timestamp</th>
+                <th class="align-left">Expires</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr ng-repeat="message in data" >
+             <td>{{ message.action.notificationMessage.message.messageId}}</td>
+             <td>
+                 <a  ng-click="showModal(message)"  >detail</a>
+                 <modal show="message.showmodal" title="'Message ' + message.action.notificationMessage.message.messageId + ' details'" >
+                     {{ message.action.notificationMessage.message.payload | decode64}}
+                 </modal>
+
+             </td>
+
+             <td>{{ message.action.notificationMessage.message.timestamp  | date : "medium"}}</td>
+             <td>{{ message.action.notificationMessage.message.expiration | date : "medium"}}</td>
+            </tr>
+
+            </tbody>
+        </table>
+
+        <p ng-hide="data.length" class="align-center" ><strong>No Messages Available</strong></p>
+    </broker>
+
+
+
+
+
+</div>
+

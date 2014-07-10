@@ -11,19 +11,19 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ChannelFactory;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoop;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.CustomExecutors;
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,7 @@ public class Gcs
 
 	private Set<Channel> agentsConnection = new HashSet<Channel>();
 
-	private ClientBootstrap connector;
+	private Bootstrap connector;
 
 	private static final long EXPIRATION_TIME;
 
@@ -125,23 +125,23 @@ public class Gcs
 				log.info("Connection fail to '{}'.", address.toString());
 				if (!cf.isDone())
 				{
-					cf.cancel();
+					cf.cancel(true);
 					// If the connection is established between isDone and Cancel, close it
-					if (cf.getChannel().isConnected())
+					if (cf.channel().isActive())
 					{
 						log.warn("Connection to '{}' established after beeing canceled.", address.toString());
-						cf.getChannel().close();
+						cf.channel().close();
 					}
 				}
 				GcsExecutor.schedule(new Connect(address), RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
 			}
 			else
 			{
-				OutboundRemoteChannels.add(remoteAgentId, cf.getChannel());
+				OutboundRemoteChannels.add(remoteAgentId, cf.channel());
 				log.info("Connection established to '{}'.", address.toString());
 				synchronized (instance.agentsConnection)
 				{
-					instance.agentsConnection.add(cf.getChannel());
+					instance.agentsConnection.add(cf.channel());
 				}
 			}
 		}
@@ -166,7 +166,7 @@ public class Gcs
 
 		for (Channel channel : connectedSessions)
 		{
-			InetSocketAddress inet = (InetSocketAddress) channel.getRemoteAddress();
+			InetSocketAddress inet = (InetSocketAddress) channel.remoteAddress();
 
 			// remove connections to agents that were removed from world map
 			if (!GlobalConfig.contains(inet))
@@ -183,7 +183,7 @@ public class Gcs
 		List<InetSocketAddress> remoteSessions = new ArrayList<InetSocketAddress>(connectedSessions.size());
 		for (Channel channel : connectedSessions)
 		{
-			remoteSessions.add((InetSocketAddress) channel.getRemoteAddress());
+			remoteSessions.add((InetSocketAddress) channel.remoteAddress());
 		}
 
 		List<Peer> peerList = GlobalConfig.getPeerList();
@@ -401,37 +401,46 @@ public class Gcs
 
 	private void startAcceptor(int portNumber) throws IOException
 	{
+        /*@todo (Luis Santos) adicionar Executors ao Bootstrap */
 		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-1");
 		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-1");
 
-		ChannelFactory factory = new NioServerSocketChannelFactory(tpe_io, tpe_workers);
-		ServerBootstrap bootstrap = new ServerBootstrap(factory);
+		//ChannelFactory factory = new NioServerSocketChannelFactory(tpe_io, tpe_workers);
+		ServerBootstrap bootstrap = new ServerBootstrap();
 
-		bootstrap.setOption("child.tcpNoDelay", true);
-		bootstrap.setOption("child.keepAlive", true);
-		bootstrap.setOption("child.receiveBufferSize", 128 * 1024);
-		bootstrap.setOption("child.sendBufferSize", 128 * 1024);
-		bootstrap.setOption("reuseAddress", true);
-		bootstrap.setOption("backlog", 1024);
 
-		ChannelPipelineFactory serverPipelineFactory = new ChannelPipelineFactory()
-		{
-			@Override
-			public ChannelPipeline getPipeline() throws Exception
-			{
-				ChannelPipeline pipeline = Channels.pipeline();
+        EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-				pipeline.addLast("broker-encoder", new GcsEncoder());
+        bootstrap.group(bossGroup,workerGroup);
 
-				pipeline.addLast("broker-decoder", new GcsDecoder());
 
-				pipeline.addLast("broker-handler", new GcsAcceptorProtocolHandler());
 
-				return pipeline;
-			}
-		};
 
-		bootstrap.setPipelineFactory(serverPipelineFactory);
+		bootstrap.childOption(ChannelOption.TCP_NODELAY,true);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE,true);
+        bootstrap.childOption(ChannelOption.SO_RCVBUF,128 * 1024);
+        bootstrap.childOption(ChannelOption.SO_SNDBUF,128 * 1024);
+        bootstrap.option(ChannelOption.SO_REUSEADDR,true);
+        bootstrap.option(ChannelOption.SO_BACKLOG,1024);
+
+		bootstrap.channel(NioServerSocketChannel.class)
+                 .childHandler(new ChannelInitializer<SocketChannel>() {
+
+                     @Override
+                     protected void initChannel(SocketChannel ch) throws Exception {
+
+                         ChannelPipeline pipeline = ch.pipeline();
+
+                         pipeline.addLast("broker-encoder", new GcsEncoder());
+
+                         pipeline.addLast("broker-decoder", new GcsDecoder());
+
+                         pipeline.addLast("broker-handler", new GcsAcceptorProtocolHandler());
+                     }
+                 });
+
+
 
 		InetSocketAddress inet = new InetSocketAddress("0.0.0.0", portNumber);
 		bootstrap.bind(inet);
@@ -451,31 +460,33 @@ public class Gcs
 
 		log.info("Starting Local Connector - step 2");
 
-		ClientBootstrap bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(tpe_io, tpe_workers));
+         /*@todo (Luis Santos) adicionar Executors ao Bootstrap */
+		Bootstrap bootstrap = new Bootstrap ();
+
+        bootstrap.group(new NioEventLoopGroup());
+
+        bootstrap.channel(NioSocketChannel.class);
 
 		log.info("Starting Local Connector - step 3");
 
-		ChannelPipelineFactory connectorPipelineFactory = new ChannelPipelineFactory()
-		{
-			@Override
-			public ChannelPipeline getPipeline() throws Exception
-			{
-				ChannelPipeline pipeline = Channels.pipeline();
+        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
-				pipeline.addLast("broker-encoder", new GcsEncoder());
+            @Override
+            protected void initChannel(SocketChannel ch) throws Exception {
+                ChannelPipeline pipeline = ch.pipeline();
 
-				pipeline.addLast("broker-decoder", new GcsDecoder());
+                pipeline.addLast("broker-encoder", new GcsEncoder());
 
-				pipeline.addLast("broker-handler", new GcsRemoteProtocolHandler());
+                pipeline.addLast("broker-decoder", new GcsDecoder());
 
-				return pipeline;
-			}
-		};
+                pipeline.addLast("broker-handler", new GcsRemoteProtocolHandler());
+            }
+        });
+
+
 		log.info("Starting Local Connector - step 4");
 
-		bootstrap.setPipelineFactory(connectorPipelineFactory);
 
-		log.info("Starting Local Connector - step 5");
 
 		// try
 		// {
@@ -486,12 +497,13 @@ public class Gcs
 		// log.error(String.format("Failed to bind to local host address. Address: '%s'.", GcsInfo.getAgentHost()), e);
 		// }
 
-		bootstrap.setOption("child.keepAlive", true);
-		bootstrap.setOption("child.receiveBufferSize", 128 * 1024);
-		bootstrap.setOption("child.sendBufferSize", 128 * 1024);
-		bootstrap.setOption("connectTimeoutMillis", 5000);
+		bootstrap.option(ChannelOption.SO_KEEPALIVE,true);
+        bootstrap.option(ChannelOption.SO_RCVBUF,128 * 1024);
+        bootstrap.option(ChannelOption.SO_SNDBUF,128 * 1024);
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,5000);
 
-		log.info("Starting Local Connector - step 6");
+
+		log.info("Starting Local Connector - step 5");
 
 		this.connector = bootstrap;
 	}

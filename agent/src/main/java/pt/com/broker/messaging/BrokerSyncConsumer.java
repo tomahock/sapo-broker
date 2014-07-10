@@ -5,8 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +103,7 @@ public class BrokerSyncConsumer
 		{
 			try
 			{
-				((BrokerProtocolHandler) ctx.getHandler()).exceptionCaught(ctx, t, null);
+				((BrokerProtocolHandler) ctx.handler()).exceptionCaught(ctx, t, null);
 			}
 			catch (Throwable t2)
 			{

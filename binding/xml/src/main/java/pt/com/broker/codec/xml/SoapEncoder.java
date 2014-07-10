@@ -1,31 +1,31 @@
 package pt.com.broker.codec.xml;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageEncoder;
 
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
+
+import java.util.List;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between client and agents.
  * 
  */
 
-@Sharable
-public class SoapEncoder extends OneToOneEncoder
+@ChannelHandler.Sharable
+public class SoapEncoder extends MessageToMessageEncoder<NetMessage>
 {
 	private static final BindingSerializer serializer = new SoapBindingSerializer();
 
-	@Override
-	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
-	{
-		if (!(msg instanceof NetMessage))
-		{
-			return msg;
-		}
 
-		return serializer.marshal((NetMessage) msg);
-	}
+    @Override
+    protected void encode(ChannelHandlerContext ctx, NetMessage msg, List out) throws Exception {
+
+        out.add(serializer.marshal(msg));
+
+    }
+
 }

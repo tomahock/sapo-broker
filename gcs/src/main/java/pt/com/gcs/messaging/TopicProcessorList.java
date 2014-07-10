@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
 
-public class TopicProcessorList
+public class TopicProcessorList implements SubscriptionProcessorList
 {
 	private static final TopicProcessorList instance = new TopicProcessorList();
 	private static final Logger log = LoggerFactory.getLogger(TopicProcessorList.class);
@@ -106,6 +107,11 @@ public class TopicProcessorList
 	{
 		return instance.i_values();
 	}
+
+    public static SubscriptionProcessorList getInstance()
+    {
+        return instance;
+    }
 
 	private TopicProcessorList()
 	{
@@ -283,4 +289,16 @@ public class TopicProcessorList
 			throw new RuntimeException(ie);
 		}
 	}
+
+    @Override
+    public SubscriptionProcessor getSubscriptionProcessor(String name) {
+        return i_get(name);
+    }
+
+    @Override
+    public Collection<SubscriptionProcessor> getValues() {
+        return (Collection)i_values();
+    }
+
+
 }

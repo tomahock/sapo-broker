@@ -1,0 +1,20 @@
+<broker src="/broker/agents"  >
+    <table class="ink-table" ng-hide="!data.length" >
+        <thead>
+        <tr>
+            <th class="align-left">Host</th>
+            <th class="align-left">Port</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr ng-repeat="queue in data" >
+            <td>{{queue.host}}</td>
+            <td>{{queue.port}}</td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <p ng-hide="data.length" class="align-center" ><strong>No Agents Available</strong></p>
+</broker>

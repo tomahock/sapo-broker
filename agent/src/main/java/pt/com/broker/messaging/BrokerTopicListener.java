@@ -2,9 +2,9 @@ package pt.com.broker.messaging;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +84,7 @@ public class BrokerTopicListener extends BrokerListener
 
 				if (deliveryAllowed(response))
 				{
-					lchannel.write(response);
+					lchannel.writeAndFlush(response);
 					showSuspendedDeliveryMessage = true;
 				}
 				else
@@ -108,7 +108,7 @@ public class BrokerTopicListener extends BrokerListener
 						else
 						{
 							channel.incrementAndGetDeliveryTries();
-							ChannelFuture future = lchannel.write(response);
+							ChannelFuture future = lchannel.writeAndFlush(response);
 							final long writeStartTime = System.nanoTime();
 							startDeliverAfter.set(writeStartTime + 10000);
 

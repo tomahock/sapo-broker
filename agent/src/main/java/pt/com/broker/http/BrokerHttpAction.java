@@ -2,19 +2,12 @@ package pt.com.broker.http;
 
 import java.io.OutputStream;
 
+import io.netty.buffer.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.*;
 import org.caudexorigo.Shutdown;
-import org.caudexorigo.http.netty.HttpAction;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBufferInputStream;
-import org.jboss.netty.buffer.ChannelBufferOutputStream;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.caudexorigo.http.netty4.HttpAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +39,9 @@ public class BrokerHttpAction extends HttpAction
 
 	private static final SoapBindingSerializer bindingSerializer = new SoapBindingSerializer();
 
-	private ChannelBuffer BAD_REQUEST_RESPONSE;
-	private ChannelBuffer ACCESS_DENIED_REQUEST_RESPONSE;
-	private ChannelBuffer INVALID_MESSAGE_TYPE_RESPONSE;
+	private ByteBuf BAD_REQUEST_RESPONSE;
+	private ByteBuf ACCESS_DENIED_REQUEST_RESPONSE;
+	private ByteBuf INVALID_MESSAGE_TYPE_RESPONSE;
 
 	public BrokerHttpAction()
 	{
@@ -56,13 +49,13 @@ public class BrokerHttpAction extends HttpAction
 		try
 		{
 			byte[] bad_arr = "<p>Only the POST verb is supported</p>".getBytes("UTF-8");
-			BAD_REQUEST_RESPONSE = ChannelBuffers.wrappedBuffer(bad_arr);
+			BAD_REQUEST_RESPONSE = Unpooled.wrappedBuffer(bad_arr);
 
 			bad_arr = "<p>Access denied</p>".getBytes("UTF-8");
-			ACCESS_DENIED_REQUEST_RESPONSE = ChannelBuffers.wrappedBuffer(bad_arr);
+			ACCESS_DENIED_REQUEST_RESPONSE = Unpooled.wrappedBuffer(bad_arr);
 
 			bad_arr = "<p>Invalid message type. Only publish is supported (topic and queue).</p>".getBytes("UTF-8");
-			INVALID_MESSAGE_TYPE_RESPONSE = ChannelBuffers.wrappedBuffer(bad_arr);
+			INVALID_MESSAGE_TYPE_RESPONSE = Unpooled.wrappedBuffer(bad_arr);
 		}
 		catch (Throwable error)
 		{
@@ -71,17 +64,19 @@ public class BrokerHttpAction extends HttpAction
 		}
 	}
 
-	@Override
-	public void service(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response)
+
+
+    @Override
+	public void service(ChannelHandlerContext ctx, FullHttpRequest request, FullHttpResponse response)
 	{
-		Channel channel = ctx.getChannel();
+		Channel channel = ctx.channel();
 		try
 		{
 			if (request.getMethod().equals(HttpMethod.POST))
 			{
-				ChannelBuffer bb = request.getContent();
+				ByteBuf bb = request.content();
 
-				NetMessage message = (NetMessage) bindingSerializer.unmarshal(new ChannelBufferInputStream(bb));
+				NetMessage message = (NetMessage) bindingSerializer.unmarshal(new ByteBufInputStream(bb));
 
 				ChannelStats.newHttpMessageReceived();
 
@@ -90,14 +85,14 @@ public class BrokerHttpAction extends HttpAction
 				if (!validationResult.accessGranted)
 				{
 					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-					response.setContent(ACCESS_DENIED_REQUEST_RESPONSE.duplicate());
+					response.content().writeBytes(ACCESS_DENIED_REQUEST_RESPONSE.duplicate());
 					return;
 				}
 
 				if ((message.getAction().getActionType() != NetAction.ActionType.PUBLISH) || (message.getAction().getPublishMessage() == null))
 				{
 					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-					response.setContent(INVALID_MESSAGE_TYPE_RESPONSE.duplicate());
+					response.content().writeBytes(INVALID_MESSAGE_TYPE_RESPONSE.duplicate());
 					return;
 				}
 
@@ -117,7 +112,7 @@ public class BrokerHttpAction extends HttpAction
 				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR); // Internal
 				// server
 				// error?...
-				response.setContent(BAD_REQUEST_RESPONSE.duplicate());
+				response.content().writeBytes(BAD_REQUEST_RESPONSE.duplicate());
 			}
 		}
 		catch (Throwable e)
@@ -126,23 +121,23 @@ public class BrokerHttpAction extends HttpAction
 			fault(null, e, response);
 			if (log.isErrorEnabled())
 			{
-				log.error("HTTP Service error, cause: '{}'. Client address: '{}'", e.getMessage(), channel.getRemoteAddress());
+				log.error("HTTP Service error, cause: '{}'. Client address: '{}'", e.getMessage(), channel.remoteAddress());
 			}
 		}
 	}
 
-	public void fault(String faultCode, Throwable cause, HttpResponse response)
+	public void fault(String faultCode, Throwable cause, FullHttpResponse response)
 	{
 		try
 		{
-			ChannelBuffer bbf = ChannelBuffers.dynamicBuffer();
-			OutputStream out = new ChannelBufferOutputStream(bbf);
+			ByteBuf bbf = Unpooled.buffer();
+			OutputStream out = new ByteBufOutputStream(bbf);
 
 			SoapEnvelope ex_msg = ErrorHandler.buildSoapFault(faultCode, cause).Message;
 			SoapSerializer.ToXml(ex_msg, out);
 			out.flush();
-			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, content_type);
-			response.setContent(bbf);
+			response.headers().set(HttpHeaders.Names.CONTENT_TYPE, content_type);
+			response.content().writeBytes(bbf);
 		}
 		catch (Throwable t)
 		{

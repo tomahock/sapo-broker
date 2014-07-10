@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.caudexorigo.text.DateUtil;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

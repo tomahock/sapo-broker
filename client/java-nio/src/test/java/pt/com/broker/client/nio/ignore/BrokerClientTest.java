@@ -394,9 +394,9 @@ public class BrokerClientTest {
     @Test
     public void testDeferedDelivery() throws Throwable {
 
-
         BrokerClient bk = new BrokerClient("192.168.100.1", 3323,NetProtocolType.JSON);
 
+        bk.connect();
 
         NetBrokerMessage brokerMessage = new NetBrokerMessage("teste");
 

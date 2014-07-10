@@ -1,0 +1,34 @@
+<div ng-controller="mainController" >
+
+    <broker src="/broker/agents/self" poll="false"  >
+
+        <table class="ink-table alternating" style="width:400px;" >
+            <thead>
+            <tr>
+                <th class="align-left">Status</th>
+                <th class="align-left">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Name</td>
+                <td>{{data.name}}</td>
+            </tr>
+            <tr>
+                <td>System Message Failures</td>
+                <td>{{data.systemMessageFailures}}</td>
+            </tr>
+            <tr>
+                <td>Version</td>
+                <td>{{data.version}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </broker>
+
+    <button ng-click="shutdown()" class="ink-button red ink-dismiss">Shutdown Broker</button>
+
+    <yes-no-modal />
+
+</div>

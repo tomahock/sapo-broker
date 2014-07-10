@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +91,7 @@ public class SynchronousMessageListener extends BrokerListener
 
 			if (deliveryAllowed(response, lchannel.getChannel()))
 			{
-				lchannel.write(response);
+				lchannel.writeAndFlush(response);
 				lastDeliveredMessage.set(System.currentTimeMillis());
 			}
 			else
@@ -169,7 +169,7 @@ public class SynchronousMessageListener extends BrokerListener
 
 				if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 				{
-					lchannel.write(faultMsg);
+					lchannel.writeAndFlush(faultMsg);
 				}
 
 				setReady(false);
@@ -219,7 +219,7 @@ public class SynchronousMessageListener extends BrokerListener
 			final ListenerChannel lchannel = getChannel();
 			if ((lchannel != null) && lchannel.isConnected() && lchannel.isWritable())
 			{
-				lchannel.write(faultMsg);
+				lchannel.writeAndFlush(faultMsg);
 			}
 		}
 	}

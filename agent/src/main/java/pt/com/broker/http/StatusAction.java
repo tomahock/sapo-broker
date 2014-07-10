@@ -3,17 +3,19 @@ package pt.com.broker.http;
 import java.io.OutputStream;
 import java.util.Date;
 
-import org.caudexorigo.http.netty.HttpAction;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import org.caudexorigo.http.netty4.HttpAction;
 import org.caudexorigo.text.DateUtil;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBufferOutputStream;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,19 +37,19 @@ public class StatusAction extends HttpAction
 	}
 
 	@Override
-	public void service(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response)
+	public void service(ChannelHandlerContext ctx, FullHttpRequest request, FullHttpResponse response)
 	{
-		ChannelBuffer bbo = ChannelBuffers.dynamicBuffer();
-		OutputStream out = new ChannelBufferOutputStream(bbo);
-		Channel channel = ctx.getChannel();
+		ByteBuf bbo = Unpooled.buffer();
+		OutputStream out = new ByteBufOutputStream(bbo);
+		Channel channel = ctx.channel();
 
 		try
 		{
 			String smessage = String.format(template, "Agent is alive", DateUtil.formatISODate(new Date()), BrokerInfo.getVersion());
 			byte[] bmessage = smessage.getBytes("UTF-8");
-			response.setHeader("Pragma", "no-cache");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
+			response.headers().set("Pragma", "no-cache");
+			response.headers().set("Cache-Control", "no-cache");
+			response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
 
 			response.setStatus(HttpResponseStatus.OK);
 
@@ -56,11 +58,11 @@ public class StatusAction extends HttpAction
 		catch (Throwable e)
 		{
 			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-			log.error("HTTP Service error, cause:" + e.getMessage() + " client:" + channel.getRemoteAddress());
+			log.error("HTTP Service error, cause:" + e.getMessage() + " client:" + channel.remoteAddress());
 		}
 		finally
 		{
-			response.setContent(bbo);
+			response.content().writeBytes(bbo);
 		}
 	}
 }

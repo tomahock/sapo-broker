@@ -1,15 +1,17 @@
 package pt.com.gcs.messaging;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.netty.channel.Channel;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,7 @@ import pt.com.gcs.conf.GlobalConfig;
  * QueueProcessor provides several queue related features, representing each instance a distinct queue.
  */
 
-public class QueueProcessor
+public class QueueProcessor implements SubscriptionProcessor
 {
 	private static Logger log = LoggerFactory.getLogger(QueueProcessor.class);
 	private static final ForwardResult failed = new ForwardResult(Result.FAILED);
@@ -210,7 +212,7 @@ public class QueueProcessor
 	protected void broadCastQueueInfo(String action, Channel channel)
 	{
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><destination>%s</destination></sysmessage>";
-		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), channel.getLocalAddress().toString(), queueName);
+		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), channel.localAddress().toString(), queueName);
 
 		NetBrokerMessage brkMsg = new NetBrokerMessage(payload.getBytes(UTF8));
 		brkMsg.setMessageId(MessageId.getMessageId());
@@ -327,7 +329,13 @@ public class QueueProcessor
 		return queueName;
 	}
 
-	private boolean hasActiveListeners(Set<MessageListener> listeners)
+    @Override
+    public String getSubscriptionName() {
+        return getQueueName();
+    }
+
+
+    private boolean hasActiveListeners(Set<MessageListener> listeners)
 	{
 		for (MessageListener ml : listeners)
 		{
@@ -565,7 +573,7 @@ public class QueueProcessor
 		}
 	}
 
-	protected long lastMessageDelivered()
+	public long lastMessageDelivered()
 	{
 		return lastMessageDelivered.get();
 	}
@@ -686,4 +694,31 @@ public class QueueProcessor
 	{
 		return msgListenterEventHandler;
 	}
+
+    @Override
+    public boolean hasLocalListeners() {
+
+        return localListeners().size() > 0 ;
+
+    }
+
+    @Override
+    public boolean hasRemoteListeners() {
+        return remoteListeners().size() > 0 ;
+    }
+
+
+    public List<NetMessage> getMessages(){
+
+        List<BDBMessage> msgs = storage.getMessages();
+
+        List<NetMessage> lista = new ArrayList<>(msgs.size());
+
+        for(BDBMessage message : msgs ){
+            lista.add(message.getMessage());
+        }
+
+        return lista;
+
+    }
 }

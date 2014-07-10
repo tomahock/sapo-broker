@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ import pt.com.gcs.conf.GlobalConfig;
 /**
  * QueueProcessorList contains references for all active QueueProcessor objects.
  */
-public class QueueProcessorList
+public class QueueProcessorList implements SubscriptionProcessorList
 {
 
 	private static final Logger log = LoggerFactory.getLogger(QueueProcessorList.class);
@@ -109,6 +109,11 @@ public class QueueProcessorList
 	{
 		return instance.i_values();
 	}
+
+    public static SubscriptionProcessorList getInstance()
+    {
+        return instance;
+    }
 
 	// key: destinationName
 	private Cache<String, QueueProcessor> qpCache = new Cache<String, QueueProcessor>();
@@ -290,4 +295,14 @@ public class QueueProcessorList
 			throw new RuntimeException(ie);
 		}
 	}
+
+    @Override
+    public SubscriptionProcessor getSubscriptionProcessor(String name) {
+        return i_get(name);
+    }
+
+    @Override
+    public Collection<SubscriptionProcessor> getValues() {
+        return (Collection)i_values();
+    }
 }

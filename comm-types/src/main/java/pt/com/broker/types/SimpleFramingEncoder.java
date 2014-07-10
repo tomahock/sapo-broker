@@ -1,10 +1,11 @@
 package pt.com.broker.types;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.codec.MessageToMessageEncoder;
+
+import java.util.List;
 
 /**
  * Base class for encoding types. Implements MINA ProtocolEncoderAdapter, an abstract ProtocolEncoder implementation for those who don't have any resources to dispose.<br/>
@@ -12,23 +13,17 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
  * 
  */
 
-public class SimpleFramingEncoder extends OneToOneEncoder
+public class SimpleFramingEncoder extends MessageToByteEncoder<byte[]>
 {
 
-	@Override
-	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
-	{
-		if (!(msg instanceof byte[]))
-		{
-			return null;
-		}
+    @Override
+    protected void encode(ChannelHandlerContext ctx, byte[] msg, ByteBuf out) throws Exception {
 
-		byte[] bmsg = (byte[]) msg;
+        out.writeInt(msg.length);
+        out.writeBytes(msg);
 
-		ChannelBuffer out = ChannelBuffers.buffer(bmsg.length + 4);
-		out.writeInt(bmsg.length);
-		out.writeBytes(bmsg);
 
-		return out;
-	}
+    }
+
+
 }

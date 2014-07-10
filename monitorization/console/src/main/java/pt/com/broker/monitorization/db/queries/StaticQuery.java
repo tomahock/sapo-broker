@@ -26,6 +26,7 @@ public abstract class StaticQuery
 
 		try
 		{
+            
 			db = DbPool.pick();
 
 			ResultSet queryResult = getResultSet(db, params);

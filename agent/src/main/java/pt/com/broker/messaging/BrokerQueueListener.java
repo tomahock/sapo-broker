@@ -2,9 +2,10 @@ package pt.com.broker.messaging;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,7 @@ public class BrokerQueueListener extends BrokerListener
 			{
 				if (deliveryAllowed(response, lchannel.getChannel()))
 				{
-					lchannel.write(response);
+					lchannel.writeAndFlush(response);
 					setReady(true);
 					lchannel.resetDeliveryTries();
 				}
@@ -95,7 +96,7 @@ public class BrokerQueueListener extends BrokerListener
 
 							setReady(false);
 
-							ChannelFuture future = lchannel.write(response);
+							ChannelFuture future = lchannel.writeAndFlush(response);
 							future.addListener(new ChannelFutureListener()
 							{
 								@Override

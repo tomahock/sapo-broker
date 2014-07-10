@@ -1,9 +1,10 @@
 package pt.com.broker;
 
+import io.netty.util.concurrent.DefaultThreadFactory;
+import io.netty.util.internal.logging.InternalLoggerFactory;
+import io.netty.util.internal.logging.Slf4JLoggerFactory;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.CustomExecutors;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ import pt.com.broker.core.BrokerServer;
 import pt.com.broker.core.BrokerUdpServer;
 import pt.com.broker.core.FilePublisher;
 import pt.com.broker.http.BrokerHttpService;
+import pt.com.broker.ws.RestServer;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
 
@@ -65,25 +67,35 @@ public class Start
             ProvidersLoader.init();
             log.info("After ProvidersLoader init");
 
+
             int broker_port = GcsInfo.getBrokerPort();
             int broker_legacy_port = GcsInfo.getBrokerLegacyPort();
-            BrokerServer broker_srv = new BrokerServer(CustomExecutors.newCachedThreadPool("broker-boss-1"), CustomExecutors.newCachedThreadPool("broker-worker-1"), broker_port, broker_legacy_port);
+            BrokerServer broker_srv = new BrokerServer(new DefaultThreadFactory("broker-boss-1"), new DefaultThreadFactory("broker-worker-1") , broker_port, broker_legacy_port);
+
             broker_srv.start();
+
+            RestServer restServer = new RestServer();
+
+            restServer.start(GcsInfo.getBrokerHttpPort()+1);
+
 
             int http_port = GcsInfo.getBrokerHttpPort();
             BrokerHttpService http_srv = new BrokerHttpService(CustomExecutors.newCachedThreadPool("broker-boss-2"), CustomExecutors.newCachedThreadPool("broker-worker-2"), http_port);
             http_srv.start();
 
+
+
             if (GcsInfo.createSSLInterface())
             {
                 int ssl_port = GcsInfo.getBrokerSSLPort();
-                BrokerSSLServer ssl_svr = new BrokerSSLServer(CustomExecutors.newCachedThreadPool("broker-boss-3"), CustomExecutors.newCachedThreadPool("broker-worker-3"), ssl_port);
+                BrokerSSLServer ssl_svr = new BrokerSSLServer(new DefaultThreadFactory("broker-boss-3") , new DefaultThreadFactory("broker-worker-3") , ssl_port);
                 ssl_svr.start();
             }
 
+
             int udp_legacy_port = GcsInfo.getBrokerUdpPort();
             int udp_bin_port = broker_port;
-            BrokerUdpServer udp_srv = new BrokerUdpServer(CustomExecutors.newCachedThreadPool("broker-boss-4"), udp_legacy_port, udp_bin_port);
+            BrokerUdpServer udp_srv = new BrokerUdpServer(new DefaultThreadFactory("broker-boss-4"), udp_legacy_port, udp_bin_port);
             udp_srv.start();
 
             FilePublisher.init();
@@ -109,6 +121,7 @@ public class Start
         }
         catch (Throwable t)
         {
+            log.debug("Error",t);
             Shutdown.now(t);
         }
     }

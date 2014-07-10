@@ -2,12 +2,13 @@ package pt.com.gcs.messaging;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
+import io.netty.channel.Channel;
 import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.gcs.conf.GcsInfo;
 
-public class TopicProcessor
+public class TopicProcessor implements SubscriptionProcessor
 {
 	private static Logger log = LoggerFactory.getLogger(TopicProcessor.class);
 
@@ -150,7 +151,7 @@ public class TopicProcessor
 	protected void broadCastTopicInfo(String action, Channel channel)
 	{
 		String ptemplate = "<sysmessage><action>%s</action><source-name>%s</source-name><source-ip>%s</source-ip><destination>%s</destination></sysmessage>";
-		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), ((InetSocketAddress) channel.getRemoteAddress()).getHostName(), subscriptionName);
+		String payload = String.format(ptemplate, action, GcsInfo.getAgentName(), ((InetSocketAddress) channel.remoteAddress()).getHostName(), subscriptionName);
 
 		NetBrokerMessage brkMsg = new NetBrokerMessage(payload.getBytes(UTF8));
 		brkMsg.setMessageId(MessageId.getMessageId());
@@ -281,4 +282,68 @@ public class TopicProcessor
 	{
 		return topicStatistics;
 	}
+
+
+    @Override
+    public Set<MessageListener> localListeners() {
+
+        Set<MessageListener> listeners = new HashSet<>();
+
+        for(MessageListener listener : listeners()){
+
+            if(listener.getType() == Type.LOCAL || listener.getType() == Type.INTERNAL ){
+                listeners.add(listener);
+            }
+
+        }
+
+        return listeners;
+    }
+
+    @Override
+    public Set<MessageListener> remoteListeners() {
+
+        Set<MessageListener> listeners = new HashSet<>();
+
+        for(MessageListener listener : listeners()){
+
+            if(listener.getType() == Type.REMOTE ){
+                listeners.add(listener);
+            }
+
+        }
+
+        return listeners;
+    }
+
+
+
+    @Override
+    public boolean hasLocalListeners() {
+
+
+        for(MessageListener listener : listeners()){
+
+            if(listener.getType() == Type.LOCAL || listener.getType() == Type.INTERNAL ){
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean hasRemoteListeners() {
+
+        for(MessageListener listener : listeners()){
+
+            if(listener.getType() == Type.REMOTE ){
+                return true;
+            }
+
+        }
+
+        return false;
+    }
 }

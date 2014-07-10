@@ -28,9 +28,9 @@
     </test>
   </tests>
   <dynamically-loaded-tests>
-    <!--test-class class-name="pt.com.broker.functests.positive.DBRolesAuthenticationTest" />
-    <test-class class-name="pt.com.broker.functests.positive.SslTopicNameSpeficied" />
-    <test-class class-name="pt.com.broker.functests.positive.SslTopicNameSpeficied" />
-    <test-class class-name="pt.com.broker.functests.negative.UnknownAuthTypeFailedTest" /-->
+    <!--test-class class-name="DBRolesAuthenticationTest" />
+    <test-class class-name="SslTopicNameSpeficied" />
+    <test-class class-name="SslTopicNameSpeficied" />
+    <test-class class-name="UnknownAuthTypeFailedTest" /-->
   </dynamically-loaded-tests>    
 </test-params>

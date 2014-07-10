@@ -1,15 +1,16 @@
 package pt.com.gcs.net.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.frame.FrameDecoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.types.NetMessage;
+
+import java.util.List;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between agents.
@@ -25,9 +26,10 @@ import pt.com.broker.types.NetMessage;
  * </pre>
  * 
  * This applies to both input and ouput messages.
+ * @todo ver Sharable
  */
-@Sharable
-public class GcsDecoder extends FrameDecoder
+//@ChannelHandler.Sharable
+public class GcsDecoder extends ByteToMessageDecoder
 {
 
 	private static final Logger log = LoggerFactory.getLogger(GcsDecoder.class);
@@ -35,48 +37,51 @@ public class GcsDecoder extends FrameDecoder
 
 	private final ProtoBufBindingSerializer serializer = new ProtoBufBindingSerializer();
 
-	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception
-	{
-		int readableBytes = buffer.readableBytes();
-		if (readableBytes < HEADER_LENGTH)
-		{
-			return null;
-		}
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
 
-		int mark = buffer.readerIndex();
+        int readableBytes = buffer.readableBytes();
+        if (readableBytes < HEADER_LENGTH)
+        {
+            return;
+        }
 
-		int len = buffer.getInt(mark);
+        int mark = buffer.readerIndex();
 
-		if (len <= 0)
-		{
-			log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
-			channel.close();
-		}
+        int len = buffer.getInt(mark);
 
-		if (buffer.readableBytes() < (len + HEADER_LENGTH))
-		{
-			return null;
-		}
+        if (len <= 0)
+        {
+            log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+            ctx.close();
+        }
 
-		buffer.skipBytes(HEADER_LENGTH);
+        if (buffer.readableBytes() < (len + HEADER_LENGTH))
+        {
+            return;
+        }
 
-		byte[] decoded = new byte[len];
-		buffer.readBytes(decoded);
+        buffer.skipBytes(HEADER_LENGTH);
 
-		// ChannelBufferInputStream sIn = new ChannelBufferInputStream(buffer);
+        byte[] decoded = new byte[len];
+        buffer.readBytes(decoded);
 
-		try
-		{
-			NetMessage msg = serializer.unmarshal(decoded);
-			return msg;
-		}
-		catch (Throwable e)
-		{
-			log.error(String.format("Can not unmarshall message"));
-			channel.close();
-			return null;
-		}
-	}
+        // ChannelBufferInputStream sIn = new ChannelBufferInputStream(buffer);
+
+        try
+        {
+            NetMessage msg = serializer.unmarshal(decoded);
+
+            out.add(msg);
+        }
+        catch (Throwable e)
+        {
+            log.error(String.format("Can not unmarshall message"));
+            ctx.close();
+            return;
+        }
+    }
+
+
 
 }

@@ -4,13 +4,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import io.netty.channel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,77 +23,84 @@ import pt.com.gcs.conf.global.ChannelType;
  * AuthorizationFilter is a Netty UpstreamHandler. Its purpose is to filter unauthorized publications and subscriptions.
  * 
  */
-@Sharable
-public class AuthorizationFilter extends SimpleChannelUpstreamHandler
+@ChannelHandler.Sharable
+public class AuthorizationFilter extends SimpleChannelInboundHandler<NetMessage>
 {
 	private static final Logger log = LoggerFactory.getLogger(AuthorizationFilter.class);
 
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
-	{
-		super.channelOpen(ctx, e);
-		Session sessionProps;
-		Channel channel = ctx.getChannel();
 
-		if (((InetSocketAddress) channel.getLocalAddress()).getPort() == GcsInfo.getBrokerSSLPort())
-		{
-			List<ChannelType> channelTypeList = new ArrayList<ChannelType>(3);
-			channelTypeList.add(ChannelType.AUTHENTICATION);
-			channelTypeList.add(ChannelType.CONFIDENTIALITY);
-			channelTypeList.add(ChannelType.INTEGRITY);
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception {
 
-			SessionProperties sp = new SessionProperties(channel);
-			sp.setChannelTypes(channelTypeList);
+        Channel channel = ctx.channel();
+        Object _session = ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "BROKER_SESSION_PROPERTIES");
 
-			sessionProps = new Session(channel, sp);
-		}
-		else
-		{
-			sessionProps = new Session(channel);
-		}
+        if (_session == null)
+        {
+            _session = new Session(channel);
+        }
 
-		ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "BROKER_SESSION_PROPERTIES", sessionProps);
-	}
+        NetMessage netMessage = msg;
+        Session sessionProps = null;
 
-	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-	{
-		Channel channel = ctx.getChannel();
-		Object _session = ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "BROKER_SESSION_PROPERTIES");
+        if (_session != null)
+        {
+            sessionProps = (Session) _session;
+        }
 
-		if (_session == null)
-		{
-			_session = new Session(channel);
-		}
+        ValidationResult result = AccessControl.validate(netMessage, sessionProps);
+        if (!result.accessGranted)
+        {
+            log.info("Message refused: '{}'", result.reasonForRejection);
+            messageRefused(channel, netMessage, result.reasonForRejection);
+            return;
+        }
 
-		NetMessage netMessage = (NetMessage) e.getMessage();
-		Session sessionProps = null;
+        ctx.fireChannelRead(msg);
 
-		if (_session != null)
-		{
-			sessionProps = (Session) _session;
-		}
+    }
 
-		ValidationResult result = AccessControl.validate(netMessage, sessionProps);
-		if (!result.accessGranted)
-		{
-			log.info("Message refused: '{}'", result.reasonForRejection);
-			messageRefused(channel, netMessage, result.reasonForRejection);
-			return;
-		}
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
 
-		ctx.sendUpstream(e);
-	}
+        Session sessionProps;
+        Channel channel = ctx.channel();
+
+        if (((InetSocketAddress) channel.localAddress()).getPort() == GcsInfo.getBrokerSSLPort())
+        {
+            List<ChannelType> channelTypeList = new ArrayList<ChannelType>(3);
+            channelTypeList.add(ChannelType.AUTHENTICATION);
+            channelTypeList.add(ChannelType.CONFIDENTIALITY);
+            channelTypeList.add(ChannelType.INTEGRITY);
+
+            SessionProperties sp = new SessionProperties(channel);
+            sp.setChannelTypes(channelTypeList);
+
+            sessionProps = new Session(channel, sp);
+        }
+        else
+        {
+            sessionProps = new Session(channel);
+        }
+
+        ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "BROKER_SESSION_PROPERTIES", sessionProps);
+    }
+
+
+
+
+
 
 	private void messageRefused(Channel channel, NetMessage message, String reason)
 	{
 		if (reason == null)
 		{
-			channel.write(NetFault.AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(NetFault.AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
 		}
 		else
 		{
-			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(NetFault.getMessageFaultWithDetail(NetFault.AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
 		}
 		MiscStats.newAccessDenied();
 	}

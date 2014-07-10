@@ -1,0 +1,9 @@
+<dl ng-repeat="sub in data" >
+    <dt>{{sub.name}}({{sub.listeners.length}})</dt>
+    <dd>
+        <ul ng-repeat="listener in sub.listeners" >
+            <li>{{listener.host}}:{{listener.port}}</li>
+        </ul>
+
+    </dd>
+</dl>

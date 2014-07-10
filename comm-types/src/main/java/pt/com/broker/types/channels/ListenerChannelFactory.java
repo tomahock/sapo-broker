@@ -1,9 +1,11 @@
 package pt.com.broker.types.channels;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
+
 
 public class ListenerChannelFactory
 {
@@ -11,7 +13,7 @@ public class ListenerChannelFactory
 
 	public static ListenerChannel getListenerChannel(ChannelHandlerContext context)
 	{
-		Channel channel = context.getChannel();
+		Channel channel = context.channel();
 
 		ListenerChannel listenerChannel = new ListenerChannel(context); // Inexpensive ctor.
 

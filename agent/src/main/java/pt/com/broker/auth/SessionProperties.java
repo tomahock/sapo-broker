@@ -8,8 +8,8 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import org.jboss.netty.channel.Channel;
 
+import io.netty.channel.Channel;
 import pt.com.gcs.conf.global.ChannelType;
 
 /**
@@ -30,7 +30,7 @@ public class SessionProperties extends HashMap<String, Object>
 	{
 		if (session != null)
 		{
-			SocketAddress remoteAddress = session.getRemoteAddress();
+			SocketAddress remoteAddress = session.remoteAddress();
 			if (remoteAddress != null)
 			{
 				address = ((InetSocketAddress) remoteAddress).getAddress();

@@ -1,6 +1,6 @@
 class python {
 
-  $packages = ['python-dev']
+  $packages = ['python-dev','python-pip']
 
   package { $packages:
     ensure => present,

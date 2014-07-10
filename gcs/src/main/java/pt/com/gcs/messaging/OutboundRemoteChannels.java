@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public class OutboundRemoteChannels
 
 	public static boolean remove(Channel channel)
 	{
-		boolean remove = remoteChannels.remove(socketToAgentId(channel.getRemoteAddress()), channel);
+		boolean remove = remoteChannels.remove(socketToAgentId(channel.remoteAddress()), channel);
 
 		return remove;
 	}

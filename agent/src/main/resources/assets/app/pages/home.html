@@ -1,0 +1,38 @@
+<div class="column-group gutters">
+    <div class="all-50 small-100 tiny-100">
+        <h3>Local queue subscriptions</h3>
+
+        <broker src="/broker/subscriptions/queue/local" class="subscriptions">
+
+
+            <div ng-include src="'assets/app/parts/list.html'" ></div>
+
+        </broker>
+
+    </div>
+    <div class="all-50 small-100 tiny-100">
+        <h3>Remote queue subscriptions</h3>
+        <div class="subscriptions" >
+            <broker src="/broker/subscriptions/queue/remote" class="subscriptions">
+                <div ng-include src="'assets/app/parts/list.html'" ></div>
+            </broker>
+        </div>
+    </div>
+    <div class="all-50 small-100 tiny-100">
+        <h3>Local topic subscriptions</h3>
+        <div class="subscriptions" >
+            <broker src="/broker/subscriptions/topic/local" class="subscriptions">
+                <div ng-include src="'assets/app/parts/list.html'" ></div>
+            </broker>
+        </div>
+    </div>
+
+    <div class="all-50 small-100 tiny-100">
+        <h3>Remote topic subscriptions</h3>
+        <div class="subscriptions">
+            <broker src="/broker/subscriptions/topic/remote" class="subscriptions">
+                <div ng-include src="'assets/app/parts/list.html'" ></div>
+            </broker>
+        </div>
+    </div>
+</div>

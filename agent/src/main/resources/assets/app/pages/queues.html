@@ -1,0 +1,34 @@
+<div ng-controller="queueController" >
+
+
+    <broker src="/broker/queues/" >
+        <table class="ink-table" ng-hide="!data.length" >
+            <thead>
+            <tr>
+                <th class="align-left">Name</th>
+                <th class="align-left">Queued Messages</th>
+                <th class="align-left">Last deliver</th>
+                <th ></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr ng-repeat="queue in data" >
+                <td>{{queue.name}}</td>
+                <td><a ng-href="#/queues/{{queue.name | encode64 }}/messages"><strong>{{queue.count}}</strong></a></td>
+                <td>{{queue.last_deliver | date : "medium" }}</td>
+                <td class="align-right" ><button id="myModalTrigger" class="ink-button red" ng-click="deleteQueue(queue , data)" >delete</button></td>
+            </tr>
+
+            </tbody>
+        </table>
+
+        <p ng-hide="data.length" class="align-center" ><strong>No Queues Available</strong></p>
+    </broker>
+
+    <yes-no-modal />
+
+
+
+</div>
+

@@ -1,9 +1,11 @@
 package pt.com.broker.http;
 
-import org.caudexorigo.http.netty.HttpAction;
-import org.caudexorigo.http.netty.RequestRouter;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.HttpRequest;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpRequest;
+import org.caudexorigo.http.netty4.HttpAction;
+import org.caudexorigo.http.netty4.RequestRouter;
 
 /**
  * BrokerRequestRouter routes incoming HTTP request to the respective handlers.
@@ -16,13 +18,7 @@ public class BrokerRequestRouter implements RequestRouter
 
 	private final StatusAction status_action = new StatusAction();
 
-	private final AdminAction admin_action = new AdminAction();
-
-	private final SubscriptionsAction subscription_action = new SubscriptionsAction();
-
-	private final MiscInfoAction misc_action = new MiscInfoAction();
-
-	public HttpAction map(HttpRequest req)
+	public HttpAction map(FullHttpRequest req)
 	{
 		String path = req.getUri();
 
@@ -34,26 +30,13 @@ public class BrokerRequestRouter implements RequestRouter
 		{
 			return status_action;
 		}
-		else if (path.equals("/broker/admin"))
-		{
-			return admin_action;
-		}
-		else if (path.equals("/broker/subscriptions"))
-		{
-			return subscription_action;
-		}
-		else if (path.equals("/broker/miscinfo"))
-		{
-			return misc_action;
-		}
 
 		return null;
 	}
-        
-        /* TODO TEMP CHANGE brsantos */
-	@Override
-	public HttpAction map(ChannelHandlerContext ctx, HttpRequest req) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-        /* TEMP CHANGE brsantos */
+
+
+    @Override
+    public HttpAction map(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) {
+       return map(fullHttpRequest);
+    }
 }

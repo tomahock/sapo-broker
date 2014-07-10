@@ -37,19 +37,19 @@
             <groupId>${project.groupId}</groupId>
             <version>${project.version}</version>
             <artifactId>sapo-broker-binding-json</artifactId>
-            <scope>provided</scope>
+
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <version>${project.version}</version>
             <artifactId>sapo-broker-binding-xml</artifactId>
-            <scope>provided</scope>
+
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <version>${project.version}</version>
             <artifactId>sapo-broker-binding-thrift</artifactId>
-            <scope>provided</scope>
+
         </dependency>
 
 

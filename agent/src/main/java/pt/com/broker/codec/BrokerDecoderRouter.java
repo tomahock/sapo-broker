@@ -1,15 +1,17 @@
 package pt.com.broker.codec;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import org.caudexorigo.ErrorAnalyser;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.frame.FrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +42,7 @@ import pt.com.broker.types.channels.ChannelAttributes;
  * This applies to both input and output messages.
  */
 
-public class BrokerDecoderRouter extends FrameDecoder
+public class BrokerDecoderRouter extends ByteToMessageDecoder
 {
 	private static final Logger log = LoggerFactory.getLogger(BrokerDecoderRouter.class);
 
@@ -71,118 +73,126 @@ public class BrokerDecoderRouter extends FrameDecoder
 		_max_message_size = max_message_size;
 	}
 
-	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception
-	{
-		int readableBytes = buffer.readableBytes();
-		if (readableBytes < HEADER_LENGTH)
-		{
-			return null;
-		}
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> objects) throws Exception {
 
-		int mark = buffer.readerIndex();
 
-		short protocol_type = buffer.getShort(mark);
-		short protocol_version = buffer.getShort(mark + 2);
-		int len = buffer.getInt(mark + 4);
+        Channel channel = ctx.channel();
+        int readableBytes = buffer.readableBytes();
+        if (readableBytes < HEADER_LENGTH)
+        {
+            return;
+        }
 
-		if (len > _max_message_size)
-		{
+        int mark = buffer.readerIndex();
 
-			try
-			{
-				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Protocol Type: %s. Channel: '%s'", len, protocol_type, channel.getRemoteAddress().toString()));
-			}
-			catch (Throwable t)
-			{
-				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
-			}
+        short protocol_type = buffer.getShort(mark);
+        short protocol_version = buffer.getShort(mark + 2);
+        int len = buffer.getInt(mark + 4);
 
-			if (channel != null)
-			{
-				if (channel.isConnected() && channel.isWritable())
-				{
-					channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
-				}
-			}
+        if (len > _max_message_size)
+        {
 
-			return null;
-		}
-		else if (len <= 0)
-		{
-			try
-			{
-				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Channel: '%s'", len, channel.getRemoteAddress().toString()));
-			}
-			catch (Throwable t)
-			{
-				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes", len));
-			}
+            try
+            {
+                log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Protocol Type: %s. Channel: '%s'", len, protocol_type, channel.remoteAddress().toString()));
+            }
+            catch (Throwable t)
+            {
+                log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+            }
 
-			if (channel != null)
-			{
-				if (channel.isConnected() && channel.isWritable())
-				{
-					channel.write(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
-				}
-			}
+            if (channel != null)
+            {
+                if (channel.isActive() && channel.isWritable())
+                {
+                    channel.writeAndFlush(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
+                }
+            }
 
-			return null;
-		}
+            return;
+        }
+        else if (len <= 0)
+        {
+            try
+            {
+                log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Channel: '%s'", len, channel.remoteAddress().toString()));
+            }
+            catch (Throwable t)
+            {
+                log.error(String.format("Illegal message size!! Received message claimed to have %s bytes", len));
+            }
 
-		if (buffer.readableBytes() < (len + HEADER_LENGTH))
-		{
-			return null;
-		}
+            if (channel != null)
+            {
+                if (channel.isActive() && channel.isWritable())
+                {
+                    channel.writeAndFlush(NetFault.InvalidMessageSizeErrorMessage).addListener(ChannelFutureListener.CLOSE);
+                }
+            }
 
-		BindingSerializer serializer = decoders.get(protocol_type);
+            return;
+        }
 
-		if (serializer == null)
-		{
-			log.error(String.format("Invalid protocol type:%s .Channel: '%s'", protocol_type, channel.getRemoteAddress().toString()));
-			channel.write(ChannelBuffers.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-			return null;
-		}
+        if (buffer.readableBytes() < (len + HEADER_LENGTH))
+        {
+            return;
+        }
 
-		ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "PROTOCOL_TYPE", new Short(protocol_type));
-		ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "PROTOCOL_VERSION", new Short(protocol_version));
+        BindingSerializer serializer = decoders.get(protocol_type);
 
-		buffer.skipBytes(HEADER_LENGTH);
+        if (serializer == null)
+        {
+            log.error(String.format("Invalid protocol type:%s .Channel: '%s'", protocol_type, channel.remoteAddress().toString()));
+            channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        }
 
-		byte[] decoded = new byte[len];
-		buffer.readBytes(decoded);
+        ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "PROTOCOL_TYPE", new Short(protocol_type));
+        ChannelAttributes.set(ChannelAttributes.getChannelId(ctx), "PROTOCOL_VERSION", new Short(protocol_version));
 
-		NetMessage message = null;
-		try
-		{
-			message = serializer.unmarshal(decoded);
-		}
-		catch (Throwable t)
-		{
-			Throwable r = ErrorAnalyser.findRootCause(t);
+        buffer.skipBytes(HEADER_LENGTH);
 
-			try
-			{
-				log.error(String.format("Message unmarshall failed: %s. Serializer: '%s' Channel: '%s'", r.getMessage(), serializer.getClass().getCanonicalName(), channel.getRemoteAddress().toString()));
-			}
-			catch (Throwable t1)
-			{
-				log.error(String.format("Message unmarshall failed: %s. Serializer: '%s'", r.getMessage(), serializer.getClass().getCanonicalName()));
-			}
-		}
+        byte[] decoded = new byte[len];
+        buffer.readBytes(decoded);
 
-		if (message == null)
-		{
-			try
-			{
-				channel.write(NetFault.InvalidMessageFormatErrorMessage).addListener(ChannelFutureListener.CLOSE);
-			}
-			catch (Throwable t)
-			{
-				log.error("Failed to send 'InvalidMessageFormatErrorMessage'", t);
-			}
-		}
+        NetMessage message = null;
 
-		return message;
-	}
+        try
+        {
+
+            message = serializer.unmarshal(decoded);
+            objects.add(message);
+
+        }
+        catch (Throwable t)
+        {
+            Throwable r = ErrorAnalyser.findRootCause(t);
+
+            try
+            {
+                log.error(String.format("Message unmarshall failed: %s. Serializer: '%s' Channel: '%s'", r.getMessage(), serializer.getClass().getCanonicalName(), channel.remoteAddress().toString()));
+            }
+            catch (Throwable t1)
+            {
+                log.error(String.format("Message unmarshall failed: %s. Serializer: '%s'", r.getMessage(), serializer.getClass().getCanonicalName()));
+            }
+        }
+
+        if (message == null)
+        {
+            try
+            {
+                channel.writeAndFlush(NetFault.InvalidMessageFormatErrorMessage).addListener(ChannelFutureListener.CLOSE);
+            }
+            catch (Throwable t)
+            {
+                log.error("Failed to send 'InvalidMessageFormatErrorMessage'", t);
+            }
+        }
+
+
+
+    }
+
+
 }

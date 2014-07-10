@@ -17,16 +17,13 @@ public class UdpBrokerClientTest {
 
     private static final Logger log = LoggerFactory.getLogger(UdpBrokerClientTest.class);
 
+    private static final String host = "192.168.100.1";
 
     @Test
     public void testSendPacket() throws Exception{
 
-        UdpBrokerClient bk = new UdpBrokerClient("127.0.0.1", 3323, NetProtocolType.JSON);
+        UdpBrokerClient bk = new UdpBrokerClient(host, 3323, NetProtocolType.JSON);
 
-
-        Future f = bk.connectAsync();
-
-        f.get();
 
         bk.publish(RandomStringUtils.randomAlphanumeric(10), "/teste/", NetAction.DestinationType.QUEUE);
 
@@ -39,12 +36,8 @@ public class UdpBrokerClientTest {
     @Test
     public void testSendPacketOldFrame() throws Exception{
 
-        UdpBrokerClient bk = new UdpBrokerClient("127.0.0.1", 3366, NetProtocolType.SOAP_v0);
+        UdpBrokerClient bk = new UdpBrokerClient(host, 3366, NetProtocolType.SOAP_v0);
 
-
-        Future f = bk.connectAsync();
-
-        f.get();
 
         bk.publish(RandomStringUtils.randomAlphanumeric(10), "/teste/", NetAction.DestinationType.QUEUE);
 

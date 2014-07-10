@@ -1,17 +1,19 @@
 package pt.com.broker.codec;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.socket.DatagramPacket;
+import io.netty.handler.codec.MessageToMessageDecoder;
 import org.caudexorigo.ErrorAnalyser;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.NetMessage;
 
-public class NoFramingDecoder extends OneToOneDecoder
+import java.util.List;
+
+public class NoFramingDecoder extends MessageToMessageDecoder<DatagramPacket>
 {
 	private static final Logger log = LoggerFactory.getLogger(NoFramingDecoder.class);
 
@@ -32,43 +34,40 @@ public class NoFramingDecoder extends OneToOneDecoder
 		_max_message_size = max_message_size;
 	}
 
-	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel, Object arg) throws Exception
-	{
-		ChannelBuffer buffer = null;
-		if (arg instanceof ChannelBuffer)
-		{
-			buffer = (ChannelBuffer) arg;
-		}
-		else
-		{
-			return null;
-		}
-		int readableBytes = buffer.readableBytes();
 
-		if ((readableBytes > _max_message_size) || (readableBytes <= 0))
-		{
-			log.error(String.format("Illegal message size!! Received message has %s bytes.", readableBytes));
+    @Override
+    protected void decode(ChannelHandlerContext channelHandlerContext, DatagramPacket packet, List<Object> objects) throws Exception {
 
-			return null;
-		}
+        ByteBuf buffer = packet.content();
 
-		byte[] decoded = new byte[readableBytes];
 
-		buffer.readBytes(decoded);
+        int readableBytes = buffer.readableBytes();
 
-		NetMessage nm = null;
+        if ((readableBytes > _max_message_size) || (readableBytes <= 0))
+        {
+            log.error(String.format("Illegal message size!! Received message has %s bytes.", readableBytes));
+            return;
+        }
 
-		try
-		{
-			nm = serializer.unmarshal(decoded);
-		}
-		catch (Throwable t)
-		{
-			Throwable r = ErrorAnalyser.findRootCause(t);
-			log.error("Failed to unmarshal message: '{}', payload: \n'{}'", r.getMessage(), new String(decoded));
-		}
+        byte[] decoded = new byte[readableBytes];
 
-		return nm;
-	}
+        buffer.readBytes(decoded);
+
+        NetMessage nm = null;
+
+        try
+        {
+            nm = serializer.unmarshal(decoded);
+            objects.add(nm);
+        }
+        catch (Throwable t)
+        {
+            Throwable r = ErrorAnalyser.findRootCause(t);
+            log.error("Failed to unmarshal message: '{}', payload: \n'{}'", r.getMessage(), new String(decoded));
+        }
+
+
+
+    }
+
 }

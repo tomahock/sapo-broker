@@ -3,8 +3,8 @@ package pt.com.gcs.messaging;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class SystemMessagesPublisher
 		if (channel.isWritable())
 		{
 			pending_messages.put(messageId, message);
-			channel.write(message);
+			channel.writeAndFlush(message);
 
 			Runnable r = new Runnable()
 			{
@@ -69,7 +69,7 @@ public class SystemMessagesPublisher
 	{
 		try
 		{
-			if (!channel.isConnected())
+			if (!channel.isActive())
 			{
 				// Channel already closed
 				return;
@@ -81,7 +81,7 @@ public class SystemMessagesPublisher
 
 			if (!(f.isDone() && f.isSuccess()))
 			{
-				String message = String.format("Unable to close connection to agent: '%s'", f.getChannel().getRemoteAddress());
+				String message = String.format("Unable to close connection to agent: '%s'", f.channel().remoteAddress());
 
 				log.error(message);
 
