@@ -11,9 +11,13 @@ import pt.com.broker.types.NetProtocolType;
 
 public class AuthenticationFailedTest extends GenericNetMessageNegativeTest
 {
-	public AuthenticationFailedTest()
-	{
-		super("Authentication Failed");
+
+    public AuthenticationFailedTest(NetProtocolType protocolType) {
+        super(protocolType);
+
+
+        setName("Authentication Failed");
+
 
 		if (!skipTest())
 		{

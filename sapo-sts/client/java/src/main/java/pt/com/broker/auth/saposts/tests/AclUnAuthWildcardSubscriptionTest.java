@@ -13,14 +13,11 @@ import pt.com.broker.types.NetProtocolType;
 
 public class AclUnAuthWildcardSubscriptionTest extends GenericPubSubTest
 {
-	public AclUnAuthWildcardSubscriptionTest() throws Exception
-	{
-		this("Acl PubSub - Unauthenticated  Wilcard");
-	}
+    public AclUnAuthWildcardSubscriptionTest(NetProtocolType protocolType) {
+        super(protocolType);
 
-	public AclUnAuthWildcardSubscriptionTest(String testName) throws Exception
-	{
-		super(testName);
+        setName("Acl PubSub - Unauthenticated  Wilcard");
+
 
 		String username = ConfigurationInfo.getParameter("sapoSts", "username");
 		String password = ConfigurationInfo.getParameter("sapoSts", "password");

@@ -9,15 +9,13 @@ import pt.com.broker.types.NetProtocolType;
 
 public class AuthenticationTopicSslTopicNameSpecified extends GenericPubSubTest
 {
-	public AuthenticationTopicSslTopicNameSpecified()
-	{
-		this("PubSub - Authentication Topic name specified");
-		setTimeout(2000);
-	}
 
-	public AuthenticationTopicSslTopicNameSpecified(String testName)
-	{
-		super(testName);
+    public AuthenticationTopicSslTopicNameSpecified(NetProtocolType protocolType) {
+        super(protocolType);
+
+        setName("PubSub - Authentication Topic name specified");
+
+		setTimeout(2000);
 
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
