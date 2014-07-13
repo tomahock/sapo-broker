@@ -1,10 +1,6 @@
 sapo-broker
 ===========
 
-SAPO Broker is a distributed messaging framework
-
-## What is it?
-
 SAPO Broker is a  highperformance distributed messaging framework. Among other features, it provides minimal administration overhead, Publish-Subscribe and Point-to-Point messaging, guaranteed delivery and wildcard subscriptions.
 
 SAPO Broker is written in Java, but has client libraries for [Perl][pl], [Python][py], [PHP][php], [.NET][net], [C][c] and quite a few [others][o], plus you can talk to it using Thrift, XML or JSON.
