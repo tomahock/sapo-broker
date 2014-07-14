@@ -79,9 +79,7 @@ public abstract class BaseBootstrap {
                         }
                     });
 
-                    IdleStateHandler idleStateHandler = new IdleStateHandler(hostInfo.getReaderIdleTime(), hostInfo.getWriterIdleTime(), 0, TimeUnit.MILLISECONDS);
 
-                    f.channel().pipeline().addBefore("heartbeat_handler","idle_state_handler", idleStateHandler);
 
 
                 } else {
