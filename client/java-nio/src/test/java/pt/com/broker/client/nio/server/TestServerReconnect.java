@@ -44,6 +44,10 @@ public class TestServerReconnect extends ServerBaseTest {
         for(SocketServer server : servers){
             HostInfo host = new HostInfo("127.0.0.1",server.getPort());
             host.setConnectTimeout(2000);
+
+            host.setReaderIdleTime(4000);
+            host.setWriterIdleTime(2000);
+
             bk.addServer(host);
         }
 

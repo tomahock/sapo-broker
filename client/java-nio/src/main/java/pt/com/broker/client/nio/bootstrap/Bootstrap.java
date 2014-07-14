@@ -75,6 +75,7 @@ public class Bootstrap extends BaseBootstrap {
 
                     f.channel().pipeline().addBefore("heartbeat_handler", "idle_state_handler", idleStateHandler);
 
+
                 }
             }
         });

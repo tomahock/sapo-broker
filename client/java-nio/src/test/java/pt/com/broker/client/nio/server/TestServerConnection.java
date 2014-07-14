@@ -46,7 +46,13 @@ public class TestServerConnection extends ServerBaseTest {
 
 
         for(SocketServer server : servers){
-            container.add(new HostInfo("127.0.0.1",server.getPort()));
+
+            HostInfo host = new HostInfo("127.0.0.1",server.getPort());
+            host.setReaderIdleTime(4000);
+            host.setWriterIdleTime(2000);
+
+            container.add(host);
+
         }
 
         Future<HostInfo> future = container.connectAsync();
@@ -165,6 +171,9 @@ public class TestServerConnection extends ServerBaseTest {
         for(SocketServer server : servers){
             HostInfo hostInfo = new HostInfo("127.0.0.1",server.getPort());
             hostInfo.setConnectTimeout(500);
+            hostInfo.setReaderIdleTime(4000);
+            hostInfo.setWriterIdleTime(2000);
+
             container.add(hostInfo);
         }
 
@@ -227,6 +236,9 @@ public class TestServerConnection extends ServerBaseTest {
         for(SocketServer server : servers){
             HostInfo host = new HostInfo("127.0.0.1",server.getPort());
             host.setConnectTimeout(500);
+            host.setReaderIdleTime(4000);
+            host.setWriterIdleTime(2000);
+
             container.add(host);
         }
 

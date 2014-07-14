@@ -1,6 +1,8 @@
 package pt.com.broker.client.nio;
 
+import org.junit.AfterClass;
 import org.junit.Assume;
+import org.junit.BeforeClass;
 
 /**
  * Created by luissantos on 22-05-2014.
@@ -29,13 +31,7 @@ public abstract class BaseTest{
         return condition;
     }
 
-    protected void setUp() throws Exception {
 
-    }
-
-    protected void tearDown() throws Exception {
-
-    }
 
 
 

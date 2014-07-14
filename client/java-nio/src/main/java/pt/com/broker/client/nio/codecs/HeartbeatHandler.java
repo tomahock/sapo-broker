@@ -39,6 +39,7 @@ public class HeartbeatHandler extends ChannelDuplexHandler {
 
                 if (e.state() == IdleState.READER_IDLE) {
 
+                    log.debug("No Pong message received. closing.");
                     //close channel when there is no input messages
                     ctx.close();
 

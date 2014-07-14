@@ -1,6 +1,8 @@
 package pt.com.broker.client.nio.server;
 
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.BaseTest;
@@ -101,9 +103,9 @@ public abstract class ServerBaseTest extends BaseTest {
     }
 
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeClass()
+    public static void setUp() throws Exception {
+
 
 
 
@@ -121,9 +123,9 @@ public abstract class ServerBaseTest extends BaseTest {
 
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterClass()
+    public static void tearDown() throws Exception {
+
 
         if(ipTables.hasPermission()) {
 
