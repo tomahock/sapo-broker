@@ -19,6 +19,7 @@ import pt.com.broker.client.nio.events.BrokerListener;
 
 
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
@@ -349,7 +350,7 @@ public class BrokerClient extends BaseClient implements Observer {
      * @return a {@link java.util.concurrent.Future} object.
      * @throws java.lang.InterruptedException if any.
      */
-    public Future<HostInfo> unsubscribe(final NetAction.DestinationType destinationType, final String dstName)  throws InterruptedException {
+    public Future<HostInfo> unsubscribe(final NetAction.DestinationType destinationType, final String dstName)  {
 
 
         Map<String,BrokerAsyncConsumer> consumers = getConsumerManager().getSubscriptions(destinationType);
@@ -397,10 +398,19 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
         if(total_unsubscribe  == 0){
-            return new ExceptionFuture<HostInfo>(new IllegalArgumentException("No subscriptions found"));
+
+            return new ExceptionFuture<HostInfo>(new SubscriptionNotFound("No subscriptions found"));
         }
 
-        return unsubcribeService.take();
+        try {
+
+            return unsubcribeService.take();
+            
+        } catch (InterruptedException e) {
+
+            return new ExceptionFuture<HostInfo>(e);
+
+        }
 
     }
 
