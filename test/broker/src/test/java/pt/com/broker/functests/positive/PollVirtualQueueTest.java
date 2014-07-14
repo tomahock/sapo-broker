@@ -3,6 +3,7 @@ package pt.com.broker.functests.positive;
 import java.util.Arrays;
 import java.util.concurrent.Future;
 
+import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
 import pt.com.broker.functests.Action;
 import org.caudexorigo.text.RandomStringUtils;
 
@@ -82,7 +83,15 @@ public class PollVirtualQueueTest extends BrokerTest
 				}
 				catch (Throwable t)
 				{
-					throw new Exception(t);
+
+                    if(t.getCause() instanceof SubscriptionNotFound){
+
+                        // Sometimes its normal that no subscription is found
+
+                    }else{
+                        throw new Exception(t);
+                    }
+
 				}
 				return this;
 			}

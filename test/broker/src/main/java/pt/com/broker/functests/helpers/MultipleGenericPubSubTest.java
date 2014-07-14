@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
 import pt.com.broker.functests.Action;
 import org.caudexorigo.text.RandomStringUtils;
 
@@ -288,7 +289,14 @@ public class MultipleGenericPubSubTest extends BrokerTest
 				}
 				catch (Throwable t)
 				{
-					throw new Exception(t);
+                    if(t.getCause() instanceof SubscriptionNotFound){
+
+                        // Sometimes its normal that no subscription is found
+
+                    }else{
+                        throw new Exception(t);
+                    }
+
 				}
 				return this;
 			}
