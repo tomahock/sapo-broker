@@ -1,5 +1,6 @@
 package pt.com.broker.functests.helpers;
 
+import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
 import pt.com.broker.functests.Action;
 
 
@@ -243,7 +244,15 @@ public class GenericPubSubTest extends BrokerTest
 				}
 				catch (Throwable t)
 				{
-					throw new Exception(t);
+                    if(t.getCause() instanceof SubscriptionNotFound){
+
+                        // Sometimes its normal that no subscription is found
+
+                    }else{
+                        throw new Exception(t);
+                    }
+
+
 				}finally {
 
                     setDone(true);
