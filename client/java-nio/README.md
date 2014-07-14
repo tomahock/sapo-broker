@@ -11,6 +11,15 @@
 
  copy jar:  target/sapo-broker-java-client-nio-4.0.49.Alpha1.jar    
  copy dependency: target/dependency/*.jar
+ 
+# Building a single jar with all dependencies
+ 
+```bash
+
+ cd client/java-nio/
+ mvn clean compile assembly:single           
+```
+ 
 
 ## Connecting synchronously
 ```java
