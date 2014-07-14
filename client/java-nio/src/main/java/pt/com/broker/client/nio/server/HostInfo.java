@@ -35,8 +35,8 @@ public final class HostInfo
     private Channel channel;
     private STATUS status = STATUS.CLOSED;
 
-    private long readerIdleTime = 20000;
-    private long writerIdleTime = 40000;
+    private long readerIdleTime = 40000;
+    private long writerIdleTime = 20000;
 
 
 
