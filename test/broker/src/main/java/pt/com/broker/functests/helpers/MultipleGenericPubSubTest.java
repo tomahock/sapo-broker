@@ -181,7 +181,8 @@ public class MultipleGenericPubSubTest extends BrokerTest
                             public void onTimeout(String actionID) {
                                 latch.countDown();
                             }
-                        },2000)).get();
+
+                        },6000)).get();
 
                         latch.await();
 					}
@@ -232,7 +233,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                             public void onTimeout(String actionID) {
                                 latch.countDown();
                             }
-                        },2000)).get();
+                        },6000)).get();
 
                         latch.await();
 					}
