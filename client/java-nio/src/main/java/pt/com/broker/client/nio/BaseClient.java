@@ -105,12 +105,14 @@ public abstract class BaseClient{
 
             host = getAvailableHost();
 
+            return this.sendNetMessage(msg, host);
+
         }catch (Exception e){
             return new HostNotAvailableFuture<HostInfo>();
         }
 
 
-        return this.sendNetMessage(msg, host);
+
 
     }
 
@@ -123,7 +125,14 @@ public abstract class BaseClient{
      */
     protected ChannelWrapperFuture sendNetMessage(NetMessage msg, HostInfo host) {
 
-        ChannelFuture f =  host.getChannel().writeAndFlush(msg);
+
+        Channel channel = host.getChannel();
+
+        if(channel == null){
+            throw new RuntimeException("Host not connected");
+        }
+
+        ChannelFuture f =  channel.writeAndFlush(msg);
 
         f.addListener(new ChannelFutureListener() {
 
@@ -446,6 +455,15 @@ public abstract class BaseClient{
 
 
     }
+
+    protected class HostNotConnected<T extends HostInfo> extends ExceptionFuture<T> {
+
+
+        public HostNotConnected() {
+            super(new Exception("No Host available to connect"));
+        }
+
+    };
 
     protected class HostNotAvailableFuture<T extends HostInfo> extends ExceptionFuture<T> {
 
