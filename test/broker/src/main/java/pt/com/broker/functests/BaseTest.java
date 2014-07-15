@@ -25,7 +25,7 @@ public class BaseTest {
             ConfigurationInfo.init();
 
 
-            Test.setDefaultimeout(30000);
+            Test.setDefaultimeout(60000);
             runOnce = false;
         }
     }
