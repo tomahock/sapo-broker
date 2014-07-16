@@ -107,15 +107,29 @@ public class HostContainer extends Observable {
 
         Future<HostInfo> f = connectAsync();
 
-        try {
 
-            return f.get();
 
-        } catch (Exception e) {
+        while(true) {
 
-            throw new RuntimeException("Could not connect", e);
+            try {
+
+
+                HostInfo host = f.get(5000, TimeUnit.MILLISECONDS);
+
+                return host;
+
+            }catch (TimeoutException timeout){
+
+                log.debug("Sync connect timeout");
+
+            } catch (Exception e) {
+
+                throw new RuntimeException("Could not connect", e);
+
+            }
 
         }
+
 
     }
 
