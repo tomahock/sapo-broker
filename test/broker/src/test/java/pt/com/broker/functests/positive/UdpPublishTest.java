@@ -23,7 +23,7 @@ public class UdpPublishTest extends GenericPubSubTest
 		try
 		{
 
-			client = new UdpBrokerClient("192.168.100.1", BrokerTest.getAgent1UdpPort(),getEncodingProtocolType());
+			client = new UdpBrokerClient(getAgent1Hostname(), BrokerTest.getAgent1UdpPort(),getEncodingProtocolType());
 
 
 		}
