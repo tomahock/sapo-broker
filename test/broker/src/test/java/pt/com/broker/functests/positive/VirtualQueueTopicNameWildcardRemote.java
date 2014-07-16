@@ -36,4 +36,9 @@ public class VirtualQueueTopicNameWildcardRemote extends MultipleGenericVirtualQ
 		}
 
 	}
+
+    @Override
+    public boolean skipTest() {
+        return true;
+    }
 }
