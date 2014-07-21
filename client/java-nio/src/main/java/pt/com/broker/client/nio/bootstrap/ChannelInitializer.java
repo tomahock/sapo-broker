@@ -86,14 +86,23 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
             SSLEngine engine = sslContext.createSSLEngine();
 
+
+
+            /*
+            *
+            * http://stackoverflow.com/a/17979954/3564261
+            *
+            * */
             SSLParameters params = engine.getSSLParameters();
 
             params.setEndpointIdentificationAlgorithm("HTTPS");
 
             engine.setSSLParameters(params);
 
-            engine.setUseClientMode(true);
 
+
+
+            engine.setUseClientMode(true);
             pipeline.addFirst("ssl", new SslHandler(engine, false) );
 
         }
