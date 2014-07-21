@@ -17,6 +17,7 @@ import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
 import pt.com.broker.types.BindingSerializer;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
 
 
 /**
@@ -84,6 +85,12 @@ public class ChannelInitializer extends BaseChannelInitializer {
         if( sslContext !=null ){
 
             SSLEngine engine = sslContext.createSSLEngine();
+
+            SSLParameters params = engine.getSSLParameters();
+
+            params.setEndpointIdentificationAlgorithm("HTTPS");
+
+            engine.setSSLParameters(params);
 
             engine.setUseClientMode(true);
 
