@@ -3,7 +3,6 @@ package pt.com.broker.net;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import io.netty.channel.*;
 import io.netty.handler.ssl.SslHandler;
@@ -21,8 +20,8 @@ import pt.com.broker.auth.AuthInfoVerifierFactory;
 import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.Session;
 import pt.com.broker.auth.SessionProperties;
-import pt.com.broker.codec.xml.FaultCode;
-import pt.com.broker.codec.xml.SoapEnvelope;
+import pt.com.broker.codec.xml.soap.FaultCode;
+import pt.com.broker.codec.xml.soap.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapSerializer;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerConsumer;

@@ -8,6 +8,7 @@ import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.com.broker.codec.xml.soap.SoapEnvelope;
 
 public class JibxActors
 {
@@ -21,7 +22,7 @@ public class JibxActors
 	{
 		try
 		{
-			bfact = BindingDirectory.getFactory(pt.com.broker.codec.xml.SoapEnvelope.class);
+			bfact = BindingDirectory.getFactory(SoapEnvelope.class);
 		}
 		catch (JiBXException e)
 		{

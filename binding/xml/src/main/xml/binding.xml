@@ -5,12 +5,12 @@
 	<namespace uri="http://www.w3.org/2005/08/addressing" prefix="wsa" />
 	<namespace uri="http://services.sapo.pt/broker" prefix="mq" />
 
-	<mapping name="Envelope" class="pt.com.broker.codec.xml.SoapEnvelope" ns="http://www.w3.org/2003/05/soap-envelope">
+	<mapping name="Envelope" class="pt.com.broker.codec.xml.soap.SoapEnvelope" ns="http://www.w3.org/2003/05/soap-envelope">
 		<structure field="header" usage="optional" />
 		<structure field="body" usage="required" />
 	</mapping>
 
-	<mapping name="Header" class="pt.com.broker.codec.xml.SoapHeader" ns="http://www.w3.org/2003/05/soap-envelope" ordered="false" flexible="true">
+	<mapping name="Header" class="pt.com.broker.codec.xml.soap.SoapHeader" ns="http://www.w3.org/2003/05/soap-envelope" ordered="false" flexible="true">
 		<value name="To" field="wsaTo" usage="optional" ns="http://www.w3.org/2005/08/addressing" />
 		<structure name="From" map-as="EndPointReference" field="wsaFrom" usage="optional" ns="http://www.w3.org/2005/08/addressing" />
 		<structure name="ReplyTo" map-as="EndPointReference" field="wsaReplyTo" usage="optional" ns="http://www.w3.org/2005/08/addressing" />
@@ -25,7 +25,7 @@
 		<value name="Address" field="address" usage="optional" ns="http://www.w3.org/2005/08/addressing" />
 	</mapping>
 
-	<mapping name="Body" class="pt.com.broker.codec.xml.SoapBody" ns="http://www.w3.org/2003/05/soap-envelope">
+	<mapping name="Body" class="pt.com.broker.codec.xml.soap.SoapBody" ns="http://www.w3.org/2003/05/soap-envelope">
 		<structure field="enqueue" usage="optional" />
 		<structure field="poll" usage="optional" />
 		<structure field="publish" usage="optional" />
@@ -39,17 +39,17 @@
 		<structure field="accepted" usage="optional" />
 	</mapping>
 
-	<mapping type-name="FaultCode" abstract="true" class="pt.com.broker.codec.xml.FaultCode" ns="http://www.w3.org/2003/05/soap-envelope" ordered="false" flexible="true">
+	<mapping type-name="FaultCode" abstract="true" class="pt.com.broker.codec.xml.soap.FaultCode" ns="http://www.w3.org/2003/05/soap-envelope" ordered="false" flexible="true">
 		<structure name="Subcode" map-as="FaultCode" field="subcode" usage="optional" ns="http://www.w3.org/2003/05/soap-envelope" />
 		<value name="Value" field="value" usage="optional" ns="http://www.w3.org/2003/05/soap-envelope" />
 	</mapping>
 	
-	<mapping type-name="FaultReason" abstract="true" class="pt.com.broker.codec.xml.FaultReason" ns="http://www.w3.org/2003/05/soap-envelope">
+	<mapping type-name="FaultReason" abstract="true" class="pt.com.broker.codec.xml.soap.FaultReason" ns="http://www.w3.org/2003/05/soap-envelope">
 		<value name="Text" field="text" usage="optional" ns="http://www.w3.org/2003/05/soap-envelope" />
 	</mapping>
 	
 	
-	<mapping name="Fault" class="pt.com.broker.codec.xml.SoapFault" ns="http://www.w3.org/2003/05/soap-envelope" ordered="false" flexible="true">
+	<mapping name="Fault" class="pt.com.broker.codec.xml.soap.SoapFault" ns="http://www.w3.org/2003/05/soap-envelope" ordered="false" flexible="true">
 		<structure name="Code" map-as="FaultCode" field="faultCode" usage="optional" ns="http://www.w3.org/2003/05/soap-envelope" />
 		<structure name="Reason" map-as="FaultReason" field="faultReason" usage="optional" ns="http://www.w3.org/2003/05/soap-envelope" />
 		<value name="Detail" field="detail" usage="optional" ns="http://www.w3.org/2003/05/soap-envelope" />

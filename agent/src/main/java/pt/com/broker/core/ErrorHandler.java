@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.codec.xml.EndPointReference;
-import pt.com.broker.codec.xml.SoapEnvelope;
-import pt.com.broker.codec.xml.SoapFault;
-import pt.com.broker.codec.xml.SoapHeader;
+import pt.com.broker.codec.xml.soap.SoapEnvelope;
+import pt.com.broker.codec.xml.soap.SoapFault;
+import pt.com.broker.codec.xml.soap.SoapHeader;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.conf.GcsInfo;
 

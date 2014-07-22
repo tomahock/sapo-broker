@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 
+import pt.com.broker.codec.xml.soap.SoapEnvelope;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;

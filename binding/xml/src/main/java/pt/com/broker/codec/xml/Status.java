@@ -4,10 +4,16 @@ import java.util.Date;
 
 import org.caudexorigo.text.DateUtil;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "Status")
 public class Status
 {
+    @XmlElement(name = "Message")
 	public String message;
 
+    @XmlElement(name = "Timestamp")
 	public String timestamp;
 
 	public Status()

@@ -15,7 +15,7 @@ import pt.com.broker.auth.AccessControl;
 import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.auth.Session;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
-import pt.com.broker.codec.xml.SoapEnvelope;
+import pt.com.broker.codec.xml.soap.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapSerializer;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerProducer;

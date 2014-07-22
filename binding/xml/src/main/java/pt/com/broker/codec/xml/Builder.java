@@ -6,6 +6,9 @@ import java.util.Date;
 import org.caudexorigo.text.DateUtil;
 import org.caudexorigo.text.StringUtils;
 
+import pt.com.broker.codec.xml.soap.SoapEnvelope;
+import pt.com.broker.codec.xml.soap.SoapFault;
+import pt.com.broker.codec.xml.soap.SoapHeader;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAcknowledge;
 import pt.com.broker.types.NetAction;
