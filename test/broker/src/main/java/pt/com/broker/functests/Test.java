@@ -122,10 +122,12 @@ public abstract class Test extends BaseTest
 		}
 		catch (Throwable t)
 		{
-            log.error(t.getMessage(),t);
+
 
 			if (!okToTimeOut() && (getAction() != null))
 			{
+                log.error(t.getMessage(),t);
+
 				if (!getAction().isSucess())
 				{
 					System.out.println(String.format(">>>> Action failed. Reason: %s", getAction().getReaseonForFailure()));
