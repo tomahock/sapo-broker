@@ -135,11 +135,11 @@ public abstract class BrokerTest extends Test
         return  Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-port"));
     }
 
-	public static int getAgent1Port()
+	public int getAgent1Port()
 	{
-		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
+
 		int port = 0;
-		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
+		if (encodingProtocolType.equals(NetProtocolType.SOAP_v0))
 		{
 			port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-port"));
 		}
@@ -150,11 +150,11 @@ public abstract class BrokerTest extends Test
 		return port;
 	}
 
-	public static int getAgent2Port()
+	public  int getAgent2Port()
 	{
-		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
+
 		int port = 0;
-		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
+		if (encodingProtocolType.equals(NetProtocolType.SOAP_v0))
 		{
 			port = Integer.parseInt(ConfigurationInfo.getParameter("agent2-legacy-port"));
 		}
@@ -165,11 +165,11 @@ public abstract class BrokerTest extends Test
 		return port;
 	}
 
-	public static int getAgent1UdpPort()
+	public int getAgent1UdpPort()
 	{
-		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
+
 		int port = 0;
-		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
+		if (encodingProtocolType.equals(NetProtocolType.SOAP_v0))
 		{
 			port = Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-udp-port"));
 		}
@@ -180,11 +180,11 @@ public abstract class BrokerTest extends Test
 		return port;
 	}
 
-	public static int getAgent2UdpPort()
+	public int getAgent2UdpPort()
 	{
-		NetProtocolType defaultEncodingProtocolType = BrokerTest.getDefaultEncodingProtocolType();
+
 		int port = 0;
-		if (defaultEncodingProtocolType.equals(NetProtocolType.SOAP_v0))
+		if (encodingProtocolType.equals(NetProtocolType.SOAP_v0))
 		{
 			port = Integer.parseInt(ConfigurationInfo.getParameter("agent2-legacy-udp-port"));
 		}
