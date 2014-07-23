@@ -210,6 +210,7 @@ public abstract class BrokerTest extends Test
             {NetProtocolType.PROTOCOL_BUFFER},
             {NetProtocolType.THRIFT},
             {NetProtocolType.SOAP},
+            {NetProtocolType.SOAP_v0}
         });
     }
 
