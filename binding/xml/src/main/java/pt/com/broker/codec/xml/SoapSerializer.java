@@ -38,11 +38,7 @@ public class SoapSerializer {
     public static void ToXml(SoapEnvelope soapEnv, OutputStream out) {
 
 
-
-        try {
-            IMarshallingContext mctx = JibxActors.getMarshallingContext();
-
-            mctx.marshalDocument(soapEnv, "UTF-8", null, System.out);
+        try{
 
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
@@ -50,26 +46,8 @@ public class SoapSerializer {
 
             jaxbMarshaller.marshal(soapEnv, out);
 
-            jaxbMarshaller.marshal(soapEnv, System.out);
 
-        } catch (JiBXException e) {
 
-            if (soapEnv.body.notification != null) {
-                BrokerMessage bmsg = soapEnv.body.notification.brokerMessage;
-                StringBuilder buf = new StringBuilder();
-                buf.append("\ncorrelationId: " + bmsg.correlationId);
-                buf.append("\ndestinationName: " + bmsg.destinationName);
-                buf.append("\nexpiration: " + bmsg.expiration);
-                buf.append("\nmessageId: " + bmsg.messageId);
-                buf.append("\npriority: " + bmsg.priority);
-                buf.append("\ntextPayload: " + bmsg.textPayload);
-                buf.append("\ntimestamp: " + bmsg.timestamp);
-
-                log.error("Unable to marshal soap envelope:" + buf.toString());
-            }
-
-            JibxActors.reload();
-            throw new RuntimeException(e);
         }catch (JAXBException ex){
 
             throw new RuntimeException(ex);
@@ -97,18 +75,6 @@ public class SoapSerializer {
             throw new RuntimeException(e);
         }
 
-        /*
-        try {
-            IUnmarshallingContext uctx = JibxActors.getUnmarshallingContext();
-            Object o = uctx.unmarshalDocument(in, "UTF-8");
-            if (o instanceof SoapEnvelope)
-                return (SoapEnvelope) o;
-            else
-                return new SoapEnvelope();
-        } catch (JiBXException e) {
-            JibxActors.reload();
-            throw new RuntimeException(e);
-        }*/
     }
 
 
