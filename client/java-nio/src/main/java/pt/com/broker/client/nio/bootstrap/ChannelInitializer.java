@@ -93,11 +93,11 @@ public class ChannelInitializer extends BaseChannelInitializer {
             * http://stackoverflow.com/a/17979954/3564261
             *
             * */
-            SSLParameters params = engine.getSSLParameters();
+            /*SSLParameters params = engine.getSSLParameters();
 
             params.setEndpointIdentificationAlgorithm("HTTPS");
 
-            engine.setSSLParameters(params);
+            engine.setSSLParameters(params);*/
 
 
 
