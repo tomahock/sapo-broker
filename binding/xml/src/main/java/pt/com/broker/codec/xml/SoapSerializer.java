@@ -40,9 +40,9 @@ public class SoapSerializer {
 
 
         try {
-            //IMarshallingContext mctx = JibxActors.getMarshallingContext();
+            IMarshallingContext mctx = JibxActors.getMarshallingContext();
 
-            //mctx.marshalDocument(soapEnv, "UTF-8", null, System.out);
+            mctx.marshalDocument(soapEnv, "UTF-8", null, System.out);
 
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
@@ -50,7 +50,9 @@ public class SoapSerializer {
 
             jaxbMarshaller.marshal(soapEnv, out);
 
-        /*} catch (JiBXException e) {
+            jaxbMarshaller.marshal(soapEnv, System.out);
+
+        } catch (JiBXException e) {
 
             if (soapEnv.body.notification != null) {
                 BrokerMessage bmsg = soapEnv.body.notification.brokerMessage;
@@ -67,7 +69,7 @@ public class SoapSerializer {
             }
 
             JibxActors.reload();
-            throw new RuntimeException(e);*/
+            throw new RuntimeException(e);
         }catch (JAXBException ex){
 
             throw new RuntimeException(ex);
