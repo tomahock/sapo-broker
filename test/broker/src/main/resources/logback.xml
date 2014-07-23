@@ -14,7 +14,7 @@
 
 	<appender class="ch.qos.logback.core.ConsoleAppender" name="Broker-ConsoleAppender">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>info</level>
+			<level>debug</level>
 		</filter>
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<pattern>%5p #BROKER#%C# [%t] - %m%n</pattern>
@@ -41,7 +41,7 @@
 	</logger>
 
 	<logger additivity="false" name="pt.com.broker">
-		<level value="info" />
+		<level value="debug" />
 		<appender-ref ref="Broker-ConsoleAppender" />
 	</logger>
 
