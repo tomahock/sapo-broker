@@ -195,7 +195,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 				}
 				catch (Throwable t)
 				{
-					throw new Exception(t);
+					throw t;
 				}
 				return this;
 			}
@@ -244,7 +244,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 				}
 				catch (Throwable t)
 				{
-					throw new Exception(t);
+					throw t;
 				}
 				return this;
 
@@ -295,7 +295,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
                         // Sometimes its normal that no subscription is found
 
                     }else{
-                        throw new Exception(t);
+                       throw t;
                     }
 
 				}
