@@ -2,13 +2,13 @@
 
 <test-params>
   <defaults>
-    <param param-name="agent1-host" param-value="localhost"/>
+    <param param-name="agent1-host" param-value="192.168.100.10"/>
     <param param-name="agent1-port" param-value="3323"/>
     <param param-name="agent1-legacy-port" param-value="3322"/>
     <param param-name="agent1-ssl-port" param-value="3390"/>
     <param param-name="agent1-udp-port" param-value="3323"/>
     <param param-name="agent1-legacy-udp-port" param-value="3366"/>
-    <param param-name="agent2-host" param-value="localhost"/>
+    <param param-name="agent2-host" param-value="192.168.100.10"/>
     <param param-name="agent2-port" param-value="3423"/>
     <param param-name="agent2-legacy-port" param-value="3422"/>
     <param param-name="agent2-ssl-port" param-value="3490"/>

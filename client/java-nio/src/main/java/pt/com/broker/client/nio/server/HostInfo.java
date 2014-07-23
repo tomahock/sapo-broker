@@ -195,7 +195,7 @@ public final class HostInfo
     protected synchronized void reconnectAttempt(){
 
         if(reconnectLimit-- <= 0){
-            setStatus(STATUS.DISABLE);
+            //setStatus(STATUS.DISABLE);
         }
 
     }

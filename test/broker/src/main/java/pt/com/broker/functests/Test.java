@@ -60,6 +60,11 @@ public abstract class Test extends BaseTest
 
 	protected abstract void build() throws Throwable;
 
+
+    protected  void logBuildTest(){
+        log.info(String.format("Building test - %s ",getName()));
+    }
+
 	public final boolean run(int nrOfRuns, TestsResults testResults)
 	{
 
@@ -72,7 +77,8 @@ public abstract class Test extends BaseTest
 		}
 		try
 		{
-			log.info("Building test - " + getName());
+
+            logBuildTest();
 			build();
 
 			log.info("Initializing  test - " + getName());
@@ -122,10 +128,14 @@ public abstract class Test extends BaseTest
 		}
 		catch (Throwable t)
 		{
-            log.error(t.getMessage(),t);
+
 
 			if (!okToTimeOut() && (getAction() != null))
 			{
+                log.error(t.getMessage(),t);
+
+
+
 				if (!getAction().isSucess())
 				{
 					System.out.println(String.format(">>>> Action failed. Reason: %s", getAction().getReaseonForFailure()));

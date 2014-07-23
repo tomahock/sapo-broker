@@ -2,6 +2,8 @@ package pt.com.broker.functests.helpers;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.com.broker.functests.Test;
 import org.caudexorigo.text.RandomStringUtils;
 
@@ -14,6 +16,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public abstract class BrokerTest extends Test
 {
+    private static final Logger log = LoggerFactory.getLogger(BrokerTest.class);
+
 	private static NetProtocolType defaultEncodingProtocolType = NetProtocolType.PROTOCOL_BUFFER;
 
 	private NetProtocolType encodingProtocolType;
@@ -26,6 +30,10 @@ public abstract class BrokerTest extends Test
 	protected int dataLenght = getDefaultDataLenght();
 
 	protected byte[] rawData = null;
+
+    protected  void logBuildTest(){
+        log.info(String.format("Building test - %s ( %s ) ",getName(),encodingProtocolType));
+    }
 
 	public BrokerTest(NetProtocolType protocolType)
 	{
