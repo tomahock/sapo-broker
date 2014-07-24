@@ -10,10 +10,10 @@
 	<artifactId>sapo-broker-sts-agent</artifactId>
 	<name>sapo-broker-sts-agent</name>
 	<packaging>jar</packaging>
-	<properties>
+	<!--<properties>
 		<mainClass>pt.com.broker.Start</mainClass>
 		<extraJvmArgs>-Xmx256M -Dagent-config-path=/conf/agent_example.config -Dbroker-global-config-path=target/conf/broker_global.config -Dproject-version=${project.version}</extraJvmArgs>
-	</properties>
+	</properties>-->
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -25,10 +25,38 @@
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-sts-client</artifactId>
 		</dependency>
-	</dependencies>
+
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>pt.com.broker.Start</mainClass>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>-Xmx256M</argument>
+                        <argument>-Dagent-config-path=/home/luissantos/Develop/sapo-broker-maven-edition/agent/package/conf/agent_example.config</argument>
+                        <argument>-Dbroker-global-config-path=target/conf/broker_global.config</argument>
+                        <argument>-Dproject-version=${project.version}</argument>
+                    </arguments>
+
+
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>

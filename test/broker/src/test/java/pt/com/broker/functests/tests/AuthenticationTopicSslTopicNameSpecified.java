@@ -1,4 +1,4 @@
-package pt.com.broker.auth.saposts.tests;
+package pt.com.broker.functests.tests;
 
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;

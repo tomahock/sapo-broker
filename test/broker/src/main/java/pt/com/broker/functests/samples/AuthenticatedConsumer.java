@@ -1,12 +1,12 @@
-package pt.com.broker.auth.saposts.samples;
+package pt.com.broker.functests.samples;
 
 import org.caudexorigo.cli.CliFactory;
 import org.apache.commons.lang3.StringUtils;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
-import pt.com.broker.client.CliArgs;
-import pt.com.broker.client.SslBrokerClient;
-import pt.com.broker.client.messaging.BrokerListener;
+import pt.com.broker.client.nio.SslBrokerClient;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Consumer sample where an authenticate user is used. This samples uses SapoSTS.
  * 
  */
-public class AuthenticatedConsumer implements BrokerListener
+public class AuthenticatedConsumer extends NotificationListenerAdapter
 {
 	private final AtomicInteger counter = new AtomicInteger(0);
 
@@ -47,7 +47,8 @@ public class AuthenticatedConsumer implements BrokerListener
 		consumer.stsUsername = cargs.getUsername();
 		consumer.stsPassword = cargs.getUserPassword();
 
-		SslBrokerClient bk = new SslBrokerClient(consumer.host, consumer.port, "tcp://mycompany.com/mysniffer", NetProtocolType.PROTOCOL_BUFFER);
+		SslBrokerClient bk = new SslBrokerClient(NetProtocolType.PROTOCOL_BUFFER);
+        bk.addServer(consumer.host, consumer.port);
 
 		CredentialsProvider cp = StringUtils.isBlank(consumer.stsLocation) ? new SapoSTSProvider(consumer.stsUsername, consumer.stsPassword) : new SapoSTSProvider(consumer.stsUsername, consumer.stsPassword, consumer.stsLocation);
 
@@ -71,30 +72,29 @@ public class AuthenticatedConsumer implements BrokerListener
 		System.out.println("subscribing");
 		NetSubscribe subscribe = new NetSubscribe(consumer.dname, consumer.dtype);
 
-		bk.addAsyncConsumer(subscribe, consumer, null);
+		bk.subscribe(subscribe, consumer);
 
 		System.out.println("listening...");
 	}
 
-	@Override
-	public boolean isAutoAck()
-	{
-		if (dtype == DestinationType.TOPIC)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
 
-	@Override
-	public void onMessage(NetNotification notification)
-	{
-		System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
-		System.out.printf("Destination: '%s'%n", notification.getDestination());
-		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
-		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
-	}
+    @Override
+    public boolean onMessage(NetNotification notification, HostInfo host) {
+
+        System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
+        System.out.printf("Destination: '%s'%n", notification.getDestination());
+        System.out.printf("Subscription: '%s'%n", notification.getSubscription());
+        System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
+
+        if (dtype == DestinationType.TOPIC)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+
 }

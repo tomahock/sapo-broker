@@ -1,4 +1,4 @@
-package pt.com.broker.auth.saposts.tests;
+package pt.com.broker.functests.tests;
 
 import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;

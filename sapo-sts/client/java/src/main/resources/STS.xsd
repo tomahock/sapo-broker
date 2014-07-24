@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns6452="http://services.sapo.pt/definitions" elementFormDefault="qualified" targetNamespace="http://services.sapo.pt/definitions">
+  <include schemaLocation="_Metadata_Schema_ESBCredentials.xsd" />
+  <complexType name="Claims">
+    <sequence>
+      <element name="Claim" type="tns6452:Claim" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+  <complexType name="Claim">
+    <sequence>
+      <element name="Name" type="string" minOccurs="0" maxOccurs="1" />
+      <element name="Value" type="string" minOccurs="0" maxOccurs="1" />
+    </sequence>
+  </complexType>
+  <complexType name="UserInfo">
+    <annotation>
+      <documentation xml:lang="en">Aggregator type that contains information about the authentication response: primary identifier, token additional information and user</documentation>
+    </annotation>
+    <sequence>
+      <element name="PrimaryId" type="string" minOccurs="1" maxOccurs="1">
+        <annotation>
+          <documentation xml:lang="en">Primary identifier</documentation>
+        </annotation>
+      </element>
+      <element name="ESBRoles" type="tns6452:ESBRoles" minOccurs="0" maxOccurs="1" />
+      <element name="ESBToken" type="string" minOccurs="1" maxOccurs="1" />
+      <element name="Group" type="string" minOccurs="0" maxOccurs="1" />
+      <element name="ESBCredentialsStore" type="string" minOccurs="0" maxOccurs="1" />
+      <element name="AccountNumbers" type="tns6452:AccountNumbers" minOccurs="0" maxOccurs="1" />
+      <element name="Attributes" type="tns6452:ArrayOfAttribute" minOccurs="0" maxOccurs="1" />
+    </sequence>
+  </complexType>
+  <complexType name="AccountNumbers">
+    <sequence>
+      <element name="AccountNumber" type="string" minOccurs="1" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+  <complexType name="ArrayOfAttribute">
+    <sequence>
+      <element name="Attribute" type="tns6452:Attribute" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+  <complexType name="Attribute">
+    <sequence>
+      <element name="Name" type="string" minOccurs="1" maxOccurs="1" />
+      <element name="Value" type="string" minOccurs="1" maxOccurs="1" />
+    </sequence>
+  </complexType>
+  <complexType name="Services">
+    <sequence>
+      <element name="Service" type="tns6452:Service" nillable="false" minOccurs="1" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+  <complexType name="Service">
+    <sequence>
+      <element name="Name" type="string" nillable="false" minOccurs="1" maxOccurs="1" />
+      <element name="Operations" type="tns6452:Operations" nillable="false" minOccurs="1" maxOccurs="1" />
+    </sequence>
+  </complexType>
+  <complexType name="Operations">
+    <sequence>
+      <element name="Operation" type="string" nillable="false" minOccurs="1" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+  <element name="RevokableToken" type="tns6452:RevokableToken" />
+  <complexType name="RevokableToken">
+    <sequence>
+      <element name="Guid" type="string" nillable="false" minOccurs="1" maxOccurs="1" />
+      <element name="EncryptedText" type="string" nillable="false" minOccurs="0" maxOccurs="1" />
+      <element name="ClientId" type="string" nillable="false" minOccurs="0" maxOccurs="1" />
+      <element name="PrimaryId" type="string" nillable="false" minOccurs="0" maxOccurs="1" />
+      <element name="Cos" type="string" nillable="false" minOccurs="0" maxOccurs="1" />
+      <element name="Application" type="string" nillable="false" minOccurs="1" maxOccurs="1" />
+      <element name="ExtraInfo" type="string" nillable="false" minOccurs="1" maxOccurs="1" />
+      <element name="ExpirationDate" type="dateTime" nillable="false" minOccurs="1" maxOccurs="1" />
+      <element name="CreationDate" type="dateTime" nillable="false" minOccurs="1" maxOccurs="1" />
+      <element name="IsExpirable" type="boolean" nillable="false" minOccurs="1" maxOccurs="1" />
+      <element name="Services" type="tns6452:Services" nillable="false" minOccurs="0" maxOccurs="1" />
+      <element name="CreatedByOwner" type="boolean" nillable="false" minOccurs="0" maxOccurs="1" />
+    </sequence>
+  </complexType>
+  <complexType name="RevokableTokens">
+    <sequence>
+      <element name="RevokableToken" type="tns6452:RevokableToken" nillable="false" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+  <complexType name="RevokeTokenInfo">
+    <sequence>
+      <element name="RevokeActionSuccess" type="boolean" nillable="false" minOccurs="1" maxOccurs="1" />
+    </sequence>
+  </complexType>
+  <complexType name="TokenInfo">
+    <annotation>
+      <documentation xml:lang="en">Tokens' information</documentation>
+    </annotation>
+    <sequence>
+      <element name="LifeTime" type="dateTime" minOccurs="1" maxOccurs="1">
+        <annotation>
+          <documentation xml:lang="en">Remaining time in which the token is considered valid</documentation>
+        </annotation>
+      </element>
+      <element name="ExtraInfo" type="string" minOccurs="1" maxOccurs="1" nillable="true">
+        <annotation>
+          <documentation xml:lang="en">Additional information generic</documentation>
+        </annotation>
+      </element>
+      <element name="PrimaryId" type="string" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation xml:lang="en">Primary identifier added to the token</documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+</schema>

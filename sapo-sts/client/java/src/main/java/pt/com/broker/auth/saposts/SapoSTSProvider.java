@@ -4,7 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.ProviderInfo;
+import pt.sapo.services.definitions.STS;
+import pt.sapo.services.definitions.STSSoapSecure;
 
+import javax.xml.ws.BindingProvider;
+import java.net.URL;
 import java.nio.charset.Charset;
 
 /**
@@ -13,15 +17,19 @@ import java.nio.charset.Charset;
  */
 public class SapoSTSProvider implements CredentialsProvider
 {
+    public static final String DEFAULT_BASE_URL = "https://services.bk.sapo.pt/STS/";
+
 	private final String providerName = "SapoSTS";
 
 	private final String username;
 	private final String password;
-	private final String stsLocation;
+    private final String stsLocation;
+
+    private final SAPOStsToken stsToken;
 
 	public SapoSTSProvider(String username, String password)
 	{
-		this(username, password, SAPOStsToken.DEFAULT_BASE_URL);
+		this(username, password,DEFAULT_BASE_URL);
 	}
 
 	public SapoSTSProvider(String username, String password, String stsLocation)
@@ -30,17 +38,21 @@ public class SapoSTSProvider implements CredentialsProvider
 		{
 			throw new IllegalArgumentException("STS Location URL must not be blank");
 		}
+
 		this.username = username;
 		this.password = password;
-		this.stsLocation = stsLocation;
+        this.stsLocation = stsLocation;
+        stsToken = new SAPOStsToken(getClient(stsLocation));
+
 	}
 
 	@Override
 	public AuthInfo getCredentials() throws Exception
 	{
-		String strToken = SAPOStsToken.getToken(username, password);
-		byte[] token = null;
-		token = strToken.getBytes(Charset.forName("UTF-8"));
+		String strToken = stsToken.getToken(username, password);
+
+		byte[] token = strToken.getBytes(Charset.forName("UTF-8"));
+
 
 		AuthInfo aui = new AuthInfo(username, null, token, providerName);
 		return aui;
@@ -58,14 +70,39 @@ public class SapoSTSProvider implements CredentialsProvider
 		return providerName;
 	}
 
-	public String getStsLocation()
-	{
-		return stsLocation;
-	}
 
 	@Override
 	public String toString()
 	{
 		return "SapoSTSProvider [providerName=" + providerName + ", stsLocation=" + stsLocation + "]";
 	}
+
+    protected STSSoapSecure getClient(String base_url){
+
+        URL url = null;
+
+        try {
+
+            url = STSSoapSecure.class.getClassLoader().getResource("STS.wsdl");
+
+            STS sts = new STS(url);
+
+
+
+            STSSoapSecure secure = sts.getSTSSoapSecure();
+
+            BindingProvider bp = (BindingProvider) secure;
+
+            bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, base_url);
+
+
+            return secure;
+
+
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
 }

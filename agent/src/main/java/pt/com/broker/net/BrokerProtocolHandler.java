@@ -377,29 +377,29 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		{
 			switch (request.getAction().getActionType())
 			{
-			case PUBLISH:
-				handlePublishMessage(ctx, request);
-				break;
-			case POLL:
-				handlePollMessage(ctx, request);
-				break;
-			case ACKNOWLEDGE:
-				handleAcknowledeMessage(ctx, request);
-				break;
-			case UNSUBSCRIBE:
-				handleUnsubscribeMessage(ctx, request);
-				break;
-			case SUBSCRIBE:
-				handleSubscribeMessage(ctx, request);
-				break;
-			case PING:
-				handlePingMessage(ctx, request);
-				break;
-			case AUTH:
-				handleAuthMessage(ctx, request);
-				break;
-			default:
-				handleUnexpectedMessageType(ctx, request);
+                case PUBLISH:
+                    handlePublishMessage(ctx, request);
+                    break;
+                case POLL:
+                    handlePollMessage(ctx, request);
+                    break;
+                case ACKNOWLEDGE:
+                    handleAcknowledeMessage(ctx, request);
+                    break;
+                case UNSUBSCRIBE:
+                    handleUnsubscribeMessage(ctx, request);
+                    break;
+                case SUBSCRIBE:
+                    handleSubscribeMessage(ctx, request);
+                    break;
+                case PING:
+                    handlePingMessage(ctx, request);
+                    break;
+                case AUTH:
+                    handleAuthMessage(ctx, request);
+                    break;
+                default:
+                    handleUnexpectedMessageType(ctx, request);
 			}
 		}
 		catch (Throwable t)
@@ -621,6 +621,9 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		channel.writeAndFlush(message);
 	}
 
+
+
+
 	private void handleAuthMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
 		Channel channel = ctx.channel();
@@ -645,6 +648,9 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		AuthInfo info = new AuthInfo(netAuthentication.getUserId(), netAuthentication.getRoles(), netAuthentication.getToken(), netAuthentication.getAuthenticationType());
 
 		AuthInfoValidator validator = AuthInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
+
+        log.debug("Auth ActionID : '{}' ",netAuthentication.getActionId());
+
 		if (validator == null)
 		{
 			log.error("Failled to obtain validator for auth type: '{}',  Channel: '{}'", netAuthentication.getAuthenticationType(), channel.remoteAddress().toString());
@@ -655,16 +661,25 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		try
 		{
 			validateResult = validator.validate(info);
+            log.debug("Broker Authentication ok. Channel: '{}' ",channel.remoteAddress().toString());
 		}
 		catch (Exception e)
 		{
-			channel.writeAndFlush(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error")).addListener(ChannelFutureListener.CLOSE);
+            NetMessage fault = NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error");
+
+            fault.getAction().getFaultMessage().setActionId(netAuthentication.getActionId());
+
+			channel.writeAndFlush(fault);//.addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 
 		if (!validateResult.areCredentialsValid())
 		{
-			channel.writeAndFlush(NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure())).addListener(ChannelFutureListener.CLOSE);
+            NetMessage fault = NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure());
+
+            fault.getAction().getFaultMessage().setActionId(netAuthentication.getActionId());
+
+			channel.writeAndFlush(fault);//.addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 
@@ -674,8 +689,11 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		plainSessionProps.setRoles(validateResult.getRoles());
 		plainSession.updateAcl();
 
+
+
 		if (netAuthentication.getActionId() != null)
 		{
+            log.debug("Sending Accepted: '{}' ",channel.remoteAddress().toString());
 			sendAccepted(ctx, netAuthentication.getActionId());
 		}
 	}
@@ -712,6 +730,7 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 	private synchronized void sendAccepted(ChannelHandlerContext ctx, final String actionId)
 	{
 		Channel channel = ctx.channel();
+
 		if (actionId != null)
 		{
 			NetAccepted accept = new NetAccepted(actionId);
@@ -719,6 +738,8 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 			action.setAcceptedMessage(accept);
 			NetMessage message = new NetMessage(action, null);
 			channel.writeAndFlush(message);
+
+            log.debug("Accepted message sent '{}",actionId);
 		}
 	}
 }

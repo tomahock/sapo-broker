@@ -32,20 +32,13 @@
     <repositories>
         <repository>
             <id>central</id>
-            <url>http://repository.sl.pt/mvn/content/repositories/public</url>
+            <url>http://repository.sl.pt/mvn/content/groups/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
-        </repository>		
+        </repository>
     </repositories>
-    <dependencies>
-        <dependency>
-            <groupId>pt.sapo</groupId>
-            <artifactId>common-proj</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 </project>

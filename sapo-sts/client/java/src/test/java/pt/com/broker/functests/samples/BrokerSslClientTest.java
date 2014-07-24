@@ -1,6 +1,7 @@
 package pt.com.broker.functests.samples;
 
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import java.util.concurrent.Future;
 /**
  * Created by luissantos on 05-05-2014.
  */
+@Ignore()
 public class BrokerSslClientTest {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerSslClientTest.class);

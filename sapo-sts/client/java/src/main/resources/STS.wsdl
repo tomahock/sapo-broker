@@ -1,0 +1,723 @@
+<definitions targetNamespace="http://services.sapo.pt/definitions" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://services.sapo.pt/definitions">
+  <types>
+    <xsd:schema targetNamespace="http://services.sapo.pt/definitions" elementFormDefault="qualified">
+      <xsd:include schemaLocation="STS.xsd" />
+      <xsd:element name="GetInfoCardClaims">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="InfoCardToken" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetInfoCardClaimsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetInfoCardClaimsResult" type="tns:Claims" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetPrimaryId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserLogin" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="JSON" type="xsd:boolean" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserType" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserLoginCredentialsStore" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetPrimaryIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetPrimaryIdResult" type="tns:UserInfo" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetPrimaryIdDetails">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserLogin" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="JSON" type="xsd:boolean" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserType" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserLoginCredentialsStore" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetPrimaryIdDetailsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetPrimaryIdDetailsResult" type="tns:UserInfo" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetRevokableToken">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="1" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserLogin" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                </xsd:documentation>
+                <xsd:documentation xml:lang="pt">
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="UserType" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="Application" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="false" />
+            <xsd:element name="ExpirationDate" type="xsd:dateTime" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="Services" type="tns:Services" minOccurs="1" maxOccurs="1" nillable="false" />
+            <xsd:element name="ExtraInfo" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="OAuthOptions" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">OAuthOptions</xsd:documentation>
+                <xsd:documentation xml:lang="pt">OAuthOptions</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetRevokableTokenResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetRevokableTokenResult" type="tns:RevokableToken" minOccurs="1" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetRoles">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="1" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserToken" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetRolesResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetRolesResult" type="tns:ESBRoles" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetToken">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="JSON" type="xsd:boolean" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetTokenResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetTokenResult" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ListRevokableTokens">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="1" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserLogin" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserType" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+            <xsd:element name="Application" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ListRevokableTokensResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ListRevokableTokensResult" type="tns:RevokableTokens" minOccurs="1" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="RevokeToken">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="1" maxOccurs="1" nillable="false" />
+            <xsd:element name="Guid" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="false" />
+            <xsd:element name="UserLogin" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="RevokeTokenResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="RevokeTokenResult" type="tns:RevokeTokenInfo" minOccurs="1" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ValidateToken">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ESBCredentials" type="tns:ESBCredentials" minOccurs="0" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ValidateTokenResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ValidateTokenResult" type="tns:TokenInfo" minOccurs="1" maxOccurs="1" nillable="false" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+  <message name="GetInfoCardClaimsSoapIn">
+    <part name="parameters" element="tns:GetInfoCardClaims" />
+  </message>
+  <message name="GetInfoCardClaimsSoapOut">
+    <part name="parameters" element="tns:GetInfoCardClaimsResponse" />
+  </message>
+  <message name="GetInfoCardClaimsSoap12In">
+    <part name="parameters" element="tns:GetInfoCardClaims" />
+  </message>
+  <message name="GetInfoCardClaimsSoap12Out">
+    <part name="parameters" element="tns:GetInfoCardClaimsResponse" />
+  </message>
+  <message name="GetInfoCardClaimsHttpGetIn">
+    <part name="parameters" element="tns:GetInfoCardClaims" />
+  </message>
+  <message name="GetInfoCardClaimsHttpGetOut">
+    <part name="parameters" element="tns:GetInfoCardClaimsResponse" />
+  </message>
+  <message name="GetInfoCardClaimsHttpPostIn">
+    <part name="parameters" element="tns:GetInfoCardClaims" />
+  </message>
+  <message name="GetInfoCardClaimsHttpPostOut">
+    <part name="parameters" element="tns:GetInfoCardClaimsResponse" />
+  </message>
+  <message name="GetPrimaryIdSoapIn">
+    <part name="parameters" element="tns:GetPrimaryId" />
+  </message>
+  <message name="GetPrimaryIdSoapOut">
+    <part name="parameters" element="tns:GetPrimaryIdResponse" />
+  </message>
+  <message name="GetPrimaryIdSoap12In">
+    <part name="parameters" element="tns:GetPrimaryId" />
+  </message>
+  <message name="GetPrimaryIdSoap12Out">
+    <part name="parameters" element="tns:GetPrimaryIdResponse" />
+  </message>
+  <message name="GetPrimaryIdHttpGetIn">
+    <part name="parameters" element="tns:GetPrimaryId" />
+  </message>
+  <message name="GetPrimaryIdHttpGetOut">
+    <part name="parameters" element="tns:GetPrimaryIdResponse" />
+  </message>
+  <message name="GetPrimaryIdHttpPostIn">
+    <part name="parameters" element="tns:GetPrimaryId" />
+  </message>
+  <message name="GetPrimaryIdHttpPostOut">
+    <part name="parameters" element="tns:GetPrimaryIdResponse" />
+  </message>
+  <message name="GetPrimaryIdDetailsSoapIn">
+    <part name="parameters" element="tns:GetPrimaryIdDetails" />
+  </message>
+  <message name="GetPrimaryIdDetailsSoapOut">
+    <part name="parameters" element="tns:GetPrimaryIdDetailsResponse" />
+  </message>
+  <message name="GetPrimaryIdDetailsSoap12In">
+    <part name="parameters" element="tns:GetPrimaryIdDetails" />
+  </message>
+  <message name="GetPrimaryIdDetailsSoap12Out">
+    <part name="parameters" element="tns:GetPrimaryIdDetailsResponse" />
+  </message>
+  <message name="GetPrimaryIdDetailsHttpGetIn">
+    <part name="parameters" element="tns:GetPrimaryIdDetails" />
+  </message>
+  <message name="GetPrimaryIdDetailsHttpGetOut">
+    <part name="parameters" element="tns:GetPrimaryIdDetailsResponse" />
+  </message>
+  <message name="GetPrimaryIdDetailsHttpPostIn">
+    <part name="parameters" element="tns:GetPrimaryIdDetails" />
+  </message>
+  <message name="GetPrimaryIdDetailsHttpPostOut">
+    <part name="parameters" element="tns:GetPrimaryIdDetailsResponse" />
+  </message>
+  <message name="GetRevokableTokenSoapIn">
+    <part name="parameters" element="tns:GetRevokableToken" />
+  </message>
+  <message name="GetRevokableTokenSoapOut">
+    <part name="parameters" element="tns:GetRevokableTokenResponse" />
+  </message>
+  <message name="GetRolesSoapIn">
+    <part name="parameters" element="tns:GetRoles" />
+  </message>
+  <message name="GetRolesSoapOut">
+    <part name="parameters" element="tns:GetRolesResponse" />
+  </message>
+  <message name="GetRolesHttpGetIn">
+    <part name="parameters" element="tns:GetRoles" />
+  </message>
+  <message name="GetRolesHttpGetOut">
+    <part name="parameters" element="tns:GetRolesResponse" />
+  </message>
+  <message name="GetRolesHttpPostIn">
+    <part name="parameters" element="tns:GetRoles" />
+  </message>
+  <message name="GetRolesHttpPostOut">
+    <part name="parameters" element="tns:GetRolesResponse" />
+  </message>
+  <message name="GetTokenSoapIn">
+    <part name="parameters" element="tns:GetToken" />
+  </message>
+  <message name="GetTokenSoapOut">
+    <part name="parameters" element="tns:GetTokenResponse" />
+  </message>
+  <message name="GetTokenSoap12In">
+    <part name="parameters" element="tns:GetToken" />
+  </message>
+  <message name="GetTokenSoap12Out">
+    <part name="parameters" element="tns:GetTokenResponse" />
+  </message>
+  <message name="GetTokenHttpGetIn">
+    <part name="parameters" element="tns:GetToken" />
+  </message>
+  <message name="GetTokenHttpGetOut">
+    <part name="parameters" element="tns:GetTokenResponse" />
+  </message>
+  <message name="GetTokenHttpPostIn">
+    <part name="parameters" element="tns:GetToken" />
+  </message>
+  <message name="GetTokenHttpPostOut">
+    <part name="parameters" element="tns:GetTokenResponse" />
+  </message>
+  <message name="ListRevokableTokensSoapIn">
+    <part name="parameters" element="tns:ListRevokableTokens" />
+  </message>
+  <message name="ListRevokableTokensSoapOut">
+    <part name="parameters" element="tns:ListRevokableTokensResponse" />
+  </message>
+  <message name="RevokeTokenSoapIn">
+    <part name="parameters" element="tns:RevokeToken" />
+  </message>
+  <message name="RevokeTokenSoapOut">
+    <part name="parameters" element="tns:RevokeTokenResponse" />
+  </message>
+  <message name="ValidateTokenSoapIn">
+    <part name="parameters" element="tns:ValidateToken" />
+  </message>
+  <message name="ValidateTokenSoapOut">
+    <part name="parameters" element="tns:ValidateTokenResponse" />
+  </message>
+  <message name="ValidateTokenSoap12In">
+    <part name="parameters" element="tns:ValidateToken" />
+  </message>
+  <message name="ValidateTokenSoap12Out">
+    <part name="parameters" element="tns:ValidateTokenResponse" />
+  </message>
+  <message name="ValidateTokenHttpGetIn">
+    <part name="parameters" element="tns:ValidateToken" />
+  </message>
+  <message name="ValidateTokenHttpGetOut">
+    <part name="parameters" element="tns:ValidateTokenResponse" />
+  </message>
+  <message name="ValidateTokenHttpPostIn">
+    <part name="parameters" element="tns:ValidateToken" />
+  </message>
+  <message name="ValidateTokenHttpPostOut">
+    <part name="parameters" element="tns:ValidateTokenResponse" />
+  </message>
+  <portType name="STSSoapSecure">
+    <operation name="GetInfoCardClaims">
+      <documentation>Returns card information.</documentation>
+      <input message="tns:GetInfoCardClaimsSoapIn" />
+      <output message="tns:GetInfoCardClaimsSoapOut" />
+    </operation>
+    <operation name="GetPrimaryId">
+      <documentation>Returns user information, his primary id and a security token.</documentation>
+      <input message="tns:GetPrimaryIdSoapIn" />
+      <output message="tns:GetPrimaryIdSoapOut" />
+    </operation>
+    <operation name="GetPrimaryIdDetails">
+      <documentation>Returns user information, his primary id,a security token and additional attributes</documentation>
+      <input message="tns:GetPrimaryIdDetailsSoapIn" />
+      <output message="tns:GetPrimaryIdDetailsSoapOut" />
+    </operation>
+    <operation name="GetRevokableToken">
+      <documentation>Returns a revocable token if the specified username and password are valid</documentation>
+      <input message="tns:GetRevokableTokenSoapIn" />
+      <output message="tns:GetRevokableTokenSoapOut" />
+    </operation>
+    <operation name="GetRoles">
+      <documentation>Returns the roles associated with the user basead on his token</documentation>
+      <input message="tns:GetRolesSoapIn" />
+      <output message="tns:GetRolesSoapOut" />
+    </operation>
+    <operation name="GetToken">
+      <documentation>Returns a token if the specified username and password are valid</documentation>
+      <input message="tns:GetTokenSoapIn" />
+      <output message="tns:GetTokenSoapOut" />
+    </operation>
+    <operation name="ListRevokableTokens">
+      <documentation>Returns a list of revocable tokens of an user.</documentation>
+      <input message="tns:ListRevokableTokensSoapIn" />
+      <output message="tns:ListRevokableTokensSoapOut" />
+    </operation>
+    <operation name="RevokeToken">
+      <documentation>Revoke the token</documentation>
+      <input message="tns:RevokeTokenSoapIn" />
+      <output message="tns:RevokeTokenSoapOut" />
+    </operation>
+    <operation name="ValidateToken">
+      <documentation>Validates a token</documentation>
+      <input message="tns:ValidateTokenSoapIn" />
+      <output message="tns:ValidateTokenSoapOut" />
+    </operation>
+  </portType>
+  <portType name="STSSoap12Secure">
+    <operation name="GetInfoCardClaims">
+      <documentation>Returns card information.</documentation>
+      <input message="tns:GetInfoCardClaimsSoap12In" />
+      <output message="tns:GetInfoCardClaimsSoap12Out" />
+    </operation>
+    <operation name="GetPrimaryId">
+      <documentation>Returns user information, his primary id and a security token.</documentation>
+      <input message="tns:GetPrimaryIdSoap12In" />
+      <output message="tns:GetPrimaryIdSoap12Out" />
+    </operation>
+    <operation name="GetPrimaryIdDetails">
+      <documentation>Returns user information, his primary id,a security token and additional attributes</documentation>
+      <input message="tns:GetPrimaryIdDetailsSoap12In" />
+      <output message="tns:GetPrimaryIdDetailsSoap12Out" />
+    </operation>
+    <operation name="GetToken">
+      <documentation>Returns a token if the specified username and password are valid</documentation>
+      <input message="tns:GetTokenSoap12In" />
+      <output message="tns:GetTokenSoap12Out" />
+    </operation>
+    <operation name="ValidateToken">
+      <documentation>Validates a token</documentation>
+      <input message="tns:ValidateTokenSoap12In" />
+      <output message="tns:ValidateTokenSoap12Out" />
+    </operation>
+  </portType>
+  <portType name="STSHttpGetSecure">
+    <operation name="GetInfoCardClaims">
+      <documentation>Returns card information.</documentation>
+      <input message="tns:GetInfoCardClaimsHttpGetIn" />
+      <output message="tns:GetInfoCardClaimsHttpGetOut" />
+    </operation>
+    <operation name="GetPrimaryId">
+      <documentation>Returns user information, his primary id and a security token.</documentation>
+      <input message="tns:GetPrimaryIdHttpGetIn" />
+      <output message="tns:GetPrimaryIdHttpGetOut" />
+    </operation>
+    <operation name="GetPrimaryIdDetails">
+      <documentation>Returns user information, his primary id,a security token and additional attributes</documentation>
+      <input message="tns:GetPrimaryIdDetailsHttpGetIn" />
+      <output message="tns:GetPrimaryIdDetailsHttpGetOut" />
+    </operation>
+    <operation name="GetRoles">
+      <documentation>Returns the roles associated with the user basead on his token</documentation>
+      <input message="tns:GetRolesHttpGetIn" />
+      <output message="tns:GetRolesHttpGetOut" />
+    </operation>
+    <operation name="GetToken">
+      <documentation>Returns a token if the specified username and password are valid</documentation>
+      <input message="tns:GetTokenHttpGetIn" />
+      <output message="tns:GetTokenHttpGetOut" />
+    </operation>
+    <operation name="ValidateToken">
+      <documentation>Validates a token</documentation>
+      <input message="tns:ValidateTokenHttpGetIn" />
+      <output message="tns:ValidateTokenHttpGetOut" />
+    </operation>
+  </portType>
+  <portType name="STSHttpPostSecure">
+    <operation name="GetInfoCardClaims">
+      <documentation>Returns card information.</documentation>
+      <input message="tns:GetInfoCardClaimsHttpPostIn" />
+      <output message="tns:GetInfoCardClaimsHttpPostOut" />
+    </operation>
+    <operation name="GetPrimaryId">
+      <documentation>Returns user information, his primary id and a security token.</documentation>
+      <input message="tns:GetPrimaryIdHttpPostIn" />
+      <output message="tns:GetPrimaryIdHttpPostOut" />
+    </operation>
+    <operation name="GetPrimaryIdDetails">
+      <documentation>Returns user information, his primary id,a security token and additional attributes</documentation>
+      <input message="tns:GetPrimaryIdDetailsHttpPostIn" />
+      <output message="tns:GetPrimaryIdDetailsHttpPostOut" />
+    </operation>
+    <operation name="GetRoles">
+      <documentation>Returns the roles associated with the user basead on his token</documentation>
+      <input message="tns:GetRolesHttpPostIn" />
+      <output message="tns:GetRolesHttpPostOut" />
+    </operation>
+    <operation name="GetToken">
+      <documentation>Returns a token if the specified username and password are valid</documentation>
+      <input message="tns:GetTokenHttpPostIn" />
+      <output message="tns:GetTokenHttpPostOut" />
+    </operation>
+    <operation name="ValidateToken">
+      <documentation>Validates a token</documentation>
+      <input message="tns:ValidateTokenHttpPostIn" />
+      <output message="tns:ValidateTokenHttpPostOut" />
+    </operation>
+  </portType>
+  <binding name="STSSoapSecure" type="tns:STSSoapSecure">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <operation name="GetInfoCardClaims">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/GetInfoCardClaims" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetPrimaryId">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/GetPrimaryId" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetPrimaryIdDetails">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/GetPrimaryIdDetails" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetRevokableToken">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/GetRevokableToken" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetRoles">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/GetRoles" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetToken">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/GetToken" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="ListRevokableTokens">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/ListRevokableTokens" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="RevokeToken">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/RevokeToken" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="ValidateToken">
+      <soap:operation soapAction="http://services.sapo.pt/definitions/ValidateToken" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="STSSoap12Secure" type="tns:STSSoap12Secure">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <operation name="GetInfoCardClaims">
+      <soap12:operation soapAction="http://services.sapo.pt/definitions/GetInfoCardClaims" style="document" />
+      <input>
+        <soap12:body use="literal" />
+      </input>
+      <output>
+        <soap12:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetPrimaryId">
+      <soap12:operation soapAction="http://services.sapo.pt/definitions/GetPrimaryId" style="document" />
+      <input>
+        <soap12:body use="literal" />
+      </input>
+      <output>
+        <soap12:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetPrimaryIdDetails">
+      <soap12:operation soapAction="http://services.sapo.pt/definitions/GetPrimaryIdDetails" style="document" />
+      <input>
+        <soap12:body use="literal" />
+      </input>
+      <output>
+        <soap12:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetToken">
+      <soap12:operation soapAction="http://services.sapo.pt/definitions/GetToken" style="document" />
+      <input>
+        <soap12:body use="literal" />
+      </input>
+      <output>
+        <soap12:body use="literal" />
+      </output>
+    </operation>
+    <operation name="ValidateToken">
+      <soap12:operation soapAction="http://services.sapo.pt/definitions/ValidateToken" style="document" />
+      <input>
+        <soap12:body use="literal" />
+      </input>
+      <output>
+        <soap12:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="STSHttpGetSecure" type="tns:STSHttpGetSecure">
+    <http:binding verb="GET" />
+    <operation name="GetInfoCardClaims">
+      <http:operation location="/GetInfoCardClaims" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetPrimaryId">
+      <http:operation location="/GetPrimaryId" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetPrimaryIdDetails">
+      <http:operation location="/GetPrimaryIdDetails" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetRoles">
+      <http:operation location="/GetRoles" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetToken">
+      <http:operation location="/GetToken" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="ValidateToken">
+      <http:operation location="/ValidateToken" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="STSHttpPostSecure" type="tns:STSHttpPostSecure">
+    <http:binding verb="POST" />
+    <operation name="GetInfoCardClaims">
+      <http:operation location="/GetInfoCardClaims" />
+      <input>
+        <mime:content part="Body" type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetPrimaryId">
+      <http:operation location="/GetPrimaryId" />
+      <input>
+        <mime:content part="Body" type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetPrimaryIdDetails">
+      <http:operation location="/GetPrimaryIdDetails" />
+      <input>
+        <mime:content part="Body" type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetRoles">
+      <http:operation location="/GetRoles" />
+      <input>
+        <mime:content part="Body" type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetToken">
+      <http:operation location="/GetToken" />
+      <input>
+        <mime:content part="Body" type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="ValidateToken">
+      <http:operation location="/ValidateToken" />
+      <input>
+        <mime:content part="Body" type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+  </binding>
+  <service name="STS">
+    <documentation>Allows to obtain an authentication token for users SAPO (via email and password). This token can be used in services and / or operations that require some level of specific authorization.</documentation>
+    <port name="STSSoapSecure" binding="tns:STSSoapSecure">
+      <soap:address location="https://services.bk.sapo.pt/STS" />
+    </port>
+    <port name="STSSoap12Secure" binding="tns:STSSoap12Secure">
+      <soap12:address location="https://services.bk.sapo.pt/STS" />
+    </port>
+    <port name="STSHttpGetSecure" binding="tns:STSHttpGetSecure">
+      <http:address location="https://services.bk.sapo.pt/STS" />
+    </port>
+    <port name="STSHttpPostSecure" binding="tns:STSHttpPostSecure">
+      <http:address location="https://services.bk.sapo.pt/STS" />
+    </port>
+  </service>
+</definitions>

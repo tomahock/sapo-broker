@@ -163,6 +163,7 @@ public class SslBrokerClient extends BrokerClient  {
 
         this.userCredentials = credentialsProvider.getCredentials();
 
+
         NetAuthentication clientAuth = new NetAuthentication(userCredentials.getToken(), userCredentials.getUserAuthenticationType());
         clientAuth.setRoles(userCredentials.getRoles());
         

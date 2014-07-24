@@ -7,14 +7,12 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.ProviderInfo;
-import pt.com.broker.client.nio.AcceptRequest;
+import pt.com.broker.auth.saposts.SapoSTSProvider;
 import pt.com.broker.client.nio.SslBrokerClient;
-import pt.com.broker.client.nio.events.AcceptResponseListener;
-import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.types.*;
+import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetProtocolType;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -25,7 +23,6 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.UUID;
 import java.util.concurrent.Future;
 
 /**
@@ -106,4 +103,31 @@ public class BrokerSslClientTest {
 
     }
 
+    @Test
+    public void testAuth() throws Throwable {
+
+
+
+        SslBrokerClient bk = createClient();
+
+        Future f = bk.connectAsync();
+
+
+
+        f.get();
+
+
+        SapoSTSProvider stsProvider = new SapoSTSProvider("luis@luissantos.pt","OTg#Yv9rfNivr8t$^TsCpgjcLJStY2vYF3G!*UF2699U8","https://pre-release.services.bk.sapo.pt/STS/");
+
+
+
+
+        bk.setCredentialsProvider(stsProvider);
+
+
+
+        Assert.assertTrue(bk.authenticateClient());
+
+
+    }
 }

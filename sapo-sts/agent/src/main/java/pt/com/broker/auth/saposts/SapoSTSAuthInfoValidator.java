@@ -1,27 +1,19 @@
 package pt.com.broker.auth.saposts;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.AuthInfoValidator;
 import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.ProviderInfo;
-import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
+import pt.sapo.services.definitions.ESBCredentials;
+import pt.sapo.services.definitions.STSSoapSecure;
+import pt.sapo.services.definitions.UserInfo;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import javax.xml.ws.soap.SOAPFaultException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,6 +23,9 @@ import java.util.List;
 
 public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 {
+
+    private static final Logger log = LoggerFactory.getLogger(SapoSTSAuthInfoValidator.class);
+
 	public static class SapoSTSAuthValidationResult implements AuthValidationResult
 	{
 		private boolean valid;
@@ -70,116 +65,99 @@ public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 
 	private static final SapoSTSAuthValidationResult internalError = new SapoSTSAuthValidationResult("Internal error");
 
+    private SapoSTSService service;
+
+
+    protected List<String> extractRoles(UserInfo userInfo){
+
+        if(userInfo.getESBRoles()!=null && userInfo.getESBRoles().getESBRole()!=null){
+            return userInfo.getESBRoles().getESBRole();
+        }
+
+        return new ArrayList<String>(1);
+    }
+
 	@Override
 	public AuthValidationResult validate(AuthInfo clientAuthInfo) throws Exception
 	{
-		URL url = new URL(getConnectionUrl(clientAuthInfo, SapoSTSService.getAgentAuthenticationInfo()));
 
-		URLConnection connection = url.openConnection();
+        SapoSTSAuthValidationResult avr;
 
-		if (!(connection instanceof HttpURLConnection))
-		{
-			return internalError;
-		}
+        try {
 
-		HttpURLConnection httpUrlconn = (HttpURLConnection) connection;
-		int respCode = httpUrlconn.getResponseCode();
+            UserInfo userInfo = authenticate(new String(clientAuthInfo.getToken(), "UTF-8"),clientAuthInfo.getUserId());
 
-		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = docBuilderFactory.newDocumentBuilder();
-		InputStream inputStream = null;
-		if (respCode == HttpURLConnection.HTTP_OK)
-		{
-			connection.getContent();
-			inputStream = httpUrlconn.getInputStream();
-		}
-		else if (respCode == HttpURLConnection.HTTP_INTERNAL_ERROR)
-		{
-			inputStream = httpUrlconn.getErrorStream();
-		}
-		else
-		{
-			return internalError;
-		}
+            avr = new SapoSTSAuthValidationResult(extractRoles(userInfo));
 
-		Document doc = documentBuilder.parse(inputStream);
+        }catch (SOAPFaultException fault){
 
-		XPath xpath = XPathFactory.newInstance().newXPath();
-		xpath.setNamespaceContext(pt.com.broker.auth.saposts.SapoSTSNamespaceContext.getInstance());
+            fault.printStackTrace();
 
-		SapoSTSAuthValidationResult avr = null;
+            avr = new SapoSTSAuthValidationResult(SapoSTSCodeErrors.getErrorDescription(fault.getMessage()));
 
-		if (respCode == HttpURLConnection.HTTP_OK)
-		{
-			NodeList roleNodes = ((NodeList) xpath.evaluate("/GetRolesResponse/GetRolesResult/ESBRoles/ESBRole", doc, XPathConstants.NODESET));
+        }catch (Throwable e){
 
-			List<String> roles = null;
+            e.printStackTrace();
 
-			if (roleNodes.getLength() != 0)
-			{
-				roles = extractRoles(roleNodes);
-			}
-			else
-			{
-				roles = new ArrayList<String>(1);
-			}
+            log.debug("Auth Error: {}",e.getMessage(),e);
 
-			System.out.println("ROLES: " + Arrays.toString(roles.toArray()));
+            return internalError;
+        }
 
-			avr = new SapoSTSAuthValidationResult(roles);
-		}
-		else
-		{
-			Element codeElem = (Element) ((NodeList) xpath.evaluate("/fault/detail/exceptionInfo/code", doc, XPathConstants.NODESET)).item(0);
 
-			avr = new SapoSTSAuthValidationResult(SapoSTSCodeErrors.getErrorDescription(codeElem.getTextContent()));
-		}
 
-		return avr;
-	}
+        return avr;
 
-	private List<String> extractRoles(NodeList roleNodes)
-	{
-		List<String> roles = new ArrayList<String>(roleNodes.getLength());
 
-		for (int i = 0; i != roleNodes.getLength(); ++i)
-		{
-			Node item = roleNodes.item(i);
-			if (item instanceof Element)
-			{
-				Element elem = (Element) item;
-				roles.add(elem.getTextContent());
-			}
-		}
-
-		return roles;
-	}
-
-	private String getConnectionUrl(AuthInfo clientAuthInfo, AuthInfo agentAuthInfo)
-	{
-		String sapoSTSUrl = SAPOStsToken.DEFAULT_BASE_URL;
-
-		Parameters parameters = SapoSTSParameterProvider.getSTSParameters();
-		if (parameters != null && parameters.getLocation() != null)
-			sapoSTSUrl = parameters.getLocation();
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(sapoSTSUrl);
-		sb.append("GetRoles?");
-
-		sb.append("ESBToken=");
-		sb.append(new String(agentAuthInfo.getToken(), Charset.forName("UTF-8")));
-
-		sb.append("&UserToken=");
-		sb.append(new String(clientAuthInfo.getToken(), Charset.forName("UTF-8")));
-
-		return sb.toString();
 	}
 
 	@Override
 	public boolean init(ProviderInfo info)
 	{
-		return SapoSTSService.start(info);
+        service = new SapoSTSService();
+
+        return service.start(info);
 	}
+
+    protected boolean safeCompare(String stringA , String stringB){
+
+            byte[] a = stringA.getBytes(Charset.forName("UTF-8"));
+            byte[] b = stringB.getBytes(Charset.forName("UTF-8"));
+
+
+            if (a.length != b.length) {
+                return false;
+            }
+
+            int result = 0;
+            for (int i = 0; i < a.length; i++) {
+                result |= a[i] ^ b[i];
+            }
+
+            return result == 0;
+
+    }
+
+    protected UserInfo authenticate(String token, String usernameOrEmail) throws Exception {
+
+        UserInfo userInfoAuth = service.getUserInfo(token);
+
+        UserInfo userInfoDetails = service.getPrimaryIdDetails(usernameOrEmail);
+
+        if(!safeCompare(userInfoAuth.getPrimaryId(), userInfoDetails.getPrimaryId())){
+            throw new Exception("Invalid credenctials");
+        }
+
+
+        return userInfoDetails;
+    }
+
+
+
+
+
+
+
+
 
 }
