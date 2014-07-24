@@ -19,6 +19,8 @@ import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.Gcs;
 
+import javax.xml.bind.JAXBException;
+
 /**
  * BrokerQueueListener represents a local queue consumer.
  */
@@ -148,7 +150,7 @@ public class BrokerQueueListener extends BrokerListener
 		}
 		catch (Throwable e)
 		{
-			if (e instanceof org.jibx.runtime.JiBXException)
+			if (e instanceof JAXBException)
 			{
 				try
 				{
