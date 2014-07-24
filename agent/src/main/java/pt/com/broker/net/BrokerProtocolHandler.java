@@ -7,6 +7,7 @@ import java.util.Set;
 import io.netty.channel.*;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.internal.chmv8.ConcurrentHashMapV8;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
@@ -121,61 +122,68 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 
         // Get the SslHandler in the current pipeline.
         // We added it in SecureChatPipelineFactory.
-        final SslHandler sslHandler = ctx.pipeline().get(SslHandler.class);
+        final SslHandler sslHandler = (SslHandler) ctx.pipeline().get("ssl");
 
         // Get notified when SSL handshake is done.
         if (sslHandler != null)
         {
+            log.info("SSL handler not Null");
+
             Future handshakeFuture = sslHandler.handshakeFuture();
-            handshakeFuture.addListener(new ChannelFutureListener()
-            {
-                @Override
-                public void operationComplete(ChannelFuture cf) throws Exception
-                {
-                    Channel channel = cf.channel();
 
-                    if (cf.isSuccess())
+            handshakeFuture.addListener(  new GenericFutureListener<Future<Channel>>() {
+
+
+                    @Override
+                    public void operationComplete(Future<Channel> cf) throws Exception {
                     {
-                        log.info("SSL handshake complete.");
-                    }
-                    else
-                    {
+                        Channel channel = cf.get();
 
-
-                        if (channel == null)
+                        if (cf.isSuccess())
                         {
-                            log.info("SSL handshake failled.");
-                            return;
+                            log.info("SSL handshake complete.");
                         }
-
-                        try
+                        else
                         {
-                            String remoteClient = channel.remoteAddress() != null ? channel.remoteAddress().toString() : "(unknown client)";
-                            log.info("SSL handshake failled, client: '{}'", remoteClient);
 
-                            // String client = channel.
 
-                            // Publish fault message
-                            NetFault fault = new NetFault("CODE:99999", "SSL handshake failled");
-                            fault.setActionId("99999");
-
-                            NetAction action = new NetAction(ActionType.FAULT);
-                            action.setFaultMessage(fault);
-
-                            NetMessage ex_msg = new NetMessage(action, null);
-
-                            if (channel.isActive())
+                            if (channel == null)
                             {
-                                channel.writeAndFlush(ex_msg).addListener(ChannelFutureListener.CLOSE);
+                                log.info("SSL handshake failled.");
+                                return;
                             }
-                        }
-                        catch (Throwable t)
-                        {
-                            log.error("Error writing 'SSL handshake failled' message");
+
+                            try
+                            {
+                                String remoteClient = channel.remoteAddress() != null ? channel.remoteAddress().toString() : "(unknown client)";
+                                log.info("SSL handshake failled, client: '{}'", remoteClient);
+
+                                // String client = channel.
+
+                                // Publish fault message
+                                NetFault fault = new NetFault("CODE:99999", "SSL handshake failled");
+                                fault.setActionId("99999");
+
+                                NetAction action = new NetAction(ActionType.FAULT);
+                                action.setFaultMessage(fault);
+
+                                NetMessage ex_msg = new NetMessage(action, null);
+
+                                if (channel.isActive())
+                                {
+                                    channel.writeAndFlush(ex_msg).addListener(ChannelFutureListener.CLOSE);
+                                }
+                            }
+                            catch (Throwable t)
+                            {
+                                log.error("Error writing 'SSL handshake failled' message");
+                            }
                         }
                     }
                 }
+
             });
+
             MiscStats.newSslConnection();
         }
         else
