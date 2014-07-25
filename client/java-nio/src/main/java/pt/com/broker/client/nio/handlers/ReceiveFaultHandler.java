@@ -90,14 +90,14 @@ public class ReceiveFaultHandler extends SimpleChannelInboundHandler<NetMessage>
             return;
         }
 
-
         BrokerListener listener = getFaultListenerAdapter();
-
-
 
         if(listener!=null){
             getFaultListenerAdapter().deliverMessage(msg,decorator.getHost());
+            return;
         }
+
+        ctx.fireChannelRead(msg);
 
     }
 

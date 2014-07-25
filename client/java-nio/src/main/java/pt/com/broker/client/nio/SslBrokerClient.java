@@ -230,6 +230,7 @@ public class SslBrokerClient extends BrokerClient  {
 
         NetMessage msg = new NetMessage(new NetAction(authentication));
 
+
         return sendNetMessage(msg);
     }
 
