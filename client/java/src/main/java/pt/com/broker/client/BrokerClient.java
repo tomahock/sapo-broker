@@ -1,11 +1,10 @@
 package pt.com.broker.client;
 
-import java.util.Collection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.NetProtocolType;
+
+import java.util.Collection;
 
 /**
  * BrokerClient represents a connection between a client and an agent. Through it clients can produce and consume broker messages. <br/>

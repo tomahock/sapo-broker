@@ -1,8 +1,12 @@
 package pt.com.broker.monitorization.configuration;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import pt.com.broker.client.HostInfo;
+import pt.com.broker.monitorization.configuration.Agents.Agent;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -10,15 +14,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import pt.com.broker.client.HostInfo;
-import pt.com.broker.monitorization.configuration.Agents.Agent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigurationInfo
 {

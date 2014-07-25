@@ -1,16 +1,7 @@
 package pt.com.broker.client;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.security.InvalidParameterException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.BindingSerializer;
@@ -18,6 +9,14 @@ import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.security.InvalidParameterException;
 
 public class UdpClient
 {

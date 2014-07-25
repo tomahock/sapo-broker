@@ -1,21 +1,20 @@
 package pt.com.broker.client.sample;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.io.NullOutputWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class PayConsumer implements BrokerListener
 {

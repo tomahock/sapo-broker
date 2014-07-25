@@ -1,9 +1,9 @@
 package pt.com.broker.core;
 
+import org.caudexorigo.concurrent.CustomExecutors;
+
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import org.caudexorigo.concurrent.CustomExecutors;
 
 /**
  * BrokerExecutor provides execution services based on a ScheduledThreadPoolExecutor;

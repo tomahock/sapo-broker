@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.text.StringBuilderWriter;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

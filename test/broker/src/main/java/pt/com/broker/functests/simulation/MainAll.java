@@ -3,7 +3,6 @@ package pt.com.broker.functests.simulation;
 import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.functests.conf.ConfigurationInfo;
 
 public class MainAll

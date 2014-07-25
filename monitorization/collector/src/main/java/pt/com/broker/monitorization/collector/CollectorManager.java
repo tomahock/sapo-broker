@@ -1,19 +1,19 @@
 package pt.com.broker.monitorization.collector;
 
+import org.caudexorigo.concurrent.CustomExecutors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.com.broker.client.BrokerClient;
+import pt.com.broker.client.HostInfo;
+import pt.com.broker.monitorization.configuration.ConfigurationInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.caudexorigo.concurrent.CustomExecutors;
 /* TODO TEMP CHANGE brsantos */
 //import org.caudexorigo.jdbc.DbExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.HostInfo;
-import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 
 public class CollectorManager
 {

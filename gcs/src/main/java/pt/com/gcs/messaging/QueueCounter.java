@@ -1,13 +1,12 @@
 package pt.com.gcs.messaging;
 
-import java.util.Collection;
-import java.util.Date;
-
-import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.time.ISO8601;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.gcs.conf.GcsInfo;
+
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * QueueCounter is responsible for counting and publishing the total number number of messages per queue.
@@ -28,7 +27,7 @@ class QueueCounter implements Runnable
 		// New format
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+		sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", ISO8601.format(new Date()), GcsInfo.getAgentName()));
 
 		for (QueueProcessor qp : QueueProcessorList.values())
 		{

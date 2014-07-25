@@ -2,7 +2,7 @@ package pt.com.broker.messaging;
 
 import java.nio.charset.Charset;
 
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import pt.com.broker.codec.xml.soap.SoapEnvelope;
 import pt.com.broker.types.Headers;

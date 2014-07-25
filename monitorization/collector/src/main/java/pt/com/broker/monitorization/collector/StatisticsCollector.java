@@ -1,17 +1,8 @@
 package pt.com.broker.monitorization.collector;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
-import java.util.Date;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
-
-import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.time.ISO8601;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.monitorization.db.StatisticsDB;
@@ -19,6 +10,13 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.util.Date;
 
 public class StatisticsCollector
 {
@@ -91,7 +89,7 @@ public class StatisticsCollector
 					{
 						agent = staxXmlReader.getAttributeValue("", "agent-name");
 						String sampleStart = staxXmlReader.getAttributeValue("", "date");
-						sampleStartDate = DateUtil.parseISODate(sampleStart);
+						sampleStartDate = ISO8601.parse(sampleStart);
 
 						// System.out.printf("agent: %s; date: %s%n", agent, sampleStartDate);
 					}

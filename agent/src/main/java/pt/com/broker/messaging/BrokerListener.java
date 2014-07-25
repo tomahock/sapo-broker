@@ -1,15 +1,10 @@
 package pt.com.broker.messaging;
 
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import pt.com.broker.types.DeliverableMessage;
-import pt.com.broker.types.ForwardResult;
+import pt.com.broker.types.*;
 import pt.com.broker.types.ForwardResult.Result;
-import pt.com.broker.types.MessageListener;
-import pt.com.broker.types.MessageListenerBase;
-import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ListenerChannel;
 
 /**

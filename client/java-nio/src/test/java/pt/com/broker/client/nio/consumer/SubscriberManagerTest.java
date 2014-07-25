@@ -1,12 +1,11 @@
 package pt.com.broker.client.nio.consumer;
 
-import io.netty.channel.Channel;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 

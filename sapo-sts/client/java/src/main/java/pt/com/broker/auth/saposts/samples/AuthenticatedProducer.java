@@ -1,14 +1,11 @@
 package pt.com.broker.auth.saposts.samples;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
 import pt.com.broker.client.CliArgs;
@@ -16,6 +13,8 @@ import pt.com.broker.client.SslBrokerClient;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetProtocolType;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Consumer sample where an authenticate user is used. This samples uses SapoSTS.

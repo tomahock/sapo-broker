@@ -1,51 +1,20 @@
 package pt.com.broker.codec.protobuf;
 
+import com.google.protobuf.ByteString;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.com.broker.codec.protobuf.PBMessage.Atom;
+import pt.com.broker.codec.protobuf.PBMessage.Atom.*;
+import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.stats.EncodingStats;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.caudexorigo.text.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pt.com.broker.codec.protobuf.PBMessage.Atom;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Accepted;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.AcknowledgeMessage;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Action;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Authentication;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.BrokerMessage;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Fault;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Header;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Notification;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Parameter;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Ping;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Poll;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Pong;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Publish;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Subscribe;
-import pt.com.broker.codec.protobuf.PBMessage.Atom.Unsubscribe;
-import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.NetAccepted;
-import pt.com.broker.types.NetAcknowledge;
-import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetAuthentication;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetFault;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetPing;
-import pt.com.broker.types.NetPoll;
-import pt.com.broker.types.NetPong;
-import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetUnsubscribe;
-import pt.com.broker.types.stats.EncodingStats;
-
-import com.google.protobuf.ByteString;
 
 /**
  * Google Protocol Buffer utility class for encoding and decoding.

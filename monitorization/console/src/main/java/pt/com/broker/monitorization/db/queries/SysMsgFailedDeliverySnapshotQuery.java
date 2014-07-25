@@ -1,8 +1,8 @@
 package pt.com.broker.monitorization.db.queries;
 
-import java.sql.ResultSet;
-
 import pt.com.broker.monitorization.AgentHostname;
+
+import java.sql.ResultSet;
 
 public class SysMsgFailedDeliverySnapshotQuery extends ComposedResultQuery
 {

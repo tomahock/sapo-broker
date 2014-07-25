@@ -1,10 +1,5 @@
 package pt.com.broker.monitorization.http;
 
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.caudexorigo.http.netty.HttpAction;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -15,7 +10,6 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.monitorization.db.queries.QueryDataProvider;
 import pt.com.broker.monitorization.db.queries.RateQueries;
 import pt.com.broker.monitorization.db.queries.SnapshotQueries;
@@ -24,6 +18,11 @@ import pt.com.broker.monitorization.db.queries.faults.FaultsInformationRouter;
 import pt.com.broker.monitorization.db.queries.queues.InactiveQueueInformationRouter;
 import pt.com.broker.monitorization.db.queries.queues.QueueInformationRouter;
 import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionsInformationRouter;
+
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DataQueryAction extends HttpAction
 {

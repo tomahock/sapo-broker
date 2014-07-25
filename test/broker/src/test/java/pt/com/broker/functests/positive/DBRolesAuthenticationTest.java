@@ -2,15 +2,15 @@ package pt.com.broker.functests.positive;
 
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import org.caudexorigo.concurrent.Sleep;
+import pt.com.broker.client.nio.SslBrokerClient;
+import pt.com.broker.functests.conf.ConfigurationInfo;
+import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.types.NetProtocolType;
 
 /* TODO TEMP CHANGE brsantos */
 //import pt.com.broker.auth.CredentialsProvider;
 //import pt.com.broker.auth.jdbc.JdbcProvider;
 /* TEMP CHANGE brsantos */
-import pt.com.broker.client.nio.SslBrokerClient;
-import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.functests.helpers.BrokerTest;
-import pt.com.broker.types.NetProtocolType;
 
 public class DBRolesAuthenticationTest extends GenericPubSubTest
 {

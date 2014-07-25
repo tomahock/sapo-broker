@@ -1,9 +1,8 @@
 package pt.com.broker.messaging;
 
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.Headers;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetPublish;

@@ -1,6 +1,5 @@
 package pt.com.broker.types;
 
-import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 
 public class CriticalErrors

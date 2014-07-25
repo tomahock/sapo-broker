@@ -1,11 +1,11 @@
 package pt.com.gcs.messaging;
 
-import java.util.regex.Pattern;
-
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.regex.Pattern;
 
 class PatternCache
 {

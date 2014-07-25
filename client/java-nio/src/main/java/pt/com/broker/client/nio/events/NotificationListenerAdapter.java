@@ -1,11 +1,9 @@
 package pt.com.broker.client.nio.events;
 
-import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;

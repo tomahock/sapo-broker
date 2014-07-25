@@ -1,12 +1,11 @@
 package pt.com.gcs.messaging;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.gcs.conf.GlobalConfig;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * GlobalConfigMonitor is an runnable type responsible for triggering the validation of exiting peers and connect to new ones based on the global configuration file.

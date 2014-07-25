@@ -7,7 +7,6 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.NetMessage;
 

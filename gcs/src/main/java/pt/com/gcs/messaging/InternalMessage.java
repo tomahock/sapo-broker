@@ -1,7 +1,6 @@
 package pt.com.gcs.messaging;
 
-import org.caudexorigo.text.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import pt.com.broker.types.DeliverableMessage;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.conf.GcsInfo;

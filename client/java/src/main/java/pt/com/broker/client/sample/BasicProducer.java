@@ -5,12 +5,13 @@
  */
 package pt.com.broker.client.sample;
 
-import java.io.InputStream;
 import org.caudexorigo.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.types.NetBrokerMessage;
+
+import java.io.InputStream;
 
 /**
  *

@@ -1,20 +1,20 @@
 package pt.com.broker.jsbridge;
 
-import java.util.List;
-
 import org.caudexorigo.ErrorAnalyser;
-/* TODO TEMP CHANGE brsantos */
-//import org.caudexorigo.http.netty.WebSocketHandler;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.websocket.DefaultWebSocketFrame;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.jsbridge.protocol.JsonMessage;
 import pt.com.broker.jsbridge.protocol.JsonMessage.MessageType;
 import pt.com.broker.jsbridge.protocol.JsonSerializer;
+
+import java.util.List;
+
+/* TODO TEMP CHANGE brsantos */
+//import org.caudexorigo.http.netty.WebSocketHandler;
 
 /* TODO TEMP CHANGE brsantos */
 public class JSBridgeHandler // implements WebSocketHandler

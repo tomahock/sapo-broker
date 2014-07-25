@@ -1,12 +1,11 @@
 package pt.com.broker.auth;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.gcs.conf.GlobalConfig;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * ProvidersLoader is responsible for loading available authentication providers.

@@ -1,6 +1,5 @@
 package pt.com.broker.client.nio.utils;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import pt.com.broker.client.nio.server.HostInfo;
 

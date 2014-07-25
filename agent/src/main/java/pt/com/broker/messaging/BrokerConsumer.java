@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.time.ISO8601;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class BrokerConsumer
 				try
 				{
 					StringBuilder sb = new StringBuilder();
-					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", ISO8601.format(new Date()), GcsInfo.getAgentName()));
 
 					for (TopicProcessor tp : TopicProcessorList.values())
 					{
@@ -96,7 +96,7 @@ public class BrokerConsumer
 				try
 				{
 					StringBuilder sb = new StringBuilder();
-					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", ISO8601.format(new Date()), GcsInfo.getAgentName()));
 
 					for (QueueProcessor qs : QueueProcessorList.values())
 					{

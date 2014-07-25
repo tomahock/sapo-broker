@@ -1,13 +1,12 @@
 package pt.com.broker.monitorization.db.queries.queues;
 
+import org.caudexorigo.jdbc.Db;
+import pt.com.broker.monitorization.db.queries.StaticQuery;
+import pt.com.broker.monitorization.http.QueryStringParameters;
+
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
-
-import org.caudexorigo.jdbc.Db;
-
-import pt.com.broker.monitorization.db.queries.StaticQuery;
-import pt.com.broker.monitorization.http.QueryStringParameters;
 
 public class QueueCountStaticQuery extends StaticQuery
 {

@@ -5,10 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetProtocolType;
 
 import java.util.List;
 

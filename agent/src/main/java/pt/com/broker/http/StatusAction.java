@@ -14,7 +14,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.caudexorigo.http.netty4.HttpAction;
-import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.time.ISO8601;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class StatusAction extends HttpAction
 
 		try
 		{
-			String smessage = String.format(template, "Agent is alive", DateUtil.formatISODate(new Date()), BrokerInfo.getVersion());
+			String smessage = String.format(template, "Agent is alive", ISO8601.format(new Date()), BrokerInfo.getVersion());
 			byte[] bmessage = smessage.getBytes("UTF-8");
 			response.headers().set("Pragma", "no-cache");
 			response.headers().set("Cache-Control", "no-cache");

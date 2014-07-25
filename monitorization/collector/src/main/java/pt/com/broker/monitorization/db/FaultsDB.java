@@ -1,7 +1,13 @@
 package pt.com.broker.monitorization.db;
 
-import java.io.ByteArrayInputStream;
-import java.util.Date;
+import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -10,17 +16,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.util.Date;
 
-import org.caudexorigo.ErrorAnalyser;
 /* TODO TEMP CHANGE brsantos */
 //import org.caudexorigo.jdbc.DbExecutor;
-import org.caudexorigo.text.StringEscapeUtils;
-import org.caudexorigo.text.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 public class FaultsDB
 {

@@ -3,7 +3,6 @@ package pt.com.broker.functests.positive;
 import org.junit.runners.Parameterized;
 import pt.com.broker.functests.Action;
 import org.caudexorigo.text.RandomStringUtils;
-
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;

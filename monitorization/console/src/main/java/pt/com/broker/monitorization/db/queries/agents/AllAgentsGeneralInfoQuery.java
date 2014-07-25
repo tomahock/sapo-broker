@@ -1,15 +1,14 @@
 package pt.com.broker.monitorization.db.queries.agents;
 
-import java.sql.ResultSet;
-import java.util.List;
-import java.util.Map;
-
 import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.monitorization.AgentHostname;
+
+import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
 public class AllAgentsGeneralInfoQuery
 {

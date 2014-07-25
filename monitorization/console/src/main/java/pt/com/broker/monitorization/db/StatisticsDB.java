@@ -1,19 +1,17 @@
 package pt.com.broker.monitorization.db;
 
-import java.sql.ResultSet;
+import org.caudexorigo.jdbc.Db;
+import org.caudexorigo.time.ISO8601;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.com.broker.monitorization.AgentHostname;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.caudexorigo.jdbc.Db;
 /* TODO TEMP CHANGE brsantos */
 //import org.caudexorigo.jdbc.DbExecutor;
-import org.caudexorigo.jdbc.DbPool;
-import org.caudexorigo.text.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pt.com.broker.monitorization.AgentHostname;
 
 public class StatisticsDB
 {
@@ -68,7 +66,7 @@ public class StatisticsDB
 
 		public String toJson()
 		{
-			return String.format("{\"agentName\":\"%s\",\"agentHostname\":\"%s\",\"time\":\"%s\",\"subject\":\"%s\",\"predicate\":\"%s\",\"value\":\"%s\"}", this.agentName, AgentHostname.get(agentName), DateUtil.formatISODate(new Date(time)), subject, predicate, value);
+			return String.format("{\"agentName\":\"%s\",\"agentHostname\":\"%s\",\"time\":\"%s\",\"subject\":\"%s\",\"predicate\":\"%s\",\"value\":\"%s\"}", this.agentName, AgentHostname.get(agentName), ISO8601.format(new Date(time)), subject, predicate, value);
 		}
 	}
 

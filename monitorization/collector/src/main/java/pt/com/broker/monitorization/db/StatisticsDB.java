@@ -1,12 +1,13 @@
 package pt.com.broker.monitorization.db;
 
-import java.util.Date;
-
 import org.caudexorigo.ErrorAnalyser;
-/* TODO TEMP CHANGE brsantos */
-//import org.caudexorigo.jdbc.DbExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+
+/* TODO TEMP CHANGE brsantos */
+//import org.caudexorigo.jdbc.DbExecutor;
 
 public class StatisticsDB
 {

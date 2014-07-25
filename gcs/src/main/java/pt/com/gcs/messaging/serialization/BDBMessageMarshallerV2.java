@@ -1,14 +1,13 @@
 package pt.com.gcs.messaging.serialization;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
-
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.gcs.messaging.BDBMessage;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 {

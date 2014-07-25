@@ -1,15 +1,15 @@
 package pt.com.broker.functests.helpers;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class GenericNetMessageNegativeTest extends GenericNegativeTest
 {

@@ -1,10 +1,6 @@
 package pt.com.broker.client.nio.server;
 
 import io.netty.channel.Channel;
-import io.netty.util.UniqueName;
-import io.netty.util.internal.PlatformDependent;
-
-import java.util.concurrent.ConcurrentMap;
 
 
 /**

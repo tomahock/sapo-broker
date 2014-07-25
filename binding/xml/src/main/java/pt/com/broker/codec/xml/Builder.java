@@ -3,8 +3,8 @@ package pt.com.broker.codec.xml;
 import java.nio.charset.Charset;
 import java.util.Date;
 
-import org.caudexorigo.text.DateUtil;
-import org.caudexorigo.text.StringUtils;
+import org.caudexorigo.time.ISO8601;
+import org.apache.commons.lang3.StringUtils;
 
 import pt.com.broker.codec.xml.soap.SoapEnvelope;
 import pt.com.broker.codec.xml.soap.SoapFault;
@@ -78,12 +78,12 @@ public class Builder
 			{
 				if (StringUtils.isNotBlank(xmsg.timestamp))
 				{
-					Date parsedTimestamp = DateUtil.parseISODate(xmsg.timestamp);
+					Date parsedTimestamp = ISO8601.parse(xmsg.timestamp);
 					netBkMsg.setTimestamp(parsedTimestamp.getTime());
 				}
 				if (StringUtils.isNotBlank(xmsg.expiration))
 				{
-					Date parsedExpiration = DateUtil.parseISODate(xmsg.expiration);
+					Date parsedExpiration = ISO8601.parse(xmsg.expiration);
 					netBkMsg.setExpiration(parsedExpiration.getTime());
 				}
 			}
@@ -371,12 +371,12 @@ public class Builder
 
 		if (net_bkmsg.getExpiration() > 0)
 		{
-			bkmsg.expiration = DateUtil.formatISODate(new Date(net_bkmsg.getExpiration()));
+			bkmsg.expiration = ISO8601.format(new Date(net_bkmsg.getExpiration()));
 		}
 
 		if (net_bkmsg.getTimestamp() > 0)
 		{
-			bkmsg.timestamp = DateUtil.formatISODate(new Date(net_bkmsg.getTimestamp()));
+			bkmsg.timestamp = ISO8601.format(new Date(net_bkmsg.getTimestamp()));
 		}
 
 		return bkmsg;

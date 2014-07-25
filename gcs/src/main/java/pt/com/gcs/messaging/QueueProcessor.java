@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.netty.channel.Channel;
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

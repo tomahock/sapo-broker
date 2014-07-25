@@ -2,6 +2,7 @@ package pt.com.broker.auth;
 
 
 
+
 import io.netty.channel.Channel;
 import pt.com.broker.auth.AccessControl.Privilege;
 

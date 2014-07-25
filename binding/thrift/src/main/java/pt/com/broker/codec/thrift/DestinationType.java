@@ -7,10 +7,6 @@
 package pt.com.broker.codec.thrift;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
 public enum DestinationType implements org.apache.thrift.TEnum {
   TOPIC(0),
   QUEUE(1),

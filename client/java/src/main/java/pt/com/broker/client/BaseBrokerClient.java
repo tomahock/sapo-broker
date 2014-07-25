@@ -1,40 +1,19 @@
 package pt.com.broker.client;
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.TimeoutException;
-
 import org.caudexorigo.concurrent.Sleep;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.utils.CircularContainer;
-import pt.com.broker.types.Headers;
-import pt.com.broker.types.NetAcknowledge;
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetPing;
-import pt.com.broker.types.NetPoll;
-import pt.com.broker.types.NetPong;
-import pt.com.broker.types.NetProtocolType;
-import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetUnsubscribe;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * 

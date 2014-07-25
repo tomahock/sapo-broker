@@ -1,22 +1,20 @@
 package pt.com.gcs.conf;
 
-import java.io.File;
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.io.FilenameUtils;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.auth.ProviderInfo;
 import pt.com.gcs.conf.agent.AgentConfig;
 import pt.com.gcs.conf.agent.AgentConfig.Ssl;
 import pt.com.gcs.conf.global.BrokerSecurityPolicy;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
+import java.util.Map;
 
 /**
  * GcsInfo contains several information about the agent.

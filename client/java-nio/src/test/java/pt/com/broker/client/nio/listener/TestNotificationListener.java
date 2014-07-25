@@ -3,26 +3,16 @@ package pt.com.broker.client.nio.listener;
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
-import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
-import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.tests.mockito.DecoratorMatcher;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
-import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
-
-import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 

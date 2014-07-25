@@ -10,15 +10,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import pt.com.broker.types.*;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetProtocolType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 
 /**

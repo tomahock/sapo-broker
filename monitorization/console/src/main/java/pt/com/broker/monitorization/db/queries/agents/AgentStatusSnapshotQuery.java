@@ -1,9 +1,9 @@
 package pt.com.broker.monitorization.db.queries.agents;
 
-import java.sql.ResultSet;
-
 import pt.com.broker.monitorization.AgentHostname;
 import pt.com.broker.monitorization.db.queries.ComposedResultQuery;
+
+import java.sql.ResultSet;
 
 public class AgentStatusSnapshotQuery extends ComposedResultQuery
 {

@@ -7,10 +7,6 @@
 package pt.com.broker.codec.thrift;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
 public enum ActionType implements org.apache.thrift.TEnum {
   PUBLISH(0),
   POLL(1),

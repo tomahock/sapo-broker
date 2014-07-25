@@ -12,9 +12,10 @@ import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
-import static org.mockito.Mockito.*;
 
 import java.util.UUID;
+
+import static org.mockito.Mockito.verify;
 
 /**
  * Copyright (c) 2014, SAPO

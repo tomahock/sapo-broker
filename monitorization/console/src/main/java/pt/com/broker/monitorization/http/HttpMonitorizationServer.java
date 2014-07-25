@@ -1,8 +1,5 @@
 package pt.com.broker.monitorization.http;
 
-import java.io.File;
-import java.net.URI;
-
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.cli.ArgumentValidationException;
 import org.caudexorigo.cli.CliFactory;
@@ -12,8 +9,10 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
+
+import java.io.File;
+import java.net.URI;
 
 public class HttpMonitorizationServer
 {

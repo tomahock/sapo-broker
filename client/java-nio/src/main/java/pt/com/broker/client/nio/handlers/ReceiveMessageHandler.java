@@ -11,10 +11,7 @@ import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
-
-import java.net.InetSocketAddress;
 
 
 /**

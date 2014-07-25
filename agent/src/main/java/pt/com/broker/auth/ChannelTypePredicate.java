@@ -1,8 +1,8 @@
 package pt.com.broker.auth;
 
-import java.util.List;
-
 import pt.com.gcs.conf.global.ChannelType;
+
+import java.util.List;
 
 /**
  * ChannelTypePredicate represents channel type predicate, that is, one that has on of the following properties: INTEGRITY, CONFIDENTIALITY, AUTHENTICATION.

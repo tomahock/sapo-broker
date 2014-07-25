@@ -4,23 +4,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.MessageToByteEncoder;
-import io.netty.handler.ssl.SslHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
-import pt.com.broker.client.nio.consumer.ConsumerManager;
-import pt.com.broker.client.nio.consumer.PongConsumerManager;
-import pt.com.broker.client.nio.handlers.PongMessageHandler;
-import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
 import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.NetProtocolType;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
 
 /**
  * Created by luissantos on 05-05-2014.

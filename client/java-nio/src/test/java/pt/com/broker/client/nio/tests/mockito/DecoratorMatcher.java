@@ -2,8 +2,6 @@ package pt.com.broker.client.nio.tests.mockito;
 
 import org.mockito.ArgumentMatcher;
 import pt.com.broker.client.nio.utils.DecoratorInterface;
-import pt.com.broker.client.nio.utils.NetNotificationDecorator;
-import pt.com.broker.types.NetNotification;
 
 /**
  * Copyright (c) 2014, SAPO

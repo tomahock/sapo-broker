@@ -1,19 +1,18 @@
 package pt.com.broker.auth.saposts;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.caudexorigo.concurrent.CustomExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.ProviderInfo;
 import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 import pt.com.broker.auth.saposts.utils.CredentialObfuscation;
+
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SapoSTSService is responsible for managing agent's credentials (STS Token) to Sapo STS and automatically renew it.

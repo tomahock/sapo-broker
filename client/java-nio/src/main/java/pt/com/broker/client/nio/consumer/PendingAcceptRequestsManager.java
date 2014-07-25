@@ -1,12 +1,10 @@
 package pt.com.broker.client.nio.consumer;
 
-import io.netty.channel.Channel;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.types.ActionIdDecorator;
-import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 
 import java.util.HashMap;

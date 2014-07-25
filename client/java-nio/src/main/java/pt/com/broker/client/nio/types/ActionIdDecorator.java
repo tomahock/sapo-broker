@@ -2,10 +2,8 @@ package pt.com.broker.client.nio.types;
 
 import pt.com.broker.client.nio.utils.DecoratorInterface;
 import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetMessage;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 

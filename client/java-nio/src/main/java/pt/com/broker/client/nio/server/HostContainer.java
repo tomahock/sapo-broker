@@ -3,7 +3,6 @@ package pt.com.broker.client.nio.server;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
@@ -11,7 +10,10 @@ import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Observable;
 import java.util.concurrent.*;
 
 /**

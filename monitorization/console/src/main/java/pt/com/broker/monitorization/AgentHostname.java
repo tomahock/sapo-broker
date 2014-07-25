@@ -1,13 +1,13 @@
 package pt.com.broker.monitorization;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class AgentHostname
 {

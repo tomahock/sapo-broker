@@ -1,9 +1,5 @@
 package pt.com.broker.monitorization.db.queries;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import pt.com.broker.monitorization.db.queries.agents.AgentFaultsRateQuery;
 import pt.com.broker.monitorization.db.queries.agents.AgentInputRateQuery;
 import pt.com.broker.monitorization.db.queries.agents.AgentOutputRateQuery;
@@ -16,6 +12,10 @@ import pt.com.broker.monitorization.db.queries.queues.QueueOutputRateQuery;
 import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionDiscardedRateQuery;
 import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionOutputRateQuery;
 import pt.com.broker.monitorization.db.queries.subscriptions.SubscriptionRateQuery;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RateQueries implements QueryDataProvider
 {

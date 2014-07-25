@@ -1,7 +1,5 @@
 package pt.com.broker.types;
 
-import java.util.Objects;
-
 /**
  * Represents an Action.
  * 

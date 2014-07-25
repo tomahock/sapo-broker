@@ -1,7 +1,6 @@
 package pt.com.broker.client.nio;
 
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AuthInfo;
@@ -11,7 +10,8 @@ import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.*;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.security.KeyStore;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;

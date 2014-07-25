@@ -11,7 +11,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.internal.chmv8.ConcurrentHashMapV8;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
-import java.util.Map;
-
 import pt.com.broker.types.NetAction.ActionType;
+
+import java.util.Map;
 
 /**
  * Represents a Fault message.

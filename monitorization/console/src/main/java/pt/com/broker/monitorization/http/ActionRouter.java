@@ -1,11 +1,11 @@
 package pt.com.broker.monitorization.http;
 
-import java.net.URI;
-
 import org.caudexorigo.http.netty.HttpAction;
 import org.caudexorigo.http.netty.RequestRouter;
 import org.caudexorigo.http.netty.StaticFileAction;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+
+import java.net.URI;
 
 public class ActionRouter implements RequestRouter
 {

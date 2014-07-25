@@ -1,9 +1,5 @@
 package pt.com.broker.monitorization.http;
 
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-
 import org.caudexorigo.http.netty.HttpAction;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -12,8 +8,11 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
-
 import pt.com.broker.monitorization.AgentHostname;
+
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 
 public class HostnameAction extends HttpAction
 {

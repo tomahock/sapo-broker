@@ -1,16 +1,15 @@
 package pt.com.gcs.messaging.serialization;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.gcs.messaging.InternalMessage;
 import pt.com.gcs.messaging.MessageType;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class InternalMessageMarshallerV1 implements Codec<InternalMessage>
 {
