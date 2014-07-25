@@ -1,5 +1,6 @@
 package pt.com.broker.client.nio;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import org.apache.commons.lang3.StringUtils;
