@@ -1,5 +1,20 @@
 package pt.com.broker.auth.saposts;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import pt.com.broker.auth.AuthInfo;
+import pt.com.broker.auth.AuthInfoValidator;
+import pt.com.broker.auth.AuthValidationResult;
+import pt.com.broker.auth.ProviderInfo;
+import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -8,23 +23,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import pt.com.broker.auth.AuthInfo;
-import pt.com.broker.auth.AuthInfoValidator;
-import pt.com.broker.auth.AuthValidationResult;
-import pt.com.broker.auth.ProviderInfo;
-import pt.com.broker.auth.saposts.SapoSTSParameterProvider.Parameters;
 
 /**
  * SapoSTSAuthInfoValidator implements AuthInfoValidator in order to provide Sapo STS based authentication, that is, given a Sapo STS token it extracts the associated user roles.

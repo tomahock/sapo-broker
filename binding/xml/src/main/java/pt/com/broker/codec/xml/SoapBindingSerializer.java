@@ -1,15 +1,14 @@
 package pt.com.broker.codec.xml;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
-
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.stats.EncodingStats;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * SOAP utility class for encoding and decoding.

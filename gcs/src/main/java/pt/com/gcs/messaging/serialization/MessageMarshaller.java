@@ -1,11 +1,10 @@
 package pt.com.gcs.messaging.serialization;
 
-import java.io.ObjectInputStream;
-
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
-
 import pt.com.gcs.messaging.BDBMessage;
 import pt.com.gcs.messaging.InternalMessage;
+
+import java.io.ObjectInputStream;
 
 public class MessageMarshaller
 {

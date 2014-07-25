@@ -1,13 +1,8 @@
 package pt.com.broker.messaging;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ForwardResult.Result;
@@ -19,6 +14,10 @@ import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.gcs.messaging.GcsExecutor;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /*
  * SynchronousMessageListener represents a poll request by a client. 

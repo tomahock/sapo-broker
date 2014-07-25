@@ -1,8 +1,8 @@
 package pt.com.broker.auth;
 
-import java.util.List;
-
 import pt.com.broker.types.NetAction;
+
+import java.util.List;
 
 /**
  * AclEntry represents an security policy Access Control Entry.

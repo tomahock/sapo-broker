@@ -1,13 +1,12 @@
 package pt.com.broker.jsbridge;
 
-import java.io.File;
-import java.net.URI;
-
-import org.caudexorigo.http.netty.NettyHttpServer;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.URI;
 
 public class JSBridgeServer
 {

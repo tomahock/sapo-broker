@@ -1,7 +1,5 @@
 package pt.com.broker.codec.xml;
 
-import java.io.InputStream;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
@@ -12,10 +10,11 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
+
+import java.io.InputStream;
 
 @Sharable
 public class SoapDecoder extends OneToOneDecoder

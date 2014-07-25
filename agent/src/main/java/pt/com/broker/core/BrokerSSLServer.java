@@ -1,15 +1,14 @@
 package pt.com.broker.core;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executor;
-
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.net.BrokerSslPipelineFactory;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executor;
 
 /**
  * BrokerServer is responsible for initializing client's SSL interface (MINA infrastructure).

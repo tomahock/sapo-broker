@@ -1,20 +1,18 @@
 package pt.com.broker.functests.conf;
 
+import org.caudexorigo.Shutdown;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.com.broker.functests.conf.TestParams.DynamicallyLoadedTests.TestClass;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
-import org.caudexorigo.Shutdown;
-import org.caudexorigo.text.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pt.com.broker.functests.conf.TestParams.DynamicallyLoadedTests.TestClass;
 
 public class ConfigurationInfo
 {

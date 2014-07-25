@@ -1,15 +1,12 @@
 package pt.com.broker.functests.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-
-import pt.com.broker.client.nio.server.HostInfo;
-
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetNotification;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MultipleNotificationsBrokerListener extends NotificationListenerAdapter
 {
@@ -31,7 +28,7 @@ public class MultipleNotificationsBrokerListener extends NotificationListenerAda
 	public boolean onMessage(NetNotification message, HostInfo host)
 	{
 
-        System.out.println("OnMessage :"+message.getMessage().getMessageId());
+        System.out.println("OnMessage :" + message.getMessage().getMessageId());
 
 
 		synchronized (list)

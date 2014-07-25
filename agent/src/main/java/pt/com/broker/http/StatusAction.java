@@ -1,10 +1,7 @@
 package pt.com.broker.http;
 
-import java.io.OutputStream;
-import java.util.Date;
-
 import org.caudexorigo.http.netty.HttpAction;
-import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.time.ISO8601;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -16,8 +13,10 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.core.BrokerInfo;
+
+import java.io.OutputStream;
+import java.util.Date;
 
 /**
  * StatusAction outputs agent status in XML.
@@ -43,7 +42,7 @@ public class StatusAction extends HttpAction
 
 		try
 		{
-			String smessage = String.format(template, "Agent is alive", DateUtil.formatISODate(new Date()), BrokerInfo.getVersion());
+			String smessage = String.format(template, "Agent is alive", ISO8601.format(new Date()), BrokerInfo.getVersion());
 			byte[] bmessage = smessage.getBytes("UTF-8");
 			response.setHeader("Pragma", "no-cache");
 			response.setHeader("Cache-Control", "no-cache");

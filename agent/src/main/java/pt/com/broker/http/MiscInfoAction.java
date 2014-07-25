@@ -1,8 +1,5 @@
 package pt.com.broker.http;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
 import org.caudexorigo.io.IOUtils;
@@ -17,9 +14,11 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.core.BrokerInfo;
 import pt.com.gcs.conf.GcsInfo;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * StatusAction outputs agent status in XML.

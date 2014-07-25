@@ -1,7 +1,6 @@
 package pt.com.broker.client.nio.android.test;
 
 import android.os.Bundle;
-import android.test.InstrumentationTestRunner;
 
 /**
  * Copyright (c) 2014, SAPO

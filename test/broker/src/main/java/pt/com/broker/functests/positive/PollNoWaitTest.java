@@ -1,14 +1,11 @@
 package pt.com.broker.functests.positive;
 
 import org.caudexorigo.text.RandomStringUtils;
-
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
-import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
-import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 

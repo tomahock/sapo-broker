@@ -1,14 +1,9 @@
 package pt.com.broker.client.sample;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
-
+import ch.qos.logback.classic.Logger;
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.messaging.BrokerListener;
@@ -16,7 +11,11 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
-import ch.qos.logback.classic.Logger;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 /**
  * Simple consumer sample. Behavior is determined by command line arguments.

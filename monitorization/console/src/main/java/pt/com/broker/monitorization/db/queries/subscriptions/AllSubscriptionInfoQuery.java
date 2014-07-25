@@ -1,16 +1,15 @@
 package pt.com.broker.monitorization.db.queries.subscriptions;
 
-import java.sql.ResultSet;
-import java.util.List;
-import java.util.Map;
-
 import org.caudexorigo.jdbc.Db;
 import org.caudexorigo.jdbc.DbPool;
 import org.caudexorigo.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.monitorization.db.queries.queues.GeneralQueueInfoQuery;
+
+import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
 public class AllSubscriptionInfoQuery
 {

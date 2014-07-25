@@ -1,7 +1,6 @@
 package pt.com.broker.auth;
 
 import org.jboss.netty.channel.Channel;
-
 import pt.com.broker.auth.AccessControl.Privilege;
 
 /**

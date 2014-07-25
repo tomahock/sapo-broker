@@ -1,17 +1,16 @@
 package pt.com.broker.client.messaging;
 
+import org.caudexorigo.concurrent.CustomExecutors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.com.broker.client.AcceptRequest;
+import pt.com.broker.types.NetFault;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import org.caudexorigo.concurrent.CustomExecutors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pt.com.broker.client.AcceptRequest;
-import pt.com.broker.types.NetFault;
 
 /**
  * PendingAcceptRequestsManager deals with Accept requests made but still unanswered holding them and setting them as timeout if necessary. The timeout may be 500 milliseconds overdue.

@@ -1,9 +1,9 @@
 package pt.com.broker.types.channels;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ListenerChannelFactory
 {

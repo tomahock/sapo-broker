@@ -5,7 +5,9 @@ import pt.com.broker.client.nio.bootstrap.DatagramBootstrap;
 import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetPublish;
 
 import java.security.InvalidParameterException;
 import java.util.concurrent.Future;

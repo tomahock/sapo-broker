@@ -1,8 +1,8 @@
 package pt.com.broker.monitorization.db.queries.queues;
 
-import java.sql.ResultSet;
-
 import pt.com.broker.monitorization.db.queries.ComposedResultQuery;
+
+import java.sql.ResultSet;
 
 public class QueueCountSnapshotQuery extends ComposedResultQuery
 {

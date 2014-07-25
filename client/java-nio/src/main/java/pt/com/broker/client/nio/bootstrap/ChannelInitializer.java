@@ -2,9 +2,7 @@ package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
-
 import io.netty.handler.ssl.SslHandler;
-
 import pt.com.broker.client.nio.codecs.HeartbeatHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
@@ -15,9 +13,9 @@ import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
 import pt.com.broker.types.BindingSerializer;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLParameters;
 
 
 /**

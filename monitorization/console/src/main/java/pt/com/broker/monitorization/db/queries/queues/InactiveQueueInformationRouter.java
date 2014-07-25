@@ -1,9 +1,9 @@
 package pt.com.broker.monitorization.db.queries.queues;
 
+import pt.com.broker.monitorization.db.queries.QueryDataProvider;
+
 import java.util.List;
 import java.util.Map;
-
-import pt.com.broker.monitorization.db.queries.QueryDataProvider;
 
 public class InactiveQueueInformationRouter implements QueryDataProvider
 {

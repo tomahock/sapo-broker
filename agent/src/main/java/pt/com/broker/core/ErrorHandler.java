@@ -1,21 +1,20 @@
 package pt.com.broker.core;
 
-import java.io.PrintWriter;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.text.StringBuilderWriter;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jibx.runtime.JiBXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.codec.xml.EndPointReference;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapFault;
 import pt.com.broker.codec.xml.SoapHeader;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.conf.GcsInfo;
+
+import java.io.PrintWriter;
 
 /**
  * It is used to deal with uncaught exceptions.

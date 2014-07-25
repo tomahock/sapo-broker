@@ -2,17 +2,16 @@ package pt.com.broker.functests.positive;
 
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
-import pt.com.broker.functests.Action;
-import pt.com.broker.functests.Epilogue;
-import pt.com.broker.functests.Prerequisite;
-import pt.com.broker.functests.Step;
-import pt.com.broker.functests.Test;
+import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.functests.*;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.NotificationConsequence;
-import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetSubscribe;
 
 public class SampleTests
 {

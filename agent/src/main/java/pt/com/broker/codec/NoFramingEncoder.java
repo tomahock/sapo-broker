@@ -1,16 +1,15 @@
 package pt.com.broker.codec;
 
-import java.io.IOException;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
-
 import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.types.NetMessage;
+
+import java.io.IOException;
 
 @Sharable
 public class NoFramingEncoder extends OneToOneEncoder

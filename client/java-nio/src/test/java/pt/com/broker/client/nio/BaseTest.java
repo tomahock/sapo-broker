@@ -1,8 +1,6 @@
 package pt.com.broker.client.nio;
 
-import org.junit.AfterClass;
 import org.junit.Assume;
-import org.junit.BeforeClass;
 
 /**
  * Created by luissantos on 22-05-2014.

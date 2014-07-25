@@ -1,29 +1,20 @@
 package pt.com.gcs.messaging;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.sleepycat.bind.ByteArrayBinding;
+import com.sleepycat.bind.tuple.LongBinding;
+import com.sleepycat.je.*;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.ForwardResult;
 import pt.com.broker.types.ForwardResult.Result;
 import pt.com.broker.types.NetMessage;
 import pt.com.gcs.messaging.serialization.MessageMarshaller;
 
-import com.sleepycat.bind.ByteArrayBinding;
-import com.sleepycat.bind.tuple.LongBinding;
-import com.sleepycat.je.Cursor;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.LockConflictException;
-import com.sleepycat.je.OperationStatus;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * BDBStorage encapsulates database access logic.

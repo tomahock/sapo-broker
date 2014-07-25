@@ -1,15 +1,9 @@
 package pt.com.broker.messaging;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.NetPoll;
 import pt.com.broker.types.channels.ChannelAttributes;
@@ -17,6 +11,11 @@ import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
+
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * BrokerSyncConsumer represents a queue synchronous consumer.

@@ -1,13 +1,13 @@
 package pt.com.broker.codec.xml;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.jibx.runtime.IMarshallingContext;
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class SoapSerializer
 {

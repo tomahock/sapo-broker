@@ -1,8 +1,5 @@
 package pt.com.broker.core;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import org.caudexorigo.Shutdown;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -12,7 +9,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.codec.BrokerDecoderRouter;
 import pt.com.broker.codec.BrokerEncoderRouter;
 import pt.com.broker.codec.xml.SoapDecoder;
@@ -22,6 +18,9 @@ import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.SimpleFramingDecoder;
 import pt.com.broker.types.SimpleFramingEncoder;
 import pt.com.gcs.conf.GcsInfo;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * BrokerServer is responsible for initializing client's TCP interface (Netty infrastructure).

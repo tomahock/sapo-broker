@@ -1,9 +1,8 @@
 package pt.com.broker.auth.saposts;
 
-import java.util.Iterator;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
+import java.util.Iterator;
 
 /**
  * Utility class for SAPO STS XML namespac.

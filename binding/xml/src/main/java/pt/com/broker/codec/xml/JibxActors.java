@@ -1,11 +1,7 @@
 package pt.com.broker.codec.xml;
 
 import org.caudexorigo.Shutdown;
-import org.jibx.runtime.BindingDirectory;
-import org.jibx.runtime.IBindingFactory;
-import org.jibx.runtime.IMarshallingContext;
-import org.jibx.runtime.IUnmarshallingContext;
-import org.jibx.runtime.JiBXException;
+import org.jibx.runtime.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

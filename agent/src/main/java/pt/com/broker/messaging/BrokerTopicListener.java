@@ -1,13 +1,10 @@
 package pt.com.broker.messaging;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.ForwardResult;
@@ -16,6 +13,8 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.channels.ListenerChannel;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * BrokerTopicListener a represents local topic consumer.

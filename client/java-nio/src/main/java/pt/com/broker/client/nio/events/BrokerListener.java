@@ -1,12 +1,7 @@
 package pt.com.broker.client.nio.events;
 
-import io.netty.channel.Channel;
-import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.client.nio.utils.ChannelDecorator;
-import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
 
 /**
  * Created by luissantos on 21-04-2014.

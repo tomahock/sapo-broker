@@ -1,25 +1,23 @@
 package pt.com.broker.net;
 
-import static org.jboss.netty.channel.Channels.pipeline;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.security.KeyStore;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-
 import org.caudexorigo.Shutdown;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.codec.BrokerDecoderRouter;
 import pt.com.broker.codec.BrokerEncoderRouter;
 import pt.com.gcs.conf.GcsInfo;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import java.io.File;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+
+import static org.jboss.netty.channel.Channels.pipeline;
 
 public class BrokerSslPipelineFactory implements ChannelPipelineFactory
 {

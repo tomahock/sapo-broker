@@ -1,12 +1,12 @@
 package pt.com.broker.functests.helpers;
 
-import java.util.Arrays;
-
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
+
+import java.util.Arrays;
 
 public class NotificationConsequence extends Consequence
 {

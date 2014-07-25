@@ -1,9 +1,6 @@
 package pt.com.broker.functests.positive;
 
-import java.util.Arrays;
-
 import org.caudexorigo.text.RandomStringUtils;
-
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
@@ -13,6 +10,8 @@ import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
+
+import java.util.Arrays;
 
 public class PollTest extends BrokerTest
 {

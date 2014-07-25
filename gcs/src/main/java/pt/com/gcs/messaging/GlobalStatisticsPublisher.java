@@ -1,17 +1,16 @@
 package pt.com.gcs.messaging;
 
-import java.util.Date;
-
-import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.time.ISO8601;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.stats.ChannelStats;
 import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
+
+import java.util.Date;
 
 public class GlobalStatisticsPublisher implements Runnable
 {
@@ -27,7 +26,7 @@ public class GlobalStatisticsPublisher implements Runnable
 
 		long difSeconds = (date.getTime() - oldDate.getTime()) / 1000;
 
-		String currentDateStr = DateUtil.formatISODate(date);
+		String currentDateStr = ISO8601.format(date);
 
 		publishQueueInfo(currentDateStr, difSeconds);
 

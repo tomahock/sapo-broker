@@ -1,16 +1,14 @@
 package pt.com.broker.auth;
 
+import org.jboss.netty.channel.Channel;
+import pt.com.gcs.conf.global.ChannelType;
+
+import javax.crypto.SecretKey;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.crypto.SecretKey;
-
-import org.jboss.netty.channel.Channel;
-
-import pt.com.gcs.conf.global.ChannelType;
 
 /**
  * SessionProperties objects contain some client specific information such channel type, address, client roles, etc.

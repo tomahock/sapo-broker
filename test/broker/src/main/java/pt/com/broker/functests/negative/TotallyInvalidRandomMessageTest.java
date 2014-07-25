@@ -1,9 +1,9 @@
 package pt.com.broker.functests.negative;
 
-import java.util.Random;
-
 import pt.com.broker.functests.helpers.GenericNegativeTest;
 import pt.com.broker.types.NetProtocolType;
+
+import java.util.Random;
 
 public class TotallyInvalidRandomMessageTest extends GenericNegativeTest
 {

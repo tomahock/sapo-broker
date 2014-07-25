@@ -1,9 +1,7 @@
 package pt.com.broker.functests.negative;
 
 
-
 import org.caudexorigo.text.RandomStringUtils;
-
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.functests.Action;

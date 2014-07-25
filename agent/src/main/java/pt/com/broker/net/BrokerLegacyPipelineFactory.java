@@ -1,15 +1,14 @@
 package pt.com.broker.net;
 
-import static org.jboss.netty.channel.Channels.pipeline;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-
 import pt.com.broker.codec.xml.SoapDecoder;
 import pt.com.broker.codec.xml.SoapEncoder;
 import pt.com.broker.types.SimpleFramingDecoder;
 import pt.com.broker.types.SimpleFramingEncoder;
 import pt.com.gcs.conf.GcsInfo;
+
+import static org.jboss.netty.channel.Channels.pipeline;
 
 public class BrokerLegacyPipelineFactory implements ChannelPipelineFactory
 {

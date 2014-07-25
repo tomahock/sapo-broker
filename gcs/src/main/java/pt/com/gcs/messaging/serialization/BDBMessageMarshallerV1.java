@@ -1,9 +1,6 @@
 package pt.com.gcs.messaging.serialization;
 
-import java.io.ObjectInputStream;
-
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
-
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
@@ -11,6 +8,8 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.gcs.messaging.BDBMessage;
 import pt.com.gcs.messaging.InternalMessage;
+
+import java.io.ObjectInputStream;
 
 public class BDBMessageMarshallerV1 implements Codec<BDBMessage>
 {

@@ -1,11 +1,11 @@
 package pt.com.broker.performance;
 
-import java.util.concurrent.CountDownLatch;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
+
+import java.util.concurrent.CountDownLatch;
 
 public class Consumer extends TestActor
 {

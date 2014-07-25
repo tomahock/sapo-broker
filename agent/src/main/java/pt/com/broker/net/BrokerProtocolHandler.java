@@ -1,32 +1,15 @@
 package pt.com.broker.net;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Set;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
-import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import pt.com.broker.auth.AuthInfo;
-import pt.com.broker.auth.AuthInfoValidator;
-import pt.com.broker.auth.AuthInfoVerifierFactory;
-import pt.com.broker.auth.AuthValidationResult;
-import pt.com.broker.auth.Session;
-import pt.com.broker.auth.SessionProperties;
+import pt.com.broker.auth.*;
 import pt.com.broker.codec.xml.FaultCode;
 import pt.com.broker.codec.xml.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapSerializer;
@@ -35,22 +18,8 @@ import pt.com.broker.messaging.BrokerConsumer;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.BrokerSyncConsumer;
 import pt.com.broker.messaging.MQ;
-import pt.com.broker.types.CriticalErrors;
-import pt.com.broker.types.Headers;
-import pt.com.broker.types.NetAccepted;
-import pt.com.broker.types.NetAcknowledge;
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.ActionType;
-import pt.com.broker.types.NetAuthentication;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetFault;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetPing;
-import pt.com.broker.types.NetPoll;
-import pt.com.broker.types.NetPong;
-import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.channels.ChannelAttributes;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.broker.types.stats.MiscStats;
@@ -59,6 +28,10 @@ import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.messaging.QueueProcessorList;
 import pt.com.gcs.messaging.TopicProcessorList;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Set;
 
 /**
  * * BrokerProtocolHandler is an Netty ChannelHandler. It handles messages from clients.

@@ -1,19 +1,14 @@
 package pt.com.broker.client.sample;
 
+import org.caudexorigo.text.RandomStringUtils;
+import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
+import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction.ActionType;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-
-import org.caudexorigo.text.RandomStringUtils;
-
-import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
-import pt.com.broker.types.BindingSerializer;
-import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetAction.ActionType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetPublish;
 
 public class FastProducer
 {

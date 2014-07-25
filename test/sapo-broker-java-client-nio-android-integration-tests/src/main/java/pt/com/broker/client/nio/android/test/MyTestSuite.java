@@ -1,12 +1,10 @@
 package pt.com.broker.client.nio.android.test;
 
 
-
 import com.uphyca.testing.AndroidJUnit4TestAdapter;
 import com.uphyca.testing.AndroidTestCase;
 import junit.framework.TestSuite;
 import pt.com.broker.client.nio.consumer.AcceptRequestsTest;
-import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.ConsumerManagerTest;
 import pt.com.broker.client.nio.consumer.SubscriberManagerTest;
 import pt.com.broker.client.nio.listener.TestAcceptResponseListener;

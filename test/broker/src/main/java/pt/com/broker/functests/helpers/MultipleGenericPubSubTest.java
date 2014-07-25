@@ -1,14 +1,6 @@
 package pt.com.broker.functests.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-
 import org.caudexorigo.text.RandomStringUtils;
-
-
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
@@ -20,6 +12,11 @@ import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 public class MultipleGenericPubSubTest extends BrokerTest
 {

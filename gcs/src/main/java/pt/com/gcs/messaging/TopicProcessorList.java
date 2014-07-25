@@ -1,12 +1,5 @@
 package pt.com.gcs.messaging;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
@@ -14,13 +7,15 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetPublish;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class TopicProcessorList
 {

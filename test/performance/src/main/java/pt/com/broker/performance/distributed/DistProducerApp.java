@@ -1,13 +1,10 @@
 package pt.com.broker.performance.distributed;
 
-import java.io.UnsupportedEncodingException;
-
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.performance.distributed.TestResult.ActorType;
@@ -15,6 +12,8 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Simple producer sample. Behavior is determined by command line arguments.

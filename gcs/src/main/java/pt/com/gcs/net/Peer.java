@@ -1,6 +1,6 @@
 package pt.com.gcs.net;
 
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Peer holds information about an agent.

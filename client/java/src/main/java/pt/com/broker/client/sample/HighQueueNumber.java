@@ -1,12 +1,11 @@
 package pt.com.broker.client.sample;
 
-import java.util.UUID;
-
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.text.RandomStringUtils;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.types.NetBrokerMessage;
+
+import java.util.UUID;
 
 public class HighQueueNumber
 {

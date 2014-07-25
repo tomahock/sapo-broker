@@ -1,18 +1,19 @@
 package pt.com.broker.functests.positive;
 
 import org.caudexorigo.text.RandomStringUtils;
-
-
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
-import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;

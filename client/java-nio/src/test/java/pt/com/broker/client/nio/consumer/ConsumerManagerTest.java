@@ -1,13 +1,12 @@
 package pt.com.broker.client.nio.consumer;
 
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import pt.com.broker.client.nio.BaseTest;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.*;
 
 /**

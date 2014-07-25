@@ -1,14 +1,16 @@
 package pt.com.broker.client.nio.consumer;
 
 
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.types.DestinationDataDelegator;
-import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetSubscribeAction;
 
 import java.net.InetSocketAddress;
 import java.util.EnumMap;

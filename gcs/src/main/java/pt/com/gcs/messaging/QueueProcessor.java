@@ -1,30 +1,23 @@
 package pt.com.gcs.messaging;
 
+import org.caudexorigo.ErrorAnalyser;
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.com.broker.types.*;
+import pt.com.broker.types.ForwardResult.Result;
+import pt.com.broker.types.MessageListener.MessageListenerState;
+import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.conf.GlobalConfig;
+
 import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.text.StringUtils;
-import org.jboss.netty.channel.Channel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pt.com.broker.types.ForwardResult;
-import pt.com.broker.types.ForwardResult.Result;
-import pt.com.broker.types.MessageListener;
-import pt.com.broker.types.MessageListener.MessageListenerState;
-import pt.com.broker.types.MessageListenerEventChangeHandler;
-import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
-import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.conf.GlobalConfig;
 
 /**
  * QueueProcessor provides several queue related features, representing each instance a distinct queue.

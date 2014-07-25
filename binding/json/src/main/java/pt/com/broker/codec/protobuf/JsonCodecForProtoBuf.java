@@ -1,19 +1,18 @@
 package pt.com.broker.codec.protobuf;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import protobuf.codec.Codec;
 import protobuf.codec.json.JsonCodec;
 import pt.com.broker.codec.protobuf.PBMessage.Atom;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class JsonCodecForProtoBuf implements BindingSerializer
 {

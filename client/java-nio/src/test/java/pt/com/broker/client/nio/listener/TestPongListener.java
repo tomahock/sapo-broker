@@ -1,20 +1,18 @@
 package pt.com.broker.client.nio.listener;
 
 import io.netty.channel.embedded.EmbeddedChannel;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
-import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
-import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPong;
 
 import java.util.UUID;
 

@@ -1,11 +1,6 @@
 package pt.com.broker.client.nio;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.concurrent.Future;
+import io.netty.channel.ChannelPromise;
 /**
  * Created by luissantos on 23-04-2014.
  *

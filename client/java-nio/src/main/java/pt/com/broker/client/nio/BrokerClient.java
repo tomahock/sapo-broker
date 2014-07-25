@@ -1,35 +1,28 @@
 package pt.com.broker.client.nio;
 
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
-
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
-
-
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.server.ReconnectEvent;
-import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.client.nio.utils.ChannelWrapperFuture;
 import pt.com.broker.client.nio.utils.HostInfoFuture;
 import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
-
 
 import java.util.*;
 import java.util.concurrent.*;

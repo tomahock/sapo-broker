@@ -1,11 +1,10 @@
 package pt.com.broker.performance;
 
-import java.util.concurrent.CountDownLatch;
-
 import org.caudexorigo.Shutdown;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.types.NetBrokerMessage;
+
+import java.util.concurrent.CountDownLatch;
 
 public class QueueProducer implements Runnable
 {

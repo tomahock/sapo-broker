@@ -1,5 +1,23 @@
 package pt.com.broker.core;
 
+import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.time.ISO8601;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.com.broker.auth.AccessControl;
+import pt.com.broker.auth.AccessControl.ValidationResult;
+import pt.com.broker.auth.Session;
+import pt.com.broker.codec.xml.SoapBindingSerializer;
+import pt.com.broker.codec.xml.SoapEnvelope;
+import pt.com.broker.messaging.BrokerProducer;
+import pt.com.broker.messaging.MQ;
+import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.stats.ChannelStats;
+import pt.com.gcs.conf.GcsInfo;
+import pt.com.gcs.messaging.Gcs;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -9,29 +27,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
-import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.text.DateUtil;
-import org.caudexorigo.text.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pt.com.broker.auth.AccessControl;
-import pt.com.broker.auth.AccessControl.ValidationResult;
-import pt.com.broker.auth.Session;
-import pt.com.broker.codec.xml.SoapBindingSerializer;
-import pt.com.broker.codec.xml.SoapEnvelope;
-import pt.com.broker.messaging.BrokerProducer;
-import pt.com.broker.messaging.MQ;
-import pt.com.broker.types.CriticalErrors;
-import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.stats.ChannelStats;
-import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.Gcs;
 
 /**
  * FilePublisher deals with dropbox functionality publishing messages
@@ -293,7 +288,7 @@ public class FilePublisher
 		{
 			StringBuilder sb = new StringBuilder();
 			String topic = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
-			sb.append(String.format("<mqinfo date=\"%s\" agent-name=\"%s\">", DateUtil.formatISODate(new Date(now)), GcsInfo.getAgentName()));
+			sb.append(String.format("<mqinfo date=\"%s\" agent-name=\"%s\">", ISO8601.format(new Date(now)), GcsInfo.getAgentName()));
 
 			sb.append(String.format("\n	<item subject=\"dropbox\" predicate=\"count\" value=\"%s\" />", fileCount));
 

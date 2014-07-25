@@ -1,27 +1,18 @@
 package pt.com.broker.functests.positive;
 
 import org.caudexorigo.concurrent.Sleep;
-
-
-
-
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
-import pt.com.broker.functests.Action;
-import pt.com.broker.functests.Consequence;
-import pt.com.broker.functests.Epilogue;
-import pt.com.broker.functests.Prerequisite;
-import pt.com.broker.functests.Step;
+import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.functests.*;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.functests.helpers.SetValueFuture;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class TopicPubSubWithActionId extends BrokerTest

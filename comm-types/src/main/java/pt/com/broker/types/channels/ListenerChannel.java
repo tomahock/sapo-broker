@@ -1,11 +1,11 @@
 package pt.com.broker.types.channels;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ListenerChannel
 {

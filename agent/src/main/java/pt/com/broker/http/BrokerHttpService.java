@@ -1,12 +1,12 @@
 package pt.com.broker.http;
 
-import java.util.concurrent.Executor;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.NettyHttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Executor;
 
 /**
  * BrokerServer is responsible for initializing client's HTTP interface (MINA infrastructure).

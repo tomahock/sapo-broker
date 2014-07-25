@@ -1,17 +1,12 @@
 package pt.com.broker.client.nio.consumer;
 
 
-
-
-
 import org.junit.Assert;
 import org.junit.Test;
 import pt.com.broker.client.nio.BaseTest;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
-
-import pt.com.broker.client.nio.utils.ChannelDecorator;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetFault;
@@ -20,7 +15,6 @@ import pt.com.broker.types.NetMessage;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**

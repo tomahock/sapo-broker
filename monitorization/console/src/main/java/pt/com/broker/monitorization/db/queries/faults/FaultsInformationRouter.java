@@ -1,11 +1,11 @@
 package pt.com.broker.monitorization.db.queries.faults;
 
-import java.util.List;
-import java.util.Map;
-
 import pt.com.broker.monitorization.db.queries.QueryDataProvider;
 import pt.com.broker.monitorization.db.queries.agents.AgentFaultTypeQuery;
 import pt.com.broker.monitorization.http.QueryStringParameters;
+
+import java.util.List;
+import java.util.Map;
 
 public class FaultsInformationRouter implements QueryDataProvider
 {

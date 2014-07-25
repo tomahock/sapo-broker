@@ -1,8 +1,5 @@
 package pt.com.broker.core;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executor;
-
 import org.caudexorigo.Shutdown;
 import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
 import org.jboss.netty.channel.ChannelPipeline;
@@ -13,13 +10,15 @@ import org.jboss.netty.channel.socket.DatagramChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.codec.NoFramingDecoder;
 import pt.com.broker.codec.NoFramingEncoder;
 import pt.com.broker.codec.UdpFramingDecoder;
 import pt.com.broker.net.AuthorizationFilter;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.gcs.conf.GcsInfo;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executor;
 
 public class BrokerUdpServer
 {

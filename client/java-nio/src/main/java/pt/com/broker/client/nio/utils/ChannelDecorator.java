@@ -1,12 +1,12 @@
 package pt.com.broker.client.nio.utils;
 
-import java.net.SocketAddress;
-
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import pt.com.broker.client.nio.server.HostInfo;
+
+import java.net.SocketAddress;
 
 /**
  * Created by luissantos on 30-05-2014.

@@ -1,9 +1,5 @@
 package pt.com.gcs.messaging;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
@@ -11,13 +7,16 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.CriticalErrors;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * QueueProcessorList contains references for all active QueueProcessor objects.

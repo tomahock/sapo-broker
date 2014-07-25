@@ -1,9 +1,5 @@
 package pt.com.broker.monitorization.http;
 
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.caudexorigo.http.netty.HttpAction;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -11,6 +7,10 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class JsonHttpAction extends HttpAction
 {

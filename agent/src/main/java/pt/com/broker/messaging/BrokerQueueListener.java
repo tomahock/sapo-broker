@@ -1,13 +1,10 @@
 package pt.com.broker.messaging;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.net.BrokerProtocolHandler;
 import pt.com.broker.types.ForwardResult;
@@ -17,6 +14,8 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.gcs.conf.GlobalConfig;
 import pt.com.gcs.messaging.Gcs;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * BrokerQueueListener represents a local queue consumer.

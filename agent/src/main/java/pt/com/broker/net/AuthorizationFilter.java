@@ -1,19 +1,9 @@
 package pt.com.broker.net;
 
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.auth.Session;
@@ -24,6 +14,10 @@ import pt.com.broker.types.channels.ChannelAttributes;
 import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.global.ChannelType;
+
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AuthorizationFilter is a Netty UpstreamHandler. Its purpose is to filter unauthorized publications and subscriptions.

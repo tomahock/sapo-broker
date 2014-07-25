@@ -2,10 +2,9 @@ package pt.com.broker.auth.saposts.tests;
 
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.SslBrokerClient;
-
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetNotification;

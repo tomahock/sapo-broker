@@ -1,10 +1,15 @@
 package pt.com.broker.monitorization.db;
 
-import java.io.ByteArrayInputStream;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.jdbc.Db;
+import org.caudexorigo.time.ISO8601;
+import org.caudexorigo.text.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import pt.com.broker.monitorization.AgentHostname;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -13,21 +18,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.jdbc.Db;
 /* TODO TEMP CHANGE brsantos */
 //import org.caudexorigo.jdbc.DbExecutor;
-import org.caudexorigo.jdbc.DbPool;
-import org.caudexorigo.text.DateUtil;
-import org.caudexorigo.text.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import pt.com.broker.monitorization.AgentHostname;
 
 public class FaultsDB
 {
@@ -82,7 +79,7 @@ public class FaultsDB
 
 		public String toJson()
 		{
-			return String.format("{\"id\":\"%s\",\"agentName\":\"%s\",\"agentHostname\":\"%s\",\"time\":\"%s\",\"shortMessage\":\"%s\",\"message\":\"%s\"}", this.id, this.agentName, AgentHostname.get(this.agentName), DateUtil.formatISODate(new Date(time)), shortMessage, message);
+			return String.format("{\"id\":\"%s\",\"agentName\":\"%s\",\"agentHostname\":\"%s\",\"time\":\"%s\",\"shortMessage\":\"%s\",\"message\":\"%s\"}", this.id, this.agentName, AgentHostname.get(this.agentName), ISO8601.format(new Date(time)), shortMessage, message);
 		}
 	}
 

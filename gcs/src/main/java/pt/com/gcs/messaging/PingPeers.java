@@ -1,18 +1,17 @@
 package pt.com.gcs.messaging;
 
-import java.nio.charset.Charset;
-import java.util.Set;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
+
+import java.nio.charset.Charset;
+import java.util.Set;
 
 public class PingPeers implements Runnable
 {

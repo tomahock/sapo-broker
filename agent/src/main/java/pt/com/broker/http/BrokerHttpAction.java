@@ -1,7 +1,5 @@
 package pt.com.broker.http;
 
-import java.io.OutputStream;
-
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -10,14 +8,9 @@ import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.auth.AccessControl;
 import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.auth.Session;
@@ -30,6 +23,8 @@ import pt.com.broker.messaging.MQ;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.stats.ChannelStats;
+
+import java.io.OutputStream;
 
 /**
  * BrokerHttpAction is an HttpAction. It supports message publishing.

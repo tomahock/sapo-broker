@@ -1,30 +1,25 @@
 package pt.com.broker.http;
 
-import java.io.OutputStream;
-import java.util.concurrent.TimeUnit;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
 import org.caudexorigo.io.IOUtils;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.messaging.Gcs;
+
+import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * AdminAction is an HttpAction. It supports some administrative options such agent's shutdown or queue deletion.

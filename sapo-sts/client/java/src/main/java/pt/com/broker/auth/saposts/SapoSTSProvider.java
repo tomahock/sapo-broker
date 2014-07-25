@@ -1,12 +1,11 @@
 package pt.com.broker.auth.saposts;
 
-import java.nio.charset.Charset;
-
-import org.caudexorigo.text.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.ProviderInfo;
+
+import java.nio.charset.Charset;
 
 /**
  * SapoSTSProvider implements a credentials provider for Sapo STS.

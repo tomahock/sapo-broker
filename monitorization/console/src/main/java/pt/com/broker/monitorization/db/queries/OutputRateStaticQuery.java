@@ -1,12 +1,11 @@
 package pt.com.broker.monitorization.db.queries;
 
+import org.caudexorigo.jdbc.Db;
+import pt.com.broker.monitorization.http.QueryStringParameters;
+
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
-
-import org.caudexorigo.jdbc.Db;
-
-import pt.com.broker.monitorization.http.QueryStringParameters;
 
 public class OutputRateStaticQuery extends StaticQuery
 {

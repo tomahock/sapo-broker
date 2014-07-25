@@ -1,23 +1,15 @@
 package pt.com.gcs.messaging;
 
-import java.util.ArrayList;
-
+import com.sleepycat.bind.tuple.StringBinding;
+import com.sleepycat.je.*;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.cryto.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.CriticalErrors;
 
-import com.sleepycat.bind.tuple.StringBinding;
-import com.sleepycat.je.Cursor;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.OperationStatus;
-import com.sleepycat.je.Transaction;
+import java.util.ArrayList;
 
 /**
  * VirtualQueueStorage stores virtual queue messages persistently.

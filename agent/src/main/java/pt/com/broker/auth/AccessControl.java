@@ -1,35 +1,25 @@
 package pt.com.broker.auth;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetPoll;
-import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetSubscribe;
 import pt.com.broker.types.channels.ChannelAttributes;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.conf.global.Agents;
+import pt.com.gcs.conf.global.*;
 import pt.com.gcs.conf.global.Agents.Agent;
-import pt.com.gcs.conf.global.Authorization;
-import pt.com.gcs.conf.global.BrokerSecurityPolicy;
-import pt.com.gcs.conf.global.ChannelType;
-import pt.com.gcs.conf.global.Condition;
 import pt.com.gcs.conf.global.Condition.Address;
-import pt.com.gcs.conf.global.Policies;
 import pt.com.gcs.conf.global.Policies.Policy;
 import pt.com.gcs.conf.global.Policies.Policy.Acl.Entry;
 import pt.com.gcs.messaging.DestinationMatcher;
 import pt.com.gcs.messaging.GlobalConfigMonitor;
 import pt.com.gcs.messaging.GlobalConfigMonitor.GlobalConfigModifiedListener;
+
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AccessControl class implements access control functionality, namely validation of users permission to perform intended operations such publishing or subscription.

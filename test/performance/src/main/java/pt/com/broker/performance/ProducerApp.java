@@ -1,20 +1,19 @@
 package pt.com.broker.performance;
 
+import org.caudexorigo.cli.CliFactory;
+import org.caudexorigo.text.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.com.broker.client.BrokerClient;
+import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.caudexorigo.cli.CliFactory;
-import org.caudexorigo.text.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
 
 /**
  * Simple producer sample. Behavior is determined by command line arguments.

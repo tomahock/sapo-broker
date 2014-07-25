@@ -4,7 +4,6 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
-import pt.com.broker.client.nio.types.ActionIdDecorator;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;

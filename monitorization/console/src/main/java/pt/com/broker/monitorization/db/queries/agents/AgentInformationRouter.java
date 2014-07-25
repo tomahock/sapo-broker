@@ -1,10 +1,10 @@
 package pt.com.broker.monitorization.db.queries.agents;
 
-import java.util.List;
-import java.util.Map;
-
 import pt.com.broker.monitorization.db.queries.QueryDataProvider;
 import pt.com.broker.monitorization.http.QueryStringParameters;
+
+import java.util.List;
+import java.util.Map;
 
 public class AgentInformationRouter implements QueryDataProvider
 {

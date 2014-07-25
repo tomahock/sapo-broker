@@ -1,12 +1,10 @@
 package pt.com.broker.client.nio.mocks;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.MessageToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
@@ -15,7 +13,6 @@ import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.types.*;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.concurrent.Future;
 
 

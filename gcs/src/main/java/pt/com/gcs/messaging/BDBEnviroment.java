@@ -1,21 +1,19 @@
 package pt.com.gcs.messaging;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.cryto.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.conf.GcsInfo;
 
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BDBEnviroment class is responsible for managing the database enviroment witch includes localization and synchronization. It also makes queue names accessible.

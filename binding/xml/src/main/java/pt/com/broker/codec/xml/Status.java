@@ -1,8 +1,8 @@
 package pt.com.broker.codec.xml;
 
-import java.util.Date;
+import org.caudexorigo.time.ISO8601;
 
-import org.caudexorigo.text.DateUtil;
+import java.util.Date;
 
 public class Status
 {
@@ -13,6 +13,6 @@ public class Status
 	public Status()
 	{
 		message = ":)";
-		timestamp = DateUtil.formatISODate(new Date());
+		timestamp = ISO8601.format(new Date());
 	}
 }

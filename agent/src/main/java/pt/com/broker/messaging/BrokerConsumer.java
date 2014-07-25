@@ -1,14 +1,9 @@
 package pt.com.broker.messaging;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import org.caudexorigo.text.DateUtil;
+import org.caudexorigo.time.ISO8601;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -17,12 +12,11 @@ import pt.com.broker.types.NetUnsubscribe;
 import pt.com.broker.types.channels.ListenerChannel;
 import pt.com.broker.types.channels.ListenerChannelFactory;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.InternalPublisher;
-import pt.com.gcs.messaging.QueueProcessor;
-import pt.com.gcs.messaging.QueueProcessorList;
-import pt.com.gcs.messaging.TopicProcessor;
-import pt.com.gcs.messaging.TopicProcessorList;
+import pt.com.gcs.messaging.*;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * BrokerConsumer is responsible for managing client subscriptions.
@@ -48,7 +42,7 @@ public class BrokerConsumer
 				try
 				{
 					StringBuilder sb = new StringBuilder();
-					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", ISO8601.format(new Date()), GcsInfo.getAgentName()));
 
 					for (TopicProcessor tp : TopicProcessorList.values())
 					{
@@ -96,7 +90,7 @@ public class BrokerConsumer
 				try
 				{
 					StringBuilder sb = new StringBuilder();
-					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", DateUtil.formatISODate(new Date()), GcsInfo.getAgentName()));
+					sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", ISO8601.format(new Date()), GcsInfo.getAgentName()));
 
 					for (QueueProcessor qs : QueueProcessorList.values())
 					{

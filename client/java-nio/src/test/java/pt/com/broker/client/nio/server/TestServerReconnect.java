@@ -1,14 +1,15 @@
 package pt.com.broker.client.nio.server;
 
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.mocks.SocketServer;
 import pt.com.broker.client.nio.tests.Utils;
-import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
 
 import java.io.IOException;
 import java.util.Collection;

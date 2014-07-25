@@ -1,12 +1,8 @@
 package pt.com.broker.functests.negative;
 
-import pt.com.broker.types.NetAction;
+import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetProtocolType;
 
 public class NotificationTest extends pt.com.broker.functests.helpers.GenericNetMessageNegativeTest
 {

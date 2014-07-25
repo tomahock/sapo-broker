@@ -2,15 +2,14 @@ package pt.com.broker.functests.helpers;
 
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.ErrorListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetFault;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class GenericNegativeTest extends BrokerTest

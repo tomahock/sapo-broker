@@ -1,16 +1,15 @@
 package pt.com.broker.performance;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import org.caudexorigo.text.RandomStringUtils;
-
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.performance.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetProtocolType;
+
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Test
 {

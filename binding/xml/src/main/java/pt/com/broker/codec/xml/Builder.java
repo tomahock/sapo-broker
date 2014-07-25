@@ -1,25 +1,12 @@
 package pt.com.broker.codec.xml;
 
+import org.caudexorigo.time.ISO8601;
+import org.apache.commons.lang3.StringUtils;
+import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction.DestinationType;
+
 import java.nio.charset.Charset;
 import java.util.Date;
-
-import org.caudexorigo.text.DateUtil;
-import org.caudexorigo.text.StringUtils;
-
-import pt.com.broker.types.NetAccepted;
-import pt.com.broker.types.NetAcknowledge;
-import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetFault;
-import pt.com.broker.types.NetMessage;
-import pt.com.broker.types.NetNotification;
-import pt.com.broker.types.NetPing;
-import pt.com.broker.types.NetPoll;
-import pt.com.broker.types.NetPong;
-import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.NetSubscribe;
-import pt.com.broker.types.NetUnsubscribe;
 
 public class Builder
 {
@@ -75,12 +62,12 @@ public class Builder
 			{
 				if (StringUtils.isNotBlank(xmsg.timestamp))
 				{
-					Date parsedTimestamp = DateUtil.parseISODate(xmsg.timestamp);
+					Date parsedTimestamp = ISO8601.parse(xmsg.timestamp);
 					netBkMsg.setTimestamp(parsedTimestamp.getTime());
 				}
 				if (StringUtils.isNotBlank(xmsg.expiration))
 				{
-					Date parsedExpiration = DateUtil.parseISODate(xmsg.expiration);
+					Date parsedExpiration = ISO8601.parse(xmsg.expiration);
 					netBkMsg.setExpiration(parsedExpiration.getTime());
 				}
 			}
@@ -368,12 +355,12 @@ public class Builder
 
 		if (net_bkmsg.getExpiration() > 0)
 		{
-			bkmsg.expiration = DateUtil.formatISODate(new Date(net_bkmsg.getExpiration()));
+			bkmsg.expiration = ISO8601.format(new Date(net_bkmsg.getExpiration()));
 		}
 
 		if (net_bkmsg.getTimestamp() > 0)
 		{
-			bkmsg.timestamp = DateUtil.formatISODate(new Date(net_bkmsg.getTimestamp()));
+			bkmsg.timestamp = ISO8601.format(new Date(net_bkmsg.getTimestamp()));
 		}
 
 		return bkmsg;

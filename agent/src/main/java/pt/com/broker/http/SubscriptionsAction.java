@@ -1,17 +1,5 @@
 package pt.com.broker.http;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty.HttpAction;
 import org.caudexorigo.io.IOUtils;
@@ -26,15 +14,14 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pt.com.broker.types.MessageListener;
 import pt.com.gcs.conf.GcsInfo;
-import pt.com.gcs.messaging.Gcs;
-import pt.com.gcs.messaging.InboundRemoteChannels;
-import pt.com.gcs.messaging.QueueProcessor;
-import pt.com.gcs.messaging.QueueProcessorList;
-import pt.com.gcs.messaging.TopicProcessor;
-import pt.com.gcs.messaging.TopicProcessorList;
+import pt.com.gcs.messaging.*;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.util.*;
 
 /**
  * StatusAction outputs agent status in XML.

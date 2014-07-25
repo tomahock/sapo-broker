@@ -1,7 +1,6 @@
 package pt.com.broker.functests.helpers;
 
 import org.caudexorigo.text.RandomStringUtils;
-
 import pt.com.broker.functests.Test;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetProtocolType;
