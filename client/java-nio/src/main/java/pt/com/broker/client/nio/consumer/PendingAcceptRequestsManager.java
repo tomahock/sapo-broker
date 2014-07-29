@@ -68,7 +68,7 @@ public class PendingAcceptRequestsManager {
 
                         if(_listener!=null) {
 
-                            removeAcceptRequest(actionID);
+                            //removeAcceptRequest(actionID);
 
                             _listener.onTimeout(actionID);
                         }
@@ -178,8 +178,8 @@ public class PendingAcceptRequestsManager {
 
                 }
 
-
-                removeAcceptRequest(actionID);
+                // @TODO remove or not remove
+               // removeAcceptRequest(actionID);
             }else
             {
                 //@todo log information
