@@ -795,6 +795,9 @@ public class BrokerClient extends BaseClient implements Observer {
             log.debug("Destination: "+entry.getKey());
 
             NetSubscribe subscribe = new NetSubscribe(consumer.getDestinationName(),consumer.getDestinationType());
+            subscribe.setActionId(consumer.getActionId());
+
+
 
             //@todo see Exception
             this.subscribeToHost(subscribe,listener,host);

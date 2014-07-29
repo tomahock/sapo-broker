@@ -56,6 +56,8 @@ public class ConsumerManager {
 
         BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(subscribe.getDestination(), subscribe.getDestinationType() , listener);
 
+        consumer.setActionId(subscribe.getActionId());
+
         consumer.setHost(hostInfo);
 
         addSubscription(consumer);

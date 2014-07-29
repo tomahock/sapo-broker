@@ -20,6 +20,8 @@ public class BrokerAsyncConsumer {
 
     private final BrokerListener listener;
 
+    private String actionId;
+
     private HostInfo host;
 
 
@@ -100,5 +102,13 @@ public class BrokerAsyncConsumer {
      */
     public BrokerListener getListener() {
         return listener;
+    }
+
+    public String getActionId() {
+        return actionId;
+    }
+
+    public void setActionId(String actionId) {
+        this.actionId = actionId;
     }
 }
