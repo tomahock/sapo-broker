@@ -87,14 +87,24 @@ public class AuthorizationFilter extends SimpleChannelUpstreamHandler
 
 	private void messageRefused(Channel channel, NetMessage message, String reason)
 	{
+
+        NetMessage AccessDeniedErrorMessage = NetFault.buildNetFaultMessage("3201", "Access denied");
+
+        ActionIdDecorator decorator = new ActionIdDecorator(message);
+
+
+        AccessDeniedErrorMessage.getAction().getFaultMessage().setActionId(decorator.getActionId());
+
+
 		if (reason == null)
 		{
-			channel.write(NetFault.AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
 		}
 		else
 		{
-			channel.write(NetFault.getMessageFaultWithDetail(NetFault.AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(NetFault.getMessageFaultWithDetail(AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
 		}
+
 		MiscStats.newAccessDenied();
 	}
 }

@@ -1,7 +1,7 @@
 package pt.com.broker.client.nio.tests.mockito;
 
 import org.mockito.ArgumentMatcher;
-import pt.com.broker.client.nio.utils.DecoratorInterface;
+import pt.com.broker.types.DecoratorInterface;
 
 /**
  * Copyright (c) 2014, SAPO

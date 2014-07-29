@@ -45,6 +45,8 @@ public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage
             return;
         }
 
+        /* If message is an Fault and there is an handler matching the ActionID
+         * the message is delivered. If not is sent to the pipeline and will handled by the default fault listener  */
         if(action.getActionType() == NetAction.ActionType.FAULT){
 
             String actionId = action.getFaultMessage().getActionId();

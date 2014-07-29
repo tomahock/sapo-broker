@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.client.nio.types.ActionIdDecorator;
+import pt.com.broker.types.ActionIdDecorator;
 import pt.com.broker.types.NetMessage;
 
 import java.util.concurrent.ConcurrentHashMap;
