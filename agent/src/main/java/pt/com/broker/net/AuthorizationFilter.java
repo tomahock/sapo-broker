@@ -8,6 +8,7 @@ import pt.com.broker.auth.AccessControl;
 import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.auth.Session;
 import pt.com.broker.auth.SessionProperties;
+import pt.com.broker.types.ActionIdDecorator;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ChannelAttributes;
@@ -98,11 +99,11 @@ public class AuthorizationFilter extends SimpleChannelUpstreamHandler
 
 		if (reason == null)
 		{
-			channel.writeAndFlush(AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
+			channel.write(AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
 		}
 		else
 		{
-			channel.writeAndFlush(NetFault.getMessageFaultWithDetail(AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
+			channel.write(NetFault.getMessageFaultWithDetail(AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
 		}
 
 		MiscStats.newAccessDenied();
