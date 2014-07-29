@@ -1,17 +1,14 @@
-package pt.com.broker.client.nio.ignore;
+package pt.com.broker.functests.samples;
 
 import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.auth.AuthInfo;
-import pt.com.broker.auth.CredentialsProvider;
-import pt.com.broker.auth.ProviderInfo;
+import pt.com.broker.auth.saposts.SapoSTSProvider;
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.*;
@@ -106,4 +103,109 @@ public class BrokerSslClientTest {
 
     }
 
+    @Test
+    public void testAuth() throws Throwable {
+
+
+
+        SslBrokerClient bk = createClient();
+
+        Future f = bk.connectAsync();
+
+
+
+        f.get();
+
+
+        SapoSTSProvider stsProvider = new SapoSTSProvider("luis@luissantos.pt","OTg#Yv9rfNivr8t$^TsCpgjcLJStY2vYF3G!*UF2699U8","https://pre-release.services.bk.sapo.pt/STS/");
+
+
+
+
+        bk.setCredentialsProvider(stsProvider);
+
+
+
+        Assert.assertTrue(bk.authenticateClient());
+
+
+    }
+
+
+    @Test
+    public void testAuthAuhtorization() throws Throwable {
+
+
+
+        SslBrokerClient bk = createClient();
+
+        Future f = bk.connectAsync();
+
+
+
+        f.get();
+
+
+        SapoSTSProvider stsProvider = new SapoSTSProvider("luis@luissantos.pt","OTg#Yv9rfNivr8t$^TsCpgjcLJStY2vYF3G!*UF2699U8","https://pre-release.services.bk.sapo.pt/STS/");
+
+
+        bk.setCredentialsProvider(stsProvider);
+
+
+
+        Assert.assertTrue(bk.authenticateClient());
+
+
+
+
+        NetSubscribeAction action = new NetSubscribe("/secret/.*", NetAction.DestinationType.QUEUE);
+
+        String actionId = UUID.randomUUID().toString();
+
+        AcceptRequest request = new AcceptRequest(actionId, new AcceptResponseListener() {
+            @Override
+            public void onMessage(NetAccepted message, HostInfo host) {
+                System.out.println("Accepeted");
+            }
+
+            @Override
+            public void onFault(NetFault fault, HostInfo host) {
+                System.out.println("Fault");
+            }
+
+            @Override
+            public void onTimeout(String actionID) {
+                System.out.println("Timeout");
+            }
+        },10000);
+
+        Future<HostInfo> future = bk.subscribe(action,new BrokerListener() {
+            @Override
+            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+
+
+                System.out.println("Message");
+
+            }
+
+        },request);
+
+        /*bk.setFaultListener(new BrokerListener() {
+            @Override
+            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+
+
+                System.out.println(message.getAction().getFaultMessage().getMessage());
+                System.out.println(message.getAction().getFaultMessage().getDetail());
+                System.out.println(message.getAction().getFaultMessage().getCode());
+
+            }
+        });*/
+
+        future.get();
+
+        Thread.sleep(10000);
+
+
+    }
 }
