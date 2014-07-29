@@ -1,6 +1,6 @@
-package pt.com.broker.client.nio.types;
+package pt.com.broker.types;
 
-import pt.com.broker.client.nio.utils.DecoratorInterface;
+import pt.com.broker.types.DecoratorInterface;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
 

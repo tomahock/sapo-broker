@@ -5,6 +5,7 @@ import io.netty.channel.*;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.types.DecoratorInterface;
 
 import java.net.SocketAddress;
 

@@ -12,6 +12,7 @@ import pt.com.broker.auth.AccessControl;
 import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.auth.Session;
 import pt.com.broker.auth.SessionProperties;
+import pt.com.broker.types.ActionIdDecorator;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.channels.ChannelAttributes;
@@ -92,16 +93,26 @@ public class AuthorizationFilter extends SimpleChannelInboundHandler<NetMessage>
 
 
 
-	private void messageRefused(Channel channel, NetMessage message, String reason)
+private void messageRefused(Channel channel, NetMessage message, String reason)
 	{
+
+        NetMessage AccessDeniedErrorMessage = NetFault.buildNetFaultMessage("3201", "Access denied");
+
+        ActionIdDecorator decorator = new ActionIdDecorator(message);
+
+
+        AccessDeniedErrorMessage.getAction().getFaultMessage().setActionId(decorator.getActionId());
+
+
 		if (reason == null)
 		{
-			channel.writeAndFlush(NetFault.AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
 		}
 		else
 		{
-			channel.writeAndFlush(NetFault.getMessageFaultWithDetail(NetFault.AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(NetFault.getMessageFaultWithDetail(AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
 		}
+
 		MiscStats.newAccessDenied();
 	}
 }

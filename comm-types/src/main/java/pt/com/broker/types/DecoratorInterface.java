@@ -1,4 +1,4 @@
-package pt.com.broker.client.nio.utils;
+package pt.com.broker.types;
 
 /**
  * Created by luissantos on 06-06-2014.

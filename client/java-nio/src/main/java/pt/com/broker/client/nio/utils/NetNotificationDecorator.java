@@ -2,6 +2,7 @@ package pt.com.broker.client.nio.utils;
 
 import io.netty.channel.Channel;
 import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.types.DecoratorInterface;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;

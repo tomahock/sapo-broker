@@ -6,7 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
-import pt.com.broker.client.nio.types.ActionIdDecorator;
+import pt.com.broker.types.ActionIdDecorator;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
