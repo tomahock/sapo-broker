@@ -9,9 +9,9 @@ tags:
 * Subscribe
 * Publish
 * Avanced topics
-    * [Advanced Acknowledge Request](./doc/advanced/acknowledge.md)
-    * [Advanced Message Handling](./doc/advanced/message-handling.md)
-    * [SSL Advanced Usage](./doc/advanced/ssl.md)
+    * [Advanced Acknowledge Request](./doc/advanced/acknowledge)
+    * [Advanced Message Handling](./doc/advanced/message-handling)
+    * [SSL Advanced Usage](./doc/advanced/ssl)
     
 
 
