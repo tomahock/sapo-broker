@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.ProviderInfo;
-import pt.com.broker.auth.saposts.SapoSTSProvider;
 import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
@@ -103,31 +102,5 @@ public class BrokerSslClientTest {
 
     }
 
-    @Test
-    public void testAuth() throws Throwable {
 
-
-
-        SslBrokerClient bk = createClient();
-
-        Future f = bk.connectAsync();
-
-
-
-        f.get();
-
-
-        SapoSTSProvider stsProvider = new SapoSTSProvider("luis@luissantos.pt","OTg#Yv9rfNivr8t$^TsCpgjcLJStY2vYF3G!*UF2699U8","https://pre-release.services.bk.sapo.pt/STS/");
-
-
-
-
-        bk.setCredentialsProvider(stsProvider);
-
-
-
-        Assert.assertTrue(bk.authenticateClient());
-
-
-    }
 }
