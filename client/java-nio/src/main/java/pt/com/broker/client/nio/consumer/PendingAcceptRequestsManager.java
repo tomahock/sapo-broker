@@ -68,7 +68,7 @@ public class PendingAcceptRequestsManager {
 
                         if(_listener!=null) {
 
-                            //removeAcceptRequest(actionID);
+                            removeAcceptRequest(actionID);
 
                             _listener.onTimeout(actionID);
                         }
@@ -172,14 +172,16 @@ public class PendingAcceptRequestsManager {
 
                     listener.deliverMessage(netMessage,host);
 
+                    // @TODO remove or not remove
+                    removeAcceptRequest(actionID);
+
                 } catch (Throwable throwable) {
 
                     throwable.printStackTrace();
 
                 }
 
-                // @TODO remove or not remove
-               // removeAcceptRequest(actionID);
+
             }else
             {
                 //@todo log information
