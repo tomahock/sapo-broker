@@ -13,6 +13,7 @@
 	<properties>
 		<mainClass>pt.com.broker.Start</mainClass>
 		<extraJvmArgs>-Xmx256M -Dagent-config-path=/conf/agent_example.config -Dbroker-global-config-path=target/conf/broker_global.config -Dproject-version=${project.version}</extraJvmArgs>
+        <skipTests>true</skipTests>
 	</properties>
 	<dependencies>
 
@@ -55,6 +56,17 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <failIfNoTests>true</failIfNoTests>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
