@@ -6,7 +6,7 @@
 
        SslBrokerClient bk = new SslBrokerClient();
        
-       bk.addServer("broker.wallet.pt",3390); // 3390 broker SSL port
+       bk.addServer("broker.bk.sapo.pt",3390); // 3390 broker SSL port
        
        // by default it uses the jvm certificate authorities but you can change it
        bk.setContext( ... );
@@ -50,7 +50,7 @@
         
          SslBrokerClient bk = new SslBrokerClient();
                
-         bk.addServer("broker.wallet.pt",3390); // 3390 broker SSL port
+         bk.addServer("broker.bk.sapo.pt",3390); // 3390 broker SSL port
                
          // by default it uses the jvm certificate authorities but you can change it
          bk.setContext(context);
