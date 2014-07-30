@@ -16,6 +16,7 @@
 							<xs:element name="broker-port" type="xs:int" />
 							<xs:element name="broker-legacy-port" type="xs:int" />
 							<xs:element name="broker-http-port" type="xs:int" />
+                            <xs:element name="broker-ws-port" type="xs:int" />
 							<xs:element name="broker-udp-port" type="xs:int" />
 						</xs:sequence>
 					</xs:complexType>

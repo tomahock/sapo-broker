@@ -111,6 +111,17 @@ public class GcsInfo {
 		return iprop;
 	}
 
+    /**
+     * HTTP port.
+     *
+     * @return HTTP port
+     */
+    public static int getBrokerWsPort()
+    {
+        int iprop = instance.conf.getNet().getBrokerWsPort();
+        return iprop;
+    }
+
 	/**
 	 * Broker legacy TCP port (used by clients). Used for backward compatibility.
 	 * 

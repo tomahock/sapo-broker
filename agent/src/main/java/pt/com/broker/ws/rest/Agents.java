@@ -26,11 +26,10 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * Created by Luis Santos<luis.santos@telecom.pt> on 25-06-2014.
  */
-@Path("agents")
+@Path("/agents")
 public class Agents {
 
-    @GET
-    @Path("/")
+    @GET()
     @Produces(MediaType.APPLICATION_JSON)
     public List<Agent> getOpenQueues() {
 

@@ -119,23 +119,23 @@ brokerApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/', {
-        templateUrl: 'assets/app/pages/home.html',
+        templateUrl: 'app/pages/home.html',
       }).
       when('/queues', {
-         templateUrl: 'assets/app/pages/queues.html',
+         templateUrl: 'app/pages/queues.html',
       }).
       when('/queues/:name/messages', {
-               templateUrl: 'assets/app/pages/messages.html',
+               templateUrl: 'app/pages/messages.html',
                controller: 'MessagesCtrl'
       }).
       when('/network', {
-               templateUrl: 'assets/app/pages/agents.html',
+               templateUrl: 'app/pages/agents.html',
       }).
        when('/agent', {
-                     templateUrl: 'assets/app/pages/agent.html',
+                     templateUrl: 'app/pages/agent.html',
       }).
       otherwise({
-         templateUrl: 'assets/app/pages/notfound.html',
+         templateUrl: 'app/pages/notfound.html',
       });
   }]);
 
@@ -295,7 +295,7 @@ brokerApp.directive('yesNoModal', function() {
         return {
             restrict: 'E',
             link: link,
-            templateUrl: 'assets/app/parts/yesnomodal.html'
+            templateUrl: 'app/parts/yesnomodal.html'
         }
 
 });
@@ -337,7 +337,7 @@ brokerApp.directive('modal', function() {
             },
             link: link,
             transclude: true,
-            templateUrl: 'assets/app/parts/modal.html',
+            templateUrl: 'app/parts/modal.html',
         }
 
 });

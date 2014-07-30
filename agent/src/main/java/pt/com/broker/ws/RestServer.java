@@ -8,7 +8,6 @@ import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -18,7 +17,6 @@ import pt.com.broker.ws.providers.NotFoundMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
 import java.io.IOException;
 
 /**
@@ -64,9 +62,6 @@ public class RestServer {
         context.setErrorHandler(new ErrorHandler() {
 
 
-
-
-
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -86,7 +81,7 @@ public class RestServer {
 
         resource_handler.setDirectoriesListed(false);
         resource_handler.setWelcomeFiles(new String[]{"index.html"});
-        resource_handler.setResourceBase("src/main/resources/");
+        resource_handler.setResourceBase("etc/assets/");
 
         resourceContext.setHandler(resource_handler);
         HandlerList handlers = new HandlerList();

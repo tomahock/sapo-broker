@@ -69,9 +69,20 @@ public class Start
 
             broker_srv.start();
 
-            RestServer restServer = new RestServer();
+            int wsPort = GcsInfo.getBrokerWsPort();
 
-            restServer.start(GcsInfo.getBrokerHttpPort()+1);
+
+            if(wsPort>0){
+
+                RestServer restServer = new RestServer();
+
+                restServer.start(wsPort);
+
+            }else{
+                log.warn("Not starting Broker WebService");
+            }
+
+
 
 
             int http_port = GcsInfo.getBrokerHttpPort();
