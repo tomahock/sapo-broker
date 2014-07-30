@@ -69,5 +69,5 @@ releases:
   - 0.1.0
 
 # ANALYTICS
-analytics: FC2C65EF-D60C-4BC2-9D76-251A50DADC3D
+analytics:
 markdown: redcarpet

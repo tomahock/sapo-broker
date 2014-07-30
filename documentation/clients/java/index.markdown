@@ -24,7 +24,7 @@ tags:
 
         BrokerClient bk = new BrokerClient();
        
-        bk.addServer("broker.wallet.pt",3323);
+        bk.addServer("broker.bk.sapo.pt",3323);
         
         bk.connect(); // if connection is not possible a runtime exception will be thrown 
                
@@ -36,7 +36,7 @@ tags:
 
         BrokerClient bk = new BrokerClient();
        
-        bk.addServer("broker.wallet.pt",3323);
+        bk.addServer("broker.bk.sapo.pt",3323);
         
         Future<HostInfo> f = bk.connectAsync();
         
@@ -162,7 +162,7 @@ tags:
 
        UdpBrokerClient bk = new UdpBrokerClient();
        
-       bk.addServer("broker.wallet.pt",3323); 
+       bk.addServer("broker.bk.sapo.pt",3323); 
        
         
        NetAction.DestinationType dstType = NetAction.DestinationType.QUEUE; // or TOPIC 
