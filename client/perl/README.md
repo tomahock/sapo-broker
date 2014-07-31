@@ -5,7 +5,7 @@ SAPO-Broker version 0.01
 
 ```bash
 git clone git@github.com:sapo/sapo-broker.git
-cd sapo-broker/clients/perl-component && perl Makefile.PL
+cd sapo-broker/clients/perl && perl Makefile.PL
 make install
 ```
 
@@ -47,6 +47,12 @@ cd protobuf-XXX
 make
 sudo make install
 ```
+Or install from debian/ubuntu repositories:
+
+```bash
+sudo apt-get install libprotobuf-dev
+```
+
 
 ## Testing
 
