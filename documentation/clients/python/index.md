@@ -5,7 +5,7 @@ title: Perl
 
 # Install
 
-To install the perl broker lib go to [GitHub](https://github.com/sapo/sapo-broker/tree/master/clients/perl-component).
+To install the perl broker lib go to [GitHub](https://github.com/sapo/sapo-broker/tree/master/clients/python-component).
     
 
 # Usage
@@ -13,34 +13,36 @@ To install the perl broker lib go to [GitHub](https://github.com/sapo/sapo-broke
 
 ## Connecting
 
-```perl
-use SAPO::Broker::Clients::Simple;
-        
-use strict;
-use warnings;
-        
-# connects to localhost using tcp by default (can also use udp or ssl)
-my $broker = SAPO::Broker::Clients::Simple->new(
-        host=>'localhost',
-        port  => 3323,
-        codec => 'protobufxs',
-        proto=>'tcp',
-); 
+```python
+from Broker.Messages import Message, Subscribe, Acknowledge
+from Broker.Transport import TCP, UDP
+from Broker.Codecs import Codec #auto codec selection (thrift or protobuf if thrift isn't installed)
+from Broker.Clients import Minimal
+
+server='broker.bk.sapo.pt'
+
+
+broker = Minimal(codec=Codec(), transport=TCP(host=server))
 ```
 
 ## Sending Message to a Topic or QUEUE
 
-```perl
+```python
 
 # .... connect to broker ....
 
-my %options = (
-    'destination_type' => 'TOPIC', #can also be QUEUE
-    'destination' => '/tests/perl',
-);
+server='broker.bk.sapo.pt'
+destination = '/python/tests/expiration'
+destination_type = 'QUEUE' #Or TOPIC
 
-# now publish something
-$broker->publish(%options, 'payload' => "This is the payload");
+
+payload_msg = 'Message' 
+message = Message(payload=payload_msg)
+
+publish = Publish(destination=destination, destination_type=destination_type, message=message)
+
+broker.send(publish)
+
  
 ```
 
