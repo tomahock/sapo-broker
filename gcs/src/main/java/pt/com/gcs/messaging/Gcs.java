@@ -612,4 +612,8 @@ public class Gcs
 
 		Gcs.publish(np);
 	}
+
+    public static Gcs getInstance() {
+        return instance;
+    }
 }

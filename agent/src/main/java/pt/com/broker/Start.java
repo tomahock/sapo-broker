@@ -10,9 +10,10 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.auth.ProvidersLoader;
 import pt.com.broker.core.*;
 import pt.com.broker.http.BrokerHttpService;
-import pt.com.broker.ws.RestServer;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
+
+import java.util.ServiceLoader;
 
 /**
  * Main class for Sapo-Broker agents.
@@ -56,6 +57,7 @@ public class Start
 
             log.info("Before GCS init");
             Gcs.init();
+            Gcs gcs = Gcs.getInstance();
             log.info("After GCS init");
 
             log.info("Before ProvidersLoader init");
@@ -68,20 +70,6 @@ public class Start
             BrokerServer broker_srv = new BrokerServer(new DefaultThreadFactory("broker-boss-1"), new DefaultThreadFactory("broker-worker-1") , broker_port, broker_legacy_port);
 
             broker_srv.start();
-
-            int wsPort = GcsInfo.getBrokerWsPort();
-
-
-            if(wsPort>0){
-
-                RestServer restServer = new RestServer();
-
-                restServer.start(wsPort);
-
-            }else{
-                log.warn("Not starting Broker WebService");
-            }
-
 
 
 
@@ -104,7 +92,16 @@ public class Start
             BrokerUdpServer udp_srv = new BrokerUdpServer(new DefaultThreadFactory("broker-boss-4"), udp_legacy_port, udp_bin_port);
             udp_srv.start();
 
-            FilePublisher.init();
+
+            ServiceLoader<AgentPlugin> implementation = ServiceLoader.load(AgentPlugin.class);
+
+
+
+            for (AgentPlugin impl : implementation) {
+                log.info("Loading plugin: "+impl);
+                impl.start(gcs);
+            }
+
 
             Thread sync_hook = new Thread()
             {
