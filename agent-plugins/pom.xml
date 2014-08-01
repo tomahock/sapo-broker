@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>sapo-broker-agent-plugins</artifactId>
+    <name>sapo-broker-agent-plugins</name>
+    <packaging>pom</packaging>
+    <parent>
+        <groupId>pt.sapo.oss.broker</groupId>
+        <artifactId>sapo-broker-parent</artifactId>
+        <version>4.0.49.Alpha1</version>
+    </parent>
+    <modules>
+        <module>sapo-broker-agent-plugin-dropbox</module>
+        <module>sapo-broker-agent-plugin-webservices</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>http://repository.sl.pt/mvn/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>
