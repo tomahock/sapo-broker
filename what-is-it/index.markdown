@@ -17,4 +17,4 @@ You can access our public broker server at broker.labs.sapo.pt and subscribe to 
 
 ## Arquitecture 
 
-![Sapo Broker Arquitecture](/broker/sapobroker_stack.png)
+![Sapo Broker Arquitecture]({{ site.url }}/broker/sapobroker_stack.png)
