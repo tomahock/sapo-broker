@@ -154,9 +154,9 @@ It's possible to define policies to grant access to consumers/producers that mee
    </condition>
    
    <!-- This condition is only applicable to authenticated users who was granted a specific role-->
-    <condition condition-type="ROLE">
+   <condition condition-type="ROLE">
               <role>brk_writer_role</role>
-    </condition>
+   </condition>
    
    <!-- 
         If you specify more than one condition they will be evaluated with like an disjunction (OR logic gate).
@@ -170,9 +170,9 @@ It's possible to define policies to grant access to consumers/producers that mee
             <role>brk_writer_role</role>
          </condition>
        
-          <condition condition-type="ROLE">
+         <condition condition-type="ROLE">
             <role>brk_reader_role</role>
-          </condition>
+         </condition>
        
    </condition>
    
@@ -191,15 +191,15 @@ Deny access to everyone that try to READ or WRITE to "/system/.*"
     <policies>
     
         <!-- ........ -->
-        
-      <policy policy-name="default">
-        <acl>
-          <entry action="DENY" destination-type="TOPIC QUEUE VIRTUAL_QUEUE" destination="/system/.*" privilege="READ WRITE">
-            <condition condition-type="ALWAYS"/>
-          </entry>
-        </acl>
-      </policy>
-  
+            
+        <policy policy-name="default">
+            <acl>
+              <entry action="DENY" destination-type="TOPIC QUEUE VIRTUAL_QUEUE" destination="/system/.*" privilege="READ WRITE">
+                <condition condition-type="ALWAYS"/>
+              </entry>
+            </acl>
+        </policy>
+      
         <!-- ........ -->
         
     </policies>
