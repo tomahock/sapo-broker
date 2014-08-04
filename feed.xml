@@ -1,0 +1,32 @@
+---
+---
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+  xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+  >
+<channel>
+    <title xml:lang="en">{{ site.title }}</title>
+    <atom:link type="application/atom+xml" href="http://ink.sapo.pt/feed.xml" rel="self"/>
+    <link>http://ink.sapo.pt/</link>
+    <pubDate>{{ site.time | date: "%a, %d %b %Y %H:%M:%S GMT" }}</pubDate>
+    <lastBuildDate>{{ site.time | date: "%a, %d %b %Y %H:%M:%S GMT" }}</lastBuildDate>
+    <language>en-US</language>
+    <description>{{ site.description }}</description>
+    {% for page in site.pages %}
+    <item>
+        <title>{{ page.title }}</title>
+        <link>http://ink.sapo.pt/{{ page.url | remove: 'index.html' | replace_first: '/','' }}</link>
+        <pubDate>{{ site.time | date: "%a, %d %b %Y %H:%M:%S GMT" }}</pubDate>
+        {% for tag in page.tags %}<category>{{ tag }}</category>{% endfor %}
+        <guid isPermaLink="false">{{ page.id }}</guid>
+        {% capture endthing %}{% raw %}%}{% endraw %}{% endcapture %}
+        <description><![CDATA[{{ page.content | strip_html | replace: '{% include','' | replace: '{% highlight html ','' | replace: '{% highlight js ','' | replace: '{% endhighlight' | replace: "{% raw ",'' | replace: "{% endraw ",'' | replace: endthing,'' }}]]></description>
+    </item>
+    {% endfor %}
+</channel>
+</rss>

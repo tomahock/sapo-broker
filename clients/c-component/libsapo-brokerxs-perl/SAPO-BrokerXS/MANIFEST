@@ -1,9 +1,0 @@
-BrokerXS.xs
-Changes
-Makefile.PL
-MANIFEST
-ppport.h
-README
-t/SAPO-BrokerXS.t
-lib/SAPO/BrokerXS.pm
-typemap

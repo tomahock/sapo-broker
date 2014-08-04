@@ -1,5 +1,0 @@
-#created with
-dh-make-perl --desc 'SAPO Broker perl bindings' -e 'c.valente@co.sapo.pt' --notest
-
-#to create the package
-dpkg-buildpackage
