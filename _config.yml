@@ -3,7 +3,7 @@ exclude: [".gitignore", ".git", "config.rb", "package.json", "Gruntfile.js", "bo
 
 destination: ./_site
 
-url: http://0.0.0.0:4000/
+url: http://0.0.0.0:4000/sapo-broker/
 environment: development
 description: Ink is a set of tools for quick development of web interfaces.
 timezone: Europe/Lisbon

@@ -10,11 +10,11 @@ tags:
 
 ### Publish-Subscribe Pattern
 
-![Publish Subscribe](/broker/pubsub.png)
+![Publish Subscribe]({{ site.url }}/broker/pubsub.png)
 
 
 <br><br><br><br>
 
 ### Queuing Messaging Pattern
 
-![Load balancing](/broker/loadbalance.png)
+![Load balancing]({{ site.url }}/broker/loadbalance.png)
