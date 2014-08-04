@@ -106,7 +106,7 @@ while(1){
  
 ```
 
-## Pool a message with timeout
+## Poll a message with timeout
 
   
 ```perl
@@ -165,7 +165,7 @@ while(1){
 ```
 
 
-## Pool a message with a higher redelivery timeout
+## Poll a message with a higher redelivery timeout
 
   
 ```perl

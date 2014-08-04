@@ -5,7 +5,7 @@ title: Perl
 
 # Install
 
-To install the perl broker lib go to [GitHub](https://github.com/sapo/sapo-broker/tree/master/clients/python-component).
+To install the python broker lib go to [GitHub](https://github.com/sapo/sapo-broker/tree/master/clients/python-component).
     
 
 # Usage

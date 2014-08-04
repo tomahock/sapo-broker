@@ -40,24 +40,23 @@ When you are consuming as a **VIRTUAL QUEUE** you are asking to broker agent to 
 all messages sent to that **TOPIC** and resend it to you as a **QUEUE**.
  
 
-
-
-
-![Publish Subscribe]({{ site.url }}/broker/broker_client_decision.png)
+<div>
+    <img  alt="Publish Subscribe" src="{{ site.url }}/broker/broker_client_decision.png" style="display: block;" class="push-center" />
+</div>
 
 ## Use Cases
 
 
 ### <a name="pubsubp"></a>Queuing Messaging Pattern
 
-<div markdown="1">
-    <img  alt="Queuing Messaging" src="{{ site.url }}/broker/loadbalance.png" />
+<div>
+    <img  alt="Queuing Messaging" src="{{ site.url }}/broker/loadbalance.png" style="display: block;" class="push-center" />
 </div>
 <br><br>
 
 ### <a name="mqp"></a>Publish-Subscribe Pattern
 
-<div markdown="1">
-    <img alt="Publish Subscribe" src="{{ site.url }}/broker/pubsub.png" />
+<div>
+    <img alt="Publish Subscribe" src="{{ site.url }}/broker/pubsub.png" style="display: block;" class="push-center" />
 </div>
 
