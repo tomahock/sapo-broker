@@ -28,7 +28,7 @@ You can fetch the latest version of the SAPO Broker source code from our Git rep
 
 ## Arquitecture 
 
-![Sapo Broker Arquitecture](/broker/sapobroker_stack.png)
+![Sapo Broker Arquitecture](broker/sapobroker_stack.png)
 
 
 [repo]: https://github.com/sapo/sapo-broker

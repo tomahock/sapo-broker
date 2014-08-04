@@ -15,9 +15,7 @@ title: Sapo Broker
 version: 3.0.3
 
 # URLS
-download_url: https://github.com/sapo/Ink/releases/download/
-download_src_url: https://github.com/sapo/Ink/archive/
-repo_url: https://github.com/sapo/Ink/
+repo_url: https://github.com/sapo/sapo-broker/
 cdn_url: http://cdn.ink.sapo.pt/
 
 # ASSETS PATHS
