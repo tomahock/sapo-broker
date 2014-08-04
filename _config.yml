@@ -21,9 +21,9 @@ repo_url: https://github.com/sapo/Ink/
 cdn_url: http://cdn.ink.sapo.pt/
 
 # ASSETS PATHS
-images_path: /assets/img/
-js_path: /assets/js/
-css_path: /assets/css/
+images_path: /sapo-broker/assets/img/
+js_path: /sapo-broker/assets/js/
+css_path: /sapo-broker/assets/css/
 
 sections:
 
