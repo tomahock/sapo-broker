@@ -108,6 +108,7 @@
 					<execution>
 						<id>generate-docs</id>
 						<phase>generate-resources</phase>
+
 						<configuration>
 							<target>
 								<echo message="Creating Documentation" />
