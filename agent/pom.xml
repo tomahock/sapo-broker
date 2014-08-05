@@ -62,7 +62,7 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>${project.groupId}</groupId>
             <version>${project.version}</version>
             <artifactId>sapo-broker-agent-plugin-dropbox</artifactId>
@@ -72,7 +72,7 @@
             <groupId>${project.groupId}</groupId>
             <version>${project.version}</version>
             <artifactId>sapo-broker-agent-plugin-webservices</artifactId>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 	<build>
