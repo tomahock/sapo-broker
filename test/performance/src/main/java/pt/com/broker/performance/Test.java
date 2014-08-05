@@ -1,6 +1,6 @@
 package pt.com.broker.performance;
 
-import org.caudexorigo.text.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.performance.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction.DestinationType;

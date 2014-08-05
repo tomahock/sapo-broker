@@ -41,7 +41,7 @@ public class BrokerHttpService
                 public void run() {
 
                     /* TODO TEMP CHANGE brsantos */
-                    NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber, false);
+                    NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber);
 
 
                     /* TEMP CHANGE brsantos */

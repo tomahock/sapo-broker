@@ -1,6 +1,6 @@
 package pt.com.broker.performance;
 
-import org.caudexorigo.text.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.codec.thrift.ThriftBindingSerializer;
 import pt.com.broker.codec.xml.SoapBindingSerializer;

@@ -1,7 +1,7 @@
 package pt.com.broker.jsbridge.transformers;
 
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.jsbridge.MessageTransformer;
@@ -59,7 +59,7 @@ public class Xml2JsonTransformer implements MessageTransformer
 		{
 
 			log.error("Error while transforming XML \"" + xmlMessage + "\" to JSON", t);
-			jsonMessage = "{\"transform-error\":\"" + StringEscapeUtils.escapeJavaScript(ErrorAnalyser.findRootCause(t).getMessage()) + "\"}";
+			jsonMessage = "{\"transform-error\":\"" + StringEscapeUtils.escapeJson(ErrorAnalyser.findRootCause(t).getMessage()) + "\"}";
 		}
 
 		return new NetBrokerMessage(jsonMessage.getBytes());
