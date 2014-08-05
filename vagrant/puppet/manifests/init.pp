@@ -33,7 +33,7 @@ class { 'ohmyzsh': }
 ohmyzsh::install { 'vagrant': }
 
 # activate plugins for a user
-ohmyzsh::plugins { 'vagrant': plugins => 'git github z' }
+ohmyzsh::plugins { 'vagrant': plugins => 'github z' }
 
 
 #import box modules
