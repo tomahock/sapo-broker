@@ -4,6 +4,45 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
+# Returns the number of processor for Linux, OS X or Windows.
+def number_of_processors
+  if RUBY_PLATFORM =~ /linux/
+    return `cat /proc/cpuinfo | grep processor | wc -l`.to_i
+  elsif RUBY_PLATFORM =~ /darwin/
+    return `sysctl -n hw.logicalcpu`.to_i
+  elsif RUBY_PLATFORM =~ /win32/
+    # this works for windows 2000 or greater
+    require 'win32ole'
+    wmi = WIN32OLE.connect("winmgmts://")
+    wmi.ExecQuery("select * from Win32_ComputerSystem").each do |system| 
+      begin
+        processors = system.NumberOfLogicalProcessors
+      rescue
+        processors = 0
+      end
+      return [system.NumberOfProcessors, processors].max
+    end
+  end
+  raise "can't determine 'number_of_processors' for '#{RUBY_PLATFORM}'"
+end
+
+def get_mem
+    host = RbConfig::CONFIG['host_os']
+
+    # Give VM 1/4 system memory
+    if host =~ /darwin/
+        # sysctl returns Bytes and we need to convert to MB
+        mem = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 4
+    elsif host =~ /linux/
+        # meminfo shows KB and we need to convert to MB
+        mem = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 4
+    else # sorry Windows folks, I can't help you
+        mem = 1024
+    end
+
+    return mem
+end
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
@@ -56,12 +95,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   vb.gui = true
   #
   #   # Use VBoxManage to customize the VM. For example to change memory:
-      vb.customize ["modifyvm", :id, "--memory", "1024"]
-
-      if not RUBY_PLATFORM.downcase.include?("mswin")
-            vb.customize ["modifyvm", :id, "--cpus", `grep "^processor" /proc/cpuinfo | wc -l`.chomp ]
-      end
-
+      vb.customize ["modifyvm", :id, "--memory", get_mem()]
+      vb.customize ["modifyvm", :id, "--cpus", number_of_processors() ]
   end
   #
   # View the documentation for the provider you're using for more
@@ -131,11 +166,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   #   chef.validation_client_name = "ORGNAME-validator"
    
-  # set auto_update to false, if you do NOT want to check the correct 
-  # additions version when booting this machine
-  config.vbguest.auto_update = false
 
-  # do NOT download the iso file from a webserver
-  config.vbguest.no_remote = true  
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    # set auto_update to false, if you do NOT want to check the correct 
+    # additions version when booting this machine
+    config.vbguest.auto_update = false
+
+    # do NOT download the iso file from a webserver
+    config.vbguest.no_remote = true  
+  end
 
 end
