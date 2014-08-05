@@ -6,7 +6,7 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.embedded.EmbeddedChannel;
-import org.caudexorigo.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.caudexorigo.text.HexUtil;
 import org.junit.Assert;
 import org.junit.Test;

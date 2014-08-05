@@ -1,6 +1,6 @@
 package pt.com.broker.client.sample;
 
-import org.caudexorigo.text.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.ActionType;

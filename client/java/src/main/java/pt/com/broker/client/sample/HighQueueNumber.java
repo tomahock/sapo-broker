@@ -1,7 +1,7 @@
 package pt.com.broker.client.sample;
 
 import org.caudexorigo.Shutdown;
-import org.caudexorigo.text.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.types.NetBrokerMessage;
 

@@ -2,7 +2,7 @@ package pt.com.broker.client.sample;
 
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
-import org.caudexorigo.text.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.UdpClient;
 import pt.com.broker.types.NetAction.DestinationType;
