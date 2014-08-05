@@ -26,6 +26,23 @@ def number_of_processors
   raise "can't determine 'number_of_processors' for '#{RUBY_PLATFORM}'"
 end
 
+def get_mem
+    host = RbConfig::CONFIG['host_os']
+
+    # Give VM 1/4 system memory
+    if host =~ /darwin/
+        # sysctl returns Bytes and we need to convert to MB
+        mem = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 4
+    elsif host =~ /linux/
+        # meminfo shows KB and we need to convert to MB
+        mem = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 4
+    else # sorry Windows folks, I can't help you
+        mem = 1024
+    end
+
+    return mem
+end
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
@@ -78,7 +95,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   vb.gui = true
   #
   #   # Use VBoxManage to customize the VM. For example to change memory:
-      vb.customize ["modifyvm", :id, "--memory", "1024"]
+      vb.customize ["modifyvm", :id, "--memory", get_mem()]
       vb.customize ["modifyvm", :id, "--cpus", number_of_processors() ]
   end
   #
