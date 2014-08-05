@@ -1,7 +1,7 @@
 package pt.com.broker.monitorization.db;
 
 import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +45,9 @@ public class FaultsDB
 
 			ErrorInfo errorInfo = extractShortMessage(message);
 
-			String escapedMsg = StringEscapeUtils.escapeHtml(clean(errorInfo.content));
+			String escapedMsg = StringEscapeUtils.escapeHtml4(clean(errorInfo.content));
 
-			String shortMessage = StringEscapeUtils.escapeHtml(clean(errorInfo.shortMessage));
+			String shortMessage = StringEscapeUtils.escapeHtml4(clean(errorInfo.shortMessage));
 
 			/* TODO TEMP CHANGE brsantos */
 //			DbExecutor.runActionPreparedStatement(ins_sql, agent, sampleDate, escapedMsg, shortMessage);
