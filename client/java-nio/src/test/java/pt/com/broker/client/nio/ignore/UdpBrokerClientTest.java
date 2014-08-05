@@ -1,6 +1,6 @@
 package pt.com.broker.client.nio.ignore;
 
-import org.caudexorigo.text.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
