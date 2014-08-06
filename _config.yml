@@ -36,9 +36,8 @@ sections:
             url: documentation
       - title: Clients
         topics:
-          - title: C
-            first: false
           - title: Java
+            first: false
           - title: PHP
           - title: Perl
           - title: Python
