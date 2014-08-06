@@ -32,7 +32,7 @@ sections:
     components:
       - title: Server
         topics:
-          - title: Basic principles
+          - title: Where to start
             url: documentation
       - title: Clients
         topics:
