@@ -119,7 +119,7 @@ public class BrokerSslClientTest {
         f.get();
 
 
-        SapoSTSProvider stsProvider = new SapoSTSProvider("luis@luissantos.pt","OTg#Yv9rfNivr8t$^TsCpgjcLJStY2vYF3G!*UF2699U8","https://pre-release.services.bk.sapo.pt/STS/");
+        SapoSTSProvider stsProvider = new SapoSTSProvider("username","password","https://pre-release.services.bk.sapo.pt/STS/");
 
 
 
@@ -148,7 +148,7 @@ public class BrokerSslClientTest {
         f.get();
 
 
-        SapoSTSProvider stsProvider = new SapoSTSProvider("luis@luissantos.pt","OTg#Yv9rfNivr8t$^TsCpgjcLJStY2vYF3G!*UF2699U8","https://pre-release.services.bk.sapo.pt/STS/");
+        SapoSTSProvider stsProvider = new SapoSTSProvider("username","password","https://pre-release.services.bk.sapo.pt/STS/");
 
 
         bk.setCredentialsProvider(stsProvider);

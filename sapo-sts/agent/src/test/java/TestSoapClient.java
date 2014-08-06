@@ -31,8 +31,8 @@ public class TestSoapClient {
 
         ESBCredentials credentials = new ESBCredentials();
 
-        credentials.setESBUsername("luis@luissantos.pt");
-        credentials.setESBPassword("OTg#Yv9rfNivr8t$^TsCpgjcLJStY2vYF3G!*UF2699U8");
+        credentials.setESBUsername("");
+        credentials.setESBPassword("");
 
 
         String token = secure.getToken(credentials,false);
