@@ -32,7 +32,7 @@ broker = Minimal(codec=Codec(), transport=TCP(host=server))
 # .... connect to broker ....
 
 server='broker.bk.sapo.pt'
-destination = '/python/tests/expiration'
+destination = '/python/tests/'
 destination_type = 'QUEUE' #Or TOPIC
 
 
@@ -55,7 +55,7 @@ broker.send(publish)
 # .... connect to broker ....
 
 
-destination = '/python/tests/expiration'
+destination = '/python/tests/'
 destination_type = 'QUEUE'
 
 # and subscribe to something
@@ -80,7 +80,7 @@ while True:
 # .... connect to broker ....
 
 
-destination = '/python/tests/expiration'
+destination = '/python/tests/'
 destination_type = 'TOPIC'
 
 # and subscribe to something
