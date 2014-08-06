@@ -19,6 +19,7 @@
         <module>binding/json</module>
         <module>binding/xml</module>
         <module>agent</module>
+        <module>agent-plugins</module>
         <module>client/java</module>
         <module>client/java-nio</module>
         <module>client/javascript</module>

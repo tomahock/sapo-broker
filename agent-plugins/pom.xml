@@ -8,6 +8,7 @@
         <groupId>pt.sapo.oss.broker</groupId>
         <artifactId>sapo-broker-parent</artifactId>
         <version>4.0.50.Alpha1</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modules>
         <module>sapo-broker-agent-plugin-dropbox</module>

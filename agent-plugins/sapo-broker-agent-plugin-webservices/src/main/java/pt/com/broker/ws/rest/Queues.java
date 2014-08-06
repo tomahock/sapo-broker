@@ -2,7 +2,7 @@ package pt.com.broker.ws.rest;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.caudexorigo.text.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.com.broker.types.NetMessage;
