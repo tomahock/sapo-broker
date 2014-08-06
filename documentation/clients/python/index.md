@@ -1,6 +1,6 @@
 ---
 layout: broker-documentation
-title: Perl
+title: Python
 ---
 
 # Install
@@ -14,7 +14,7 @@ To install the python broker lib go to [GitHub](https://github.com/sapo/sapo-bro
 ## Connecting
 
 ```python
-from Broker.Messages import Message, Subscribe, Acknowledge
+from Broker.Messages import Message, Subscribe, Acknowledge, Fault
 from Broker.Transport import TCP, UDP
 from Broker.Codecs import Codec #auto codec selection (thrift or protobuf if thrift isn't installed)
 from Broker.Clients import Minimal
@@ -50,165 +50,84 @@ broker.send(publish)
 ## Subscribing a Queue
 
 
-```perl
+```python
 
 # .... connect to broker ....
 
 
-my %options = (
-    'destination_type' => 'QUEUE', #can also be TOPIC
-    'destination' => '/tests/perl',
-);
+destination = '/python/tests/expiration'
+destination_type = 'QUEUE'
 
 # and subscribe to something
-$broker->subscribe(%options);
+broker.send(Subscribe(destination=destination, destination_type=destination_type))
 
-while(1){
-
-    my $notification = $broker->receive; # blocks!!!!
+while True:
+    message = broker.receive() #blocks!!!
     
-    my $payload = $notification->message->payload;
+    payload = message.message.payload
     
     # ... do something with your payload ....  
     
     # acknowledge the message
-    $broker->acknowledge($notification);
+    broker.send(Acknowledge(message_id=message.message.id, destination=message.subscription))
 
-}
-
-
- 
 ```
 
 ## Subscribing a topic
 
-```perl
+```python
 
 # .... connect to broker ....
 
 
-my %options = (
-    'destination_type' => 'TOPIC',
-    'destination' => '/tests/perl',
-);
+destination = '/python/tests/expiration'
+destination_type = 'TOPIC'
 
 # and subscribe to something
-$broker->subscribe(%options);
+broker.send(Subscribe(destination=destination, destination_type=destination_type))
 
-while(1){
-
-    my $notification = $broker->receive; # blocks!!!!
+while True:
+    message = broker.receive() #blocks!!!
     
-    my $payload = $notification->message->payload;
+    payload = message.message.payload
     
     # ... do something with your payload ....  
-    
-}
 
- 
 ```
 
 ## Pool a message with timeout
 
   
-```perl
+```python
 
 # .... connect to broker ....
 
-
-my %options = (
-    'destination_type' => 'QUEUE',
-    'destination' => '/tests/perl',
-    'timeout' => 1000,
-);
+destination = '/python/tests/'
 
 
-while(1){
+while True:
+    broker.send(Poll(destination=destination, timeout=5000))
+    message = broker.receive() #blocks!!!
+    
+    if isinstance(message, Fault) and message.fault_code == '2005':
+        print "timeout"
+        break
+        
+        
+    if isinstance(message, Fault)
+        print 'another fault'
+        break
 
-     $broker->poll(%options);
-   
-     my $notification;
-       
-     eval {
-           $notification  = $broker->receive; # blocks!!!!
-     };
-   
-     if($@){
-   
-           my $fault = $@;
-   
-           if( ref($fault) eq "SAPO::Broker::Messages::Fault" &&  $fault->fault_code == 2005 ){
-           
-               # .... Timeout.....
-               print "timeout\n";
-   
-           }else{
-           
-               print $fault;
-               
-           }
-   
-           die;
-     }
-   
-   
-     my $payload = $notification->message->payload;
-   
-     # ... do something with your payload ....
-     print( $payload );
-   
-   
-     # acknowledge the message
-     $broker->acknowledge($notification);
+    payload = message.message.payload
+    
+    # ... do something with your payload ....  
+    
+    # acknowledge the message
+    broker.send(Acknowledge(message_id=message.message.id, destination=message.subscription))
 
-}
-
- 
 ```
 
 
-## Pool a message with a higher redelivery timeout
-
-  
-```perl
-
-# .... connect to broker ....
-
-
-my %options = (
-    'destination_type' => 'QUEUE',
-    'destination' => '/tests/perl',
-    'header' => {
-        'RESERVE_TIME' => 900000, # The message will be resent to any client after 15 minutes 
-    }
-);
-
-while(1){
-
-     $broker->poll(%options);
-   
-     my $notification;
-       
-     eval {
-           $notification  = $broker->receive; # blocks!!!!
-     };
-   
-     if($@){
-         print $fault;
-         die;
-     }
-   
-     my $payload = $notification->message->payload;
-   
-     # ... do something with your payload ....
-     # if your code takes more then 15 min (900000 miliseconds) then the message will be sent to another consumer
-
-
-     # acknowledge the message
-     $broker->acknowledge($notification);
-
-}
-```
 
 
 

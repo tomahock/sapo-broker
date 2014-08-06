@@ -42,7 +42,6 @@ sections:
           - title: PHP
           - title: Perl
           - title: Python
-          - title: ruby
       - title: Security
         topics:
             - title: SSL
