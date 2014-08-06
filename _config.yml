@@ -3,8 +3,8 @@ exclude: [".gitignore", ".git", "config.rb", "package.json", "Gruntfile.js", "bo
 
 destination: ./_site
 
-#url: http://0.0.0.0:4000/sapo-broker/
-url: http://oss.sapo.pt/sapo-broker/
+url: http://0.0.0.0:4000/sapo-broker/
+#url: http://oss.sapo.pt/sapo-broker/
 environment: development
 description: Ink is a set of tools for quick development of web interfaces.
 timezone: Europe/Lisbon
@@ -25,13 +25,12 @@ js_path: /sapo-broker/assets/js/
 css_path: /sapo-broker/assets/css/
 
 sections:
-
-  - title: What is it?
-    url: what-is-it
   - title: Documentation
     components:
-      - title: Server
+      - title: Broker
         topics:
+          - title: What it is
+            url: ""
           - title: Where to start
             url: documentation
       - title: Clients
@@ -50,6 +49,13 @@ sections:
               hash: true
             - title: Authorization
               hash: true
+      - title: Other
+        topics:
+             - title: SDB Authentication
+               first: false
+             - title: Agent Plugins
+             - title: Agent Configuration
+               first: false
 
 
 releases:

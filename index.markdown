@@ -1,12 +1,12 @@
 ---
-layout: cookbook
+layout: broker-documentation
 title: Sapo Broker
 site_root:  /
 tags:
 ---
 
 
-sapo Broker is a distributed messaging framework. Among other features, it provides minimal administration overhead, Publish-Subscribe and Point-to-Point messaging, guaranteed delivery and wildcard subscriptions.
+Sapo Broker is a distributed messaging framework. Among other features, it provides minimal administration overhead, Publish-Subscribe and Point-to-Point messaging, guaranteed delivery and wildcard subscriptions.
 
 sapo Broker is written in Java, but has client libraries for Perl, Python, PHP, .NET, C and quite a few others, and you can talk to it using Thrift, XML or JSON.
 

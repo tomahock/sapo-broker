@@ -1,32 +1,46 @@
 <div class="left-drawer">
     <ul>
-        <li class="search">
-            {% include search.html %}
-        </li>
 
-        {% for section in site.sections %}
-        {% assign section_uri = section.title | downcase | replace:' ','-' %}
-        
-        <li{% if current_section[1] == section_uri %} class="active"{% endif %}>
-            <a href="{{ site.url }}{{ section.title | downcase | replace:' ','-' }}/" title="{{ section.title }}">{{ section.title }}</a>
-        </li>
-        {% endfor %}
+
+
 
         {% include section-selector.html %}
 
         {% for component in section.components %}
         <li class="heading">{{ component.title }}{% if component.topics %}
-        {% for topic in component.topics %}
-          {% if forloop.first %}
-          <li><a href="{{ site.url }}{{ section.title | downcase | replace: ' ','-' }}/{{ component.title | downcase | replace: ' ','-' | replace: ',','' }}/">{{ topic.title }}</a></li>
-          {% else %}
-          <li><a href="{{ site.url }}{{ section.title | downcase | replace: ' ','-' }}/{{ component.title | downcase | replace: ' ','-' }}/#{{ topic.title | downcase | replace: ' ','-' | replace: ',','' }}" title="{{ topic.title }}">{{ topic.title }}</a></li>
-          {% endif %}
-          {% endfor %}
+            {% for topic in component.topics %}
+
+            {% if topic.url or topic.first == false  %}
+
+            {% if topic.url %}
+        <li><a href="{{ site.url }}{{ topic.url }}" title="{{ topic.title }}">{{ topic.title }}</a></li>
+        {% else %}
+        {% if topic.hash == true %}
+        <li><a href="{{ site.url }}{{ section.title | downcase | replace: ' ','-' }}/{{ component.title | downcase | replace: ' ','-' }}/#{{ topic.title | downcase | replace: ' ','-' | replace: ',','' }}" title="{{ topic.title }}">{{ topic.title }}</a></li>
+        {% else %}
+        <li><a href="{{ site.url }}{{ section.title | downcase | replace: ' ','-' }}/{{ component.title | downcase | replace: ' ','-' }}/{{ topic.title | downcase | replace: ' ','-' | replace: ',','' }}" title="{{ topic.title }}">{{ topic.title }}</a></li>
+        {% endif %}
+        {% endif %}
+
+        {% else %}
+
+        {% if forloop.first %}
+        <li><a href="{{ site.url }}{{ section.title | downcase | replace: ' ','-' }}/{{ component.title | downcase | replace: ' ','-' | replace: ',','' }}/">{{ topic.title }}</a></li>
+        {% else %}
+        {% if topic.hash == true %}
+        <li><a href="{{ site.url }}{{ section.title | downcase | replace: ' ','-' }}/{{ component.title | downcase | replace: ' ','-' }}/#{{ topic.title | downcase | replace: ' ','-' | replace: ',','' }}" title="{{ topic.title }}">{{ topic.title }}</a></li>
+        {% else %}
+        <li><a href="{{ site.url }}{{ section.title | downcase | replace: ' ','-' }}/{{ component.title | downcase | replace: ' ','-' }}/{{ topic.title | downcase | replace: ' ','-' | replace: ',','' }}" title="{{ topic.title }}">{{ topic.title }}</a></li>
+        {% endif %}
+        {% endif %}
+
+        {% endif %}
+
+        {% endfor %}
         {% endif %}
       </li>{% endfor %}
 
-        <li><a class="ink-button blue" href="{{ site.download_url }}{{ site.version }}/ink-{{ site.version }}.zip" data-trackerlink="content|menudrawer|downloadzip">Download</a></li>
+
 
     </ul>
 </div>
