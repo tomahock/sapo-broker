@@ -28,7 +28,7 @@ title: Security
 ## <a name="authentication"></a>Authentication
 
 ### <a name="connectors"></a>Available Authentication Connectors
-- SDB (Service Delivery Broker)
+- [SDB (Service Delivery Broker)]({{ site.url }}documentation/other/sdb-authentication/)
     
     
 ### <a name="custom_connector"></a>Supporting custom Authentication providers
@@ -155,7 +155,7 @@ It's possible to define policies to grant access to consumers/producers that mee
    
    <!-- This condition is only applicable to authenticated users who was granted a specific role-->
    <condition condition-type="ROLE">
-              <role>brk_writer_role</role>
+              <role>SUPER-USER</role>
    </condition>
    
    <!-- 
@@ -167,7 +167,7 @@ It's possible to define policies to grant access to consumers/producers that mee
    <condition condition-type="AND">
          
          <condition condition-type="ROLE">
-            <role>brk_writer_role</role>
+            <role>SUPER-USER</role>
          </condition>
        
          <condition condition-type="ROLE">
