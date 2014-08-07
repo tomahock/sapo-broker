@@ -42,4 +42,6 @@ pt.com.broker.samples.CustomPlugin
 Finally you must put the resulting jar inside the agent class-path.
 **You must run your code inside a thread otherwise the broker agent will block the execution and willnot load the 
  remaining plugins.** 
+ 
+Check our [GitHub](https://github.com/sapo/sapo-broker/tree/master/agent-plugins) repository to see the available plugins.
 
