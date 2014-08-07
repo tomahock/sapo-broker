@@ -1,0 +1,36 @@
+@startuml
+
+participant Client
+participant Broker
+participant SDB
+
+== Client Authenticates ==
+
+Client -> SDB: /STS/GetToken
+activate SDB
+Client <-- SDB: EsbToken
+deactivate SDB
+
+|||
+
+Client -> Broker: Authenticate(esbToken,userName)
+
+
+
+Broker -> SDB: validates the client credentials
+activate SDB
+
+|||
+
+Broker <- SDB
+deactivate SDB
+
+Client <- Broker: Ok
+
+
+== Client Publishes messages ==
+
+Client -> Broker: Publish(Authenticated Channel)
+
+
+@enduml
