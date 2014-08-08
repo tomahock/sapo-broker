@@ -19,6 +19,8 @@ There is a pre-configured [Vagrant](http://www.vagrantup.com/) box with the tool
 ```bash
     cd vagrant
     cp Vagrantfile.orig Vagrantfile 
+    git submodule init
+    git submodule update
     vagrant up
 ```
 
