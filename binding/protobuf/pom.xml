@@ -25,7 +25,7 @@
 
                                 <exec executable="sh" resultproperty="returncode" >
                                     <arg value="-c"/>
-                                    <arg value="protoc --version | grep 2.4.1"/>
+                                    <arg value="protoc &#8211;&#8211;version | grep 2.4.1"/>
                                 </exec>
 
                                 <fail message="Invalid protoc version">
@@ -37,7 +37,7 @@
 
 
                                 <exec executable="protoc">
-                                    <arg value="--java_out=src/main/java"/>
+                                    <arg value="&#8211;&#8211;java_out=src/main/java"/>
                                     <arg value="src/main/protobuf/broker.proto"/>
                                 </exec>
                                 <replace file="src/main/java/pt/com/broker/codec/protobuf/PBMessage.java" token="public final class" value="final class"/>
