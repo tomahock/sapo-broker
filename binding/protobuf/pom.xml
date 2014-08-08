@@ -12,6 +12,7 @@
     <packaging>jar</packaging>
     <build>
         <plugins>
+            <!--
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
@@ -47,7 +48,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin> -->
         </plugins>
     </build>
     <dependencies>
