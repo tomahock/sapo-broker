@@ -885,12 +885,12 @@ footer {
 .copyright {
 
     .SAPOlogo {
-        background: url("#{$img-path}SAPOlogo.png") no-repeat;
+        background: url("//imgs.sapo.pt/sapologos/madeby/madeby-100x35-black.png") no-repeat;
         text-indent: -9999px;
         color: transparent !important;
         display: inline-block;
-        width: 101px;
-        min-height: 43px;
+        width: 100px;
+        min-height: 35px;
     }
 
     .PTClogo {
