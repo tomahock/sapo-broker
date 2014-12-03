@@ -3,9 +3,11 @@ package pt.com.broker.client.nio;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
@@ -23,6 +25,7 @@ import pt.com.broker.client.nio.utils.ChannelWrapperFuture;
 import pt.com.broker.client.nio.utils.HostInfoFuture;
 import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction.DestinationType;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -785,23 +788,28 @@ public class BrokerClient extends BaseClient implements Observer {
     private void resubscribe(HostInfo host){
 
         log.debug("Resubscribing : "+host);
-
-        Map<String,BrokerAsyncConsumer> map =  consumerManager.removeSubscriptions(NetAction.DestinationType.QUEUE, host);
-
-        for(Map.Entry<String, BrokerAsyncConsumer> entry : map.entrySet() ){
-            BrokerAsyncConsumer consumer = entry.getValue();
-            BrokerListener listener = entry.getValue().getListener();
-
-            log.debug("Destination: "+entry.getKey());
-
-            NetSubscribe subscribe = new NetSubscribe(consumer.getDestinationName(),consumer.getDestinationType());
-            subscribe.setActionId(consumer.getActionId());
-
-
-
-            //@todo see Exception
-            this.subscribeToHost(subscribe,listener,host);
-
+        
+        DestinationType[] resubscribeTypes = { DestinationType.QUEUE, DestinationType.TOPIC, DestinationType.VIRTUAL_QUEUE };
+        
+        for(DestinationType dType: resubscribeTypes){
+        	
+	        Map<String,BrokerAsyncConsumer> map =  consumerManager.removeSubscriptions(dType, host);
+	
+	        for(Map.Entry<String, BrokerAsyncConsumer> entry : map.entrySet() ){
+	            BrokerAsyncConsumer consumer = entry.getValue();
+	            BrokerListener listener = entry.getValue().getListener();
+	
+	            log.debug("Destination: "+entry.getKey());
+	
+	            NetSubscribe subscribe = new NetSubscribe(consumer.getDestinationName(),consumer.getDestinationType());
+	            subscribe.setActionId(consumer.getActionId());
+	
+	
+	
+	            //@todo see Exception
+	            this.subscribeToHost(subscribe,listener,host);
+	
+	        }
         }
 
 
