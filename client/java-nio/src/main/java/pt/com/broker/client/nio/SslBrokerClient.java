@@ -111,7 +111,15 @@ public class SslBrokerClient extends BrokerClient  {
         return super.connectAsync();
     }
 
-    private SSLContext getDefaultSslContext()
+    @Override
+	public HostInfo connect() {
+    	if(getContext() == null){
+    		setContext(getDefaultSslContext());
+    	}
+		return super.connect();
+	}
+
+	private SSLContext getDefaultSslContext()
     {
 
         try
