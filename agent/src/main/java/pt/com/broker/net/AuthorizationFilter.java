@@ -106,11 +106,11 @@ private void messageRefused(Channel channel, NetMessage message, String reason)
 
 		if (reason == null)
 		{
-			channel.write(AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(AccessDeniedErrorMessage).addListener(ChannelFutureListener.CLOSE);
 		}
 		else
 		{
-			channel.write(NetFault.getMessageFaultWithDetail(AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(NetFault.getMessageFaultWithDetail(AccessDeniedErrorMessage, reason)).addListener(ChannelFutureListener.CLOSE);
 		}
 
 		MiscStats.newAccessDenied();
