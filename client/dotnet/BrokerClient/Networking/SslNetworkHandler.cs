@@ -32,12 +32,13 @@ namespace SapoBrokerClient.Networking
                 return true;
 
 
-            if ( (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors) && (acceptableCertificates != null))
+			if ( (sslPolicyErrors & System.Net.Security.SslPolicyErrors.RemoteCertificateChainErrors) != 0 && (acceptableCertificates != null))
             {
                 foreach (X509Certificate cert in acceptableCertificates)
                 {
-                    if (cert.Equals(certificate))
-                        return true;
+					if (cert.GetRawCertDataString () == certificate.GetRawCertDataString ()) {
+						return true;
+					}
                 }
             }
 
