@@ -28,8 +28,12 @@
 	<logger level="info" additivity="false" name="pt.com.gcs">
 		<appender-ref ref="GCS-ConsoleAppender" />
 	</logger>
+	
+	<logger level="debug" additivity="false" name="pt.com.gcs.messaging">
+		<appender-ref ref="GCS-ConsoleAppender" />
+	</logger>
 
-	<logger level="info" additivity="false" name="pt.com.broker">
+	<logger level="debug" additivity="false" name="pt.com.broker">
 		<appender-ref ref="Broker-ConsoleAppender" />
 	</logger>
 

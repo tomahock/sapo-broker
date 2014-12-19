@@ -1,5 +1,8 @@
 package pt.com.broker.functests.negative;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pt.com.broker.functests.helpers.GenericNetMessageNegativeTest;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.ActionType;
@@ -7,9 +10,12 @@ import pt.com.broker.types.NetAction.DestinationType;
 
 public class AccessDeniedTest extends GenericNetMessageNegativeTest
 {
+	
+	private static final Logger log = LoggerFactory.getLogger(AccessDeniedTest.class);
 
     public AccessDeniedTest(NetProtocolType protocolType) {
         super(protocolType);
+        log.debug("AccessDeniedTest constructor!");
 
 		setName("Access Denied");
 

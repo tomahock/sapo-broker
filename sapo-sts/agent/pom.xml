@@ -15,27 +15,22 @@
 		<extraJvmArgs>-Xmx256M -Dagent-config-path=/conf/agent_example.config -Dbroker-global-config-path=target/conf/broker_global.config -Dproject-version=${project.version}</extraJvmArgs>
 	</properties>-->
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<version>${project.version}</version>
-			<artifactId>sapo-broker-agent</artifactId>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>${project.groupId}</groupId> -->
+<!-- 			<version>${project.version}</version> -->
+<!-- 			<artifactId>sapo-broker-agent</artifactId> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-sts-client</artifactId>
 		</dependency>
-
-
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
 
     <build>

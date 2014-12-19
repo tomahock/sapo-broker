@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import pt.com.broker.auth.ProviderInfo;
 import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 import pt.com.gcs.net.Peer;
@@ -21,8 +22,11 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -57,21 +61,37 @@ public class GlobalConfig
 
 	private GlobalConfig()
 	{
-		String globalConfigPath = GcsInfo.getGlobalConfigFilePath();
-		Source schemaLocation = new StreamSource(GlobalConfig.class.getResourceAsStream("/pt/com/gcs/etc/global_config.xsd"));
-		File xmlFile = new File(globalConfigPath);
+		
+		try {
+			String configFile = GcsInfo.getGlobalConfigFilePath();
+			String globalConfigPath = null;
+			File xmlFile = null;
+			//FIXME: Place the validator in the resources folder as well.
+			Source schemaLocation = new StreamSource(GlobalConfig.class.getResourceAsStream("/pt/com/gcs/etc/global_config.xsd"));
+			URL globalConfigUrl = getClass().getClassLoader().getResource(configFile);
+			if(globalConfigUrl != null){
+				xmlFile = new File(globalConfigUrl.toURI());
+				globalConfigPath = globalConfigUrl.toURI().getPath();
+			} else {
+				xmlFile = new File(configFile);
+				globalConfigPath = configFile;
+			}
+			XsdValidationResult result = SchemaValidator.validate(schemaLocation, xmlFile);
 
-		XsdValidationResult result = SchemaValidator.validate(schemaLocation, xmlFile);
+			if (!result.isValid())
+			{
+				log.error("Invalid world map, aborting startup.");
+				log.error(result.getMessage());
+				Shutdown.now();
+			}
+			Document doc = parseXmlFile(globalConfigPath, false);
 
-		if (!result.isValid())
-		{
-			log.error("Invalid world map, aborting startup.");
-			log.error(result.getMessage());
-			Shutdown.now();
+			init(doc);
+		} catch (URISyntaxException e) {
+			// Throwable t = ErrorAnalyser.findRootCause(e);
+			log.error("Fatal error: {}", e.getMessage());
+			Shutdown.now(e);
 		}
-		Document doc = parseXmlFile(globalConfigPath, false);
-
-		init(doc);
 	}
 
 	private void init(Document doc)

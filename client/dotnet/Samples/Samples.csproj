@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E3973196-CBAC-446C-A70A-351FBAA45DE9}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -11,7 +11,7 @@
     <RootNamespace>Samples</RootNamespace>
     <AssemblyName>Samples</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>Samples.Consumers.Consumer</StartupObject>
+    <StartupObject>Samples.Consumers.SslConsumer</StartupObject>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -36,7 +36,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Commandlineparameters>dn=/queue/foo dt=QUEUE</Commandlineparameters>
+    <Commandlineparameters>-hn:127.0.0.1 -port:3390 -dt:TOPIC -cer:/home/bruno/Work/Broker/sapo-broker/client/dotnet/Tests/myservercert.cer -dn:/topic/secret</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -81,9 +81,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="BrokerClient">
-      <HintPath>Lib\BrokerClient.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -93,4 +90,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <ProjectReference Include="..\BrokerClient\SapoBrokerClient.csproj">
+      <Project>{B51BD9C3-BDA6-4404-8968-9095CDBD56D5}</Project>
+      <Name>SapoBrokerClient</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

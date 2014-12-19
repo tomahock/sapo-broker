@@ -26,7 +26,6 @@ public class GenericNegativeTest extends BrokerTest
 
 	private BrokerListener defaultErrorListener = new ErrorListenerAdapter() {
 
-
         @Override
         public void onMessage(NetFault message,HostInfo host) {
             log.info("Error Message Fault");
@@ -50,8 +49,8 @@ public class GenericNegativeTest extends BrokerTest
 
 		try
 		{
-			brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-            brokerClient.connect();
+//			brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
+//          brokerClient.connect();
 		}
 		catch (Throwable e)
 		{
@@ -111,6 +110,7 @@ public class GenericNegativeTest extends BrokerTest
 				}
 				catch (Throwable t)
 				{
+					log.error("Error running the test action.", t);
 					setReasonForFailure(t.toString());
 				}
 				return this;

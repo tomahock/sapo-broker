@@ -239,6 +239,7 @@ public class TopicProcessor implements SubscriptionProcessor
 		{
 			if ((ml.getTargetDestinationType() == DestinationType.TOPIC) && ml.getType().equals(MessageListener.Type.LOCAL))
 			{
+				log.debug("Incrementig toppic messages delivered for topic: {}", this.getSubscriptionName());
 				topicStatistics.newTopicMessageDelivered();
 			}
 			else

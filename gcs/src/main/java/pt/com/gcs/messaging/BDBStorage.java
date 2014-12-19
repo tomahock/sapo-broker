@@ -377,9 +377,11 @@ public class BDBStorage
 
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
-
+			int countLoop = 0;
 			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
 			{
+				//TODO: Delete the debug log below
+				log.debug("Count loop: {}", ++countLoop);
 				if (isMarkedForDeletion.get())
 					break;
 
@@ -407,6 +409,9 @@ public class BDBStorage
 
 				boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
 				long reserveTimeout = bdbm.getReserveTimeout();
+				//TODO: Delete the logs bellow
+				log.debug("Message reserve timeout: {}", reserveTimeout);
+				log.debug("Current time: {}", now);
 				final boolean isReserved = reserveTimeout > now;
 
 				if (!isReserved)
@@ -421,7 +426,7 @@ public class BDBStorage
 						{
 							nextCycle = diff;
 						}
-
+						//No chains arround my feet, but i'm not free...
 						continue;
 					}
 

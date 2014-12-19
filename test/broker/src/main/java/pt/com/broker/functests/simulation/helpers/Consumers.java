@@ -113,7 +113,7 @@ public class Consumers
 			{
 				ci.consumerName = appName + i;
 				ci.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), protocolType);
-
+				ci.brokerClient.connect();
 				consumers.add(ci);
 			}
 			catch (Throwable e)

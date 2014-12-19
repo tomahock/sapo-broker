@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
 
 	<jmxConfigurator />
 
@@ -29,7 +29,7 @@
 			<pattern>%5p #GCS#%C# [%t] - %m%n</pattern>
 		</layout>
 	</appender>
-	
+
 	<logger additivity="false" name="org.apache">
 		<level value="error" />
 		<appender-ref ref="ConsoleAppender" />

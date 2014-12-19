@@ -50,29 +50,30 @@ public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 	{
 		BDBMessage message = new BDBMessage();
 
-		ObjectInputStream oIn = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(data));
+		try(ObjectInputStream oIn = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(data));){
 
-		short version = oIn.readShort();
-
-		if (version != 2)
-		{
-			String errorMessage = String.format("Incorrect serialization version: ", version);
-			throw new RuntimeException(errorMessage);
-		}
-
-		message.setVersion(version);
-		message.setSequence(oIn.readLong());
-		message.setPreferLocalConsumer(oIn.readBoolean());
-		message.setReserveTimeout(oIn.readLong());
-
-		//byte[] buf = new byte[oIn.available()];
-
+			short version = oIn.readShort();
 	
-		NetMessage nmsg = serializer.unmarshal(oIn);
-
-		//message.setRawPacket(buf);
-		message.setMessage(nmsg);
-
-		return message;
+			if (version != 2)
+			{
+				String errorMessage = String.format("Incorrect serialization version: ", version);
+				throw new RuntimeException(errorMessage);
+			}
+	
+			message.setVersion(version);
+			message.setSequence(oIn.readLong());
+			message.setPreferLocalConsumer(oIn.readBoolean());
+			message.setReserveTimeout(oIn.readLong());
+	
+			//byte[] buf = new byte[oIn.available()];
+	
+		
+			NetMessage nmsg = serializer.unmarshal(oIn);
+	
+			//message.setRawPacket(buf);
+			message.setMessage(nmsg);
+	
+			return message;
+		}
 	}
 }

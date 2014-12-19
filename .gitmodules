@@ -15,7 +15,7 @@
 	url = https://github.com/Adcade/puppet-thrift.git
 [submodule "vagrant/puppet/modules/thrift"]
 	path = vagrant/puppet/modules/thrift
-	url = git@github.com:luissantos/puppet-thrift.git
+	url = https://github.com/luissantos/puppet-thrift.git
 [submodule "vagrant/puppet/modules/apt"]
 	path = vagrant/puppet/modules/apt
 	url = https://github.com/puppetlabs/puppetlabs-apt

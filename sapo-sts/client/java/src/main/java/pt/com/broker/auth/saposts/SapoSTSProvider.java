@@ -43,7 +43,6 @@ public class SapoSTSProvider implements CredentialsProvider
 		this.password = password;
         this.stsLocation = stsLocation;
         stsToken = new SAPOStsToken(getClient(stsLocation));
-
 	}
 
 	@Override

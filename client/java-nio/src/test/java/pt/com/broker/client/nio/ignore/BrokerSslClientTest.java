@@ -29,78 +29,64 @@ import java.util.concurrent.Future;
  */
 public class BrokerSslClientTest {
 
-    private static final Logger log = LoggerFactory.getLogger(BrokerSslClientTest.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(BrokerSslClientTest.class);
 
+	protected SslBrokerClient createClient() throws Throwable {
 
+		SslBrokerClient bk = new SslBrokerClient("127.0.0.1", 3390,
+				NetProtocolType.JSON);
 
-    protected SslBrokerClient createClient() throws Throwable {
+		// Load CAs from an InputStream
+		// (could be from a resource or ByteArrayInputStream or ...)
+		CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-        SslBrokerClient bk = new SslBrokerClient("192.168.100.10", 3390, NetProtocolType.JSON);
+		// InputStream caInput = new BufferedInputStream(new
+		// FileInputStream("/home/luissantos/Develop/sapo-broker-maven-edition/client/java-nio/teste.crt"));
+		InputStream caInput = new BufferedInputStream(getClass()
+				.getClassLoader().getResourceAsStream("myservercert.cer"));
+		Certificate ca;
+		try {
+			ca = cf.generateCertificate(caInput);
+			System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+		} finally {
+			caInput.close();
+		}
 
+		// Create a KeyStore containing our trusted CAs
+		String keyStoreType = KeyStore.getDefaultType();
+		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+		keyStore.load(null, null);
+		keyStore.setCertificateEntry("ca", ca);
 
-        // Load CAs from an InputStream
-        // (could be from a resource or ByteArrayInputStream or ...)
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+		// Create a TrustManager that trusts the CAs in our KeyStore
+		String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+		tmf.init(keyStore);
 
-        InputStream caInput = new BufferedInputStream(new FileInputStream("/home/luissantos/Develop/sapo-broker-maven-edition/client/java-nio/teste.crt"));
-        Certificate ca;
-        try {
-            ca = cf.generateCertificate(caInput);
-            System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
-        } finally {
-            caInput.close();
-        }
+		// Create an SSLContext that uses our TrustManager
+		SSLContext context = SSLContext.getInstance("TLS");
+		context.init(null, tmf.getTrustManagers(), null);
 
-        // Create a KeyStore containing our trusted CAs
-        String keyStoreType = KeyStore.getDefaultType();
-        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        keyStore.load(null, null);
-        keyStore.setCertificateEntry("ca", ca);
+		bk.setContext(context);
 
-        // Create a TrustManager that trusts the CAs in our KeyStore
-        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-        tmf.init(keyStore);
+		return bk;
 
-        // Create an SSLContext that uses our TrustManager
-        SSLContext context = SSLContext.getInstance("TLS");
-        context.init(null, tmf.getTrustManagers(), null);
+	}
 
-        bk.setContext(context);
+	@Test
+	public void testPingPong() throws Throwable {
+		SslBrokerClient bk = createClient();
+		Future f = bk.connectAsync();
+		f.get();
+		bk.checkStatus(new PongListenerAdapter() {
+			@Override
+			public void onMessage(NetPong message, HostInfo host) {
+				log.debug("Got pong message");
+			}
+		});
+		Thread.sleep(10000);
 
-
-        return bk;
-
-
-    }
-
-    @Test
-    public void testPingPong() throws Throwable {
-
-        SslBrokerClient bk = createClient();
-
-        Future f = bk.connectAsync();
-
-
-
-        f.get();
-
-
-
-        bk.checkStatus(new PongListenerAdapter() {
-            @Override
-            public void onMessage(NetPong message, HostInfo host) {
-
-                log.debug("Got pong message");
-
-            }
-
-        });
-
-
-        Thread.sleep(10000);
-
-    }
-
+	}
 
 }

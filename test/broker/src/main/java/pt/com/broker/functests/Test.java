@@ -128,7 +128,7 @@ public abstract class Test extends BaseTest
 		}
 		catch (Throwable t)
 		{
-
+			t.printStackTrace();
 
 			if (!okToTimeOut() && (getAction() != null))
 			{
@@ -208,7 +208,7 @@ public abstract class Test extends BaseTest
     public final void run(){
 
         Boolean result =  run(1, new TestsResults());
-
+        //FIXME: Remove the deprecated class. Replace by org.junit.Assert.assertTrue
         Assert.assertTrue(result);
     }
 

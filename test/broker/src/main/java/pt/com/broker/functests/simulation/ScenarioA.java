@@ -1,6 +1,9 @@
 package pt.com.broker.functests.simulation;
 
 import org.caudexorigo.Shutdown;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.functests.simulation.helpers.Consumers;
 import pt.com.broker.functests.simulation.helpers.Producers;
@@ -9,6 +12,8 @@ import pt.com.broker.types.NetProtocolType;
 
 public class ScenarioA
 {
+	
+	static final Logger log = LoggerFactory.getLogger(ScenarioA.class);
 
 	public static void run()
 	{
@@ -56,7 +61,9 @@ public class ScenarioA
 
 	public static void main(String[] args)
 	{
-		System.out.println("Starting Scenario A");
+		
+		log.info("Starting test battery for Scenario A.");
+//		System.out.println("Starting Scenario A");
 
 		TestMachines machines = TestMachines.All;
 

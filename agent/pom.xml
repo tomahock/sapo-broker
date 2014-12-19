@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>pt.sapo.oss.broker</groupId>
@@ -10,10 +11,10 @@
 	<name>sapo-broker-agent</name>
 	<packaging>jar</packaging>
 	<properties>
-	    <agent-config-path>package/conf/agent_example.config</agent-config-path>
-        <broker-global-config-path>package/conf/broker_global.config</broker-global-config-path>
-		<mainClass>pt.com.broker.Start</mainClass>   
-		<workingDirectory>package</workingDirectory>  
+		<agent-config-path>agent_example.config</agent-config-path>
+		<broker-global-config-path>broker_global.config</broker-global-config-path>
+		<mainClass>pt.com.broker.Start</mainClass>
+		<workingDirectory>package</workingDirectory>
 		<appArgs>-Xmx256M</appArgs>
 	</properties>
 	<dependencies>
@@ -49,62 +50,60 @@
 		</dependency>
 
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>org.caudexorigo</groupId>
-            <artifactId>org-caudexorigo-commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+		<dependency>
+			<groupId>org.caudexorigo</groupId>
+			<artifactId>org-caudexorigo-commons</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 
-        <!--<dependency>
-            <groupId>${project.groupId}</groupId>
-            <version>${project.version}</version>
-            <artifactId>sapo-broker-agent-plugin-dropbox</artifactId>
-        </dependency>
+		<!--<dependency> <groupId>${project.groupId}</groupId> <version>${project.version}</version> 
+			<artifactId>sapo-broker-agent-plugin-dropbox</artifactId> </dependency> <dependency> 
+			<groupId>${project.groupId}</groupId> <version>${project.version}</version> 
+			<artifactId>sapo-broker-agent-plugin-webservices</artifactId> </dependency> -->
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <version>${project.version}</version>
-            <artifactId>sapo-broker-agent-plugin-webservices</artifactId>
-        </dependency>-->
-
-    </dependencies>
+	</dependencies>
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>pt.com.broker.Start</mainClass>
-                    <systemProperties>
-                        <systemProperty>
-                            <key>agent-config-path</key>
-                            <value>${agent-config-path}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>broker-global-config-path</key>
-                            <value>${broker-global-config-path}</value>
-                        </systemProperty>
-                    </systemProperties>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>pt.com.broker.Start</mainClass>
+					<systemProperties>
+						<systemProperty>
+							<key>agent-config-path</key>
+							<value>${agent-config-path}</value>
+						</systemProperty>
+						<systemProperty>
+							<key>broker-global-config-path</key>
+							<value>${broker-global-config-path}</value>
+						</systemProperty>
+					</systemProperties>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
+				<version>1.7</version>
 				<executions>
 					<execution>
 						<id>generate-docs</id>
@@ -119,7 +118,7 @@
 								</copy>
 								<delete dir="target/doc" />
 								<mkdir dir="target/doc/images" />
-								<touch file="target/VERSION.txt"/>
+								<touch file="target/VERSION.txt" />
 								<echo file="target/VERSION.txt" append="false">${project.version}</echo>
 								<exec executable="xmlto" dir="package/doc/docbook/">
 									<arg value="--skip-validation" />
@@ -134,7 +133,7 @@
 									<fileset dir="package/doc/docbook/images" />
 								</copy>
 								<copy file="package/doc/docbook/brokerdoc.css" todir="target/doc" />
-								<chmod dir="target" perm="+x" includes="*.sh"/>
+								<chmod dir="target" perm="+x" includes="*.sh" />
 								<delete file="target/VERSION.txt" />
 							</target>
 						</configuration>
@@ -145,20 +144,56 @@
 				</executions>
 			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>
+											[1.7,)
+										</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 </project>

@@ -355,12 +355,15 @@ public class Gcs
 		{
 			startAcceptor(GcsInfo.getAgentPort());
 			startConnector();
-
-			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
+			
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
-			GcsExecutor.scheduleWithFixedDelay(new GlobalStatisticsPublisher(), 60, 60, TimeUnit.SECONDS);
-
+			
+			//Statistics
+			GcsExecutor.scheduleWithFixedDelay(new StatisticsCollector(), 60, 60, TimeUnit.SECONDS);
+			//This one go to stats as well
 			GcsExecutor.scheduleWithFixedDelay(new QueueLister(), 5, 5, TimeUnit.MINUTES);
+			//This one must be on the stats as well
+			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
 
 			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
 
@@ -402,8 +405,8 @@ public class Gcs
 	private void startAcceptor(int portNumber) throws IOException
 	{
         /*@todo (Luis Santos) adicionar Executors ao Bootstrap */
-		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-1");
-		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-1");
+//		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-1");
+//		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-1");
 
 		//ChannelFactory factory = new NioServerSocketChannelFactory(tpe_io, tpe_workers);
 		ServerBootstrap bootstrap = new ServerBootstrap();
@@ -452,11 +455,11 @@ public class Gcs
 	{
 		log.info("Starting Local Connector - step 0");
 
-		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-2");
+//		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-2");
 
 		log.info("Starting Local Connector - step 1");
 
-		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-2");
+//		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-2");
 
 		log.info("Starting Local Connector - step 2");
 

@@ -23,38 +23,22 @@ public abstract class NotificationListenerAdapter implements BrokerListener {
     /** {@inheritDoc} */
     @Override
     public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
-
-            NetAction netAction = message.getAction();
-
-            NetNotification netNotification = netAction.getNotificationMessage();
-
-
-            if(netNotification != null){
-
-                if(onMessage(netNotification,host)){
-
-                    if (brokerClient != null) {
-
-                        // acknowledge if not a topic
-                        if (netNotification.getDestinationType() != NetAction.DestinationType.TOPIC ) {
-
-                            brokerClient.acknowledge(netNotification,host);
-                        }
-
-
-                    } else{
-
-                        log.debug("Message not acknowledged because broker client was not set ");
-
+        NetAction netAction = message.getAction();
+        NetNotification netNotification = netAction.getNotificationMessage();
+        if(netNotification != null){
+            if(onMessage(netNotification,host)){
+                if (brokerClient != null) {
+                    // acknowledge if not a topic
+                    if (netNotification.getDestinationType() != NetAction.DestinationType.TOPIC ) {
+                        brokerClient.acknowledge(netNotification,host);
                     }
-
-
+                } else{
+                    log.debug("Message not acknowledged because broker client was not set ");
                 }
-
-            }else{
-                log.error("Invalid Message");
             }
-
+        }else{
+            log.error("Invalid Message");
+        }
     }
 
 

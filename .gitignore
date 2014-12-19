@@ -61,3 +61,14 @@ nbactions.xml
 nb-configuration.xml
 
 persistent*
+
+#Eclipse files
+.classpath
+.project
+.settings
+#README Files converted to html
+**/.README.md.html
+
+#.Net binary files
+client/dotnet/**/bin/
+client/dotnet/**/obj/

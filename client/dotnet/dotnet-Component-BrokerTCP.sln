@@ -27,7 +27,7 @@ Global
 		{E3973196-CBAC-446C-A70A-351FBAA45DE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = BrokerClient\SapoBrokerClient.csproj
+		StartupItem = Samples\Samples.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -23,7 +23,7 @@ java -server \
 -Dfile.encoding=UTF-8 \
 -Dconfig-file=./conf/testparams.xml \
 -cp $classpath \
-Main -a 1
+pt.com.broker.functests.simulation.Main -a 1
 
 # all
 #Main -a 1

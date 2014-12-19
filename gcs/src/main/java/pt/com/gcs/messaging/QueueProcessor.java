@@ -78,7 +78,9 @@ public class QueueProcessor implements SubscriptionProcessor
 		}
 
 		this.queueName = queueName;
-
+		
+		//TODO: With time, remove this kind of dependencies from the code. Try to loose couple at least
+		//the core classes.
 		storage = new BDBStorage(this);
 
 		long cnt = storage.count();
@@ -614,7 +616,6 @@ public class QueueProcessor implements SubscriptionProcessor
 						/*
 						 * Schedule a new delivery if: - the nextCycleTime is earlier than a previous scheduled delivery, or - the nextRun is previous to 'now'
 						 */
-
 						nextRun.set(nextCycleTime);
 						GcsExecutor.schedule(new Runnable()
 						{

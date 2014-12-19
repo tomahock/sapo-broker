@@ -1,53 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>pt.sapo.oss.broker</groupId>
 		<artifactId>sapo-broker-parent</artifactId>
 		<version>4.0.50.Alpha1</version>
-        <relativePath>../../pom.xml</relativePath>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>sapo-broker-simulation-tests</artifactId>
 	<name>sapo-broker-simulation-tests</name>
 	<packaging>jar</packaging>
 	<properties>
-		<mainClass>MainAll</mainClass>
-        <agent-config-path>package/conf/agent_example.config</agent-config-path>
-        <broker-global-config-path>package/conf/broker_global.config</broker-global-config-path>
-        <skipTests>true</skipTests>
+		<mainClass>pt.com.broker.functests.simulation.MainAll</mainClass>
+		<agent-config-path>package/conf/agent_example.config</agent-config-path>
+		<broker-global-config-path>package/conf/broker_global.config</broker-global-config-path>
+		<skipTests>false</skipTests>
 	</properties>
 	<build>
 		<plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>Main</mainClass>
-                    <systemProperties>
-
-                        <systemProperty>
-                            <key>config-file</key>
-                            <value>package/conf/testparams.xml</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>agent-config-path</key>
-                            <value>${agent-config-path}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>broker-global-config-path</key>
-                            <value>${broker-global-config-path}</value>
-                        </systemProperty>
-                    </systemProperties>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>${mainClass}</mainClass>
+					<systemProperties>
+						<systemProperty>
+							<key>config-file</key>
+							<value>package/conf/testparams.xml</value>
+						</systemProperty>
+						<systemProperty>
+							<key>agent-config-path</key>
+							<value>${agent-config-path}</value>
+						</systemProperty>
+						<systemProperty>
+							<key>broker-global-config-path</key>
+							<value>${broker-global-config-path}</value>
+						</systemProperty>
+					</systemProperties>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
@@ -68,73 +68,92 @@
 				</executions>
 			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.17</version>
-                <configuration>
-                   <failIfNoTests>true</failIfNoTests>
-                    <excludes>
-                        <exclude>pt/com/broker/functests/negative/UnknownAuthTypeFailedTest.java</exclude>
-                        <exclude>pt/com/broker/functests/negative/InvalidDestinationNameTest.java</exclude>
-                        <exclude>pt/com/broker/functests/positive/DBRolesAuthenticationTest.java</exclude>
-                        <exclude>pt/com/broker/functests/positive/SslTopicNameSpeficied.java</exclude>
-                        <exclude>pt/com/broker/functests/positive/VirtualQueueNameSpecifiedRemote.java</exclude>
-                    </excludes>
-                   <includes>
-                       <include>pt/com/broker/functests/positive/*.java</include>
-                       <include>pt/com/broker/functests/negative/*.java</include>
-                   </includes>
-                    <skipTests>${skipTests}</skipTests>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<failIfNoTests>true</failIfNoTests>
+					<excludes>
+						<exclude>pt/com/broker/functests/negative/UnknownAuthTypeFailedTest.java</exclude>
+						<exclude>pt/com/broker/functests/negative/InvalidDestinationNameTest.java</exclude>
+						<exclude>pt/com/broker/functests/positive/DBRolesAuthenticationTest.java</exclude>
+						<exclude>pt/com/broker/functests/positive/SslTopicNameSpeficied.java</exclude>
+						<exclude>pt/com/broker/functests/positive/VirtualQueueNameSpecifiedRemote.java</exclude>
+					</excludes>
+					<includes>
+						<include>pt/com/broker/functests/positive/*.java</include>
+						<include>pt/com/broker/functests/negative/*.java</include>
+					</includes>
+					<skipTests>${skipTests}</skipTests>
+					<systemPropertyVariables>
+						<config-file>package/conf/testparams.xml</config-file>
+						<agent-config-path>${agent-config-path}</agent-config-path>
+						<broker-global-config-path>${broker-global-config-path}</broker-global-config-path>
+					</systemPropertyVariables>
+					<systemProperties>
+						<systemProperty>
+							<key>config-file</key>
+							<value>package/conf/testparams.xml</value>
+						</systemProperty>
+						<systemProperty>
+							<key>agent-config-path</key>
+							<value>${agent-config-path}</value>
+						</systemProperty>
+						<systemProperty>
+							<key>broker-global-config-path</key>
+							<value>${broker-global-config-path}</value>
+						</systemProperty>
+					</systemProperties>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-            <version>${project.version}</version>
+			<version>${project.version}</version>
 			<artifactId>sapo-broker-java-client-nio</artifactId>
-        </dependency>
+		</dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <version>${project.version}</version>
-            <artifactId>sapo-broker-sts-client</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+			<artifactId>sapo-broker-sts-client</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <version>${project.version}</version>
-            <artifactId>sapo-broker-java-client</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+			<artifactId>sapo-broker-java-client</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-agent</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.0.18.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.1.2</version>
-        </dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.18.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.1.2</version>
+		</dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
 
-    </dependencies>
+	</dependencies>
 
 </project>

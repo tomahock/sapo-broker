@@ -1,20 +1,24 @@
 package pt.com.gcs.conf;
 
-import org.caudexorigo.Shutdown;
-import org.caudexorigo.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.com.broker.auth.ProviderInfo;
-import pt.com.gcs.conf.agent.AgentConfig;
-import pt.com.gcs.conf.agent.AgentConfig.Ssl;
-import pt.com.gcs.conf.global.BrokerSecurityPolicy;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.Shutdown;
+import org.caudexorigo.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.auth.ProviderInfo;
+import pt.com.gcs.conf.agent.AgentConfig;
+import pt.com.gcs.conf.agent.AgentConfig.Ssl;
+import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 
 /**
  * GcsInfo contains several information about the agent.
@@ -263,8 +267,9 @@ public class GcsInfo {
 	 */
 	public static String getKeystoreLocation()
 	{
-		if (instance.conf.getSsl() != null)
+		if (instance.conf.getSsl() != null){
 			return instance.conf.getSsl().getKeystoreLocation();
+		}
 		return null;
 	}
 
@@ -374,8 +379,15 @@ public class GcsInfo {
 		{
 			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf.agent");
 			Unmarshaller u = jc.createUnmarshaller();
-
-			File f = new File(filePath);
+			
+			URL fileUrl = getClass().getClassLoader().getResource(filePath);
+			File f = null;
+			if(fileUrl != null){
+				f = new File(fileUrl.toURI());
+			} else {
+				f = new File(filePath);
+			}
+			
 			boolean b = f.exists();
 			if (!b)
 			{
@@ -392,7 +404,7 @@ public class GcsInfo {
 			}
 			agentName = prop;
 		}
-		catch (JAXBException e)
+		catch (JAXBException | URISyntaxException e)
 		{
 			// Throwable t = ErrorAnalyser.findRootCause(e);
 			log.error("Fatal error: {}", e.getMessage());

@@ -431,7 +431,7 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 			writeInvalidDestinationFault(channel, actionId, destination);
 			return;
 		}
-
+		//FIXME: This comparisson can be done in the above method isValidDestination
 		if (StringUtils.contains(destination, "@"))
 		{
 			writeInvalidDestinationFault(channel, actionId, destination);

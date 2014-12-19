@@ -3,8 +3,14 @@ package pt.com.gcs.messaging;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TopicStatistics
 {
+	
+	private static final Logger log = LoggerFactory.getLogger(TopicStatistics.class);
+	
 	// delivered
 	private final AtomicLong tDeliveredMessages = new AtomicLong(0);
 	private final AtomicBoolean tDeliveredPublish = new AtomicBoolean(true);
@@ -12,6 +18,7 @@ public class TopicStatistics
 	public final void newTopicMessageDelivered()
 	{
 		tDeliveredMessages.incrementAndGet();
+		log.debug("Total delivered messages: {}", tDeliveredMessages.get());
 	}
 
 	public long getTopicMessagesDeliveredAndReset()

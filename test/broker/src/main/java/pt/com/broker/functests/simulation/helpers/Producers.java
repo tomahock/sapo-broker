@@ -119,6 +119,7 @@ public class Producers
 			try
 			{
 				pi.brokerClient = new BrokerClient(hostInfo.getHostname(), hostInfo.getPort(), protocolType);
+				pi.brokerClient.connect();
 
 				pi.producerName = appName + i;
 

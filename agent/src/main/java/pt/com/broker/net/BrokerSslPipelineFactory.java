@@ -4,6 +4,7 @@ package pt.com.broker.net;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
@@ -14,6 +15,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslHandler;
+
 import org.caudexorigo.Shutdown;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,6 +44,10 @@ public class BrokerSslPipelineFactory
 			{
 				log.error("keystore location is blank");
 				return;
+			}
+			URL keystoreUrl = getClass().getClassLoader().getResource(keyStoreLocation);
+			if(keystoreUrl != null){
+				keyStoreLocation = keystoreUrl.toURI().getPath();
 			}
 
 			String keyStorePasswordStr = GcsInfo.getKeystorePassword();
@@ -76,7 +82,7 @@ public class BrokerSslPipelineFactory
 
 			kmf.init(keyStore, KEYPW);
 
-			sslContext = javax.net.ssl.SSLContext.getInstance("SSLv3");
+			sslContext = javax.net.ssl.SSLContext.getInstance("TLSv1");
 
 			sslContext.init(kmf.getKeyManagers(), null, null);
 		}
@@ -98,6 +104,7 @@ public class BrokerSslPipelineFactory
                 ChannelPipeline pipeline = socketChannel.pipeline();
 
                 SSLContext sslContext = getSSLContext();
+                log.debug("Incoming SSL connection from: {}:{}", socketChannel.remoteAddress().getAddress().getHostAddress(), socketChannel.remoteAddress().getPort());
                 SSLEngine sslEngine = sslContext.createSSLEngine();
                 sslEngine.setUseClientMode(false);
                 SslHandler sslHandler = new SslHandler(sslEngine);

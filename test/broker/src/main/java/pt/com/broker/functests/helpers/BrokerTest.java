@@ -206,7 +206,7 @@ public abstract class BrokerTest extends Test
     @Parameterized.Parameters()
     public static Collection getProtocolTypes() {
         return Arrays.asList(new Object[][]{
-            {NetProtocolType.JSON},
+//            {NetProtocolType.JSON},
             {NetProtocolType.PROTOCOL_BUFFER},
             {NetProtocolType.THRIFT},
             {NetProtocolType.SOAP},
