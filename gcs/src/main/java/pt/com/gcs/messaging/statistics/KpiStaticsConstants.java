@@ -1,4 +1,4 @@
-package pt.com.gcs.messaging;
+package pt.com.gcs.messaging.statistics;
 
 public final class KpiStaticsConstants {
 	
@@ -40,5 +40,7 @@ public final class KpiStaticsConstants {
 	public static final String CONNECTION_TCP_LEGACY_METRIC = "tcp";
 	public static final String CONNECTION_SSL_METRIC = "ssl";
 	public static final String SYSTEM_FAULTS_METRIC = "faults";
+	public static final String SUBSCRIPTIONS_METRIC = "subscriptions";
+	public static final String QUEUED_MESSAGES_METRIC = "queued-messages";
 
 }

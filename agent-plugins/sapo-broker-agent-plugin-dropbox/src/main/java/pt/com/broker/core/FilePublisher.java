@@ -286,6 +286,7 @@ public class FilePublisher
 
 		if (publish)
 		{
+			//TODO: Check this construction and add it to the stats module.
 			StringBuilder sb = new StringBuilder();
 			String topic = String.format("/system/stats/dropbox/#%s#", GcsInfo.getAgentName());
 			sb.append(String.format("<mqinfo date=\"%s\" agent-name=\"%s\">", ISO8601.format(new Date(now)), GcsInfo.getAgentName()));

@@ -60,9 +60,9 @@ public class BrokerClientTest {
 
         BrokerClient bk = new BrokerClient("localhost",3323);
 
-        bk.addServer("localhost",3324);
-        bk.addServer("localhost",3325);
-        bk.addServer("localhost",3326);
+//        bk.addServer("localhost",3324);
+//        bk.addServer("localhost",3325);
+//        bk.addServer("localhost",3326);
 
 
         Future<HostInfo> f = bk.connectAsync();

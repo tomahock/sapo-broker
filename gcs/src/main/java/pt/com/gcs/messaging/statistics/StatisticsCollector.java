@@ -1,4 +1,4 @@
-package pt.com.gcs.messaging;
+package pt.com.gcs.messaging.statistics;
 
 import java.util.Date;
 import java.util.List;
@@ -9,6 +9,11 @@ import org.slf4j.Logger;
 
 import pt.com.broker.types.stats.ChannelStats;
 import pt.com.broker.types.stats.MiscStats;
+import pt.com.gcs.messaging.GlobalStatisticsPublisher;
+import pt.com.gcs.messaging.QueueProcessor;
+import pt.com.gcs.messaging.QueueProcessorList;
+import pt.com.gcs.messaging.TopicProcessor;
+import pt.com.gcs.messaging.TopicProcessorList;
 import pt.com.gcs.stats.ChannelStatistics;
 import pt.com.gcs.stats.QueueStatistics;
 import pt.com.gcs.stats.Statistics;
@@ -31,9 +36,9 @@ public class StatisticsCollector implements Runnable {
 			date = new Date();
 			Statistics stats = getStatistics();
 			KpiGlobalStatisticsPublisher kpiStatsPublisher = new KpiGlobalStatisticsPublisher(date, stats);
-			GlobalStatisticsPublisher globalStatsPublisher = new GlobalStatisticsPublisher(oldDate, date, stats);
+//			GlobalStatisticsPublisher globalStatsPublisher = new GlobalStatisticsPublisher(oldDate, date, stats);
 			kpiStatsPublisher.publishStatistics();
-			globalStatsPublisher.publishStatistics();
+//			globalStatsPublisher.publishStatistics();
 		} catch(Exception e){
 			log.error("Unhandled exception caught collecting agent statistics.", e);
 		}

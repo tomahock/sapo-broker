@@ -123,9 +123,9 @@ public class BrokerConsumer
 			}
 		};
 
-		BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 120, 120, TimeUnit.SECONDS);
-
-		BrokerExecutor.scheduleWithFixedDelay(queue_consumer_counter, 120, 120, TimeUnit.SECONDS);
+//		BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 120, 120, TimeUnit.SECONDS);
+//
+//		BrokerExecutor.scheduleWithFixedDelay(queue_consumer_counter, 120, 120, TimeUnit.SECONDS);
 	}
 
 	public void listen(NetSubscribe sb, ChannelHandlerContext context, boolean ackRequired)

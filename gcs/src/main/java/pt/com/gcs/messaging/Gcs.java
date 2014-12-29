@@ -1,5 +1,18 @@
 package pt.com.gcs.messaging;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -8,22 +21,10 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ChannelFactory;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoop;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import org.caudexorigo.Shutdown;
-import org.caudexorigo.concurrent.CustomExecutors;
 import org.apache.commons.lang3.StringUtils;
-
+import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,10 @@ import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetPublish;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.conf.GlobalConfig;
+import pt.com.gcs.messaging.statistics.KpiQueueConsumerCounter;
+import pt.com.gcs.messaging.statistics.KpiQueuesSize;
+import pt.com.gcs.messaging.statistics.KpiTopicConsumerCounter;
+import pt.com.gcs.messaging.statistics.StatisticsCollector;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsDecoder;
 import pt.com.gcs.net.codec.GcsEncoder;
@@ -358,12 +363,17 @@ public class Gcs
 			
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
 			
+			//TODO: Place all stats tasks in the same class that manages them.
 			//Statistics
 			GcsExecutor.scheduleWithFixedDelay(new StatisticsCollector(), 60, 60, TimeUnit.SECONDS);
+			GcsExecutor.scheduleWithFixedDelay(new KpiQueueConsumerCounter(), 120, 120, TimeUnit.SECONDS);
+			GcsExecutor.scheduleWithFixedDelay(new KpiTopicConsumerCounter(), 120, 120, TimeUnit.SECONDS);
+//			BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 120, 120, TimeUnit.SECONDS);
 			//This one go to stats as well
 			GcsExecutor.scheduleWithFixedDelay(new QueueLister(), 5, 5, TimeUnit.MINUTES);
 			//This one must be on the stats as well
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
+			GcsExecutor.scheduleWithFixedDelay(new KpiQueuesSize(), 5, 5, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
 

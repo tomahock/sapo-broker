@@ -1,4 +1,4 @@
-package pt.com.gcs.messaging;
+package pt.com.gcs.messaging.statistics;
 
 import java.util.Date;
 import java.util.List;
@@ -7,10 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetBrokerMessage;
-import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.stats.ChannelStats;
-import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.stats.ChannelStatistics;
 import pt.com.gcs.stats.QueueStatistics;
@@ -21,10 +17,6 @@ import pt.sapo.socialbus.common.kpi.EventBuilder;
 import pt.sapo.socialbus.common.kpi.data.Event;
 import pt.sapo.socialbus.common.kpi.data.MetricItem;
 import pt.sapo.socialbus.common.kpi.data.MetricType;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 /**
@@ -48,21 +40,7 @@ public class KpiGlobalStatisticsPublisher {
 		kpiEvents.addAll(getTopicInfoKpis());
 		kpiEvents.addAll(getChannelInfoKpis());
 		kpiEvents.addAll(getMiscInformationKpis());
-		publishKpiEvents(kpiEvents);
-	}
-	
-	private void publishKpiEvents(List<Event> events){
-		log.debug("Publishing #{} KpiEvents.", events.size());
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-		for(Event event: events){
-			try {
-				NetPublish np = new NetPublish("/sapo/event-agg-kpi", DestinationType.TOPIC, new NetBrokerMessage(objectMapper.writeValueAsString(event)));
-				Gcs.publish(np);
-			} catch (JsonProcessingException e) {
-				log.error("Error encoding event object to json. Event object: {}", event.toString(), e);
-			}
-		}
+		KpiStatistics.publishKpiEvents(kpiEvents);
 	}
 	
 	private EventBuilder getEventBuilder(String destinationType){

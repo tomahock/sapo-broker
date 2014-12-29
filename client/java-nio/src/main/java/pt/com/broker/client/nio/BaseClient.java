@@ -57,7 +57,7 @@ public abstract class BaseClient{
      * @param port a int.
      */
     public BaseClient(String host, int port) {
-
+    	//Changed the default protocol to PROTOBUF in order to support the old servers.
         this(new HostInfo(host, port), NetProtocolType.JSON);
 
 
