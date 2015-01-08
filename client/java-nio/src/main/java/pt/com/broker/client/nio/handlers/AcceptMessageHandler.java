@@ -84,4 +84,5 @@ public class AcceptMessageHandler extends SimpleChannelInboundHandler<NetMessage
     public void setManager(PendingAcceptRequestsManager manager) {
         this.manager = manager;
     }
+    
 }

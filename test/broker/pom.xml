@@ -15,7 +15,8 @@
 		<mainClass>pt.com.broker.functests.simulation.MainAll</mainClass>
 		<agent-config-path>package/conf/agent_example.config</agent-config-path>
 		<broker-global-config-path>package/conf/broker_global.config</broker-global-config-path>
-		<skipTests>false</skipTests>
+		<tests.skip>false</tests.skip>
+		<tests.agent.launch>true</tests.agent.launch>
 	</properties>
 	<build>
 		<plugins>
@@ -82,10 +83,11 @@
 						<exclude>pt/com/broker/functests/positive/VirtualQueueNameSpecifiedRemote.java</exclude>
 					</excludes>
 					<includes>
-						<include>pt/com/broker/functests/positive/*.java</include>
-						<include>pt/com/broker/functests/negative/*.java</include>
+						<include>pt/com/broker/functests/positive/Multiple1NTopic.java</include>
+						<!-- <include>pt/com/broker/functests/positive/*.java</include>
+						<include>pt/com/broker/functests/negative/*.java</include>-->
 					</includes>
-					<skipTests>${skipTests}</skipTests>
+					<skipTests>${tests.skip}</skipTests>
 					<systemPropertyVariables>
 						<config-file>package/conf/testparams.xml</config-file>
 						<agent-config-path>${agent-config-path}</agent-config-path>

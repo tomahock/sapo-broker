@@ -36,6 +36,8 @@ public abstract class BaseClient{
 
     BindingSerializer serializer = null;
     NetProtocolType protocolType = NetProtocolType.JSON;
+    
+    
 
 
     /**
@@ -58,7 +60,7 @@ public abstract class BaseClient{
      */
     public BaseClient(String host, int port) {
     	//Changed the default protocol to PROTOBUF in order to support the old servers.
-        this(new HostInfo(host, port), NetProtocolType.JSON);
+        this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER);
 
 
     }
@@ -264,7 +266,7 @@ public abstract class BaseClient{
             throw new RuntimeException("Was not possible to get an active channel");
         }
 
-        log.debug("Selected channel is: "+ h);
+//        log.debug("Selected channel is: "+ h);
 
         return h;
     }

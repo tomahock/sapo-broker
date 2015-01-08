@@ -13,7 +13,7 @@ public class EmptyDestinationNameInPublication extends GenericNetMessageNegative
 
         setName("Empty destination name in publication");
 
-
+        
 		NetPublish publish = new NetPublish("", DestinationType.TOPIC, new NetBrokerMessage("content"));
 		NetAction action = new NetAction(ActionType.PUBLISH);
 		action.setPublishMessage(publish);

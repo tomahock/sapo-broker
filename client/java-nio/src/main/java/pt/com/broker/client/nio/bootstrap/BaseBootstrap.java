@@ -12,6 +12,9 @@ import pt.com.broker.client.nio.utils.ChannelDecorator;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  *  Copyright (c) 2014, SAPO
@@ -21,12 +24,12 @@ import java.util.concurrent.TimeUnit;
  * @version $Id: $Id
  */
 public abstract class BaseBootstrap {
+	
+	private static final Logger log = LoggerFactory.getLogger(BaseBootstrap.class);
 
     private final BaseChannelInitializer channelInitializer;
 
     private final EventLoopGroup group = new NioEventLoopGroup();
-
-
 
     /**
      * <p>Constructor for BaseBootstrap.</p>
@@ -47,48 +50,34 @@ public abstract class BaseBootstrap {
      * @return a {@link io.netty.channel.ChannelFuture} object.
      */
     public ChannelFuture connect(final HostInfo hostInfo){
-
         io.netty.bootstrap.Bootstrap boot = getNewInstance();
-
         boot.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,hostInfo.getConnectTimeout());
-
-
         InetSocketAddress socketAddress = new InetSocketAddress(hostInfo.getHostname(),hostInfo.getPort());
-
         ChannelFuture f = boot.connect(socketAddress);
-
         f.addListener(new ChannelFutureListener() {
+        	
             @Override
             public void operationComplete(ChannelFuture f) throws Exception {
-
                 if (f.isSuccess()) {
-
                     ChannelDecorator channel = new ChannelDecorator(f.channel());
                     channel.setHost(hostInfo);
                     hostInfo.setChannel(channel);
                     hostInfo.setStatus(HostInfo.STATUS.OPEN);
-
                     f.channel().closeFuture().addListener(new ChannelFutureListener() {
 
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
-
                             hostInfo.setStatus(HostInfo.STATUS.CLOSED);
                             hostInfo.setChannel(null);
                         }
+                        
                     });
-
-
-
-
                 } else {
                     hostInfo.setStatus(HostInfo.STATUS.CLOSED);
                 }
-
-
             }
+            
         });
-
         return f;
     }
 

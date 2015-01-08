@@ -4,7 +4,7 @@
 			 // This sends everything else to /public 
 			<id>nexus</id>
 			<mirrorOf>*</mirrorOf>
-			<url>http://repository.sl.pt/mvn/content/groups/public</url>
+			<url>http://repository.sl.pt/nexus/content/groups/public</url>
 		</mirror>
 	</mirrors -->
 	<profiles>
@@ -15,7 +15,7 @@
 			<repositories>
 				<repository>
 					<id>central</id>
-					<url>http://repository.sl.pt/mvn/content/groups/public</url>
+					<url>http://repository.sl.pt/nexus/content/groups/public</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
@@ -27,7 +27,7 @@
 			<pluginRepositories>
 				<pluginRepository>
 					<id>central</id>
-					<url>http://repository.sl.pt/mvn/content/groups/public</url>
+					<url>http://repository.sl.pt/nexus/content/groups/public</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>

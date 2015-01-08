@@ -3,9 +3,12 @@ package pt.com.broker.client.nio.server;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
+import pt.com.broker.client.nio.events.ConnectionEventListener;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
@@ -38,10 +41,14 @@ public class HostContainer extends Observable {
 
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-
     private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
 
     SelectServerStrategy strategy = new RoundRobinStrategy();
+    
+    /**
+     * Optional Connection Event Listeners to keep track of connection changes.
+     * */
+    private List<ConnectionEventListener> connectionEventListeners =  new ArrayList<ConnectionEventListener>();
 
 
     /**
@@ -149,72 +156,51 @@ public class HostContainer extends Observable {
 
 
     private Future<HostInfo> connect(final Collection<HostInfo> servers) {
-
         return executorService.submit(new Callable<HostInfo>() {
 
             @Override
             public HostInfo call() throws Exception {
-
-
                 for (final HostInfo host : servers) {
-
-
                     service.submit(new Callable<HostInfo>() {
 
                         @Override
                         public HostInfo call() throws Exception {
-
                             ChannelFuture f = connectToHost(host);
-
                             final CountDownLatch latch = new CountDownLatch(1);
-
                             f.addListener(new ChannelFutureListener() {
+                            	
                                 @Override
                                 public void operationComplete(ChannelFuture future) throws Exception {
-
                                     latch.countDown();
-
                                 }
+                                
                             });
-
                             latch.await();
-
                             return host;
-
-
                         }
-
+                        
                     });
 
                 }
-
-
                 HostInfo host = null;
-
                 int count = servers.size();
-
-
-                    /* @todo server connected and isWritable */
+                /* @todo server connected and isWritable */
                 do {
-
                     host = service.take().get();
-
                     count--;
                 } while ((host == null || !host.isActive()) && count > 0);
-
-
                 if (host == null) {
                     throw new Exception("Could not connect");
                 }
-
                 while (!host.isActive()) {
                     Thread.sleep(500);
                 }
-
+                //Call the listeners
+                for(ConnectionEventListener eventListener: connectionEventListeners){
+                	eventListener.connected(host);
+                }
                 return host;
-
             }
-
 
         });
 
@@ -243,9 +229,11 @@ public class HostContainer extends Observable {
                                 }
 
                                 synchronized (hostContainer) {
-                                    log.debug("NotifyObservers: " + host);
                                     hostContainer.setChanged();
                                     hostContainer.notifyObservers(new ReconnectEvent(host));
+                                }
+                                for(ConnectionEventListener eventListener: connectionEventListeners){
+                                	eventListener.reconnected(host);
                                 }
 
                             }
@@ -471,68 +459,47 @@ public class HostContainer extends Observable {
     }
 
     private ChannelFuture connectToHost(final HostInfo host) throws Exception {
-
-
         synchronized (host) {
-
             if (host.getStatus() != HostInfo.STATUS.CLOSED) {
                 throw new RuntimeException("Cannot open an host that is not closed");
             }
-
             host.setStatus(HostInfo.STATUS.CONNECTING);
-
             final ChannelFuture f = bootstrap.connect(host);
-
-
             f.addListener(new ChannelFutureListener() {
 
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
-
                     synchronized (host) {
                         if (!future.isSuccess()) {
-
                             host.reconnectAttempt();
-
                             log.debug("Error connecting to server: " + host);
                             reconnect(host);
-
                             return;
                         }
-
                         Channel channel = new ChannelDecorator(f.channel());
-
-
                         host.resetReconnectLimit();
-
                         channel.closeFuture().addListener(new ChannelFutureListener() {
 
                             @Override
                             public void operationComplete(ChannelFuture future) throws Exception {
-
                                 inactiveHost(host);
-
+                                //Call the event listeners before reconnecting
+                                for(ConnectionEventListener listener: connectionEventListeners){
+                            		listener.disconnected(host);
+                            	}
                                 if (!future.isCancelled()) {
                                     reconnect(host);
                                 }
                             }
 
                         });
-
                         addConnectedHost(host);
-
                         log.debug("Connected to server: " + host);
-
-
                     }
-
                 }
-
-
             });
+            
             return f;
-
-
         }
     }
 
@@ -587,11 +554,9 @@ public class HostContainer extends Observable {
      * @return a int.
      */
     public int getConnectedSize() {
-
         synchronized (connectedHosts) {
             return connectedHosts.size();
         }
-
     }
 
     /**
@@ -601,6 +566,16 @@ public class HostContainer extends Observable {
         scheduler.shutdown();
         executorService.shutdown();
     }
+    
+    /**
+     * Adds a new ConnectionEventListener to the HostContainer. All event listeners are called
+     * when the triggered event occurs.
+     * 
+     * @param connectionEventListener {@link pt.com.broker.client.nio.events.ConnectionEventListener} object.
+     * */
+    public void addConnectionEventListener(ConnectionEventListener connectionEventListener) {
+		this.connectionEventListeners.add(connectionEventListener);
+	}
 
 
 }

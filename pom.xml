@@ -33,7 +33,7 @@
     <repositories>
         <repository>
             <id>central</id>
-            <url>http://repository.sl.pt/mvn/content/groups/public</url>
+            <url>http://repository.sl.pt/nexus/content/groups/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

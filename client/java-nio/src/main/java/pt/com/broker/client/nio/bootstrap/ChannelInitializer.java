@@ -1,6 +1,10 @@
 package pt.com.broker.client.nio.bootstrap;
 
+import java.io.IOException;
+
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.ssl.SslHandler;
 import pt.com.broker.client.nio.codecs.HeartbeatHandler;
@@ -17,6 +21,9 @@ import pt.com.broker.types.BindingSerializer;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Created by luissantos on 06-05-2014.
@@ -27,6 +34,8 @@ import javax.net.ssl.SSLEngine;
 public class ChannelInitializer extends BaseChannelInitializer {
 
     
+	static final Logger log = LoggerFactory.getLogger(ChannelInitializer.class);
+	
     private final HeartbeatHandler heartbeatHandler = new HeartbeatHandler();
     private final PongMessageHandler pongMessageHandler;
     private final ReceiveFaultHandler faultHandler;
@@ -104,8 +113,8 @@ public class ChannelInitializer extends BaseChannelInitializer {
             pipeline.addFirst("ssl", new SslHandler(engine, false) );
 
         }
-
-        pipeline.addLast("heartbeat_handler", heartbeatHandler);
+        //FIXME: Add a proper heartbeat handler to the client. This one simply won't work.
+//        pipeline.addLast("heartbeat_handler", heartbeatHandler);
 
 
         /* add message receive handler */
@@ -114,6 +123,17 @@ public class ChannelInitializer extends BaseChannelInitializer {
         pipeline.addLast("broker_pong_handler",pongMessageHandler);
         pipeline.addLast("broker_fault_handler", faultHandler);
         pipeline.addLast("broker_accept_handler",acceptMessageHandler);
+        pipeline.addLast("exception_catcher", new ChannelHandlerAdapter() {
+
+			@Override
+			public void exceptionCaught(ChannelHandlerContext ctx,
+					Throwable cause) throws Exception {
+				if(!(cause instanceof IOException)){
+					log.error("*************Unexpected exception caught*********************", cause);
+				}
+			}
+        	
+		});
 
     }
 

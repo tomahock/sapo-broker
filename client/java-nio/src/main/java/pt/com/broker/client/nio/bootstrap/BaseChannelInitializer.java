@@ -5,8 +5,10 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.MessageToByteEncoder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
 import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
 import pt.com.broker.types.BindingSerializer;
@@ -72,10 +74,6 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
                 out.writeBytes(data);
             }
         });
-
-
-
-
     }
 
 
@@ -96,4 +94,11 @@ public abstract class BaseChannelInitializer extends io.netty.channel.ChannelIni
     public void setOldFraming(boolean oldFraming) {
         this.oldFraming = oldFraming;
     }
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+			throws Exception {
+		log.debug("********Unexpected exception caught.*********", cause);
+	}
+    
 }

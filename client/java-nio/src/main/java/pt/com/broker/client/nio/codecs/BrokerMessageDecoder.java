@@ -38,46 +38,29 @@ public class BrokerMessageDecoder extends ByteToMessageDecoder{
      * @param serializer a {@link pt.com.broker.types.BindingSerializer} object.
      */
     public BrokerMessageDecoder(BindingSerializer serializer){
-
         this.serializer = serializer;
-
     }
 
     /** {@inheritDoc} */
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-
-
         switch (state){
-
             case Header:
                 if(in.readableBytes() < 8 ){
                     return;
                 }
-
                 decodeHeader(in);
-
                 state = State.Body;
-            break;
-
+                break;
             case Body:
-
                 if (in.readableBytes() < bodyLen ) {
                     return;
                 }
-
                 NetMessage msg = decodeBody(in);
-
                 out.add(msg);
-
-
-
                 state = State.Header;
-
-            break;
+                break;
         }
-
-
     }
 
 
@@ -87,15 +70,11 @@ public class BrokerMessageDecoder extends ByteToMessageDecoder{
      * @param in a {@link io.netty.buffer.ByteBuf} object.
      */
     protected void decodeHeader(ByteBuf in){
-
         /* discard encoding type */
         in.readShort();
-
         /* discard encoding version */
         in.readShort();
-
         bodyLen = in.readInt();
-
     }
 
     /**
@@ -105,14 +84,9 @@ public class BrokerMessageDecoder extends ByteToMessageDecoder{
      * @return a {@link pt.com.broker.types.NetMessage} object.
      */
     protected NetMessage decodeBody(ByteBuf in){
-
        byte[] body = new byte[bodyLen];
-
        in.readBytes(body);
-
        return serializer.unmarshal(body);
-
-
     }
 
 }

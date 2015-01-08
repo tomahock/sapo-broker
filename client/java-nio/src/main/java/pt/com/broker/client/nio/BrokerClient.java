@@ -15,6 +15,7 @@ import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.ConnectionEventListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
@@ -48,13 +49,13 @@ public class BrokerClient extends BaseClient implements Observer {
     private PendingAcceptRequestsManager acceptRequestsManager;
 
     private ChannelInitializer channelInitializer;
-
+    
+    
 
     ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
     private final CompletionService<HostInfo> unsubcribeService = new ExecutorCompletionService<HostInfo>(executorService);
-
 
     /**
      * <p>Constructor for BrokerClient.</p>
@@ -101,25 +102,16 @@ public class BrokerClient extends BaseClient implements Observer {
      * <p>init.</p>
      */
     protected void init(){
-
+    	//FIXME: The PongConsumerManager is always created new. Find a way to use the provided one.
         setPongConsumerManager(new PongConsumerManager());
         setConsumerManager(new ConsumerManager());
-
         channelInitializer  = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager());
-
-
         channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
-
         setBootstrap(new Bootstrap(channelInitializer));
-
         setAcceptRequestsManager(new PendingAcceptRequestsManager());
-
         channelInitializer.setAcceptRequestsManager(getAcceptRequestsManager());
-
         HostContainer hostContainer = new HostContainer(getBootstrap());
-
         hostContainer.addObserver(this);
-
         setHosts(hostContainer);
     }
 
@@ -814,11 +806,18 @@ public class BrokerClient extends BaseClient implements Observer {
 
 
     }
-
-
-
-
-
+    
+    /**
+     * Adds a new ConnectionEventListener to the HostContainer. All event listeners are called
+     * when the triggered event occurs.
+     * 
+     * This method is just a proxy to the HostContainer method.
+     * 
+     * @param connectionEventListener {@link pt.com.broker.client.nio.events.ConnectionEventListener} object.
+     * */
+    public void addConnectionEventListener(ConnectionEventListener connectionEventListener) {
+		this.hosts.addConnectionEventListener(connectionEventListener);
+	}
 
 }
 

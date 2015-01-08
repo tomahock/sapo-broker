@@ -10,6 +10,9 @@ import pt.com.broker.client.nio.server.HostInfo;
 
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by luissantos on 23-04-2014.
  *
@@ -17,6 +20,8 @@ import java.util.concurrent.TimeUnit;
  * @version $Id: $Id
  */
 public class Bootstrap extends BaseBootstrap {
+	
+	static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
 
     /**
@@ -52,24 +57,21 @@ public class Bootstrap extends BaseBootstrap {
     @Override
     public ChannelFuture connect(final HostInfo hostInfo) {
         ChannelFuture f = super.connect(hostInfo);
-
-
         f.addListener(new ChannelFutureListener() {
+        	
             @Override
             public void operationComplete(ChannelFuture f) throws Exception {
 
                 if (f.isSuccess()) {
-
+                	log.debug("Adding iddle state handler to the pipeline. Reader idle timeout: {}. Writter idle timeout: {}", hostInfo.getReaderIdleTime(), hostInfo.getWriterIdleTime());
                     IdleStateHandler idleStateHandler = new IdleStateHandler(hostInfo.getReaderIdleTime(), hostInfo.getWriterIdleTime(), 0, TimeUnit.MILLISECONDS);
-
-                    f.channel().pipeline().addBefore("heartbeat_handler", "idle_state_handler", idleStateHandler);
-
+//                    f.channel().pipeline().addBefore("heartbeat_handler", "idle_state_handler", idleStateHandler);
+                    f.channel().pipeline().addFirst(idleStateHandler);
 
                 }
             }
+            
         });
-
-
         return f;
     }
 }

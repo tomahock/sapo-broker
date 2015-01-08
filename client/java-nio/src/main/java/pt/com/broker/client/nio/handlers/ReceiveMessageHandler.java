@@ -91,7 +91,7 @@ public class ReceiveMessageHandler extends SimpleChannelInboundHandler<NetMessag
 
     private void deliverNotification(ChannelHandlerContext ctx, NetMessage msg) throws Throwable {
 
-        log.debug("Message Received");
+//        log.debug("Message Received");
 
         manager.deliverMessage(msg,getHost(ctx.channel()));
 

@@ -1,4 +1,4 @@
-package pt.com.broker.functests;
+package pt.com.broker.client.nio.ignore;
 
 import java.io.UnsupportedEncodingException;
 
@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.LogConnectionEventListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction.DestinationType;
@@ -14,12 +15,13 @@ import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 
+//TODO: This class does not bellong here. Change this behaviour into a test
 public class ResubscriptionTest {
 	
-	private static final String BROKER_HOST = "127.0.0.1";
+	private static final String BROKER_HOST = "localhost";
 	private static final Integer BROKER_PORT = 3323;
-	private static final String BROKER_TOPIC = "/topic/test";
-	private static final String BROKER_QUEUE = "/queue/test";
+	private static final String BROKER_TOPIC = "/test";
+	private static final String BROKER_QUEUE = "/sapo/broker/dev/queue/test";
 	
 	public static class TopicProducer implements Runnable {
 		
@@ -27,6 +29,7 @@ public class ResubscriptionTest {
 		
 		public TopicProducer(){
 			bClient = new BrokerClient(BROKER_HOST, BROKER_PORT, NetProtocolType.PROTOCOL_BUFFER);
+			bClient.addConnectionEventListener(new LogConnectionEventListener());
 			bClient.connect();
 			new Thread(this).start();
 		}
@@ -54,6 +57,7 @@ public class ResubscriptionTest {
 		
 		public TopicConsumer(){
 			bClient = new BrokerClient(BROKER_HOST, BROKER_PORT, NetProtocolType.PROTOCOL_BUFFER);
+			bClient.addConnectionEventListener(new LogConnectionEventListener());
 			bClient.connect();
 			try {
 				consume();
@@ -69,8 +73,7 @@ public class ResubscriptionTest {
 				@Override
 				public void deliverMessage(NetMessage message, HostInfo host)
 						throws Throwable {
-					// TODO Auto-generated method stub
-					log.debug("Received a new message");
+//					log.debug("Received a new message");
 				}
 			});
 		}
@@ -109,6 +112,7 @@ public class ResubscriptionTest {
 		
 		public QueueConsumer() {
 			bClient = new BrokerClient(BROKER_HOST, BROKER_PORT, NetProtocolType.PROTOCOL_BUFFER);
+			bClient.addConnectionEventListener(new LogConnectionEventListener());
 			bClient.connect();
 			try {
 				consume();
@@ -137,10 +141,10 @@ public class ResubscriptionTest {
 	}
 	
 	public static void main(String[] args){
-//		TopicProducer p = new TopicProducer();
-//		TopicConsumer c = new TopicConsumer();
-		QueueProducer qp = new QueueProducer();
-		QueueConsumer qc = new QueueConsumer();
+		TopicProducer p = new TopicProducer();
+		TopicConsumer c = new TopicConsumer();
+//		QueueProducer qp = new QueueProducer();
+//		QueueConsumer qc = new QueueConsumer();
 	}
 
 }
