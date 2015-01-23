@@ -1,5 +1,7 @@
 package pt.com.broker.functests;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -9,7 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,10 +207,8 @@ public abstract class Test extends BaseTest
 
     @org.junit.Test()
     public final void run(){
-
         Boolean result =  run(1, new TestsResults());
-        //FIXME: Remove the deprecated class. Replace by org.junit.Assert.assertTrue
-        Assert.assertTrue(result);
+        assertTrue(result);
     }
 
 

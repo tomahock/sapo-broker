@@ -63,9 +63,10 @@ AC_ARG_ENABLE(
 )
 AM_CONDITIONAL(WITH_TEST, test "${enable_tests}" != "no")
 
-ACX_ARG_VAR_DEFAULT([TEST_BROKER_HOST], [broker host to connect to while testing], [broker.labs.sapo.pt])
+#ACX_ARG_VAR_DEFAULT([TEST_BROKER_HOST], [broker host to connect to while testing], [broker.labs.sapo.pt])
+ACX_ARG_VAR_DEFAULT([TEST_BROKER_HOST], [broker host to connect to while testing], [127.0.0.1])
 
-ACX_ARG_VAR_DEFAULT([TEST_BROKER_TCP_PORT], [broker tcp port to connect to while testing], [3323])
+ACX_ARG_VAR_DEFAULT([TEST_BROKER_TCP_PORT], [broker tcp port to connect to while testing], [3423])
 
 ACX_ARG_VAR_DEFAULT([TEST_BROKER_QUEUE_ITERATIONS], [number of messages to produce and consume while testing], [10000])
 

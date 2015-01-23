@@ -1,6 +1,7 @@
 package pt.com.broker.functests.conf;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +10,8 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import org.caudexorigo.Shutdown;
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +38,13 @@ public class ConfigurationInfo
 		{
 			jc = JAXBContext.newInstance("pt.com.broker.functests.conf");
 			u = jc.createUnmarshaller();
-			File f = new File(filename);
+			URL configFileUrl = ConfigurationInfo.class.getClassLoader().getResource(filename);
+			File f = new File(configFileUrl.getFile());
 			boolean b = f.exists();
 			if (!b)
 			{
 				log.error("Configuration file (" + filename + ") was not found.");
+				System.exit(-1);
 			}
 			testParams = (TestParams) u.unmarshal(f);
 		}

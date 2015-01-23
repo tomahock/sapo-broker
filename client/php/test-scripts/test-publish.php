@@ -2,7 +2,7 @@
 <?php
 
 // instantiate the broker handle
-$broker = broker_init("127.0.0.1", SB_PORT, SB_TCP, SB_PROTOBUF);
+$broker = broker_init("127.0.0.1", 3323, SB_TCP, SB_PROTOBUF);
 $msg = "Hello, world!";
 
 // publish

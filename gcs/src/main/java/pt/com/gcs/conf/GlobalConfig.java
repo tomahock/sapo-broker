@@ -61,7 +61,6 @@ public class GlobalConfig
 
 	private GlobalConfig()
 	{
-		
 		try {
 			String configFile = GcsInfo.getGlobalConfigFilePath();
 			String globalConfigPath = null;

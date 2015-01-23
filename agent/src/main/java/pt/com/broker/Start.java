@@ -20,6 +20,9 @@ import java.util.ServiceLoader;
  */
 public class Start
 {
+	
+	public static final String AGENT_CONFIG_PATH_PROPERTY 			= "agent-config-path";
+	public static final String GLOBAL_CONFIG_PATH_PROPERTY 			= "broker-global-config-path";
 
     private static final Logger log = LoggerFactory.getLogger(Start.class);
 

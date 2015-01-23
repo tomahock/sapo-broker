@@ -40,6 +40,7 @@ public class BrokerSslPipelineFactory
 			KeyStore keyStore = KeyStore.getInstance("JKS");
 
 			String keyStoreLocation = GcsInfo.getKeystoreLocation();
+			log.debug("Keystore location: {}", keyStoreLocation);
 			if (StringUtils.isBlank(keyStoreLocation))
 			{
 				log.error("keystore location is blank");
@@ -75,8 +76,8 @@ public class BrokerSslPipelineFactory
 				log.warn("Keystore file not found");
 				return;
 			}
-
-			keyStore.load(new FileInputStream(keyStoreLocation), KEYSTOREPW);
+			
+			keyStore.load(new FileInputStream(ks), KEYSTOREPW);
 
 			javax.net.ssl.KeyManagerFactory kmf = javax.net.ssl.KeyManagerFactory.getInstance("SunX509");
 
@@ -95,7 +96,7 @@ public class BrokerSslPipelineFactory
 	public ChannelInitializer<SocketChannel> getInitializer() throws Exception
 	{
 
-        ChannelInitializer initializer = new ChannelInitializer<SocketChannel>() {
+        ChannelInitializer<SocketChannel> initializer = new ChannelInitializer<SocketChannel>() {
 
             @Override
             protected void initChannel(SocketChannel socketChannel) throws Exception {

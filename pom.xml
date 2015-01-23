@@ -1,45 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>pt.sapo.oss.broker</groupId>
-    <artifactId>sapo-broker-parent</artifactId>
-    <name>sapo-broker-parent</name>
-    <version>4.0.50.Alpha1</version>
-    <packaging>pom</packaging>
-    <parent>
-        <groupId>pt.sapo</groupId>
-        <artifactId>sapo-parent</artifactId>
-        <version>1.0.0</version>
-    </parent>
-    <modules>
-        <module>comm-types</module>
-        <module>gcs</module>
-        <module>binding/protobuf</module>
-        <module>binding/thrift</module>
-        <module>binding/json</module>
-        <module>binding/xml</module>
-        <module>agent</module>
-        <module>agent-plugins</module>
-        <module>client/java</module>
-        <module>client/java-nio</module>
-        <module>client/javascript</module>
-        <module>test/broker</module>
-        <module>test/performance</module>
-        <module>monitorization/collector</module>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>pt.sapo.oss.broker</groupId>
+	<artifactId>sapo-broker-parent</artifactId>
+	<name>sapo-broker-parent</name>
+	<version>4.0.50.Alpha1</version>
+	<packaging>pom</packaging>
+	
+	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <netty.version>4.0.25.Final</netty.version>
+    </properties>
+	
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>http://repository.sl.pt/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	
+	<modules>
+		<module>comm-types</module>
+		<module>gcs</module>
+		<module>binding/protobuf</module>
+		<module>binding/thrift</module>
+		<module>binding/json</module>
+		<module>binding/xml</module>
+		<module>agent</module>
+		<module>agent-plugins</module>
+		<module>client/java</module>
+		<module>client/java-nio</module>
+		<module>client/javascript</module>
+		<module>test/broker</module>
+		<module>test/performance</module>
+		<module>monitorization/collector</module>
 		<module>sapo-sts/agent</module>
-        <!--<module>monitorization/console</module>-->
-        <module>sapo-sts/client/java</module>
-    </modules>
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>http://repository.sl.pt/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+		<!--<module>monitorization/console</module> -->
+		<module>sapo-sts/client/java</module>
+	</modules>
+	<dependencies>
+		<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
 </project>

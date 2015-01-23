@@ -139,9 +139,9 @@ public abstract class BaseClient{
 
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-
+            	//FIXME: This code should retry at least 3 times to resend the message.
+            	//Is it suposed to be here the resend mechanics?
                 if(!future.isSuccess()){
-
                     log.error("Error sending message!!! Message lost",future.cause());
                 }
             }

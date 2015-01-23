@@ -17,13 +17,9 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 
     public DBRolesAuthenticationTest(NetProtocolType protocolType) {
         super(protocolType);
-
-
         setName("PubSub - Database authentication");
-
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
-
 		if (!skipTest())
 		{
 			SslBrokerClient bk = null;

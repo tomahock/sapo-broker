@@ -3,6 +3,7 @@ package pt.com.gcs.conf;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -379,6 +380,8 @@ public class GcsInfo {
 		{
 			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf.agent");
 			Unmarshaller u = jc.createUnmarshaller();
+			
+			log.debug("******************Current path: {}***********************", Paths.get(".").toAbsolutePath().normalize().toString());
 			
 			URL fileUrl = getClass().getClassLoader().getResource(filePath);
 			File f = null;

@@ -1,4 +1,4 @@
-AM_CFLAGS=-I "$(top_srcdir)/src"
+AM_CFLAGS=-I "$(top_srcdir)/src" -O0
 
 noinst_PROGRAMS = enqueue publish consume
 

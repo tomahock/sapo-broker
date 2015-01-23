@@ -51,7 +51,7 @@ public class BrokerClient extends BaseClient implements Observer {
     private ChannelInitializer channelInitializer;
     
     
-
+    //FIXME: change the number of threads.
     ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
@@ -227,12 +227,12 @@ public class BrokerClient extends BaseClient implements Observer {
         }
 
         for(final HostInfo host : servers){
-
+        	log.debug("Submiting the fucking task.");
             service.submit(new Callable<HostInfo>() {
 
                 @Override
                 public HostInfo call() throws Exception {
-
+                	log.debug("Executing the fucking call.");
                     ChannelWrapperFuture future = subscribeToHost(subscribe,listener,host);
 
 
@@ -242,6 +242,7 @@ public class BrokerClient extends BaseClient implements Observer {
                     future.getInstance().addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
+                        	log.debug("CountDown the Fucking latch");
                             latch.countDown();
                         }
                     });

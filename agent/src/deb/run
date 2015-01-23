@@ -1,0 +1,59 @@
+#!/bin/sh
+
+exec 2>&1
+
+######################################################################################
+# Important files and location
+#
+# Global configuration file (local): /servers/broker/etc/broker_global.config 
+# Global configuration file (cfengine distributed): /etc/broker_global.config
+# PTMAIL Global configuration file: /ptmail/etc/broker_global.config
+#
+######################################################################################
+
+if [ -f /servers/broker/conf/broker-defaults.conf ]; then . /servers/broker/conf/broker-defaults.conf; fi
+
+if [ -f /servers/broker/conf/global.config ]
+then
+  GLOBAL_CONFIG="/servers/broker/conf/global.config"
+else
+ if [ -f /etc/broker_global.config ]
+ then
+  GLOBAL_CONFIG="/etc/broker_global.config"
+ else
+  if [ -f /ptmail/etc/broker_global.config ]
+  then
+    GLOBAL_CONFIG="/ptmail/etc/broker_global.config"
+  fi
+ fi
+fi
+
+if [ ! -f $GLOBAL_CONFIG ]
+then
+	echo "Couldn't find any working broker_global.config file."
+	echo "For standalone instalations you can: cp /server/broker/tmp/broker_global.config /servers/broker/etc/"
+	echo "Exiting..."
+exit;
+fi
+
+#cd /servers/broker/
+
+export LC_ALL=en_US
+
+/sbin/sysctl -w net.core.rmem_max=8388608
+
+ulimit -n 32768
+
+exec setuidgid nobody java \
+  -Dapp-name=sapo-broker -XX:+UseNUMA -XX:+UseParallelGC -XX:+HeapDumpOnOutOfMemoryError -Xms32M -Xmx512M\
+  -Dcom.sun.management.jmxremote.port=5002 \
+  -Dcom.sun.management.jmxremote.authenticate=false \
+  -Dcom.sun.management.jmxremote.ssl=false \
+  -Djava.awt.headless=true \
+  -Djava.net.preferIPv4Stack=true \
+  -Djava.net.preferIPv6Addresses=false \
+  -Dfile.encoding=UTF-8 \
+  -Dagent-config-path=/servers/broker/conf/agent.config \
+  -Dbroker-global-config-path=/servers/broker/conf/global.config \
+  -cp "/servers/broker/conf:/servers/broker/dist/*:/servers/broker/dist/lib/*" \
+  pt.com.broker.Start

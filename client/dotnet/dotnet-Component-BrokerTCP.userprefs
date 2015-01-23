@@ -1,19 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="BrokerClient/Networking/SslNetworkHandler.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Samples/Consumers/Consumer.cs">
     <Files>
-      <File FileName="BrokerClient/Networking/SslNetworkHandler.cs" Line="1" Column="1" />
-      <File FileName="Tests/Main.cs" Line="1" Column="1" />
-      <File FileName="Samples/Consumers/SslConsumer.cs" Line="1" Column="1" />
-      <File FileName="Tests/Tests/PositiveTests/SSLTest.cs" Line="2" Column="2" />
-      <File FileName="Tests/Tests/MultiplePubSubTest.cs" Line="5" Column="5" />
-      <File FileName="Tests/SimpleTestsFramework/Test.cs" Line="13" Column="13" />
-      <File FileName="Tests/Tests/TestParms/TestParams.xml" Line="45" Column="45" />
-      <File FileName="Samples/Consumers/Ping.cs" Line="20" Column="20" />
-      <File FileName="Samples/Consumers/ConsumerWithAutoAck.cs" Line="14" Column="14" />
-      <File FileName="BrokerClient/SslBrokerClient.cs" Line="22" Column="22" />
-      <File FileName="Samples/Consumers/Consumer.cs" Line="1" Column="1" />
-      <File FileName="BrokerClient/Networking/NetworkHandler.cs" Line="1" Column="1" />
+      <File FileName="Tests/Tests/NotificationHandler.cs" Line="34" Column="34" />
+      <File FileName="Samples/Consumers/Consumer.cs" Line="75" Column="75" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

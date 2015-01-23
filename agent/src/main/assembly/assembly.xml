@@ -1,0 +1,13 @@
+<assembly>
+  <id>lib</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+<!--   <baseDirectory>/servers/${project.artifactId}/dist/lib</baseDirectory> -->
+  <dependencySets>
+    <dependencySet>
+<!--       <outputDirectory>lib</outputDirectory> -->
+      <scope>runtime</scope>
+    </dependencySet>
+  </dependencySets>
+</assembly>

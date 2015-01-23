@@ -13,42 +13,115 @@
 	<packaging>jar</packaging>
 	<properties>
 		<mainClass>pt.com.broker.functests.simulation.MainAll</mainClass>
-		<agent-config-path>package/conf/agent_example.config</agent-config-path>
-		<broker-global-config-path>package/conf/broker_global.config</broker-global-config-path>
-		<tests.skip>false</tests.skip>
+		<agent-config-path>agent1.config</agent-config-path>
+		<broker-global-config-path>global.config</broker-global-config-path>
+		<tests.skip>true</tests.skip>
 		<tests.agent.launch>true</tests.agent.launch>
+		<tests.agent.nagents>2</tests.agent.nagents>
+		<tests.config.params>testparams.xml</tests.config.params>
+		<tests.agent1.config>agent1.config</tests.agent1.config>
+		<tests.agent2.config>agent2.config</tests.agent2.config>
+		<tests.agent.globalconfig>global.config</tests.agent.globalconfig>
+		<tests.agent.mainClass>pt.com.broker.Start</tests.agent.mainClass>
 	</properties>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>java</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>${mainClass}</mainClass>
-					<systemProperties>
-						<systemProperty>
-							<key>config-file</key>
-							<value>package/conf/testparams.xml</value>
-						</systemProperty>
-						<systemProperty>
-							<key>agent-config-path</key>
-							<value>${agent-config-path}</value>
-						</systemProperty>
-						<systemProperty>
-							<key>broker-global-config-path</key>
-							<value>${broker-global-config-path}</value>
-						</systemProperty>
-					</systemProperties>
-				</configuration>
-			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.codehaus.mojo</groupId> -->
+<!-- 				<artifactId>exec-maven-plugin</artifactId> -->
+<!-- 				<version>1.3.2</version> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>agent-1</id> -->
+<!-- 						<phase>generate-test-resources</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>java</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<includeProjectDependencies>false</includeProjectDependencies> -->
+<!-- 							<includePluginDependencies>true</includePluginDependencies> -->
+<!-- 							<executableDependency> -->
+<!-- 								<groupId>pt.sapo.oss.broker</groupId> -->
+<!-- 								<artifactId>sapo-broker-agent</artifactId> -->
+<!-- 							</executableDependency> -->
+<!-- 							<mainClass>pt.com.broker.Start</mainClass> -->
+<!-- 							<systemProperties> -->
+<!-- 								<systemProperty> -->
+<!-- 									<key>agent-config-path</key> -->
+<!-- 									<value>src/test/resources/agent1.config</value> -->
+<!-- 								</systemProperty> -->
+<!-- 								<systemProperty> -->
+<!-- 									<key>broker-global-config-path</key> -->
+<!-- 									<value>src/test/resources/global.config</value> -->
+<!-- 								</systemProperty> -->
+<!-- 							</systemProperties> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 					<execution> -->
+<!-- 						<id>agent-2</id> -->
+<!-- 						<phase>generate-test-resources</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>java</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<includeProjectDependencies>false</includeProjectDependencies> -->
+<!-- 							<includePluginDependencies>true</includePluginDependencies> -->
+<!-- 							<executableDependency> -->
+<!-- 								<groupId>pt.sapo.oss.broker</groupId> -->
+<!-- 								<artifactId>sapo-broker-agent</artifactId> -->
+<!-- 							</executableDependency> -->
+<!-- 							<mainClass>pt.com.broker.Start</mainClass> -->
+<!-- 							<systemProperties> -->
+<!-- 								<systemProperty> -->
+<!-- 									<key>agent-config-path</key> -->
+<!-- 									<value>src/test/resources/agent2.config</value> -->
+<!-- 								</systemProperty> -->
+<!-- 								<systemProperty> -->
+<!-- 									<key>broker-global-config-path</key> -->
+<!-- 									<value>src/test/resources/global.config</value> -->
+<!-- 								</systemProperty> -->
+<!-- 							</systemProperties> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 				<dependencies> -->
+<!-- 					<dependency> -->
+<!-- 						<groupId>pt.sapo.oss.broker</groupId> -->
+<!-- 						<artifactId>sapo-broker-agent</artifactId> -->
+<!-- 						<version>4.0.50.Alpha1</version> -->
+<!-- 						<type>jar</type> -->
+<!-- 					</dependency> -->
+<!-- 				</dependencies> -->
+<!-- 			</plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.codehaus.mojo</groupId> -->
+			<!-- <artifactId>exec-maven-plugin</artifactId> -->
+			<!-- <version>1.2.1</version> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <goals> -->
+			<!-- <goal>java</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- <configuration> -->
+			<!-- <mainClass>${mainClass}</mainClass> -->
+			<!-- <systemProperties> -->
+			<!-- <systemProperty> -->
+			<!-- <key>config-file</key> -->
+			<!-- <value>package/conf/testparams.xml</value> -->
+			<!-- </systemProperty> -->
+			<!-- <systemProperty> -->
+			<!-- <key>agent-config-path</key> -->
+			<!-- <value>${agent-config-path}</value> -->
+			<!-- </systemProperty> -->
+			<!-- <systemProperty> -->
+			<!-- <key>broker-global-config-path</key> -->
+			<!-- <value>${broker-global-config-path}</value> -->
+			<!-- </systemProperty> -->
+			<!-- </systemProperties> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
@@ -74,6 +147,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.17</version>
 				<configuration>
+					<forkCount>0</forkCount>
 					<failIfNoTests>true</failIfNoTests>
 					<excludes>
 						<exclude>pt/com/broker/functests/negative/UnknownAuthTypeFailedTest.java</exclude>
@@ -83,33 +157,78 @@
 						<exclude>pt/com/broker/functests/positive/VirtualQueueNameSpecifiedRemote.java</exclude>
 					</excludes>
 					<includes>
-						<include>pt/com/broker/functests/positive/Multiple1NTopic.java</include>
-						<!-- <include>pt/com/broker/functests/positive/*.java</include>
-						<include>pt/com/broker/functests/negative/*.java</include>-->
+						<!-- <include>pt/com/broker/functests/positive/Multiple1NTopic.java</include> -->
+						<!-- <include>pt/com/broker/functests/positive/DeferredDeliveryQueueTest.java</include> -->
+						<include>pt/com/broker/functests/positive/Multiple1NTopicRemote.java</include>
+						<!-- <include>pt/com/broker/functests/positive/*.java</include> -->
+						<!--<include>pt/com/broker/functests/negative/*.java</include> -->
 					</includes>
 					<skipTests>${tests.skip}</skipTests>
 					<systemPropertyVariables>
-						<config-file>package/conf/testparams.xml</config-file>
-						<agent-config-path>${agent-config-path}</agent-config-path>
-						<broker-global-config-path>${broker-global-config-path}</broker-global-config-path>
+						<config-file>${tests.config.params}</config-file>
+						<agent-config-path-0>${tests.agent1.config}</agent-config-path-0>
+						<broker-global-config-path-0>${tests.agent.globalconfig}</broker-global-config-path-0>
+						<agent-config-path-1>${tests.agent2.config}</agent-config-path-1>
+						<broker-global-config-path-1>${tests.agent.globalconfig}</broker-global-config-path-1>
+						<agent-launch>${tests.agent.launch}</agent-launch>
+						<n-agents>${tests.agent.nagents}</n-agents>
 					</systemPropertyVariables>
 					<systemProperties>
 						<systemProperty>
 							<key>config-file</key>
-							<value>package/conf/testparams.xml</value>
+							<value>${tests.config.params}</value>
 						</systemProperty>
 						<systemProperty>
 							<key>agent-config-path</key>
-							<value>${agent-config-path}</value>
+							<value>${tests.agent1.config}</value>
 						</systemProperty>
 						<systemProperty>
 							<key>broker-global-config-path</key>
-							<value>${broker-global-config-path}</value>
+							<value>${tests.agent.globalconfig}</value>
+						</systemProperty>
+						<systemProperty>
+							<key>agent-launch</key>
+							<value>${tests.agent.launch}</value>
 						</systemProperty>
 					</systemProperties>
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>
+											[1.3,)
+										</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<dependencies>
 		<dependency>
@@ -117,13 +236,16 @@
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-java-client-nio</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+			<artifactId>sapo-broker-java-client</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-sts-client</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<version>${project.version}</version>
@@ -137,25 +259,13 @@
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
-			<version>4.0.18.Final</version>
+			<version>${netty.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 		</dependency>
-
 	</dependencies>
 
 </project>

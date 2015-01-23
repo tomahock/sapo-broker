@@ -18,17 +18,20 @@ import pt.com.broker.types.NetProtocolType;
 //TODO: This class does not bellong here. Change this behaviour into a test
 public class ResubscriptionTest {
 	
-	private static final String BROKER_HOST = "localhost";
-	private static final Integer BROKER_PORT = 3323;
-	private static final String BROKER_TOPIC = "/test";
+	private static final String AGENT_1_BROKER_HOST = "broker.bk.sapo.pt";
+	private static final Integer AGENT_1_BROKER_PORT = 3323;
+	private static final String AGENT_2_BROKER_HOST = "localhost";
+	private static final Integer AGENT_2_BROKER_PORT = 3423;
+	private static final String BROKER_TOPIC = "/sapo/broker/dev/topic/test";
 	private static final String BROKER_QUEUE = "/sapo/broker/dev/queue/test";
+	private static final String BROKER_SNIFF_TOPIC = "/.*hp.*";
 	
 	public static class TopicProducer implements Runnable {
 		
 		private BrokerClient bClient;
 		
-		public TopicProducer(){
-			bClient = new BrokerClient(BROKER_HOST, BROKER_PORT, NetProtocolType.PROTOCOL_BUFFER);
+		public TopicProducer(String brokerHost, Integer brokerPort){
+			bClient = new BrokerClient(brokerHost, brokerPort, NetProtocolType.PROTOCOL_BUFFER);
 			bClient.addConnectionEventListener(new LogConnectionEventListener());
 			bClient.connect();
 			new Thread(this).start();
@@ -51,12 +54,14 @@ public class ResubscriptionTest {
 
 	public static class TopicConsumer{
 		
+		private static final Logger log = LoggerFactory.getLogger(TopicConsumer.class);
+		
 		private BrokerClient bClient;
+		private String topic;
 		
-		static final Logger log = LoggerFactory.getLogger(TopicConsumer.class);
-		
-		public TopicConsumer(){
-			bClient = new BrokerClient(BROKER_HOST, BROKER_PORT, NetProtocolType.PROTOCOL_BUFFER);
+		public TopicConsumer(String brokerHost, Integer brokerPort, String topic){
+			bClient = new BrokerClient(brokerHost, brokerPort, NetProtocolType.PROTOCOL_BUFFER);
+			this.topic = topic;
 			bClient.addConnectionEventListener(new LogConnectionEventListener());
 			bClient.connect();
 			try {
@@ -68,12 +73,13 @@ public class ResubscriptionTest {
 		}
 		
 		private void consume() throws InterruptedException{
-			bClient.subscribe(BROKER_TOPIC, DestinationType.TOPIC, new BrokerListener() {
+			bClient.subscribe(topic, DestinationType.TOPIC, new BrokerListener() {
 				
 				@Override
 				public void deliverMessage(NetMessage message, HostInfo host)
 						throws Throwable {
-//					log.debug("Received a new message");
+					log.debug("Received a new message for topic: {}", message.getAction().getNotificationMessage().getDestination());
+//					log.debug("Message contents: {}", new String(message.getAction().getNotificationMessage().getMessage().getPayload(), "UTF-8"));
 				}
 			});
 		}
@@ -84,8 +90,8 @@ public class ResubscriptionTest {
 		
 		private BrokerClient bClient;
 		
-		public QueueProducer() {
-			bClient = new BrokerClient(BROKER_HOST, BROKER_PORT, NetProtocolType.PROTOCOL_BUFFER);
+		public QueueProducer(String brokerHost, Integer brokerPort) {
+			bClient = new BrokerClient(brokerHost, brokerPort, NetProtocolType.PROTOCOL_BUFFER);
 			bClient.connect();
 			new Thread(this).start();
 		}
@@ -110,8 +116,8 @@ public class ResubscriptionTest {
 		
 		private BrokerClient bClient;
 		
-		public QueueConsumer() {
-			bClient = new BrokerClient(BROKER_HOST, BROKER_PORT, NetProtocolType.PROTOCOL_BUFFER);
+		public QueueConsumer(String brokerHost, Integer brokerPort) {
+			bClient = new BrokerClient(brokerHost, brokerPort, NetProtocolType.PROTOCOL_BUFFER);
 			bClient.addConnectionEventListener(new LogConnectionEventListener());
 			bClient.connect();
 			try {
@@ -141,10 +147,11 @@ public class ResubscriptionTest {
 	}
 	
 	public static void main(String[] args){
-		TopicProducer p = new TopicProducer();
-		TopicConsumer c = new TopicConsumer();
+//		TopicProducer p = new TopicProducer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT);
+//		TopicConsumer c = new TopicConsumer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT);
 //		QueueProducer qp = new QueueProducer();
 //		QueueConsumer qc = new QueueConsumer();
+		TopicConsumer sniffer = new TopicConsumer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT, BROKER_SNIFF_TOPIC);
 	}
 
 }

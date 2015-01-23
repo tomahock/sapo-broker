@@ -3,6 +3,9 @@ cd `dirname $0`
 set -x
 set -e
 
+touch test/broker_config.h.in
+touch libsapo-broker2.pc.in
+touch src/config.h.in
 aclocal -I m4
 libtoolize --force --copy
 autoheader

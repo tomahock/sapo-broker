@@ -46,9 +46,12 @@ int main(int argc, char *argv[])
         }
         if( argc >= 4) {
             count = atoi(argv[3]);
+        } else {
+            count = 1;
         }
 
     } else {
+        count = 1;
         dest.type = SB_QUEUE;
         dest.name = QUEUE_NAME;
     }

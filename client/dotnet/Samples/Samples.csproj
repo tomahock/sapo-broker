@@ -11,7 +11,7 @@
     <RootNamespace>Samples</RootNamespace>
     <AssemblyName>Samples</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>Samples.Consumers.SslConsumer</StartupObject>
+    <StartupObject>Samples.Consumers.Consumer</StartupObject>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>

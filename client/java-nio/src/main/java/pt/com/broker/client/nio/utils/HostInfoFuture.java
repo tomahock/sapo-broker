@@ -14,11 +14,4 @@ import java.util.concurrent.Future;
  * @author vagrant
  * @version $Id: $Id
  */
-abstract public class HostInfoFuture<T extends HostInfo> implements Future<T> {
-
-
-
-
-
-
-}
+abstract public class HostInfoFuture<T extends HostInfo> implements Future<T> {}

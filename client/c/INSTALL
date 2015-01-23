@@ -11,3 +11,9 @@ $ make install
 or
 $ PREFIX=/opt/xxx make install
 
+UPDATE:
+
+Falta marcar a dependencial do protoc -> protobuf-compiler
+
+$./bootstrap
+$./make_deb.sh

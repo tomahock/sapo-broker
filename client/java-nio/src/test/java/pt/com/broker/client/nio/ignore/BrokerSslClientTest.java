@@ -52,7 +52,7 @@ public class BrokerSslClientTest {
 		} finally {
 			caInput.close();
 		}
-
+		
 		// Create a KeyStore containing our trusted CAs
 		String keyStoreType = KeyStore.getDefaultType();
 		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
