@@ -4,6 +4,7 @@ import org.caudexorigo.concurrent.Sleep;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
@@ -78,6 +79,7 @@ public abstract class BaseBrokerClient
 	};
 
 	protected BrokerErrorListenter errorListener;
+	protected ScheduledExecutorService statusScheduler = Executors.newSingleThreadScheduledExecutor();
 
 	// Should be called by inherit types
 	protected void init() throws Throwable
@@ -87,6 +89,22 @@ public abstract class BaseBrokerClient
 		_netHandler = getBrokerProtocolHandler();
 		getNetHandler().start();
 		state = BrokerClientState.OK;
+		//FIXME: Hack to prevent loosing connection to the agent
+		statusScheduler.scheduleWithFixedDelay(new CheckStatusTask(), 0, 1, TimeUnit.MINUTES);
+	}
+	
+	private class CheckStatusTask implements Runnable {
+
+		@Override
+		public void run() {
+			try {
+				checkStatus();
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	/**
@@ -854,4 +872,44 @@ public abstract class BaseBrokerClient
 	{
 		return oldFramming;
 	}
+	
+	/**
+	 * Setup an Heartbeat Ping/Pong mechanism to check for idle/closed connections.
+	 * */
+	protected void setupHeartBeatPacket(){
+		/*String actionId = UUID.randomUUID().toString();
+		NetPing ping = new NetPing(actionId);
+
+		NetAction action = new NetAction(ActionType.PING);
+		action.setPingMessage(ping);
+
+		NetMessage message = buildMessage(action);
+
+		getNetHandler().sendMessage(message);
+
+		long timeout = System.currentTimeMillis() + (2 * 1000);
+		NetPong pong = null;
+
+		do
+		{
+			synchronized (_bstatus)
+			{
+				Sleep.time(500);
+				if (System.currentTimeMillis() > timeout)
+					return null;
+				pong = _bstatus.peek();
+				if (pong == null)
+					continue;
+				if (!pong.getActionId().equals(NetPong.getUniversalActionId()) && !pong.getActionId().equals(actionId))
+				{
+					pong = null;
+				}
+				_bstatus.remove();
+			}
+		}
+		while (pong == null);
+
+		return pong;*/
+	}
+	
 }
