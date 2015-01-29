@@ -148,10 +148,10 @@ public class ResubscriptionTest {
 	
 	public static void main(String[] args){
 //		TopicProducer p = new TopicProducer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT);
-//		TopicConsumer c = new TopicConsumer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT);
-//		QueueProducer qp = new QueueProducer();
-//		QueueConsumer qc = new QueueConsumer();
-		TopicConsumer sniffer = new TopicConsumer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT, BROKER_SNIFF_TOPIC);
+//		TopicConsumer c = new TopicConsumer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT, BROKER_TOPIC);
+		QueueProducer qp = new QueueProducer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT);
+		QueueConsumer qc = new QueueConsumer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT);
+//		TopicConsumer sniffer = new TopicConsumer(AGENT_1_BROKER_HOST, AGENT_1_BROKER_PORT, BROKER_SNIFF_TOPIC);
 	}
 
 }

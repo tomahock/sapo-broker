@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#if [ -d /service/broker ]
+#then
+#	cd /service/broker
+#	svc -dx .
+#	rm -fr /service/broker
+#fi

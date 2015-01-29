@@ -33,10 +33,8 @@ public final class HostInfo
 
     private long readerIdleTime = 40000;
     private long writerIdleTime = 20000;
-
-
-
-
+    
+    
     /**
      * Creates a HostInfo instance.
      *

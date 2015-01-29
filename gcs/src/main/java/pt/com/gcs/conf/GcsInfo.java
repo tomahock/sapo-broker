@@ -389,6 +389,9 @@ public class GcsInfo {
 				f = new File(fileUrl.toURI());
 			} else {
 				f = new File(filePath);
+				if(!f.exists()){
+					f = new File(Paths.get(".").resolve(filePath).toAbsolutePath().normalize().toString());
+				}
 			}
 			
 			boolean b = f.exists();

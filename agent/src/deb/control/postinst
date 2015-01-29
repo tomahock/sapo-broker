@@ -1,1 +1,6 @@
 #!/bin/bash
+
+chown nobody:nogroup /servers/broker/daemontools/log
+ln -s /servers/broker/daemontools /service/broker
+svc -d /service/broker
+svc -u /service/broker

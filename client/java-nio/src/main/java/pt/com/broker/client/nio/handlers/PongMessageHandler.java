@@ -1,10 +1,15 @@
 package pt.com.broker.client.nio.handlers;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pt.com.broker.client.nio.codecs.HeartBeatEventHandler;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.types.ActionIdDecorator;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
@@ -49,7 +54,6 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg){
 
-
         NetAction action = msg.getAction();
 
         if(action.getActionType() != NetAction.ActionType.PONG || action.getPongMessage()  == null){
@@ -62,7 +66,13 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
 
         try {
 
-            if(getActionId(msg).equals(HEART_BEAT_ACTION_ID)){
+            if(getActionId(msg).equals(HeartBeatEventHandler.HEART_BEAT_ACTION_ID)){
+            	//Heart beat message. Reset the statistics
+            	AtomicInteger heartBeatCounter = ctx.channel().attr(HeartBeatEventHandler.ATTRIBUTE_HEART_BEAT_COUNTER).get();
+            	if(heartBeatCounter != null){
+            		log.debug("HeartBeat counter: {}", heartBeatCounter.get());
+            	}
+            	ctx.channel().attr(HeartBeatEventHandler.ATTRIBUTE_HEART_BEAT_COUNTER).remove();
                 log.debug("Got a heartbeat pong response");
                 return;
             }

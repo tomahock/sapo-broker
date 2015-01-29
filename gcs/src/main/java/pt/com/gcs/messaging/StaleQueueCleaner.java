@@ -25,7 +25,7 @@ public class StaleQueueCleaner implements Runnable
 			long lastDeliveredMsg = qp.lastMessageDelivered();
 			long qstaleAge = now - lastDeliveredMsg;
 
-			if (qstaleAge >= maxStaleAge)
+			if (qstaleAge >= maxStaleAge /*&& !QueueProcessorList.get(qp.getQueueName()).hasRecipient()*/)
 			{
 				to_remove.add(qp.getQueueName());
 			}

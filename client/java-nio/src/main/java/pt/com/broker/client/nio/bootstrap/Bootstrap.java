@@ -23,7 +23,6 @@ public class Bootstrap extends BaseBootstrap {
 	
 	static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
-
     /**
      * <p>Constructor for Bootstrap.</p>
      *

@@ -87,7 +87,7 @@ public class QueueProcessorList implements SubscriptionProcessorList
 
 	protected static void remove(String queueName, boolean safe)
 	{
-		instance.i_remove(queueName, false);
+		instance.i_remove(queueName, safe);
 	}
 
 	protected static void remove(String queueName)

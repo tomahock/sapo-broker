@@ -29,16 +29,11 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseClient{
 
     private static final Logger log = LoggerFactory.getLogger(BaseClient.class);
-
+    
     protected HostContainer hosts;
-
     BaseBootstrap bootstrap;
-
     BindingSerializer serializer = null;
     NetProtocolType protocolType = NetProtocolType.JSON;
-    
-    
-
 
     /**
      * <p>Constructor for BaseClient.</p>
@@ -59,10 +54,7 @@ public abstract class BaseClient{
      * @param port a int.
      */
     public BaseClient(String host, int port) {
-    	//Changed the default protocol to PROTOBUF in order to support the old servers.
         this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER);
-
-
     }
 
     /**

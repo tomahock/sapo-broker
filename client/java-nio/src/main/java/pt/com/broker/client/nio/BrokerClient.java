@@ -227,22 +227,17 @@ public class BrokerClient extends BaseClient implements Observer {
         }
 
         for(final HostInfo host : servers){
-        	log.debug("Submiting the fucking task.");
             service.submit(new Callable<HostInfo>() {
 
                 @Override
                 public HostInfo call() throws Exception {
-                	log.debug("Executing the fucking call.");
                     ChannelWrapperFuture future = subscribeToHost(subscribe,listener,host);
-
-
 
                     final CountDownLatch latch = new CountDownLatch(1);
 
                     future.getInstance().addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
-                        	log.debug("CountDown the Fucking latch");
                             latch.countDown();
                         }
                     });

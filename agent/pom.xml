@@ -222,11 +222,11 @@
 									</mapper>
 								</data>
 								<data>
-									<src>${basedir}/src/deb/run</src>
-									<type>file</type>
+									<src>${basedir}/src/deb/daemontools</src>
+									<type>directory</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/servers/broker</prefix>
+										<prefix>/servers/broker/daemontools</prefix>
 										<filemode>755</filemode>
 									</mapper>
 								</data>

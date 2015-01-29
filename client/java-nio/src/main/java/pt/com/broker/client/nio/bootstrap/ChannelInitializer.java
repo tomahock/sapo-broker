@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.ssl.SslHandler;
+import pt.com.broker.client.nio.codecs.HeartBeatEventHandler;
 import pt.com.broker.client.nio.codecs.HeartbeatHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
@@ -115,6 +116,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
         }
         //FIXME: Add a proper heartbeat handler to the client. This one simply won't work.
 //        pipeline.addLast("heartbeat_handler", heartbeatHandler);
+        pipeline.addLast("heartbeat_handler", new HeartBeatEventHandler());
 
 
         /* add message receive handler */

@@ -92,6 +92,7 @@ public class SubscriberManagerTest  {
             if(destinationType == NetAction.DestinationType.TOPIC){
                 Assert.assertEquals("Invalid message", "A listener for the destination /teste/ already exists",ex.getMessage());
             }else{
+            	//FIXME: If a domain name is set, the message is invalid and the test fails.
                 Assert.assertEquals("Invalid message", "A listener for the destination localhost:3323#/teste/ already exists",ex.getMessage());
             }
 

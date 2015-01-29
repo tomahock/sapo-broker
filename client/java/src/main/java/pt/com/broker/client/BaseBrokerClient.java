@@ -98,10 +98,16 @@ public abstract class BaseBrokerClient
 		@Override
 		public void run() {
 			try {
-				checkStatus();
+				log.debug("Checking connection status!");
+				if(checkStatus() == null){
+					log.debug("Restarting the connection.");
+					state = BrokerClientState.FAIL;
+					getNetHandler().stop();
+					getNetHandler().start();
+					state = BrokerClientState.CONNECT;
+				}
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Unexpected error checking connection status.", e);
 			}
 		}
 		
