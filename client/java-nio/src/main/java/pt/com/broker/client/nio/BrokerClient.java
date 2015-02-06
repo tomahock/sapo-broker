@@ -201,62 +201,40 @@ public class BrokerClient extends BaseClient implements Observer {
      * @throws java.lang.InterruptedException if any.
      */
     public Future<HostInfo> subscribe(final NetSubscribeAction subscribe, final BrokerListener listener , final AcceptRequest request) throws InterruptedException {
-
-
         Collection<HostInfo> servers  = null;
-
         if(subscribe.getDestinationType() == NetAction.DestinationType.TOPIC){
             servers = new ArrayList<HostInfo>();
-
             servers.add( getAvailableHost());
         }else{
             servers = getHosts().getConnectedHosts();
         }
-
         if(servers.size()==0) {
             return new HostNotAvailableFuture<HostInfo>();
         }
-
-
-
-
-
         if(request!=null) {
             subscribe.setActionId(request.getActionId());
             addAcceptMessageHandler(request);
         }
-
         for(final HostInfo host : servers){
             service.submit(new Callable<HostInfo>() {
 
                 @Override
                 public HostInfo call() throws Exception {
                     ChannelWrapperFuture future = subscribeToHost(subscribe,listener,host);
-
                     final CountDownLatch latch = new CountDownLatch(1);
-
                     future.getInstance().addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
                             latch.countDown();
                         }
                     });
-
-
                     latch.await();
-
-
                     return host;
-
                 }
+                
             });
-
-
         }
-
         return service.take();
-
-
     }
 
     private HostInfoFuture<HostInfo> subscribeToHost(final NetSubscribeAction subscribe , final BrokerListener listener){

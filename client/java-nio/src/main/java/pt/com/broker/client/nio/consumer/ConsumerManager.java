@@ -4,7 +4,9 @@ package pt.com.broker.client.nio.consumer;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.exceptions.ExistingSubscriptionException;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.types.DestinationDataDelegator;
 import pt.com.broker.types.NetAction;
@@ -116,7 +118,8 @@ public class ConsumerManager {
 
                 if (subscriptions.containsKey(destination))
                 {
-                    throw new IllegalArgumentException("A listener for the destination "+destination+" already exists");
+//                    throw new IllegalArgumentException("A listener for the destination "+destination+" already exists");
+                	throw new ExistingSubscriptionException(String.format("A listener for the destination %s already exists", destination));
                 }
 
                 subscriptions.put(destination,consumer);

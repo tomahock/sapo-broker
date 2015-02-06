@@ -192,7 +192,7 @@
 						</goals>
 						<configuration>
 							<verbose>true</verbose>
-							<deb>${project.build.directory}/${project.build.finalName}.deb</deb>
+							<deb>${project.build.directory}/sapo-broker.deb</deb>
 							<dataSet>
 								<data>
 									<src>${project.build.directory}/conf</src>

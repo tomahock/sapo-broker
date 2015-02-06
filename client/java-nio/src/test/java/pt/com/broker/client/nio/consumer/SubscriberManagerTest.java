@@ -1,16 +1,18 @@
 package pt.com.broker.client.nio.consumer;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.exceptions.ExistingSubscriptionException;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetMessage;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Created by luissantos on 08-05-2014.
@@ -55,53 +57,27 @@ public class SubscriberManagerTest  {
 
     }
 
-    @Test(expected = IllegalArgumentException.class )
+    @Test(expected = ExistingSubscriptionException.class )
     public void testSubscriptionDuplicatedQueue(){
-
         ConsumerManager consumerManager = new ConsumerManager();
-
         BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
+            @Override
+            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+
+            }
+            
+        });
+        consumer.setHost(new HostInfo("127.0.0.1",3323));
+        consumerManager.addSubscription(consumer);
+        BrokerAsyncConsumer consumer2 = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
             @Override
             public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
 
             }
 
         });
-
-        consumer.setHost(new HostInfo("127.0.0.1",3323));
-
-        consumerManager.addSubscription(consumer);
-
-
-        try{
-
-            BrokerAsyncConsumer consumer2 = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
-                @Override
-                public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
-
-                }
-
-            });
-            consumer2.setHost(new HostInfo("127.0.0.1",3323));
-
-            consumerManager.addSubscription(consumer2);
-
-        }catch (IllegalArgumentException ex){
-
-            System.out.println(ex.getMessage());
-            if(destinationType == NetAction.DestinationType.TOPIC){
-                Assert.assertEquals("Invalid message", "A listener for the destination /teste/ already exists",ex.getMessage());
-            }else{
-            	//FIXME: If a domain name is set, the message is invalid and the test fails.
-                Assert.assertEquals("Invalid message", "A listener for the destination localhost:3323#/teste/ already exists",ex.getMessage());
-            }
-
-
-
-            throw ex;
-        }
-
-
+        consumer2.setHost(new HostInfo("127.0.0.1",3323));
+        consumerManager.addSubscription(consumer2);
     }
 
 

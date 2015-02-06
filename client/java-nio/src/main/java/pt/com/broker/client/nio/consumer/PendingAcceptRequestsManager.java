@@ -1,6 +1,9 @@
 package pt.com.broker.client.nio.consumer;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Preconditions;
+
 import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.server.HostInfo;
@@ -41,13 +44,10 @@ public class PendingAcceptRequestsManager {
      * @param actionID a {@link java.lang.String} object.
      * @param timeout a long.
      * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
-     * @throws java.lang.Throwable if any.
+     * @throws Exception
      */
-    public void addAcceptRequest(final String actionID, long timeout , BrokerListener listener) throws Throwable{
-
-        if(StringUtils.isEmpty(actionID)){
-            throw new Exception("Invalid actionID");
-        }
+    public void addAcceptRequest(final String actionID, long timeout , BrokerListener listener) throws Exception {
+    	Preconditions.checkArgument(StringUtils.isNotEmpty(actionID), "Invalid actionID");
 
         synchronized (requests){
 

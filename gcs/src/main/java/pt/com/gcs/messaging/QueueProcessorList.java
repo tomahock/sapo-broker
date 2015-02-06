@@ -3,9 +3,12 @@ package pt.com.gcs.messaging;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
@@ -46,7 +49,8 @@ public class QueueProcessorList implements SubscriptionProcessorList
 		{
 			try
 			{
-				if (instance.qpCache.size() > GcsInfo.getMaxQueues())
+				if (GcsInfo.getMaxQueues() != GcsInfo.UNLIMITED_QUEUES_VALUE &&
+						instance.qpCache.size() > GcsInfo.getMaxQueues())
 				{
 					throw new MaximumQueuesAllowedReachedException();
 				}
@@ -108,6 +112,26 @@ public class QueueProcessorList implements SubscriptionProcessorList
 	public static Collection<QueueProcessor> values()
 	{
 		return instance.i_values();
+	}
+	
+	/**
+	 * This method finds queues by name or wildcard.
+	 * @param searchQuery - The term to search
+	 * @return returns a collection of QueueProcessor where the queue associated with the
+	 * processor matches the searchQuery.
+	 * */
+	public static Collection<QueueProcessor> findByPattern(String searchPattern){
+		List<QueueProcessor> matchingQueues = new ArrayList<QueueProcessor>();
+		Collection<QueueProcessor> queues = instance.i_values();
+		//FIXME: Use the PatternCache class to get the pattern.
+		Pattern matchingPattern = Pattern.compile(searchPattern);
+		for(QueueProcessor queueProcessor: queues){
+			Matcher match = matchingPattern.matcher(queueProcessor.getQueueName());
+			if(match.matches()){
+				matchingQueues.add(queueProcessor);
+			}
+		}
+		return matchingQueues;
 	}
 
     public static SubscriptionProcessorList getInstance()

@@ -30,6 +30,20 @@
 										<xs:element name="store-time" type="xs:long" />
 										<xs:element name="max-stale-age" type="xs:long" minOccurs="0" />
 										<xs:element name="redelivery-interval" type="xs:long" minOccurs="0" />
+										<xs:element name="prefixes" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="prefix" minOccurs="1" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"></xs:element>
+																<xs:element name="max-stale-age" type="xs:long" minOccurs="1" maxOccurs="1"></xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>

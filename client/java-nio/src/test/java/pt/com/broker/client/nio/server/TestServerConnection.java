@@ -33,43 +33,22 @@ public class TestServerConnection extends ServerBaseTest {
 
     @Test()
     public void testConnection() throws ExecutionException, InterruptedException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-
-
         List<SocketServer> servers = getServers();
-
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
-
-
         Bootstrap b = new Bootstrap(new ChannelInitializer(serializer,null,null));
-
         HostContainer container = new HostContainer(b);
-
-
         for(SocketServer server : servers){
-
             HostInfo host = new HostInfo("127.0.0.1",server.getPort());
             host.setReaderIdleTime(4000);
             host.setWriterIdleTime(2000);
-
             container.add(host);
-
         }
-
         Future<HostInfo> future = container.connectAsync();
-
-
-
         HostInfo hostInfo = future.get(10000,TimeUnit.MILLISECONDS);
-
-
         Assert.assertNotNull(hostInfo);
-
         //container.shutdown();
-
         //f.get(10000,TimeUnit.MILLISECONDS);
-
         ShutDownServers(servers);
-
     }
 
 

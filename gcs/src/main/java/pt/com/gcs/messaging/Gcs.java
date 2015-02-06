@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 import pt.com.broker.types.Headers;
 import pt.com.broker.types.MessageListener;
@@ -381,7 +384,14 @@ public class Gcs
 
 			GcsExecutor.scheduleWithFixedDelay(new PingPeers(), 5, 5, TimeUnit.MINUTES);
 
-			GcsExecutor.scheduleWithFixedDelay(new StaleQueueCleaner(), GlobalConfig.getQueueMaxStaleAge(), GlobalConfig.getQueueMaxStaleAge(), TimeUnit.MILLISECONDS);
+			GcsExecutor.scheduleWithFixedDelay(new StaleQueueCleaner(Optional.<String>absent(), GlobalConfig.getQueueMaxStaleAge()), GlobalConfig.getQueueMaxStaleAge(), GlobalConfig.getQueueMaxStaleAge(), TimeUnit.MILLISECONDS);
+			//We should place one stalequeuecleaner for each queue prefix running at the specific time
+			Map<String, Long> queuePrefixConfig = GlobalConfig.getQueuePrefixConfig();
+			Set<String> queuePrefixes = queuePrefixConfig.keySet();
+			for(String queuePrefix: queuePrefixes){
+				Long queueStaleTimer = queuePrefixConfig.get(queuePrefix);
+				GcsExecutor.scheduleWithFixedDelay(new StaleQueueCleaner(Optional.<String>of(queuePrefix), queueStaleTimer), queueStaleTimer, queueStaleTimer, TimeUnit.MILLISECONDS);
+			}
 		}
 		catch (Throwable t)
 		{

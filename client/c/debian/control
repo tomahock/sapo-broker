@@ -2,7 +2,7 @@ Source: libsapo-broker2
 Section: libs
 Priority: extra
 Maintainer: Claudio Valente <c.valente@co.sapo.pt>
-Build-Depends: cdbs, debhelper (>= 5), autotools-dev, libtool, autogen, autoconf, automake, libprotobuf-dev, protobuf-compiler, pkg-config
+Build-Depends: cdbs, debhelper (>= 5), autotools-dev, libtool, autogen, autoconf, automake, libprotobuf-dev (>= 2.5.0), protobuf-compiler, pkg-config
 
 Package: libsapo-broker2
 Architecture: any

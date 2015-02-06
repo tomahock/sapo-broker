@@ -44,16 +44,13 @@ export LC_ALL=en_US
 
 ulimit -n 32768
 
-exec setuidgid nobody java \
+exec setuidgid nobody /opt/sapojvm/bin/java \
   -Dapp-name=sapo-broker -XX:+UseNUMA -XX:+UseParallelGC -XX:+HeapDumpOnOutOfMemoryError -Xms32M -Xmx512M\
-  -Dcom.sun.management.jmxremote.port=5002 \
-  -Dcom.sun.management.jmxremote.authenticate=false \
-  -Dcom.sun.management.jmxremote.ssl=false \
   -Djava.awt.headless=true \
   -Djava.net.preferIPv4Stack=true \
   -Djava.net.preferIPv6Addresses=false \
   -Dfile.encoding=UTF-8 \
   -Dagent-config-path=/servers/broker/conf/agent.config \
-  -Dbroker-global-config-path=/servers/broker/conf/global.config \
+  -Dbroker-global-config-path=$GLOBAL_CONFIG \
   -cp "/servers/broker/conf:/servers/broker/dist/*:/servers/broker/dist/lib/*" \
   pt.com.broker.Start

@@ -38,7 +38,7 @@ public class MultiThreadSync {
 		
 	}
 	
-	@Test
+//	@Test
 	public void testNonAthomicVariables() throws InterruptedException{
 		BrokerClient consumer = new BrokerClient("127.0.0.1", 3323, NetProtocolType.PROTOCOL_BUFFER);
 		consumer.connect();

@@ -1,0 +1,4 @@
+/servers/broker/conf/keystore
+/servers/broker/conf/broker-defaults.conf
+/servers/broker/conf/agent.config
+/servers/broker/conf/global.config

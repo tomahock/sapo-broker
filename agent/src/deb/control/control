@@ -1,5 +1,6 @@
-Package: [[artifactId]]
+Package: sapo-broker
 Version: [[version]]
+Depends: sapo-jvm (>= 1.7.0)
 Section: Java
 Priority: optional
 Architecture: all

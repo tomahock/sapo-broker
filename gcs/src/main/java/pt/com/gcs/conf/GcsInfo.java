@@ -28,6 +28,8 @@ import pt.com.gcs.conf.global.BrokerSecurityPolicy;
 public class GcsInfo {
 
 	private final static Logger log = LoggerFactory.getLogger(GcsInfo.class);
+	
+	public static final int UNLIMITED_QUEUES_VALUE = -1;
 
 	private static final GcsInfo instance = new GcsInfo();
 

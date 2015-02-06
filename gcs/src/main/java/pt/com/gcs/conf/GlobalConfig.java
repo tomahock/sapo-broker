@@ -1,16 +1,19 @@
 package pt.com.gcs.conf;
 
-import org.caudexorigo.Shutdown;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import pt.com.broker.auth.ProviderInfo;
-import pt.com.gcs.conf.global.BrokerSecurityPolicy;
-import pt.com.gcs.net.Peer;
+import java.io.File;
+import java.io.FileReader;
+import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -23,13 +26,18 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import java.io.File;
-import java.net.InetSocketAddress;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.Shutdown;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import pt.com.broker.auth.ProviderInfo;
+import pt.com.gcs.conf.global.BrokerSecurityPolicy;
+import pt.com.gcs.net.Peer;
 
 public class GlobalConfig
 {
@@ -58,6 +66,8 @@ public class GlobalConfig
 	private int maxDistinctSubscriptions;
 	private boolean preferLocalConsumers = true;
 	private boolean supportVirtualQueues = true;
+	//Max Stake age by queues prefix
+	private Map<String, Long> queuePrefixConfig = new HashMap<String, Long>();
 
 	private GlobalConfig()
 	{
@@ -79,7 +89,7 @@ public class GlobalConfig
 
 			if (!result.isValid())
 			{
-				log.error("Invalid world map, aborting startup.");
+				log.error("Invalid Global configuration file, aborting startup.");
 				log.error(result.getMessage());
 				Shutdown.now();
 			}
@@ -160,7 +170,29 @@ public class GlobalConfig
 
 		String maxStoreTimeStr = extractElementInfo(doc, "store-time")[0];
 		maxStoreTime = Long.parseLong(maxStoreTimeStr);
+		
+		queuePrefixConfig = loadQueuePrefixConfig(doc);
 
+	}
+	
+	private Map<String, Long> loadQueuePrefixConfig(Document doc){
+		Map<String, Long> queuePrefixConfig = new HashMap<String, Long>();
+		NodeList prefixes = doc.getElementsByTagName("prefixes");
+		if(prefixes.getLength() > 0){
+			//This means we have prefixes to load
+			NodeList prefixNodes = ((Element) prefixes.item(0)).getElementsByTagName("prefix");
+			//Because we validate the xml as good developers we are, we can be assured that this nodelist
+			//will allways be filled.
+			for(int i = 0; i < prefixNodes.getLength(); i++){
+				Element prefixNode = (Element) prefixNodes.item(i);
+				//Queue prefix
+				String prefixName = prefixNode.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
+				//Queue prefix timer
+				Long prefixStaleAge = Long.valueOf(prefixNode.getElementsByTagName("max-stale-age").item(0).getFirstChild().getNodeValue());
+				queuePrefixConfig.put(prefixName, prefixStaleAge);
+			}
+		}
+		return queuePrefixConfig;
 	}
 
 	private synchronized void populateWorldMap(Document doc)
@@ -262,7 +294,6 @@ public class GlobalConfig
 			factory.setValidating(validating);
 			File xmlFile = new File(filename);
 			last_modified.set(xmlFile.lastModified());
-
 			// Create the builder and parse the file
 			Document doc = factory.newDocumentBuilder().parse(xmlFile);
 			return doc;
@@ -406,5 +437,9 @@ public class GlobalConfig
 	public static int getMaxDistinctSubscriptions()
 	{
 		return instance.maxDistinctSubscriptions;
+	}
+	
+	public static Map<String, Long> getQueuePrefixConfig(){
+		return instance.queuePrefixConfig;
 	}
 }
