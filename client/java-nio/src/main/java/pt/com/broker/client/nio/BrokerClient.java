@@ -50,8 +50,10 @@ public class BrokerClient extends BaseClient implements Observer {
 
     private ChannelInitializer channelInitializer;
     
+    private List<ConnectionEventListener> connectionEventListeners;
     
-    //FIXME: change the number of threads.
+    
+    //FIXME: change the number of threads. Can we use the Netty executors?
     ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
@@ -105,7 +107,8 @@ public class BrokerClient extends BaseClient implements Observer {
     	//FIXME: The PongConsumerManager is always created new. Find a way to use the provided one.
         setPongConsumerManager(new PongConsumerManager());
         setConsumerManager(new ConsumerManager());
-        channelInitializer  = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager());
+        setConnectionEventListeners(new ArrayList<ConnectionEventListener>());
+        channelInitializer  = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager(), getConnectionEventListeners());
         channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
         setBootstrap(new Bootstrap(channelInitializer));
         setAcceptRequestsManager(new PendingAcceptRequestsManager());
@@ -673,6 +676,14 @@ public class BrokerClient extends BaseClient implements Observer {
     public void setPongConsumerManager(PongConsumerManager pongConsumerManager) {
         this.pongConsumerManager = pongConsumerManager;
     }
+    
+    public void setConnectionEventListeners(List<ConnectionEventListener> connectionEventListeners){
+    	this.connectionEventListeners = connectionEventListeners;
+    }
+    
+    public List<ConnectionEventListener> getConnectionEventListeners(){
+    	return connectionEventListeners;
+    }
 
     /**
      * <p>getHosts.</p>
@@ -790,7 +801,8 @@ public class BrokerClient extends BaseClient implements Observer {
      * @param connectionEventListener {@link pt.com.broker.client.nio.events.ConnectionEventListener} object.
      * */
     public void addConnectionEventListener(ConnectionEventListener connectionEventListener) {
-		this.hosts.addConnectionEventListener(connectionEventListener);
+//		this.hosts.addConnectionEventListener(connectionEventListener);
+    	this.connectionEventListeners.add(connectionEventListener);
 	}
 
 }

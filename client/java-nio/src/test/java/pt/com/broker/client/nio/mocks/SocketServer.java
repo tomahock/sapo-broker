@@ -25,7 +25,6 @@ public class SocketServer {
 
     int port;
 
-
     private ChannelFuture future;
 
     EventLoopGroup bossGroup = new NioEventLoopGroup();

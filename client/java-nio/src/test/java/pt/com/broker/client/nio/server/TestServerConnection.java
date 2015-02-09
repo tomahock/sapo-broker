@@ -2,8 +2,11 @@ package pt.com.broker.client.nio.server;
 
 
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Assert;
 import org.junit.Test;
+
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
@@ -24,21 +27,18 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by luissantos on 12-05-2014.
  */
+
+//FIXME: Isn't this supposed to be an integration test?
 public class TestServerConnection extends ServerBaseTest {
-
-
-
-
-
 
     @Test()
     public void testConnection() throws ExecutionException, InterruptedException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         List<SocketServer> servers = getServers();
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
-        Bootstrap b = new Bootstrap(new ChannelInitializer(serializer,null,null));
+        Bootstrap b = new Bootstrap(new ChannelInitializer(serializer,null,null, null));
         HostContainer container = new HostContainer(b);
         for(SocketServer server : servers){
-            HostInfo host = new HostInfo("127.0.0.1",server.getPort());
+            HostInfo host = new HostInfo("127.0.0.1", server.getPort());
             host.setReaderIdleTime(4000);
             host.setWriterIdleTime(2000);
             container.add(host);
@@ -64,7 +64,7 @@ public class TestServerConnection extends ServerBaseTest {
 
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        HostContainer container = new HostContainer(new Bootstrap(new ChannelInitializer( serializer,null,null)));
+        HostContainer container = new HostContainer(new Bootstrap(new ChannelInitializer( serializer,null,null, null)));
 
         for(SocketServer server : servers){
             container.add(new HostInfo("127.0.0.1",server.getPort()));
@@ -142,7 +142,7 @@ public class TestServerConnection extends ServerBaseTest {
 
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager()));
+        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager(), null));
 
         HostContainer container = new HostContainer(bootstrap);
 
@@ -207,7 +207,7 @@ public class TestServerConnection extends ServerBaseTest {
 
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager()));
+        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager(), null));
 
         HostContainer container = new HostContainer(bootstrap);
 

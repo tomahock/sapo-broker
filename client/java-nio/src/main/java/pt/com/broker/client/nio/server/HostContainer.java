@@ -231,11 +231,12 @@ public class HostContainer extends Observable {
                                 synchronized (hostContainer) {
                                     hostContainer.setChanged();
                                     hostContainer.notifyObservers(new ReconnectEvent(host));
+                                    log.debug("Fire the user event trigger RECONNECT!");
+                                    future.channel().pipeline().fireUserEventTriggered(new ReconnectEvent(host));
                                 }
                                 for(ConnectionEventListener eventListener: connectionEventListeners){
                                 	eventListener.reconnected(host);
                                 }
-
                             }
 
                         });
@@ -350,7 +351,6 @@ public class HostContainer extends Observable {
      *
      * @return Channel
      * @throws java.lang.InterruptedException if any.
-     * @see pt.com.broker.client.nio.codecs.HeartbeatHandler
      */
     public HostInfo getAvailableHost() throws InterruptedException {
 

@@ -66,7 +66,7 @@ public class PongConsumerManager {
      * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
      * @throws java.lang.Throwable if any.
      */
-    public void deliverMessage(NetMessage netMessage, HostInfo host) throws Throwable {
+    public void deliverMessage(NetMessage netMessage, HostInfo host) throws Throwable {//FIXME: This should not be a throwable
 
         String actionid = getActionId(netMessage);
 

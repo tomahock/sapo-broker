@@ -1,4 +1,4 @@
-package pt.com.broker.client.nio.codecs;
+package pt.com.broker.client.nio.handlers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,6 +45,9 @@ public class HeartBeatEventHandler extends ChannelDuplexHandler {
 			    	ctx.writeAndFlush(message);
 				}
 			}
+		} else {
+			//Nothing to do here, we forward the event to the next handler in the pipeline.
+			ctx.fireUserEventTriggered(evt);
 		}
 	}
 

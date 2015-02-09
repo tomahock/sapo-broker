@@ -25,7 +25,7 @@ public class TestServerReconnect extends ServerBaseTest {
 
 
 
-    @Test()
+//    @Test()
     public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
         if(skipTest(Utils.isAndroid())){

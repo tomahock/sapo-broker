@@ -9,7 +9,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.client.nio.codecs.HeartBeatEventHandler;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.types.ActionIdDecorator;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
@@ -40,7 +39,6 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
      */
     public PongMessageHandler(PongConsumerManager manager) {
         super();
-
         this.manager = manager;
     }
 
@@ -53,19 +51,12 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
     /** {@inheritDoc} */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg){
-
         NetAction action = msg.getAction();
-
         if(action.getActionType() != NetAction.ActionType.PONG || action.getPongMessage()  == null){
             ctx.fireChannelRead(msg);
             return;
         }
-
-
-
-
         try {
-
             if(getActionId(msg).equals(HeartBeatEventHandler.HEART_BEAT_ACTION_ID)){
             	//Heart beat message. Reset the statistics
             	AtomicInteger heartBeatCounter = ctx.channel().attr(HeartBeatEventHandler.ATTRIBUTE_HEART_BEAT_COUNTER).get();
@@ -73,28 +64,16 @@ public class PongMessageHandler extends SimpleChannelInboundHandler<NetMessage> 
             		log.debug("HeartBeat counter: {}", heartBeatCounter.get());
             	}
             	ctx.channel().attr(HeartBeatEventHandler.ATTRIBUTE_HEART_BEAT_COUNTER).remove();
-                log.debug("Got a heartbeat pong response");
                 return;
             }
-
             log.debug("Got a pong message");
-
             ChannelDecorator decorator = new ChannelDecorator(ctx.channel());
-
             manager.deliverMessage( msg, decorator.getHost() );
-
-
-
-
         } catch (Throwable throwable) {
-
             log.error("Was not possible to deliver pong message", throwable);
-
         }finally {
             ctx.fireChannelReadComplete();
         }
-
-
     }
 
 

@@ -1,22 +1,24 @@
 package pt.com.broker.client.nio.bootstrap;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.ssl.SslHandler;
-import pt.com.broker.client.nio.codecs.HeartBeatEventHandler;
-import pt.com.broker.client.nio.codecs.HeartbeatHandler;
 import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.events.ConnectionEventListener;
 import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
+import pt.com.broker.client.nio.handlers.HeartBeatEventHandler;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
+import pt.com.broker.client.nio.handlers.ReconnectEventHandler;
 import pt.com.broker.types.BindingSerializer;
 
 import javax.net.ssl.SSLContext;
@@ -37,7 +39,6 @@ public class ChannelInitializer extends BaseChannelInitializer {
     
 	static final Logger log = LoggerFactory.getLogger(ChannelInitializer.class);
 	
-    private final HeartbeatHandler heartbeatHandler = new HeartbeatHandler();
     private final PongMessageHandler pongMessageHandler;
     private final ReceiveFaultHandler faultHandler;
     private final AcceptMessageHandler acceptMessageHandler;
@@ -49,6 +50,8 @@ public class ChannelInitializer extends BaseChannelInitializer {
     protected PendingAcceptRequestsManager acceptRequestsManager;
 
     protected SSLContext context;
+    
+    private List<ConnectionEventListener> connectionEventListeners;
 
 
 
@@ -60,7 +63,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
      * @param consumerManager a {@link pt.com.broker.client.nio.consumer.ConsumerManager} object.
      * @param pongConsumerManager a {@link pt.com.broker.client.nio.consumer.PongConsumerManager} object.
      */
-    public ChannelInitializer(BindingSerializer serializer, ConsumerManager consumerManager, PongConsumerManager pongConsumerManager) {
+    public ChannelInitializer(BindingSerializer serializer, ConsumerManager consumerManager, PongConsumerManager pongConsumerManager, List<ConnectionEventListener> connectionEventListeners) {
 
         super(serializer);
 
@@ -68,6 +71,8 @@ public class ChannelInitializer extends BaseChannelInitializer {
 
         setPongConsumerManager(pongConsumerManager);
 
+        this.connectionEventListeners = connectionEventListeners;
+        
         pongMessageHandler =  new PongMessageHandler(getPongConsumerManager());
 
         faultHandler = new ReceiveFaultHandler(getConsumerManager());
@@ -83,6 +88,8 @@ public class ChannelInitializer extends BaseChannelInitializer {
     protected void initChannel(Channel ch) throws Exception {
 
         super.initChannel(ch);
+        
+        log.debug("**************** Initializing channel! **********************");
 
         ChannelPipeline pipeline = ch.pipeline();
 
@@ -114,17 +121,16 @@ public class ChannelInitializer extends BaseChannelInitializer {
             pipeline.addFirst("ssl", new SslHandler(engine, false) );
 
         }
-        //FIXME: Add a proper heartbeat handler to the client. This one simply won't work.
-//        pipeline.addLast("heartbeat_handler", heartbeatHandler);
         pipeline.addLast("heartbeat_handler", new HeartBeatEventHandler());
 
 
         /* add message receive handler */
-        pipeline.addLast("broker_notification_handler",receiveMessageHandler);
+        pipeline.addLast("broker_notification_handler", receiveMessageHandler);
 
-        pipeline.addLast("broker_pong_handler",pongMessageHandler);
+        pipeline.addLast("broker_pong_handler", pongMessageHandler);
         pipeline.addLast("broker_fault_handler", faultHandler);
-        pipeline.addLast("broker_accept_handler",acceptMessageHandler);
+        pipeline.addLast("broker_accept_handler", acceptMessageHandler);
+        pipeline.addLast("reconnect_handler", new ReconnectEventHandler(connectionEventListeners));
         pipeline.addLast("exception_catcher", new ChannelHandlerAdapter() {
 
 			@Override
