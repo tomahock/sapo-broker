@@ -22,3 +22,6 @@
 [submodule "vagrant/puppet/modules/ohmyzsh"]
 	path = vagrant/puppet/modules/ohmyzsh
 	url = https://github.com/acme/puppet-acme-oh-my-zsh.git
+[submodule "vagrant/puppet/modules/puppi"]
+	path = vagrant/puppet/modules/puppi
+	url = https://github.com/example42/puppi.git

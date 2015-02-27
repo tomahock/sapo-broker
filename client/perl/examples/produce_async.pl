@@ -6,14 +6,14 @@ use AnyEvent;
 use strict;
 use warnings;
 
-my $host = "10.135.66.175";    #"broker.labs.sapo.pt"; #'broker.m3.bk.sapo.pt'
-my $port = 3390;
+my $host = "localhost";    #"broker.labs.sapo.pt"; #'broker.m3.bk.sapo.pt'
+my $port = 3323;
 
 my $broker = SAPO::Broker::Clients::Async->new(
     host  => $host,
     port  => $port,
-    codec => 'protobufxs',
-    tls   => 1
+    codec => 'thriftxs',
+    #tls   => 1
 );
 
 my %options = (

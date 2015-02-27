@@ -8,7 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
+import pt.com.broker.client.nio.events.ConnectedEvent;
 import pt.com.broker.client.nio.events.ConnectionEventListener;
+import pt.com.broker.client.nio.events.DisconnectedEvent;
+import pt.com.broker.client.nio.events.ReconnectedEvent;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
@@ -172,6 +175,7 @@ public class HostContainer extends Observable {
                                 @Override
                                 public void operationComplete(ChannelFuture future) throws Exception {
                                     latch.countDown();
+                                    future.channel().pipeline().fireUserEventTriggered(new ConnectedEvent());
                                 }
                                 
                             });
@@ -233,6 +237,7 @@ public class HostContainer extends Observable {
                                     hostContainer.notifyObservers(new ReconnectEvent(host));
                                     log.debug("Fire the user event trigger RECONNECT!");
                                     future.channel().pipeline().fireUserEventTriggered(new ReconnectEvent(host));
+                                    future.channel().pipeline().fireUserEventTriggered(new ReconnectedEvent());
                                 }
                                 for(ConnectionEventListener eventListener: connectionEventListeners){
                                 	eventListener.reconnected(host);
@@ -243,7 +248,7 @@ public class HostContainer extends Observable {
 
 
                     } catch (Exception e) {
-
+                    	log.error("Unexpected error caught.", e);
                     }
 
 
@@ -350,13 +355,16 @@ public class HostContainer extends Observable {
      * If its not possible to write in channel for a while the server will be disconnected.
      *
      * @return Channel
-     * @throws java.lang.InterruptedException if any.
      */
-    public HostInfo getAvailableHost() throws InterruptedException {
+    public HostInfo getAvailableHost() {
 
         HostInfo host = null;
 
         int total = connectedHosts.size();
+        
+        if (total == 0) {
+            return null;
+        }
 
         do {
 
@@ -483,10 +491,11 @@ public class HostContainer extends Observable {
                             @Override
                             public void operationComplete(ChannelFuture future) throws Exception {
                                 inactiveHost(host);
+                                future.channel().pipeline().fireUserEventTriggered(new DisconnectedEvent());
                                 //Call the event listeners before reconnecting
-                                for(ConnectionEventListener listener: connectionEventListeners){
+                                /*for(ConnectionEventListener listener: connectionEventListeners){
                             		listener.disconnected(host);
-                            	}
+                            	}*/
                                 if (!future.isCancelled()) {
                                     reconnect(host);
                                 }

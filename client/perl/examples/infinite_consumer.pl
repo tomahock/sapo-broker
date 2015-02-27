@@ -12,15 +12,13 @@ my $broker = SAPO::Broker::Clients::Simple->new(
 );
 my %options = (
     'destination_type' => 'QUEUE',
-    'destination'      => '/tests/perl',
+    'destination'      => '/tests/perlclient',
     'auto_acknowledge' => 1
 );
 
 $broker->subscribe(%options);
 
-my $N = $ARGV[0] || 100;
-
-for my $n ( 1 .. $N ) {
+while(1) {
     my $notification = $broker->receive;
     my $payload      = $notification->message->payload;
     print $payload. "\n";

@@ -1,3 +1,5 @@
+$USER_HOME = "/home/${USER}"
+
 class forceupdate {
   exec { "apt-update":
     command => "/usr/bin/apt-get update"
@@ -25,23 +27,27 @@ apt::key { 'sapodebiankey':
   repos      => 'sapo'
 }->Exec['apt-update']
 
-class { 'ohmyzsh': }
+# class { 'ohmyzsh': }
 
 # for a single user
-ohmyzsh::install { 'vagrant': }
+# ohmyzsh::install { 'vagrant': }
 
 # activate plugins for a user
-ohmyzsh::plugins { 'vagrant': plugins => 'github z' }
+# ohmyzsh::plugins { 'vagrant': plugins => 'github z' }
 
+class { 'perl':
+}
 
 #import box modules
 import 'includes/*.pp'
 
+class { 'perlbrew': }
 class { 'java': }
 class { 'misc': }
 class { 'protobuf': }
 class { 'python': }
 class { 'php': }
+class { 'broker_perl': }
 
 include thrift
 

@@ -11,8 +11,8 @@
 	<name>sapo-broker-agent</name>
 	<packaging>jar</packaging>
 	<properties>
-		<agent-config-path>agent_example.config</agent-config-path>
-		<broker-global-config-path>broker_global.config</broker-global-config-path>
+		<agent-config-path>src/main/resources/conf/agent.config</agent-config-path>
+		<broker-global-config-path>src/main/resources/conf/global.config</broker-global-config-path>
 		<mainClass>pt.com.broker.Start</mainClass>
 		<!-- <workingDirectory>package</workingDirectory> -->
 		<appArgs>-Xmx256M</appArgs>
@@ -192,7 +192,7 @@
 						</goals>
 						<configuration>
 							<verbose>true</verbose>
-							<deb>${project.build.directory}/sapo-broker.deb</deb>
+							<deb>${project.build.directory}/sapo-broker-${project.version}.deb</deb>
 							<dataSet>
 								<data>
 									<src>${project.build.directory}/conf</src>

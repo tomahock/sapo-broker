@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.BrokerListener;
+import pt.com.broker.client.nio.exceptions.UnavailableAgentException;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
@@ -55,13 +56,14 @@ public class MultipleAgentsTests {
 		public void run() {
 			try{
 				for(int i = 0; i < nMessages; i++){
-					bClient.publish("Test broker Message", topic, destinationType);
-					producedMessages.incrementAndGet();
 					try {
+						bClient.publish("Test broker Message", topic, destinationType);
+						producedMessages.incrementAndGet();
 						Thread.sleep(PRODUCER_SLEEP_TIME);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch(UnavailableAgentException e){
+						log.error("No agent available to publish message.");
 					}
 				}
 			} finally {

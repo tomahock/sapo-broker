@@ -13,19 +13,24 @@ exec 2>&1
 
 if [ -f /servers/broker/conf/broker-defaults.conf ]; then . /servers/broker/conf/broker-defaults.conf; fi
 
-if [ -f /servers/broker/conf/global.config ]
+if [ -f /servers/broker/etc/broker_global.config ]
 then
-  GLOBAL_CONFIG="/servers/broker/conf/global.config"
+  GLOBAL_CONFIG="/servers/broker/etc/broker_global.config"
 else
- if [ -f /etc/broker_global.config ]
- then
-  GLOBAL_CONFIG="/etc/broker_global.config"
- else
-  if [ -f /ptmail/etc/broker_global.config ]
+  if [ -f /servers/broker/conf/global.config ]
   then
-    GLOBAL_CONFIG="/ptmail/etc/broker_global.config"
+    GLOBAL_CONFIG="/servers/broker/conf/global.config"
+  else
+   if [ -f /etc/broker_global.config ]
+   then
+    GLOBAL_CONFIG="/etc/broker_global.config"
+   else
+    if [ -f /ptmail/etc/broker_global.config ]
+    then
+      GLOBAL_CONFIG="/ptmail/etc/broker_global.config"
+    fi
+   fi
   fi
- fi
 fi
 
 if [ ! -f $GLOBAL_CONFIG ]
@@ -34,6 +39,13 @@ then
 	echo "For standalone instalations you can: cp /server/broker/tmp/broker_global.config /servers/broker/etc/"
 	echo "Exiting..."
 exit;
+fi
+
+if [ -f /servers/broker/etc/agent.config ]
+then
+	AGENT_CONFIG="/servers/broker/etc/agent.config"
+else
+	AGENT_CONFIG="/servers/broker/conf/agent.config"
 fi
 
 cd /servers/broker/
@@ -50,7 +62,7 @@ exec setuidgid nobody /opt/sapojvm/bin/java \
   -Djava.net.preferIPv4Stack=true \
   -Djava.net.preferIPv6Addresses=false \
   -Dfile.encoding=UTF-8 \
-  -Dagent-config-path=/servers/broker/conf/agent.config \
+  -Dagent-config-path=$AGENT_CONFIG \
   -Dbroker-global-config-path=$GLOBAL_CONFIG \
   -cp "/servers/broker/conf:/servers/broker/dist/*:/servers/broker/dist/lib/*" \
   pt.com.broker.Start

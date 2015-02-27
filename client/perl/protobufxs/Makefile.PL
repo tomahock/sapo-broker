@@ -21,7 +21,7 @@ WriteMakefile(
     'LD'       => '$(CC)',
     'CCFLAGS'  => '-fno-strict-aliasing -Wall',
     'OBJECT'   => 'broker.pb.o Atom.o',
-    'LIBS'     => [" -L/usr/local/lib -lprotobuf"],
+    'LIBS'     => [" -L/usr/local/lib -lprotobuf -lpthread"],
     'INC'      => " -I/usr/local/include",
     'XSOPT'    => '-C++',
 );

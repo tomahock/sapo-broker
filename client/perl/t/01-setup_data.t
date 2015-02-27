@@ -20,7 +20,7 @@ sub rand_string($) {
 my $rand_name = '/perl/tests/' . hostfqdn() . "_" . time();
 my $N         = $ENV{'BROKER_N_TESTS'} || 100;
 my $L         = $ENV{'BROKER_SIZE_TESTS'} || 1000;
-my $host      = $ENV{'BROKER_HOST'} || 'broker.labs.sapo.pt';
+my $host      = $ENV{'BROKER_HOST'} || 'localhost';
 my $action_id = $host.'_'.(rand (1000000000));	#quick and dirty uuid
 
 #plan tests => 3 + 2 * $N;

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#chown nobody:nogroup /servers/broker/daemontools/log
+[ ! -d /service/broker ] && ln -s /servers/broker/daemontools /service/broker

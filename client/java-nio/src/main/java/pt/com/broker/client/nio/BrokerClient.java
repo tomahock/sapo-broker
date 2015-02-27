@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 import pt.com.broker.client.nio.bootstrap.Bootstrap;
 import pt.com.broker.client.nio.bootstrap.ChannelInitializer;
 import pt.com.broker.client.nio.consumer.BrokerAsyncConsumer;
@@ -18,6 +20,7 @@ import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.ConnectionEventListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
+import pt.com.broker.client.nio.exceptions.UnavailableAgentException;
 import pt.com.broker.client.nio.handlers.timeout.TimeoutException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
@@ -119,22 +122,25 @@ public class BrokerClient extends BaseClient implements Observer {
     }
 
 
-    /** {@inheritDoc} */
-    public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
+    /** {@inheritDoc} 
+     * @throws UnavailableAgentException */
+    public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException {
 
         return publish(brokerMessage.getBytes(), destinationName, dtype);
     }
 
-    /** {@inheritDoc} */
-    public Future<HostInfo> publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
+    /** {@inheritDoc} 
+     * @throws UnavailableAgentException */
+    public Future<HostInfo> publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
         return publish(msg, destinationName, dtype);
     }
 
-    /** {@inheritDoc} */
-    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
+    /** {@inheritDoc} 
+     * @throws UnavailableAgentException */
+    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) throws UnavailableAgentException {
         return publish(brokerMessage, destination, dtype, null);
     }
 
@@ -146,14 +152,16 @@ public class BrokerClient extends BaseClient implements Observer {
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @param request a {@link pt.com.broker.client.nio.AcceptRequest} object.
      * @return a {@link java.util.concurrent.Future} object.
+     * @throws java.lang.NullPointerException if the brokerMessage is null.
+     * @throws java.lang.IllegalArgumentException if the destination is null or empty.
      */
-    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype, AcceptRequest request) {
-
-
-        if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
-            throw new IllegalArgumentException("Mal-formed Enqueue request");
-        }
-
+    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype, AcceptRequest request) throws UnavailableAgentException {
+    	Preconditions.checkNotNull(brokerMessage, "brokerMessage cannot be null.");
+    	Preconditions.checkArgument(StringUtils.isNotBlank(destination), "destination cannot be null or empty");
+    	//Check if there are available agents
+    	if(getHosts().getAvailableHost() == null){
+    		throw new UnavailableAgentException();
+    	}
         NetPublish publish = new NetPublish(destination, dtype, brokerMessage);
 
         if(request!=null){

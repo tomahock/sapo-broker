@@ -3,11 +3,14 @@ package pt.com.broker.client.nio;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
 import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
+import pt.com.broker.client.nio.exceptions.UnavailableAgentException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.utils.ChannelWrapperFuture;
@@ -178,7 +181,7 @@ public abstract class BaseClient{
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException {
 
         return publish(brokerMessage.getBytes(), destinationName, dtype);
     }
@@ -191,7 +194,7 @@ public abstract class BaseClient{
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future<HostInfo> publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException {
 
         NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
@@ -206,7 +209,7 @@ public abstract class BaseClient{
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) throws UnavailableAgentException{
 
         if ((brokerMessage == null) || StringUtils.isBlank(destination)) {
             throw new IllegalArgumentException("Mal-formed Enqueue request");
@@ -227,7 +230,7 @@ public abstract class BaseClient{
      * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future<HostInfo> publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(NetPublish message, String destination, NetAction.DestinationType dtype) throws UnavailableAgentException{
 
         NetAction action = new NetAction(message);
 
@@ -242,26 +245,19 @@ public abstract class BaseClient{
      *
      * @return a {@link pt.com.broker.client.nio.server.HostInfo} object.
      */
-    protected HostInfo getAvailableHost(){
+	protected HostInfo getAvailableHost() {
 
-       HostInfo h = null;
+		HostInfo h = null;
+		h = getHosts().getAvailableHost();
+		if (h == null) {
+			throw new RuntimeException(
+					"Was not possible to get an active channel");
+		}
 
-        try {
+		// log.debug("Selected channel is: "+ h);
 
-            h = getHosts().getAvailableHost();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if(h==null){
-            throw new RuntimeException("Was not possible to get an active channel");
-        }
-
-//        log.debug("Selected channel is: "+ h);
-
-        return h;
-    }
+		return h;
+	}
 
     /**
      * <p>connect.</p>

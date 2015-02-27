@@ -2,3 +2,11 @@
 /servers/broker/conf/broker-defaults.conf
 /servers/broker/conf/agent.config
 /servers/broker/conf/global.config
+/servers/broker/keys/agent/clientKeystore
+/servers/broker/keys/agent/agent.cer
+/servers/broker/keys/agent/file.pem
+/servers/broker/keys/agent/keystore
+/servers/broker/keys/client/clientKeystore
+/servers/broker/keys/client/agent.cer
+/servers/broker/etc/agent.config
+/servers/broker/etc/broker-defaults.conf

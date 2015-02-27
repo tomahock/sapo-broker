@@ -43,6 +43,10 @@ def get_mem
     return mem
 end
 
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise 'vagrant-vbguest is not installed: type vagrant plugin install vagrant-vbguest'
+end
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
@@ -50,12 +54,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
   #config.vm.box = "wheezy-64"
-  config.vm.box = "puppetlabs/debian-7.6-32-puppet"
+  config.vm.box = "puppetlabs/debian-7.8-32-puppet"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
   #config.vm.box_url = "http://vagrantboxes.footballradar.com/wheezy64.box"
-  config.vm.box_url = "https://vagrantcloud.com/puppetlabs/boxes/debian-7.6-32-puppet/versions/1.0.0/providers/virtualbox.box"
+  config.vm.box_url = "https://vagrantcloud.com/puppetlabs/boxes/debian-7.8-32-puppet/versions/1.0.1/providers/virtualbox.box"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -66,17 +70,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # using a specific IP.
   config.vm.network :private_network, ip: "192.168.100.10"
   # Broker Ports redirect
-  config.vm.network "forwarded_port", guest: 3323, host: 3323, protocol: 'tcp', host_ip: '192.168.100.1'
-  config.vm.network "forwarded_port", guest: 3323, host: 3323, protocol: 'udp', host_ip: '192.168.100.1'
-  config.vm.network "forwarded_port", guest: 3423, host: 3423, protocol: 'tcp', host_ip: '192.168.100.1'
-  config.vm.network "forwarded_port", guest: 3423, host: 3423, protocol: 'udp', host_ip: '192.168.100.1'
-  config.vm.network "forwarded_port", guest: 3390, host: 3390, protocol: 'tcp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3323, host: 3323, protocol: 'tcp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3323, host: 3323, protocol: 'udp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3423, host: 3423, protocol: 'tcp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3423, host: 3423, protocol: 'udp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3390, host: 3390, protocol: 'tcp', host_ip: '192.168.100.1'
 
   # Broker Legacy Ports redirect
-  config.vm.network "forwarded_port", guest: 3322, host: 3322, protocol: 'tcp', host_ip: '192.168.100.1'
-  config.vm.network "forwarded_port", guest: 3366, host: 3366, protocol: 'udp', host_ip: '192.168.100.1'
-  config.vm.network "forwarded_port", guest: 3422, host: 3422, protocol: 'tcp', host_ip: '192.168.100.1'
-  config.vm.network "forwarded_port", guest: 3466, host: 3466, protocol: 'udp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3322, host: 3322, protocol: 'tcp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3366, host: 3366, protocol: 'udp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3422, host: 3422, protocol: 'tcp', host_ip: '192.168.100.1'
+  #config.vm.network "forwarded_port", guest: 3466, host: 3466, protocol: 'udp', host_ip: '192.168.100.1'
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -177,10 +181,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if Vagrant.has_plugin?("vagrant-vbguest")
     # set auto_update to false, if you do NOT want to check the correct 
     # additions version when booting this machine
-    config.vbguest.auto_update = false
+    config.vbguest.auto_update = true
 
     # do NOT download the iso file from a webserver
-    config.vbguest.no_remote = true  
+    #config.vbguest.no_remote = true  
   end
 
 end

@@ -23,7 +23,7 @@ sub has_module($) {
     return not $@;
 }
 
-unless ( has_module 'LWP' and has_module 'Crypt::SSLeay' and has_module 'JSON::Any' ) {
+if ( has_module 'LWP' and has_module 'Crypt::SSLeay' and has_module 'JSON::Any' ) {
     if ( prompt( 'Do you want to use the HTTP interface to authenticate with SAPO STS?', 'yes' ) =~ /^yes/i ) {
         $PREREQ_PM{'Crypt::SSLeay'} = 0;
         $PREREQ_PM{'LWP'}           = 0;
@@ -31,7 +31,7 @@ unless ( has_module 'LWP' and has_module 'Crypt::SSLeay' and has_module 'JSON::A
     }
 }
 
-unless ( has_module "IO::Socket::SSL" ) {
+if ( has_module "IO::Socket::SSL" ) {
     if ( prompt( 'Do you want to use the SSL transport', 'yes' ) =~ /^yes/i ) {
         $PREREQ_PM{'IO::Socket:SSL'} = 0;
     }
@@ -50,7 +50,7 @@ if ( prompt( 'Do you want to install support for Thrift', 'yes' ) !~ /yes/i ) {
 
 my $use_thriftxs = 0;
 if ( prompt( 'Do you want to install support for Thrift(XS)', 'yes' ) =~ /yes/i ) {
-    $use_protobuf = 1;
+    $use_thriftxs = 1;
 }
 
 if ( not( $use_thrift or $use_protobuf or $use_thriftxs ) ) {
@@ -74,7 +74,7 @@ WriteMakefile(
     'PMLIBDIRS'     => [@PMLIBDIRS],
     'PREREQ_PM'     => {%PREREQ_PM},
     'test'          => { 'TESTS' => 't/*.t' },
-    dist            => {
+    'dist'          => {
         COMPRESS => 'gzip -9f',
         SUFFIX   => 'gz',
     },

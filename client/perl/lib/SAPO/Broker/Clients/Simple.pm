@@ -101,7 +101,7 @@ sub __get_transport_class {
 
 sub __can_acknowledge($) {
     my ($kind) = @_;
-    return $kind eq 'QUEUE' or $kind eq 'VIRTUAL_QUEUE';
+    return ($kind eq 'QUEUE' or $kind eq 'VIRTUAL_QUEUE');
 }
 
 sub subscribe {

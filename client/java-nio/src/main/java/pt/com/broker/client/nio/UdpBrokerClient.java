@@ -3,6 +3,7 @@ package pt.com.broker.client.nio;
 import pt.com.broker.client.nio.bootstrap.BaseChannelInitializer;
 import pt.com.broker.client.nio.bootstrap.DatagramBootstrap;
 import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
+import pt.com.broker.client.nio.exceptions.UnavailableAgentException;
 import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction;
@@ -66,7 +67,7 @@ public class UdpBrokerClient extends BaseClient {
 
     /** {@inheritDoc} */
     @Override
-    public Future<HostInfo> publish(NetPublish message, String destination, NetAction.DestinationType dtype) {
+    public Future<HostInfo> publish(NetPublish message, String destination, NetAction.DestinationType dtype) throws UnavailableAgentException {
 
         if (message.getActionId() != null)
         {

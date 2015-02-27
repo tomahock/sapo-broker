@@ -98,8 +98,8 @@ public abstract class BaseBrokerClient
 		@Override
 		public void run() {
 			try {
-				log.debug("Checking connection status!");
-				if(checkStatus() == null){
+				log.debug("Checking connection state and status!");
+				if(state == BrokerClientState.OK && checkStatus() == null){
 					log.debug("Restarting the connection.");
 					state = BrokerClientState.FAIL;
 					getNetHandler().stop();
@@ -108,7 +108,7 @@ public abstract class BaseBrokerClient
 				}
 			} catch (Throwable e) {
 				log.error("Unexpected error checking connection status.", e);
-			}
+			}	
 		}
 		
 	}
@@ -766,6 +766,7 @@ public abstract class BaseBrokerClient
 	public void close()
 	{
 		getNetHandler().stop();
+		statusScheduler.shutdown();
 		state = BrokerClientState.CLOSE;
 	}
 
@@ -877,45 +878,6 @@ public abstract class BaseBrokerClient
 	public boolean isOldFramming()
 	{
 		return oldFramming;
-	}
-	
-	/**
-	 * Setup an Heartbeat Ping/Pong mechanism to check for idle/closed connections.
-	 * */
-	protected void setupHeartBeatPacket(){
-		/*String actionId = UUID.randomUUID().toString();
-		NetPing ping = new NetPing(actionId);
-
-		NetAction action = new NetAction(ActionType.PING);
-		action.setPingMessage(ping);
-
-		NetMessage message = buildMessage(action);
-
-		getNetHandler().sendMessage(message);
-
-		long timeout = System.currentTimeMillis() + (2 * 1000);
-		NetPong pong = null;
-
-		do
-		{
-			synchronized (_bstatus)
-			{
-				Sleep.time(500);
-				if (System.currentTimeMillis() > timeout)
-					return null;
-				pong = _bstatus.peek();
-				if (pong == null)
-					continue;
-				if (!pong.getActionId().equals(NetPong.getUniversalActionId()) && !pong.getActionId().equals(actionId))
-				{
-					pong = null;
-				}
-				_bstatus.remove();
-			}
-		}
-		while (pong == null);
-
-		return pong;*/
 	}
 	
 }

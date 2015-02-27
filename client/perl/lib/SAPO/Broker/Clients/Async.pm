@@ -5,18 +5,23 @@ use Carp qw(carp croak);
 use SAPO::Broker::Utils qw(has_ssl has_thrift has_protobufxs has_thriftxs);
 use SAPO::Broker::Messages;
 use SAPO::Broker::Transport::TCP_Async;
+use Time::HiRes "time";
+use Data::Dumper;
 
 use strict;
 use warnings;
 
-=head
+
+use constant DEBUG => 0;
+
+#=head
 #don't fail if SSL is not a viable transport (please install IO::Socket::SSL)
 
 my $has_ssl = has_ssl();
 if ($has_ssl) {
     eval 'use SAPO::Broker::Transport::SSL';
 }
-=cut
+#=cut
 
 my %DEFAULT_OPTIONS = ();    # 'proto' => 'tcp_async' );
 
@@ -89,6 +94,8 @@ sub new {
         };
     }
 
+    $self->{_error_cb} = $options{error_cb};
+
     return $self;
 } ## end sub new
 
@@ -112,7 +119,7 @@ sub __get_codec {
         return $codec_name;
     } else {
         my $codec = $codecs{$codec_name};
-
+        
         if ($codec) {
             return $codec;
         } else {
@@ -144,7 +151,7 @@ sub __get_transport_class {
 
 sub __can_acknowledge {
     my ($kind) = @_;
-    return $kind eq 'QUEUE' or $kind eq 'VIRTUAL_QUEUE';
+    return ($kind eq 'QUEUE' or $kind eq 'VIRTUAL_QUEUE');
 }
 
 sub subscribe {
@@ -203,13 +210,52 @@ sub publish {
 
     if ( exists( $options{'payload'} ) ) {
         my $message = SAPO::Broker::Messages::Message->new(%options);
-        my $publish = SAPO::Broker::Messages::Publish->new( %options, 'message' => $message );
+        my $publish;
 
-        $self->send( $publish, %options );
+        if (!exists $options{action_id}) {
+					my $aid = time;
+
+					$publish = SAPO::Broker::Messages::Publish->new(
+						%options, action_id => $aid, 'message' => $message );
+
+					$self->send($publish,
+						%options,
+						cb => sub {},
+					);
+					$self->_receive_ack($options{cb});
+				}
+				else {
+	        $publish = SAPO::Broker::Messages::Publish->new(
+						%options, 'message' => $message );
+
+					$self->send( $publish, %options );
+				}
     } else {
         carp("no payload to publish");
     }
 }
+
+
+sub _receive_ack {
+	my ($self,$cb) = @_;
+
+	print STDERR "_receive_ack\n" if DEBUG;
+
+	$self->receive(
+		timeout => 10,
+		cb => sub {
+			my ($data) = @_;
+			print STDERR "receive ack cb [",ref $data,"]!\n" if DEBUG;
+
+			if (ref $data eq 'SAPO::Broker::Messages::Accepted') {
+				print STDERR "received SAPO::Broker::Messages::Accepted [",$data->action_id,"]!\n" if DEBUG;
+				$cb->() if $cb;
+			}
+		}
+	);
+
+}
+
 
 sub authenticate {
     my ( $self, $username, $password, %args ) = @_;
@@ -242,12 +288,14 @@ sub receive {
             #possible inheritance problems
             my $msg_type = ref($message);
 
-            #print STDERR "Async::Receive: [$msg_type]\n";
+            print STDERR "Async::Receive: [$msg_type]\n" if DEBUG;
 
             if ( $msg_type eq 'SAPO::Broker::Messages::Fault' ) {
                 warn __PACKAGE__ . " " . $message->fault_message;
-                die $message;
-
+                #die $message;
+								if ($self->{_error_cb}) {
+									$self->{_error_cb}->('fatal',$data->fault_message);
+								}
                 #otherwise return the message with no modification
             } elsif ( $msg_type eq 'SAPO::Broker::Messages::Notification' ) {
 

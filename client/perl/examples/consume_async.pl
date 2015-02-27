@@ -7,14 +7,15 @@ use AnyEvent;
 use strict;
 use warnings;
 
-my $host = "10.135.66.175";    #"broker.labs.sapo.pt"; #'broker.m3.bk.sapo.pt'
-my $port = 3390;
+my $host = "localhost";    #"broker.labs.sapo.pt"; #'broker.m3.bk.sapo.pt'
+#my $port = 3390;
+my $port = 3323;
 
 my $broker = SAPO::Broker::Clients::Async->new(
     host  => $host,
     port  => $port,
     codec => 'protobufxs',
-    tls   => 1,
+    #tls   => 1,
     rcb   => sub {
         my ($msg) = @_;
         my $payload = $msg->message->payload;

@@ -2,6 +2,5 @@
 
 chown nobody:nogroup /servers/broker/daemontools/log
 [ ! -d /service/broker ] && ln -s /servers/broker/daemontools /service/broker
-[ ! -d /servers/broker/persistent ] && mkdir /servers/broker/persistent && chown nobody:nogroup /servers/broker/persistent)
-#svc -d /service/broker
-#svc -u /service/broker
+[ ! -d /servers/broker/persistent ] && mkdir /servers/broker/persistent && chown nobody:nogroup /servers/broker/persistent
+echo 'Broker Agent Ready'
