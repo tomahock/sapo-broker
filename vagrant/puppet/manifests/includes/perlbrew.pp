@@ -1,6 +1,6 @@
 class perlbrew {
 
-    $PERL_VERSION = '5.20.0' # Needs to be moved to hiera
+    $PERL_VERSION = '5.20.2' # Needs to be moved to hiera
     $PERL_NAME = "perl-${PERL_VERSION}"
     $PERLBREW_ROOT = "${USER_HOME}/perl5/perlbrew"
     $CPANM = "${PERLBREW_ROOT}/perls/${PERL_NAME}/bin/cpanm"

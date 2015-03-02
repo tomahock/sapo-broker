@@ -48,7 +48,7 @@ public class TestAcceptResponseListener {
 
         NetAccepted  netAccepted = new NetAccepted(UUID.randomUUID().toString());
 
-        manager.addAcceptRequest(netAccepted.getActionId(),2000,listener);
+        manager.addAcceptRequest(netAccepted.getActionId(), 2000, listener);
 
 
         NetMessage netMessage = new NetMessage(new NetAction(netAccepted));
@@ -58,15 +58,14 @@ public class TestAcceptResponseListener {
 
         ChannelDecorator decorator = new ChannelDecorator(channel);
 
-        HostInfo host = new HostInfo("127.0.0.1",3323);
+        HostInfo host = new HostInfo("127.0.0.1", 3323);
 
         decorator.setHost(host);
 
         channel.writeInbound(netMessage);
 
-
-        verify(listener).deliverMessage(netMessage,host);
-        verify(listener).onMessage(netAccepted,host);
+        verify(listener).deliverMessage(netMessage, host);
+        verify(listener).onMessage(netAccepted, host);
 
 
     }
