@@ -1,0 +1,14 @@
+requires 'Thrift';
+requires 'Thrift::XS';
+requires 'IO::Socket::INET';
+requires 'Time::HiRes';
+requires 'Readonly';
+requires 'XML::LibXML';
+requires 'XML::LibXML::XPathContext';
+requires 'Test::More';
+requires 'AnyEvent';
+requires 'AnyEvent::Handle';
+requires 'Crypt::SSLeay';
+requires 'JSON::Any';
+requires 'LWP';
+requires 'IO::Socket::SSL';

@@ -8,10 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.nio.bootstrap.BaseBootstrap;
-import pt.com.broker.client.nio.events.ConnectedEvent;
-import pt.com.broker.client.nio.events.ConnectionEventListener;
-import pt.com.broker.client.nio.events.DisconnectedEvent;
-import pt.com.broker.client.nio.events.ReconnectedEvent;
+import pt.com.broker.client.nio.events.connection.ConnectionEventListener;
+import pt.com.broker.client.nio.events.connection.ConnectionStatusChangeEventImpl;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
 import pt.com.broker.client.nio.server.strategies.SelectServerStrategy;
 import pt.com.broker.client.nio.utils.ChannelDecorator;
@@ -175,7 +173,9 @@ public class HostContainer extends Observable {
                                 @Override
                                 public void operationComplete(ChannelFuture future) throws Exception {
                                     latch.countDown();
-                                    future.channel().pipeline().fireUserEventTriggered(new ConnectedEvent());
+                                    future.channel().pipeline().fireUserEventTriggered(
+                                    	new ConnectionStatusChangeEventImpl(host, HostInfo.STATUS.OPEN)
+                                    );
                                 }
                                 
                             });
@@ -236,11 +236,9 @@ public class HostContainer extends Observable {
                                     hostContainer.setChanged();
                                     hostContainer.notifyObservers(new ReconnectEvent(host));
                                     log.debug("Fire the user event trigger RECONNECT!");
-                                    future.channel().pipeline().fireUserEventTriggered(new ReconnectEvent(host));
-                                    future.channel().pipeline().fireUserEventTriggered(new ReconnectedEvent());
-                                }
-                                for(ConnectionEventListener eventListener: connectionEventListeners){
-                                	eventListener.reconnected(host);
+                                    future.channel().pipeline().fireUserEventTriggered(
+                                    	new ConnectionStatusChangeEventImpl(host, HostInfo.STATUS.OPEN)
+                                    );
                                 }
                             }
 
@@ -491,7 +489,9 @@ public class HostContainer extends Observable {
                             @Override
                             public void operationComplete(ChannelFuture future) throws Exception {
                                 inactiveHost(host);
-                                future.channel().pipeline().fireUserEventTriggered(new DisconnectedEvent());
+                                future.channel().pipeline().fireUserEventTriggered(
+                                	new ConnectionStatusChangeEventImpl(host, HostInfo.STATUS.DISABLE)
+                                );
                                 //Call the event listeners before reconnecting
                                 /*for(ConnectionEventListener listener: connectionEventListeners){
                             		listener.disconnected(host);
@@ -580,7 +580,7 @@ public class HostContainer extends Observable {
      * Adds a new ConnectionEventListener to the HostContainer. All event listeners are called
      * when the triggered event occurs.
      * 
-     * @param connectionEventListener {@link pt.com.broker.client.nio.events.ConnectionEventListener} object.
+     * @param connectionEventListener {@link pt.com.broker.client.nio.events.connection.ConnectionEventListener} object.
      * */
     public void addConnectionEventListener(ConnectionEventListener connectionEventListener) {
 		this.connectionEventListeners.add(connectionEventListener);

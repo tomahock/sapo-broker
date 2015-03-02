@@ -12,13 +12,13 @@ import pt.com.broker.client.nio.consumer.ConsumerManager;
 import pt.com.broker.client.nio.consumer.PendingAcceptRequestsManager;
 import pt.com.broker.client.nio.consumer.PongConsumerManager;
 import pt.com.broker.client.nio.events.BrokerListener;
-import pt.com.broker.client.nio.events.ConnectionEventListener;
+import pt.com.broker.client.nio.events.connection.ConnectionEventListener;
 import pt.com.broker.client.nio.handlers.AcceptMessageHandler;
 import pt.com.broker.client.nio.handlers.HeartBeatEventHandler;
 import pt.com.broker.client.nio.handlers.PongMessageHandler;
 import pt.com.broker.client.nio.handlers.ReceiveFaultHandler;
 import pt.com.broker.client.nio.handlers.ReceiveMessageHandler;
-import pt.com.broker.client.nio.handlers.ConnectionEventHandler;
+import pt.com.broker.client.nio.handlers.ConnectionStatusChangeEventHandler;
 import pt.com.broker.types.BindingSerializer;
 
 import javax.net.ssl.SSLContext;
@@ -130,7 +130,7 @@ public class ChannelInitializer extends BaseChannelInitializer {
         pipeline.addLast("broker_pong_handler", pongMessageHandler);
         pipeline.addLast("broker_fault_handler", faultHandler);
         pipeline.addLast("broker_accept_handler", acceptMessageHandler);
-        pipeline.addLast("reconnect_handler", new ConnectionEventHandler(connectionEventListeners));
+        pipeline.addLast("reconnect_handler", new ConnectionStatusChangeEventHandler(connectionEventListeners));
         pipeline.addLast("exception_catcher", new ChannelHandlerAdapter() {
 
 			@Override

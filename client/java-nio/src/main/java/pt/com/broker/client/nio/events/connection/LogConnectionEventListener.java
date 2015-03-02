@@ -1,4 +1,4 @@
-package pt.com.broker.client.nio.events;
+package pt.com.broker.client.nio.events.connection;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -20,11 +20,6 @@ public class LogConnectionEventListener implements ConnectionEventListener {
 	@Override
 	public void disconnected(HostInfo hostInfo) {
 		log.debug("**************************Connection to host {}:{} lost.**************************", hostInfo.getHostname(), hostInfo.getPort());
-	}
-
-	@Override
-	public void reconnected(HostInfo hostInfo) {
-		log.debug("**************************Reconnected to host {}:{}.**************************", hostInfo.getHostname(), hostInfo.getPort());
 	}
 
 }

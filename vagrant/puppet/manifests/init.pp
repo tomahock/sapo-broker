@@ -1,4 +1,8 @@
+$USER = 'vagrant'
 $USER_HOME = "/home/${USER}"
+
+## This is necessary due to a bug in the puppet package for CentOS
+group { 'puppet': ensure => present }
 
 class forceupdate {
   exec { "apt-update":
@@ -35,8 +39,8 @@ apt::key { 'sapodebiankey':
 # activate plugins for a user
 # ohmyzsh::plugins { 'vagrant': plugins => 'github z' }
 
-class { 'perl':
-}
+#class { 'perl':
+#}
 
 #import box modules
 import 'includes/*.pp'
@@ -47,7 +51,7 @@ class { 'misc': }
 class { 'protobuf': }
 class { 'python': }
 class { 'php': }
-class { 'broker_perl': }
+#class { 'broker_perl': }
 
 include thrift
 
