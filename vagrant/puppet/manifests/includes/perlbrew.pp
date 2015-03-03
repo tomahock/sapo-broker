@@ -1,10 +1,17 @@
 class perlbrew {
 
-    $PERL_VERSION = '5.20.2' # Needs to be moved to hiera
+    $PERL_VERSION = '5.18.4' # Needs to be moved to hiera
     $PERL_NAME = "perl-${PERL_VERSION}"
     $PERLBREW_ROOT = "${USER_HOME}/perl5/perlbrew"
     $CPANM = "${PERLBREW_ROOT}/perls/${PERL_NAME}/bin/cpanm"
     $PERL = "${PERLBREW_ROOT}/perls/${PERL_NAME}/bin/perl"
+
+    #$packages = ['dh-make-perl', 'libxml2-dev', 'xml2']
+
+    #package { $packages:
+    #    ensure => present,
+    #    before => Exec['App::cpanminus Dependencies Installation']
+    #}
 
     Exec {
         path => '/bin:/usr/bin',
@@ -23,6 +30,9 @@ class perlbrew {
 
     package { curl: ensure => latest }
     package { gcc: ensure => latest }
+    package { dh-make-perl: ensure => latest }
+    package { libxml2-dev: ensure => latest }
+    package { xml2: ensure => latest }
 
     exec { 'Perlbrew Installation':
         require => Package['curl'],
@@ -91,7 +101,7 @@ class perlbrew {
     }
 
     exec { 'App::cpanminus Dependencies Installation':
-        require => Exec['Module::CPANfile Installation'],
+        require => [Package['dh-make-perl', 'libxml2-dev', 'xml2'], Exec['Module::CPANfile Installation']],
         provider => shell,
         command => "${CPANM} -q --installdeps /${USER}",
         onlyif => "/usr/bin/test -r /${USER}/cpanfile",

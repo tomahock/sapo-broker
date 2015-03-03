@@ -1,4 +1,6 @@
 use lib ('../lib');
+use lib('../protobufxs/blib/lib');
+use lib('../protobufxs/blib/arch');
 
 use SAPO::Broker::Clients::Simple;
 use Data::Dumper;
@@ -8,7 +10,7 @@ use warnings;
 
 my $broker = SAPO::Broker::Clients::Simple->new(
     'host'  => 'localhost',
-    'proto' => 'tcp'
+    'proto' => 'ssl'
 );
 my %options = (
     'destination_type' => 'QUEUE',

@@ -17,6 +17,12 @@ import pt.com.broker.client.nio.events.connection.ConnectionStatusChangeEventImp
 import pt.com.broker.client.nio.handlers.ConnectionStatusChangeEventHandler;
 import pt.com.broker.client.nio.server.HostInfo;
 
+/**
+ * This class tests in simultaneous the ConnectionEventListener interface and the
+ * ConnectionStatusChangeEventHandler class. The main goal is to guaranteed that
+ * the listeners are called when a ConnectionStatusChangeEvent is generated. As more
+ * status are added to the listeners, the test cases will also reflect those status.
+ * */
 public class TestConnectionStatusEventListener {
 	
 	private final ConnectionEventListener eventListener = mock(ConnectionEventListener.class);

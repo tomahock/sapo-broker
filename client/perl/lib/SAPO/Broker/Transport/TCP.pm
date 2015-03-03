@@ -5,6 +5,7 @@ use Socket ();
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 Readonly::Scalar my $DEFAULT_PORT => 3323;
 Readonly::Scalar my $DEFAULT_HOST => 'localhost';
@@ -32,7 +33,6 @@ sub new {
     } or do {
         warn "Error setting TCP keep-alive: $@";
     };
-
     return $self;
 } ## end sub new
 

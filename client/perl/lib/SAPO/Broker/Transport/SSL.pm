@@ -2,13 +2,14 @@ package SAPO::Broker::Transport::SSL;
 
 use IO::Socket::SSL;
 use Readonly;
+use Data::Dumper;
 
 use strict;
 use warnings;
 
 use base qw(SAPO::Broker::Transport::TCP);
 
-Readonly::Scalar my $DEFAULT_PORT => 3390;
+Readonly::Scalar my $DEFAULT_PORT => 3490;
 Readonly::Scalar my $DEFAULT_HOST => 'localhost';
 
 sub new {
@@ -22,13 +23,18 @@ sub new {
     );
 
     #now do the SSL handshake on the tcp socket
-
     my $original_socket = $self->{'__socket'};
-
     #and use the new wrapped socket as if it were a regular TCP socket
-
     $original_socket->blocking(1);
-    $self->{'__socket'} = IO::Socket::SSL->start_SSL( $original_socket, @_ );
+    #warn 'options';
+    #warn Dumper(\@_);
+
+    my @params = @_;
+    #push @params, 'key', 'value'
+
+
+    $self->{'__socket'} = IO::Socket::SSL->start_SSL( $original_socket, @params ); #Commented because IO::Socket::SSL->start_SSL does not return nothing
+    #IO::Socket::SSL->start_SSL( $original_socket, @_ );
     $self->{'__original_socket'} = $original_socket;
 
     return $self;
@@ -40,7 +46,15 @@ sub new {
 sub __write {
     my ( $self, $payload ) = @_;
 
+    my $i = 1;
+    warn "Stack Trace:\n";
+    while ( (my @call_details = (caller($i++))) ){
+        warn $call_details[1].":".$call_details[2]." in function ".$call_details[3]."\n";
+    }
+
+    warn "__write self: " . Dumper($self);
     my $sock        = $self->{'__socket'};
+    warn Dumper($sock);
     my $tot_written = 0;
     my $tot_write   = length($payload);
 

@@ -15,7 +15,6 @@ WriteMakefile(
     'VERSION_FROM' => 'Atom.pm',
     'ABSTRACT'     => 'SAPO::Broker::Protobuf XS',
     'PREREQ_PM'    => {%PREREQ_PM},
-
     'OPTIMIZE' => '-O3 -Wall',
     'CC'       => 'g++',
     'LD'       => '$(CC)',

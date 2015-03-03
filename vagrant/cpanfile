@@ -1,3 +1,4 @@
+requires 'Class::Accessor::Fast';
 requires 'Thrift';
 requires 'Thrift::XS';
 requires 'IO::Socket::INET';

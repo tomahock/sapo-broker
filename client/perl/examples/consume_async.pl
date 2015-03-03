@@ -1,4 +1,6 @@
 use lib ('../lib');
+use lib('../protobufxs/blib/lib');
+use lib('../protobufxs/blib/arch');
 
 use SAPO::Broker::Clients::Async;
 use Data::Dumper;
@@ -14,7 +16,7 @@ my $port = 3323;
 my $broker = SAPO::Broker::Clients::Async->new(
     host  => $host,
     port  => $port,
-    codec => 'protobufxs',
+    codec => 'thriftxs',
     #tls   => 1,
     rcb   => sub {
         my ($msg) = @_;

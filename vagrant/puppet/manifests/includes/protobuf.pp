@@ -1,6 +1,6 @@
 class protobuf {
 
-  $packages = ['protobuf-compiler']
+  $packages = ['protobuf-compiler', 'libprotobuf-dev', 'libprotoc-dev']
 
   package { $packages:
     ensure => present,

@@ -18,7 +18,7 @@ sub has_module($) {
     my ($module) = @_;
 
     eval "use $module;";
-    print "Return valur of user $module: " . $@ . "\n";
+    
     return not $@;
 }
 

@@ -7,6 +7,7 @@ use SAPO::Broker::Messages;
 use SAPO::Broker::Clients::Minimal;
 use SAPO::Broker::Transport::TCP;
 use SAPO::Broker::Transport::UDP;
+use Data::Dumper;
 
 use strict;
 use warnings;
@@ -45,7 +46,6 @@ if ( has_protobufxs() ) {
 
 sub new {
     my ( $pack, %options ) = @_;
-
     %options = ( %DEFAULT_OPTIONS, %options );
 
     my $codec     = __get_codec(%options);
@@ -56,8 +56,9 @@ sub new {
         'transport' => $transport,
     );
 
-    $self->{'auto_ack'} = {};
+    warn 'Self: ' . Dumper($self);
 
+    $self->{'auto_ack'} = {};
     return $self;
 
 }

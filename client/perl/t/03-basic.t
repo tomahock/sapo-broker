@@ -206,8 +206,8 @@ sub test_codec($) {
     #ssl stuff
 SKIP: {
         if ( not $ENV{'BROKER_DISABLE_SSL'} and SAPO::Broker::Utils::has_ssl() ) {
-            test_queue( 'SSL', 'TCP', $codec );
-            test_queue( 'SSL', 'UDP', $codec );
+            #test_queue( 'SSL', 'TCP', 'protobufxs' );
+            #test_queue( 'SSL', 'UDP', 'protobufxs' );
         } else {
             skip( $ENV{'BROKER_DISABLE_SSL'} ? "SSL tests disabled by env var" : "no SSL support", 6 + 16 * $N );
         }
