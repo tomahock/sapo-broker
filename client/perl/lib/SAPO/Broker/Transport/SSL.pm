@@ -8,9 +8,10 @@ use strict;
 use warnings;
 
 use base qw(SAPO::Broker::Transport::TCP);
+use IO::Socket::SSL qw(debug4);
 
 Readonly::Scalar my $DEFAULT_PORT => 3490;
-Readonly::Scalar my $DEFAULT_HOST => 'localhost';
+Readonly::Scalar my $DEFAULT_HOST => '192.168.100.1';
 
 sub new {
     my $self = shift @_;
@@ -29,12 +30,14 @@ sub new {
     #warn 'options';
     #warn Dumper(\@_);
 
-    my @params = @_;
-    #push @params, 'key', 'value'
+    #my @params = @_;
 
+    #push @params, SSL_verify_mode, SSL_VERIFY_NONE;
+    #print 'Parameters dump: ' . Dumper(@params);
 
-    $self->{'__socket'} = IO::Socket::SSL->start_SSL( $original_socket, @params ); #Commented because IO::Socket::SSL->start_SSL does not return nothing
+    #$self->{'__socket'} = IO::Socket::SSL->start_SSL( $original_socket, @_ ); #Commented because IO::Socket::SSL->start_SSL does not return nothing
     #IO::Socket::SSL->start_SSL( $original_socket, @_ );
+    $self->{'__socket'} = IO::Socket::SSL->start_SSL( $original_socket ); #Because we use a self signed certificate we dont validate the certificate
     $self->{'__original_socket'} = $original_socket;
 
     return $self;
@@ -47,14 +50,8 @@ sub __write {
     my ( $self, $payload ) = @_;
 
     my $i = 1;
-    warn "Stack Trace:\n";
-    while ( (my @call_details = (caller($i++))) ){
-        warn $call_details[1].":".$call_details[2]." in function ".$call_details[3]."\n";
-    }
 
-    warn "__write self: " . Dumper($self);
     my $sock        = $self->{'__socket'};
-    warn Dumper($sock);
     my $tot_written = 0;
     my $tot_write   = length($payload);
 

@@ -56,8 +56,6 @@ sub new {
         'transport' => $transport,
     );
 
-    warn 'Self: ' . Dumper($self);
-
     $self->{'auto_ack'} = {};
     return $self;
 

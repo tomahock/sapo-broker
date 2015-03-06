@@ -62,12 +62,13 @@ public class BrokerSslPipelineFactory
 
 			if (StringUtils.isBlank(keyPasswordStr))
 			{
-				log.error("key password is blank");
-				return;
+				log.warn("key password is blank");
+				keyPasswordStr = null;
+//				return;
 			}
 
 			char[] KEYSTOREPW = keyStorePasswordStr.toCharArray();
-			char[] KEYPW = keyPasswordStr.toCharArray();
+			char[] KEYPW = keyPasswordStr != null ? keyPasswordStr.toCharArray() : null;
 
 			File ks = new File(keyStoreLocation);
 

@@ -9,11 +9,11 @@ use strict;
 use warnings;
 
 my $broker = SAPO::Broker::Clients::Simple->new(
-    'host'  => 'localhost',
+    'host'  => '192.168.100.1',
     'proto' => 'ssl'
 );
 my %options = (
-    'destination_type' => 'QUEUE',
+    'destination_type' => 'TOPIC',
     'destination'      => '/tests/perl',
     'auto_acknowledge' => 1
 );
