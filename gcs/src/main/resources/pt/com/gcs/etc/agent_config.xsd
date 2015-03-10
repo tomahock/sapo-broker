@@ -52,6 +52,9 @@
 							<xs:element name="keystore-location" type="xs:string" />
 							<xs:element name="keystore-password" type="xs:string" />
 							<xs:element name="key-password" type="xs:string" />
+							<xs:element name="cert-file" type="xs:string" />
+							<xs:element name="key-file" type="xs:string" />
+							<xs:element name="force-agent-ssl" type="xs:boolean" />
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>

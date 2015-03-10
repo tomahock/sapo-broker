@@ -365,6 +365,33 @@ public class GcsInfo {
 	{
 		return getSecurityPolicies() != null;
 	}
+	
+	/**
+	 * Is agent communications forced to TLS.
+	 * 
+	 * @return <code>true</code> if it is enabled <code>false</code> otherwise
+	 * */
+	public static boolean isForceAgentSsl(){
+		return instance.conf.getSsl().getForceAgentSsl();
+	}
+	
+	/**
+	 * Gets the path to the certificate file used for SSL comunications.
+	 * 
+	 * @return The path to the certificate file.
+	 * */
+	public static String getCertificateFile(){
+		return instance.conf.getSsl().getCertFile();
+	}
+	
+	/**
+	 * Gets the path to the private key file used for SSL comunications.
+	 * 
+	 * @return The path to the private key file.
+	 * */
+	public static String getKeyFile(){
+		return instance.conf.getSsl().getKeyFile();
+	}
 
 	private AgentConfig conf;
 

@@ -686,6 +686,7 @@ public class AgentConfig {
      *         &lt;element name="keystore-location" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *         &lt;element name="keystore-password" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *         &lt;element name="key-password" type="{http://www.w3.org/2001/XMLSchema}string"/>
+     *         &lt;element name="force-agent-ssl" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -699,7 +700,10 @@ public class AgentConfig {
         "brokerSslPort",
         "keystoreLocation",
         "keystorePassword",
-        "keyPassword"
+        "keyPassword",
+        "certFile",
+        "keyFile",
+        "forceAgentSsl"
     })
     public static class Ssl {
 
@@ -711,6 +715,12 @@ public class AgentConfig {
         protected String keystorePassword;
         @XmlElement(name = "key-password", required = true)
         protected String keyPassword;
+        @XmlElement(name = "cert-file", required = true)
+        protected String certFile;
+        @XmlElement(name = "key-file", required = true)
+        protected String keyFile;
+        @XmlElement(name = "force-agent-ssl", required = true)
+        protected boolean forceAgentSsl;
 
         /**
          * Gets the value of the brokerSslPort property.
@@ -798,6 +808,45 @@ public class AgentConfig {
          */
         public void setKeyPassword(String value) {
             this.keyPassword = value;
+        }
+        
+        /**
+         * Gets the value of the forceAgentSsl property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link boolean }
+         *     
+         */
+        public boolean getForceAgentSsl(){
+        	return forceAgentSsl;
+        }
+        
+        /**
+         * Sets the value of the forceAgentSsl property
+         * 
+         * @param value
+         * 		allowed object is
+         * 		{@link boolean}
+         * */
+        public void setForceAgentSsl(boolean value){
+        	this.forceAgentSsl = value;
+        }
+        
+        public void setCertFile(String certFile){
+        	this.certFile = certFile;
+        }
+        
+        public String getCertFile(){
+        	return certFile;
+        }
+        
+        public void setKeyFile(String keyFile){
+        	this.keyFile = keyFile;
+        }
+        
+        public String getKeyFile(){
+        	return keyFile;
         }
 
     }

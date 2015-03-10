@@ -53,6 +53,7 @@ public class BDBEnviroment
 			// envConfig.setTxnWriteNoSync(true);
 			// envConfig.setTxnNoSync(true);
 			envConfig.setCachePercent(40);
+			log.info("Persistence directory: {}", dbDir);
 			env = new Environment(new File(dbDir), envConfig);
 		}
 		catch (Throwable t)

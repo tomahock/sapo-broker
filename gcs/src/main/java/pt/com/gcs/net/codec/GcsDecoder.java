@@ -28,8 +28,7 @@ import java.util.List;
  * @todo ver Sharable
  */
 //@ChannelHandler.Sharable
-public class GcsDecoder extends ByteToMessageDecoder
-{
+public class GcsDecoder extends ByteToMessageDecoder {
 
 	private static final Logger log = LoggerFactory.getLogger(GcsDecoder.class);
 	private static final int HEADER_LENGTH = 4;
@@ -38,49 +37,21 @@ public class GcsDecoder extends ByteToMessageDecoder
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-
         int readableBytes = buffer.readableBytes();
-        if (readableBytes < HEADER_LENGTH)
-        {
-            return;
-        }
-
-        int mark = buffer.readerIndex();
-
-        int len = buffer.getInt(mark);
-
-        if (len <= 0)
-        {
-            log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
-            ctx.close();
-        }
-
-        if (buffer.readableBytes() < (len + HEADER_LENGTH))
-        {
-            return;
-        }
-
-        buffer.skipBytes(HEADER_LENGTH);
-
-        byte[] decoded = new byte[len];
-        buffer.readBytes(decoded);
-
-        // ChannelBufferInputStream sIn = new ChannelBufferInputStream(buffer);
-
-        try
-        {
-            NetMessage msg = serializer.unmarshal(decoded);
-
-            out.add(msg);
-        }
-        catch (Throwable e)
-        {
-            log.error(String.format("Can not unmarshall message"));
-            ctx.close();
-            return;
+        if(readableBytes >= HEADER_LENGTH){
+        	int len = buffer.readInt();
+        	if(len <= 0){
+        		log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+                ctx.close();
+        	}
+        	if(readableBytes >= (len + HEADER_LENGTH)){
+        		//TODO: Check if this is the best possible approach. No buffer limit?!?!
+        		byte[] decoded = new byte[len];
+                buffer.readBytes(decoded);
+                NetMessage msg = serializer.unmarshal(decoded);
+                out.add(msg);
+        	}
         }
     }
-
-
 
 }

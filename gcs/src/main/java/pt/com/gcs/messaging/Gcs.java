@@ -12,7 +12,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.FutureListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -24,12 +29,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+
 import org.apache.commons.lang3.StringUtils;
 import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 import pt.com.broker.types.Headers;
 import pt.com.broker.types.MessageListener;
@@ -46,8 +52,13 @@ import pt.com.gcs.messaging.statistics.KpiQueuesSize;
 import pt.com.gcs.messaging.statistics.KpiTopicConsumerCounter;
 import pt.com.gcs.messaging.statistics.StatisticsCollector;
 import pt.com.gcs.net.Peer;
+import pt.com.gcs.net.codec.GcsCodec;
 import pt.com.gcs.net.codec.GcsDecoder;
 import pt.com.gcs.net.codec.GcsEncoder;
+import pt.com.gcs.net.codec.GcsHandler;
+import pt.com.gcs.net.ssl.SslContextFactory;
+
+import com.google.common.base.Optional;
 
 /**
  * Gcs is a facade for handling several message related functionality such as publish, acknowledge, etc.
@@ -432,14 +443,10 @@ public class Gcs
 		ServerBootstrap bootstrap = new ServerBootstrap();
 
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         bootstrap.group(bossGroup,workerGroup);
-
-
-
-
 		bootstrap.childOption(ChannelOption.TCP_NODELAY,true);
         bootstrap.childOption(ChannelOption.SO_KEEPALIVE,true);
         bootstrap.childOption(ChannelOption.SO_RCVBUF,128 * 1024);
@@ -448,69 +455,44 @@ public class Gcs
         bootstrap.option(ChannelOption.SO_BACKLOG,1024);
 
 		bootstrap.channel(NioServerSocketChannel.class)
-                 .childHandler(new ChannelInitializer<SocketChannel>() {
+         .childHandler(new ChannelInitializer<SocketChannel>() {
 
-                     @Override
-                     protected void initChannel(SocketChannel ch) throws Exception {
-
-                         ChannelPipeline pipeline = ch.pipeline();
-
-                         pipeline.addLast("broker-encoder", new GcsEncoder());
-
-                         pipeline.addLast("broker-decoder", new GcsDecoder());
-
-                         pipeline.addLast("broker-handler", new GcsAcceptorProtocolHandler());
-                     }
-                 });
-
-
+             @Override
+             protected void initChannel(SocketChannel ch) throws Exception {
+                 ChannelPipeline pipeline = ch.pipeline();
+                 SslContext serverContext = SslContextFactory.getServerSslContext(
+                     GcsInfo.getCertificateFile(), GcsInfo.getKeyFile(), GcsInfo.getKeyPassword()
+                 );
+                 pipeline.addLast("broker-gcs-handler", new GcsHandler(serverContext, GcsInfo.isForceAgentSsl()));
+             }
+             
+         });
 
 		InetSocketAddress inet = new InetSocketAddress("0.0.0.0", portNumber);
 		bootstrap.bind(inet);
-		log.info("SAPO-BROKER Listening on: '{}'.", inet.toString());
+//		log.info("SAPO-BROKER Listening on: '{}'.", inet.toString());
 		log.info("{} listening on: '{}'.", SERVICE_NAME, inet.toString());
 	}
 
 	private void startConnector()
 	{
-		log.info("Starting Local Connector - step 0");
-
 //		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-2");
-
-		log.info("Starting Local Connector - step 1");
-
 //		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-2");
-
-		log.info("Starting Local Connector - step 2");
-
          /*@todo (Luis Santos) adicionar Executors ao Bootstrap */
 		Bootstrap bootstrap = new Bootstrap ();
-
         bootstrap.group(new NioEventLoopGroup());
-
         bootstrap.channel(NioSocketChannel.class);
-
-		log.info("Starting Local Connector - step 3");
-
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
-
-                pipeline.addLast("broker-encoder", new GcsEncoder());
-
-                pipeline.addLast("broker-decoder", new GcsDecoder());
-
+                SslContext clientContext = SslContextFactory.getClientSslContext();
+                pipeline.addLast("broker-ssl-handler", clientContext.newHandler(ch.alloc()));
+                pipeline.addLast("broker-codec", new GcsCodec());
                 pipeline.addLast("broker-handler", new GcsRemoteProtocolHandler());
             }
         });
-
-
-		log.info("Starting Local Connector - step 4");
-
-
-
 		// try
 		// {
 		// bootstrap.setOption("localAddress", new InetSocketAddress(Inet4Address.getByName(GcsInfo.getAgentHost()), 0));
@@ -519,15 +501,10 @@ public class Gcs
 		// {
 		// log.error(String.format("Failed to bind to local host address. Address: '%s'.", GcsInfo.getAgentHost()), e);
 		// }
-
 		bootstrap.option(ChannelOption.SO_KEEPALIVE,true);
         bootstrap.option(ChannelOption.SO_RCVBUF,128 * 1024);
         bootstrap.option(ChannelOption.SO_SNDBUF,128 * 1024);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,5000);
-
-
-		log.info("Starting Local Connector - step 5");
-
 		this.connector = bootstrap;
 	}
 

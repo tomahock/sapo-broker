@@ -34,7 +34,7 @@ import pt.com.gcs.net.Peer;
  */
 
 @ChannelHandler.Sharable
-class GcsAcceptorProtocolHandler extends SimpleChannelInboundHandler<NetMessage>
+public class GcsAcceptorProtocolHandler extends SimpleChannelInboundHandler<NetMessage>
 {
 	private static Logger log = LoggerFactory.getLogger(GcsAcceptorProtocolHandler.class);
 	private static final Charset UTF8 = Charset.forName("UTF-8");

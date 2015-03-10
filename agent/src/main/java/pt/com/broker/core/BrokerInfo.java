@@ -22,7 +22,7 @@ public class BrokerInfo
 		}
 		catch (Throwable e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 }
