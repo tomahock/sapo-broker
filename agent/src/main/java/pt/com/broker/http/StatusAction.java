@@ -40,10 +40,9 @@ public class StatusAction extends HttpAction
 	public void service(ChannelHandlerContext ctx, FullHttpRequest request, FullHttpResponse response)
 	{
 		ByteBuf bbo = Unpooled.buffer();
-		OutputStream out = new ByteBufOutputStream(bbo);
 		Channel channel = ctx.channel();
 
-		try
+		try(OutputStream out = new ByteBufOutputStream(bbo);)
 		{
 			String smessage = String.format(template, "Agent is alive", ISO8601.format(new Date()), BrokerInfo.getVersion());
 			byte[] bmessage = smessage.getBytes("UTF-8");

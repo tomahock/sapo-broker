@@ -1,5 +1,6 @@
 package pt.com.gcs.net.stats;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.InetSocketAddress;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.MessageListener;
 import pt.com.gcs.messaging.InboundRemoteChannels;
+import pt.com.gcs.messaging.OutboundRemoteChannels;
 import pt.com.gcs.messaging.QueueProcessor;
 import pt.com.gcs.messaging.QueueProcessorList;
 import pt.com.gcs.messaging.TopicProcessor;
@@ -28,6 +30,7 @@ public class NetStats {
 	
 	public static final String QUEUE_SUBSCRIPTIONS = "queue_connections";
 	public static final String TOPIC_SUBSCRIPTIONS = "topic_connections";
+	public static final String AGENT_CONNECTIONS = "agent_connections";
 	
 	private static final Logger log = LoggerFactory.getLogger(NetStats.class);
 	
@@ -46,12 +49,20 @@ public class NetStats {
 	}
 	
 	private void collectAgentNetStats(){
-		List<AgentConnectionInfo> agentConnections = new ArrayList<AgentConnectionInfo>();
-		Map<String, ChannelHandlerContext> remoteAgents = InboundRemoteChannels.getAll();
-		for(String agent: remoteAgents.keySet()){
+		List<SubscriptionInfo> agentConnections = new ArrayList<SubscriptionInfo>();
+		SubscriptionInfo subscriptionInfo = new SubscriptionInfo(agentName);
+		Map<String, ChannelHandlerContext> remoteConnections = InboundRemoteChannels.getAll();
+		for(String agent: remoteConnections.keySet()){
 			log.debug("Agent: {}", agent);
-			agentConnections.add(new AgentConnectionInfo(agent, remoteAgents.get(agent).channel()));
+			subscriptionInfo.addRemoteListener((InetSocketAddress) remoteConnections.get(agent).channel().remoteAddress());
 		}
+		Map<String, Channel> localConnections = OutboundRemoteChannels.getAll();
+		for(String agent: localConnections.keySet()){
+			log.debug("Agent: {}", agent);
+			subscriptionInfo.addLocalListener((InetSocketAddress) localConnections.get(agent).remoteAddress());
+		}
+		agentConnections.add(subscriptionInfo);
+		subscriptions.put(AGENT_CONNECTIONS, agentConnections);
 	}
 	
 	private void collectQueueNetStats(){
