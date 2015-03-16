@@ -80,14 +80,10 @@ public class Subscriptions {
             if(topicProcessor.hasLocalListeners()){
                 return new LocalSubscription(topicProcessor);
             }
-
         }else{
-
             if(topicProcessor.hasRemoteListeners()){
                 return new RemoteSubscription(topicProcessor);
             }
-
-
         }
 
         return null;

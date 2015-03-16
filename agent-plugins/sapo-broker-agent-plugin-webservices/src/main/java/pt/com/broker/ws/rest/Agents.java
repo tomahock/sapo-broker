@@ -1,9 +1,9 @@
 package pt.com.broker.ws.rest;
 
 import io.netty.channel.Channel;
+
 import org.caudexorigo.*;
-import pt.com.broker.core.BrokerExecutor;
-import pt.com.broker.core.BrokerInfo;
+
 import pt.com.broker.types.stats.MiscStats;
 import pt.com.broker.ws.models.Agent;
 import pt.com.broker.ws.models.AgentStatus;
@@ -15,6 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -41,12 +42,11 @@ public class Agents {
     @Path("/self")
     @Produces(MediaType.APPLICATION_JSON)
     public AgentStatus getStatus() {
-
-
-        AgentStatus status = new AgentStatus();
-
+    	String version  = System.getProperty("project-version");
+    	AgentStatus status = new AgentStatus();
         status.setName(GcsInfo.getAgentName());
-        status.setVersion(BrokerInfo.getVersion()!=null ? BrokerInfo.getVersion() : "");
+        //FIXME: Change the next line
+        status.setVersion(version != null ? version : "");
         status.setSystemMessageFailures(MiscStats.getSystemMessagesFailures());
 
         return status;
@@ -57,18 +57,18 @@ public class Agents {
     @Path("/self/shutdown")
     @Produces(MediaType.APPLICATION_JSON)
     public void shutdown() {
+    	//TODO: Fix this method
 
-
-        Runnable kill = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                Shutdown.now();
-            }
-        };
-
-        BrokerExecutor.schedule(kill, 1000, TimeUnit.MILLISECONDS);
+//        Runnable kill = new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                Shutdown.now();
+//            }
+//        };
+//
+//        BrokerExecutor.schedule(kill, 1000, TimeUnit.MILLISECONDS);
 
     }
 

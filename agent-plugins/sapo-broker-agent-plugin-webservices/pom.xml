@@ -1,57 +1,62 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-        <groupId>pt.sapo.oss.broker</groupId>
-        <artifactId>sapo-broker-agent-plugins</artifactId>
-        <version>4.0.50.Alpha1</version>
-  </parent>
-  <artifactId>sapo-broker-agent-plugin-webservices</artifactId>
-  <packaging>jar</packaging>
-  <name>sapo-broker-agent-plugin-webservices</name>
- 
-  <dependencies>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>pt.sapo.oss.broker</groupId>
+		<artifactId>sapo-broker-agent-plugins</artifactId>
+		<version>4.0.50.Alpha1</version>
+	</parent>
+	<artifactId>sapo-broker-agent-plugin-webservices</artifactId>
+	<packaging>jar</packaging>
+	<name>sapo-broker-agent-plugin-webservices</name>
+
+	<dependencies>
 
 
-      <dependency>
-          <groupId>${project.groupId}</groupId>
-          <version>${project.version}</version>
-          <artifactId>sapo-broker-agent</artifactId>
-          <scope>provided</scope>
-      </dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>${project.groupId}</groupId> -->
+		<!-- <version>${project.version}</version> -->
+		<!-- <artifactId>sapo-broker-agent</artifactId> -->
+		<!-- <scope>provided</scope> -->
+		<!-- </dependency> -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+			<artifactId>sapo-broker-gcs</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>9.2.1.v20140609</version>
+		</dependency>
 
-      <dependency>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-servlet</artifactId>
-          <version>9.2.1.v20140609</version>
-      </dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core" -->
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>2.11</version>
+		</dependency>
 
-      <dependency>
-          <groupId>org.glassfish.jersey.containers</groupId>
-          <!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core"  -->
-          <artifactId>jersey-container-servlet</artifactId>
-          <version>2.11</version>
-      </dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>2.5.1</version>
+		</dependency>
 
-      <dependency>
-          <groupId>org.glassfish.jersey.media</groupId>
-          <artifactId>jersey-media-json-jackson</artifactId>
-          <version>2.5.1</version>
-      </dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
 
-      <dependency>
-          <groupId>org.codehaus.jackson</groupId>
-          <artifactId>jackson-core-asl</artifactId>
-          <version>1.9.13</version>
-      </dependency>
-
-      <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 
 

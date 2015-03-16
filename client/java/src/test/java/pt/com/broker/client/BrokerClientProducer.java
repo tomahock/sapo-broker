@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetProtocolType;
 
 public class BrokerClientProducer {
 	
@@ -14,6 +15,7 @@ public class BrokerClientProducer {
 	public BrokerClientProducer(String host, int port){
 		try {
 			bk = new BrokerClient(host, port);
+			bk.setPortocolType(NetProtocolType.JSON);
 		} catch (Throwable e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

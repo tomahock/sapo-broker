@@ -38,6 +38,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <version>1.3.2</version>
                 <configuration>
                     <mainClass>pt.com.broker.Start</mainClass>
                     <executable>java</executable>

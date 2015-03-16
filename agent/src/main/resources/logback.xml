@@ -29,7 +29,7 @@
 		<appender-ref ref="GCS-ConsoleAppender" />
 	</logger>
 	
-	<logger level="info" additivity="false" name="pt.com.gcs.messaging">
+	<logger level="debug" additivity="false" name="pt.com.gcs.messaging">
 		<appender-ref ref="GCS-ConsoleAppender" />
 	</logger>
 

@@ -2,9 +2,10 @@ package pt.com.broker.ws;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.core.AgentPlugin;
+
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
+import pt.com.gcs.plugins.AgentPlugin;
 
 /**
  * Copyright (c) 2014, SAPO

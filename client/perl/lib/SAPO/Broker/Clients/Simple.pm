@@ -50,7 +50,7 @@ sub new {
 
     my $codec     = __get_codec(%options);
     my $transport = __get_transport_class(%options)->new(%options);
-
+    warn 'Selected codec: ' . $codec;
     my $self = $pack->SUPER::new(
         'codec'     => $codec,
         'transport' => $transport,

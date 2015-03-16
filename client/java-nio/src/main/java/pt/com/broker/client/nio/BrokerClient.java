@@ -31,6 +31,7 @@ import pt.com.broker.client.nio.utils.NetNotificationDecorator;
 import pt.com.broker.types.*;
 import pt.com.broker.types.NetAction.DestinationType;
 
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -125,8 +126,7 @@ public class BrokerClient extends BaseClient implements Observer {
     /** {@inheritDoc} 
      * @throws UnavailableAgentException */
     public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException {
-
-        return publish(brokerMessage.getBytes(), destinationName, dtype);
+        return publish(brokerMessage.getBytes(Charset.forName("UTF-8")), destinationName, dtype);
     }
 
     /** {@inheritDoc} 

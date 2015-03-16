@@ -249,11 +249,6 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<version>${project.version}</version>
-			<artifactId>sapo-broker-java-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<version>${project.version}</version>
 			<artifactId>sapo-broker-agent</artifactId>
 		</dependency>
 		<dependency>

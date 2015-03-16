@@ -1,4 +1,4 @@
-package pt.com.broker.core;
+package pt.com.gcs.plugins;
 
 import pt.com.gcs.messaging.Gcs;
 

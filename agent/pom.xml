@@ -49,6 +49,16 @@
 			<artifactId>sapo-broker-binding-thrift</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+			<artifactId>sapo-broker-agent-plugin-webservices</artifactId>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>${project.groupId}</groupId> -->
+<!-- 			<version>${project.version}</version> -->
+<!-- 			<artifactId>sapo-broker-agent-plugin-dropbox</artifactId> -->
+<!-- 		</dependency> -->
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
@@ -64,10 +74,6 @@
 			<artifactId>compiler</artifactId>
 			<version>0.8.17</version>
 		</dependency>
-		<!--<dependency> <groupId>${project.groupId}</groupId> <version>${project.version}</version> 
-			<artifactId>sapo-broker-agent-plugin-dropbox</artifactId> </dependency> <dependency> 
-			<groupId>${project.groupId}</groupId> <version>${project.version}</version> 
-			<artifactId>sapo-broker-agent-plugin-webservices</artifactId> </dependency> -->
 	</dependencies>
 	<build>
 		<resources>

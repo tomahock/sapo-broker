@@ -10,7 +10,7 @@ use warnings;
 
 my $broker = SAPO::Broker::Clients::Simple->new(
     'host'  => '192.168.100.1',
-    'proto' => 'ssl'
+    'proto' => 'tcp'
 );
 my %options = (
     'destination_type' => 'TOPIC',

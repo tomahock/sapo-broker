@@ -1,8 +1,8 @@
 package pt.com.broker;
 
-import pt.com.broker.core.AgentPlugin;
 import pt.com.broker.core.FilePublisher;
 import pt.com.gcs.messaging.Gcs;
+import pt.com.gcs.plugins.AgentPlugin;
 
 /**
  * Copyright (c) 2014, SAPO

@@ -10,9 +10,13 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
+
 import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
@@ -63,7 +67,6 @@ public class BrokerEncoderRouter extends MessageToMessageEncoder<NetMessage>
         {
             Short protocol_type = (Short) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "PROTOCOL_TYPE");
             Short protocol_version = (Short) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "PROTOCOL_VERSION");
-
             if (protocol_type == null)
             {
                 log.error("No PROTOCOL_TYPE defined for this channel: '{}'", channel.toString());

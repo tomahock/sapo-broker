@@ -3,15 +3,18 @@ package pt.com.broker;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
+
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.CustomExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.auth.ProvidersLoader;
 import pt.com.broker.core.*;
 import pt.com.broker.http.BrokerHttpService;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.messaging.Gcs;
+import pt.com.gcs.plugins.AgentPlugin;
 
 import java.util.ServiceLoader;
 
