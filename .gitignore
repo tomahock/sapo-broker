@@ -73,3 +73,9 @@ persistent*
 #.Net binary files
 client/dotnet/**/bin/
 client/dotnet/**/obj/
+
+#Certificate files
+agent/src/main/resources/conf/broker.csr
+agent/src/main/resources/conf/broker.jks
+agent/src/main/resources/conf/broker.key
+agent/src/main/resources/conf/broker.pem

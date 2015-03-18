@@ -36,6 +36,10 @@
 	<logger level="debug" additivity="false" name="pt.com.broker">
 		<appender-ref ref="Broker-ConsoleAppender" />
 	</logger>
+	
+	<logger name="com.wordnik" level="debug">
+		<appender-ref ref="ConsoleAppender" />
+	</logger>
 
 	<root level="info">
 		<appender-ref ref="ConsoleAppender" />

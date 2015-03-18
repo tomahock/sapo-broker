@@ -1,5 +1,7 @@
 package pt.com.broker.ws.models;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+
 /**
  * Copyright (c) 2014, SAPO
  * All rights reserved.
@@ -15,11 +17,11 @@ public class Error {
 
     public final static Error RESOURCE_NOT_FOUND= new Error(10004,"Resource not found");
 
-    int code;
+    private int code;
 
-    String message;
-
-
+    private String message;
+    
+    @JsonCreator
     public Error(int code, String message) {
         this.code = code;
         this.message = message;
