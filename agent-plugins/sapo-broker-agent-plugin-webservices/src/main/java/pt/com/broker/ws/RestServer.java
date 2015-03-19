@@ -1,7 +1,7 @@
 package pt.com.broker.ws;
 
 
-import org.codehaus.jackson.map.ObjectMapper;
+//import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ErrorHandler;
@@ -15,6 +15,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.config.ConfigFactory;
 import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.jaxrs.config.BeanConfig;

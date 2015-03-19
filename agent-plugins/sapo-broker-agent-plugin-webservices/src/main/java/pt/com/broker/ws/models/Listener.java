@@ -1,10 +1,9 @@
 package pt.com.broker.ws.models;
-
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonValue;
 import pt.com.broker.types.MessageListener;
 
 import java.net.InetSocketAddress;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Copyright (c) 2014, SAPO

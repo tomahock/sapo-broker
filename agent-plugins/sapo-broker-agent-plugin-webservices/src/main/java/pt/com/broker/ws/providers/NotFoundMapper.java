@@ -1,6 +1,5 @@
 package pt.com.broker.ws.providers;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import pt.com.broker.ws.models.*;
 import pt.com.broker.ws.models.Error;
 

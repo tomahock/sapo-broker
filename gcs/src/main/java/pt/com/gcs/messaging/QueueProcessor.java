@@ -66,6 +66,7 @@ public class QueueProcessor implements SubscriptionProcessor
 	private final AtomicLong currentIdx = new AtomicLong(0);
 
 	private final AtomicLong lastMessageDelivered = new AtomicLong(System.currentTimeMillis());
+	
 	private long maxStaleAge;
 
 	protected QueueProcessor(String queueName, long maxStaleAge)

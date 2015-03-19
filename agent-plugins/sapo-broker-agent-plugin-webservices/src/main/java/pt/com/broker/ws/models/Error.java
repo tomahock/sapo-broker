@@ -1,6 +1,6 @@
 package pt.com.broker.ws.models;
 
-import org.codehaus.jackson.annotate.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  * Copyright (c) 2014, SAPO
@@ -13,9 +13,9 @@ import org.codehaus.jackson.annotate.JsonCreator;
 public class Error {
 
 
-    public final static Error INVALID_REQUEST = new Error(99999,"Invalid Request");
+    public final static Error INVALID_REQUEST = new Error(99999, "Invalid Request");
 
-    public final static Error RESOURCE_NOT_FOUND= new Error(10004,"Resource not found");
+    public final static Error RESOURCE_NOT_FOUND= new Error(10004, "Resource not found");
 
     private int code;
 

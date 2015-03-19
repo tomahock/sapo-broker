@@ -16,6 +16,16 @@
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-gcs</artifactId>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -31,13 +41,24 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>2.5.1</version>
+			<version>2.11</version>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jackson-core</artifactId> -->
+<!-- 					<groupId>com.fasterxml.jackson.core</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
 		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-			<version>1.9.13</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.glassfish.jersey.media</groupId> -->
+		<!-- <artifactId>jersey-media-json-jackson</artifactId> -->
+		<!-- <version>2.5.1</version> -->
+		<!-- </dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.codehaus.jackson</groupId> -->
+<!-- 			<artifactId>jackson-core-asl</artifactId> -->
+<!-- 			<version>2.3.2</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -46,8 +67,28 @@
 		</dependency>
 		<dependency>
 			<groupId>com.wordnik</groupId>
-			<artifactId>swagger-jersey2-jaxrs_2.10</artifactId>
+			<artifactId>swagger-jersey2-jaxrs_2.11</artifactId>
 			<version>1.3.12</version>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jackson-module-jsonSchema</artifactId> -->
+<!-- 					<groupId>com.fasterxml.jackson.module</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jackson-module-scala_2.10</artifactId> -->
+<!-- 					<groupId>com.fasterxml.jackson.module</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jackson-annotations</artifactId> -->
+<!-- 					<groupId>com.fasterxml.jackson.core</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

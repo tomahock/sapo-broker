@@ -1,9 +1,10 @@
 package pt.com.broker.ws.models;
 
 import io.netty.channel.Channel;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.net.InetSocketAddress;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Copyright (c) 2014, SAPO

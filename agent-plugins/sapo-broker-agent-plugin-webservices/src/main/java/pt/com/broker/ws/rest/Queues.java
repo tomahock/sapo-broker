@@ -17,7 +17,9 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetMessage;
+import pt.com.broker.ws.models.Message;
 import pt.com.broker.ws.models.Queue;
 import pt.com.broker.ws.responses.MessageList;
 import pt.com.broker.ws.responses.QueueList;
@@ -90,7 +92,7 @@ public class Queues {
 
 
     @GET()
-    @Path("/{name}")
+    @Path("/{name : .+}")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
     		value = "Get message queue.",
@@ -110,7 +112,7 @@ public class Queues {
     }
 
     @GET()
-    @Path("/{name}/messages")
+    @Path("/{name : .+}/messages")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
     		value = "Get queue messages.",
@@ -127,7 +129,25 @@ public class Queues {
             throw new WebApplicationException(404);
         }
         QueueProcessor processor = QueueProcessorList.get(name);
-        QueueMessages queueMessages = new QueueMessages(processor.getSubscriptionName(), new MessageList(processor.getMessages()));
+        List<NetMessage> netMessages = processor.getMessages();
+        List<Message> messages = new ArrayList<Message>();
+        for(NetMessage nm: netMessages){
+        	if(nm.getAction().getActionType() == ActionType.NOTIFICATION){
+        		//It's the only message that should be in the queue
+        		Message m = new Message(
+        				nm.getAction().getNotificationMessage().getMessage().getMessageId(),
+        				nm.getHeaders(),
+        				nm.getAction().getActionType().name(),
+        				nm.getAction().getNotificationMessage().getDestination(),
+        				nm.getAction().getNotificationMessage().getDestinationType()
+        		);
+        		messages.add(m);
+        	} else {
+        		log.warn("The queue {} contains a message of type {}.", name, nm.getAction().getActionType().name());
+        	}
+        	
+        }
+        QueueMessages queueMessages = new QueueMessages(processor.getSubscriptionName(), new MessageList(messages));
         return queueMessages;
     }
 

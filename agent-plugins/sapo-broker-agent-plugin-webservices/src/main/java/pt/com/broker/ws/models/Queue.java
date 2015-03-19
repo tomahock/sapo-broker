@@ -1,9 +1,5 @@
 package pt.com.broker.ws.models;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import pt.com.gcs.messaging.QueueProcessor;
 
 import java.text.DateFormat;
@@ -12,6 +8,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Copyright (c) 2014, SAPO
  * All rights reserved.
@@ -21,40 +20,48 @@ import java.util.TimeZone;
  */
 @JsonIgnoreProperties({"processor"})
 public class Queue {
-
-	//FIXME: This should be a placeholder only. The getter fields are being calculated and they should
-	//not.
 	
+	public static final String JSON_PROP_NAME 						= "queue_name";
+	public static final String JSON_PROP_MESSAGE_COUNT 				= "message_count";
+	public static final String JSON_PROP_LAST_MESSAGE_DELIVERED 	= "message_last_delivery";
+
     private static DateFormat ISO_8601_DATE_TIME = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ");
     static {
     	//FIXME: Fix this line...
         ISO_8601_DATE_TIME.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
     
-    private final String name;
-    private final long messageCount;
-    private final String lastMessageDelivered;
+    private String name;
+    private Long messageCount;
+    private String lastMessageDelivered;
+    
+    public Queue(){
+    	
+    }
 
-    public Queue(String name, long messageCount, String lastMessageDelivered) {
+    @JsonCreator()
+    public Queue(@JsonProperty(JSON_PROP_NAME) String name, 
+    		@JsonProperty(JSON_PROP_MESSAGE_COUNT) long messageCount, 
+    		@JsonProperty(JSON_PROP_LAST_MESSAGE_DELIVERED) String lastMessageDelivered) {
     	this.name = name;
     	this.messageCount = messageCount;
     	this.lastMessageDelivered = lastMessageDelivered;
     }
     
-    @JsonProperty("name")
+    @JsonProperty(JSON_PROP_NAME)
     public String getName(){
 //        return processor.getSubscriptionName();
     	return name;
     }
 
-    @JsonProperty("count")
-    public long getMessageCount(){
+    @JsonProperty(JSON_PROP_MESSAGE_COUNT)
+    public Long getMessageCount(){
 //        return processor.getQueuedMessagesCount();
     	return messageCount;
     }
 
-    @JsonProperty("last_deliver")
-    public String getLastDeliver(){
+    @JsonProperty(JSON_PROP_LAST_MESSAGE_DELIVERED)
+    public String getLastMessageDelivered(){
     	return lastMessageDelivered;
 
 //        long last = processor.lastMessageDelivered();
@@ -67,4 +74,19 @@ public class Queue {
 //
 //        return outDate;
     }
+
+    @JsonProperty(JSON_PROP_NAME)
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@JsonProperty(JSON_PROP_MESSAGE_COUNT)
+	public void setMessageCount(long messageCount) {
+		this.messageCount = messageCount;
+	}
+
+	@JsonProperty(JSON_PROP_LAST_MESSAGE_DELIVERED)
+	public void setLastMessageDelivered(String lastMessageDelivered) {
+		this.lastMessageDelivered = lastMessageDelivered;
+	}
 }
