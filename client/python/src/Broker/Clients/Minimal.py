@@ -1,5 +1,11 @@
 from __future__ import with_statement #for python 2.5
-import dummy_threading
+
+class DummyLock:
+    def __enter__(self):
+        return True
+
+    def __exit__(self, type, value, traceback):
+        pass
 
 class Client:
     '''minimalistic client for Broker'''
@@ -9,7 +15,7 @@ class Client:
         self.__transport = transport
 
         if lock is None:
-            lock = dummy_threading.RLock()
+            lock = DummyLock()
 
         self.__lock = lock
 
