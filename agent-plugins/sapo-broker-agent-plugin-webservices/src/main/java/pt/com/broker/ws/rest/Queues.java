@@ -40,7 +40,7 @@ import com.wordnik.swagger.annotations.ApiResponses;
  * <p/>
  * Created by Luis Santos<luis.santos@telecom.pt> on 25-06-2014.
  */
-@Path("/queues")
+@Path("")
 @Api(value="/queues" , description = "Operations on queues maintained by the agent.")
 @Produces({"application/json"})
 public class Queues {
@@ -48,6 +48,7 @@ public class Queues {
     private static final Logger log = LoggerFactory.getLogger(Queues.class);
 
     @GET()
+    @Path("/queues")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
     		value = "Get all queues.",
@@ -63,7 +64,7 @@ public class Queues {
 
     //FIXME: Add Generic response method
     @DELETE()
-    @Path("/{name : .+}")
+    @Path("/queues{name : /.+}")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
     		value = "Delete existing queue.",
@@ -92,7 +93,7 @@ public class Queues {
 
 
     @GET()
-    @Path("/{name : .+}")
+    @Path("/queues{name : /.+}") //FIXME: Is this OK?
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
     		value = "Get message queue.",
@@ -112,7 +113,7 @@ public class Queues {
     }
 
     @GET()
-    @Path("/{name : .+}/messages")
+    @Path("/queues{name : /.+}/messages")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
     		value = "Get queue messages.",

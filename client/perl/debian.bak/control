@@ -1,0 +1,16 @@
+Source: libsapo-broker-perl
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 5), perl (>= 5.6.10-12)
+Maintainer: Claudio Valente <c.valente@co.sapo.pt>
+Standards-Version: 3.8.0
+Homepage: http://search.cpan.org/dist/SAPO-Broker/
+
+Package: libsapo-broker-perl
+Architecture: all
+Depends: ${perl:Depends}, ${shlibs:Depends}, ${misc:Depends}, libxml-libxml-perl, libreadonly-perl, libthrift-perl
+Recommends: libwww-perl, libio-socket-ssl-perl, libjson-any-perl, libthrift-xs-perl, libsapo-broker-perl-xs-helper
+Description: SAPO Broker perl bindings (XS version)
+ This is SAPO Broker's perl API.
+ .
+ perl library to use SAPO broker.

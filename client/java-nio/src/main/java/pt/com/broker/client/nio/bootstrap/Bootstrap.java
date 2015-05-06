@@ -1,8 +1,10 @@
 package pt.com.broker.client.nio.bootstrap;
 
 
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.handler.timeout.IdleStateHandler;
 import pt.com.broker.client.nio.NioSocketChannelBroker;
@@ -45,7 +47,7 @@ public class Bootstrap extends BaseBootstrap {
 
 
        bootstrap.group(group).channel(NioSocketChannelBroker.class);
-
+       bootstrap.option(ChannelOption.ALLOCATOR, new PooledByteBufAllocator(true));
 
        bootstrap.handler(getChannelInitializer());
 

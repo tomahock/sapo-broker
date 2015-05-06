@@ -10,7 +10,7 @@ use warnings;
 use base qw(SAPO::Broker::Transport::TCP);
 #use IO::Socket::SSL qw(debug4);
 
-Readonly::Scalar my $DEFAULT_PORT => 3490;
+Readonly::Scalar my $DEFAULT_PORT => 3390;
 Readonly::Scalar my $DEFAULT_HOST => '192.168.100.1';
 
 sub new {

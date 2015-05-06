@@ -11,7 +11,7 @@ import pt.com.broker.types.NetSubscribe;
 public class SimpleConsumer {
 
 	public static void main(String[] args) throws Throwable {
-		BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "Test", NetProtocolType.JSON);
+		BrokerClient bk = new BrokerClient("127.0.0.1", 3323, "Test", NetProtocolType.PROTOCOL_BUFFER);
 		bk.addAsyncConsumer(new NetSubscribe("/sapo/broker/dev/test_node", DestinationType.TOPIC), new BrokerListener() {
 			
 			@Override

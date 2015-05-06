@@ -703,7 +703,9 @@ public class AgentConfig {
         "keyPassword",
         "certFile",
         "keyFile",
-        "forceAgentSsl"
+        "forceAgentSsl",
+        "sslProtocolWhiteList",
+        "sslCipherSuiteWhiteList"
     })
     public static class Ssl {
 
@@ -721,6 +723,10 @@ public class AgentConfig {
         protected String keyFile;
         @XmlElement(name = "force-agent-ssl", required = true)
         protected boolean forceAgentSsl;
+        @XmlElement(name = "ssl-protocol-white-list")
+        protected String sslProtocolWhiteList;
+        @XmlElement(name = "ssl-ciphersuite-white-list")
+        protected String sslCipherSuiteWhiteList;
 
         /**
          * Gets the value of the brokerSslPort property.
@@ -831,6 +837,53 @@ public class AgentConfig {
          * */
         public void setForceAgentSsl(boolean value){
         	this.forceAgentSsl = value;
+        }
+        
+        
+        /**
+         * Gets the value of the sslProtocolWhiteList property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getSslProtocolWhiteList(){
+        	return sslProtocolWhiteList;
+        }
+        
+        /**
+         * Sets the value of the sslProtocolWhiteList property
+         * 
+         * @param value
+         * 		allowed object is
+         * 		{@link String} and the values are: [TLSv1, TLSv1.1, TLSv1.2, SSLv3]
+         * */
+        public void setSslProtocolWhiteList(String sslProtocolWhiteList){
+        	this.sslProtocolWhiteList = sslProtocolWhiteList;
+        }
+        
+        /**
+         * Gets the value of the sslCipherSuiteWhiteList property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getSslCipherSuiteWhiteList(){
+        	return sslCipherSuiteWhiteList;
+        }
+        
+        /**
+         * Sets the value of the sslCipherSuiteWhiteList property
+         * 
+         * @param value
+         * 		allowed object is
+         * 		{@link String}
+         * */
+        public void setSslCipherSuiteWhiteList(String sslCipherSuiteWhiteList){
+        	this.sslCipherSuiteWhiteList = sslCipherSuiteWhiteList;
         }
         
         public void setCertFile(String certFile){

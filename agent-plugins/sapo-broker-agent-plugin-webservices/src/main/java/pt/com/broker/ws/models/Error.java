@@ -21,6 +21,10 @@ public class Error {
 
     private String message;
     
+    public Error(){
+    	
+    }
+    
     @JsonCreator
     public Error(int code, String message) {
         this.code = code;

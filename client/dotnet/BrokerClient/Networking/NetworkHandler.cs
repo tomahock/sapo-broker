@@ -118,7 +118,7 @@ namespace SapoBrokerClient.Networking
             {
                 bool signaled = asyncResult.AsyncWaitHandle.WaitOne(15 * 1000, false);
                 if (!signaled)
-                    throw new TimeoutException(String.Format("Connection timeout while connectig to agent {0}:{1}", hostInfo.Hostname, hostInfo.Port));
+                    throw new TimeoutException(String.Format("Connection timeout while connecting to agent {0}:{1}", hostInfo.Hostname, hostInfo.Port));
             }
             this.communicationStream = GetCommunicationStream();
         }

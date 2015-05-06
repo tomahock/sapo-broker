@@ -1,6 +1,18 @@
 SAPO-Broker version 0.01
 ========================
 
+LATEST INSTRUCTIONS:
+
+To build the client with the vagrant provided, just type:
+
+make clean
+perl Makefile.PL
+make && make test
+
+If all went right and all tests pass, you can install the module:
+
+sudo make install
+
 ## Installing from source
 
 ```bash

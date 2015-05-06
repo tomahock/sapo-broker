@@ -375,6 +375,14 @@ public class GcsInfo {
 		return instance.conf.getSsl().getForceAgentSsl();
 	}
 	
+	public static String getSslProtocolWhiteList(){
+		return instance.conf.getSsl().getSslProtocolWhiteList();
+	}
+	
+	public static String getSslCipherSuiteWhitelist(){
+		return instance.conf.getSsl().getSslCipherSuiteWhiteList();
+	}
+	
 	/**
 	 * Gets the path to the certificate file used for SSL comunications.
 	 * 

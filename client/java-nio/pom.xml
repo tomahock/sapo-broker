@@ -14,6 +14,7 @@
 	<properties>
 		<extraArgs>-Xmx32M -Dproject-version=${project.version}</extraArgs>
 		<skipTests>true</skipTests>
+		<netty.version>4.0.25.Final</netty.version>
 		<guava.version>18.0</guava.version>
 	</properties>
 

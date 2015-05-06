@@ -21,20 +21,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class LocalSubscription extends Subscription {
 
     public LocalSubscription(SubscriptionProcessor topicProcessor) {
-        super(topicProcessor);
+//        super(topicProcessor);
     }
 
     @JsonProperty("listeners")
     public List<Listener> getListeners() {
-
-        Collection<MessageListener> locallisteners = topicProcessor.localListeners();
-
-        List<Listener> listeners = new ArrayList<>(locallisteners.size());
-
-        for(MessageListener l : locallisteners){
-                listeners.add(new Listener(l));
-        }
-
-        return listeners;
+    	return null;
+//        Collection<MessageListener> locallisteners = topicProcessor.localListeners();
+//
+//        List<Listener> listeners = new ArrayList<>(locallisteners.size());
+//
+//        for(MessageListener l : locallisteners){
+//                listeners.add(new Listener(l));
+//        }
+//
+//        return listeners;
     }
 }

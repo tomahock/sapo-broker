@@ -1,6 +1,9 @@
 package pt.com.broker.ws.models;
 
-import pt.com.gcs.messaging.SubscriptionProcessor;
+import java.util.ArrayList;
+import java.util.List;
+
+import pt.com.broker.ws.rest.Subscriptions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,21 +14,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p/>
  * Created by Luis Santos<luis.santos@telecom.pt> on 24-06-2014.
  */
-public abstract class Subscription {
-
-
-    protected final SubscriptionProcessor topicProcessor;
-
-
-    public Subscription(SubscriptionProcessor topicProcessor) {
-        this.topicProcessor = topicProcessor;
-    }
-
-    @JsonProperty("name")
+public class Subscription {
+	
+	@JsonProperty("name")
+	private String name;
+	@JsonProperty("local_listeners")
+	private List<Listener> localListeners;
+	@JsonProperty("remote_listeners")
+	private List<Listener> remoteListeners;
+	
+	public Subscription(){
+		this.name = "";
+		this.localListeners = new ArrayList<Listener>();
+		this.remoteListeners = new ArrayList<Listener>();
+	}
+	
+	public Subscription(String name){
+		this.name = name;
+		this.localListeners = new ArrayList<Listener>();
+		this.remoteListeners = new ArrayList<Listener>();
+	}
+	
     public String getName() {
-        return topicProcessor.getSubscriptionName();
+    	return name;
     }
 
-
+    public void addLocalListener(Listener listener){
+    	localListeners.add(listener);
+    }
+    
+    public void addRemoteListener(Listener listener){
+    	remoteListeners.add(listener);
+    }
 
 }

@@ -33,7 +33,7 @@ if ( has_module 'LWP' and has_module 'Crypt::SSLeay' and has_module 'JSON::Any' 
 
 if ( has_module "IO::Socket::SSL" ) {
     if ( prompt( 'Do you want to use the SSL transport', 'yes' ) =~ /^yes/i ) {
-        $PREREQ_PM{'IO::Socket:SSL'} = 0;
+        $PREREQ_PM{'IO::Socket::SSL'} = 0;
     }
 }
 

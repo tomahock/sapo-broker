@@ -84,6 +84,7 @@ public class BrokerSslPipelineFactory
 
 			kmf.init(keyStore, KEYPW);
 
+//			sslContext = javax.net.ssl.SSLContext.getInstance("TLSv1.1");
 			sslContext = javax.net.ssl.SSLContext.getInstance("TLSv1");
 
 			sslContext.init(kmf.getKeyManagers(), null, null);

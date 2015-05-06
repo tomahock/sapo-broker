@@ -389,7 +389,8 @@ public class Gcs
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new KpiQueuesSize(), 5, 5, TimeUnit.MINUTES);
 
-			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
+//			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
+			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 1, 1, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new QueueWatchDog(), 2, 2, TimeUnit.MINUTES);
 

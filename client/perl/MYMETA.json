@@ -1,0 +1,52 @@
+{
+   "abstract" : "Perl extension for using SAPO Broker",
+   "author" : [
+      "Cláudio Valente <c.valente@co.sapo.pt>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "ExtUtils::MakeMaker version 7.04, CPAN::Meta::Converter version 2.120921",
+   "license" : [
+      "unknown"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "SAPO-Broker",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "inc"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Crypt::SSLeay" : "0",
+            "IO::Socket::INET" : "0",
+            "IO::Socket::SSL" : "0",
+            "JSON::Any" : "0",
+            "LWP" : "0",
+            "Readonly" : "0",
+            "Test::More" : "0",
+            "Thrift" : "0.1",
+            "Thrift::XS" : "0.1",
+            "Time::HiRes" : "0",
+            "XML::LibXML" : "0",
+            "XML::LibXML::XPathContext" : "0"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "version" : "v0.0.3"
+}

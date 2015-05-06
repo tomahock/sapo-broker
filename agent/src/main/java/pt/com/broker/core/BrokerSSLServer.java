@@ -1,6 +1,9 @@
 package pt.com.broker.core;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
@@ -10,8 +13,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslHandler;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
 
 import pt.com.broker.codec.BrokerDecoderRouter;
 import pt.com.broker.codec.BrokerEncoderRouter;
@@ -71,10 +77,53 @@ public class BrokerSSLServer extends BrokerServer
     private final SSLEngine getSSLEngine() throws Exception {
 
         SSLContext sslContext = sslPipelineFactory.getSSLContext();
-
         SSLEngine sslEngine = sslContext.createSSLEngine();
-
+        
+        String sslWhiteListProtocolsStr = GcsInfo.getSslProtocolWhiteList();
+        //Validate and apply Ssl White List Protocols.
+        if(sslWhiteListProtocolsStr != null){
+        	String[] sslSupportedProtocols = sslEngine.getSupportedProtocols();
+        	String[] sslWhiteListProtocols = sslWhiteListProtocolsStr.replaceAll("\\s*,\\s*", ",").split(",");
+        	List<String> validSslWhiteListProtocols = new ArrayList<String>();
+        	for(String sslWhiteListProtocol: sslWhiteListProtocols){
+        		if(Arrays.binarySearch(sslSupportedProtocols, sslWhiteListProtocol) > 0){
+        			//Valid protocol string.
+        			validSslWhiteListProtocols.add(sslWhiteListProtocol);
+        		} else {
+        			log.warn("Invalid SSL protocol configuration found: {}", sslWhiteListProtocol);
+        		}
+        	}
+        	if(validSslWhiteListProtocols.size() > 0){
+        		sslEngine.setEnabledProtocols(validSslWhiteListProtocols.toArray(new String[validSslWhiteListProtocols.size()]));
+        	}
+        }
+        
+        String sslWhiteListCipherSuiteStr = GcsInfo.getSslCipherSuiteWhitelist();
+        //Validate and apply Ssl CipherSuites white lists
+        if(sslWhiteListCipherSuiteStr != null){
+        	String[] sslSupportedCipherSuites = sslEngine.getSupportedCipherSuites();
+        	String[] sslWhiteListCipherSuites = sslWhiteListCipherSuiteStr.replaceAll("\\s*,\\s*", ",").split(",");
+        	
+        	List<String> validSslWhiteListCipherSuites = new ArrayList<String>();
+        	for(String sslWhiteListCipherSuite: sslWhiteListCipherSuites){
+        		if(Arrays.binarySearch(sslSupportedCipherSuites, sslWhiteListCipherSuite) > 0){
+        			//Valid protocol string.
+        			validSslWhiteListCipherSuites.add(sslWhiteListCipherSuite);
+        		} else {
+        			log.warn("Invalid SSL ciphersuite configuration found: {}", sslWhiteListCipherSuite);
+        		}
+        	}
+        	if(validSslWhiteListCipherSuites.size() > 0){
+        		sslEngine.setEnabledCipherSuites(validSslWhiteListCipherSuites.toArray(new String[validSslWhiteListCipherSuites.size()]));
+        	}
+        	
+        }
+        
         sslEngine.setUseClientMode(false);
+        
+        log.debug("SSLEngine enabled protocols: {}", Arrays.toString(sslEngine.getEnabledProtocols()));
+        log.debug("SSLEngine supported protocols: {}", Arrays.toString(sslEngine.getSupportedProtocols()));
+        log.debug("SSLEngine supported ciphersuites: {}", Arrays.toString(sslEngine.getSupportedCipherSuites()));
 
         return sslEngine;
 
