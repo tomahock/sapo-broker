@@ -13,6 +13,12 @@ To build a debian package:
 	mvn package
 ```
 
+To run the agent directly from maven:
+
+```bash
+	mvn exec:java
+```
+
 The package will be at the target directory.
 
 
@@ -34,10 +40,10 @@ The package will be at the target directory.
 There is a pre-configured [Vagrant](http://www.vagrantup.com/) box with the tools that you need start using sapo broker. 
 
 ```bash
-    cd vagrant
-    cp Vagrantfile.orig Vagrantfile 
-    git submodule init
+	git submodule init
     git submodule update
+    cd vagrant
+    cp Vagrantfile.orig Vagrantfile
     vagrant plugin install vagrant-share
 	vagrant plugin install vagrant-vbguest
 	vagrant plugin install vagrant-timezone
