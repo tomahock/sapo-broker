@@ -47,6 +47,10 @@ unless Vagrant.has_plugin?("vagrant-vbguest")
   raise 'vagrant-vbguest is not installed: type vagrant plugin install vagrant-vbguest'
 end
 
+unless Vagrant.has_plugin?("vagrant-timezone")
+  raise 'vagrant-timezone is not installed: type vagrant plugin install vagrant-timezone'
+end
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
@@ -185,6 +189,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # do NOT download the iso file from a webserver
     #config.vbguest.no_remote = true  
+  end
+  if Vagrant.has_plugin?("vagrant-timezone")
+    config.timezone.value = "Europe/Lisbon"
   end
 
 end
