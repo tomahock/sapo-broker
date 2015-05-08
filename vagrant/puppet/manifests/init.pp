@@ -15,7 +15,6 @@ class forceupdate {
 
 class { 'forceupdate': }
 
-
 class { 'apt':
   always_apt_update    => true
 }

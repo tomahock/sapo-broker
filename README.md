@@ -1,5 +1,22 @@
 # Sapo Broker - Maven Edition
 #### Here will be documented variables and goals used to build and execute broker agents and clients, and their dependencies.
+
+To build with maven:
+
+```bash
+	mvn clean install
+```
+
+To build a debian package:
+
+```bash
+	mvn package
+```
+
+The package will be at the target directory.
+
+
+
 1. **Clean and Build** - in order to build all components please execute **_mvn install_** on the root of the project. If you need to clean all previous builds before a new build execute **_mvn clean_**. You can combine both goals by executing **_mvn clean install_**. You can run these goals on each submodule separately if you only need to update or bundle one of these submodules. All the created jars and necessary files are accessible through the created _target_ folder on each submodule. All inner dependencies follow the global's project version.
 1. **Jar with dependencies** - if you include a file named **_with-deps_** on the root of your submodule, a jar with all dependencies is created on the target folder.
 1. **Configurable properties (inside the POM or within the command line execution)**
@@ -21,6 +38,9 @@ There is a pre-configured [Vagrant](http://www.vagrantup.com/) box with the tool
     cp Vagrantfile.orig Vagrantfile 
     git submodule init
     git submodule update
+    vagrant plugin install vagrant-share
+	vagrant plugin install vagrant-vbguest
+	vagrant plugin install vagrant-timezone
     vagrant up
 ```
 
