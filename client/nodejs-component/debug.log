@@ -1,0 +1,48 @@
+2015-03-02T17:39:27.911Z - info: Client instantiated
+2015-03-02T17:39:27.912Z - info: Initializing client
+2015-03-02T17:39:27.912Z - info: Socket created
+2015-03-02T17:39:27.912Z - info: Port: 3323
+2015-03-02T17:39:27.912Z - info: Host: localhost
+2015-03-02T17:39:27.913Z - info: Transport Format: json
+2015-03-02T17:39:27.913Z - info: Return Format: js
+2015-03-02T17:39:27.914Z - info: Consumer Callbacks: { onConnect: null,
+  onData: [Function: brokerConsumerDataCb],
+  onEnd: null,
+  onTimeout: null,
+  onDrain: null,
+  onError: null,
+  onClose: null }
+2015-03-02T17:39:27.914Z - info: Connecting to localhost:3323
+2015-03-02T17:39:27.914Z - info: Subscribing /sapo/broker/dev/test_node as TOPIC, Acknowledge Mode is null
+2015-03-02T17:41:52.532Z - info: Client instantiated
+2015-03-02T17:41:52.533Z - info: Initializing client
+2015-03-02T17:41:52.533Z - info: Socket created
+2015-03-02T17:41:52.534Z - info: Port: 3323
+2015-03-02T17:41:52.534Z - info: Host: localhost
+2015-03-02T17:41:52.534Z - info: Transport Format: json
+2015-03-02T17:41:52.534Z - info: Return Format: js
+2015-03-02T17:41:52.535Z - info: Consumer Callbacks: { onConnect: null,
+  onData: [Function: brokerConsumerDataCb],
+  onEnd: null,
+  onTimeout: null,
+  onDrain: null,
+  onError: null,
+  onClose: null }
+2015-03-02T17:41:52.535Z - info: Connecting to localhost:3323
+2015-03-02T17:41:52.535Z - info: Subscribing /sapo/broker/dev/test_node as TOPIC, Acknowledge Mode is null
+2015-03-02T17:42:16.176Z - info: Client instantiated
+2015-03-02T17:42:16.178Z - info: Initializing client
+2015-03-02T17:42:16.178Z - info: Socket created
+2015-03-02T17:42:16.178Z - info: Port: 3323
+2015-03-02T17:42:16.178Z - info: Host: localhost
+2015-03-02T17:42:16.179Z - info: Transport Format: json
+2015-03-02T17:42:16.179Z - info: Return Format: js
+2015-03-02T17:42:16.180Z - info: Consumer Callbacks: { onConnect: null,
+  onData: [Function: brokerConsumerDataCb],
+  onEnd: null,
+  onTimeout: null,
+  onDrain: null,
+  onError: null,
+  onClose: null }
+2015-03-02T17:42:16.180Z - info: Connecting to localhost:3323
+2015-03-02T17:42:16.180Z - info: Subscribing /sapo/broker/dev/test_node as TOPIC, Acknowledge Mode is null
