@@ -1,18 +1,14 @@
 package pt.com.broker.http;
 
-import io.netty.buffer.ByteBufAllocator;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty4.NettyHttpServer;
+import org.caudexorigo.netty.NettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * BrokerServer is responsible for initializing client's HTTP interface (MINA infrastructure).
+ * BrokerServer is responsible for initializing client's HTTP interface
  */
 
 public class BrokerHttpService
@@ -21,33 +17,25 @@ public class BrokerHttpService
 
 	private final int _portNumber;
 
-	private final Executor tpeIo;
-	private final Executor tpeWorkers;
+	private final NettyContext nettyCtx;
 
-    final Executor executor = Executors.newSingleThreadScheduledExecutor();
-
-	private final ByteBufAllocator _allocator;
-
-	public BrokerHttpService(Executor tpe_io, Executor tpe_workers, int portNumber, ByteBufAllocator allocator)
+	public BrokerHttpService(int portNumber, NettyContext nettyCtx)
 	{
-		tpeIo = tpe_io;
-		tpeWorkers = tpe_workers;
 		_portNumber = portNumber;
-		_allocator = allocator;
+		this.nettyCtx = nettyCtx;
 	}
 
 	public void start()
 	{
 		try
 		{
-
-            executor.execute(new Runnable() {
+			nettyCtx.getWorkerEventLoopGroup().execute(new Runnable() {
                 @Override
                 public void run() {
 
                     /* TODO TEMP CHANGE brsantos */
                     NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber);
-                    server.setAllocator(_allocator);
+                    server.setNettyContext(nettyCtx);
 
 
                     /* TEMP CHANGE brsantos */

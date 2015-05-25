@@ -2,19 +2,20 @@ package pt.com.broker.client.nio.bootstrap;
 
 
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.handler.timeout.IdleStateHandler;
-import pt.com.broker.client.nio.NioSocketChannelBroker;
-import pt.com.broker.client.nio.server.HostInfo;
 
 import java.util.concurrent.TimeUnit;
 
+import org.caudexorigo.netty.NettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pt.com.broker.client.nio.server.HostInfo;
 
 /**
  * Created by luissantos on 23-04-2014.
@@ -25,14 +26,15 @@ import org.slf4j.LoggerFactory;
 public class Bootstrap extends BaseBootstrap {
 	
 	static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
+	private Class<? extends Channel> channel;
 
     /**
      * <p>Constructor for Bootstrap.</p>
      *
      * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
      */
-    public Bootstrap(BaseChannelInitializer channelInitializer, ByteBufAllocator allocator) {
-        super(channelInitializer, allocator);
+    public Bootstrap(BaseChannelInitializer channelInitializer, NettyContext nettyCtx) {
+        super(channelInitializer, nettyCtx);
     }
 
     /**
@@ -48,7 +50,7 @@ public class Bootstrap extends BaseBootstrap {
         EventLoopGroup group = getGroup();
 
 
-       bootstrap.group(group).channel(NioSocketChannelBroker.class);
+       bootstrap.group(group).channel(getNettyContext().getChannelClass());
        bootstrap.option(ChannelOption.ALLOCATOR, allocator);
 
        bootstrap.handler(getChannelInitializer());
@@ -57,7 +59,8 @@ public class Bootstrap extends BaseBootstrap {
     }
 
 
-    @Override
+
+	@Override
     public ChannelFuture connect(final HostInfo hostInfo) {
         ChannelFuture f = super.connect(hostInfo);
         f.addListener(new ChannelFutureListener() {
@@ -77,4 +80,6 @@ public class Bootstrap extends BaseBootstrap {
         });
         return f;
     }
+    
+ 
 }

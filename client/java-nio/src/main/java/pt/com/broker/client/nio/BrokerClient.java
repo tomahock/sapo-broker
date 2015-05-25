@@ -2,9 +2,10 @@ package pt.com.broker.client.nio;
 
 
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.EventLoopGroup;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.netty.NettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,8 +101,8 @@ public class BrokerClient extends BaseClient implements Observer {
         super(ptype);
     }
     
-    public BrokerClient(NetProtocolType ptype, ByteBufAllocator allocator) {
-        super(ptype, allocator);
+    public BrokerClient(NetProtocolType ptype, NettyContext nettyCtx) {
+        super(ptype, nettyCtx);
     }
 
     /**
@@ -120,8 +122,8 @@ public class BrokerClient extends BaseClient implements Observer {
      * @param host a {@link java.lang.String} object.
      * @param port a int.
      */
-    public BrokerClient(String host, int port, ByteBufAllocator allocator) {
-        super(host, port, allocator);
+    public BrokerClient(String host, int port, NettyContext nettyCtx) {
+        super(host, port, nettyCtx);
     }
 
     /**
@@ -143,8 +145,8 @@ public class BrokerClient extends BaseClient implements Observer {
      * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
      * @param allocator a {@link io.netty.buffer.ByteBufAllocator} object.
      */
-    public BrokerClient(String host, int port, NetProtocolType ptype, ByteBufAllocator allocator) {
-        super(host, port, ptype, allocator);
+    public BrokerClient(String host, int port, NetProtocolType ptype, NettyContext nettyCtx) {
+        super(host, port, ptype, nettyCtx);
     }
 
     /**
@@ -165,8 +167,8 @@ public class BrokerClient extends BaseClient implements Observer {
      * @param allocator a {@link io.netty.buffer.ByteBufAllocator} object.
      */   
     
-    public BrokerClient(HostInfo host, NetProtocolType ptype, ByteBufAllocator allocator) {
-        super(host, ptype, allocator);
+    public BrokerClient(HostInfo host, NetProtocolType ptype, NettyContext nettyCtx) {
+        super(host, ptype, nettyCtx);
     }
 
 
@@ -180,14 +182,13 @@ public class BrokerClient extends BaseClient implements Observer {
         connectionEventListeners = new ArrayList<ConnectionEventListener>();
         channelInitializer  = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager(), connectionEventListeners);
         channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
-        setBootstrap(new Bootstrap(channelInitializer, getAllocator()));
+        setBootstrap(new Bootstrap(channelInitializer, getNettyContext()));
         setAcceptRequestsManager(new PendingAcceptRequestsManager());
         channelInitializer.setAcceptRequestsManager(getAcceptRequestsManager());
         HostContainer hostContainer = new HostContainer(getBootstrap());
         hostContainer.addObserver(this);
         setHosts(hostContainer);
     }
-
 
 
 

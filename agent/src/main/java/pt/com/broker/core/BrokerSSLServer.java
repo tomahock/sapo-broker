@@ -1,34 +1,28 @@
 package pt.com.broker.core;
 
-import java.net.InetSocketAddress;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslHandler;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadFactory;
-
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.ssl.SslHandler;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Splitter;
-
-import pt.com.broker.codec.BrokerDecoderRouter;
-import pt.com.broker.codec.BrokerEncoderRouter;
-import pt.com.broker.net.AuthorizationFilter;
-import pt.com.broker.net.BrokerProtocolHandler;
-import pt.com.broker.net.BrokerSslPipelineFactory;
-import pt.com.gcs.conf.GcsInfo;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+
+import org.caudexorigo.netty.NettyContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.codec.BrokerDecoderRouter;
+import pt.com.broker.codec.BrokerEncoderRouter;
+import pt.com.broker.net.BrokerSslPipelineFactory;
+import pt.com.gcs.conf.GcsInfo;
 
 /**
  * BrokerServer is responsible for initializing client's SSL interface (MINA infrastructure).
@@ -43,9 +37,9 @@ public class BrokerSSLServer extends BrokerServer
     private static BrokerSslPipelineFactory sslPipelineFactory  = new BrokerSslPipelineFactory();
 
 
-	public BrokerSSLServer(ThreadFactory tf_io, ThreadFactory tf_workers, int portNumber, ByteBufAllocator allocator)
+	public BrokerSSLServer(int portNumber, NettyContext nettyCtx)
 	{
-        super(tf_io,tf_workers,portNumber,0, allocator);
+        super(portNumber,0, nettyCtx);
 	}
 
 	public void start()

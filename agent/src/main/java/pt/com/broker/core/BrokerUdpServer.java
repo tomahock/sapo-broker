@@ -1,15 +1,18 @@
 package pt.com.broker.core;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadFactory;
-
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
-import io.netty.channel.socket.nio.NioDatagramChannel;
+
+import java.net.InetSocketAddress;
+
 import org.caudexorigo.Shutdown;
+import org.caudexorigo.netty.NettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +29,6 @@ public class BrokerUdpServer
 
 	private static final int MAX_UDP_MESSAGE_SIZE = 65 * 1024;
 
-	private final ThreadFactory tfIo;
 
     private final InetSocketAddress socketAddress;
     private final InetSocketAddress legacySocketAddress;
@@ -35,24 +37,21 @@ public class BrokerUdpServer
     private final AuthorizationFilter authorizationFilter =  new AuthorizationFilter();
     private final UdpFramingDecoder udpFramingDecoder =  new UdpFramingDecoder(GcsInfo.getMessageMaxSize());
 
-	public BrokerUdpServer(ThreadFactory tf_io, int legacyPort, int binProtoPort)
+	private NettyContext nettyCtx;
+
+	public BrokerUdpServer(int legacyPort, int binProtoPort, NettyContext nettyCtx)
 	{
 		super();
-
-        socketAddress = new InetSocketAddress("0.0.0.0", binProtoPort);
-        legacySocketAddress = new InetSocketAddress("0.0.0.0", legacyPort);
-
-		this.tfIo = tf_io;
+		this.nettyCtx = nettyCtx;
+		this.socketAddress = new InetSocketAddress("0.0.0.0", binProtoPort);
+		this.legacySocketAddress = new InetSocketAddress("0.0.0.0", legacyPort);
 	}
 
 	public void start()
 	{
-
 		try
 		{
-
 			ChannelFuture future = startUdpServer();
-
 
             future.addListener(new ChannelFutureListener() {
 
@@ -62,12 +61,8 @@ public class BrokerUdpServer
                     if(channelFuture.isSuccess()){
                         log.info("SAPO-UDP-BROKER BINARY Listening on: '{}'.", channelFuture.channel().localAddress());
                     }
-
                 }
             });
-
-
-
 		}
 		catch (Throwable t)
 		{
@@ -86,13 +81,8 @@ public class BrokerUdpServer
                     if(channelFuture.isSuccess()){
                         log.info("SAPO-UDP-BROKER LEGACY Listening on: '{}'.", channelFuture.channel().localAddress());
                     }
-
-
                 }
             });
-
-
-
 		}
 		catch (Throwable t)
 		{
@@ -121,8 +111,6 @@ public class BrokerUdpServer
 
             }
         });
-
-
 
         return legacyBootstrap.bind(legacySocketAddress);
 
@@ -156,11 +144,11 @@ public class BrokerUdpServer
 
         Bootstrap bootstrap = new Bootstrap();
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup(5,this.tfIo); // (1)
+        EventLoopGroup bossGroup = nettyCtx.getBossEventLoopGroup();
 
         bootstrap.group(bossGroup);
 
-        bootstrap.channel(NioDatagramChannel.class);
+        bootstrap.channel(nettyCtx.getDatagramChannelClass());
         bootstrap.option(ChannelOption.SO_BROADCAST, true);
 
 

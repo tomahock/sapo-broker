@@ -1,12 +1,20 @@
 package pt.com.broker.client.nio;
 
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.EventLoopGroup;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.netty.DefaultNettyContext;
+import org.caudexorigo.netty.NettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +25,12 @@ import pt.com.broker.client.nio.server.HostContainer;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.utils.ChannelWrapperFuture;
 import pt.com.broker.client.nio.utils.HostInfoFuture;
-import pt.com.broker.types.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetPublish;
 
 /**
  * Created by luissantos on 05-05-2014.
@@ -41,17 +48,17 @@ public abstract class BaseClient{
     NetProtocolType protocolType = NetProtocolType.JSON;
     
     private final ByteBufAllocator allocator;
+	private final EventLoopGroup group;
+
+	private NettyContext nettyCtx;
 
 
-
-	public BaseClient(NetProtocolType ptype)
-	{
-		this(null, NetProtocolType.PROTOCOL_BUFFER, PooledByteBufAllocator.DEFAULT);
+	public BaseClient(NetProtocolType ptype) {
+		this(null, NetProtocolType.PROTOCOL_BUFFER, DefaultNettyContext.get());
 	}
 
-	public BaseClient(NetProtocolType ptype, ByteBufAllocator allocator)
-	{
-		this(null, NetProtocolType.PROTOCOL_BUFFER, allocator);
+	public BaseClient(NetProtocolType ptype, NettyContext nettyCtx)	{
+		this(null, NetProtocolType.PROTOCOL_BUFFER, nettyCtx);
 	}
 	
 
@@ -62,11 +69,11 @@ public abstract class BaseClient{
      * @param port a int.
      */
     public BaseClient(String host, int port) {
-        this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER, PooledByteBufAllocator.DEFAULT);
+        this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER, DefaultNettyContext.get());
     }
     
-    public BaseClient(String host, int port, ByteBufAllocator allocator) {
-        this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER, allocator);
+    public BaseClient(String host, int port, NettyContext nettyCtx) {
+        this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER, nettyCtx);
     }
     
 
@@ -79,7 +86,7 @@ public abstract class BaseClient{
      */
     public BaseClient(String host, int port, NetProtocolType ptype) {
 
-        this(new HostInfo(host, port), ptype, PooledByteBufAllocator.DEFAULT);
+        this(new HostInfo(host, port), ptype, DefaultNettyContext.get());
 
     }
     
@@ -93,19 +100,21 @@ public abstract class BaseClient{
      */
     public BaseClient(HostInfo host, NetProtocolType ptype) {
 
-        this(host, ptype, PooledByteBufAllocator.DEFAULT);
-
+        this(host, ptype, DefaultNettyContext.get());
     }
 
-    public BaseClient(String host, int port, NetProtocolType ptype, ByteBufAllocator allocator) {
+    public BaseClient(String host, int port, NetProtocolType ptype, NettyContext nettyCtx) {
     	
-    	this(new HostInfo(host, port), ptype, allocator);
-    	
+    	this(new HostInfo(host, port), ptype, nettyCtx);    	
     }
-    public BaseClient(HostInfo agent, NetProtocolType ptype, ByteBufAllocator allocator) {
+
+    public BaseClient(HostInfo agent, NetProtocolType ptype, NettyContext nettyCtx) {
         
+		
 		setProtocolType(ptype);
-		this.allocator = allocator;
+		this.nettyCtx = nettyCtx;
+		this.allocator = nettyCtx.getAllocator();
+		this.group = nettyCtx.getBossEventLoopGroup();
 		
 		init();
 		
@@ -113,10 +122,7 @@ public abstract class BaseClient{
 		{
 			this.addServer(agent);
 		}
-		
-		
     }
-    
 
 
 	/**
@@ -138,11 +144,17 @@ public abstract class BaseClient{
         }catch (Exception e){
             return new HostNotAvailableFuture<HostInfo>();
         }
-
-
-
-
     }
+    
+    protected EventLoopGroup getEventLoopGroup() {
+    	if (group !=null) {
+    		return group;
+		}
+    	else {
+    		throw new IllegalStateException("Netty EventLoopGroup is not set");
+    	}		
+	}
+    
     
     protected ByteBufAllocator getAllocator() {
     	if (allocator !=null) {
@@ -153,6 +165,16 @@ public abstract class BaseClient{
     	}		
 	}
     
+    protected NettyContext getNettyContext() {
+    	if (nettyCtx !=null) {
+    		return nettyCtx;
+		}
+    	else {
+    		throw new IllegalStateException("NettyContext is not set");
+    	}
+    }
+    
+    
 
     /**
      * <p>sendNetMessage.</p>
@@ -162,7 +184,6 @@ public abstract class BaseClient{
      * @return a {@link io.netty.channel.ChannelFuture} object.
      */
     protected ChannelWrapperFuture sendNetMessage(NetMessage msg, HostInfo host) {
-
 
         Channel channel = host.getChannel();
 

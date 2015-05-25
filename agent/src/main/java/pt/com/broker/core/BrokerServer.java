@@ -1,19 +1,17 @@
 package pt.com.broker.core;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+
+import java.net.InetSocketAddress;
 
 import org.caudexorigo.Shutdown;
+import org.caudexorigo.netty.NettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,23 +44,13 @@ public class BrokerServer
     protected final AuthorizationFilter authorizationFilter = new AuthorizationFilter();
     protected final BrokerEncoderRouter brokerEncoderRouter = new BrokerEncoderRouter();
 
+	private final NettyContext nettyCtx;
 
-    private EventLoopGroup bossGroup;
-    private EventLoopGroup workerGroup;
-
-	private ByteBufAllocator allocator;
-
-
-
-	public BrokerServer(ThreadFactory tf_io, ThreadFactory tf_workers, int portNumber, int legacyPortNumber, ByteBufAllocator allocator)
+	public BrokerServer(int portNumber, int legacyPortNumber, NettyContext nettyCtx)
 	{
-        this.allocator = allocator;
-		bossGroup = new NioEventLoopGroup(5,tf_io); // (1)
-        workerGroup = new NioEventLoopGroup(5,tf_workers);
-
-
-        socketAddress = new InetSocketAddress("0.0.0.0", portNumber);
-        legacySocketAddress = new InetSocketAddress("0.0.0.0", legacyPortNumber);
+        this.nettyCtx = nettyCtx;
+        this. socketAddress = new InetSocketAddress("0.0.0.0", portNumber);
+        this.legacySocketAddress = new InetSocketAddress("0.0.0.0", legacyPortNumber);
 	}
 
 	public void start()
@@ -171,13 +159,13 @@ public class BrokerServer
     protected ServerBootstrap createBootstrap(){
 
         ServerBootstrap bootstrap = new ServerBootstrap();
-        bootstrap.channel(NioServerSocketChannel.class);
+        bootstrap.channel(nettyCtx.getServerChannelClass());
 
 
 
-        bootstrap.group(bossGroup,workerGroup);
+        bootstrap.group(nettyCtx.getBossEventLoopGroup(), nettyCtx.getWorkerEventLoopGroup());
 
-        bootstrap.childOption(ChannelOption.ALLOCATOR, this.allocator);
+        bootstrap.childOption(ChannelOption.ALLOCATOR, nettyCtx.getAllocator());
         bootstrap.childOption(ChannelOption.TCP_NODELAY, false);
         bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
         bootstrap.childOption(ChannelOption.SO_RCVBUF, 256 * 1024);

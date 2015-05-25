@@ -11,6 +11,7 @@ import io.netty.util.concurrent.Future;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+import org.caudexorigo.netty.NettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,20 +32,23 @@ public abstract class BaseBootstrap {
 
     private final BaseChannelInitializer channelInitializer;
 
-    private final EventLoopGroup group = new NioEventLoopGroup();
+    private final EventLoopGroup group;
 
 	private final ByteBufAllocator allocator;
+
+	private NettyContext nettyCtx;
 
     /**
      * <p>Constructor for BaseBootstrap.</p>
      *
      * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
      */
-    public BaseBootstrap(BaseChannelInitializer channelInitializer, ByteBufAllocator allocator) {
+    public BaseBootstrap(BaseChannelInitializer channelInitializer, NettyContext nettyCtx) {
 
         this.channelInitializer = channelInitializer;
-		this.allocator = allocator;
-
+		this.nettyCtx = nettyCtx;
+		this.allocator = nettyCtx.getAllocator();
+		this.group = nettyCtx.getBossEventLoopGroup();
     }
 
 
@@ -104,8 +108,16 @@ public abstract class BaseBootstrap {
     public EventLoopGroup getGroup() {
         return group;
     }
+    
+    
 
-    /**
+    public NettyContext getNettyContext()
+	{
+		return nettyCtx;
+	}
+
+
+	/**
      * <p>getNewInstance.</p>
      *
      * @return a {@link io.netty.bootstrap.Bootstrap} object.
@@ -113,9 +125,6 @@ public abstract class BaseBootstrap {
     
     public abstract io.netty.bootstrap.Bootstrap getNewInstance(ByteBufAllocator allocator);
     
-    //public abstract io.netty.bootstrap.Bootstrap getNewInstance();
-    
-   
 
 
     /**

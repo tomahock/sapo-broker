@@ -1,5 +1,7 @@
 package pt.com.broker.client.nio.bootstrap;
 
+import org.caudexorigo.netty.NettyContext;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelOption;
@@ -20,8 +22,8 @@ public class DatagramBootstrap extends BaseBootstrap {
      *
      * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
      */
-    public DatagramBootstrap(BaseChannelInitializer channelInitializer, ByteBufAllocator allocator) {
-        super(channelInitializer, allocator);
+    public DatagramBootstrap(BaseChannelInitializer channelInitializer, NettyContext nettyCtx) {
+        super(channelInitializer, nettyCtx);
     }
 
     /** {@inheritDoc} */
@@ -32,7 +34,7 @@ public class DatagramBootstrap extends BaseBootstrap {
 
         EventLoopGroup group = getGroup();
 
-        bootstrap.group(group).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, true);
+        bootstrap.group(group).channel(getNettyContext().getDatagramChannelClass()).option(ChannelOption.SO_BROADCAST, true);
 
         bootstrap.handler(getChannelInitializer());
 

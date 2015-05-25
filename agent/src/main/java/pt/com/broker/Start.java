@@ -10,6 +10,8 @@ import io.netty.util.internal.logging.Slf4JLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.CustomExecutors;
+import org.caudexorigo.netty.DefaultNettyContext;
+import org.caudexorigo.netty.NettyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,13 +79,15 @@ public class Start
 
             int broker_port = GcsInfo.getBrokerPort();
             int broker_legacy_port = GcsInfo.getBrokerLegacyPort();
-            ByteBufAllocator allocator=  getAllocator();
-            BrokerServer broker_srv = new BrokerServer(new DefaultThreadFactory("broker-boss-1"), new DefaultThreadFactory("broker-worker-1") , broker_port, broker_legacy_port, allocator);
+            
+            NettyContext nettyCtx = DefaultNettyContext.get();
+
+            BrokerServer broker_srv = new BrokerServer(broker_port, broker_legacy_port, nettyCtx);
 
             broker_srv.start();
 
             int http_port = GcsInfo.getBrokerHttpPort();
-            BrokerHttpService http_srv = new BrokerHttpService(CustomExecutors.newCachedThreadPool("broker-boss-2"), CustomExecutors.newCachedThreadPool("broker-worker-2"), http_port, allocator);
+            BrokerHttpService http_srv = new BrokerHttpService(http_port, nettyCtx);
             http_srv.start();
 
 
@@ -91,14 +95,14 @@ public class Start
             if (GcsInfo.createSSLInterface())
             {
                 int ssl_port = GcsInfo.getBrokerSSLPort();
-                BrokerSSLServer ssl_svr = new BrokerSSLServer(new DefaultThreadFactory("broker-boss-3") , new DefaultThreadFactory("broker-worker-3") , ssl_port, allocator);
+                BrokerSSLServer ssl_svr = new BrokerSSLServer(ssl_port, nettyCtx);
                 ssl_svr.start();
             }
 
 
             int udp_legacy_port = GcsInfo.getBrokerUdpPort();
             int udp_bin_port = broker_port;
-            BrokerUdpServer udp_srv = new BrokerUdpServer(new DefaultThreadFactory("broker-boss-4"), udp_legacy_port, udp_bin_port);
+            BrokerUdpServer udp_srv = new BrokerUdpServer(udp_legacy_port, udp_bin_port, nettyCtx);
             udp_srv.start();
 
 

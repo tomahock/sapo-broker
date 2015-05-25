@@ -1,5 +1,10 @@
 package pt.com.broker.client.nio;
 
+import java.security.InvalidParameterException;
+import java.util.concurrent.Future;
+
+import org.caudexorigo.netty.VoidNettyContext;
+
 import pt.com.broker.client.nio.bootstrap.BaseChannelInitializer;
 import pt.com.broker.client.nio.bootstrap.DatagramBootstrap;
 import pt.com.broker.client.nio.bootstrap.DatagramChannelInitializer;
@@ -9,9 +14,6 @@ import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetPublish;
-
-import java.security.InvalidParameterException;
-import java.util.concurrent.Future;
 
 /**
  * Created by luissantos on 05-05-2014.
@@ -87,7 +89,7 @@ public class UdpBrokerClient extends BaseClient {
 
         channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
 
-        setBootstrap(new DatagramBootstrap(channelInitializer, null));
+        setBootstrap(new DatagramBootstrap(channelInitializer, new VoidNettyContext()));
 
         setHosts(new HostContainer(bootstrap));
     }
