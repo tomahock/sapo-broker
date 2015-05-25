@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>pt.sapo.oss.broker</groupId>
 		<artifactId>sapo-broker-parent</artifactId>
-		<version>4.0.50.Alpha1</version>
+		<version>4.0.50.Alpha4</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>sapo-broker-java-client-nio</artifactId>
@@ -14,7 +14,6 @@
 	<properties>
 		<extraArgs>-Xmx32M -Dproject-version=${project.version}</extraArgs>
 		<skipTests>true</skipTests>
-		<netty.version>4.0.25.Final</netty.version>
 		<guava.version>18.0</guava.version>
 	</properties>
 
@@ -23,12 +22,6 @@
 			<groupId>${project.groupId}</groupId>
 			<version>${project.version}</version>
 			<artifactId>sapo-broker-comm-types</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -66,11 +59,6 @@
 			<artifactId>mockito-all</artifactId>
 			<version>1.9.5</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-			<version>${netty.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>

@@ -5,14 +5,14 @@
 	<groupId>pt.sapo.oss.broker</groupId>
 	<artifactId>sapo-broker-parent</artifactId>
 	<name>sapo-broker-parent</name>
-	<version>4.0.50.Alpha1</version>
+	<version>4.0.50.Alpha4</version>
 	<packaging>pom</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		<netty.version>4.0.25.Final</netty.version>
+		<netty.version>4.0.28.Final</netty.version>
 	</properties>
 
 	<repositories>
