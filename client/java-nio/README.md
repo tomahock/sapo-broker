@@ -9,7 +9,7 @@
  mvn clean package               
 ```
 
- copy jar:  target/sapo-broker-java-client-nio-4.0.49.Alpha1.jar    
+ copy jar:  target/sapo-broker-java-client-nio-4.0.50.Alpha4.jar    
  copy dependency: target/dependency/*.jar
  
 # Building a single jar with all dependencies
