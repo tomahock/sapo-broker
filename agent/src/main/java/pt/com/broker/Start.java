@@ -1,9 +1,13 @@
 package pt.com.broker;
 
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.CustomExecutors;
 import org.slf4j.Logger;
@@ -73,14 +77,13 @@ public class Start
 
             int broker_port = GcsInfo.getBrokerPort();
             int broker_legacy_port = GcsInfo.getBrokerLegacyPort();
-            BrokerServer broker_srv = new BrokerServer(new DefaultThreadFactory("broker-boss-1"), new DefaultThreadFactory("broker-worker-1") , broker_port, broker_legacy_port);
+            ByteBufAllocator allocator=  getAllocator();
+            BrokerServer broker_srv = new BrokerServer(new DefaultThreadFactory("broker-boss-1"), new DefaultThreadFactory("broker-worker-1") , broker_port, broker_legacy_port, allocator);
 
             broker_srv.start();
 
-
-
             int http_port = GcsInfo.getBrokerHttpPort();
-            BrokerHttpService http_srv = new BrokerHttpService(CustomExecutors.newCachedThreadPool("broker-boss-2"), CustomExecutors.newCachedThreadPool("broker-worker-2"), http_port);
+            BrokerHttpService http_srv = new BrokerHttpService(CustomExecutors.newCachedThreadPool("broker-boss-2"), CustomExecutors.newCachedThreadPool("broker-worker-2"), http_port, allocator);
             http_srv.start();
 
 
@@ -88,7 +91,7 @@ public class Start
             if (GcsInfo.createSSLInterface())
             {
                 int ssl_port = GcsInfo.getBrokerSSLPort();
-                BrokerSSLServer ssl_svr = new BrokerSSLServer(new DefaultThreadFactory("broker-boss-3") , new DefaultThreadFactory("broker-worker-3") , ssl_port);
+                BrokerSSLServer ssl_svr = new BrokerSSLServer(new DefaultThreadFactory("broker-boss-3") , new DefaultThreadFactory("broker-worker-3") , ssl_port, allocator);
                 ssl_svr.start();
             }
 
@@ -134,4 +137,20 @@ public class Start
             Shutdown.now(t);
         }
     }
+    
+	private static ByteBufAllocator getAllocator()
+	{
+		String os_arch = System.getProperty("os.arch");
+
+		boolean isARM = StringUtils.contains(os_arch, "arm");
+
+		if (isARM)
+		{
+			return new UnpooledByteBufAllocator(false);
+		}
+		else
+		{
+			return new PooledByteBufAllocator(true);
+		}
+	}
 }

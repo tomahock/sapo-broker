@@ -1,19 +1,21 @@
 package pt.com.broker.client.nio.bootstrap;
 
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.Future;
-import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.client.nio.utils.ChannelDecorator;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.client.nio.utils.ChannelDecorator;
 
 /**
  *
@@ -31,14 +33,17 @@ public abstract class BaseBootstrap {
 
     private final EventLoopGroup group = new NioEventLoopGroup();
 
+	private final ByteBufAllocator allocator;
+
     /**
      * <p>Constructor for BaseBootstrap.</p>
      *
      * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
      */
-    public BaseBootstrap(BaseChannelInitializer channelInitializer) {
+    public BaseBootstrap(BaseChannelInitializer channelInitializer, ByteBufAllocator allocator) {
 
         this.channelInitializer = channelInitializer;
+		this.allocator = allocator;
 
     }
 
@@ -50,7 +55,7 @@ public abstract class BaseBootstrap {
      * @return a {@link io.netty.channel.ChannelFuture} object.
      */
     public ChannelFuture connect(final HostInfo hostInfo){
-        io.netty.bootstrap.Bootstrap boot = getNewInstance();
+        io.netty.bootstrap.Bootstrap boot = getNewInstance(allocator);
         boot.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,hostInfo.getConnectTimeout());
         InetSocketAddress socketAddress = new InetSocketAddress(hostInfo.getHostname(),hostInfo.getPort());
         ChannelFuture f = boot.connect(socketAddress);
@@ -105,7 +110,12 @@ public abstract class BaseBootstrap {
      *
      * @return a {@link io.netty.bootstrap.Bootstrap} object.
      */
-    public abstract io.netty.bootstrap.Bootstrap getNewInstance();
+    
+    public abstract io.netty.bootstrap.Bootstrap getNewInstance(ByteBufAllocator allocator);
+    
+    //public abstract io.netty.bootstrap.Bootstrap getNewInstance();
+    
+   
 
 
     /**

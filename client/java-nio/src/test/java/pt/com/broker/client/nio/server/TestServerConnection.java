@@ -15,6 +15,7 @@ import pt.com.broker.client.nio.mocks.SocketServer;
 import pt.com.broker.client.nio.tests.Utils;
 import pt.com.broker.types.BindingSerializer;
 import pt.com.broker.types.NetProtocolType;
+import io.netty.buffer.PooledByteBufAllocator;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -35,7 +36,7 @@ public class TestServerConnection extends ServerBaseTest {
     public void testConnection() throws ExecutionException, InterruptedException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         List<SocketServer> servers = getServers();
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
-        Bootstrap b = new Bootstrap(new ChannelInitializer(serializer,null,null, null));
+        Bootstrap b = new Bootstrap(new ChannelInitializer(serializer,null,null, null), new PooledByteBufAllocator(true));
         HostContainer container = new HostContainer(b);
         for(SocketServer server : servers){
             HostInfo host = new HostInfo("127.0.0.1", server.getPort());
@@ -64,7 +65,7 @@ public class TestServerConnection extends ServerBaseTest {
 
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        HostContainer container = new HostContainer(new Bootstrap(new ChannelInitializer( serializer,null,null, null)));
+        HostContainer container = new HostContainer(new Bootstrap(new ChannelInitializer( serializer,null,null, null), new PooledByteBufAllocator(true)));
 
         for(SocketServer server : servers){
             container.add(new HostInfo("127.0.0.1",server.getPort()));
@@ -142,7 +143,7 @@ public class TestServerConnection extends ServerBaseTest {
 
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager(), null));
+        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager(), null), new PooledByteBufAllocator(true));
 
         HostContainer container = new HostContainer(bootstrap);
 
@@ -207,7 +208,7 @@ public class TestServerConnection extends ServerBaseTest {
 
         BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager(), null));
+        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager(), null), new PooledByteBufAllocator(true));
 
         HostContainer container = new HostContainer(bootstrap);
 

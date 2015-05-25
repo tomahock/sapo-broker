@@ -8,6 +8,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -42,9 +43,9 @@ public class BrokerSSLServer extends BrokerServer
     private static BrokerSslPipelineFactory sslPipelineFactory  = new BrokerSslPipelineFactory();
 
 
-	public BrokerSSLServer(ThreadFactory tf_io, ThreadFactory tf_workers, int portNumber)
+	public BrokerSSLServer(ThreadFactory tf_io, ThreadFactory tf_workers, int portNumber, ByteBufAllocator allocator)
 	{
-        super(tf_io,tf_workers,portNumber,0);
+        super(tf_io,tf_workers,portNumber,0, allocator);
 	}
 
 	public void start()

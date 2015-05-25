@@ -1,6 +1,7 @@
 package pt.com.broker.client.nio.bootstrap;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -14,18 +15,18 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 public class DatagramBootstrap extends BaseBootstrap {
 
 
-    /**
+	/**
      * <p>Constructor for DatagramBootstrap.</p>
      *
      * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
      */
-    public DatagramBootstrap(BaseChannelInitializer channelInitializer) {
-        super(channelInitializer);
+    public DatagramBootstrap(BaseChannelInitializer channelInitializer, ByteBufAllocator allocator) {
+        super(channelInitializer, allocator);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Bootstrap getNewInstance() {
+    public Bootstrap getNewInstance(ByteBufAllocator allocator) {
 
         Bootstrap bootstrap = new Bootstrap();
 

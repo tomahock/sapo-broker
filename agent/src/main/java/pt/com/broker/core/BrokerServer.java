@@ -7,10 +7,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+
 import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +50,14 @@ public class BrokerServer
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
+	private ByteBufAllocator allocator;
 
 
-	public BrokerServer(ThreadFactory tf_io, ThreadFactory tf_workers, int portNumber, int legacyPortNumber)
+
+	public BrokerServer(ThreadFactory tf_io, ThreadFactory tf_workers, int portNumber, int legacyPortNumber, ByteBufAllocator allocator)
 	{
-        bossGroup = new NioEventLoopGroup(5,tf_io); // (1)
+        this.allocator = allocator;
+		bossGroup = new NioEventLoopGroup(5,tf_io); // (1)
         workerGroup = new NioEventLoopGroup(5,tf_workers);
 
 
@@ -172,6 +177,7 @@ public class BrokerServer
 
         bootstrap.group(bossGroup,workerGroup);
 
+        bootstrap.childOption(ChannelOption.ALLOCATOR, this.allocator);
         bootstrap.childOption(ChannelOption.TCP_NODELAY, false);
         bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
         bootstrap.childOption(ChannelOption.SO_RCVBUF, 256 * 1024);

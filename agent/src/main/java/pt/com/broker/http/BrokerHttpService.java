@@ -1,5 +1,7 @@
 package pt.com.broker.http;
 
+import io.netty.buffer.ByteBufAllocator;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -24,11 +26,14 @@ public class BrokerHttpService
 
     final Executor executor = Executors.newSingleThreadScheduledExecutor();
 
-	public BrokerHttpService(Executor tpe_io, Executor tpe_workers, int portNumber)
+	private final ByteBufAllocator _allocator;
+
+	public BrokerHttpService(Executor tpe_io, Executor tpe_workers, int portNumber, ByteBufAllocator allocator)
 	{
 		tpeIo = tpe_io;
 		tpeWorkers = tpe_workers;
 		_portNumber = portNumber;
+		_allocator = allocator;
 	}
 
 	public void start()
@@ -42,6 +47,7 @@ public class BrokerHttpService
 
                     /* TODO TEMP CHANGE brsantos */
                     NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber);
+                    server.setAllocator(_allocator);
 
 
                     /* TEMP CHANGE brsantos */

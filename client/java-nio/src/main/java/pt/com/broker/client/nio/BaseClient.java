@@ -1,5 +1,7 @@
 package pt.com.broker.client.nio;
 
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -37,18 +39,21 @@ public abstract class BaseClient{
     BaseBootstrap bootstrap;
     BindingSerializer serializer = null;
     NetProtocolType protocolType = NetProtocolType.JSON;
+    
+    private final ByteBufAllocator allocator;
 
-    /**
-     * <p>Constructor for BaseClient.</p>
-     *
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     */
-    public BaseClient(NetProtocolType ptype) {
 
-        setProtocolType(ptype);
-        init();
 
-    }
+	public BaseClient(NetProtocolType ptype)
+	{
+		this(null, NetProtocolType.PROTOCOL_BUFFER, PooledByteBufAllocator.DEFAULT);
+	}
+
+	public BaseClient(NetProtocolType ptype, ByteBufAllocator allocator)
+	{
+		this(null, NetProtocolType.PROTOCOL_BUFFER, allocator);
+	}
+	
 
     /**
      * <p>Constructor for BaseClient.</p>
@@ -57,8 +62,13 @@ public abstract class BaseClient{
      * @param port a int.
      */
     public BaseClient(String host, int port) {
-        this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER);
+        this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER, PooledByteBufAllocator.DEFAULT);
     }
+    
+    public BaseClient(String host, int port, ByteBufAllocator allocator) {
+        this(new HostInfo(host, port), NetProtocolType.PROTOCOL_BUFFER, allocator);
+    }
+    
 
     /**
      * <p>Constructor for BaseClient.</p>
@@ -69,11 +79,12 @@ public abstract class BaseClient{
      */
     public BaseClient(String host, int port, NetProtocolType ptype) {
 
-        this(new HostInfo(host, port), ptype);
-
+        this(new HostInfo(host, port), ptype, PooledByteBufAllocator.DEFAULT);
 
     }
+    
 
+ 
     /**
      * <p>Constructor for BaseClient.</p>
      *
@@ -82,12 +93,33 @@ public abstract class BaseClient{
      */
     public BaseClient(HostInfo host, NetProtocolType ptype) {
 
-        this(ptype);
+        this(host, ptype, PooledByteBufAllocator.DEFAULT);
 
-        this.addServer(host);
     }
 
-    /**
+    public BaseClient(String host, int port, NetProtocolType ptype, ByteBufAllocator allocator) {
+    	
+    	this(new HostInfo(host, port), ptype, allocator);
+    	
+    }
+    public BaseClient(HostInfo agent, NetProtocolType ptype, ByteBufAllocator allocator) {
+        
+		setProtocolType(ptype);
+		this.allocator = allocator;
+		
+		init();
+		
+		if (agent!=null)
+		{
+			this.addServer(agent);
+		}
+		
+		
+    }
+    
+
+
+	/**
      * <p>sendNetMessage.</p>
      *
      * @param msg a {@link pt.com.broker.types.NetMessage} object.
@@ -111,6 +143,16 @@ public abstract class BaseClient{
 
 
     }
+    
+    protected ByteBufAllocator getAllocator() {
+    	if (allocator !=null) {
+    		return allocator;
+		}
+    	else {
+    		throw new IllegalStateException("Netty memory allocator is not set");
+    	}		
+	}
+    
 
     /**
      * <p>sendNetMessage.</p>

@@ -87,7 +87,7 @@ public class UdpBrokerClient extends BaseClient {
 
         channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
 
-        setBootstrap(new DatagramBootstrap(channelInitializer));
+        setBootstrap(new DatagramBootstrap(channelInitializer, null));
 
         setHosts(new HostContainer(bootstrap));
     }
