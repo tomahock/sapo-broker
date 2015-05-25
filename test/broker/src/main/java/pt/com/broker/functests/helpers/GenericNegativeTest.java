@@ -1,38 +1,38 @@
 package pt.com.broker.functests.helpers;
 
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.functests.Action;
-import pt.com.broker.functests.Step;
-import pt.com.broker.functests.conf.ConfigurationInfo;
+
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.ErrorListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.functests.Action;
+import pt.com.broker.functests.Step;
 import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetProtocolType;
-
-import java.util.concurrent.Future;
 
 public class GenericNegativeTest extends BrokerTest
 {
 
-    private static final Logger log = LoggerFactory.getLogger(GenericNegativeTest.class);
+	private static final Logger log = LoggerFactory.getLogger(GenericNegativeTest.class);
 
 	private BrokerClient brokerClient = null;
 
 	private boolean okToTimeout = false;
 
-	private BrokerListener defaultErrorListener = new ErrorListenerAdapter() {
+	private BrokerListener defaultErrorListener = new ErrorListenerAdapter()
+	{
 
-        @Override
-        public void onMessage(NetFault message,HostInfo host) {
-            log.info("Error Message Fault");
-            faultFuture.set(message);
-        }
-    };
-
+		@Override
+		public void onMessage(NetFault message, HostInfo host)
+		{
+			log.info("Error Message Fault");
+			faultFuture.set(message);
+		}
+	};
 
 	private byte[] dataToSend = new byte[] {};
 
@@ -43,14 +43,14 @@ public class GenericNegativeTest extends BrokerTest
 	private String faultActionId = null;
 	private String faultDetail = null;
 
-    public GenericNegativeTest(NetProtocolType protocolType) {
-        super(protocolType);
-
+	public GenericNegativeTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		try
 		{
-//			brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-//          brokerClient.connect();
+			// brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
+			// brokerClient.connect();
 		}
 		catch (Throwable e)
 		{
@@ -64,7 +64,6 @@ public class GenericNegativeTest extends BrokerTest
 		addAction();
 		addConsequece();
 	}
-
 
 	protected void addConsequece()
 	{
@@ -90,20 +89,20 @@ public class GenericNegativeTest extends BrokerTest
 
 					brokerClient.setFaultListener(getErrorListener());
 
-					//brokerClient.getNetHandler().getConnector().getOutput().write(getDataToSend());
+					// brokerClient.getNetHandler().getConnector().getOutput().write(getDataToSend());
 
-                    byte[] data = getDataToSend();
+					byte[] data = getDataToSend();
 
-                    Byte[] byteObjects = new Byte[data.length];
+					Byte[] byteObjects = new Byte[data.length];
 
-                    int i=0;
+					int i = 0;
 
-                    for(byte b: data)
-                        byteObjects[i++] = b;  // Autoboxing.
+					for (byte b : data)
+						byteObjects[i++] = b; // Autoboxing.
 
-                    Future f = brokerClient.getHosts().getAvailableHost().getChannel().writeAndFlush(byteObjects);
+					Future f = brokerClient.getHosts().getAvailableHost().getChannel().writeAndFlush(byteObjects);
 
-                    f.get();
+					f.get();
 
 					setDone(true);
 					setSucess(true);
@@ -120,18 +119,22 @@ public class GenericNegativeTest extends BrokerTest
 
 	}
 
-    @Override
-    protected void end() {
-        try {
+	@Override
+	protected void end()
+	{
+		try
+		{
 
-            brokerClient.close();
+			brokerClient.close();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-    public void setBrokerClient(BrokerClient brokerClient)
+	public void setBrokerClient(BrokerClient brokerClient)
 	{
 		this.brokerClient = brokerClient;
 	}

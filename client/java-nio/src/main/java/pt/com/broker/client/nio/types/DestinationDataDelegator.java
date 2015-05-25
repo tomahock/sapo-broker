@@ -5,14 +5,11 @@ import pt.com.broker.types.NetFault;
 import pt.com.broker.types.NetMessage;
 
 /**
- * Copyright (c) 2014, SAPO
- * All rights reserved.
+ * Copyright (c) 2014, SAPO All rights reserved.
  * <p/>
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  * <p/>
- * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the SAPO nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 3. Neither the name of the SAPO nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
  * <p/>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * <p/>
@@ -21,147 +18,164 @@ import pt.com.broker.types.NetMessage;
  * @author vagrant
  * @version $Id: $Id
  */
-public class DestinationDataDelegator {
+public class DestinationDataDelegator
+{
 
+	NetMessage netMessage;
 
-    NetMessage netMessage;
+	/**
+	 * <p>
+	 * Constructor for DestinationDataDelegator.
+	 * </p>
+	 *
+	 * @param msg
+	 *            a {@link pt.com.broker.types.NetMessage} object.
+	 */
+	public DestinationDataDelegator(NetMessage msg)
+	{
 
-    /**
-     * <p>Constructor for DestinationDataDelegator.</p>
-     *
-     * @param msg a {@link pt.com.broker.types.NetMessage} object.
-     */
-    public DestinationDataDelegator(NetMessage msg) {
+		netMessage = msg;
+	}
 
-        netMessage = msg;
-    }
+	/**
+	 * <p>
+	 * getSubscription.
+	 * </p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
+	public String getSubscription()
+	{
 
-    /**
-     * <p>getSubscription.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getSubscription(){
+		NetAction netAction = netMessage.getAction();
 
-        NetAction netAction = netMessage.getAction();
+		NetAction.ActionType actionType = netAction.getActionType();
 
-        NetAction.ActionType actionType = netAction.getActionType();
+		String destination = null;
 
-        String destination = null;
+		switch (actionType)
+		{
 
-        switch (actionType){
+		case NOTIFICATION:
+			destination = netAction.getNotificationMessage().getSubscription();
+			break;
 
-            case NOTIFICATION:
-                destination = netAction.getNotificationMessage().getSubscription();
-                break;
+		case FAULT:
+			destination = getDestination(netMessage.getAction().getFaultMessage());
+			break;
+		}
 
-            case FAULT:
-                destination = getDestination(netMessage.getAction().getFaultMessage());
-                break;
-        }
+		return destination;
 
+	}
 
-        return destination;
+	/**
+	 * <p>
+	 * getDestination.
+	 * </p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
+	public String getDestination()
+	{
 
+		NetAction netAction = netMessage.getAction();
 
-    }
+		NetAction.ActionType actionType = netAction.getActionType();
 
-    /**
-     * <p>getDestination.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDestination(){
+		String destination = null;
 
-        NetAction netAction = netMessage.getAction();
+		switch (actionType)
+		{
 
-        NetAction.ActionType actionType = netAction.getActionType();
+		case NOTIFICATION:
+			destination = netAction.getNotificationMessage().getDestination();
+			break;
 
-        String destination = null;
+		case FAULT:
+			destination = getDestination(netAction.getFaultMessage());
+			break;
 
-        switch (actionType){
+		}
 
-            case NOTIFICATION:
-                destination = netAction.getNotificationMessage().getDestination();
-                break;
+		return destination;
 
-            case FAULT:
-                destination = getDestination(netAction.getFaultMessage());
-                break;
+	}
 
-        }
+	/**
+	 * <p>
+	 * getDestinationType.
+	 * </p>
+	 *
+	 * @return a {@link pt.com.broker.types.NetAction.DestinationType} object.
+	 */
+	public NetAction.DestinationType getDestinationType()
+	{
 
+		NetAction netAction = netMessage.getAction();
 
-        return destination;
+		NetAction.ActionType actionType = netAction.getActionType();
 
+		NetAction.DestinationType destinationType = null;
 
-    }
+		switch (actionType)
+		{
 
-    /**
-     * <p>getDestinationType.</p>
-     *
-     * @return a {@link pt.com.broker.types.NetAction.DestinationType} object.
-     */
-    public NetAction.DestinationType getDestinationType(){
+		case NOTIFICATION:
+			destinationType = netAction.getNotificationMessage().getDestinationType();
+			break;
 
-        NetAction netAction = netMessage.getAction();
+		case FAULT:
+			destinationType = getDestinationType(netAction.getFaultMessage());
+			break;
 
-        NetAction.ActionType actionType = netAction.getActionType();
+		}
 
+		return destinationType;
+	}
 
-        NetAction.DestinationType destinationType = null;
+	/**
+	 * <p>
+	 * getDestination.
+	 * </p>
+	 *
+	 * @param fault
+	 *            a {@link pt.com.broker.types.NetFault} object.
+	 * @return a {@link java.lang.String} object.
+	 */
+	protected String getDestination(NetFault fault)
+	{
 
-        switch (actionType){
+		if (NetFault.PollTimeoutErrorCode.equals(fault.getCode())
+				|| NetFault.NoMessageInQueueErrorCode.equals(fault.getCode()))
+		{
 
-            case NOTIFICATION:
-                destinationType = netAction.getNotificationMessage().getDestinationType();
-                break;
+			return fault.getDetail();
 
-            case FAULT:
-                destinationType = getDestinationType(netAction.getFaultMessage());
-                break;
+		}
 
-        }
+		return null;
+	}
 
+	/**
+	 * <p>
+	 * getDestinationType.
+	 * </p>
+	 *
+	 * @param fault
+	 *            a {@link pt.com.broker.types.NetFault} object.
+	 * @return a {@link pt.com.broker.types.NetAction.DestinationType} object.
+	 */
+	protected NetAction.DestinationType getDestinationType(NetFault fault)
+	{
 
-        return destinationType;
-    }
+		if (NetFault.PollTimeoutErrorCode.equals(fault.getCode()))
+		{
 
-    /**
-     * <p>getDestination.</p>
-     *
-     * @param fault a {@link pt.com.broker.types.NetFault} object.
-     * @return a {@link java.lang.String} object.
-     */
-    protected String getDestination(NetFault fault){
+			return NetAction.DestinationType.QUEUE;
 
-        if(NetFault.PollTimeoutErrorCode.equals(fault.getCode())
-                || NetFault.NoMessageInQueueErrorCode.equals(fault.getCode())    ){
+		}
 
-            return fault.getDetail();
-
-        }
-
-
-        return null;
-    }
-
-
-    /**
-     * <p>getDestinationType.</p>
-     *
-     * @param fault a {@link pt.com.broker.types.NetFault} object.
-     * @return a {@link pt.com.broker.types.NetAction.DestinationType} object.
-     */
-    protected NetAction.DestinationType getDestinationType(NetFault fault){
-
-        if(NetFault.PollTimeoutErrorCode.equals(fault.getCode())){
-
-            return NetAction.DestinationType.QUEUE;
-
-        }
-
-
-        return null;
-    }
+		return null;
+	}
 }

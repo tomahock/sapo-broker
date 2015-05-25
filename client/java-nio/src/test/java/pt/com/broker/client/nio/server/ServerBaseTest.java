@@ -1,15 +1,5 @@
 package pt.com.broker.client.nio.server;
 
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.BaseTest;
-import pt.com.broker.client.nio.mocks.ServerFactory;
-import pt.com.broker.client.nio.mocks.SocketServer;
-import pt.com.broker.client.nio.tests.iptables.IpTables;
-
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,128 +10,148 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.client.nio.BaseTest;
+import pt.com.broker.client.nio.mocks.ServerFactory;
+import pt.com.broker.client.nio.mocks.SocketServer;
+import pt.com.broker.client.nio.tests.iptables.IpTables;
+
 /**
  * Created by luissantos on 28-05-2014.
  */
-public abstract class ServerBaseTest extends BaseTest {
+public abstract class ServerBaseTest extends BaseTest
+{
 
-    private static final Logger log = LoggerFactory.getLogger(ServerBaseTest.class);
+	private static final Logger log = LoggerFactory.getLogger(ServerBaseTest.class);
 
-    int totalServers = 20;
+	int totalServers = 20;
 
-    static IpTables ipTables = new IpTables();
+	static IpTables ipTables = new IpTables();
 
-    static  String chainName = "java-nio-tests";
+	static String chainName = "java-nio-tests";
 
-    protected List<SocketServer> getServers() {
+	protected List<SocketServer> getServers()
+	{
 
-        int count = (int) (1 + (Math.random() *  totalServers));
+		int count = (int) (1 + (Math.random() * totalServers));
 
-        return getServers(count);
-    }
+		return getServers(count);
+	}
 
-    protected List<SocketServer> getServers(int count) {
+	protected List<SocketServer> getServers(int count)
+	{
 
-        List<SocketServer> servers = new ArrayList<SocketServer>();
+		List<SocketServer> servers = new ArrayList<SocketServer>();
 
-        while (count-- > 0){
+		while (count-- > 0)
+		{
 
-            SocketServer server = ServerFactory.getInstance(0);
+			SocketServer server = ServerFactory.getInstance(0);
 
-            servers.add(server);
+			servers.add(server);
 
-        }
+		}
 
-        return servers;
-    }
+		return servers;
+	}
 
+	protected List<SocketServer> getRandomServers(Collection<SocketServer> servers)
+	{
 
+		List<SocketServer> _servers = new ArrayList<>(servers);
 
-    protected List<SocketServer> getRandomServers(Collection<SocketServer> servers){
+		Collections.shuffle(_servers);
 
+		return _servers.subList(0, (int) (Math.random() * _servers.size()));
 
-        List<SocketServer> _servers = new ArrayList<>(servers);
+		// return _servers.subList(0, _servers.size()-2);
+	}
 
-        Collections.shuffle(_servers);
+	public boolean userHasPermissions()
+	{
 
-        return _servers.subList(0, (int) (Math.random() *  _servers.size()));
+		IpTables ipTables = new IpTables();
 
-        //return _servers.subList(0, _servers.size()-2);
-    }
+		return ipTables.hasPermission();
 
+	}
 
-    public boolean userHasPermissions(){
+	protected void ShutDownServers(Collection<SocketServer> servers)
+	{
 
-        IpTables ipTables = new IpTables();
+		for (SocketServer s : servers)
+		{
 
+			Future f = s.shutdown();
 
-        return ipTables.hasPermission();
+			try
+			{
+				f.get(20000, TimeUnit.MILLISECONDS);
 
-    }
+				System.out.println("Shutdown Server: " + s);
 
-    protected void ShutDownServers(Collection<SocketServer> servers){
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			catch (ExecutionException e)
+			{
+				e.printStackTrace();
+			}
+			catch (TimeoutException e)
+			{
+				e.printStackTrace();
+			}
 
-        for(SocketServer s : servers){
+		}
 
-            Future f = s.shutdown();
+	}
 
-            try {
-                f.get(20000, TimeUnit.MILLISECONDS);
+	@BeforeClass()
+	public static void setUp() throws Exception
+	{
 
-                System.out.println("Shutdown Server: "+s);
+		if (ipTables.hasPermission())
+		{
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                e.printStackTrace();
-            }
+			if (!ipTables.addChain(currentChainName()))
+			{
+				System.out.println("Error adding chain:" + currentChainName());
+			}
+			else
+			{
+				ipTables.addChaintoChain("OUTPUT", currentChainName());
+			}
 
-        }
+		}
 
-    }
+	}
 
+	@AfterClass()
+	public static void tearDown() throws Exception
+	{
 
-    @BeforeClass()
-    public static void setUp() throws Exception {
+		if (ipTables.hasPermission())
+		{
 
+			ipTables.removeChainfromChain("OUTPUT", currentChainName());
 
+			ipTables.deleteChain(currentChainName());
 
+		}
+	}
 
+	public static String currentChainName()
+	{
 
-        if(ipTables.hasPermission()){
+		String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
 
-
-            if(!ipTables.addChain(currentChainName())){
-                System.out.println("Error adding chain:"+currentChainName());
-            }else{
-                ipTables.addChaintoChain("OUTPUT",currentChainName());
-            }
-
-        }
-
-    }
-
-    @AfterClass()
-    public static void tearDown() throws Exception {
-
-
-        if(ipTables.hasPermission()) {
-
-            ipTables.removeChainfromChain("OUTPUT",currentChainName());
-
-            ipTables.deleteChain(currentChainName());
-
-        }
-    }
-
-    public static String currentChainName(){
-
-        String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
-
-        return chainName+"-"+pid;
-    }
-
+		return chainName + "-" + pid;
+	}
 
 }

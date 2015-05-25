@@ -20,7 +20,7 @@ public class CriticalErrors
 
 	public static void exitIfCritical(Throwable cause)
 	{
-		//ErrorAnalyser.exitIfOOM(cause);
+		// ErrorAnalyser.exitIfOOM(cause);
 		exitIfUlimit(cause);
 	}
 }

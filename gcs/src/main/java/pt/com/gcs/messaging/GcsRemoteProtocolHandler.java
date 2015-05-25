@@ -1,14 +1,15 @@
 package pt.com.gcs.messaging;
 
-import java.nio.charset.Charset;
-import java.util.concurrent.TimeUnit;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.caudexorigo.ErrorAnalyser;
+
+import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,112 +34,110 @@ class GcsRemoteProtocolHandler extends SimpleChannelInboundHandler<NetMessage>
 	private static Logger log = LoggerFactory.getLogger(GcsRemoteProtocolHandler.class);
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+	{
+		super.exceptionCaught(ctx, cause);
 
-        Channel channel = ctx.channel();
+		Channel channel = ctx.channel();
 
-        Throwable rootCause = ErrorAnalyser.findRootCause(cause);
-        CriticalErrors.exitIfCritical(rootCause);
-        log.error("Exception Caught:{}, {}", channel.remoteAddress(), rootCause.getMessage());
-        if (channel.isActive())
-        {
-            log.error("STACKTRACE", rootCause);
-        }
+		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+		CriticalErrors.exitIfCritical(rootCause);
+		log.error("Exception Caught:{}, {}", channel.remoteAddress(), rootCause.getMessage());
+		if (channel.isActive())
+		{
+			log.error("STACKTRACE", rootCause);
+		}
 
-        try
-        {
-            channel.close();
-        }
-        catch (Throwable t)
-        {
-            log.error("STACKTRACE", t);
-        }
-    }
+		try
+		{
+			channel.close();
+		}
+		catch (Throwable t)
+		{
+			log.error("STACKTRACE", t);
+		}
+	}
 
+	@Override
+	protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception
+	{
 
+		final NetMessage m = msg;
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception {
+		String mtype = m.getHeaders().get("TYPE");
 
-        final NetMessage m = msg;
+		NetNotification nnot = m.getAction().getNotificationMessage();
 
-        String mtype = m.getHeaders().get("TYPE");
+		NetBrokerMessage brkMsg = nnot.getMessage();
 
-        NetNotification nnot = m.getAction().getNotificationMessage();
+		Channel channel = ctx.channel();
 
-        NetBrokerMessage brkMsg = nnot.getMessage();
+		if (log.isDebugEnabled())
+		{
+			log.debug("Message Received from: '{}', Type: '{}'", channel.remoteAddress(), mtype);
+		}
 
-        Channel channel = ctx.channel();
+		if (m.getHeaders() != null)
+		{
+			brkMsg.addAllHeaders(m.getHeaders());
+		}
+		brkMsg.addHeader("IS_REMOTE", "true");
 
-        if (log.isDebugEnabled())
-        {
-            log.debug("Message Received from: '{}', Type: '{}'", channel.remoteAddress(), mtype);
-        }
+		if (mtype.equals("COM_TOPIC"))
+		{
+			NetPublish np = new NetPublish(nnot.getDestination(), DestinationType.TOPIC, brkMsg);
+			TopicProcessorList.notify(np, true);
+		}
+		else if (mtype.equals("COM_QUEUE"))
+		{
+			QueueProcessor queueProcessor = QueueProcessorList.get(nnot.getDestination());
+			if (queueProcessor != null)
+			{
+				if (acknowledgeMessage(queueProcessor.getQueueName(), brkMsg.getMessageId(), channel))
+				{
+					queueProcessor.store(m, GlobalConfig.preferLocalConsumers());
+				}
+			}
+		}
+		else if (mtype.equals("SYSTEM_ACK"))
+		{
+			String msgContent = new String(brkMsg.getPayload(), UTF8);
+			String messageId = extract(msgContent, "<message-id>", "</message-id>");
+			SystemMessagesPublisher.messageAcknowledged(messageId);
+		}
+		else
+		{
+			log.warn("Unkwown message type. Don't know how to handle message. Type: '{}'", mtype);
+		}
 
-        if (m.getHeaders() != null)
-        {
-            brkMsg.addAllHeaders(m.getHeaders());
-        }
-        brkMsg.addHeader("IS_REMOTE", "true");
+	}
 
-        if (mtype.equals("COM_TOPIC"))
-        {
-            NetPublish np = new NetPublish(nnot.getDestination(), DestinationType.TOPIC, brkMsg);
-            TopicProcessorList.notify(np, true);
-        }
-        else if (mtype.equals("COM_QUEUE"))
-        {
-            QueueProcessor queueProcessor = QueueProcessorList.get(nnot.getDestination());
-            if (queueProcessor != null)
-            {
-                if (acknowledgeMessage(queueProcessor.getQueueName(), brkMsg.getMessageId(), channel))
-                {
-                    queueProcessor.store(m, GlobalConfig.preferLocalConsumers());
-                }
-            }
-        }
-        else if (mtype.equals("SYSTEM_ACK"))
-        {
-            String msgContent = new String(brkMsg.getPayload(), UTF8);
-            String messageId = extract(msgContent, "<message-id>", "</message-id>");
-            SystemMessagesPublisher.messageAcknowledged(messageId);
-        }
-        else
-        {
-            log.warn("Unkwown message type. Don't know how to handle message. Type: '{}'", mtype);
-        }
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception
+	{
+		super.channelInactive(ctx);
 
-    }
+		Channel channel = ctx.channel();
 
+		log.info("Session Closed: '{}'", channel.remoteAddress());
 
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
+		Gcs.remoteSessionClosed(channel);
 
-        Channel channel = ctx.channel();
+		if (OutboundRemoteChannels.remove(channel))
+		{
+			GcsExecutor.schedule(new Connect(channel.remoteAddress()), 5000, TimeUnit.MILLISECONDS);
+		}
+	}
 
-        log.info("Session Closed: '{}'", channel.remoteAddress());
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception
+	{
+		super.channelActive(ctx);
 
-        Gcs.remoteSessionClosed(channel);
-
-        if (OutboundRemoteChannels.remove(channel))
-        {
-            GcsExecutor.schedule(new Connect(channel.remoteAddress()), 5000, TimeUnit.MILLISECONDS);
-        }
-    }
-
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-
-        log.info("Session Opened: '{}'", ctx.channel().remoteAddress());
-        sayHello(ctx);
-    }
-
-
+		log.info("Session Opened: '{}'", ctx.channel().remoteAddress());
+		sayHello(ctx);
+	}
 
 	private boolean acknowledgeMessage(String destination, String messageId, Channel channel)
 	{

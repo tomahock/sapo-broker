@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 
 public class SetValueFuture<T> implements Future<T>
 {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(SetValueFuture.class);
-	
+
 	private T value = null;
 	private Object syncObj = new Object();
 

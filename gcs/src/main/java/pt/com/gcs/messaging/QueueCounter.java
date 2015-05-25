@@ -1,12 +1,13 @@
 package pt.com.gcs.messaging;
 
+import java.util.Collection;
+import java.util.Date;
+
 import org.caudexorigo.time.ISO8601;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.gcs.conf.GcsInfo;
 
-import java.util.Collection;
-import java.util.Date;
+import pt.com.gcs.conf.GcsInfo;
 
 /**
  * QueueCounter is responsible for counting and publishing the total number number of messages per queue.

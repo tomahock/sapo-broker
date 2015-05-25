@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.nio.BrokerClient;
-
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
@@ -155,7 +154,7 @@ public class Producers
 						try
 						{
 
-							producerInfo.brokerClient.publish(brokerMessage, destinatination,destinationType);
+							producerInfo.brokerClient.publish(brokerMessage, destinatination, destinationType);
 
 							++producerInfo.messagesSend;
 							if (stop)
@@ -180,7 +179,7 @@ public class Producers
 					{
 						try
 						{
-                            producerInfo.brokerClient.publish(brokerMessage, destinatination,destinationType);
+							producerInfo.brokerClient.publish(brokerMessage, destinatination, destinationType);
 
 							++producerInfo.messagesSend;
 							if (stop)
@@ -214,12 +213,15 @@ public class Producers
 
 		for (ProducerInfo pi : producers)
 		{
-            try {
-                pi.brokerClient.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+			try
+			{
+				pi.brokerClient.close();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 
 		activeProducers.remove(this);
 	}

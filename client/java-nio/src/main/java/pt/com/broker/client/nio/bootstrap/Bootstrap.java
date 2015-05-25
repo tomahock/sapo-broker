@@ -1,6 +1,5 @@
 package pt.com.broker.client.nio.bootstrap;
 
-
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -23,63 +22,71 @@ import pt.com.broker.client.nio.server.HostInfo;
  * @author vagrant
  * @version $Id: $Id
  */
-public class Bootstrap extends BaseBootstrap {
-	
+public class Bootstrap extends BaseBootstrap
+{
+
 	static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 	private Class<? extends Channel> channel;
 
-    /**
-     * <p>Constructor for Bootstrap.</p>
-     *
-     * @param channelInitializer a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
-     */
-    public Bootstrap(BaseChannelInitializer channelInitializer, NettyContext nettyCtx) {
-        super(channelInitializer, nettyCtx);
-    }
+	/**
+	 * <p>
+	 * Constructor for Bootstrap.
+	 * </p>
+	 *
+	 * @param channelInitializer
+	 *            a {@link pt.com.broker.client.nio.bootstrap.BaseChannelInitializer} object.
+	 */
+	public Bootstrap(BaseChannelInitializer channelInitializer, NettyContext nettyCtx)
+	{
+		super(channelInitializer, nettyCtx);
+	}
 
-    /**
-     * <p>getNewInstance.</p>
-     *
-     * @return a {@link io.netty.bootstrap.Bootstrap} object.
-     */
-    
-    public io.netty.bootstrap.Bootstrap getNewInstance(ByteBufAllocator allocator){
+	/**
+	 * <p>
+	 * getNewInstance.
+	 * </p>
+	 *
+	 * @return a {@link io.netty.bootstrap.Bootstrap} object.
+	 */
 
-        io.netty.bootstrap.Bootstrap bootstrap = new io.netty.bootstrap.Bootstrap();
+	public io.netty.bootstrap.Bootstrap getNewInstance(ByteBufAllocator allocator)
+	{
 
-        EventLoopGroup group = getGroup();
+		io.netty.bootstrap.Bootstrap bootstrap = new io.netty.bootstrap.Bootstrap();
 
+		EventLoopGroup group = getGroup();
 
-       bootstrap.group(group).channel(getNettyContext().getChannelClass());
-       bootstrap.option(ChannelOption.ALLOCATOR, allocator);
+		bootstrap.group(group).channel(getNettyContext().getChannelClass());
+		bootstrap.option(ChannelOption.ALLOCATOR, allocator);
 
-       bootstrap.handler(getChannelInitializer());
+		bootstrap.handler(getChannelInitializer());
 
-        return  bootstrap;
-    }
-
-
+		return bootstrap;
+	}
 
 	@Override
-    public ChannelFuture connect(final HostInfo hostInfo) {
-        ChannelFuture f = super.connect(hostInfo);
-        f.addListener(new ChannelFutureListener() {
-        	
-            @Override
-            public void operationComplete(ChannelFuture f) throws Exception {
+	public ChannelFuture connect(final HostInfo hostInfo)
+	{
+		ChannelFuture f = super.connect(hostInfo);
+		f.addListener(new ChannelFutureListener()
+		{
 
-                if (f.isSuccess()) {
-                	log.debug("Adding iddle state handler to the pipeline. Reader idle timeout: {}. Writter idle timeout: {}", hostInfo.getReaderIdleTime(), hostInfo.getWriterIdleTime());
-                    IdleStateHandler idleStateHandler = new IdleStateHandler(hostInfo.getReaderIdleTime(), hostInfo.getWriterIdleTime(), 0, TimeUnit.MILLISECONDS);
-//                    f.channel().pipeline().addBefore("heartbeat_handler", "idle_state_handler", idleStateHandler);
-                    f.channel().pipeline().addFirst(idleStateHandler);
+			@Override
+			public void operationComplete(ChannelFuture f) throws Exception
+			{
 
-                }
-            }
-            
-        });
-        return f;
-    }
-    
- 
+				if (f.isSuccess())
+				{
+					log.debug("Adding iddle state handler to the pipeline. Reader idle timeout: {}. Writter idle timeout: {}", hostInfo.getReaderIdleTime(), hostInfo.getWriterIdleTime());
+					IdleStateHandler idleStateHandler = new IdleStateHandler(hostInfo.getReaderIdleTime(), hostInfo.getWriterIdleTime(), 0, TimeUnit.MILLISECONDS);
+					// f.channel().pipeline().addBefore("heartbeat_handler", "idle_state_handler", idleStateHandler);
+					f.channel().pipeline().addFirst(idleStateHandler);
+
+				}
+			}
+
+		});
+		return f;
+	}
+
 }

@@ -5,8 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-
-
 public class ListenerChannelFactory
 {
 	private final static ConcurrentHashMap<Channel, ListenerChannel> channels = new ConcurrentHashMap<Channel, ListenerChannel>();

@@ -8,11 +8,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement(name = "Notification")
 public class Notification
 {
-    @XmlAttribute(name = "action-id")
-    @XmlJavaTypeAdapter(EmptyStringAdapter.class)
+	@XmlAttribute(name = "action-id")
+	@XmlJavaTypeAdapter(EmptyStringAdapter.class)
 	public String actionId;
 
-    @XmlElement(name = "BrokerMessage")
+	@XmlElement(name = "BrokerMessage")
 	public BrokerMessage brokerMessage;
 
 	public Notification()

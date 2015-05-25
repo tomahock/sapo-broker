@@ -1,9 +1,5 @@
 package pt.com.broker.codec;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -12,6 +8,11 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,84 +56,78 @@ public class UdpFramingDecoder extends MessageToMessageDecoder<DatagramPacket>
 		_max_message_size = max_message_size;
 	}
 
+	@Override
+	protected void decode(ChannelHandlerContext channelHandlerContext, DatagramPacket packet, List<Object> objects) throws Exception
+	{
 
-    @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext,  DatagramPacket packet, List<Object> objects) throws Exception {
+		Channel channel = channelHandlerContext.channel();
 
+		ByteBuf buffer = packet.content();
 
-        Channel channel = channelHandlerContext.channel();
+		int readableBytes = buffer.readableBytes();
 
-        ByteBuf buffer = packet.content();
+		if (readableBytes < HEADER_LENGTH)
+		{
+			return;
+		}
 
-        int readableBytes = buffer.readableBytes();
+		if (readableBytes > _max_message_size)
+		{
+			log.error(String.format("Illegal message size!! Received message has %s bytes.", readableBytes));
+			return;
+		}
 
+		int mark = buffer.readerIndex();
 
+		short protocol_type = buffer.getShort(mark);
+		short protocol_version = buffer.getShort(mark + 2);
+		int len = buffer.getInt(mark + 4);
 
-        if (readableBytes < HEADER_LENGTH)
-        {
-            return;
-        }
+		if (len > _max_message_size)
+		{
+			log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
 
-        if (readableBytes > _max_message_size)
-        {
-            log.error(String.format("Illegal message size!! Received message has %s bytes.", readableBytes));
-            return;
-        }
+			return;
+		}
+		else if (len <= 0)
+		{
+			log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Channel: '%s'", len, channel.remoteAddress().toString()));
 
-        int mark = buffer.readerIndex();
+			return;
+		}
 
-        short protocol_type = buffer.getShort(mark);
-        short protocol_version = buffer.getShort(mark + 2);
-        int len = buffer.getInt(mark + 4);
+		if (buffer.readableBytes() < (len + HEADER_LENGTH))
+		{
+			return;
+		}
 
-        if (len > _max_message_size)
-        {
-            log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+		BindingSerializer serializer = decoders.get(protocol_type);
 
-            return;
-        }
-        else if (len <= 0)
-        {
-            log.error(String.format("Illegal message size!! Received message claimed to have %s bytes. Channel: '%s'", len, channel.remoteAddress().toString()));
+		if (serializer == null)
+		{
+			log.error(String.format("Invalid protocol type:%s .Channel: '%s'", protocol_type, channel.remoteAddress().toString()));
+			channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+			return;
+		}
 
-            return;
-        }
+		buffer.skipBytes(HEADER_LENGTH);
 
-        if (buffer.readableBytes() < (len + HEADER_LENGTH))
-        {
-            return;
-        }
+		byte[] decoded = new byte[len];
+		buffer.readBytes(decoded);
 
-        BindingSerializer serializer = decoders.get(protocol_type);
+		NetMessage nm = null;
 
-        if (serializer == null)
-        {
-            log.error(String.format("Invalid protocol type:%s .Channel: '%s'", protocol_type, channel.remoteAddress().toString()));
-            channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-            return;
-        }
+		try
+		{
+			nm = serializer.unmarshal(decoded);
+			objects.add(nm);
+		}
+		catch (Throwable t)
+		{
+			Throwable r = ErrorAnalyser.findRootCause(t);
+			log.error("Failed to unmarshal message: '{}', payload: \n'{}'", r.getMessage(), new String(decoded));
+		}
 
-        buffer.skipBytes(HEADER_LENGTH);
-
-        byte[] decoded = new byte[len];
-        buffer.readBytes(decoded);
-
-        NetMessage nm = null;
-
-        try
-        {
-            nm = serializer.unmarshal(decoded);
-            objects.add(nm);
-        }
-        catch (Throwable t)
-        {
-            Throwable r = ErrorAnalyser.findRootCause(t);
-            log.error("Failed to unmarshal message: '{}', payload: \n'{}'", r.getMessage(), new String(decoded));
-        }
-
-
-
-    }
-
+	}
 
 }

@@ -6,6 +6,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "CheckStatus")
 public class CheckStatus
 {
-    @XmlAttribute(name = "action-id")
-    public String actionId;
+	@XmlAttribute(name = "action-id")
+	public String actionId;
 }

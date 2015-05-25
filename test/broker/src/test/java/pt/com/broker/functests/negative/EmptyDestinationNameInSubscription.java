@@ -11,8 +11,9 @@ import pt.com.broker.types.NetSubscribe;
 public class EmptyDestinationNameInSubscription extends GenericNetMessageNegativeTest
 {
 
-    public EmptyDestinationNameInSubscription(NetProtocolType protocolType) {
-        super(protocolType);
+	public EmptyDestinationNameInSubscription(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Empty destination name in subscription");
 

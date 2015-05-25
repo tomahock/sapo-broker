@@ -20,15 +20,14 @@ import pt.com.broker.types.NetProtocolType;
 
 public class AuthenticationFailedTest extends GenericNetMessageNegativeTest
 {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(AuthenticationFailedTest.class);
 
-    public AuthenticationFailedTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public AuthenticationFailedTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-
-        setName("Authentication Failed");
-
+		setName("Authentication Failed");
 
 		if (!skipTest())
 		{
@@ -52,30 +51,34 @@ public class AuthenticationFailedTest extends GenericNetMessageNegativeTest
 			}
 		}
 	}
-    
-    @Override
-    public SslBrokerClient getBrokerClient(){
-    	try{
-	    	log.debug("Setting up SSL Settings.");
+
+	@Override
+	public SslBrokerClient getBrokerClient()
+	{
+		try
+		{
+			log.debug("Setting up SSL Settings.");
 			KeyStore keyStore = KeyStore.getInstance("JKS");
 			keyStore.load(getClass().getClassLoader().getResourceAsStream("mykeystore.jks"), "password".toCharArray());
 			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 			kmf.init(keyStore, "jordan".toCharArray());
-			
+
 			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-	        tmf.init(keyStore);
-	        
+			tmf.init(keyStore);
+
 			SSLContext sslContext = SSLContext.getInstance("TLS");
 			sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 			SslBrokerClient client = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), getEncodingProtocolType());
 			client.setContext(sslContext);
 			client.connect();
 			return client;
-    	} catch(Exception e){
-    		log.error("Exception caught instantiating broker client.", e);
-    	}
-    	return null;
-    }
+		}
+		catch (Exception e)
+		{
+			log.error("Exception caught instantiating broker client.", e);
+		}
+		return null;
+	}
 
 	@Override
 	public boolean skipTest()

@@ -1,15 +1,16 @@
 package pt.com.broker.performance;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.performance.conf.ConfigurationInfo;
-import pt.com.broker.types.NetAction.DestinationType;
-import pt.com.broker.types.NetProtocolType;
-
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.RandomStringUtils;
+
+import pt.com.broker.client.BrokerClient;
+import pt.com.broker.performance.conf.ConfigurationInfo;
+import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetProtocolType;
 
 public class Test
 {

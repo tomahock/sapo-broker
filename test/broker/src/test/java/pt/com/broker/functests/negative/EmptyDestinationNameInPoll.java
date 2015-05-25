@@ -10,8 +10,9 @@ import pt.com.broker.types.NetProtocolType;
 public class EmptyDestinationNameInPoll extends GenericNetMessageNegativeTest
 {
 
-    public EmptyDestinationNameInPoll(NetProtocolType protocolType) {
-        super(protocolType);
+	public EmptyDestinationNameInPoll(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Empty destination name in poll");
 

@@ -1,9 +1,10 @@
 package pt.com.gcs.messaging;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

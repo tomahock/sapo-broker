@@ -3,18 +3,16 @@ package pt.com.broker.functests.positive;
 import java.util.Arrays;
 import java.util.concurrent.Future;
 
-import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
-import pt.com.broker.functests.Action;
 import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
+import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
-import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.functests.helpers.BrokerTest;
-
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
@@ -27,16 +25,15 @@ public class PollVirtualQueueTest extends BrokerTest
 	private String topicName;
 	private String queueName;
 
+	public PollVirtualQueueTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-    public PollVirtualQueueTest(NetProtocolType protocolType) {
-        super(protocolType);
-
-        setName("Virtual Poll test");
-        baseName = RandomStringUtils.randomAlphanumeric(10);
-        topicName = String.format("/topic/%s", baseName);
-        queueName = "app@" + topicName;
-    }
-
+		setName("Virtual Poll test");
+		baseName = RandomStringUtils.randomAlphanumeric(10);
+		topicName = String.format("/topic/%s", baseName);
+		queueName = "app@" + topicName;
+	}
 
 	@Override
 	protected void build() throws Throwable
@@ -50,33 +47,33 @@ public class PollVirtualQueueTest extends BrokerTest
 				try
 				{
 					BrokerClient bk = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-                    bk.connect();
+					bk.connect();
 
 					NetSubscribe subscribe = new NetSubscribe(queueName, DestinationType.VIRTUAL_QUEUE);
-					Future f = bk.subscribe(subscribe, new NotificationListenerAdapter() {
+					Future f = bk.subscribe(subscribe, new NotificationListenerAdapter()
+					{
 
-                        @Override
-                        public boolean onMessage(NetNotification message, HostInfo host) {
-                            return false;
-                        }
+						@Override
+						public boolean onMessage(NetNotification message, HostInfo host)
+						{
+							return false;
+						}
 
+					});
 
-                    });
-
-                    f.get();
+					f.get();
 
 					f = bk.unsubscribe(DestinationType.VIRTUAL_QUEUE, queueName);
 
 					f.get();
 
-
-                    NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
+					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 					bk.publish(brokerMessage, topicName, DestinationType.TOPIC);
 
-                    Thread.sleep(3000);
+					Thread.sleep(3000);
 
-				    bk.close();
+					bk.close();
 
 					setDone(true);
 					setSucess(true);
@@ -84,13 +81,16 @@ public class PollVirtualQueueTest extends BrokerTest
 				catch (Throwable t)
 				{
 
-                    if(t.getCause() instanceof SubscriptionNotFound){
+					if (t.getCause() instanceof SubscriptionNotFound)
+					{
 
-                        // Sometimes its normal that no subscription is found
+						// Sometimes its normal that no subscription is found
 
-                    }else{
-                        throw new Exception(t);
-                    }
+					}
+					else
+					{
+						throw new Exception(t);
+					}
 
 				}
 				return this;
@@ -105,18 +105,13 @@ public class PollVirtualQueueTest extends BrokerTest
 			{
 				try
 				{
-					BrokerClient bk = new BrokerClient(getAgent1Hostname() , getAgent1Port() , getEncodingProtocolType());
+					BrokerClient bk = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
 
-                    bk.connect();
+					bk.connect();
 
-                    NetNotification msg = bk.poll(queueName);
-
+					NetNotification msg = bk.poll(queueName);
 
 					bk.acknowledge(msg).get();
-
-
-
-
 
 					if (msg.getMessage() == null)
 					{
@@ -135,7 +130,7 @@ public class PollVirtualQueueTest extends BrokerTest
 						return this;
 					}
 
-                    bk.close();
+					bk.close();
 
 					setDone(true);
 					setSucess(true);

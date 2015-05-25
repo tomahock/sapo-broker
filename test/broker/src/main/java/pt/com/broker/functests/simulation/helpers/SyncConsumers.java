@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.nio.BrokerClient;
-
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
@@ -148,12 +147,15 @@ public class SyncConsumers
 	{
 		for (ConsumerInfo ci : consumers)
 		{
-            try {
-                ci.brokerClient.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+			try
+			{
+				ci.brokerClient.close();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 
 		activeConsumers.remove(this);
 	}

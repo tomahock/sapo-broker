@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Publish")
 public class Publish
 {
-    @XmlAttribute(name = "action-id")
+	@XmlAttribute(name = "action-id")
 	public String actionId;
 
-    @XmlElement(name = "BrokerMessage")
+	@XmlElement(name = "BrokerMessage")
 	public BrokerMessage brokerMessage;
 
 	public Publish()

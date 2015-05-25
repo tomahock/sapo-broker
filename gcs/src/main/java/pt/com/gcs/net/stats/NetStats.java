@@ -21,53 +21,59 @@ import pt.com.gcs.messaging.QueueProcessorList;
 import pt.com.gcs.messaging.TopicProcessor;
 import pt.com.gcs.messaging.TopicProcessorList;
 
-
 /**
- * Gathers the statistics about Queue and Topic subscriptions, both local and remote.
- * It also tracks connections to other agents.
+ * Gathers the statistics about Queue and Topic subscriptions, both local and remote. It also tracks connections to other agents.
  * */
-public class NetStats {
-	
+public class NetStats
+{
+
 	public static final String QUEUE_SUBSCRIPTIONS = "queue_connections";
 	public static final String TOPIC_SUBSCRIPTIONS = "topic_connections";
 	public static final String AGENT_CONNECTIONS = "agent_connections";
-	
+
 	private static final Logger log = LoggerFactory.getLogger(NetStats.class);
-	
+
 	private final String agentName;
 	private final Map<String, List<SubscriptionInfo>> subscriptions;
-	
-	public NetStats(String agentName){
+
+	public NetStats(String agentName)
+	{
 		this.agentName = agentName;
 		this.subscriptions = new HashMap<String, List<SubscriptionInfo>>();
 	}
-	
-	private void collectStats(){
+
+	private void collectStats()
+	{
 		collectQueueNetStats();
 		collectTopicNetStats();
 		collectAgentNetStats();
 	}
-	
-	private void collectAgentNetStats(){
+
+	private void collectAgentNetStats()
+	{
 		List<SubscriptionInfo> agentConnections = new ArrayList<SubscriptionInfo>();
 		SubscriptionInfo subscriptionInfo = new SubscriptionInfo(agentName);
 		Map<String, ChannelHandlerContext> remoteConnections = InboundRemoteChannels.getAll();
-		for(String agent: remoteConnections.keySet()){
+		for (String agent : remoteConnections.keySet())
+		{
 			log.debug("Agent: {}", agent);
 			subscriptionInfo.addRemoteListener((InetSocketAddress) remoteConnections.get(agent).channel().remoteAddress());
 		}
 		Map<String, Channel> localConnections = OutboundRemoteChannels.getAll();
-		for(String agent: localConnections.keySet()){
+		for (String agent : localConnections.keySet())
+		{
 			log.debug("Agent: {}", agent);
 			subscriptionInfo.addLocalListener((InetSocketAddress) localConnections.get(agent).remoteAddress());
 		}
 		agentConnections.add(subscriptionInfo);
 		subscriptions.put(AGENT_CONNECTIONS, agentConnections);
 	}
-	
-	private void collectQueueNetStats(){
+
+	private void collectQueueNetStats()
+	{
 		List<SubscriptionInfo> queueSubscriptions = new ArrayList<SubscriptionInfo>();
-		for(QueueProcessor p: QueueProcessorList.values()){
+		for (QueueProcessor p : QueueProcessorList.values())
+		{
 			SubscriptionInfo subscriptionInfo = new SubscriptionInfo(p.getSubscriptionName());
 			Set<MessageListener> localListeners = p.localListeners();
 			Set<MessageListener> remoteListeners = p.remoteListeners();
@@ -77,10 +83,12 @@ public class NetStats {
 		}
 		subscriptions.put(QUEUE_SUBSCRIPTIONS, queueSubscriptions);
 	}
-	
-	private void collectTopicNetStats(){
+
+	private void collectTopicNetStats()
+	{
 		List<SubscriptionInfo> topicSubscriptions = new ArrayList<SubscriptionInfo>();
-		for(TopicProcessor tp: TopicProcessorList.values()){
+		for (TopicProcessor tp : TopicProcessorList.values())
+		{
 			SubscriptionInfo subscriptionInfo = new SubscriptionInfo(tp.getSubscriptionName());
 			addConnections(tp.localListeners(), subscriptionInfo, true);
 			addConnections(tp.remoteListeners(), subscriptionInfo, false);
@@ -88,29 +96,37 @@ public class NetStats {
 		}
 		subscriptions.put(TOPIC_SUBSCRIPTIONS, topicSubscriptions);
 	}
-	
-	private void addConnections(Set<MessageListener> listeners, SubscriptionInfo subInfo, boolean localListener){
-		for(MessageListener listener: listeners){
-			if(localListener){
+
+	private void addConnections(Set<MessageListener> listeners, SubscriptionInfo subInfo, boolean localListener)
+	{
+		for (MessageListener listener : listeners)
+		{
+			if (localListener)
+			{
 				subInfo.addLocalListener((InetSocketAddress) listener.getChannel().getChannel().remoteAddress());
-			} else {
+			}
+			else
+			{
 				subInfo.addRemoteListener((InetSocketAddress) listener.getChannel().getChannel().remoteAddress());
 			}
 		}
 	}
-	
-	public static final NetStats getStats(String agentName){
+
+	public static final NetStats getStats(String agentName)
+	{
 		NetStats netStats = new NetStats(agentName);
 		netStats.collectStats();
 		return netStats;
 	}
 
-	public String getAgentName() {
+	public String getAgentName()
+	{
 		return agentName;
 	}
 
-	public Map<String, List<SubscriptionInfo>> getSubscriptions() {
+	public Map<String, List<SubscriptionInfo>> getSubscriptions()
+	{
 		return subscriptions;
 	}
-	
+
 }

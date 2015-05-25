@@ -1,15 +1,17 @@
 package pt.com.broker.auth.saposts;
 
+import java.net.URL;
+import java.nio.charset.Charset;
+
+import javax.xml.ws.BindingProvider;
+
 import org.apache.commons.lang3.StringUtils;
+
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.ProviderInfo;
 import pt.sapo.services.definitions.STS;
 import pt.sapo.services.definitions.STSSoapSecure;
-
-import javax.xml.ws.BindingProvider;
-import java.net.URL;
-import java.nio.charset.Charset;
 
 /**
  * SapoSTSProvider implements a credentials provider for Sapo STS.
@@ -17,19 +19,19 @@ import java.nio.charset.Charset;
  */
 public class SapoSTSProvider implements CredentialsProvider
 {
-    public static final String DEFAULT_BASE_URL = "https://services.bk.sapo.pt/STS/";
+	public static final String DEFAULT_BASE_URL = "https://services.bk.sapo.pt/STS/";
 
 	private final String providerName = "SapoSTS";
 
 	private final String username;
 	private final String password;
-    private final String stsLocation;
+	private final String stsLocation;
 
-    private final SAPOStsToken stsToken;
+	private final SAPOStsToken stsToken;
 
 	public SapoSTSProvider(String username, String password)
 	{
-		this(username, password,DEFAULT_BASE_URL);
+		this(username, password, DEFAULT_BASE_URL);
 	}
 
 	public SapoSTSProvider(String username, String password, String stsLocation)
@@ -41,8 +43,8 @@ public class SapoSTSProvider implements CredentialsProvider
 
 		this.username = username;
 		this.password = password;
-        this.stsLocation = stsLocation;
-        stsToken = new SAPOStsToken(getClient(stsLocation));
+		this.stsLocation = stsLocation;
+		stsToken = new SAPOStsToken(getClient(stsLocation));
 	}
 
 	@Override
@@ -51,7 +53,6 @@ public class SapoSTSProvider implements CredentialsProvider
 		String strToken = stsToken.getToken(username, password);
 
 		byte[] token = strToken.getBytes(Charset.forName("UTF-8"));
-
 
 		AuthInfo aui = new AuthInfo(username, null, token, providerName);
 		return aui;
@@ -69,39 +70,37 @@ public class SapoSTSProvider implements CredentialsProvider
 		return providerName;
 	}
 
-
 	@Override
 	public String toString()
 	{
 		return "SapoSTSProvider [providerName=" + providerName + ", stsLocation=" + stsLocation + "]";
 	}
 
-    protected STSSoapSecure getClient(String base_url){
+	protected STSSoapSecure getClient(String base_url)
+	{
 
-        URL url = null;
+		URL url = null;
 
-        try {
+		try
+		{
 
-            url = STSSoapSecure.class.getClassLoader().getResource("STS.wsdl");
+			url = STSSoapSecure.class.getClassLoader().getResource("STS.wsdl");
 
-            STS sts = new STS(url);
+			STS sts = new STS(url);
 
+			STSSoapSecure secure = sts.getSTSSoapSecure();
 
+			BindingProvider bp = (BindingProvider) secure;
 
-            STSSoapSecure secure = sts.getSTSSoapSecure();
+			bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, base_url);
 
-            BindingProvider bp = (BindingProvider) secure;
+			return secure;
 
-            bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, base_url);
+		}
+		catch (Throwable e)
+		{
+			throw new RuntimeException(e);
+		}
 
-
-            return secure;
-
-
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-
-
-    }
+	}
 }

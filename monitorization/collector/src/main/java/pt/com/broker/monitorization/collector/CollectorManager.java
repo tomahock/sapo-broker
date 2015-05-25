@@ -1,16 +1,17 @@
 package pt.com.broker.monitorization.collector;
 
-import org.caudexorigo.concurrent.CustomExecutors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.client.HostInfo;
-import pt.com.broker.monitorization.configuration.ConfigurationInfo;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import org.caudexorigo.concurrent.CustomExecutors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.client.BrokerClient;
+import pt.com.broker.client.HostInfo;
+import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 
 /* TODO TEMP CHANGE brsantos */
 //import org.caudexorigo.jdbc.DbExecutor;
@@ -61,9 +62,9 @@ public class CollectorManager
 				int del_events_counter = 0;
 
 				/* TODO TEMP CHANGE brsantos */
-//				int del_faults_counter = DbExecutor.runActionPreparedStatement("DELETE FROM fault_data WHERE (event_time < (now()-'00:30'::time));");
+				// int del_faults_counter = DbExecutor.runActionPreparedStatement("DELETE FROM fault_data WHERE (event_time < (now()-'00:30'::time));");
 
-//				log.info("Database cleaner deleted {} event entries and {} fault entries.", del_events_counter, del_faults_counter);
+				// log.info("Database cleaner deleted {} event entries and {} fault entries.", del_events_counter, del_faults_counter);
 				/* TEMP CHANGE brsantos */
 			}
 		};

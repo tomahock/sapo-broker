@@ -6,11 +6,11 @@ import pt.com.broker.types.NetProtocolType;
 public class VirtualQueueNameSpecified extends MultipleGenericVirtualQueuePubSubTest
 {
 
-    public VirtualQueueNameSpecified(NetProtocolType protocolType) {
-        super(protocolType);
+	public VirtualQueueNameSpecified(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("VirtualQueue - Topic name specified");
-    }
-
+		setName("VirtualQueue - Topic name specified");
+	}
 
 }

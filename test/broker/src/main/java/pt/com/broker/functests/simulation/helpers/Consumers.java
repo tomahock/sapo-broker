@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.client.nio.BrokerClient;
-
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
@@ -155,9 +154,8 @@ public class Consumers
 						e.printStackTrace();
 					}
 
-                    return false;
+					return false;
 				}
-
 
 			};
 
@@ -232,12 +230,15 @@ public class Consumers
 	{
 		for (ConsumerInfo ci : consumers)
 		{
-            try {
-                ci.brokerClient.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+			try
+			{
+				ci.brokerClient.close();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 		consumers.clear();
 		activeConsumers.remove(this);
 	}

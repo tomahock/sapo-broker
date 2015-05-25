@@ -1,11 +1,11 @@
 package pt.com.gcs.messaging;
 
-import org.caudexorigo.concurrent.CustomExecutors;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import org.caudexorigo.concurrent.CustomExecutors;
 
 /**
  * GcsExecutor provides execution services based in a ScheduledThreadPoolExecutor;

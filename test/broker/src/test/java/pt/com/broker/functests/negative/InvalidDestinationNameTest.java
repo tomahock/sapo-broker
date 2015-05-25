@@ -11,8 +11,9 @@ import pt.com.broker.types.NetSubscribe;
 public class InvalidDestinationNameTest extends GenericNetMessageNegativeTest
 {
 
-    public InvalidDestinationNameTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public InvalidDestinationNameTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Invalid destination name");
 

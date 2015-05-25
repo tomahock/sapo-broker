@@ -1,10 +1,11 @@
 package pt.com.broker.auth;
 
+import io.netty.channel.Channel;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

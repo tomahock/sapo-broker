@@ -1,9 +1,5 @@
 package pt.com.broker.http;
 
-import java.io.OutputStream;
-import java.util.Date;
-
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
@@ -13,9 +9,12 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
+
+import java.io.OutputStream;
+import java.util.Date;
+
 import org.caudexorigo.http.netty4.HttpAction;
 import org.caudexorigo.time.ISO8601;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,7 @@ public class StatusAction extends HttpAction
 		ByteBuf bbo = Unpooled.buffer();
 		Channel channel = ctx.channel();
 
-		try(OutputStream out = new ByteBufOutputStream(bbo);)
+		try (OutputStream out = new ByteBufOutputStream(bbo);)
 		{
 			String smessage = String.format(template, "Agent is alive", ISO8601.format(new Date()), BrokerInfo.getVersion());
 			byte[] bmessage = smessage.getBytes("UTF-8");

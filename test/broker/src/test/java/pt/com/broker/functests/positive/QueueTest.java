@@ -7,11 +7,12 @@ import pt.com.broker.types.NetProtocolType;
 public class QueueTest extends GenericPubSubTest
 {
 
-    public QueueTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public QueueTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("Queue with single recipient");
-        setDestinationType(DestinationType.QUEUE);
-    }
+		setName("Queue with single recipient");
+		setDestinationType(DestinationType.QUEUE);
+	}
 
 }

@@ -1,13 +1,14 @@
 package pt.com.gcs.messaging.serialization;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.caudexorigo.io.UnsynchronizedByteArrayInputStream;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
+
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.types.NetMessage;
 import pt.com.gcs.messaging.BDBMessage;
-
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 {
@@ -50,29 +51,29 @@ public class BDBMessageMarshallerV2 implements Codec<BDBMessage>
 	{
 		BDBMessage message = new BDBMessage();
 
-		try(ObjectInputStream oIn = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(data));){
+		try (ObjectInputStream oIn = new ObjectInputStream(new UnsynchronizedByteArrayInputStream(data));)
+		{
 
 			short version = oIn.readShort();
-	
+
 			if (version != 2)
 			{
 				String errorMessage = String.format("Incorrect serialization version: ", version);
 				throw new RuntimeException(errorMessage);
 			}
-	
+
 			message.setVersion(version);
 			message.setSequence(oIn.readLong());
 			message.setPreferLocalConsumer(oIn.readBoolean());
 			message.setReserveTimeout(oIn.readLong());
-	
-			//byte[] buf = new byte[oIn.available()];
-	
-		
+
+			// byte[] buf = new byte[oIn.available()];
+
 			NetMessage nmsg = serializer.unmarshal(oIn);
-	
-			//message.setRawPacket(buf);
+
+			// message.setRawPacket(buf);
 			message.setMessage(nmsg);
-	
+
 			return message;
 		}
 	}

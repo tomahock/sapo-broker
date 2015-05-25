@@ -1,7 +1,6 @@
 package pt.com.broker.functests.helpers;
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetProtocolType;
 
@@ -9,11 +8,11 @@ public class MultipleGenericVirtualQueuePubSubTest extends MultipleGenericPubSub
 {
 	private int consumerNotifications = 0;
 
+	public MultipleGenericVirtualQueuePubSubTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-    public MultipleGenericVirtualQueuePubSubTest(NetProtocolType protocolType) {
-        super(protocolType);
-
-        setName("MultipleGenericVirtualQueuePubSubTest");
+		setName("MultipleGenericVirtualQueuePubSubTest");
 
 		setSubscriptionName("xpto@" + getSubscriptionName());
 		setConsumerDestinationType(DestinationType.VIRTUAL_QUEUE);
@@ -25,8 +24,8 @@ public class MultipleGenericVirtualQueuePubSubTest extends MultipleGenericPubSub
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port() , getEncodingProtocolType());
-            tci.brokerClient.connect();
+			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
+			tci.brokerClient.connect();
 
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getConsumerDestinationType(), getConsumerNotifications());
 			tci.numberOfExecutions = getConsumerNotifications();
@@ -47,7 +46,7 @@ public class MultipleGenericVirtualQueuePubSubTest extends MultipleGenericPubSub
 			TestClientInfo tci = new TestClientInfo();
 
 			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-            tci.brokerClient.connect();
+			tci.brokerClient.connect();
 
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;

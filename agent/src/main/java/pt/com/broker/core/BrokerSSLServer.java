@@ -33,13 +33,11 @@ public class BrokerSSLServer extends BrokerServer
 
 	private static Logger log = LoggerFactory.getLogger(BrokerSSLServer.class);
 
-
-    private static BrokerSslPipelineFactory sslPipelineFactory  = new BrokerSslPipelineFactory();
-
+	private static BrokerSslPipelineFactory sslPipelineFactory = new BrokerSslPipelineFactory();
 
 	public BrokerSSLServer(int portNumber, NettyContext nettyCtx)
 	{
-        super(portNumber,0, nettyCtx);
+		super(portNumber, 0, nettyCtx);
 	}
 
 	public void start()
@@ -48,19 +46,20 @@ public class BrokerSSLServer extends BrokerServer
 		try
 		{
 
-            ChannelFuture future = startSSLBrokerServer();
+			ChannelFuture future = startSSLBrokerServer();
 
+			future.addListener(new ChannelFutureListener()
+			{
+				@Override
+				public void operationComplete(ChannelFuture channelFuture) throws Exception
+				{
 
-            future.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture channelFuture) throws Exception {
-
-                    if(channelFuture.isSuccess()){
-                        log.info("SAPO-SSL-BROKER  Listening on: '{}'.", channelFuture.channel().localAddress());
-                    }
-                }
-            });
-
+					if (channelFuture.isSuccess())
+					{
+						log.info("SAPO-SSL-BROKER  Listening on: '{}'.", channelFuture.channel().localAddress());
+					}
+				}
+			});
 
 		}
 		catch (Throwable t)
@@ -69,102 +68,114 @@ public class BrokerSSLServer extends BrokerServer
 		}
 	}
 
-    private final SSLEngine getSSLEngine() throws Exception {
+	private final SSLEngine getSSLEngine() throws Exception
+	{
 
-        SSLContext sslContext = sslPipelineFactory.getSSLContext();
-        SSLEngine sslEngine = sslContext.createSSLEngine();
-        
-        String sslWhiteListProtocolsStr = GcsInfo.getSslProtocolWhiteList();
-        //Validate and apply Ssl White List Protocols.
-        if(sslWhiteListProtocolsStr != null){
-        	String[] sslSupportedProtocols = sslEngine.getSupportedProtocols();
-        	String[] sslWhiteListProtocols = sslWhiteListProtocolsStr.replaceAll("\\s*,\\s*", ",").split(",");
-        	List<String> validSslWhiteListProtocols = new ArrayList<String>();
-        	for(String sslWhiteListProtocol: sslWhiteListProtocols){
-        		if(Arrays.binarySearch(sslSupportedProtocols, sslWhiteListProtocol) > 0){
-        			//Valid protocol string.
-        			validSslWhiteListProtocols.add(sslWhiteListProtocol);
-        		} else {
-        			log.warn("Invalid SSL protocol configuration found: {}", sslWhiteListProtocol);
-        		}
-        	}
-        	if(validSslWhiteListProtocols.size() > 0){
-        		sslEngine.setEnabledProtocols(validSslWhiteListProtocols.toArray(new String[validSslWhiteListProtocols.size()]));
-        	}
-        }
-        
-        String sslWhiteListCipherSuiteStr = GcsInfo.getSslCipherSuiteWhitelist();
-        //Validate and apply Ssl CipherSuites white lists
-        if(sslWhiteListCipherSuiteStr != null){
-        	String[] sslSupportedCipherSuites = sslEngine.getSupportedCipherSuites();
-        	String[] sslWhiteListCipherSuites = sslWhiteListCipherSuiteStr.replaceAll("\\s*,\\s*", ",").split(",");
-        	
-        	List<String> validSslWhiteListCipherSuites = new ArrayList<String>();
-        	for(String sslWhiteListCipherSuite: sslWhiteListCipherSuites){
-        		if(Arrays.binarySearch(sslSupportedCipherSuites, sslWhiteListCipherSuite) > 0){
-        			//Valid protocol string.
-        			validSslWhiteListCipherSuites.add(sslWhiteListCipherSuite);
-        		} else {
-        			log.warn("Invalid SSL ciphersuite configuration found: {}", sslWhiteListCipherSuite);
-        		}
-        	}
-        	if(validSslWhiteListCipherSuites.size() > 0){
-        		sslEngine.setEnabledCipherSuites(validSslWhiteListCipherSuites.toArray(new String[validSslWhiteListCipherSuites.size()]));
-        	}
-        	
-        }
-        
-        sslEngine.setUseClientMode(false);
-        
-        log.debug("SSLEngine enabled protocols: {}", Arrays.toString(sslEngine.getEnabledProtocols()));
-        log.debug("SSLEngine supported protocols: {}", Arrays.toString(sslEngine.getSupportedProtocols()));
-        log.debug("SSLEngine supported ciphersuites: {}", Arrays.toString(sslEngine.getSupportedCipherSuites()));
+		SSLContext sslContext = sslPipelineFactory.getSSLContext();
+		SSLEngine sslEngine = sslContext.createSSLEngine();
 
-        return sslEngine;
+		String sslWhiteListProtocolsStr = GcsInfo.getSslProtocolWhiteList();
+		// Validate and apply Ssl White List Protocols.
+		if (sslWhiteListProtocolsStr != null)
+		{
+			String[] sslSupportedProtocols = sslEngine.getSupportedProtocols();
+			String[] sslWhiteListProtocols = sslWhiteListProtocolsStr.replaceAll("\\s*,\\s*", ",").split(",");
+			List<String> validSslWhiteListProtocols = new ArrayList<String>();
+			for (String sslWhiteListProtocol : sslWhiteListProtocols)
+			{
+				if (Arrays.binarySearch(sslSupportedProtocols, sslWhiteListProtocol) > 0)
+				{
+					// Valid protocol string.
+					validSslWhiteListProtocols.add(sslWhiteListProtocol);
+				}
+				else
+				{
+					log.warn("Invalid SSL protocol configuration found: {}", sslWhiteListProtocol);
+				}
+			}
+			if (validSslWhiteListProtocols.size() > 0)
+			{
+				sslEngine.setEnabledProtocols(validSslWhiteListProtocols.toArray(new String[validSslWhiteListProtocols.size()]));
+			}
+		}
 
-    }
+		String sslWhiteListCipherSuiteStr = GcsInfo.getSslCipherSuiteWhitelist();
+		// Validate and apply Ssl CipherSuites white lists
+		if (sslWhiteListCipherSuiteStr != null)
+		{
+			String[] sslSupportedCipherSuites = sslEngine.getSupportedCipherSuites();
+			String[] sslWhiteListCipherSuites = sslWhiteListCipherSuiteStr.replaceAll("\\s*,\\s*", ",").split(",");
 
-    protected ChannelFuture startSSLBrokerServer(){
+			List<String> validSslWhiteListCipherSuites = new ArrayList<String>();
+			for (String sslWhiteListCipherSuite : sslWhiteListCipherSuites)
+			{
+				if (Arrays.binarySearch(sslSupportedCipherSuites, sslWhiteListCipherSuite) > 0)
+				{
+					// Valid protocol string.
+					validSslWhiteListCipherSuites.add(sslWhiteListCipherSuite);
+				}
+				else
+				{
+					log.warn("Invalid SSL ciphersuite configuration found: {}", sslWhiteListCipherSuite);
+				}
+			}
+			if (validSslWhiteListCipherSuites.size() > 0)
+			{
+				sslEngine.setEnabledCipherSuites(validSslWhiteListCipherSuites.toArray(new String[validSslWhiteListCipherSuites.size()]));
+			}
 
+		}
 
-        ServerBootstrap bootstrap = createBootstrap();
+		sslEngine.setUseClientMode(false);
 
+		log.debug("SSLEngine enabled protocols: {}", Arrays.toString(sslEngine.getEnabledProtocols()));
+		log.debug("SSLEngine supported protocols: {}", Arrays.toString(sslEngine.getSupportedProtocols()));
+		log.debug("SSLEngine supported ciphersuites: {}", Arrays.toString(sslEngine.getSupportedCipherSuites()));
 
-        bootstrap.childHandler(new ChannelInitializer<SocketChannel>(){
+		return sslEngine;
 
-            @Override
-            protected void initChannel(SocketChannel ch) throws Exception {
+	}
 
-                // Create a default pipeline implementation.
-                ChannelPipeline pipeline = ch.pipeline();
+	protected ChannelFuture startSSLBrokerServer()
+	{
 
-                SSLEngine sslEngine = getSSLEngine();
+		ServerBootstrap bootstrap = createBootstrap();
 
-                SslHandler sslHandler = new SslHandler(sslEngine);
+		bootstrap.childHandler(new ChannelInitializer<SocketChannel>()
+		{
 
-                pipeline.addLast("ssl", sslHandler);
+			@Override
+			protected void initChannel(SocketChannel ch) throws Exception
+			{
 
-                pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
-                pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
+				// Create a default pipeline implementation.
+				ChannelPipeline pipeline = ch.pipeline();
 
-                super.initChannel(ch);
-            }
-        });
+				SSLEngine sslEngine = getSSLEngine();
 
+				SslHandler sslHandler = new SslHandler(sslEngine);
 
-        return bootstrap.bind(socketAddress);
+				pipeline.addLast("ssl", sslHandler);
 
+				pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
+				pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
 
-     }
+				super.initChannel(ch);
+			}
+		});
 
+		return bootstrap.bind(socketAddress);
 
-    @Override
-    protected ServerBootstrap createBootstrap() {
+	}
 
-        ServerBootstrap bootstrap =  super.createBootstrap();
+	@Override
+	protected ServerBootstrap createBootstrap()
+	{
 
-        bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+		ServerBootstrap bootstrap = super.createBootstrap();
 
-        return bootstrap;
-    }
+		bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+
+		return bootstrap;
+	}
 }

@@ -1,17 +1,18 @@
 package pt.com.broker.functests.positive;
 
-import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;
+import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetProtocolType;
 
 public class SslTopicNameSpeficied extends GenericPubSubTest
 {
 
-    public SslTopicNameSpeficied(NetProtocolType protocolType) {
-        super(protocolType);
+	public SslTopicNameSpeficied(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("PubSub - SSL Topic name specified");
+		setName("PubSub - SSL Topic name specified");
 		if (!skipTest())
 		{
 			SslBrokerClient bk = null;

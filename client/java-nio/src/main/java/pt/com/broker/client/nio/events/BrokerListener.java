@@ -9,16 +9,19 @@ import pt.com.broker.types.NetMessage;
  * @author vagrant
  * @version $Id: $Id
  */
-public interface BrokerListener {
+public interface BrokerListener
+{
 
-    /**
-     * Fired when a message arrives.
-     *
-     * @param message The message.
-     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
-     * @throws java.lang.Throwable if any.
-     */
-    public void deliverMessage(NetMessage message,HostInfo host)  throws Throwable;
-
+	/**
+	 * Fired when a message arrives.
+	 *
+	 * @param message
+	 *            The message.
+	 * @param host
+	 *            a {@link pt.com.broker.client.nio.server.HostInfo} object.
+	 * @throws java.lang.Throwable
+	 *             if any.
+	 */
+	public void deliverMessage(NetMessage message, HostInfo host) throws Throwable;
 
 }

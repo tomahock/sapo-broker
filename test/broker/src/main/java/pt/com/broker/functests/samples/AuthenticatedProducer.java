@@ -1,21 +1,21 @@
 package pt.com.broker.functests.samples;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.commons.lang3.StringUtils;
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
 import org.caudexorigo.text.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
-
 import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetProtocolType;
-
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Consumer sample where an authenticate user is used. This samples uses SapoSTS.
@@ -55,7 +55,7 @@ public class AuthenticatedProducer
 
 		SslBrokerClient bk = new SslBrokerClient(NetProtocolType.PROTOCOL_BUFFER);
 
-        bk.addServer(producer.host, producer.port);
+		bk.addServer(producer.host, producer.port);
 
 		CredentialsProvider cp = StringUtils.isBlank(producer.stsLocation) ? new SapoSTSProvider(producer.stsUsername, producer.stsPassword) : new SapoSTSProvider(producer.stsUsername, producer.stsPassword, producer.stsLocation);
 
@@ -89,10 +89,9 @@ public class AuthenticatedProducer
 			final String msg = i + " - " + RandomStringUtils.randomAlphanumeric(messageLength);
 			NetBrokerMessage brokerMessage = new NetBrokerMessage(msg);
 
+			Future f = bk.publish(brokerMessage, dname, dtype);
 
-		    Future f = bk.publish(brokerMessage, dname, dtype);
-
-            f.get();
+			f.get();
 
 			log.info(String.format("%s -> Send Message: %s", counter.incrementAndGet(), msg));
 

@@ -1,6 +1,9 @@
 package pt.com.broker.net;
 
-
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,14 +13,8 @@ import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.ssl.SslHandler;
-
-import org.caudexorigo.Shutdown;
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +44,8 @@ public class BrokerSslPipelineFactory
 				return;
 			}
 			URL keystoreUrl = getClass().getClassLoader().getResource(keyStoreLocation);
-			if(keystoreUrl != null){
+			if (keystoreUrl != null)
+			{
 				keyStoreLocation = keystoreUrl.toURI().getPath();
 			}
 
@@ -64,7 +62,7 @@ public class BrokerSslPipelineFactory
 			{
 				log.warn("key password is blank");
 				keyPasswordStr = null;
-//				return;
+				// return;
 			}
 
 			char[] KEYSTOREPW = keyStorePasswordStr.toCharArray();
@@ -77,14 +75,14 @@ public class BrokerSslPipelineFactory
 				log.warn("Keystore file not found");
 				return;
 			}
-			
+
 			keyStore.load(new FileInputStream(ks), KEYSTOREPW);
 
 			javax.net.ssl.KeyManagerFactory kmf = javax.net.ssl.KeyManagerFactory.getInstance("SunX509");
 
 			kmf.init(keyStore, KEYPW);
 
-//			sslContext = javax.net.ssl.SSLContext.getInstance("TLSv1.1");
+			// sslContext = javax.net.ssl.SSLContext.getInstance("TLSv1.1");
 			sslContext = javax.net.ssl.SSLContext.getInstance("TLSv1");
 
 			sslContext.init(kmf.getKeyManagers(), null, null);
@@ -98,35 +96,36 @@ public class BrokerSslPipelineFactory
 	public ChannelInitializer<SocketChannel> getInitializer() throws Exception
 	{
 
-        ChannelInitializer<SocketChannel> initializer = new ChannelInitializer<SocketChannel>() {
+		ChannelInitializer<SocketChannel> initializer = new ChannelInitializer<SocketChannel>()
+		{
 
-            @Override
-            protected void initChannel(SocketChannel socketChannel) throws Exception {
+			@Override
+			protected void initChannel(SocketChannel socketChannel) throws Exception
+			{
 
-                // Create a default pipeline implementation.
-                ChannelPipeline pipeline = socketChannel.pipeline();
+				// Create a default pipeline implementation.
+				ChannelPipeline pipeline = socketChannel.pipeline();
 
-                SSLContext sslContext = getSSLContext();
-                log.debug("Incoming SSL connection from: {}:{}", socketChannel.remoteAddress().getAddress().getHostAddress(), socketChannel.remoteAddress().getPort());
-                SSLEngine sslEngine = sslContext.createSSLEngine();
-                sslEngine.setUseClientMode(false);
-                SslHandler sslHandler = new SslHandler(sslEngine);
+				SSLContext sslContext = getSSLContext();
+				log.debug("Incoming SSL connection from: {}:{}", socketChannel.remoteAddress().getAddress().getHostAddress(), socketChannel.remoteAddress().getPort());
+				SSLEngine sslEngine = sslContext.createSSLEngine();
+				sslEngine.setUseClientMode(false);
+				SslHandler sslHandler = new SslHandler(sslEngine);
 
-                pipeline.addLast("ssl", sslHandler);
+				pipeline.addLast("ssl", sslHandler);
 
-                pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
-                pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
+				pipeline.addLast("broker-encoder", new BrokerEncoderRouter());
+				pipeline.addLast("broker-decoder", new BrokerDecoderRouter(GcsInfo.getMessageMaxSize()));
 
-                if (GcsInfo.useAccessControl())
-                {
-                    pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
-                }
+				if (GcsInfo.useAccessControl())
+				{
+					pipeline.addLast("broker-auth-filter", new AuthorizationFilter());
+				}
 
-                pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
+				pipeline.addLast("broker-handler", BrokerProtocolHandler.getInstance());
 
-            }
-        };
-
+			}
+		};
 
 		return initializer;
 	}

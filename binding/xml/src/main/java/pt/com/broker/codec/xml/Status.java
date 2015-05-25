@@ -1,19 +1,19 @@
 package pt.com.broker.codec.xml;
 
-import org.caudexorigo.time.ISO8601;
-
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.caudexorigo.time.ISO8601;
+
 @XmlRootElement(name = "Status")
 public class Status
 {
-    @XmlElement(name = "Message")
+	@XmlElement(name = "Message")
 	public String message;
 
-    @XmlElement(name = "Timestamp")
+	@XmlElement(name = "Timestamp")
 	public String timestamp;
 
 	public Status()

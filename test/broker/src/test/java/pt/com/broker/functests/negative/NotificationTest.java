@@ -12,8 +12,9 @@ import pt.com.broker.types.NetProtocolType;
 public class NotificationTest extends GenericNetMessageNegativeTest
 {
 
-    public NotificationTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public NotificationTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Unexpected Message - Notification");
 

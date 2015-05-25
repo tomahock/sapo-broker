@@ -1,4 +1,3 @@
-
 package pt.sapo.services.definitions;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -7,11 +6,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -29,36 +29,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "getPrimaryIdResult"
+		"getPrimaryIdResult"
 })
 @XmlRootElement(name = "GetPrimaryIdResponse")
-public class GetPrimaryIdResponse {
+public class GetPrimaryIdResponse
+{
 
-    @XmlElement(name = "GetPrimaryIdResult")
-    protected UserInfo getPrimaryIdResult;
+	@XmlElement(name = "GetPrimaryIdResult")
+	protected UserInfo getPrimaryIdResult;
 
-    /**
-     * Gets the value of the getPrimaryIdResult property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link UserInfo }
-     *     
-     */
-    public UserInfo getGetPrimaryIdResult() {
-        return getPrimaryIdResult;
-    }
+	/**
+	 * Gets the value of the getPrimaryIdResult property.
+	 * 
+	 * @return possible object is {@link UserInfo }
+	 * 
+	 */
+	public UserInfo getGetPrimaryIdResult()
+	{
+		return getPrimaryIdResult;
+	}
 
-    /**
-     * Sets the value of the getPrimaryIdResult property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link UserInfo }
-     *     
-     */
-    public void setGetPrimaryIdResult(UserInfo value) {
-        this.getPrimaryIdResult = value;
-    }
+	/**
+	 * Sets the value of the getPrimaryIdResult property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link UserInfo }
+	 * 
+	 */
+	public void setGetPrimaryIdResult(UserInfo value)
+	{
+		this.getPrimaryIdResult = value;
+	}
 
 }

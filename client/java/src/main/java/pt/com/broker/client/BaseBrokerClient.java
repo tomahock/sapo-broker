@@ -1,7 +1,21 @@
 package pt.com.broker.client;
 
-import org.caudexorigo.concurrent.Sleep;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,12 +23,21 @@ import pt.com.broker.client.messaging.BrokerErrorListenter;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.utils.CircularContainer;
-import pt.com.broker.types.*;
+import pt.com.broker.types.Headers;
+import pt.com.broker.types.NetAcknowledge;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAction.DestinationType;
-
-import java.util.*;
-import java.util.concurrent.*;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetPing;
+import pt.com.broker.types.NetPoll;
+import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetUnsubscribe;
 
 /**
  * 
@@ -89,28 +112,34 @@ public abstract class BaseBrokerClient
 		_netHandler = getBrokerProtocolHandler();
 		getNetHandler().start();
 		state = BrokerClientState.OK;
-		//FIXME: Hack to prevent loosing connection to the agent
+		// FIXME: Hack to prevent loosing connection to the agent
 		statusScheduler.scheduleWithFixedDelay(new CheckStatusTask(), 0, 1, TimeUnit.MINUTES);
 	}
-	
-	private class CheckStatusTask implements Runnable {
+
+	private class CheckStatusTask implements Runnable
+	{
 
 		@Override
-		public void run() {
-			try {
+		public void run()
+		{
+			try
+			{
 				log.debug("Checking connection state and status!");
-				if(state == BrokerClientState.OK && checkStatus() == null){
+				if (state == BrokerClientState.OK && checkStatus() == null)
+				{
 					log.debug("Restarting the connection.");
 					state = BrokerClientState.FAIL;
 					getNetHandler().stop();
 					getNetHandler().start();
 					state = BrokerClientState.CONNECT;
 				}
-			} catch (Throwable e) {
+			}
+			catch (Throwable e)
+			{
 				log.error("Unexpected error checking connection status.", e);
-			}	
+			}
 		}
-		
+
 	}
 
 	/**
@@ -879,5 +908,5 @@ public abstract class BaseBrokerClient
 	{
 		return oldFramming;
 	}
-	
+
 }

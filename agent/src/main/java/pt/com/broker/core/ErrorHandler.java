@@ -2,10 +2,12 @@ package pt.com.broker.core;
 
 import java.io.PrintWriter;
 
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.lang3.StringUtils;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.io.StringBuilderWriter;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +17,6 @@ import pt.com.broker.codec.xml.soap.SoapFault;
 import pt.com.broker.codec.xml.soap.SoapHeader;
 import pt.com.broker.types.CriticalErrors;
 import pt.com.gcs.conf.GcsInfo;
-
-import javax.xml.bind.JAXBException;
 
 /**
  * It is used to deal with uncaught exceptions.

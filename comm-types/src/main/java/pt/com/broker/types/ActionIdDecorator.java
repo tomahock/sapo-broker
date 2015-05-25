@@ -1,9 +1,5 @@
 package pt.com.broker.types;
 
-import pt.com.broker.types.DecoratorInterface;
-import pt.com.broker.types.NetAction;
-import pt.com.broker.types.NetMessage;
-
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -13,69 +9,78 @@ import java.util.Map;
  * @author vagrant
  * @version $Id: $Id
  */
-public class ActionIdDecorator extends NetMessage implements DecoratorInterface<NetMessage> {
+public class ActionIdDecorator extends NetMessage implements DecoratorInterface<NetMessage>
+{
 
-    private NetMessage netMessage;
+	private NetMessage netMessage;
 
-    /**
-     * <p>Constructor for ActionIdDecorator.</p>
-     *
-     * @param netMessage a {@link pt.com.broker.types.NetMessage} object.
-     */
-    public ActionIdDecorator(NetMessage netMessage) {
-        super(null);
-        this.netMessage = netMessage;
+	/**
+	 * <p>
+	 * Constructor for ActionIdDecorator.
+	 * </p>
+	 *
+	 * @param netMessage
+	 *            a {@link pt.com.broker.types.NetMessage} object.
+	 */
+	public ActionIdDecorator(NetMessage netMessage)
+	{
+		super(null);
+		this.netMessage = netMessage;
 
-    }
+	}
 
+	/** {@inheritDoc} */
+	@Override
+	public Map<String, String> getHeaders()
+	{
+		return netMessage.getHeaders();
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public Map<String, String> getHeaders() {
-        return netMessage.getHeaders();
-    }
+	/** {@inheritDoc} */
+	@Override
+	public NetAction getAction()
+	{
+		return netMessage.getAction();
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public NetAction getAction() {
-        return netMessage.getAction();
-    }
+	/**
+	 * <p>
+	 * getActionId.
+	 * </p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
+	public String getActionId()
+	{
 
+		NetAction netAction = getAction();
 
-    /**
-     * <p>getActionId.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getActionId(){
+		if (netAction.getActionType() == NetAction.ActionType.NOTIFICATION)
+		{
+			return null;
+		}
 
-        NetAction netAction = getAction();
+		Object object = netAction.getNetActionMessage();
 
-        if(netAction.getActionType() == NetAction.ActionType.NOTIFICATION){
-            return null;
-        }
+		try
+		{
 
+			Method method = object.getClass().getMethod("getActionId");
 
-        Object object = netAction.getNetActionMessage();
+			return (String) method.invoke(object);
 
-        try {
+		}
+		catch (Throwable e)
+		{
+			return null;
+		}
 
-            Method method = object.getClass().getMethod("getActionId");
+	}
 
-
-            return (String)method.invoke(object);
-
-
-        } catch (Throwable e) {
-            return null;
-        }
-
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public NetMessage getInstance() {
-        return netMessage;
-    }
+	/** {@inheritDoc} */
+	@Override
+	public NetMessage getInstance()
+	{
+		return netMessage;
+	}
 }

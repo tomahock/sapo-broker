@@ -1,31 +1,32 @@
 package pt.com.broker.functests.positive;
 
-import org.junit.runners.Parameterized;
-import pt.com.broker.functests.Action;
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.caudexorigo.text.RandomStringUtils;
+import org.junit.runners.Parameterized;
+
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 public class PollNoWaitTest extends BrokerTest
 {
 	private String baseName = RandomStringUtils.randomAlphanumeric(10);
 	private String queueName = String.format("/poll/%s", baseName);
 
+	public PollNoWaitTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-    public PollNoWaitTest(NetProtocolType protocolType) {
-        super(protocolType);
+		setName("Poll No Wait test");
+	}
 
-        setName("Poll No Wait test");
-    }
-
-    @Override
+	@Override
 	protected void build() throws Throwable
 	{
 		setAction(new Action("Poll Test", "Producer")
@@ -49,9 +50,9 @@ public class PollNoWaitTest extends BrokerTest
 				try
 				{
 					BrokerClient bk = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-                    bk.connect();
+					bk.connect();
 
-                    NetNotification msg = bk.poll(queueName,-1);
+					NetNotification msg = bk.poll(queueName, -1);
 
 					if (msg == null)
 					{
@@ -76,16 +77,15 @@ public class PollNoWaitTest extends BrokerTest
 		});
 	}
 
-	/*@Override
-	public boolean skipTest()
+	/*
+	 * @Override public boolean skipTest() { return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0) || (getEncodingProtocolType() == NetProtocolType.JSON); }
+	 */
+	@Parameterized.Parameters()
+	public static Collection getProtocolTypes()
 	{
-		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0) || (getEncodingProtocolType() == NetProtocolType.JSON);
-	}*/
-    @Parameterized.Parameters()
-    public static Collection getProtocolTypes() {
-        return Arrays.asList(new Object[][]{
-                {NetProtocolType.THRIFT},
-                {NetProtocolType.PROTOCOL_BUFFER},
-        });
-    }
+		return Arrays.asList(new Object[][] {
+				{ NetProtocolType.THRIFT },
+				{ NetProtocolType.PROTOCOL_BUFFER },
+		});
+	}
 }

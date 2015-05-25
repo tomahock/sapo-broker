@@ -1,5 +1,8 @@
 package pt.com.broker.functests.negative;
 
+import java.util.Arrays;
+import java.util.Random;
+
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.functests.Prerequisite;
@@ -8,13 +11,11 @@ import pt.com.broker.functests.helpers.GenericNegativeTest;
 import pt.com.broker.types.NetPong;
 import pt.com.broker.types.NetProtocolType;
 
-import java.util.Arrays;
-import java.util.Random;
-
 public class InvalidRandomMessageTest extends GenericNegativeTest
 {
-    public InvalidRandomMessageTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public InvalidRandomMessageTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Invalid Message - Random content with valid enconding and length");
 
@@ -52,20 +53,21 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 			{
 				try
 				{
-					getBrokerClient().checkStatus(new PongListenerAdapter() {
-                        @Override
-                        public void onMessage(NetPong message, HostInfo hostInfo) {
+					getBrokerClient().checkStatus(new PongListenerAdapter()
+					{
+						@Override
+						public void onMessage(NetPong message, HostInfo hostInfo)
+						{
 
-                        }
-                    });
-
+						}
+					});
 
 					setSucess(true);
 					setDone(true);
 				}
 				catch (Throwable e)
 				{
-                    e.printStackTrace();
+					e.printStackTrace();
 					setReasonForFailure(e.getMessage());
 				}
 				return this;
@@ -76,6 +78,6 @@ public class InvalidRandomMessageTest extends GenericNegativeTest
 	@Override
 	public boolean skipTest()
 	{
-		return (getEncodingProtocolType() == NetProtocolType.JSON || getEncodingProtocolType() == NetProtocolType.SOAP_v0 );
+		return (getEncodingProtocolType() == NetProtocolType.JSON || getEncodingProtocolType() == NetProtocolType.SOAP_v0);
 	}
 }

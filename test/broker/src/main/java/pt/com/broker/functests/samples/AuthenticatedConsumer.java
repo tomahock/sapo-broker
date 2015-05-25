@@ -1,7 +1,11 @@
 package pt.com.broker.functests.samples;
 
-import org.caudexorigo.cli.CliFactory;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.cli.CliFactory;
+
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.saposts.SapoSTSProvider;
 import pt.com.broker.client.nio.SslBrokerClient;
@@ -11,9 +15,6 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetProtocolType;
 import pt.com.broker.types.NetSubscribe;
-
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Consumer sample where an authenticate user is used. This samples uses SapoSTS.
@@ -48,7 +49,7 @@ public class AuthenticatedConsumer extends NotificationListenerAdapter
 		consumer.stsPassword = cargs.getUserPassword();
 
 		SslBrokerClient bk = new SslBrokerClient(NetProtocolType.PROTOCOL_BUFFER);
-        bk.addServer(consumer.host, consumer.port);
+		bk.addServer(consumer.host, consumer.port);
 
 		CredentialsProvider cp = StringUtils.isBlank(consumer.stsLocation) ? new SapoSTSProvider(consumer.stsUsername, consumer.stsPassword) : new SapoSTSProvider(consumer.stsUsername, consumer.stsPassword, consumer.stsLocation);
 
@@ -77,24 +78,23 @@ public class AuthenticatedConsumer extends NotificationListenerAdapter
 		System.out.println("listening...");
 	}
 
+	@Override
+	public boolean onMessage(NetNotification notification, HostInfo host)
+	{
 
-    @Override
-    public boolean onMessage(NetNotification notification, HostInfo host) {
+		System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
+		System.out.printf("Destination: '%s'%n", notification.getDestination());
+		System.out.printf("Subscription: '%s'%n", notification.getSubscription());
+		System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
 
-        System.out.printf("===========================     [%s]#%s   =================================%n", new Date(), counter.incrementAndGet());
-        System.out.printf("Destination: '%s'%n", notification.getDestination());
-        System.out.printf("Subscription: '%s'%n", notification.getSubscription());
-        System.out.printf("Payload: '%s'%n", new String(notification.getMessage().getPayload()));
-
-        if (dtype == DestinationType.TOPIC)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
+		if (dtype == DestinationType.TOPIC)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
 
 }

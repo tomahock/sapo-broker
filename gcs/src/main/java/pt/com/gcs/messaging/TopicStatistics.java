@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 
 public class TopicStatistics
 {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(TopicStatistics.class);
-	
+
 	// delivered
 	private final AtomicLong tDeliveredMessages = new AtomicLong(0);
 	private final AtomicBoolean tDeliveredPublish = new AtomicBoolean(true);

@@ -1,10 +1,15 @@
 package pt.com.broker.auth.saposts;
 
+import java.net.URL;
+
+import javax.xml.ws.BindingProvider;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.auth.ProviderInfo;
@@ -12,9 +17,6 @@ import pt.sapo.services.definitions.ESBCredentials;
 import pt.sapo.services.definitions.STS;
 import pt.sapo.services.definitions.STSSoapSecure;
 import pt.sapo.services.definitions.UserInfo;
-
-import javax.xml.ws.BindingProvider;
-import java.net.URL;
 
 /**
  * SapoSTSService is responsible for managing agent's credentials (STS Token) to Sapo STS and automatically renew it.
@@ -28,171 +30,171 @@ public class SapoSTSService
 	private static AuthInfo agentAuthenticationInfo = null;
 	private static CredentialsProvider authProvider = null;
 
-    protected STSSoapSecure soapSecure;
+	protected STSSoapSecure soapSecure;
 
-    private static ESBCredentials credentials;
+	private static ESBCredentials credentials;
 
-    public static ESBCredentials getCredentials() {
-        return credentials;
-    }
+	public static ESBCredentials getCredentials()
+	{
+		return credentials;
+	}
 
+	protected Node getConfig(Element element, String name)
+	{
 
-    protected Node getConfig(Element element, String name){
+		NodeList node = element.getElementsByTagName(name);
 
-        NodeList node = element.getElementsByTagName(name);
+		if (node.getLength() == 0)
+		{
+			log.error("Missing '{}' element in validation provider params", name);
+			throw new RuntimeException(String.format("Node %s not found", name));
+		}
 
-        if (node.getLength() == 0){
-            log.error("Missing '{}' element in validation provider params",name);
-            throw new RuntimeException(String.format("Node %s not found",name));
-        }
+		return node.item(0);
 
-        return node.item(0);
+	}
 
-    }
+	public boolean start(ProviderInfo providerInfo)
+	{
+		if (providerInfo == null)
+		{
+			log.error("Failed to obtain Authentication information from GcsInfo");
+			return false;
+		}
 
+		Element confNode = providerInfo.getParameters();
 
-    public boolean start(ProviderInfo providerInfo) {
-        if (providerInfo == null) {
-            log.error("Failed to obtain Authentication information from GcsInfo");
-            return false;
-        }
+		if (confNode == null)
+		{
+			log.error("There is no configuration info regarding SapoSTS authentication provider.");
+			return false;
+		}
 
+		String stsPassword = null;
+		String stsUsername = null;
+		String stsLocation = null;
+		String stsToken = null;
 
-        Element confNode = providerInfo.getParameters();
+		try
+		{
 
-        if (confNode == null) {
-            log.error("There is no configuration info regarding SapoSTS authentication provider.");
-            return false;
-        }
+			Element stsElem = (Element) getConfig(confNode, "sts");
 
+			stsLocation = getConfig(stsElem, "sts-location").getTextContent();
 
-        String stsPassword = null;
-        String stsUsername = null;
-        String stsLocation = null;
-        String stsToken = null;
+			if ((stsElem.getElementsByTagName("sts-username").getLength() > 0 ||
+					stsElem.getElementsByTagName("sts-password").getLength() > 0) &&
+					stsElem.getElementsByTagName("sts-token").getLength() > 0)
+			{
 
-        try {
+				throw new RuntimeException("You can have either Token or Username Password, not both");
 
-            Element stsElem = (Element) getConfig(confNode, "sts");
+			}
 
-            stsLocation = getConfig(stsElem, "sts-location").getTextContent();
+			if (stsElem.getElementsByTagName("sts-username").getLength() > 0 ||
+					stsElem.getElementsByTagName("sts-password").getLength() > 0)
+			{
 
-            if( (stsElem.getElementsByTagName("sts-username").getLength() > 0  ||
-                 stsElem.getElementsByTagName("sts-password").getLength() > 0) &&
-                 stsElem.getElementsByTagName("sts-token").getLength() > 0 ){
+				log.warn("You should not use raw credentials. Please use an ESBToken.");
+				stsUsername = getConfig(stsElem, "sts-username").getTextContent();
+				stsPassword = getConfig(stsElem, "sts-password").getTextContent();
 
-                throw new RuntimeException("You can have either Token or Username Password, not both");
+			}
+			else
+			{
 
-            }
+				stsToken = getConfig(stsElem, "sts-token").getTextContent();
 
-            if( stsElem.getElementsByTagName("sts-username").getLength() > 0  ||
-                    stsElem.getElementsByTagName("sts-password").getLength() > 0){
+			}
 
-                 log.warn("You should not use raw credentials. Please use an ESBToken.");
-                 stsUsername = getConfig(stsElem, "sts-username").getTextContent();
-                 stsPassword = getConfig(stsElem, "sts-password").getTextContent();
+		}
+		catch (Throwable t)
+		{
 
+			log.error("Config error", t);
 
+			return false;
+		}
 
+		credentials = new ESBCredentials();
 
-            }else{
+		credentials.setESBUsername(stsUsername);
+		credentials.setESBPassword(stsPassword);
+		credentials.setESBToken(stsToken);
 
-                  stsToken = getConfig(stsElem, "sts-token").getTextContent();
+		try
+		{
 
-            }
+			soapSecure = getClient(stsLocation);
 
+			soapSecure.getPrimaryId(credentials, null, false, null, null);
 
+		}
+		catch (Throwable e)
+		{
+			log.warn("Failed to get credentials for Service BUS.", e);
+			return false;
+		}
 
-        } catch (Throwable t) {
+		log.info("STS Credentials obtained");
 
-            log.error("Config error",t);
+		return true;
+	}
 
-            return false;
-        }
+	public UserInfo getUserInfo(String token)
+	{
 
+		ESBCredentials credentials = new ESBCredentials();
 
-        credentials = new ESBCredentials();
+		credentials.setESBToken(token);
 
+		UserInfo info = soapSecure.getPrimaryId(credentials, null, false, null, null);
 
-        credentials.setESBUsername(stsUsername);
-        credentials.setESBPassword(stsPassword);
-        credentials.setESBToken(stsToken);
+		return info;
+	}
 
-        try {
+	protected UserInfo getPrimaryIdDetails(String user_email)
+	{
+		return getPrimaryIdDetails(user_email, "sapo");
+	}
 
-            soapSecure = getClient(stsLocation);
+	protected UserInfo getPrimaryIdDetails(String user_email, String credentialstore)
+	{
 
-            soapSecure.getPrimaryId(credentials,null,false,null,null);
+		ESBCredentials credentials = getCredentials();
 
+		return soapSecure.getPrimaryIdDetails(credentials, user_email, false, null, credentialstore);
 
-        } catch (Throwable e) {
-            log.warn("Failed to get credentials for Service BUS.",e);
-            return false;
-        }
+	}
 
+	public STSSoapSecure getClient(String base_url)
+	{
 
+		URL url = null;
 
-        log.info("STS Credentials obtained");
+		try
+		{
 
+			url = STSSoapSecure.class.getClassLoader().getResource("STS.wsdl");
 
-        return true;
-    }
+			STS sts = new STS(url);
 
-    public UserInfo getUserInfo(String token){
+			STSSoapSecure secure = sts.getSTSSoapSecure();
 
-        ESBCredentials credentials = new ESBCredentials();
+			BindingProvider bp = (BindingProvider) secure;
 
-        credentials.setESBToken(token);
+			bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, base_url);
 
+			return secure;
 
-        UserInfo info = soapSecure.getPrimaryId(credentials, null, false, null, null);
+		}
+		catch (Throwable e)
+		{
+			e.printStackTrace();
+		}
 
-        return info;
-    }
+		return null;
 
-    protected UserInfo getPrimaryIdDetails(String user_email){
-        return getPrimaryIdDetails(user_email,"sapo");
-    }
-
-    protected UserInfo getPrimaryIdDetails(String user_email,String credentialstore){
-
-        ESBCredentials credentials = getCredentials();
-
-        return soapSecure.getPrimaryIdDetails(credentials,user_email,false,null,credentialstore);
-
-    }
-
-
-    public STSSoapSecure getClient(String base_url){
-
-        URL url = null;
-
-        try {
-
-            url = STSSoapSecure.class.getClassLoader().getResource("STS.wsdl");
-
-            STS sts = new STS(url);
-
-
-
-            STSSoapSecure secure = sts.getSTSSoapSecure();
-
-            BindingProvider bp = (BindingProvider) secure;
-
-            bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, base_url);
-
-
-            return secure;
-
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-
-        return null;
-
-    }
-
+	}
 
 }

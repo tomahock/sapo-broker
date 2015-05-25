@@ -1,4 +1,3 @@
-
 package pt.sapo.services.definitions;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -7,11 +6,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -29,36 +29,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "getPrimaryIdDetailsResult"
+		"getPrimaryIdDetailsResult"
 })
 @XmlRootElement(name = "GetPrimaryIdDetailsResponse")
-public class GetPrimaryIdDetailsResponse {
+public class GetPrimaryIdDetailsResponse
+{
 
-    @XmlElement(name = "GetPrimaryIdDetailsResult")
-    protected UserInfo getPrimaryIdDetailsResult;
+	@XmlElement(name = "GetPrimaryIdDetailsResult")
+	protected UserInfo getPrimaryIdDetailsResult;
 
-    /**
-     * Gets the value of the getPrimaryIdDetailsResult property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link UserInfo }
-     *     
-     */
-    public UserInfo getGetPrimaryIdDetailsResult() {
-        return getPrimaryIdDetailsResult;
-    }
+	/**
+	 * Gets the value of the getPrimaryIdDetailsResult property.
+	 * 
+	 * @return possible object is {@link UserInfo }
+	 * 
+	 */
+	public UserInfo getGetPrimaryIdDetailsResult()
+	{
+		return getPrimaryIdDetailsResult;
+	}
 
-    /**
-     * Sets the value of the getPrimaryIdDetailsResult property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link UserInfo }
-     *     
-     */
-    public void setGetPrimaryIdDetailsResult(UserInfo value) {
-        this.getPrimaryIdDetailsResult = value;
-    }
+	/**
+	 * Sets the value of the getPrimaryIdDetailsResult property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link UserInfo }
+	 * 
+	 */
+	public void setGetPrimaryIdDetailsResult(UserInfo value)
+	{
+		this.getPrimaryIdDetailsResult = value;
+	}
 
 }

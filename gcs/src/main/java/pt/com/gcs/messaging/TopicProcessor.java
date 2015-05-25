@@ -1,5 +1,7 @@
 package pt.com.gcs.messaging;
 
+import io.netty.channel.Channel;
+
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.HashSet;
@@ -7,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
-import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -284,67 +285,75 @@ public class TopicProcessor implements SubscriptionProcessor
 		return topicStatistics;
 	}
 
+	@Override
+	public Set<MessageListener> localListeners()
+	{
 
-    @Override
-    public Set<MessageListener> localListeners() {
+		Set<MessageListener> listeners = new HashSet<>();
 
-        Set<MessageListener> listeners = new HashSet<>();
+		for (MessageListener listener : listeners())
+		{
 
-        for(MessageListener listener : listeners()){
+			if (listener.getType() == Type.LOCAL || listener.getType() == Type.INTERNAL)
+			{
+				listeners.add(listener);
+			}
 
-            if(listener.getType() == Type.LOCAL || listener.getType() == Type.INTERNAL ){
-                listeners.add(listener);
-            }
+		}
 
-        }
+		return listeners;
+	}
 
-        return listeners;
-    }
+	@Override
+	public Set<MessageListener> remoteListeners()
+	{
 
-    @Override
-    public Set<MessageListener> remoteListeners() {
+		Set<MessageListener> listeners = new HashSet<>();
 
-        Set<MessageListener> listeners = new HashSet<>();
+		for (MessageListener listener : listeners())
+		{
 
-        for(MessageListener listener : listeners()){
+			if (listener.getType() == Type.REMOTE)
+			{
+				listeners.add(listener);
+			}
 
-            if(listener.getType() == Type.REMOTE ){
-                listeners.add(listener);
-            }
+		}
 
-        }
+		return listeners;
+	}
 
-        return listeners;
-    }
+	@Override
+	public boolean hasLocalListeners()
+	{
 
+		for (MessageListener listener : listeners())
+		{
 
+			if (listener.getType() == Type.LOCAL || listener.getType() == Type.INTERNAL)
+			{
+				return true;
+			}
 
-    @Override
-    public boolean hasLocalListeners() {
+		}
 
+		return false;
+	}
 
-        for(MessageListener listener : listeners()){
+	@Override
+	public boolean hasRemoteListeners()
+	{
 
-            if(listener.getType() == Type.LOCAL || listener.getType() == Type.INTERNAL ){
-                return true;
-            }
+		for (MessageListener listener : listeners())
+		{
 
-        }
+			if (listener.getType() == Type.REMOTE)
+			{
+				return true;
+			}
 
-        return false;
-    }
+		}
 
-    @Override
-    public boolean hasRemoteListeners() {
-
-        for(MessageListener listener : listeners()){
-
-            if(listener.getType() == Type.REMOTE ){
-                return true;
-            }
-
-        }
-
-        return false;
-    }
+		return false;
+	}
 }

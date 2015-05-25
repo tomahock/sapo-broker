@@ -5,11 +5,11 @@ import java.util.Collection;
 /**
  * Created by luissantos on 24-06-2014.
  */
-public interface SubscriptionProcessorList {
+public interface SubscriptionProcessorList
+{
 
-    public SubscriptionProcessor getSubscriptionProcessor(String name);
+	public SubscriptionProcessor getSubscriptionProcessor(String name);
 
-    public Collection<SubscriptionProcessor> getValues();
-
+	public Collection<SubscriptionProcessor> getValues();
 
 }

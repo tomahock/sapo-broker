@@ -1,30 +1,27 @@
 package pt.com.broker.functests.positive;
 
+import java.util.concurrent.Future;
 
-import pt.com.broker.functests.Action;
-import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.UdpBrokerClient;
+import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Step;
-import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetProtocolType;
-
-import java.util.concurrent.Future;
 
 public class UdpPublishTest extends GenericPubSubTest
 {
 	private UdpBrokerClient client;
 
-    public UdpPublishTest(NetProtocolType protocolType) {
-        super(protocolType);
-
+	public UdpPublishTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		try
 		{
 
-			client = new UdpBrokerClient(getAgent1Hostname(), getAgent1UdpPort(),getEncodingProtocolType());
-
+			client = new UdpBrokerClient(getAgent1Hostname(), getAgent1UdpPort(), getEncodingProtocolType());
 
 		}
 		catch (Throwable e)
@@ -40,7 +37,7 @@ public class UdpPublishTest extends GenericPubSubTest
 	public Action getAction()
 	{
 		final UdpBrokerClient uclient = client;
-		
+
 		return new Action("Publish", "producer")
 		{
 			public Step run() throws Exception
@@ -52,11 +49,9 @@ public class UdpPublishTest extends GenericPubSubTest
 
 					Future f = uclient.publish(brokerMessage, getDestinationName(), getDestinationType());
 
+					f.get();
 
-                    f.get();
-
-                    Thread.sleep(4000);
-
+					Thread.sleep(4000);
 
 					setDone(true);
 					setSucess(true);

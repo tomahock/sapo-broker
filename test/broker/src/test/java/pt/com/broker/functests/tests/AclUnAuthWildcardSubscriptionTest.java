@@ -12,11 +12,11 @@ import pt.com.broker.types.NetProtocolType;
 
 public class AclUnAuthWildcardSubscriptionTest extends GenericPubSubTest
 {
-    public AclUnAuthWildcardSubscriptionTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public AclUnAuthWildcardSubscriptionTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("Acl PubSub - Unauthenticated  Wilcard");
-
+		setName("Acl PubSub - Unauthenticated  Wilcard");
 
 		String username = ConfigurationInfo.getParameter("sapoSts", "username");
 		String password = ConfigurationInfo.getParameter("sapoSts", "password");
@@ -34,7 +34,7 @@ public class AclUnAuthWildcardSubscriptionTest extends GenericPubSubTest
 			try
 			{
 
-				bk_producer = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")),  getEncodingProtocolType());
+				bk_producer = new SslBrokerClient(ConfigurationInfo.getParameter("agent1-host"), Integer.parseInt(ConfigurationInfo.getParameter("agent1-ssl-port")), getEncodingProtocolType());
 
 				bk_producer.setCredentialsProvider(cp);
 
@@ -59,7 +59,7 @@ public class AclUnAuthWildcardSubscriptionTest extends GenericPubSubTest
 			this.setBrokerListener(new NotificationListenerAdapter()
 			{
 				@Override
-				public boolean onMessage(NetNotification message , HostInfo host)
+				public boolean onMessage(NetNotification message, HostInfo host)
 				{
 					System.out.println("ERROR: Should not receive message");
 
@@ -67,7 +67,7 @@ public class AclUnAuthWildcardSubscriptionTest extends GenericPubSubTest
 
 					setOkToTimeOut(false);
 
-                    return true;
+					return true;
 				}
 			});
 		}

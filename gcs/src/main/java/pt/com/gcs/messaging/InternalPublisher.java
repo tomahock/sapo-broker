@@ -1,10 +1,10 @@
 package pt.com.gcs.messaging;
 
+import java.nio.charset.Charset;
+
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
-
-import java.nio.charset.Charset;
 
 public class InternalPublisher
 {

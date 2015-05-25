@@ -1,8 +1,9 @@
 package pt.com.broker.functests.simulation;
 
-import pt.com.broker.functests.simulation.helpers.Consumers;
 import org.caudexorigo.Shutdown;
+
 import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.functests.simulation.helpers.Consumers;
 import pt.com.broker.functests.simulation.helpers.Producers;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetProtocolType;

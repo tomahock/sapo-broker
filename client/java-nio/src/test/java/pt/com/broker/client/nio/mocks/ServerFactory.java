@@ -3,32 +3,32 @@ package pt.com.broker.client.nio.mocks;
 /**
  * Created by luissantos on 12-05-2014.
  */
-public class ServerFactory {
+public class ServerFactory
+{
 
+	public static SocketServer getInstance(int port)
+	{
 
+		SocketServer socketServer = new SocketServer(port);
 
-    public static SocketServer getInstance(int port){
+		try
+		{
 
+			socketServer.bind();
 
+			return socketServer;
 
-        SocketServer socketServer = new SocketServer(port);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 
-        try {
+	}
 
-            socketServer.bind();
-
-            return socketServer;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-
-
-    }
-
-    public static SocketServer getInstance(){
-        return getInstance(0);
-    }
+	public static SocketServer getInstance()
+	{
+		return getInstance(0);
+	}
 }

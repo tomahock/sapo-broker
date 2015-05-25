@@ -1,7 +1,13 @@
 package pt.com.broker.client.sample;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.caudexorigo.cli.CliFactory;
 import org.caudexorigo.concurrent.Sleep;
+
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.client.HostInfo;
@@ -9,11 +15,6 @@ import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Consumer sample using client failover. Behavior is determined by command line arguments.

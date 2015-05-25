@@ -1,141 +1,137 @@
 package pt.com.broker.client.nio.server;
 
-
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.server.strategies.RoundRobinStrategy;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by luissantos on 16-05-2014.
  */
-public class TestSelectServerStrategy extends BaseTest{
+public class TestSelectServerStrategy extends BaseTest
+{
 
+	@Test()
+	public void RoundRobinLoop()
+	{
 
+		List<HostInfo> list = new ArrayList<HostInfo>();
 
-    @Test()
-    public void RoundRobinLoop(){
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
 
+		RoundRobinStrategy strategy = new RoundRobinStrategy(list);
 
-        List<HostInfo> list = new ArrayList<HostInfo>();
+		for (HostInfo host : list)
+		{
 
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
+			Assert.assertSame(host, strategy.next());
 
-        RoundRobinStrategy strategy = new RoundRobinStrategy(list);
+		}
 
-        for(HostInfo host : list){
+		for (HostInfo host : list)
+		{
 
-            Assert.assertSame(host, strategy.next());
+			Assert.assertSame(host, strategy.next());
 
-        }
+		}
 
-        for(HostInfo host : list){
+	}
 
-            Assert.assertSame(host, strategy.next());
+	@Test()
+	public void testRoundRobinLoopWithRemove()
+	{
 
-        }
+		List<HostInfo> list = new ArrayList<HostInfo>();
 
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
 
-    }
+		RoundRobinStrategy strategy = new RoundRobinStrategy(list);
 
+		for (HostInfo host : list)
+		{
 
-    @Test()
-    public void testRoundRobinLoopWithRemove(){
+			Assert.assertSame(host, strategy.next());
 
+		}
 
-        List<HostInfo> list = new ArrayList<HostInfo>();
+		while (list.size() > 0)
+		{
 
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
+			HostInfo host = strategy.next();
 
-        RoundRobinStrategy strategy = new RoundRobinStrategy(list);
+			HostInfo removed = list.remove(list.size() - 1);
 
-        for(HostInfo host : list){
+			Assert.assertNotNull(host);
 
-            Assert.assertSame(host, strategy.next());
+		}
 
-        }
+	}
 
-        while (list.size()>0){
+	@Test()
+	public void testRoundRobinLoopWithRemoveAndAdd()
+	{
 
-            HostInfo host = strategy.next();
+		List<HostInfo> list = new ArrayList<HostInfo>();
 
-            HostInfo removed = list.remove(list.size()-1);
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
 
-            Assert.assertNotNull(host);
+		RoundRobinStrategy strategy = new RoundRobinStrategy(list);
 
-        }
+		for (HostInfo host : list)
+		{
 
-    }
+			Assert.assertSame(host, strategy.next());
 
+		}
 
+		while (list.size() > 0)
+		{
 
-    @Test()
-    public void testRoundRobinLoopWithRemoveAndAdd(){
+			HostInfo host = strategy.next();
 
+			list.remove(0);
 
-        List<HostInfo> list = new ArrayList<HostInfo>();
+			Assert.assertNotNull(host);
 
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
+		}
 
-        RoundRobinStrategy strategy = new RoundRobinStrategy(list);
+		HostInfo host = strategy.next();
 
-        for(HostInfo host : list){
+		Assert.assertNull(host);
 
-            Assert.assertSame(host, strategy.next());
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
+		list.add(new HostInfo("127.0.0.1", 1234));
 
-        }
+		for (HostInfo host2 : list)
+		{
 
-        while (list.size()>0){
+			Assert.assertSame(host2, strategy.next());
 
-            HostInfo host = strategy.next();
+		}
 
-            list.remove(0);
-
-            Assert.assertNotNull(host);
-
-        }
-
-        HostInfo host = strategy.next();
-
-        Assert.assertNull(host);
-
-
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-        list.add(new HostInfo("127.0.0.1",1234));
-
-
-        for(HostInfo host2 : list){
-
-            Assert.assertSame(host2, strategy.next());
-
-        }
-
-
-
-    }
-
+	}
 
 }

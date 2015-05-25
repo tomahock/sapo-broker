@@ -1,5 +1,9 @@
 package pt.com.broker.functests.negative;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import pt.com.broker.client.nio.events.PongListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
@@ -9,18 +13,20 @@ import pt.com.broker.codec.xml.SoapBindingSerializer;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
-import pt.com.broker.types.*;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.ActionType;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPing;
+import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetProtocolType;
 
 public class InvalidMessageTest extends GenericNegativeTest
 {
 
-    public InvalidMessageTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public InvalidMessageTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Invalid Message - Ping with bits inverted");
 		setDataToSend(buildMessage());
@@ -36,12 +42,14 @@ public class InvalidMessageTest extends GenericNegativeTest
 			{
 				try
 				{
-					getBrokerClient().checkStatus(new PongListenerAdapter() {
-                        @Override
-                        public void onMessage(NetPong message, HostInfo hostInfo) {
+					getBrokerClient().checkStatus(new PongListenerAdapter()
+					{
+						@Override
+						public void onMessage(NetPong message, HostInfo hostInfo)
+						{
 
-                        }
-                    });
+						}
+					});
 					setSucess(true);
 					setDone(true);
 				}

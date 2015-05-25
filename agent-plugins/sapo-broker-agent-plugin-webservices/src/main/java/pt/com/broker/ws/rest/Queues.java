@@ -34,154 +34,177 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
 /**
- * Copyright (c) 2014, SAPO
- * All rights reserved.
+ * Copyright (c) 2014, SAPO All rights reserved.
  *
  * <p/>
  * Created by Luis Santos<luis.santos@telecom.pt> on 25-06-2014.
  */
 @Path("")
-@Api(value="/queues" , description = "Operations on queues maintained by the agent.")
-@Produces({"application/json"})
-public class Queues {
+@Api(value = "/queues", description = "Operations on queues maintained by the agent.")
+@Produces({ "application/json" })
+public class Queues
+{
 
-    private static final Logger log = LoggerFactory.getLogger(Queues.class);
+	private static final Logger log = LoggerFactory.getLogger(Queues.class);
 
-    @GET()
-    @Path("/queues")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-    		value = "Get all queues.",
-    		notes = "Gets all existing message queues mainained by the agent.",
-    		response = QueueList.class
-    )
-    @ApiResponses(value = {
-    		@ApiResponse(code = 200, message = "Returns all agent queues.", response = QueueList.class)
-    })
-    public QueueList getOpenQueues() {
-        return new QueueList(getMessageQueues());
-    }
+	@GET()
+	@Path("/queues")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get all queues.",
+			notes = "Gets all existing message queues mainained by the agent.",
+			response = QueueList.class
+			)
+			@ApiResponses(value = {
+					@ApiResponse(code = 200, message = "Returns all agent queues.", response = QueueList.class)
+			})
+			public QueueList getOpenQueues()
+	{
+		return new QueueList(getMessageQueues());
+	}
 
-    //FIXME: Add Generic response method
-    @DELETE()
-    @Path("/queues{name : /.+}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-    		value = "Delete existing queue.",
-    		notes = "Deletes the message queue with the name provided by the name parameter." +
-    		"The force parameter is used to indicate if the queue should be eliminated even if " +
-    		"it haves consumers.",
-    		response = Boolean.class
-    )
-    @ApiResponses(value = {
-    		@ApiResponse(code = 200, message = "The agent status information.", response = Boolean.class),
-    		@ApiResponse(code = 404, message = "The message queue was not found.", response = Boolean.class)
-    })
-    public boolean deleteQueue(@PathParam("name") String name, @DefaultValue("false") @QueryParam("force") boolean force){
-    	Queue q = getMessageQueue(name);
-    	if(q == null) {
-            throw new WebApplicationException(404);
-        }
-        try{
-            deleteMessageQueue(name,!force);
-            return true;
-        }catch (Exception e){
-            log.error("Error deleting queue",e);
-            return false;
-        }
-    }
+	// FIXME: Add Generic response method
+	@DELETE()
+	@Path("/queues{name : /.+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Delete existing queue.",
+			notes = "Deletes the message queue with the name provided by the name parameter." +
+					"The force parameter is used to indicate if the queue should be eliminated even if " +
+					"it haves consumers.",
+			response = Boolean.class
+			)
+			@ApiResponses(value = {
+					@ApiResponse(code = 200, message = "The agent status information.", response = Boolean.class),
+					@ApiResponse(code = 404, message = "The message queue was not found.", response = Boolean.class)
+			})
+			public boolean deleteQueue(@PathParam("name") String name, @DefaultValue("false") @QueryParam("force") boolean force)
+	{
+		Queue q = getMessageQueue(name);
+		if (q == null)
+		{
+			throw new WebApplicationException(404);
+		}
+		try
+		{
+			deleteMessageQueue(name, !force);
+			return true;
+		}
+		catch (Exception e)
+		{
+			log.error("Error deleting queue", e);
+			return false;
+		}
+	}
 
+	@GET()
+	@Path("/queues{name : /.+}")
+	// FIXME: Is this OK?
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get message queue.",
+			notes = "Returns the message queue with the name provided by the name parameter.",
+			response = Queue.class
+			)
+			@ApiResponses(value = {
+					@ApiResponse(code = 200, message = "The queue with the provided name.", response = Queue.class),
+					@ApiResponse(code = 404, message = "The message queue was not found.")
+			})
+			public Queue getQueue(@PathParam("name") String name)
+	{
+		Queue queue = getMessageQueue(name);
+		if (queue == null)
+		{
+			throw new WebApplicationException(404);
+		}
+		return queue;
+	}
 
-    @GET()
-    @Path("/queues{name : /.+}") //FIXME: Is this OK?
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-    		value = "Get message queue.",
-    		notes = "Returns the message queue with the name provided by the name parameter.",
-    		response = Queue.class
-    )
-    @ApiResponses(value = {
-    		@ApiResponse(code = 200, message = "The queue with the provided name.", response = Queue.class),
-    		@ApiResponse(code = 404, message = "The message queue was not found.")
-    })
-    public Queue getQueue(@PathParam("name") String name){
-        Queue queue = getMessageQueue(name);
-        if(queue == null) {
-            throw new WebApplicationException(404);
-        }
-        return queue;
-    }
+	@GET()
+	@Path("/queues{name : /.+}/messages")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get queue messages.",
+			notes = "Returns the messages contained in the message queue.",
+			response = QueueMessages.class
+			)
+			@ApiResponses(value = {
+					@ApiResponse(code = 200, message = "The messages contained by the queue with the provided name.", response = Queue.class),
+					@ApiResponse(code = 404, message = "The message queue was not found.")
+			})
+			public QueueMessages getQueueMessages(@PathParam("name") String name)
+	{
+		Queue queue = getMessageQueue(name);
+		if (queue == null)
+		{
+			throw new WebApplicationException(404);
+		}
+		QueueProcessor processor = QueueProcessorList.get(name);
+		List<NetMessage> netMessages = processor.getMessages();
+		List<Message> messages = new ArrayList<Message>();
+		for (NetMessage nm : netMessages)
+		{
+			if (nm.getAction().getActionType() == ActionType.NOTIFICATION)
+			{
+				// It's the only message that should be in the queue
+				Message m = new Message(
+						nm.getAction().getNotificationMessage().getMessage().getMessageId(),
+						nm.getHeaders(),
+						nm.getAction().getActionType().name(),
+						nm.getAction().getNotificationMessage().getDestination(),
+						nm.getAction().getNotificationMessage().getDestinationType()
+						);
+				messages.add(m);
+			}
+			else
+			{
+				log.warn("The queue {} contains a message of type {}.", name, nm.getAction().getActionType().name());
+			}
 
-    @GET()
-    @Path("/queues{name : /.+}/messages")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(
-    		value = "Get queue messages.",
-    		notes = "Returns the messages contained in the message queue.",
-    		response = QueueMessages.class
-    )
-    @ApiResponses(value = {
-    		@ApiResponse(code = 200, message = "The messages contained by the queue with the provided name.", response = Queue.class),
-    		@ApiResponse(code = 404, message = "The message queue was not found.")
-    })
-    public QueueMessages getQueueMessages(@PathParam("name") String name){
-        Queue queue = getMessageQueue(name);
-        if(queue == null) {
-            throw new WebApplicationException(404);
-        }
-        QueueProcessor processor = QueueProcessorList.get(name);
-        List<NetMessage> netMessages = processor.getMessages();
-        List<Message> messages = new ArrayList<Message>();
-        for(NetMessage nm: netMessages){
-        	if(nm.getAction().getActionType() == ActionType.NOTIFICATION){
-        		//It's the only message that should be in the queue
-        		Message m = new Message(
-        				nm.getAction().getNotificationMessage().getMessage().getMessageId(),
-        				nm.getHeaders(),
-        				nm.getAction().getActionType().name(),
-        				nm.getAction().getNotificationMessage().getDestination(),
-        				nm.getAction().getNotificationMessage().getDestinationType()
-        		);
-        		messages.add(m);
-        	} else {
-        		log.warn("The queue {} contains a message of type {}.", name, nm.getAction().getActionType().name());
-        	}
-        	
-        }
-        QueueMessages queueMessages = new QueueMessages(processor.getSubscriptionName(), new MessageList(messages));
-        return queueMessages;
-    }
+		}
+		QueueMessages queueMessages = new QueueMessages(processor.getSubscriptionName(), new MessageList(messages));
+		return queueMessages;
+	}
 
-    private void deleteMessageQueue(String name,boolean safe){
-        /* @todo fix bug in deletequeue */
-        if(safe){
-            Gcs.deleteQueue(name);
-        }else {
-            Gcs.deleteQueue(name,false);
-        }
-    }
+	private void deleteMessageQueue(String name, boolean safe)
+	{
+		/* @todo fix bug in deletequeue */
+		if (safe)
+		{
+			Gcs.deleteQueue(name);
+		}
+		else
+		{
+			Gcs.deleteQueue(name, false);
+		}
+	}
 
-    private  List<Queue> getMessageQueues(){
-        List<Queue> queues = new ArrayList<>();
-        for(QueueProcessor qp : QueueProcessorList.values()){
-        	Queue q = new Queue(
-        		qp.getSubscriptionName(), qp.getQueuedMessagesCount(), new Date(qp.lastMessageDelivered()).toString()
-        	);
-            queues.add(q);
-        }
-        return queues;
-    }
+	private List<Queue> getMessageQueues()
+	{
+		List<Queue> queues = new ArrayList<>();
+		for (QueueProcessor qp : QueueProcessorList.values())
+		{
+			Queue q = new Queue(
+					qp.getSubscriptionName(), qp.getQueuedMessagesCount(), new Date(qp.lastMessageDelivered()).toString()
+					);
+			queues.add(q);
+		}
+		return queues;
+	}
 
-    private Queue getMessageQueue(String name){
-        for(QueueProcessor qp : QueueProcessorList.values()){
-            if(qp.getSubscriptionName().equals(name)){
-            	Queue q = new Queue(
-            		qp.getSubscriptionName(), qp.getQueuedMessagesCount(), new Date(qp.lastMessageDelivered()).toString()
-            	);
-                return q;
-            }
-        }
-        return null;
-    }
-    
+	private Queue getMessageQueue(String name)
+	{
+		for (QueueProcessor qp : QueueProcessorList.values())
+		{
+			if (qp.getSubscriptionName().equals(name))
+			{
+				Queue q = new Queue(
+						qp.getSubscriptionName(), qp.getQueuedMessagesCount(), new Date(qp.lastMessageDelivered()).toString()
+						);
+				return q;
+			}
+		}
+		return null;
+	}
+
 }

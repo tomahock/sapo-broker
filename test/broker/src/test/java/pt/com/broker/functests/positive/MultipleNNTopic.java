@@ -1,21 +1,20 @@
 package pt.com.broker.functests.positive;
 
-import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.functests.helpers.MultipleGenericPubSubTest;
 import pt.com.broker.functests.helpers.MultipleNotificationsBrokerListener;
-import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetProtocolType;
 
 public class MultipleNNTopic extends MultipleGenericPubSubTest
 {
-    public MultipleNNTopic(NetProtocolType protocolType) {
-        super(protocolType);
+	public MultipleNNTopic(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("Topic - N producer N consumers");
-    }
+		setName("Topic - N producer N consumers");
+	}
 
-    @Override
+	@Override
 	protected void addConsumers()
 	{
 		super.addConsumers();
@@ -24,7 +23,7 @@ public class MultipleNNTopic extends MultipleGenericPubSubTest
 			TestClientInfo tci = new TestClientInfo();
 
 			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-            tci.brokerClient.connect();
+			tci.brokerClient.connect();
 
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), 1);
 			tci.numberOfExecutions = getInfoProducers().size();
@@ -45,8 +44,8 @@ public class MultipleNNTopic extends MultipleGenericPubSubTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
-			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port() , getEncodingProtocolType());
-            tci.brokerClient.connect();
+			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
+			tci.brokerClient.connect();
 			tci.brokerListenter = null;
 
 			this.addInfoProducer(tci);

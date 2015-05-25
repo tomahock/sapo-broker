@@ -1,9 +1,10 @@
 package pt.com.gcs.messaging;
 
+import io.netty.channel.Channel;
+
 import java.nio.charset.Charset;
 import java.util.Set;
 
-import io.netty.channel.Channel;
 import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

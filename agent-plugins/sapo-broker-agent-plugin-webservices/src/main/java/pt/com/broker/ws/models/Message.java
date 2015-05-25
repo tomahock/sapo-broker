@@ -3,19 +3,20 @@ package pt.com.broker.ws.models;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.DestinationType;
 
-public class Message {
-	
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class Message
+{
+
 	public static final String JSON_PROP_MESSAGE_ID = "id";
 	public static final String JSON_PROP_MESSAGE_HEADERS = "headers";
 	public static final String JSON_PROP_MESSAGE_TYPE = "type";
 	public static final String JSON_PROP_DESTINATION = "destination";
 	public static final String JSON_PROP_DESTINATION_TYPE = "destination_type";
-	
+
 	@JsonProperty(JSON_PROP_MESSAGE_ID)
 	private String messageId;
 	@JsonProperty(JSON_PROP_MESSAGE_HEADERS)
@@ -26,16 +27,18 @@ public class Message {
 	private NetAction.DestinationType destinationType;
 	@JsonProperty(JSON_PROP_DESTINATION)
 	private String destination;
-	
-	public Message(){
+
+	public Message()
+	{
 		this.messageId = new String("");
 		this.messageHeaders = new HashMap<String, String>();
 		this.messageType = new String("");
 		this.destination = new String("");
 		this.destinationType = null;
 	}
-	
-	public Message(String messageId, Map<String, String> messageHeaders, String messageType, String destination, DestinationType destinationType){
+
+	public Message(String messageId, Map<String, String> messageHeaders, String messageType, String destination, DestinationType destinationType)
+	{
 		this.messageId = messageId;
 		this.messageHeaders = messageHeaders;
 		this.messageType = messageType;
@@ -43,23 +46,28 @@ public class Message {
 		this.destinationType = destinationType;
 	}
 
-	public String getMessageId() {
+	public String getMessageId()
+	{
 		return messageId;
 	}
 
-	public Map<String, String> getMessageHeaders() {
+	public Map<String, String> getMessageHeaders()
+	{
 		return messageHeaders;
 	}
 
-	public String getMessageType() {
+	public String getMessageType()
+	{
 		return messageType;
 	}
 
-	public String getDestination() {
+	public String getDestination()
+	{
 		return destination;
 	}
 
-	public NetAction.DestinationType getDestinationType() {
+	public NetAction.DestinationType getDestinationType()
+	{
 		return destinationType;
 	}
 

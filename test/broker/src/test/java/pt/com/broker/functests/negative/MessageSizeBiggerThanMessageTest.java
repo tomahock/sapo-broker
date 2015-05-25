@@ -6,8 +6,9 @@ import pt.com.broker.types.NetProtocolType;
 public class MessageSizeBiggerThanMessageTest extends GenericNegativeTest
 {
 
-    public MessageSizeBiggerThanMessageTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public MessageSizeBiggerThanMessageTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("MessageSizeBiggerThanMessageTest");
 

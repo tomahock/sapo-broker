@@ -1,9 +1,9 @@
 package pt.com.gcs.messaging;
 
+import java.util.Comparator;
+
 import com.sleepycat.bind.tuple.LongBinding;
 import com.sleepycat.je.DatabaseEntry;
-
-import java.util.Comparator;
 
 /**
  * BDBMessageComparator compares two database entries.

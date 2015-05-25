@@ -1,14 +1,18 @@
 package pt.com.broker.performance;
 
-import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
-import pt.com.broker.types.*;
-import pt.com.broker.types.NetAction.ActionType;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
+import pt.com.broker.types.NetAcknowledge;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAction.ActionType;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetPoll;
 
 public class SyncConsumerClientV2 implements Runnable
 {

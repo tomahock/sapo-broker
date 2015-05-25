@@ -1,20 +1,27 @@
 package pt.com.broker.client;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.concurrent.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.BaseBrokerClient.BrokerClientState;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
 import pt.com.broker.client.net.ProtocolHandler;
-import pt.com.broker.types.*;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.NetAccepted;
+import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetAction.ActionType;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.UnknownHostException;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
 
 /**
  * BrokerProtocolHandler extends ProtocolHandler defining protocol aspects such as message handling (including errors), message encoding/decoding and on failure behavior.

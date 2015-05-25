@@ -18,103 +18,109 @@ import pt.com.broker.types.NetMessage;
  * Created by luissantos on 08-05-2014.
  */
 @RunWith(Parameterized.class)
-public class SubscriberManagerTest  {
+public class SubscriberManagerTest
+{
 
-    protected NetAction.DestinationType destinationType = null;
-    protected  String destinationName = null;
+	protected NetAction.DestinationType destinationType = null;
+	protected String destinationName = null;
 
+	public SubscriberManagerTest(NetAction.DestinationType destinationType, String destinationName)
+	{
+		this.destinationType = destinationType;
+		this.destinationName = destinationName;
+	}
 
-    public SubscriberManagerTest(NetAction.DestinationType destinationType, String destinationName) {
-        this.destinationType = destinationType;
-        this.destinationName = destinationName;
-    }
+	@Parameterized.Parameters
+	public static Collection primeNumbers()
+	{
+		return Arrays.asList(new Object[][] {
+				{ NetAction.DestinationType.QUEUE, "/teste/" },
+				{ NetAction.DestinationType.TOPIC, "/teste/" },
+		});
+	}
 
-    @Parameterized.Parameters
-    public static Collection primeNumbers() {
-        return Arrays.asList(new Object[][]{
-                {NetAction.DestinationType.QUEUE,"/teste/"},
-                {NetAction.DestinationType.TOPIC,"/teste/"},
-        });
-    }
+	@Test
+	public void testSubscription()
+	{
 
+		ConsumerManager consumerManager = new ConsumerManager();
 
-    @Test
-    public void testSubscription(){
+		BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener()
+		{
+			@Override
+			public void deliverMessage(NetMessage message, HostInfo host) throws Throwable
+			{
 
-        ConsumerManager consumerManager = new ConsumerManager();
+			}
 
-        BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
-            @Override
-            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+		});
 
-            }
+		consumer.setHost(new HostInfo("127.0.0.1", 3323));
 
-        });
+		consumerManager.addSubscription(consumer);
 
-        consumer.setHost(new HostInfo("127.0.0.1",3323));
+	}
 
-        consumerManager.addSubscription(consumer);
+	@Test(expected = ExistingSubscriptionException.class)
+	public void testSubscriptionDuplicatedQueue()
+	{
+		ConsumerManager consumerManager = new ConsumerManager();
+		BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener()
+		{
+			@Override
+			public void deliverMessage(NetMessage message, HostInfo host) throws Throwable
+			{
 
-    }
+			}
 
-    @Test(expected = ExistingSubscriptionException.class )
-    public void testSubscriptionDuplicatedQueue(){
-        ConsumerManager consumerManager = new ConsumerManager();
-        BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
-            @Override
-            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+		});
+		consumer.setHost(new HostInfo("127.0.0.1", 3323));
+		consumerManager.addSubscription(consumer);
+		BrokerAsyncConsumer consumer2 = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener()
+		{
+			@Override
+			public void deliverMessage(NetMessage message, HostInfo host) throws Throwable
+			{
 
-            }
-            
-        });
-        consumer.setHost(new HostInfo("127.0.0.1",3323));
-        consumerManager.addSubscription(consumer);
-        BrokerAsyncConsumer consumer2 = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
-            @Override
-            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+			}
 
-            }
+		});
+		consumer2.setHost(new HostInfo("127.0.0.1", 3323));
+		consumerManager.addSubscription(consumer2);
+	}
 
-        });
-        consumer2.setHost(new HostInfo("127.0.0.1",3323));
-        consumerManager.addSubscription(consumer2);
-    }
+	@Test()
+	public void testSubscriptionRemove()
+	{
 
+		ConsumerManager consumerManager = new ConsumerManager();
 
-    @Test()
-    public void testSubscriptionRemove(){
+		BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener()
+		{
 
-        ConsumerManager consumerManager = new ConsumerManager();
+			@Override
+			public void deliverMessage(NetMessage message, HostInfo host) throws Throwable
+			{
 
+			}
 
+		});
 
-        BrokerAsyncConsumer consumer = new BrokerAsyncConsumer(destinationName, destinationType, new BrokerListener() {
+		HostInfo host = new HostInfo("123.0.0.1", 3323);
+		consumer.setHost(host);
 
-            @Override
-            public void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+		consumerManager.addSubscription(consumer);
 
-            }
+		BrokerAsyncConsumer asyncConsumer = consumerManager.removeSubscription(destinationType, destinationName, host);
 
-        });
+		Assert.assertNotNull(asyncConsumer);
 
+		Assert.assertSame(consumer, asyncConsumer);
 
-        HostInfo host = new HostInfo("123.0.0.1",3323);
-        consumer.setHost(host);
+		BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(destinationType, destinationName, host);
 
-        consumerManager.addSubscription(consumer);
+		Assert.assertNull(consumer2);
 
-
-        BrokerAsyncConsumer asyncConsumer = consumerManager.removeSubscription(destinationType,destinationName,host);
-
-        Assert.assertNotNull(asyncConsumer);
-
-        Assert.assertSame(consumer,asyncConsumer);
-
-
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(destinationType,destinationName,host);
-
-        Assert.assertNull(consumer2);
-
-    }
+	}
 
 }

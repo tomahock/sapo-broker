@@ -1,15 +1,16 @@
 package pt.com.broker.client.net;
 
-import org.caudexorigo.ErrorAnalyser;
-import org.caudexorigo.concurrent.CustomExecutors;
-import pt.com.broker.client.BaseNetworkConnector;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.caudexorigo.ErrorAnalyser;
+import org.caudexorigo.concurrent.CustomExecutors;
+
+import pt.com.broker.client.BaseNetworkConnector;
 
 /**
  * ProtocolHandler is an abstract class that defines the basic functionality for implementing Sapo-Broker messaging aspects.
@@ -129,7 +130,7 @@ public abstract class ProtocolHandler<T>
 	}
 
 	public void sendMessage(final T message) throws Throwable
-	{		
+	{
 		final BaseNetworkConnector connector = getConnector();
 		long connectionVersion = connector.getConnectionVersion();
 		try

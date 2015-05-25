@@ -1,4 +1,3 @@
-
 package pt.sapo.services.definitions;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,11 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for RevokeTokenInfo complex type.
+ * <p>
+ * Java class for RevokeTokenInfo complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="RevokeTokenInfo">
@@ -28,27 +28,30 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RevokeTokenInfo", propOrder = {
-    "revokeActionSuccess"
+		"revokeActionSuccess"
 })
-public class RevokeTokenInfo {
+public class RevokeTokenInfo
+{
 
-    @XmlElement(name = "RevokeActionSuccess")
-    protected boolean revokeActionSuccess;
+	@XmlElement(name = "RevokeActionSuccess")
+	protected boolean revokeActionSuccess;
 
-    /**
-     * Gets the value of the revokeActionSuccess property.
-     * 
-     */
-    public boolean isRevokeActionSuccess() {
-        return revokeActionSuccess;
-    }
+	/**
+	 * Gets the value of the revokeActionSuccess property.
+	 * 
+	 */
+	public boolean isRevokeActionSuccess()
+	{
+		return revokeActionSuccess;
+	}
 
-    /**
-     * Sets the value of the revokeActionSuccess property.
-     * 
-     */
-    public void setRevokeActionSuccess(boolean value) {
-        this.revokeActionSuccess = value;
-    }
+	/**
+	 * Sets the value of the revokeActionSuccess property.
+	 * 
+	 */
+	public void setRevokeActionSuccess(boolean value)
+	{
+		this.revokeActionSuccess = value;
+	}
 
 }

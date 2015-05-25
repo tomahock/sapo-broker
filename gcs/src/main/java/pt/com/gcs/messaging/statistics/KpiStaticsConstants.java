@@ -1,7 +1,8 @@
 package pt.com.gcs.messaging.statistics;
 
-public final class KpiStaticsConstants {
-	
+public final class KpiStaticsConstants
+{
+
 	public static final String BROKER_KPI_STATISTICS_DOMAIN = "broker.bk.sapo.pt";
 	/**
 	 * KPI name attributes:
@@ -22,8 +23,7 @@ public final class KpiStaticsConstants {
 	public static final String TCP_CONNECTIONS_ATTRIBUTE = "tcp";
 	public static final String TCP_LEGACY_CONNECTIONS_ATTRIBUTE = "tcp-legacy";
 	public static final String SSL_CONNECTIONS_ATTRIBUTE = "ssl";
-	
-	
+
 	/**
 	 * Metrics to collect
 	 * */

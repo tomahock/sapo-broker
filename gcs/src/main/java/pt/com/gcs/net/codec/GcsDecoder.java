@@ -1,15 +1,16 @@
 package pt.com.gcs.net.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
-import pt.com.broker.types.NetMessage;
 
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
+import pt.com.broker.types.NetMessage;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between agents.
@@ -25,33 +26,39 @@ import java.util.List;
  * </pre>
  * 
  * This applies to both input and ouput messages.
+ * 
  * @todo ver Sharable
  */
-//@ChannelHandler.Sharable
-public class GcsDecoder extends ByteToMessageDecoder {
+// @ChannelHandler.Sharable
+public class GcsDecoder extends ByteToMessageDecoder
+{
 
 	private static final Logger log = LoggerFactory.getLogger(GcsDecoder.class);
 	private static final int HEADER_LENGTH = 4;
 
 	private final ProtoBufBindingSerializer serializer = new ProtoBufBindingSerializer();
 
-    @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        int readableBytes = buffer.readableBytes();
-        if(readableBytes >= HEADER_LENGTH){
-        	int len = buffer.readInt();
-        	if(len <= 0){
-        		log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
-                ctx.close();
-        	}
-        	if(readableBytes >= (len + HEADER_LENGTH)){
-        		//TODO: Check if this is the best possible approach. No buffer limit?!?!
-        		byte[] decoded = new byte[len];
-                buffer.readBytes(decoded);
-                NetMessage msg = serializer.unmarshal(decoded);
-                out.add(msg);
-        	}
-        }
-    }
+	@Override
+	protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception
+	{
+		int readableBytes = buffer.readableBytes();
+		if (readableBytes >= HEADER_LENGTH)
+		{
+			int len = buffer.readInt();
+			if (len <= 0)
+			{
+				log.error(String.format("Illegal message size!! Received message claimed to have %s bytes.", len));
+				ctx.close();
+			}
+			if (readableBytes >= (len + HEADER_LENGTH))
+			{
+				// TODO: Check if this is the best possible approach. No buffer limit?!?!
+				byte[] decoded = new byte[len];
+				buffer.readBytes(decoded);
+				NetMessage msg = serializer.unmarshal(decoded);
+				out.add(msg);
+			}
+		}
+	}
 
 }

@@ -1,7 +1,10 @@
 package pt.com.broker.monitorization.collector;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.BaseBrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
 import pt.com.broker.monitorization.db.FaultsDB;
@@ -9,8 +12,6 @@ import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 import pt.com.broker.types.NetSubscribe;
-
-import java.util.Date;
 
 public class FaultsCollector
 {

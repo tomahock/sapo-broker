@@ -1,8 +1,18 @@
 package pt.com.broker.client;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.CredentialsProvider;
 import pt.com.broker.client.messaging.PendingAcceptRequestsManager;
@@ -12,14 +22,6 @@ import pt.com.broker.types.NetAction.ActionType;
 import pt.com.broker.types.NetAuthentication;
 import pt.com.broker.types.NetMessage;
 import pt.com.broker.types.NetProtocolType;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Collection;
 
 public final class SslBrokerClient extends BaseBrokerClient
 {

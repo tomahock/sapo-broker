@@ -1,43 +1,47 @@
 package pt.com.broker.ws.models;
 
 /**
- * Copyright (c) 2014, SAPO
- * All rights reserved.
+ * Copyright (c) 2014, SAPO All rights reserved.
  *
- * @see LICENSE.TXT
- * <p/>
- * Created by Luis Santos<luis.santos@telecom.pt> on 26-06-2014.
+ * @see LICENSE.TXT <p/>
+ *      Created by Luis Santos<luis.santos@telecom.pt> on 26-06-2014.
  */
-public class AgentStatus {
+public class AgentStatus
+{
 
-    String version;
+	String version;
 
-    String name;
+	String name;
 
-    long systemMessageFailures;
+	long systemMessageFailures;
 
-    public String getVersion() {
-        return version;
-    }
+	public String getVersion()
+	{
+		return version;
+	}
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+	public void setVersion(String version)
+	{
+		this.version = version;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName()
+	{
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name)
+	{
+		this.name = name;
+	}
 
+	public long getSystemMessageFailures()
+	{
+		return systemMessageFailures;
+	}
 
-    public long getSystemMessageFailures() {
-        return systemMessageFailures;
-    }
-
-    public void setSystemMessageFailures(long systemMessageFailures) {
-        this.systemMessageFailures = systemMessageFailures;
-    }
+	public void setSystemMessageFailures(long systemMessageFailures)
+	{
+		this.systemMessageFailures = systemMessageFailures;
+	}
 }

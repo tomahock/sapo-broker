@@ -1,28 +1,29 @@
 package pt.com.broker.functests.positive;
 
-import pt.com.broker.functests.Action;
-import pt.com.broker.functests.Prerequisite;
-import pt.com.broker.functests.helpers.BrokerTest;
-import org.caudexorigo.text.RandomStringUtils;
-
-
-import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.client.nio.events.NotificationListenerAdapter;
-import pt.com.broker.functests.Step;
-import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.types.*;
-import pt.com.broker.types.NetAction.DestinationType;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
+import org.caudexorigo.text.RandomStringUtils;
+
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.functests.Action;
+import pt.com.broker.functests.Prerequisite;
+import pt.com.broker.functests.Step;
+import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
+
 public class DeferredDeliveryQueueTest extends BrokerTest
 {
 
-    private final CountDownLatch latch = new CountDownLatch(1);
+	private final CountDownLatch latch = new CountDownLatch(1);
 
 	private static final String DEFERRED_DELIVERY_HEADER = "DEFERRED_DELIVERY";
 
@@ -37,21 +38,19 @@ public class DeferredDeliveryQueueTest extends BrokerTest
 	private String queueName = String.format("/queue/%s", RandomStringUtils.randomAlphanumeric(10));
 	final Object sync = new Object();
 
-
-
 	public DeferredDeliveryQueueTest(NetProtocolType protocolType)
 	{
 
 		super(protocolType);
 
-        setName("Deferred Delivery Queue Test");
+		setName("Deferred Delivery Queue Test");
 
 		this.setTimeout(3000);
 
 		try
 		{
 			this.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-            this.brokerClient.connect();
+			this.brokerClient.connect();
 		}
 		catch (Throwable e)
 		{
@@ -71,33 +70,36 @@ public class DeferredDeliveryQueueTest extends BrokerTest
 				{
 					System.out.println("DeferredDeliveryQueueTest.build().new Prerequisite() {...}.run()");
 
-                    brokerClient.subscribe(new NetSubscribe(queueName, DestinationType.QUEUE), new NotificationListenerAdapter() {
+					brokerClient.subscribe(new NetSubscribe(queueName, DestinationType.QUEUE), new NotificationListenerAdapter()
+					{
 
+						@Override
+						public boolean onMessage(NetNotification message, HostInfo host)
+						{
 
-                        @Override
-                        public boolean onMessage(NetNotification message, HostInfo host) {
+							long now = System.currentTimeMillis();
 
+							long acceptableInterval = 500;
 
-                            long now = System.currentTimeMillis();
+							setDone(true);
+							if ((now > expectedDeliveryTime + acceptableInterval) || (now < expectedDeliveryTime - acceptableInterval))
+							{
+								setSucess(false);
+								setReasonForFailure("Message received in a not acceptable interval. Dif: " + (now - expectedDeliveryTime));
+							}
+							else
+							{
+								setSucess(true);
+							}
+							synchronized (sync)
+							{
+								sync.notifyAll();
+							}
 
-                            long acceptableInterval = 500;
+							return true;
+						}
 
-                            setDone(true);
-                            if ((now > expectedDeliveryTime + acceptableInterval) || (now < expectedDeliveryTime - acceptableInterval)) {
-                                setSucess(false);
-                                setReasonForFailure("Message received in a not acceptable interval. Dif: " + (now - expectedDeliveryTime));
-                            } else {
-                                setSucess(true);
-                            }
-                            synchronized (sync) {
-                                sync.notifyAll();
-                            }
-
-                            return true;
-                        }
-
-
-                    }).get();
+					}).get();
 
 				}
 				catch (Throwable e)
@@ -124,8 +126,7 @@ public class DeferredDeliveryQueueTest extends BrokerTest
 
 				Future f = brokerClient.publish(message, queueName, DestinationType.QUEUE);
 
-                f.get();
-
+				f.get();
 
 				synchronized (sync)
 				{
@@ -158,19 +159,16 @@ public class DeferredDeliveryQueueTest extends BrokerTest
 		// });
 	}
 
-	/*@Override
-	public boolean skipTest()
+	/*
+	 * @Override public boolean skipTest() { return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0) || (getEncodingProtocolType() == NetProtocolType.JSON); }
+	 */
+
+	public static Collection getProtocolTypes()
 	{
-		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0) || (getEncodingProtocolType() == NetProtocolType.JSON);
-	}*/
-
-
-    public static Collection getProtocolTypes() {
-        return Arrays.asList(new Object[][]{
-                {NetProtocolType.PROTOCOL_BUFFER},
-                {NetProtocolType.THRIFT},
-        });
-    }
-
+		return Arrays.asList(new Object[][] {
+				{ NetProtocolType.PROTOCOL_BUFFER },
+				{ NetProtocolType.THRIFT },
+		});
+	}
 
 }

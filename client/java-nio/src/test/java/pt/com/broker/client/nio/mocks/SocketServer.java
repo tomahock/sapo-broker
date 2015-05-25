@@ -1,173 +1,184 @@
 package pt.com.broker.client.nio.mocks;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
-import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
-import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
-import pt.com.broker.types.*;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.client.nio.codecs.BindingSerializerFactory;
+import pt.com.broker.client.nio.codecs.BrokerMessageDecoder;
+import pt.com.broker.client.nio.codecs.BrokerMessageEncoder;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetProtocolType;
 
 /**
  * Created by luissantos on 12-05-2014.
  */
-public class SocketServer {
+public class SocketServer
+{
 
-    private static final Logger log = LoggerFactory.getLogger(SocketServer.class);
+	private static final Logger log = LoggerFactory.getLogger(SocketServer.class);
 
-    int port;
+	int port;
 
-    private ChannelFuture future;
+	private ChannelFuture future;
 
-    EventLoopGroup bossGroup = new NioEventLoopGroup();
-    EventLoopGroup workerGroup = new NioEventLoopGroup();
-    ServerBootstrap b = new ServerBootstrap();
+	EventLoopGroup bossGroup = new NioEventLoopGroup();
+	EventLoopGroup workerGroup = new NioEventLoopGroup();
+	ServerBootstrap b = new ServerBootstrap();
 
-    public SocketServer() {
-        this(0);
-    }
-    public SocketServer(int port) {
-        this.port = port;
-    }
+	public SocketServer()
+	{
+		this(0);
+	}
 
-    private class InputHandler extends ChannelInboundHandlerAdapter{
+	public SocketServer(int port)
+	{
+		this.port = port;
+	}
 
-        @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
+	private class InputHandler extends ChannelInboundHandlerAdapter
+	{
 
-            if(msg instanceof NetMessage){
+		@Override
+		public void channelRead(ChannelHandlerContext ctx, Object msg)
+		{ // (2)
 
-                NetMessage _msg = (NetMessage)msg;
+			if (msg instanceof NetMessage)
+			{
 
-                if(_msg.getAction().getActionType() == NetAction.ActionType.PING) {
+				NetMessage _msg = (NetMessage) msg;
 
-                    NetMessage netMessage = new NetMessage(new NetAction(new NetPong(_msg.getAction().getPingMessage().getActionId())));
+				if (_msg.getAction().getActionType() == NetAction.ActionType.PING)
+				{
 
-                    ctx.writeAndFlush(netMessage);
-                }
+					NetMessage netMessage = new NetMessage(new NetAction(new NetPong(_msg.getAction().getPingMessage().getActionId())));
 
-            }
+					ctx.writeAndFlush(netMessage);
+				}
 
-            ctx.fireChannelReadComplete();
-        }
+			}
 
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
-            // Close the connection when an exception is raised.
-            //cause.printStackTrace();
-            ctx.close();
-        }
+			ctx.fireChannelReadComplete();
+		}
 
-    }
+		@Override
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+		{ // (4)
+			// Close the connection when an exception is raised.
+			// cause.printStackTrace();
+			ctx.close();
+		}
 
+	}
 
-    protected int bind() throws Exception {
+	protected int bind() throws Exception
+	{
 
-        ChannelFuture future = run();
+		ChannelFuture future = run();
 
+		setFuture(future);
 
-        setFuture(future);
+		InetSocketAddress address = (InetSocketAddress) future.channel().localAddress();
 
+		this.port = address.getPort();
 
-        InetSocketAddress address = (InetSocketAddress)future.channel().localAddress();
+		log.debug("Test server running on port: " + this.getPort());
 
+		return this.getPort();
+	}
 
+	private ChannelFuture run() throws Exception
+	{
 
-        this.port = address.getPort();
+		try
+		{
 
-        log.debug("Test server running on port: "+this.getPort());
+			b.group(bossGroup, workerGroup)
+					.channel(NioServerSocketChannel.class) // (3)
+					.childHandler(new ChannelInitializer<SocketChannel>()
+					{ // (4)
+								@Override
+								public void initChannel(SocketChannel ch) throws Exception
+								{
 
-        return this.getPort();
-    }
+									BindingSerializer binding = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
+									ch.pipeline().addLast("broker_message_decoder", new BrokerMessageDecoder(binding));
+									ch.pipeline().addLast("broker_message_encoder", new BrokerMessageEncoder(binding));
+									ch.pipeline().addLast("server_handler", new InputHandler());
 
+									log.debug("Remote client connected");
 
-    private ChannelFuture run() throws Exception {
+								}
+							})
+					.option(ChannelOption.SO_BACKLOG, 128) // (5)
+					.childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
-
-
-
-        try {
-
-
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class) // (3)
-                    .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-
-
-                            BindingSerializer binding = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
-
-
-                            ch.pipeline().addLast("broker_message_decoder", new BrokerMessageDecoder(binding));
-                            ch.pipeline().addLast("broker_message_encoder", new BrokerMessageEncoder(binding));
-                            ch.pipeline().addLast("server_handler", new InputHandler());
-
-
-                            log.debug("Remote client connected");
-
-
-                        }
-                    })
-                    .option(ChannelOption.SO_BACKLOG, 128)          // (5)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
-
-            // Bind and start to accept incoming connections.
-            ChannelFuture f = b.bind("0.0.0.0",getPort()).sync(); // (7)
-
-            // Wait until the server socket is closed.
-            // In this example, this does not happen, but you can do that to gracefully
-            // shut down your server.
-            //f.channel().closeFuture().sync();
-
-
-
-            return f;
-
-        } finally {
-
-            //workerGroup.shutdownGracefully();
-            //bossGroup.shutdownGracefully();
-
-        }
-
-
-
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    private ChannelFuture getFuture() {
-        return future;
-    }
-
-    private void setFuture(ChannelFuture future) {
-        this.future = future;
-    }
-
-
-    public Future shutdown(){
-
-            try {
-                bossGroup.shutdownGracefully();
-                return workerGroup.shutdownGracefully();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-    }
-
-
+			// Bind and start to accept incoming connections.
+			ChannelFuture f = b.bind("0.0.0.0", getPort()).sync(); // (7)
+
+			// Wait until the server socket is closed.
+			// In this example, this does not happen, but you can do that to gracefully
+			// shut down your server.
+			// f.channel().closeFuture().sync();
+
+			return f;
+
+		}
+		finally
+		{
+
+			// workerGroup.shutdownGracefully();
+			// bossGroup.shutdownGracefully();
+
+		}
+
+	}
+
+	public int getPort()
+	{
+		return port;
+	}
+
+	private ChannelFuture getFuture()
+	{
+		return future;
+	}
+
+	private void setFuture(ChannelFuture future)
+	{
+		this.future = future;
+	}
+
+	public Future shutdown()
+	{
+
+		try
+		{
+			bossGroup.shutdownGracefully();
+			return workerGroup.shutdownGracefully();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }

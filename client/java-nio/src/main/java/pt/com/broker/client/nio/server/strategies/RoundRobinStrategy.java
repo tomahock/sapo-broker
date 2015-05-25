@@ -1,8 +1,8 @@
 package pt.com.broker.client.nio.server.strategies;
 
-import pt.com.broker.client.nio.server.HostInfo;
-
 import java.util.List;
+
+import pt.com.broker.client.nio.server.HostInfo;
 
 /**
  * Created by luissantos on 15-05-2014.
@@ -10,63 +10,73 @@ import java.util.List;
  * @author vagrant
  * @version $Id: $Id
  */
-public class RoundRobinStrategy implements SelectServerStrategy {
+public class RoundRobinStrategy implements SelectServerStrategy
+{
 
+	private List<HostInfo> hosts;
 
-    private  List<HostInfo> hosts;
+	private int position = 0;
 
-    private  int position = 0;
+	/**
+	 * <p>
+	 * Constructor for RoundRobinStrategy.
+	 * </p>
+	 */
+	public RoundRobinStrategy()
+	{
 
-    /**
-     * <p>Constructor for RoundRobinStrategy.</p>
-     */
-    public RoundRobinStrategy() {
+	}
 
-    }
+	/**
+	 * <p>
+	 * Constructor for RoundRobinStrategy.
+	 * </p>
+	 *
+	 * @param hosts
+	 *            a {@link java.util.List} object.
+	 */
+	public RoundRobinStrategy(List<HostInfo> hosts)
+	{
+		setCollection(hosts);
+	}
 
-    /**
-     * <p>Constructor for RoundRobinStrategy.</p>
-     *
-     * @param hosts a {@link java.util.List} object.
-     */
-    public RoundRobinStrategy(List<HostInfo> hosts) {
-        setCollection(hosts);
-    }
+	/** {@inheritDoc} */
+	@Override
+	public void setCollection(List<HostInfo> servers)
+	{
+		this.hosts = servers;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public void setCollection(List<HostInfo> servers) {
-        this.hosts = servers;
-    }
+	/** {@inheritDoc} */
+	@Override
+	public HostInfo next()
+	{
 
-    /** {@inheritDoc} */
-    @Override
-    public HostInfo next() {
+		synchronized (hosts)
+		{
 
+			int size = hosts.size();
 
-        synchronized (hosts) {
+			while (position < size)
+			{
 
-            int size = hosts.size();
+				HostInfo host = hosts.get(position);
 
-            while (position < size){
+				position++;
 
-                HostInfo host = hosts.get(position);
+				return host;
+			}
 
-                position ++;
+			position = 0;
 
-                return host;
-            }
+			if (size == 0)
+			{
+				return null;
+			}
 
-            position = 0;
+			return next();
 
-            if(size == 0){
-                return null;
-            }
+		}
 
-
-            return next();
-
-        }
-
-    }
+	}
 }

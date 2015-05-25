@@ -1,17 +1,18 @@
 package pt.com.gcs.messaging;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import org.caudexorigo.ErrorAnalyser;
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,171 +71,170 @@ public class GcsAcceptorProtocolHandler extends SimpleChannelInboundHandler<NetM
 		createPeersList();
 	}
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception {
+	@Override
+	protected void channelRead0(ChannelHandlerContext ctx, NetMessage msg) throws Exception
+	{
 
-        final NetMessage m = msg;
-        String mtype = m.getHeaders().get("TYPE");
+		final NetMessage m = msg;
+		String mtype = m.getHeaders().get("TYPE");
 
-        NetNotification nnot = m.getAction().getNotificationMessage();
-        NetBrokerMessage brkMsg = nnot.getMessage();
+		NetNotification nnot = m.getAction().getNotificationMessage();
+		NetBrokerMessage brkMsg = nnot.getMessage();
 
-        String msgContent = new String(brkMsg.getPayload(), "UTF-8");
+		String msgContent = new String(brkMsg.getPayload(), "UTF-8");
 
-        if (log.isDebugEnabled())
-        {
-            log.debug(String.format("Message Received from: '%s', Destination: '%s', Type: '%s', MsgId: '%s'", ctx.channel().remoteAddress(), nnot.getDestination(), mtype, brkMsg.getMessageId()));
-        }
+		if (log.isDebugEnabled())
+		{
+			log.debug(String.format("Message Received from: '%s', Destination: '%s', Type: '%s', MsgId: '%s'", ctx.channel().remoteAddress(), nnot.getDestination(), mtype, brkMsg.getMessageId()));
+		}
 
-        if (mtype.equals("ACK"))
-        {
-            Gcs.ackMessage(nnot.getDestination(), brkMsg.getMessageId());
-            return;
-        }
-        else if (mtype.equals("PING"))
-        {
-            acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
-            return;
-        }
-        else if (mtype.equals("HELLO"))
-        {
-            Peer peer = Peer.createPeerFromHelloMessage(msgContent);
-            if (peer == null)
-            {
-                log.error("Invalid 'HELLO' message: ", msgContent);
-                return;
-            }
+		if (mtype.equals("ACK"))
+		{
+			Gcs.ackMessage(nnot.getDestination(), brkMsg.getMessageId());
+			return;
+		}
+		else if (mtype.equals("PING"))
+		{
+			acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
+			return;
+		}
+		else if (mtype.equals("HELLO"))
+		{
+			Peer peer = Peer.createPeerFromHelloMessage(msgContent);
+			if (peer == null)
+			{
+				log.error("Invalid 'HELLO' message: ", msgContent);
+				return;
+			}
 
-            validatePeer(ctx, peer, msgContent);
-            boolean isValid = ((Boolean) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.ISVALID")).booleanValue();
-            if (!isValid)
-            {
-                String paddr = String.valueOf(ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.PEER_ADDRESS"));
-                log.error("A peer from \"{}\" tried to connect but it does not appear in the world map.", paddr);
-                ctx.channel().close();
-            }
-            else
-            {
-                log.debug("Peer is valid!");
+			validatePeer(ctx, peer, msgContent);
+			boolean isValid = ((Boolean) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.ISVALID")).booleanValue();
+			if (!isValid)
+			{
+				String paddr = String.valueOf(ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "GcsAcceptorProtocolHandler.PEER_ADDRESS"));
+				log.error("A peer from \"{}\" tried to connect but it does not appear in the world map.", paddr);
+				ctx.channel().close();
+			}
+			else
+			{
+				log.debug("Peer is valid!");
 
-                ChannelHandlerContext previousChannel = InboundRemoteChannels.add(peer.getAddress(), ctx);
-                if (previousChannel != null)
-                {
-                    log.info(String.format("Peer '%s' connected through channel '%s' was connected through channel '%s'", peer.getAddress(), ctx.channel().toString(), previousChannel.channel().toString()));
+				ChannelHandlerContext previousChannel = InboundRemoteChannels.add(peer.getAddress(), ctx);
+				if (previousChannel != null)
+				{
+					log.info(String.format("Peer '%s' connected through channel '%s' was connected through channel '%s'", peer.getAddress(), ctx.channel().toString(), previousChannel.channel().toString()));
 
-                    handleChannelClosed(previousChannel);
-                }
+					handleChannelClosed(previousChannel);
+				}
 
-                return;
-            }
-            return;
-        }
-        else if (mtype.equals("SYSTEM_TOPIC") || mtype.equals("SYSTEM_QUEUE"))
-        {
-            final String action = extract(msgContent, "<action>", "</action>");
-            final String src_name = extract(msgContent, "<source-name>", "</source-name>");
+				return;
+			}
+			return;
+		}
+		else if (mtype.equals("SYSTEM_TOPIC") || mtype.equals("SYSTEM_QUEUE"))
+		{
+			final String action = extract(msgContent, "<action>", "</action>");
+			final String src_name = extract(msgContent, "<source-name>", "</source-name>");
 
-            ChannelHandlerContext channelHandlerContext = InboundRemoteChannels.get(src_name);
+			ChannelHandlerContext channelHandlerContext = InboundRemoteChannels.get(src_name);
 
-            if (!ctx.equals(channelHandlerContext))
-            {
-                log.error(String.format("RemoteChannel for agent '%s' is '%s' but received a system message from '%s'. Closing both.", src_name, channelHandlerContext, ctx));
-                channelHandlerContext.channel().close();
-                ctx.channel().close();
+			if (!ctx.equals(channelHandlerContext))
+			{
+				log.error(String.format("RemoteChannel for agent '%s' is '%s' but received a system message from '%s'. Closing both.", src_name, channelHandlerContext, ctx));
+				channelHandlerContext.channel().close();
+				ctx.channel().close();
 
-                return;
-            }
+				return;
+			}
 
-            final String subscriptionKey = extract(msgContent, "<destination>", "</destination>");
+			final String subscriptionKey = extract(msgContent, "<destination>", "</destination>");
 
-            if (StringUtils.isBlank(subscriptionKey))
-            {
-                String errorMessage = String.format("Sytem Queue or Topic message has a blank destination field. Message content: %s", msgContent);
-                log.error(errorMessage);
-                throw new RuntimeException(errorMessage);
-            }
+			if (StringUtils.isBlank(subscriptionKey))
+			{
+				String errorMessage = String.format("Sytem Queue or Topic message has a blank destination field. Message content: %s", msgContent);
+				log.error(errorMessage);
+				throw new RuntimeException(errorMessage);
+			}
 
-            if (StringUtils.isBlank(action))
-            {
-                String errorMessage = String.format("Sytem Queue or Topic message has a blank action field. Message content: %s", msgContent);
-                log.error(errorMessage);
-                throw new RuntimeException(errorMessage);
-            }
+			if (StringUtils.isBlank(action))
+			{
+				String errorMessage = String.format("Sytem Queue or Topic message has a blank action field. Message content: %s", msgContent);
+				log.error(errorMessage);
+				throw new RuntimeException(errorMessage);
+			}
 
-            if (log.isInfoEnabled())
-            {
-                String lmsg = String.format("Action: '%s' Consumer; Subscription: '%s'; Source: '%s'", action, subscriptionKey, src_name);
-                log.info(lmsg);
-            }
+			if (log.isInfoEnabled())
+			{
+				String lmsg = String.format("Action: '%s' Consumer; Subscription: '%s'; Source: '%s'", action, subscriptionKey, src_name);
+				log.info(lmsg);
+			}
 
-            acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
+			acknowledgeSystemMessage(brkMsg.getMessageId(), ctx);
 
-            if (mtype.equals("SYSTEM_TOPIC"))
-            {
-                MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
+			if (mtype.equals("SYSTEM_TOPIC"))
+			{
+				MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx), subscriptionKey, DestinationType.TOPIC, DestinationType.TOPIC);
 
-                TopicProcessor tp = TopicProcessorList.get(subscriptionKey);
+				TopicProcessor tp = TopicProcessorList.get(subscriptionKey);
 
-                if (tp == null)
-                {
-                    log.error("Failed to obtain a TopicProcessor instance for topic '{}'.", subscriptionKey);
-                    return;
-                }
+				if (tp == null)
+				{
+					log.error("Failed to obtain a TopicProcessor instance for topic '{}'.", subscriptionKey);
+					return;
+				}
 
-                if (action.equals("CREATE"))
-                {
-                    tp.add(remoteListener, false);
-                }
-                else if (action.equals("DELETE"))
-                {
-                    tp.remove(remoteListener);
-                }
+				if (action.equals("CREATE"))
+				{
+					tp.add(remoteListener, false);
+				}
+				else if (action.equals("DELETE"))
+				{
+					tp.remove(remoteListener);
+				}
 
-            }
-            else if (mtype.equals("SYSTEM_QUEUE"))
-            {
-                MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
+			}
+			else if (mtype.equals("SYSTEM_QUEUE"))
+			{
+				MessageListener remoteListener = new RemoteListener(ListenerChannelFactory.getListenerChannel(ctx), subscriptionKey, DestinationType.QUEUE, DestinationType.QUEUE);
 
-                QueueProcessor qp = QueueProcessorList.get(subscriptionKey);
-                if (qp == null)
-                {
-                    log.error("Failed to obtain a QueueProcessor instance for queue '{}'.", subscriptionKey);
-                    return;
-                }
+				QueueProcessor qp = QueueProcessorList.get(subscriptionKey);
+				if (qp == null)
+				{
+					log.error("Failed to obtain a QueueProcessor instance for queue '{}'.", subscriptionKey);
+					return;
+				}
 
-                if (action.equals("CREATE"))
-                {
-                    qp.add(remoteListener);
-                }
-                else if (action.equals("DELETE"))
-                {
-                    qp.remove(remoteListener);
-                }
-            }
-        }
-        else
-        {
-            log.warn("Unkwown message type. Don't know how to handle message");
-        }
+				if (action.equals("CREATE"))
+				{
+					qp.add(remoteListener);
+				}
+				else if (action.equals("DELETE"))
+				{
+					qp.remove(remoteListener);
+				}
+			}
+		}
+		else
+		{
+			log.warn("Unkwown message type. Don't know how to handle message");
+		}
 
-    }
+	}
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+	{
 
-        Throwable rootCause = ErrorAnalyser.findRootCause(cause);
-        CriticalErrors.exitIfCritical(rootCause);
-        log.error("Exception Caught:'{}', '{}'", ctx.channel().remoteAddress().toString(), rootCause.getMessage());
-        log.error(String.format("STACKTRACE:\n%s", rootCause));
+		Throwable rootCause = ErrorAnalyser.findRootCause(cause);
+		CriticalErrors.exitIfCritical(rootCause);
+		log.error("Exception Caught:'{}', '{}'", ctx.channel().remoteAddress().toString(), rootCause.getMessage());
+		log.error(String.format("STACKTRACE:\n%s", rootCause));
 
-        if (rootCause instanceof java.nio.channels.ClosedChannelException)
-        {
-            handleChannelClosed(ctx);
-        }
-    }
-
-
-
+		if (rootCause instanceof java.nio.channels.ClosedChannelException)
+		{
+			handleChannelClosed(ctx);
+		}
+	}
 
 	private void acknowledgeSystemMessage(String messageId, ChannelHandlerContext ctx)
 	{
@@ -270,15 +270,13 @@ public class GcsAcceptorProtocolHandler extends SimpleChannelInboundHandler<NetM
 		}
 	}
 
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception
+	{
+		super.channelInactive(ctx);
 
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
-
-        handleChannelClosed(ctx);
-    }
-
-
+		handleChannelClosed(ctx);
+	}
 
 	private void handleChannelClosed(ChannelHandlerContext ctx)
 	{
@@ -311,24 +309,24 @@ public class GcsAcceptorProtocolHandler extends SimpleChannelInboundHandler<NetM
 		return false;
 	}
 
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception
+	{
+		super.channelActive(ctx);
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
+		log.info("Session Opened: '{}'", ctx.channel().remoteAddress());
 
-        log.info("Session Opened: '{}'", ctx.channel().remoteAddress());
-
-        if (!validPeerAddress(ctx))
-        {
-            ctx.channel().close();
-            log.warn("GCS: connection refused");
-            return;
-        }
-        if (log.isDebugEnabled())
-        {
-            log.debug("Session Created: '{}'", ctx.channel().remoteAddress());
-        }
-    }
+		if (!validPeerAddress(ctx))
+		{
+			ctx.channel().close();
+			log.warn("GCS: connection refused");
+			return;
+		}
+		if (log.isDebugEnabled())
+		{
+			log.debug("Session Created: '{}'", ctx.channel().remoteAddress());
+		}
+	}
 
 	private void validatePeer(ChannelHandlerContext ctx, Peer peer, String helloMessage)
 	{

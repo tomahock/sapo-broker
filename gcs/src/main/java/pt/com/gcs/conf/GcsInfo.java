@@ -25,10 +25,11 @@ import pt.com.gcs.conf.global.BrokerSecurityPolicy;
  * GcsInfo contains several information about the agent.
  * 
  */
-public class GcsInfo {
+public class GcsInfo
+{
 
 	private final static Logger log = LoggerFactory.getLogger(GcsInfo.class);
-	
+
 	public static final int UNLIMITED_QUEUES_VALUE = -1;
 
 	private static final GcsInfo instance = new GcsInfo();
@@ -118,16 +119,16 @@ public class GcsInfo {
 		return iprop;
 	}
 
-    /**
-     * HTTP port.
-     *
-     * @return HTTP port
-     */
-    public static int getBrokerWsPort()
-    {
-        int iprop = instance.conf.getNet().getBrokerWsPort();
-        return iprop;
-    }
+	/**
+	 * HTTP port.
+	 *
+	 * @return HTTP port
+	 */
+	public static int getBrokerWsPort()
+	{
+		int iprop = instance.conf.getNet().getBrokerWsPort();
+		return iprop;
+	}
 
 	/**
 	 * Broker legacy TCP port (used by clients). Used for backward compatibility.
@@ -270,7 +271,8 @@ public class GcsInfo {
 	 */
 	public static String getKeystoreLocation()
 	{
-		if (instance.conf.getSsl() != null){
+		if (instance.conf.getSsl() != null)
+		{
 			return instance.conf.getSsl().getKeystoreLocation();
 		}
 		return null;
@@ -365,39 +367,44 @@ public class GcsInfo {
 	{
 		return getSecurityPolicies() != null;
 	}
-	
+
 	/**
 	 * Is agent communications forced to TLS.
 	 * 
 	 * @return <code>true</code> if it is enabled <code>false</code> otherwise
 	 * */
-	public static boolean isForceAgentSsl(){
+	public static boolean isForceAgentSsl()
+	{
 		return instance.conf.getSsl().getForceAgentSsl();
 	}
-	
-	public static String getSslProtocolWhiteList(){
+
+	public static String getSslProtocolWhiteList()
+	{
 		return instance.conf.getSsl().getSslProtocolWhiteList();
 	}
-	
-	public static String getSslCipherSuiteWhitelist(){
+
+	public static String getSslCipherSuiteWhitelist()
+	{
 		return instance.conf.getSsl().getSslCipherSuiteWhiteList();
 	}
-	
+
 	/**
 	 * Gets the path to the certificate file used for SSL comunications.
 	 * 
 	 * @return The path to the certificate file.
 	 * */
-	public static String getCertificateFile(){
+	public static String getCertificateFile()
+	{
 		return instance.conf.getSsl().getCertFile();
 	}
-	
+
 	/**
 	 * Gets the path to the private key file used for SSL comunications.
 	 * 
 	 * @return The path to the private key file.
 	 * */
-	public static String getKeyFile(){
+	public static String getKeyFile()
+	{
 		return instance.conf.getSsl().getKeyFile();
 	}
 
@@ -417,20 +424,24 @@ public class GcsInfo {
 		{
 			JAXBContext jc = JAXBContext.newInstance("pt.com.gcs.conf.agent");
 			Unmarshaller u = jc.createUnmarshaller();
-			
+
 			log.debug("******************Current path: {}***********************", Paths.get(".").toAbsolutePath().normalize().toString());
-			
+
 			URL fileUrl = getClass().getClassLoader().getResource(filePath);
 			File f = null;
-			if(fileUrl != null){
+			if (fileUrl != null)
+			{
 				f = new File(fileUrl.toURI());
-			} else {
+			}
+			else
+			{
 				f = new File(filePath);
-				if(!f.exists()){
+				if (!f.exists())
+				{
 					f = new File(Paths.get(".").resolve(filePath).toAbsolutePath().normalize().toString());
 				}
 			}
-			
+
 			boolean b = f.exists();
 			if (!b)
 			{

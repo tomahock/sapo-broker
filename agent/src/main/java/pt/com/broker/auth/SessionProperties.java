@@ -1,5 +1,7 @@
 package pt.com.broker.auth;
 
+import io.netty.channel.Channel;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -8,8 +10,6 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-
-import io.netty.channel.Channel;
 import pt.com.gcs.conf.global.ChannelType;
 
 /**

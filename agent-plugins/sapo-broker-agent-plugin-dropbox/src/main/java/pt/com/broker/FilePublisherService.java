@@ -5,17 +5,17 @@ import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.plugins.AgentPlugin;
 
 /**
- * Copyright (c) 2014, SAPO
- * All rights reserved.
+ * Copyright (c) 2014, SAPO All rights reserved.
  *
- * @see LICENSE.TXT
- * <p/>
- * Created by Luis Santos<luis.santos@telecom.pt> on 01-08-2014.
+ * @see LICENSE.TXT <p/>
+ *      Created by Luis Santos<luis.santos@telecom.pt> on 01-08-2014.
  */
-public class FilePublisherService implements AgentPlugin {
+public class FilePublisherService implements AgentPlugin
+{
 
-    @Override
-    public void start(Gcs gcs) {
-        FilePublisher.init();
-    }
+	@Override
+	public void start(Gcs gcs)
+	{
+		FilePublisher.init();
+	}
 }

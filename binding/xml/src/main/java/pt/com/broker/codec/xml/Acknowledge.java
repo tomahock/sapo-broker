@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Acknowledge")
 public class Acknowledge
 {
-    @XmlAttribute(name = "action-id")
+	@XmlAttribute(name = "action-id")
 	public String actionId;
 
-    @XmlElement(name = "DestinationName", required = true)
+	@XmlElement(name = "DestinationName", required = true)
 	public String destinationName;
 
-    @XmlElement(name = "MessageId",required = true)
+	@XmlElement(name = "MessageId", required = true)
 	public String messageId;
 }

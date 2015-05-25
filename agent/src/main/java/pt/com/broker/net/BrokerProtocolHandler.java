@@ -1,17 +1,22 @@
 package pt.com.broker.net;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Set;
-
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.internal.chmv8.ConcurrentHashMapV8;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +26,9 @@ import pt.com.broker.auth.AuthInfoVerifierFactory;
 import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.Session;
 import pt.com.broker.auth.SessionProperties;
+import pt.com.broker.codec.xml.SoapSerializer;
 import pt.com.broker.codec.xml.soap.FaultCode;
 import pt.com.broker.codec.xml.soap.SoapEnvelope;
-import pt.com.broker.codec.xml.SoapSerializer;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerConsumer;
 import pt.com.broker.messaging.BrokerProducer;
@@ -86,127 +91,126 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 	{
 	}
 
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception
+	{
+		super.channelActive(ctx);
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
+		Channel channel = ctx.channel();
 
-        Channel channel = ctx.channel();
+		try
+		{
+			if ((channel != null) && (channel.remoteAddress() != null))
+			{
+				String remoteClient = channel.remoteAddress().toString();
+				log.info("channel open: {}", remoteClient);
 
-        try
-        {
-            if ((channel != null) && (channel.remoteAddress() != null))
-            {
-                String remoteClient = channel.remoteAddress().toString();
-                log.info("channel open: {}", remoteClient);
+				if (open_channels.contains(remoteClient))
+				{
+					log.warn("There is already a registred ip:port bundle with the value '{}'. Check your network settings", remoteClient);
+				}
+				else
+				{
+					open_channels.add(remoteClient);
+				}
+			}
+		}
+		catch (Throwable t)
+		{
+			exceptionCaught(ctx, t, null);
+		}
 
-                if (open_channels.contains(remoteClient))
-                {
-                    log.warn("There is already a registred ip:port bundle with the value '{}'. Check your network settings", remoteClient);
-                }
-                else
-                {
-                    open_channels.add(remoteClient);
-                }
-            }
-        }
-        catch (Throwable t)
-        {
-            exceptionCaught(ctx, t, null);
-        }
+		if (log.isDebugEnabled() && channel.remoteAddress() != null)
+		{
+			log.debug("channel created: '{}'", channel.remoteAddress().toString());
+		}
 
-        if (log.isDebugEnabled() && channel.remoteAddress() != null)
-        {
-            log.debug("channel created: '{}'", channel.remoteAddress().toString());
-        }
+		// Get the SslHandler in the current pipeline.
+		// We added it in SecureChatPipelineFactory.
+		final SslHandler sslHandler = (SslHandler) ctx.pipeline().get("ssl");
 
-        // Get the SslHandler in the current pipeline.
-        // We added it in SecureChatPipelineFactory.
-        final SslHandler sslHandler = (SslHandler) ctx.pipeline().get("ssl");
+		// Get notified when SSL handshake is done.
+		if (sslHandler != null)
+		{
+			log.info("SSL handler not Null");
 
-        // Get notified when SSL handshake is done.
-        if (sslHandler != null)
-        {
-            log.info("SSL handler not Null");
+			Future handshakeFuture = sslHandler.handshakeFuture();
 
-            Future handshakeFuture = sslHandler.handshakeFuture();
+			handshakeFuture.addListener(new GenericFutureListener<Future<Channel>>()
+			{
 
-            handshakeFuture.addListener(  new GenericFutureListener<Future<Channel>>() {
+				@Override
+				public void operationComplete(Future<Channel> cf) throws Exception
+				{
+					{
+						Channel channel = cf.get();
 
+						if (cf.isSuccess())
+						{
+							log.info("SSL handshake complete.");
+						}
+						else
+						{
 
-                    @Override
-                    public void operationComplete(Future<Channel> cf) throws Exception {
-                    {
-                        Channel channel = cf.get();
+							if (channel == null)
+							{
+								log.info("SSL handshake failled.");
+								return;
+							}
 
-                        if (cf.isSuccess())
-                        {
-                            log.info("SSL handshake complete.");
-                        }
-                        else
-                        {
+							try
+							{
+								String remoteClient = channel.remoteAddress() != null ? channel.remoteAddress().toString() : "(unknown client)";
+								log.info("SSL handshake failled, client: '{}'", remoteClient);
 
+								// String client = channel.
 
-                            if (channel == null)
-                            {
-                                log.info("SSL handshake failled.");
-                                return;
-                            }
+								// Publish fault message
+								NetFault fault = new NetFault("CODE:99999", "SSL handshake failled");
+								fault.setActionId("99999");
 
-                            try
-                            {
-                                String remoteClient = channel.remoteAddress() != null ? channel.remoteAddress().toString() : "(unknown client)";
-                                log.info("SSL handshake failled, client: '{}'", remoteClient);
+								NetAction action = new NetAction(ActionType.FAULT);
+								action.setFaultMessage(fault);
 
-                                // String client = channel.
+								NetMessage ex_msg = new NetMessage(action, null);
 
-                                // Publish fault message
-                                NetFault fault = new NetFault("CODE:99999", "SSL handshake failled");
-                                fault.setActionId("99999");
+								if (channel.isActive())
+								{
+									channel.writeAndFlush(ex_msg).addListener(ChannelFutureListener.CLOSE);
+								}
+							}
+							catch (Throwable t)
+							{
+								log.error("Error writing 'SSL handshake failled' message");
+							}
+						}
+					}
+				}
 
-                                NetAction action = new NetAction(ActionType.FAULT);
-                                action.setFaultMessage(fault);
+			});
 
-                                NetMessage ex_msg = new NetMessage(action, null);
+			MiscStats.newSslConnection();
+		}
+		else
+		{
+			int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
+			if (port == GcsInfo.getBrokerPort())
+			{
+				MiscStats.newTcpConnection();
+			}
+			else if (port == GcsInfo.getBrokerLegacyPort())
+			{
+				MiscStats.newTcpLegacyConnection();
+			}
+		}
+	}
 
-                                if (channel.isActive())
-                                {
-                                    channel.writeAndFlush(ex_msg).addListener(ChannelFutureListener.CLOSE);
-                                }
-                            }
-                            catch (Throwable t)
-                            {
-                                log.error("Error writing 'SSL handshake failled' message");
-                            }
-                        }
-                    }
-                }
-
-            });
-
-            MiscStats.newSslConnection();
-        }
-        else
-        {
-            int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
-            if (port == GcsInfo.getBrokerPort())
-            {
-                MiscStats.newTcpConnection();
-            }
-            else if (port == GcsInfo.getBrokerLegacyPort())
-            {
-                MiscStats.newTcpLegacyConnection();
-            }
-        }
-    }
-
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
-        handleChannelClosed(ctx);
-    }
-
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception
+	{
+		super.channelInactive(ctx);
+		handleChannelClosed(ctx);
+	}
 
 	private void handleChannelClosed(ChannelHandlerContext ctx)
 	{
@@ -249,12 +253,12 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		}
 	}
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+	{
 
-        exceptionCaught(ctx, cause, null);
-    }
-
+		exceptionCaught(ctx, cause, null);
+	}
 
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause, String actionId)
 	{
@@ -353,21 +357,18 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		}
 	}
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, NetMessage netMessage) throws Exception {
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, NetMessage netMessage) throws Exception
+	{
 
+		if (!(netMessage instanceof NetMessage))
+		{
+			log.error("Unknown message type,  Channel: '{}'", channelHandlerContext.channel().remoteAddress().toString());
+			return;
+		}
 
-        if (!(netMessage instanceof NetMessage))
-        {
-            log.error("Unknown message type,  Channel: '{}'", channelHandlerContext.channel().remoteAddress().toString());
-            return;
-        }
-
-
-        handleMessage(channelHandlerContext, netMessage);
-    }
-
-
+		handleMessage(channelHandlerContext, netMessage);
+	}
 
 	private void handleMessage(ChannelHandlerContext ctx, final NetMessage request)
 	{
@@ -377,29 +378,29 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		{
 			switch (request.getAction().getActionType())
 			{
-                case PUBLISH:
-                    handlePublishMessage(ctx, request);
-                    break;
-                case POLL:
-                    handlePollMessage(ctx, request);
-                    break;
-                case ACKNOWLEDGE:
-                    handleAcknowledeMessage(ctx, request);
-                    break;
-                case UNSUBSCRIBE:
-                    handleUnsubscribeMessage(ctx, request);
-                    break;
-                case SUBSCRIBE:
-                    handleSubscribeMessage(ctx, request);
-                    break;
-                case PING:
-                    handlePingMessage(ctx, request);
-                    break;
-                case AUTH:
-                    handleAuthMessage(ctx, request);
-                    break;
-                default:
-                    handleUnexpectedMessageType(ctx, request);
+			case PUBLISH:
+				handlePublishMessage(ctx, request);
+				break;
+			case POLL:
+				handlePollMessage(ctx, request);
+				break;
+			case ACKNOWLEDGE:
+				handleAcknowledeMessage(ctx, request);
+				break;
+			case UNSUBSCRIBE:
+				handleUnsubscribeMessage(ctx, request);
+				break;
+			case SUBSCRIBE:
+				handleSubscribeMessage(ctx, request);
+				break;
+			case PING:
+				handlePingMessage(ctx, request);
+				break;
+			case AUTH:
+				handleAuthMessage(ctx, request);
+				break;
+			default:
+				handleUnexpectedMessageType(ctx, request);
 			}
 		}
 		catch (Throwable t)
@@ -431,7 +432,7 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 			writeInvalidDestinationFault(channel, actionId, destination);
 			return;
 		}
-		//FIXME: This comparisson can be done in the above method isValidDestination
+		// FIXME: This comparisson can be done in the above method isValidDestination
 		if (StringUtils.contains(destination, "@"))
 		{
 			writeInvalidDestinationFault(channel, actionId, destination);
@@ -621,9 +622,6 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		channel.writeAndFlush(message);
 	}
 
-
-
-
 	private void handleAuthMessage(ChannelHandlerContext ctx, NetMessage request)
 	{
 		Channel channel = ctx.channel();
@@ -649,7 +647,7 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 
 		AuthInfoValidator validator = AuthInfoVerifierFactory.getValidator(info.getUserAuthenticationType());
 
-        log.debug("Auth ActionID : '{}' ",netAuthentication.getActionId());
+		log.debug("Auth ActionID : '{}' ", netAuthentication.getActionId());
 
 		if (validator == null)
 		{
@@ -661,25 +659,25 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		try
 		{
 			validateResult = validator.validate(info);
-            log.debug("Broker Authentication ok. Channel: '{}' ",channel.remoteAddress().toString());
+			log.debug("Broker Authentication ok. Channel: '{}' ", channel.remoteAddress().toString());
 		}
 		catch (Exception e)
 		{
-            NetMessage fault = NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error");
+			NetMessage fault = NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, "Internal Error");
 
-            fault.getAction().getFaultMessage().setActionId(netAuthentication.getActionId());
+			fault.getAction().getFaultMessage().setActionId(netAuthentication.getActionId());
 
-			channel.writeAndFlush(fault);//.addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(fault);// .addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 
 		if (!validateResult.areCredentialsValid())
 		{
-            NetMessage fault = NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure());
+			NetMessage fault = NetFault.getMessageFaultWithDetail(NetFault.AuthenticationFailedErrorMessage, validateResult.getReasonForFailure());
 
-            fault.getAction().getFaultMessage().setActionId(netAuthentication.getActionId());
+			fault.getAction().getFaultMessage().setActionId(netAuthentication.getActionId());
 
-			channel.writeAndFlush(fault);//.addListener(ChannelFutureListener.CLOSE);
+			channel.writeAndFlush(fault);// .addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 
@@ -689,11 +687,9 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 		plainSessionProps.setRoles(validateResult.getRoles());
 		plainSession.updateAcl();
 
-
-
 		if (netAuthentication.getActionId() != null)
 		{
-            log.debug("Sending Accepted: '{}' ",channel.remoteAddress().toString());
+			log.debug("Sending Accepted: '{}' ", channel.remoteAddress().toString());
 			sendAccepted(ctx, netAuthentication.getActionId());
 		}
 	}
@@ -739,7 +735,7 @@ public class BrokerProtocolHandler extends SimpleChannelInboundHandler<NetMessag
 			NetMessage message = new NetMessage(action, null);
 			channel.writeAndFlush(message);
 
-            log.debug("Accepted message sent '{}",actionId);
+			log.debug("Accepted message sent '{}", actionId);
 		}
 	}
 }

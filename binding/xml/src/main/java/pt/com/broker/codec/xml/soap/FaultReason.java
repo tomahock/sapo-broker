@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class FaultReason
 {
-    @XmlElement(name = "Text")
+	@XmlElement(name = "Text")
 	public String text;
 
 	public FaultReason()

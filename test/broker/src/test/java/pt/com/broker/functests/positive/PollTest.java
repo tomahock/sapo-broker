@@ -2,14 +2,13 @@ package pt.com.broker.functests.positive;
 
 import java.util.Arrays;
 
-import pt.com.broker.functests.Action;
-import pt.com.broker.functests.Consequence;
-import pt.com.broker.functests.helpers.BrokerTest;
 import org.caudexorigo.text.RandomStringUtils;
 
 import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.functests.Action;
+import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
-import pt.com.broker.functests.conf.ConfigurationInfo;
+import pt.com.broker.functests.helpers.BrokerTest;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
@@ -20,14 +19,14 @@ public class PollTest extends BrokerTest
 	private String baseName = RandomStringUtils.randomAlphanumeric(10);
 	private String queueName = String.format("/poll/%s", baseName);
 
+	public PollTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-    public PollTest(NetProtocolType protocolType) {
-        super(protocolType);
+		setName("Poll test");
+	}
 
-        setName("Poll test");
-    }
-
-    @Override
+	@Override
 	protected void build() throws Throwable
 	{
 		setAction(new Action("Poll Test", "Producer")
@@ -39,11 +38,10 @@ public class PollTest extends BrokerTest
 				try
 				{
 					BrokerClient bk = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-                    bk.connect();
+					bk.connect();
 					NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
 					bk.publish(brokerMessage, queueName, NetAction.DestinationType.QUEUE).get();
-
 
 					setDone(true);
 					setSucess(true);
@@ -65,15 +63,13 @@ public class PollTest extends BrokerTest
 				try
 				{
 					BrokerClient bk = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-                    bk.connect();
+					bk.connect();
 
-
-                    NetNotification msg = bk.poll(queueName);
-
+					NetNotification msg = bk.poll(queueName);
 
 					bk.acknowledge(msg).get();
 
-                    bk.close();
+					bk.close();
 
 					if (msg.getMessage() == null)
 					{

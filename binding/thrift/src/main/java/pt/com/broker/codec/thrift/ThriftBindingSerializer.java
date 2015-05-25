@@ -1,17 +1,33 @@
 package pt.com.broker.codec.thrift;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.caudexorigo.io.UnsynchronizedByteArrayOutputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.types.*;
-import pt.com.broker.types.stats.EncodingStats;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import pt.com.broker.types.BindingSerializer;
+import pt.com.broker.types.NetAccepted;
+import pt.com.broker.types.NetAcknowledge;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetAuthentication;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetMessage;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetPing;
+import pt.com.broker.types.NetPoll;
+import pt.com.broker.types.NetPong;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetPublish;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetUnsubscribe;
+import pt.com.broker.types.stats.EncodingStats;
 
 /**
  * Thrift utility class for encoding and decoding.

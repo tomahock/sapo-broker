@@ -1,9 +1,9 @@
 package pt.com.gcs.messaging;
 
-import org.caudexorigo.cryto.MD5;
-
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.caudexorigo.cryto.MD5;
 
 public class MessageId
 {

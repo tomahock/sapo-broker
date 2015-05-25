@@ -1,16 +1,17 @@
 package pt.com.broker.monitorization.collector;
 
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo;
 import pt.com.broker.monitorization.configuration.ConfigurationInfo.AgentInfo;
 import pt.com.broker.monitorization.db.StatisticsDB;
 import pt.com.broker.types.NetPong;
-
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class AgentStatusCollector
 {

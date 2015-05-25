@@ -1,22 +1,19 @@
 package pt.com.broker.codec;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pt.com.broker.codec.protobuf.JsonCodecForProtoBuf;
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
@@ -58,46 +55,45 @@ public class BrokerEncoderRouter extends MessageToMessageEncoder<NetMessage>
 		encoders.put(new Short((short) 3), new JsonCodecForProtoBuf());
 	}
 
-    @Override
-    protected void encode(ChannelHandlerContext ctx, NetMessage netMessage, List<Object> objects) throws Exception {
+	@Override
+	protected void encode(ChannelHandlerContext ctx, NetMessage netMessage, List<Object> objects) throws Exception
+	{
 
+		Channel channel = ctx.channel();
+		try
+		{
+			Short protocol_type = (Short) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "PROTOCOL_TYPE");
+			Short protocol_version = (Short) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "PROTOCOL_VERSION");
+			if (protocol_type == null)
+			{
+				log.error("No PROTOCOL_TYPE defined for this channel: '{}'", channel.toString());
 
-        Channel channel = ctx.channel();
-        try
-        {
-            Short protocol_type = (Short) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "PROTOCOL_TYPE");
-            Short protocol_version = (Short) ChannelAttributes.get(ChannelAttributes.getChannelId(ctx), "PROTOCOL_VERSION");
-            if (protocol_type == null)
-            {
-                log.error("No PROTOCOL_TYPE defined for this channel: '{}'", channel.toString());
+				return;
+			}
 
-                return;
-            }
+			BindingSerializer handler = encoders.get(protocol_type);
 
-            BindingSerializer handler = encoders.get(protocol_type);
+			if (handler == null)
+			{
+				throw new RuntimeException("Invalid protocol type: " + protocol_type);
+			}
 
-            if (handler == null)
-            {
-                throw new RuntimeException("Invalid protocol type: " + protocol_type);
-            }
+			byte[] bmsg = handler.marshal(netMessage);
 
-            byte[] bmsg = handler.marshal(netMessage);
+			ByteBuf out = channel.alloc().buffer(bmsg.length + 8);
+			out.writeShort(protocol_type);
+			out.writeShort(protocol_version);
+			out.writeInt(bmsg.length);
+			out.writeBytes(bmsg);
 
-            ByteBuf out = channel.alloc().buffer(bmsg.length + 8);
-            out.writeShort(protocol_type);
-            out.writeShort(protocol_version);
-            out.writeInt(bmsg.length);
-            out.writeBytes(bmsg);
+			objects.add(out);
+		}
+		catch (Throwable t)
+		{
+			Throwable r = ErrorAnalyser.findRootCause(t);
+			throw new IOException("Failed to encode message. Reason: " + r.getMessage());
+		}
 
-            objects.add(out);
-        }
-        catch (Throwable t)
-        {
-            Throwable r = ErrorAnalyser.findRootCause(t);
-            throw new IOException("Failed to encode message. Reason: " + r.getMessage());
-        }
-
-    }
-
+	}
 
 }

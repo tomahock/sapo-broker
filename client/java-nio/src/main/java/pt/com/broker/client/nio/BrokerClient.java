@@ -1,11 +1,7 @@
 package pt.com.broker.client.nio;
 
-
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.EventLoopGroup;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -70,173 +66,235 @@ import com.google.common.base.Preconditions;
  * @author vagrant
  * @version $Id: $Id
  */
-public class BrokerClient extends BaseClient implements Observer {
+public class BrokerClient extends BaseClient implements Observer
+{
 
-    private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);
+	private static final Logger log = LoggerFactory.getLogger(BrokerClient.class);
 
-    private ConsumerManager consumerManager;
+	private ConsumerManager consumerManager;
 
-    private PongConsumerManager pongConsumerManager;
+	private PongConsumerManager pongConsumerManager;
 
-    private PendingAcceptRequestsManager acceptRequestsManager;
+	private PendingAcceptRequestsManager acceptRequestsManager;
 
-    private ChannelInitializer channelInitializer;
-    
-    private List<ConnectionEventListener> connectionEventListeners;
-    
-    
-    //FIXME: change the number of threads. Can we use the Netty executors?
-    ExecutorService executorService = Executors.newFixedThreadPool(10);
+	private ChannelInitializer channelInitializer;
 
-    private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
-    private final CompletionService<HostInfo> unsubcribeService = new ExecutorCompletionService<HostInfo>(executorService);
+	private List<ConnectionEventListener> connectionEventListeners;
 
+	// FIXME: change the number of threads. Can we use the Netty executors?
+	ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-    /**
-     * <p>Constructor for BrokerClient.</p>
-     *
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     */
-    public BrokerClient(NetProtocolType ptype) {
-        super(ptype);
-    }
-    
-    public BrokerClient(NetProtocolType ptype, NettyContext nettyCtx) {
-        super(ptype, nettyCtx);
-    }
+	private final CompletionService<HostInfo> service = new ExecutorCompletionService<HostInfo>(executorService);
+	private final CompletionService<HostInfo> unsubcribeService = new ExecutorCompletionService<HostInfo>(executorService);
 
-    /**
-     * <p>Constructor for BrokerClient.</p>
-     *
-     * @param host a {@link java.lang.String} object.
-     * @param port a int.
-     * @param allocator a {@link io.netty.buffer.ByteBufAllocator} object. 
-     */
-    public BrokerClient(String host, int port) {
-        super(host, port);
-    }
-    
-    /**
-     * <p>Constructor for BrokerClient.</p>
-     *
-     * @param host a {@link java.lang.String} object.
-     * @param port a int.
-     */
-    public BrokerClient(String host, int port, NettyContext nettyCtx) {
-        super(host, port, nettyCtx);
-    }
+	/**
+	 * <p>
+	 * Constructor for BrokerClient.
+	 * </p>
+	 *
+	 * @param ptype
+	 *            a {@link pt.com.broker.types.NetProtocolType} object.
+	 */
+	public BrokerClient(NetProtocolType ptype)
+	{
+		super(ptype);
+	}
 
-    /**
-     * <p>Constructor for BrokerClient.</p>
-     *
-     * @param host a {@link java.lang.String} object.
-     * @param port a int.
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     */
-    public BrokerClient(String host, int port, NetProtocolType ptype) {
-        super(host, port, ptype);
-    }
-    
-    /**
-     * <p>Constructor for BrokerClient.</p>
-     *
-     * @param host a {@link java.lang.String} object.
-     * @param port a int.
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     * @param allocator a {@link io.netty.buffer.ByteBufAllocator} object.
-     */
-    public BrokerClient(String host, int port, NetProtocolType ptype, NettyContext nettyCtx) {
-        super(host, port, ptype, nettyCtx);
-    }
+	public BrokerClient(NetProtocolType ptype, NettyContext nettyCtx)
+	{
+		super(ptype, nettyCtx);
+	}
 
-    /**
-     * <p>Constructor for BrokerClient.</p>
-     *
-     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     */
-    public BrokerClient(HostInfo host, NetProtocolType ptype) {
-        super(host, ptype);
-    }
-    
-    /**
-     * <p>Constructor for BrokerClient.</p>
-     *
-     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     * @param allocator a {@link io.netty.buffer.ByteBufAllocator} object.
-     */   
-    
-    public BrokerClient(HostInfo host, NetProtocolType ptype, NettyContext nettyCtx) {
-        super(host, ptype, nettyCtx);
-    }
+	/**
+	 * <p>
+	 * Constructor for BrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link java.lang.String} object.
+	 * @param port
+	 *            a int.
+	 * @param allocator
+	 *            a {@link io.netty.buffer.ByteBufAllocator} object.
+	 */
+	public BrokerClient(String host, int port)
+	{
+		super(host, port);
+	}
 
+	/**
+	 * <p>
+	 * Constructor for BrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link java.lang.String} object.
+	 * @param port
+	 *            a int.
+	 */
+	public BrokerClient(String host, int port, NettyContext nettyCtx)
+	{
+		super(host, port, nettyCtx);
+	}
 
-    /**
-     * <p>init.</p>
-     */
-    protected void init(){
-    	//FIXME: The PongConsumerManager is always created new. Find a way to use the provided one.
-        setPongConsumerManager(new PongConsumerManager());
-        setConsumerManager(new ConsumerManager());
-        connectionEventListeners = new ArrayList<ConnectionEventListener>();
-        channelInitializer  = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager(), connectionEventListeners);
-        channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
-        setBootstrap(new Bootstrap(channelInitializer, getNettyContext()));
-        setAcceptRequestsManager(new PendingAcceptRequestsManager());
-        channelInitializer.setAcceptRequestsManager(getAcceptRequestsManager());
-        HostContainer hostContainer = new HostContainer(getBootstrap());
-        hostContainer.addObserver(this);
-        setHosts(hostContainer);
-    }
+	/**
+	 * <p>
+	 * Constructor for BrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link java.lang.String} object.
+	 * @param port
+	 *            a int.
+	 * @param ptype
+	 *            a {@link pt.com.broker.types.NetProtocolType} object.
+	 */
+	public BrokerClient(String host, int port, NetProtocolType ptype)
+	{
+		super(host, port, ptype);
+	}
 
+	/**
+	 * <p>
+	 * Constructor for BrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link java.lang.String} object.
+	 * @param port
+	 *            a int.
+	 * @param ptype
+	 *            a {@link pt.com.broker.types.NetProtocolType} object.
+	 * @param allocator
+	 *            a {@link io.netty.buffer.ByteBufAllocator} object.
+	 */
+	public BrokerClient(String host, int port, NetProtocolType ptype, NettyContext nettyCtx)
+	{
+		super(host, port, ptype, nettyCtx);
+	}
 
+	/**
+	 * <p>
+	 * Constructor for BrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link pt.com.broker.client.nio.server.HostInfo} object.
+	 * @param ptype
+	 *            a {@link pt.com.broker.types.NetProtocolType} object.
+	 */
+	public BrokerClient(HostInfo host, NetProtocolType ptype)
+	{
+		super(host, ptype);
+	}
 
-	/** {@inheritDoc} 
-     * @throws UnavailableAgentException */
-    public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException {
-        return publish(brokerMessage.getBytes(Charset.forName("UTF-8")), destinationName, dtype);
-    }
+	/**
+	 * <p>
+	 * Constructor for BrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link pt.com.broker.client.nio.server.HostInfo} object.
+	 * @param ptype
+	 *            a {@link pt.com.broker.types.NetProtocolType} object.
+	 * @param allocator
+	 *            a {@link io.netty.buffer.ByteBufAllocator} object.
+	 */
 
-    /** {@inheritDoc} 
-     * @throws UnavailableAgentException */
-    public Future<HostInfo> publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException {
+	public BrokerClient(HostInfo host, NetProtocolType ptype, NettyContext nettyCtx)
+	{
+		super(host, ptype, nettyCtx);
+	}
 
-        NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
+	/**
+	 * <p>
+	 * init.
+	 * </p>
+	 */
+	protected void init()
+	{
+		// FIXME: The PongConsumerManager is always created new. Find a way to use the provided one.
+		setPongConsumerManager(new PongConsumerManager());
+		setConsumerManager(new ConsumerManager());
+		connectionEventListeners = new ArrayList<ConnectionEventListener>();
+		channelInitializer = new ChannelInitializer(getSerializer(), getConsumerManager(), getPongConsumerManager(), connectionEventListeners);
+		channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
+		setBootstrap(new Bootstrap(channelInitializer, getNettyContext()));
+		setAcceptRequestsManager(new PendingAcceptRequestsManager());
+		channelInitializer.setAcceptRequestsManager(getAcceptRequestsManager());
+		HostContainer hostContainer = new HostContainer(getBootstrap());
+		hostContainer.addObserver(this);
+		setHosts(hostContainer);
+	}
 
-        return publish(msg, destinationName, dtype);
-    }
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws UnavailableAgentException
+	 */
+	public Future<HostInfo> publish(String brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException
+	{
+		return publish(brokerMessage.getBytes(Charset.forName("UTF-8")), destinationName, dtype);
+	}
 
-    /** {@inheritDoc} 
-     * @throws UnavailableAgentException */
-    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) throws UnavailableAgentException {
-        return publish(brokerMessage, destination, dtype, null);
-    }
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws UnavailableAgentException
+	 */
+	public Future<HostInfo> publish(byte[] brokerMessage, String destinationName, NetAction.DestinationType dtype) throws UnavailableAgentException
+	{
 
-    /**
-     * <p>publish.</p>
-     *
-     * @param brokerMessage a {@link pt.com.broker.types.NetBrokerMessage} object.
-     * @param destination a {@link java.lang.String} object.
-     * @param dtype a {@link pt.com.broker.types.NetAction.DestinationType} object.
-     * @param request a {@link pt.com.broker.client.nio.AcceptRequest} object.
-     * @return a {@link java.util.concurrent.Future} object.
-     * @throws java.lang.NullPointerException if the brokerMessage is null.
-     * @throws java.lang.IllegalArgumentException if the destination is null or empty.
-     */
-    public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype, AcceptRequest request) throws UnavailableAgentException {
-    	Preconditions.checkNotNull(brokerMessage, "brokerMessage cannot be null.");
-    	Preconditions.checkArgument(StringUtils.isNotBlank(destination), "destination cannot be null or empty");
-    	//Check if there are available agents
-    	if(getHosts().getAvailableHost() == null){
-    		throw new UnavailableAgentException();
-    	}
-        NetPublish publish = new NetPublish(destination, dtype, brokerMessage);
+		NetBrokerMessage msg = new NetBrokerMessage(brokerMessage);
 
-        if(request!=null){
-            publish.setActionId(request.getActionId());
-            addAcceptMessageHandler(request);
-        }
+		return publish(msg, destinationName, dtype);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws UnavailableAgentException
+	 */
+	public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype) throws UnavailableAgentException
+	{
+		return publish(brokerMessage, destination, dtype, null);
+	}
+
+	/**
+	 * <p>
+	 * publish.
+	 * </p>
+	 *
+	 * @param brokerMessage
+	 *            a {@link pt.com.broker.types.NetBrokerMessage} object.
+	 * @param destination
+	 *            a {@link java.lang.String} object.
+	 * @param dtype
+	 *            a {@link pt.com.broker.types.NetAction.DestinationType} object.
+	 * @param request
+	 *            a {@link pt.com.broker.client.nio.AcceptRequest} object.
+	 * @return a {@link java.util.concurrent.Future} object.
+	 * @throws java.lang.NullPointerException
+	 *             if the brokerMessage is null.
+	 * @throws java.lang.IllegalArgumentException
+	 *             if the destination is null or empty.
+	 */
+	public Future<HostInfo> publish(NetBrokerMessage brokerMessage, String destination, NetAction.DestinationType dtype, AcceptRequest request) throws UnavailableAgentException
+	{
+		Preconditions.checkNotNull(brokerMessage, "brokerMessage cannot be null.");
+		Preconditions.checkArgument(StringUtils.isNotBlank(destination), "destination cannot be null or empty");
+		// Check if there are available agents
+		if (getHosts().getAvailableHost() == null)
+		{
+			throw new UnavailableAgentException();
+		}
+		NetPublish publish = new NetPublish(destination, dtype, brokerMessage);
+
+		if (request != null)
+		{
+			publish.setActionId(request.getActionId());
+			addAcceptMessageHandler(request);
+		}
 
 		NetAction action = new NetAction(publish);
 

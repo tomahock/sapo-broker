@@ -1,20 +1,19 @@
 package pt.com.broker.auth.saposts;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.auth.AuthInfo;
 import pt.com.broker.auth.AuthInfoValidator;
 import pt.com.broker.auth.AuthValidationResult;
 import pt.com.broker.auth.ProviderInfo;
-import pt.sapo.services.definitions.ESBCredentials;
-import pt.sapo.services.definitions.STSSoapSecure;
 import pt.sapo.services.definitions.UserInfo;
-
-import javax.xml.ws.soap.SOAPFaultException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * SapoSTSAuthInfoValidator implements AuthInfoValidator in order to provide Sapo STS based authentication, that is, given a Sapo STS token it extracts the associated user roles.
@@ -24,7 +23,7 @@ import java.util.List;
 public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 {
 
-    private static final Logger log = LoggerFactory.getLogger(SapoSTSAuthInfoValidator.class);
+	private static final Logger log = LoggerFactory.getLogger(SapoSTSAuthInfoValidator.class);
 
 	public static class SapoSTSAuthValidationResult implements AuthValidationResult
 	{
@@ -65,99 +64,97 @@ public class SapoSTSAuthInfoValidator implements AuthInfoValidator
 
 	private static final SapoSTSAuthValidationResult internalError = new SapoSTSAuthValidationResult("Internal error");
 
-    private SapoSTSService service;
+	private SapoSTSService service;
 
+	protected List<String> extractRoles(UserInfo userInfo)
+	{
 
-    protected List<String> extractRoles(UserInfo userInfo){
+		if (userInfo.getESBRoles() != null && userInfo.getESBRoles().getESBRole() != null)
+		{
+			return userInfo.getESBRoles().getESBRole();
+		}
 
-        if(userInfo.getESBRoles()!=null && userInfo.getESBRoles().getESBRole()!=null){
-            return userInfo.getESBRoles().getESBRole();
-        }
-
-        return new ArrayList<String>(1);
-    }
+		return new ArrayList<String>(1);
+	}
 
 	@Override
 	public AuthValidationResult validate(AuthInfo clientAuthInfo) throws Exception
 	{
 
-        SapoSTSAuthValidationResult avr;
+		SapoSTSAuthValidationResult avr;
 
-        try {
+		try
+		{
 
-            UserInfo userInfo = authenticate(new String(clientAuthInfo.getToken(), "UTF-8"),clientAuthInfo.getUserId());
+			UserInfo userInfo = authenticate(new String(clientAuthInfo.getToken(), "UTF-8"), clientAuthInfo.getUserId());
 
-            avr = new SapoSTSAuthValidationResult(extractRoles(userInfo));
+			avr = new SapoSTSAuthValidationResult(extractRoles(userInfo));
 
-        }catch (SOAPFaultException fault){
+		}
+		catch (SOAPFaultException fault)
+		{
 
-            fault.printStackTrace();
+			fault.printStackTrace();
 
-            avr = new SapoSTSAuthValidationResult(SapoSTSCodeErrors.getErrorDescription(fault.getMessage()));
+			avr = new SapoSTSAuthValidationResult(SapoSTSCodeErrors.getErrorDescription(fault.getMessage()));
 
-        }catch (Throwable e){
+		}
+		catch (Throwable e)
+		{
 
-            e.printStackTrace();
+			e.printStackTrace();
 
-            log.debug("Auth Error: {}",e.getMessage(),e);
+			log.debug("Auth Error: {}", e.getMessage(), e);
 
-            return internalError;
-        }
+			return internalError;
+		}
 
-
-
-        return avr;
-
+		return avr;
 
 	}
 
 	@Override
 	public boolean init(ProviderInfo info)
 	{
-        service = new SapoSTSService();
+		service = new SapoSTSService();
 
-        return service.start(info);
+		return service.start(info);
 	}
 
-    protected boolean safeCompare(String stringA , String stringB){
+	protected boolean safeCompare(String stringA, String stringB)
+	{
 
-            byte[] a = stringA.getBytes(Charset.forName("UTF-8"));
-            byte[] b = stringB.getBytes(Charset.forName("UTF-8"));
+		byte[] a = stringA.getBytes(Charset.forName("UTF-8"));
+		byte[] b = stringB.getBytes(Charset.forName("UTF-8"));
 
+		if (a.length != b.length)
+		{
+			return false;
+		}
 
-            if (a.length != b.length) {
-                return false;
-            }
+		int result = 0;
+		for (int i = 0; i < a.length; i++)
+		{
+			result |= a[i] ^ b[i];
+		}
 
-            int result = 0;
-            for (int i = 0; i < a.length; i++) {
-                result |= a[i] ^ b[i];
-            }
+		return result == 0;
 
-            return result == 0;
+	}
 
-    }
+	protected UserInfo authenticate(String token, String usernameOrEmail) throws Exception
+	{
 
-    protected UserInfo authenticate(String token, String usernameOrEmail) throws Exception {
+		UserInfo userInfoAuth = service.getUserInfo(token);
 
-        UserInfo userInfoAuth = service.getUserInfo(token);
+		UserInfo userInfoDetails = service.getPrimaryIdDetails(usernameOrEmail);
 
-        UserInfo userInfoDetails = service.getPrimaryIdDetails(usernameOrEmail);
+		if (!safeCompare(userInfoAuth.getPrimaryId(), userInfoDetails.getPrimaryId()))
+		{
+			throw new Exception("Invalid credenctials");
+		}
 
-        if(!safeCompare(userInfoAuth.getPrimaryId(), userInfoDetails.getPrimaryId())){
-            throw new Exception("Invalid credenctials");
-        }
-
-
-        return userInfoDetails;
-    }
-
-
-
-
-
-
-
-
+		return userInfoDetails;
+	}
 
 }

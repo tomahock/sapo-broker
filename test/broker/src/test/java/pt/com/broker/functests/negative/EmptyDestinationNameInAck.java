@@ -10,10 +10,11 @@ import pt.com.broker.types.NetProtocolType;
 public class EmptyDestinationNameInAck extends GenericNetMessageNegativeTest
 {
 
-    public EmptyDestinationNameInAck(NetProtocolType protocolType) {
-        super(protocolType);
+	public EmptyDestinationNameInAck(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("Empty destination name in ack");
+		setName("Empty destination name in ack");
 
 		NetAcknowledge netAcknowledge = new NetAcknowledge("", "This is a fake action id.");
 		NetAction action = new NetAction(ActionType.ACKNOWLEDGE);

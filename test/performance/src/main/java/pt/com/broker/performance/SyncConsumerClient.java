@@ -1,11 +1,11 @@
 package pt.com.broker.performance;
 
-import pt.com.broker.client.BrokerClient;
-import pt.com.broker.types.NetNotification;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import pt.com.broker.client.BrokerClient;
+import pt.com.broker.types.NetNotification;
 
 public class SyncConsumerClient implements Runnable
 {

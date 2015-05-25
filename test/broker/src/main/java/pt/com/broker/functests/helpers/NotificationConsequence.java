@@ -1,16 +1,16 @@
 package pt.com.broker.functests.helpers;
 
+import java.util.Arrays;
+
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.types.NetAction;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetNotification;
 
-import java.util.Arrays;
-
 public class NotificationConsequence extends Consequence
 {
-    private NetNotification[] notifications;
+	private NetNotification[] notifications;
 
 	// Comparation fields
 	private String destination;
@@ -27,19 +27,21 @@ public class NotificationConsequence extends Consequence
 	public Step run() throws Exception
 	{
 
-        Thread.sleep(1000);
+		Thread.sleep(1000);
 
-        NetNotification netNotification = null;
+		NetNotification netNotification = null;
 
-        synchronized (notifications) {
-             netNotification = notifications[0];
-        }
+		synchronized (notifications)
+		{
+			netNotification = notifications[0];
+		}
 
-        if(netNotification == null){
-            setDone(true);
-            setSucess(false);
-            return this;
-        }
+		if (netNotification == null)
+		{
+			setDone(true);
+			setSucess(false);
+			return this;
+		}
 
 		if (destinationType != null)
 		{

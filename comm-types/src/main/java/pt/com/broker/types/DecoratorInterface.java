@@ -6,13 +6,16 @@ package pt.com.broker.types;
  * @author vagrant
  * @version $Id: $Id
  */
-public interface DecoratorInterface<T>  {
+public interface DecoratorInterface<T>
+{
 
-    /**
-     * <p>getInstance.</p>
-     *
-     * @return a T object.
-     */
-    public T getInstance();
+	/**
+	 * <p>
+	 * getInstance.
+	 * </p>
+	 *
+	 * @return a T object.
+	 */
+	public T getInstance();
 
 }

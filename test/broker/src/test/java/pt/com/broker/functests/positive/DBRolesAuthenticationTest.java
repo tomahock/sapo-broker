@@ -1,10 +1,10 @@
 package pt.com.broker.functests.positive;
 
-import pt.com.broker.functests.helpers.GenericPubSubTest;
 import org.caudexorigo.concurrent.Sleep;
+
 import pt.com.broker.client.nio.SslBrokerClient;
 import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.functests.helpers.BrokerTest;
+import pt.com.broker.functests.helpers.GenericPubSubTest;
 import pt.com.broker.types.NetProtocolType;
 
 /* TODO TEMP CHANGE brsantos */
@@ -15,9 +15,10 @@ import pt.com.broker.types.NetProtocolType;
 public class DBRolesAuthenticationTest extends GenericPubSubTest
 {
 
-    public DBRolesAuthenticationTest(NetProtocolType protocolType) {
-        super(protocolType);
-        setName("PubSub - Database authentication");
+	public DBRolesAuthenticationTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
+		setName("PubSub - Database authentication");
 		setDestinationName("/secret/foo");
 		setSubscriptionName("/secret/foo");
 		if (!skipTest())
@@ -48,12 +49,13 @@ public class DBRolesAuthenticationTest extends GenericPubSubTest
 				SslBrokerClient bk = (SslBrokerClient) getInfoConsumer();
 
 				/* TODO TEMP CHANGE brsantos */
-				/*CredentialsProvider cp = new JdbcProvider(username, password);
-
-				bk.setCredentialsProvider(cp);
-
-				bk.authenticateClient();
-				*/
+				/*
+				 * CredentialsProvider cp = new JdbcProvider(username, password);
+				 * 
+				 * bk.setCredentialsProvider(cp);
+				 * 
+				 * bk.authenticateClient();
+				 */
 				/* TEMP CHANGE brsantos */
 
 				Sleep.time(1000);

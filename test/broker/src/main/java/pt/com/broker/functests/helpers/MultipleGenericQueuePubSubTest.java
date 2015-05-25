@@ -1,7 +1,6 @@
 package pt.com.broker.functests.helpers;
 
 import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetProtocolType;
 
@@ -9,10 +8,11 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 {
 	private int consumerNotifications = 0;
 
-    public MultipleGenericQueuePubSubTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public MultipleGenericQueuePubSubTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("MultipleGenericQueuePubSubTest");
+		setName("MultipleGenericQueuePubSubTest");
 
 		setDestinationType(DestinationType.QUEUE);
 		setConsumerDestinationType(DestinationType.QUEUE);
@@ -25,7 +25,7 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 			TestClientInfo tci = new TestClientInfo();
 
 			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-            tci.brokerClient.connect();
+			tci.brokerClient.connect();
 
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), getConsumerNotifications());
 			tci.numberOfExecutions = getConsumerNotifications();
@@ -46,7 +46,7 @@ public class MultipleGenericQueuePubSubTest extends MultipleGenericPubSubTest
 			TestClientInfo tci = new TestClientInfo();
 
 			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), getEncodingProtocolType());
-            tci.brokerClient.connect();
+			tci.brokerClient.connect();
 
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;

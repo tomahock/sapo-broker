@@ -1,8 +1,14 @@
 package pt.com.broker.client.nio.consumer;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 
 import pt.com.broker.client.nio.events.AcceptResponseListener;
 import pt.com.broker.client.nio.events.BrokerListener;
@@ -10,9 +16,7 @@ import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.types.ActionIdDecorator;
 import pt.com.broker.types.NetMessage;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.*;
+import com.google.common.base.Preconditions;
 
 /**
  * Created by luissantos on 09-05-2014.
@@ -20,175 +24,210 @@ import java.util.concurrent.*;
  * @author vagrant
  * @version $Id: $Id
  */
-public class PendingAcceptRequestsManager {
+public class PendingAcceptRequestsManager
+{
 
+	private final Map<String, BrokerListener> requests = new HashMap<String, BrokerListener>();
 
-    private final Map<String, BrokerListener> requests = new HashMap<String, BrokerListener>();
+	private final ScheduledExecutorService schedule = Executors.newScheduledThreadPool(2);
 
-    private final ScheduledExecutorService schedule = Executors.newScheduledThreadPool(2);
+	private final Map<String, ScheduledFuture> schedules = new HashMap<String, ScheduledFuture>();
 
-    private final Map<String, ScheduledFuture> schedules = new HashMap<String, ScheduledFuture>();
+	/**
+	 * <p>
+	 * Constructor for PendingAcceptRequestsManager.
+	 * </p>
+	 */
+	public PendingAcceptRequestsManager()
+	{
 
+	}
 
+	/**
+	 * <p>
+	 * addAcceptRequest.
+	 * </p>
+	 *
+	 * @param actionID
+	 *            a {@link java.lang.String} object.
+	 * @param timeout
+	 *            a long.
+	 * @param listener
+	 *            a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+	 * @throws Exception
+	 */
+	public void addAcceptRequest(final String actionID, long timeout, BrokerListener listener) throws Exception
+	{
+		Preconditions.checkArgument(StringUtils.isNotEmpty(actionID), "Invalid actionID");
 
-    /**
-     * <p>Constructor for PendingAcceptRequestsManager.</p>
-     */
-    public PendingAcceptRequestsManager() {
+		synchronized (requests)
+		{
 
-    }
+			if (requests.containsKey(actionID))
+			{
+				throw new Exception("ActionID already registered");
+			}
 
-    /**
-     * <p>addAcceptRequest.</p>
-     *
-     * @param actionID a {@link java.lang.String} object.
-     * @param timeout a long.
-     * @param listener a {@link pt.com.broker.client.nio.events.BrokerListener} object.
-     * @throws Exception
-     */
-    public void addAcceptRequest(final String actionID, long timeout , BrokerListener listener) throws Exception {
-    	Preconditions.checkArgument(StringUtils.isNotEmpty(actionID), "Invalid actionID");
+			requests.put(actionID, listener);
 
-        synchronized (requests){
+			Runnable command = new Runnable()
+			{
 
-            if(requests.containsKey(actionID)){
-                throw new Exception("ActionID already registered");
-            }
+				@Override
+				public void run()
+				{
 
-            requests.put(actionID, listener);
+					synchronized (requests)
+					{
 
-            Runnable command = new Runnable(){
+						AcceptResponseListener _listener = (AcceptResponseListener) getListener(actionID);
 
-                @Override
-                public void run() {
+						if (_listener != null)
+						{
 
-                    synchronized (requests) {
+							removeAcceptRequest(actionID);
 
-                        AcceptResponseListener _listener = (AcceptResponseListener) getListener(actionID);
+							_listener.onTimeout(actionID);
+						}
 
-                        if(_listener!=null) {
+					}
 
-                            removeAcceptRequest(actionID);
+				}
+			};
 
-                            _listener.onTimeout(actionID);
-                        }
+			ScheduledFuture f = schedule.schedule(command, timeout, TimeUnit.MILLISECONDS);
 
-                    }
+			schedules.put(actionID, f);
 
-                }
-            };
+		}
 
-            ScheduledFuture f = schedule.schedule(command,timeout, TimeUnit.MILLISECONDS);
+	}
 
-            schedules.put(actionID, f);
+	/**
+	 * <p>
+	 * removeAcceptRequest.
+	 * </p>
+	 *
+	 * @param actionID
+	 *            a {@link java.lang.String} object.
+	 * @return a {@link pt.com.broker.client.nio.events.AcceptResponseListener} object.
+	 */
+	public AcceptResponseListener removeAcceptRequest(String actionID)
+	{
 
-        }
+		AcceptResponseListener b = (AcceptResponseListener) requests.remove(actionID);
 
-    }
+		if (b != null)
+		{
+			cancelTimeout(actionID);
+		}
 
+		return b;
+	}
 
-    /**
-     * <p>removeAcceptRequest.</p>
-     *
-     * @param actionID a {@link java.lang.String} object.
-     * @return a {@link pt.com.broker.client.nio.events.AcceptResponseListener} object.
-     */
-    public AcceptResponseListener removeAcceptRequest(String actionID){
+	/**
+	 * <p>
+	 * getListener.
+	 * </p>
+	 *
+	 * @param actionID
+	 *            a {@link java.lang.String} object.
+	 * @return a {@link pt.com.broker.client.nio.events.BrokerListener} object.
+	 */
+	public BrokerListener getListener(String actionID)
+	{
 
-        AcceptResponseListener b = (AcceptResponseListener) requests.remove(actionID);
+		return requests.get(actionID);
 
-        if(b!=null){
-            cancelTimeout(actionID);
-        }
+	}
 
+	/**
+	 * <p>
+	 * cancelTimeout.
+	 * </p>
+	 *
+	 * @param actionID
+	 *            a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
+	protected boolean cancelTimeout(String actionID)
+	{
 
-        return b;
-    }
+		boolean cancel_return = false;
 
+		synchronized (schedules)
+		{
 
-    /**
-     * <p>getListener.</p>
-     *
-     * @param actionID a {@link java.lang.String} object.
-     * @return a {@link pt.com.broker.client.nio.events.BrokerListener} object.
-     */
-    public BrokerListener getListener(String actionID){
+			Future f = schedules.get(actionID);
 
-        return requests.get(actionID);
+			if (f != null)
+			{
+				cancel_return = f.cancel(false);
+			}
 
-    }
+			schedules.remove(actionID);
+		}
 
-    /**
-     * <p>cancelTimeout.</p>
-     *
-     * @param actionID a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    protected boolean cancelTimeout(String actionID){
+		return cancel_return;
+	}
 
-        boolean cancel_return = false;
+	/**
+	 * <p>
+	 * deliverMessage.
+	 * </p>
+	 *
+	 * @param netMessage
+	 *            a {@link pt.com.broker.types.NetMessage} object.
+	 * @param host
+	 *            a {@link pt.com.broker.client.nio.server.HostInfo} object.
+	 * @throws java.lang.Exception
+	 *             if any.
+	 */
+	public void deliverMessage(NetMessage netMessage, HostInfo host) throws Exception
+	{
 
-        synchronized (schedules){
+		ActionIdDecorator decorator = new ActionIdDecorator(netMessage);
 
-            Future f = schedules.get(actionID);
+		String actionID = decorator.getActionId();
 
-            if(f!=null){
-                cancel_return = f.cancel(false);
-            }
+		if (StringUtils.isEmpty(actionID))
+		{
 
-            schedules.remove(actionID);
-        }
+			throw new Exception("Invalid actionID");
 
-        return cancel_return;
-    }
+		}
 
+		synchronized (requests)
+		{
 
-    /**
-     * <p>deliverMessage.</p>
-     *
-     * @param netMessage a {@link pt.com.broker.types.NetMessage} object.
-     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
-     * @throws java.lang.Exception if any.
-     */
-    public void deliverMessage(NetMessage netMessage, HostInfo host) throws Exception {
+			BrokerListener listener = getListener(actionID);
 
-        ActionIdDecorator decorator = new ActionIdDecorator(netMessage);
+			if (listener != null)
+			{
 
-        String actionID = decorator.getActionId();
+				try
+				{
 
-        if(StringUtils.isEmpty(actionID)){
+					listener.deliverMessage(netMessage, host);
 
-            throw new Exception("Invalid actionID");
+					// @TODO remove or not remove
+					removeAcceptRequest(actionID);
 
-        }
+				}
+				catch (Throwable throwable)
+				{
 
-        synchronized (requests) {
+					throwable.printStackTrace();
 
-            BrokerListener listener = getListener(actionID);
+				}
 
-            if (listener != null) {
+			}
+			else
+			{
+				// @todo log information
+			}
+		}
 
-                try {
-
-                    listener.deliverMessage(netMessage,host);
-
-                    // @TODO remove or not remove
-                    removeAcceptRequest(actionID);
-
-                } catch (Throwable throwable) {
-
-                    throwable.printStackTrace();
-
-                }
-
-
-            }else
-            {
-                //@todo log information
-            }
-        }
-
-
-    }
+	}
 
 }

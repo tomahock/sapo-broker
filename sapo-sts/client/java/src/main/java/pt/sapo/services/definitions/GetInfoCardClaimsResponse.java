@@ -1,4 +1,3 @@
-
 package pt.sapo.services.definitions;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -7,11 +6,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -29,36 +29,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "getInfoCardClaimsResult"
+		"getInfoCardClaimsResult"
 })
 @XmlRootElement(name = "GetInfoCardClaimsResponse")
-public class GetInfoCardClaimsResponse {
+public class GetInfoCardClaimsResponse
+{
 
-    @XmlElement(name = "GetInfoCardClaimsResult")
-    protected Claims getInfoCardClaimsResult;
+	@XmlElement(name = "GetInfoCardClaimsResult")
+	protected Claims getInfoCardClaimsResult;
 
-    /**
-     * Gets the value of the getInfoCardClaimsResult property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Claims }
-     *     
-     */
-    public Claims getGetInfoCardClaimsResult() {
-        return getInfoCardClaimsResult;
-    }
+	/**
+	 * Gets the value of the getInfoCardClaimsResult property.
+	 * 
+	 * @return possible object is {@link Claims }
+	 * 
+	 */
+	public Claims getGetInfoCardClaimsResult()
+	{
+		return getInfoCardClaimsResult;
+	}
 
-    /**
-     * Sets the value of the getInfoCardClaimsResult property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Claims }
-     *     
-     */
-    public void setGetInfoCardClaimsResult(Claims value) {
-        this.getInfoCardClaimsResult = value;
-    }
+	/**
+	 * Sets the value of the getInfoCardClaimsResult property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Claims }
+	 * 
+	 */
+	public void setGetInfoCardClaimsResult(Claims value)
+	{
+		this.getInfoCardClaimsResult = value;
+	}
 
 }

@@ -1,16 +1,18 @@
 package pt.com.broker.performance.distributed.conf;
 
-import org.caudexorigo.Shutdown;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.com.broker.performance.distributed.conf.Agents.Agent;
-import pt.com.broker.types.NetProtocolType;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
+import org.caudexorigo.Shutdown;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.performance.distributed.conf.Agents.Agent;
+import pt.com.broker.types.NetProtocolType;
 
 public class ConfigurationInfo
 {

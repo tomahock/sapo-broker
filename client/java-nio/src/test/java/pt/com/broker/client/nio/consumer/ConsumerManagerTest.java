@@ -1,161 +1,155 @@
 package pt.com.broker.client.nio.consumer;
 
-
 import org.junit.Assert;
 import org.junit.Test;
+
 import pt.com.broker.client.nio.BaseTest;
 import pt.com.broker.client.nio.events.BrokerListener;
 import pt.com.broker.client.nio.events.NotificationListenerAdapter;
 import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.types.*;
+import pt.com.broker.types.NetAction;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetPoll;
+import pt.com.broker.types.NetSubscribe;
+import pt.com.broker.types.NetSubscribeAction;
 
 /**
  * Created by luissantos on 08-05-2014.
  */
-public class ConsumerManagerTest extends BaseTest {
+public class ConsumerManagerTest extends BaseTest
+{
 
+	@Test()
+	public void testNetPoolAddedAsQueue()
+	{
 
+		ConsumerManager consumerManager = new ConsumerManager();
 
-    @Test()
-    public void testNetPoolAddedAsQueue(){
+		String destination = "/teste/";
 
-        ConsumerManager consumerManager = new ConsumerManager();
+		NetPoll netPoll = new NetPoll(destination, 1000);
 
-        String destination = "/teste/";
+		BrokerListener brokerListener = new NotificationListenerAdapter()
+		{
 
-        NetPoll netPoll = new NetPoll(destination, 1000);
+			@Override
+			public boolean onMessage(NetNotification notification, HostInfo host)
+			{
+				return true;
+			}
 
+		};
 
-        BrokerListener brokerListener = new NotificationListenerAdapter() {
+		HostInfo host = new HostInfo("127.0.0.1", 3323);
 
-            @Override
-            public boolean onMessage(NetNotification notification, HostInfo host) {
-                return true;
-            }
+		consumerManager.addSubscription(netPoll, brokerListener, host);
 
-        };
+		BrokerAsyncConsumer consumer = consumerManager.getConsumer(NetAction.DestinationType.QUEUE, destination, host);
 
-        HostInfo host = new HostInfo("127.0.0.1",3323);
+		Assert.assertNotNull(consumer);
 
-        consumerManager.addSubscription(netPoll, brokerListener,host);
+		BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC, destination, host);
 
-        BrokerAsyncConsumer consumer = consumerManager.getConsumer(NetAction.DestinationType.QUEUE, destination, host);
+		Assert.assertNull(consumer2);
 
-        Assert.assertNotNull(consumer);
+	}
 
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC, destination, host);
+	@Test()
+	public void testNetSubribeQueue()
+	{
 
-        Assert.assertNull(consumer2);
+		ConsumerManager consumerManager = new ConsumerManager();
 
+		String destination = "/teste/";
 
-    }
+		NetAction.DestinationType destinationType = NetAction.DestinationType.QUEUE;
 
-    @Test()
-    public void testNetSubribeQueue(){
+		NetPoll netPoll = new NetPoll(destination, 1000);
 
-        ConsumerManager consumerManager = new ConsumerManager();
+		BrokerListener brokerListener = new NotificationListenerAdapter()
+		{
 
-        String destination = "/teste/";
+			@Override
+			public boolean onMessage(NetNotification notification, HostInfo host)
+			{
+				return true;
+			}
+		};
 
-        NetAction.DestinationType destinationType = NetAction.DestinationType.QUEUE;
+		HostInfo host = new HostInfo("127.0.0.1", 3323);
 
-        NetPoll netPoll = new NetPoll(destination, 1000);
+		NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
 
+		consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
 
-        BrokerListener brokerListener = new NotificationListenerAdapter() {
+		BrokerAsyncConsumer consumer = consumerManager.getConsumer(destinationType, destination, host);
 
-            @Override
-            public boolean onMessage(NetNotification notification, HostInfo host) {
-                return true;
-            }
-        };
+		Assert.assertNotNull(consumer);
 
-        HostInfo host = new HostInfo("127.0.0.1",3323);
+		BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC, destination, host);
 
+		Assert.assertNull(consumer2);
 
-        NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
+	}
 
-        consumerManager.addSubscription(netSubscribeAction, brokerListener,host);
+	@Test(expected = IllegalArgumentException.class)
+	public void testSubscriptionInvalidDestinationType()
+	{
 
+		ConsumerManager consumerManager = new ConsumerManager();
 
-        BrokerAsyncConsumer consumer = consumerManager.getConsumer(destinationType, destination, host);
+		String destination = "/teste/";
 
-        Assert.assertNotNull(consumer);
+		NetAction.DestinationType destinationType = null;
 
+		NetPoll netPoll = new NetPoll(destination, 1000);
 
-        BrokerAsyncConsumer consumer2 = consumerManager.getConsumer(NetAction.DestinationType.TOPIC,destination, host);
+		BrokerListener brokerListener = new NotificationListenerAdapter()
+		{
 
+			@Override
+			public boolean onMessage(NetNotification notification, HostInfo host)
+			{
+				return true;
+			}
+		};
 
-        Assert.assertNull(consumer2);
+		NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
 
-    }
+		HostInfo host = new HostInfo("127.0.0.1", 3323);
 
+		consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
 
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSubscriptionInvalidDestinationType(){
+	@Test(expected = IllegalArgumentException.class)
+	public void testSubscriptionInvalidDestination()
+	{
 
+		ConsumerManager consumerManager = new ConsumerManager();
 
-        ConsumerManager consumerManager = new ConsumerManager();
+		String destination = null;
 
-        String destination = "/teste/";
+		NetAction.DestinationType destinationType = NetAction.DestinationType.TOPIC;
 
-        NetAction.DestinationType destinationType =  null;
+		NetPoll netPoll = new NetPoll(destination, 1000);
 
-        NetPoll netPoll = new NetPoll(destination, 1000);
+		HostInfo host = new HostInfo("127.0.0.1", 3323);
 
+		BrokerListener brokerListener = new NotificationListenerAdapter()
+		{
 
-        BrokerListener brokerListener = new NotificationListenerAdapter() {
+			@Override
+			public boolean onMessage(NetNotification message, HostInfo host)
+			{
+				return true;
+			}
+		};
 
-            @Override
-            public boolean onMessage(NetNotification notification, HostInfo host) {
-                return true;
-            }
-        };
+		NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
 
-        NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
+		consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
 
-        HostInfo host = new HostInfo("127.0.0.1",3323);
-
-        consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
-
-
-    }
-
-    @Test(expected = IllegalArgumentException.class )
-    public void testSubscriptionInvalidDestination(){
-
-
-        ConsumerManager consumerManager = new ConsumerManager();
-
-        String destination = null;
-
-        NetAction.DestinationType destinationType =  NetAction.DestinationType.TOPIC;
-
-        NetPoll netPoll = new NetPoll(destination, 1000);
-
-        HostInfo host = new HostInfo("127.0.0.1",3323);
-
-        BrokerListener brokerListener = new NotificationListenerAdapter() {
-
-            @Override
-            public boolean onMessage(NetNotification message, HostInfo host) {
-                return true;
-            }
-        };
-
-        NetSubscribeAction netSubscribeAction = new NetSubscribe(destination, destinationType);
-
-
-
-        consumerManager.addSubscription(netSubscribeAction, brokerListener, host);
-
-
-    }
-
-
-
-
-
+	}
 
 }

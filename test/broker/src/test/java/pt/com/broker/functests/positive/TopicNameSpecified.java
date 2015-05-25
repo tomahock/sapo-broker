@@ -6,10 +6,10 @@ import pt.com.broker.types.NetProtocolType;
 public class TopicNameSpecified extends GenericPubSubTest
 {
 
-
-    public TopicNameSpecified(NetProtocolType protocolType) {
-        super(protocolType);
-        setName("PubSub - Topic name specified");
-    }
+	public TopicNameSpecified(NetProtocolType protocolType)
+	{
+		super(protocolType);
+		setName("PubSub - Topic name specified");
+	}
 
 }

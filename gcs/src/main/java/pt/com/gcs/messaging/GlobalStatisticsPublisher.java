@@ -1,5 +1,7 @@
 package pt.com.gcs.messaging;
 
+import java.util.Date;
+
 import org.caudexorigo.time.ISO8601;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,15 +9,11 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetBrokerMessage;
 import pt.com.broker.types.NetPublish;
-import pt.com.broker.types.stats.ChannelStats;
-import pt.com.broker.types.stats.MiscStats;
 import pt.com.gcs.conf.GcsInfo;
 import pt.com.gcs.stats.ChannelStatistics;
 import pt.com.gcs.stats.QueueStatistics;
 import pt.com.gcs.stats.Statistics;
 import pt.com.gcs.stats.TopicStatistics;
-
-import java.util.Date;
 
 public class GlobalStatisticsPublisher
 {
@@ -24,9 +22,9 @@ public class GlobalStatisticsPublisher
 	private Date currentDate;
 	private Date oldDate;
 	private Statistics statistics;
-	
-	
-	public GlobalStatisticsPublisher(Date oldDate, Date currentDate, Statistics statistics) {
+
+	public GlobalStatisticsPublisher(Date oldDate, Date currentDate, Statistics statistics)
+	{
 		this.oldDate = oldDate;
 		this.currentDate = currentDate;
 		this.statistics = statistics;
@@ -60,7 +58,7 @@ public class GlobalStatisticsPublisher
 
 		double rate;
 		long value;
-		for (QueueStatistics queueStats: statistics.getQueueStatistics())
+		for (QueueStatistics queueStats : statistics.getQueueStatistics())
 		{
 			StringBuilder qSb = new StringBuilder();
 			int infoCount = 0;
@@ -131,7 +129,7 @@ public class GlobalStatisticsPublisher
 		rate = ((double) statistics.getSystemStatistics().getReceivedTopicMessages() / dSeconds);
 
 		sb.append(String.format("\n\t<item subject='topic://.*' predicate='input-rate' value='%s' />", rate));
-		for (TopicStatistics topicStats: statistics.getTopicStatistics())
+		for (TopicStatistics topicStats : statistics.getTopicStatistics())
 		{
 			StringBuilder tSb = new StringBuilder();
 			int infoCount = 0;
@@ -181,8 +179,9 @@ public class GlobalStatisticsPublisher
 		double dSeconds = (double) seconds;
 
 		StringBuilder sb = new StringBuilder();
-		
-		for(ChannelStatistics channelStats: statistics.getChannelStatistics()){
+
+		for (ChannelStatistics channelStats : statistics.getChannelStatistics())
+		{
 			sb.append(String.format("<mqinfo date='%s' agent-name='%s'>", date, GcsInfo.getAgentName()));
 
 			double rate;
@@ -195,7 +194,6 @@ public class GlobalStatisticsPublisher
 			sb.append("\n</mqinfo>");
 		}
 
-		
 		String result = sb.toString();
 
 		final String sys_topic = String.format("/system/stats/channels/#%s#", GcsInfo.getAgentName());

@@ -1,41 +1,61 @@
 package pt.com.gcs.stats;
 
-public class QueueStatistics {
-	
+public class QueueStatistics
+{
+
 	private String queueName;
 	private Long receivedMessages;
 	private Long deliveredMessages;
 	private Long expiredMessages;
 	private Long redeliveredMessages;
-	
-	public String getQueueName() {
+
+	public String getQueueName()
+	{
 		return queueName;
 	}
-	public void setQueueName(String queueName) {
+
+	public void setQueueName(String queueName)
+	{
 		this.queueName = queueName;
 	}
-	public Long getReceivedMessages() {
+
+	public Long getReceivedMessages()
+	{
 		return receivedMessages;
 	}
-	public void setReceivedMessages(Long receivedMessages) {
+
+	public void setReceivedMessages(Long receivedMessages)
+	{
 		this.receivedMessages = receivedMessages;
 	}
-	public Long getDeliveredMessages() {
+
+	public Long getDeliveredMessages()
+	{
 		return deliveredMessages;
 	}
-	public void setDeliveredMessages(Long deliveredMessages) {
+
+	public void setDeliveredMessages(Long deliveredMessages)
+	{
 		this.deliveredMessages = deliveredMessages;
 	}
-	public Long getExpiredMessages() {
+
+	public Long getExpiredMessages()
+	{
 		return expiredMessages;
 	}
-	public void setExpiredMessages(Long expiredMessages) {
+
+	public void setExpiredMessages(Long expiredMessages)
+	{
 		this.expiredMessages = expiredMessages;
 	}
-	public Long getRedeliveredMessages() {
+
+	public Long getRedeliveredMessages()
+	{
 		return redeliveredMessages;
 	}
-	public void setRedeliveredMessages(Long redeliveredMessages) {
+
+	public void setRedeliveredMessages(Long redeliveredMessages)
+	{
 		this.redeliveredMessages = redeliveredMessages;
 	}
 

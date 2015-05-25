@@ -1,40 +1,47 @@
 package pt.com.gcs.messaging;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 public class StaleQueueCleaner implements Runnable
 {
 	private static Logger log = LoggerFactory.getLogger(StaleQueueCleaner.class);
-	
+
 	private Optional<String> queuePrefix;
 	private Long queueMaxStaleAge;
-	
-	public StaleQueueCleaner(Optional<String> queuePrefix, Long queueMaxStaleAge){
+
+	public StaleQueueCleaner(Optional<String> queuePrefix, Long queueMaxStaleAge)
+	{
 		Preconditions.checkNotNull(queuePrefix, "The queuePrefix cannot be null.");
 		Preconditions.checkNotNull(queueMaxStaleAge, "The queueMaxStaleAge cannot be null.");
 		this.queuePrefix = queuePrefix;
 		this.queueMaxStaleAge = queueMaxStaleAge;
 	}
-	
-	private Collection<QueueProcessor> getProcessors(){
-		if(queuePrefix.isPresent()){
+
+	private Collection<QueueProcessor> getProcessors()
+	{
+		if (queuePrefix.isPresent())
+		{
 			return QueueProcessorList.findByPattern(queuePrefix.get());
-		} else {
+		}
+		else
+		{
 			return QueueProcessorList.values();
 		}
 	}
 
 	@Override
-	public void run() {
-		if(log.isDebugEnabled()){
+	public void run()
+	{
+		if (log.isDebugEnabled())
+		{
 			log.debug("Running Stale Queue Cleaner: {}", queuePrefix.isPresent() ? queuePrefix.get() : "global");
 		}
 		long now = System.currentTimeMillis();
@@ -46,9 +53,10 @@ public class StaleQueueCleaner implements Runnable
 			long lastDeliveredMsg = qp.lastMessageDelivered();
 			long qstaleAge = now - lastDeliveredMsg;
 
-			//If the stale age have expired and we have a specific setting for the queue prefix or the
-			//queue does not have any consumers, we delete the queue.
-			if (qstaleAge >= queueMaxStaleAge && (queuePrefix.isPresent() || !QueueProcessorList.get(qp.getQueueName()).hasRecipient())){
+			// If the stale age have expired and we have a specific setting for the queue prefix or the
+			// queue does not have any consumers, we delete the queue.
+			if (qstaleAge >= queueMaxStaleAge && (queuePrefix.isPresent() || !QueueProcessorList.get(qp.getQueueName()).hasRecipient()))
+			{
 				to_remove.add(qp.getQueueName());
 			}
 
@@ -65,7 +73,7 @@ public class StaleQueueCleaner implements Runnable
 			Gcs.deleteQueue(queueName, false);
 			log.debug("Deleted stale queue '{}'", queueName);
 		}
-		
+
 		log.info("Deleted queues: {}. Number of active queues: {}", qdelete, QueueProcessorList.values().size());
 	}
 }

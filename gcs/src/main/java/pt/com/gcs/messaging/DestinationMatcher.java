@@ -1,11 +1,11 @@
 package pt.com.gcs.messaging;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.caudexorigo.Shutdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * DestinationMatcher uses regular expressions to determine if a given subscription matches a given topic name.

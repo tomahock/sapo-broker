@@ -8,35 +8,41 @@ import pt.com.gcs.messaging.Gcs;
 import pt.com.gcs.plugins.AgentPlugin;
 
 /**
- * Copyright (c) 2014, SAPO
- * All rights reserved.
+ * Copyright (c) 2014, SAPO All rights reserved.
  *
  * <p/>
  * Created by Luis Santos<luis.santos@telecom.pt> on 01-08-2014.
  */
-public class RestServerPlugin implements AgentPlugin {
+public class RestServerPlugin implements AgentPlugin
+{
 
-    private static final Logger log = LoggerFactory.getLogger(RestServerPlugin.class);
+	private static final Logger log = LoggerFactory.getLogger(RestServerPlugin.class);
 
-    @Override
-    public void start(Gcs gcs) {
+	@Override
+	public void start(Gcs gcs)
+	{
 
-        int wsPort = GcsInfo.getBrokerWsPort();
+		int wsPort = GcsInfo.getBrokerWsPort();
 
+		if (wsPort > 0)
+		{
 
-        if(wsPort>0){
+			RestServer restServer = new RestServer();
 
-            RestServer restServer = new RestServer();
+			try
+			{
+				restServer.start(wsPort);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 
-            try {
-                restServer.start(wsPort);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+		}
+		else
+		{
+			log.warn("Not starting Broker WebService");
+		}
 
-        }else{
-            log.warn("Not starting Broker WebService");
-        }
-
-    }
+	}
 }

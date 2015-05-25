@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Poll")
 public class Poll
 {
-    @XmlAttribute(name = "action-id")
+	@XmlAttribute(name = "action-id")
 	public String actionId;
 
-    @XmlElement(name = "DestinationName")
+	@XmlElement(name = "DestinationName")
 	public String destinationName;
 
 	public Poll()

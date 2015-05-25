@@ -1,4 +1,3 @@
-
 package pt.sapo.services.definitions;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -7,11 +6,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -29,36 +29,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "revokeTokenResult"
+		"revokeTokenResult"
 })
 @XmlRootElement(name = "RevokeTokenResponse")
-public class RevokeTokenResponse {
+public class RevokeTokenResponse
+{
 
-    @XmlElement(name = "RevokeTokenResult", required = true)
-    protected RevokeTokenInfo revokeTokenResult;
+	@XmlElement(name = "RevokeTokenResult", required = true)
+	protected RevokeTokenInfo revokeTokenResult;
 
-    /**
-     * Gets the value of the revokeTokenResult property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link RevokeTokenInfo }
-     *     
-     */
-    public RevokeTokenInfo getRevokeTokenResult() {
-        return revokeTokenResult;
-    }
+	/**
+	 * Gets the value of the revokeTokenResult property.
+	 * 
+	 * @return possible object is {@link RevokeTokenInfo }
+	 * 
+	 */
+	public RevokeTokenInfo getRevokeTokenResult()
+	{
+		return revokeTokenResult;
+	}
 
-    /**
-     * Sets the value of the revokeTokenResult property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link RevokeTokenInfo }
-     *     
-     */
-    public void setRevokeTokenResult(RevokeTokenInfo value) {
-        this.revokeTokenResult = value;
-    }
+	/**
+	 * Sets the value of the revokeTokenResult property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link RevokeTokenInfo }
+	 * 
+	 */
+	public void setRevokeTokenResult(RevokeTokenInfo value)
+	{
+		this.revokeTokenResult = value;
+	}
 
 }

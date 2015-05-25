@@ -10,8 +10,9 @@ import pt.com.broker.types.NetProtocolType;
 public class PongTest extends GenericNetMessageNegativeTest
 {
 
-    public PongTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public PongTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Unexpected Message - Pong");
 

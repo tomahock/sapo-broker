@@ -1,11 +1,19 @@
 package pt.com.broker.http;
 
-import java.io.OutputStream;
-
-import io.netty.buffer.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
+
+import java.io.OutputStream;
+
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.http.netty4.HttpAction;
 import org.slf4j.Logger;
@@ -15,8 +23,8 @@ import pt.com.broker.auth.AccessControl;
 import pt.com.broker.auth.AccessControl.ValidationResult;
 import pt.com.broker.auth.Session;
 import pt.com.broker.codec.xml.SoapBindingSerializer;
-import pt.com.broker.codec.xml.soap.SoapEnvelope;
 import pt.com.broker.codec.xml.SoapSerializer;
+import pt.com.broker.codec.xml.soap.SoapEnvelope;
 import pt.com.broker.core.ErrorHandler;
 import pt.com.broker.messaging.BrokerProducer;
 import pt.com.broker.messaging.MQ;
@@ -64,9 +72,7 @@ public class BrokerHttpAction extends HttpAction
 		}
 	}
 
-
-
-    @Override
+	@Override
 	public void service(ChannelHandlerContext ctx, FullHttpRequest request, FullHttpResponse response)
 	{
 		Channel channel = ctx.channel();

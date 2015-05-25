@@ -66,7 +66,6 @@ public class BDBStorage
 			dbConfig.setBtreeComparator(BDBMessageComparator.class);
 			messageDb = env.openDatabase(null, primaryDbName, dbConfig);
 
-
 			log.info("Storage for queue '{}' is ready.", queueProcessor.getQueueName());
 		}
 		catch (Throwable t)
@@ -294,58 +293,63 @@ public class BDBStorage
 
 	protected AtomicBoolean recoveryRunning = new AtomicBoolean(false);
 
-    public List<BDBMessage> getMessages(){
+	public List<BDBMessage> getMessages()
+	{
 
-        Cursor msg_cursor = null;
+		Cursor msg_cursor = null;
 
-        List<BDBMessage> list = new ArrayList<>(10);
+		List<BDBMessage> list = new ArrayList<>(10);
 
-        try {
+		try
+		{
 
-            msg_cursor = messageDb.openCursor(null, null);
+			msg_cursor = messageDb.openCursor(null, null);
 
-            DatabaseEntry key = new DatabaseEntry();
-            DatabaseEntry data = new DatabaseEntry();
+			DatabaseEntry key = new DatabaseEntry();
+			DatabaseEntry data = new DatabaseEntry();
 
-            while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS)) {
-                if (isMarkedForDeletion.get())
-                    break;
+			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
+			{
+				if (isMarkedForDeletion.get())
+					break;
 
+				byte[] bdata = data.getData();
 
-                byte[] bdata = data.getData();
+				BDBMessage bdbm = null;
 
-                BDBMessage bdbm = null;
+				try
+				{
+					bdbm = MessageMarshaller.unmarshallBDBMessage(bdata);
+					if (bdbm == null)
+					{
+						log.info("MessageMarshaller.unmarshallBDBMessage returned null");
+						continue;
+					}
 
-                try
-                {
-                    bdbm = MessageMarshaller.unmarshallBDBMessage(bdata);
-                    if (bdbm == null)
-                    {
-                        log.info("MessageMarshaller.unmarshallBDBMessage returned null");
-                        continue;
-                    }
+					list.add(bdbm);
+				}
+				catch (Throwable e)
+				{
 
-                    list.add(bdbm);
-                }
-                catch (Throwable e)
-                {
+					continue;
+				}
 
-                    continue;
-                }
+			}
 
-            }
+		}
+		catch (Exception ex)
+		{
 
-        }catch (Exception ex){
+			log.error(ex.getMessage(), ex);
 
-            log.error(ex.getMessage(), ex);
+		}
+		finally
+		{
+			closeDbCursor(msg_cursor);
+		}
 
-        }finally {
-            closeDbCursor(msg_cursor);
-        }
-
-
-        return list;
-    }
+		return list;
+	}
 
 	protected long recoverMessages()
 	{
@@ -380,7 +384,7 @@ public class BDBStorage
 			int countLoop = 0;
 			while ((msg_cursor.getNext(key, data, null) == OperationStatus.SUCCESS))
 			{
-				//TODO: Delete the debug log below
+				// TODO: Delete the debug log below
 				log.debug("Count loop: {}", ++countLoop);
 				if (isMarkedForDeletion.get())
 					break;
@@ -409,7 +413,7 @@ public class BDBStorage
 
 				boolean preferLocalConsumer = bdbm.getPreferLocalConsumer();
 				long reserveTimeout = bdbm.getReserveTimeout();
-				//TODO: Delete the logs bellow
+				// TODO: Delete the logs bellow
 				log.debug("Message reserve timeout: {}", reserveTimeout);
 				log.debug("Current time: {}", now);
 				final boolean isReserved = reserveTimeout > now;
@@ -426,7 +430,7 @@ public class BDBStorage
 						{
 							nextCycle = diff;
 						}
-						//No chains arround my feet, but i'm not free...
+						// No chains arround my feet, but i'm not free...
 						continue;
 					}
 
@@ -449,7 +453,7 @@ public class BDBStorage
 							do
 							{
 								result = queueProcessor.forward(nmsg, preferLocalConsumer);
-								//preferLocalConsumer = false;
+								// preferLocalConsumer = false;
 								++tries;
 							}
 							while ((result.result == Result.FAILED) && (tries != MAX_REDELIVERY_PER_MESSAGE));

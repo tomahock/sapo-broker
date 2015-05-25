@@ -10,9 +10,9 @@ import pt.com.broker.types.NetProtocolType;
 public class FaultTest extends GenericNetMessageNegativeTest
 {
 
-    public FaultTest(NetProtocolType protocolType) {
-        super(protocolType);
-
+	public FaultTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Unexpected Message - Fault");
 

@@ -10,8 +10,9 @@ import pt.com.broker.types.NetProtocolType;
 public class InvalidAuthChannelTypeTest extends GenericNetMessageNegativeTest
 {
 
-    public InvalidAuthChannelTypeTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public InvalidAuthChannelTypeTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Invalid Authentication Channel Type Failed");
 

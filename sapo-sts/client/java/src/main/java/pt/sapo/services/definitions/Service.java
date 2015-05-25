@@ -1,4 +1,3 @@
-
 package pt.sapo.services.definitions;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,11 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for Service complex type.
+ * <p>
+ * Java class for Service complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Service">
@@ -29,62 +29,61 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Service", propOrder = {
-    "name",
-    "operations"
+		"name",
+		"operations"
 })
-public class Service {
+public class Service
+{
 
-    @XmlElement(name = "Name", required = true)
-    protected String name;
-    @XmlElement(name = "Operations", required = true)
-    protected Operations operations;
+	@XmlElement(name = "Name", required = true)
+	protected String name;
+	@XmlElement(name = "Operations", required = true)
+	protected Operations operations;
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Gets the value of the name property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getName()
+	{
+		return name;
+	}
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
+	/**
+	 * Sets the value of the name property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setName(String value)
+	{
+		this.name = value;
+	}
 
-    /**
-     * Gets the value of the operations property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Operations }
-     *     
-     */
-    public Operations getOperations() {
-        return operations;
-    }
+	/**
+	 * Gets the value of the operations property.
+	 * 
+	 * @return possible object is {@link Operations }
+	 * 
+	 */
+	public Operations getOperations()
+	{
+		return operations;
+	}
 
-    /**
-     * Sets the value of the operations property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Operations }
-     *     
-     */
-    public void setOperations(Operations value) {
-        this.operations = value;
-    }
+	/**
+	 * Sets the value of the operations property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Operations }
+	 * 
+	 */
+	public void setOperations(Operations value)
+	{
+		this.operations = value;
+	}
 
 }

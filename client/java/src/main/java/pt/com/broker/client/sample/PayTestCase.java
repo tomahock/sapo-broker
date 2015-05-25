@@ -1,9 +1,9 @@
 package pt.com.broker.client.sample;
 
+import java.util.concurrent.ExecutorService;
+
 import org.caudexorigo.concurrent.CustomExecutors;
 import org.caudexorigo.concurrent.Sleep;
-
-import java.util.concurrent.ExecutorService;
 
 public class PayTestCase
 {

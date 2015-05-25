@@ -21,76 +21,97 @@ import pt.com.broker.types.NetPublish;
  * @author vagrant
  * @version $Id: $Id
  */
-public class UdpBrokerClient extends BaseClient {
+public class UdpBrokerClient extends BaseClient
+{
 
-    /**
-     * <p>Constructor for UdpBrokerClient.</p>
-     *
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     */
-    public UdpBrokerClient(NetProtocolType ptype) {
-        super(ptype);
-        connect();
-    }
+	/**
+	 * <p>
+	 * Constructor for UdpBrokerClient.
+	 * </p>
+	 *
+	 * @param ptype
+	 *            a {@link pt.com.broker.types.NetProtocolType} object.
+	 */
+	public UdpBrokerClient(NetProtocolType ptype)
+	{
+		super(ptype);
+		connect();
+	}
 
-    /**
-     * <p>Constructor for UdpBrokerClient.</p>
-     *
-     * @param host a {@link java.lang.String} object.
-     * @param port a int.
-     */
-    public UdpBrokerClient(String host, int port) {
-        super(host, port);
-        connect();
-    }
+	/**
+	 * <p>
+	 * Constructor for UdpBrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link java.lang.String} object.
+	 * @param port
+	 *            a int.
+	 */
+	public UdpBrokerClient(String host, int port)
+	{
+		super(host, port);
+		connect();
+	}
 
-    /**
-     * <p>Constructor for UdpBrokerClient.</p>
-     *
-     * @param host a {@link java.lang.String} object.
-     * @param port a int.
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     */
-    public UdpBrokerClient(String host, int port, NetProtocolType ptype) {
-        super(host, port, ptype);
-        connect();
-    }
+	/**
+	 * <p>
+	 * Constructor for UdpBrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link java.lang.String} object.
+	 * @param port
+	 *            a int.
+	 * @param ptype
+	 *            a {@link pt.com.broker.types.NetProtocolType} object.
+	 */
+	public UdpBrokerClient(String host, int port, NetProtocolType ptype)
+	{
+		super(host, port, ptype);
+		connect();
+	}
 
-    /**
-     * <p>Constructor for UdpBrokerClient.</p>
-     *
-     * @param host a {@link pt.com.broker.client.nio.server.HostInfo} object.
-     * @param ptype a {@link pt.com.broker.types.NetProtocolType} object.
-     */
-    public UdpBrokerClient(HostInfo host, NetProtocolType ptype) {
-        super(host, ptype);
-        connect();
-    }
+	/**
+	 * <p>
+	 * Constructor for UdpBrokerClient.
+	 * </p>
+	 *
+	 * @param host
+	 *            a {@link pt.com.broker.client.nio.server.HostInfo} object.
+	 * @param ptype
+	 *            a {@link pt.com.broker.types.NetProtocolType} object.
+	 */
+	public UdpBrokerClient(HostInfo host, NetProtocolType ptype)
+	{
+		super(host, ptype);
+		connect();
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public Future<HostInfo> publish(NetPublish message, String destination, NetAction.DestinationType dtype) throws UnavailableAgentException {
+	/** {@inheritDoc} */
+	@Override
+	public Future<HostInfo> publish(NetPublish message, String destination, NetAction.DestinationType dtype) throws UnavailableAgentException
+	{
 
-        if (message.getActionId() != null)
-        {
-            throw new InvalidParameterException("Messages published over UDP are not allowed to carry a message identifier.");
-        }
+		if (message.getActionId() != null)
+		{
+			throw new InvalidParameterException("Messages published over UDP are not allowed to carry a message identifier.");
+		}
 
-        return super.publish(message, destination, dtype);
-    }
+		return super.publish(message, destination, dtype);
+	}
 
+	/** {@inheritDoc} */
+	@Override
+	protected void init()
+	{
 
+		BaseChannelInitializer channelInitializer = new DatagramChannelInitializer(getSerializer());
 
-    /** {@inheritDoc} */
-    @Override
-    protected void init() {
+		channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
 
-        BaseChannelInitializer channelInitializer = new DatagramChannelInitializer(getSerializer());
+		setBootstrap(new DatagramBootstrap(channelInitializer, new VoidNettyContext()));
 
-        channelInitializer.setOldFraming(getProtocolType() == NetProtocolType.SOAP_v0);
-
-        setBootstrap(new DatagramBootstrap(channelInitializer, new VoidNettyContext()));
-
-        setHosts(new HostContainer(bootstrap));
-    }
+		setHosts(new HostContainer(bootstrap));
+	}
 }

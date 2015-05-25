@@ -1,21 +1,15 @@
 package pt.com.gcs.net.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import io.netty.handler.codec.MessageToMessageEncoder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.com.broker.codec.protobuf.ProtoBufBindingSerializer;
 import pt.com.broker.types.NetMessage;
-
-import java.io.BufferedOutputStream;
-import java.util.List;
 
 /**
  * Encoder implementation. Used to encode messages exchanged between agents.
@@ -40,35 +34,36 @@ public class GcsEncoder extends MessageToByteEncoder<NetMessage>
 	private final ProtoBufBindingSerializer serializer = new ProtoBufBindingSerializer();
 
 	@Override
-	protected void encode(ChannelHandlerContext ctx, NetMessage msg, ByteBuf out) throws Exception {
+	protected void encode(ChannelHandlerContext ctx, NetMessage msg, ByteBuf out) throws Exception
+	{
 		byte[] buffer = serializer.marshal(msg);
 		out.writeInt(buffer.length);
 		out.writeBytes(buffer);
 	}
 
-//    @Override
-//    protected void encode(ChannelHandlerContext ctx, Object msg, List out) throws Exception {
-//
-//        if (!(msg instanceof NetMessage))
-//        {
-//            String errorMessage = "Message to be encoded is from an unexpected type - " + msg.getClass().getName();
-//            log.error(errorMessage);
-//            throw new IllegalArgumentException(errorMessage);
-//        }
-//
-//
-//
-//        ByteBuf bout = ctx.alloc().buffer();
-//        ByteBufOutputStream sout = new ByteBufOutputStream(bout);
-//        sout.writeInt(0);
-//
-//        serializer.marshal((NetMessage) msg, sout);
-//
-//        int len = bout.writerIndex() - 4;
-//
-//        bout.setInt(0, len);
-//
-//        out.add(bout);
-//
-//    }
+	// @Override
+	// protected void encode(ChannelHandlerContext ctx, Object msg, List out) throws Exception {
+	//
+	// if (!(msg instanceof NetMessage))
+	// {
+	// String errorMessage = "Message to be encoded is from an unexpected type - " + msg.getClass().getName();
+	// log.error(errorMessage);
+	// throw new IllegalArgumentException(errorMessage);
+	// }
+	//
+	//
+	//
+	// ByteBuf bout = ctx.alloc().buffer();
+	// ByteBufOutputStream sout = new ByteBufOutputStream(bout);
+	// sout.writeInt(0);
+	//
+	// serializer.marshal((NetMessage) msg, sout);
+	//
+	// int len = bout.writerIndex() - 4;
+	//
+	// bout.setInt(0, len);
+	//
+	// out.add(bout);
+	//
+	// }
 }

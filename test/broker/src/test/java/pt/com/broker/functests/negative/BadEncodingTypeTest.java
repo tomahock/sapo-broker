@@ -1,17 +1,19 @@
 package pt.com.broker.functests.negative;
 
-import org.junit.runners.Parameterized;
-import pt.com.broker.functests.helpers.GenericNegativeTest;
-import pt.com.broker.types.NetProtocolType;
-
 import java.util.Arrays;
 import java.util.Collection;
+
+import org.junit.runners.Parameterized;
+
+import pt.com.broker.functests.helpers.GenericNegativeTest;
+import pt.com.broker.types.NetProtocolType;
 
 public class BadEncodingTypeTest extends GenericNegativeTest
 {
 
-    public BadEncodingTypeTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public BadEncodingTypeTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Bad Encoding Type Test");
 
@@ -26,19 +28,18 @@ public class BadEncodingTypeTest extends GenericNegativeTest
 	{
 	}
 
-	/*@Override
-	public boolean skipTest()
-	{
-		return true;
-	}*/
+	/*
+	 * @Override public boolean skipTest() { return true; }
+	 */
 
-    @Parameterized.Parameters()
-    public static Collection getProtocolTypes() {
-        return Arrays.asList(new Object[][]{
-                {NetProtocolType.PROTOCOL_BUFFER},
-                {NetProtocolType.THRIFT},
-                {NetProtocolType.JSON},
-                {NetProtocolType.SOAP},
-        });
-    }
+	@Parameterized.Parameters()
+	public static Collection getProtocolTypes()
+	{
+		return Arrays.asList(new Object[][] {
+				{ NetProtocolType.PROTOCOL_BUFFER },
+				{ NetProtocolType.THRIFT },
+				{ NetProtocolType.JSON },
+				{ NetProtocolType.SOAP },
+		});
+	}
 }

@@ -6,10 +6,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Fault")
 public class SoapFault
 {
-    @XmlElement(name = "Code")
+	@XmlElement(name = "Code")
 	public FaultCode faultCode;
 
-    @XmlElement(name = "Reason")
+	@XmlElement(name = "Reason")
 	public FaultReason faultReason;
 
 	public String detail = "";

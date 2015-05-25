@@ -29,22 +29,23 @@ public class BrokerHttpService
 	{
 		try
 		{
-			nettyCtx.getWorkerEventLoopGroup().execute(new Runnable() {
-                @Override
-                public void run() {
+			nettyCtx.getWorkerEventLoopGroup().execute(new Runnable()
+			{
+				@Override
+				public void run()
+				{
 
-                    /* TODO TEMP CHANGE brsantos */
-                    NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber);
-                    server.setNettyContext(nettyCtx);
+					/* TODO TEMP CHANGE brsantos */
+					NettyHttpServer server = new NettyHttpServer("0.0.0.0", _portNumber);
+					server.setNettyContext(nettyCtx);
 
+					/* TEMP CHANGE brsantos */
+					server.setRouter(new BrokerRequestRouter());
 
-                    /* TEMP CHANGE brsantos */
-                    server.setRouter(new BrokerRequestRouter());
+					server.start();
 
-                    server.start();
-
-                }
-            });
+				}
+			});
 
 		}
 		catch (Throwable ex)

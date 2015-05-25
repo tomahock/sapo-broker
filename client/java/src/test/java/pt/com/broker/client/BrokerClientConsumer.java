@@ -1,5 +1,6 @@
 package pt.com.broker.client;
 
-public class BrokerClientConsumer {
+public class BrokerClientConsumer
+{
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.functests.Consequence;
 import pt.com.broker.functests.Step;
 import pt.com.broker.types.NetAction;
@@ -13,7 +14,7 @@ import pt.com.broker.types.NetNotification;
 
 public class MultipleNotificationConsequence extends Consequence
 {
-    private static final Logger log = LoggerFactory.getLogger( MultipleNotificationConsequence.class);
+	private static final Logger log = LoggerFactory.getLogger(MultipleNotificationConsequence.class);
 
 	private MultipleNotificationsBrokerListener brokerListener;
 
@@ -31,11 +32,11 @@ public class MultipleNotificationConsequence extends Consequence
 
 	public Step run() throws Exception
 	{
-        log.info("Start - Waiting for List NetNotification");
+		log.info("Start - Waiting for List NetNotification");
 
 		List<NetNotification> notifications = brokerListener.getFuture().get();
 
-        log.info("Done - Waiting for List NetNotification");
+		log.info("Done - Waiting for List NetNotification");
 
 		for (NetNotification netNotification : notifications)
 		{

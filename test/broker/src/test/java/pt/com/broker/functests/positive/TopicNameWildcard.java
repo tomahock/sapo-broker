@@ -6,10 +6,11 @@ import pt.com.broker.types.NetProtocolType;
 public class TopicNameWildcard extends GenericPubSubTest
 {
 
-    public TopicNameWildcard(NetProtocolType protocolType) {
-        super(protocolType);
+	public TopicNameWildcard(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("PubSub - Topic name is a wildcard");
+		setName("PubSub - Topic name is a wildcard");
 		setSubscriptionName("/topic/.*");
 	}
 }

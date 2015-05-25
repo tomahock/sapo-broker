@@ -7,8 +7,6 @@ import io.netty.channel.ChannelPipeline;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-
-
 public class ListenerChannel
 {
 	public enum ChannelState
@@ -39,10 +37,11 @@ public class ListenerChannel
 	{
 		return channel.write(obj);
 	}
-    public ChannelFuture writeAndFlush(Object obj)
-    {
-        return channel.writeAndFlush(obj);
-    }
+
+	public ChannelFuture writeAndFlush(Object obj)
+	{
+		return channel.writeAndFlush(obj);
+	}
 
 	public boolean isConnected()
 	{
@@ -53,8 +52,6 @@ public class ListenerChannel
 	{
 		return channel.isWritable();
 	}
-
-
 
 	public Channel getChannel()
 	{

@@ -1,17 +1,18 @@
 package pt.com.broker.jsbridge;
 
-import org.caudexorigo.ErrorAnalyser;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.ErrorAnalyser;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.websocket.DefaultWebSocketFrame;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.jsbridge.protocol.JsonMessage;
 import pt.com.broker.jsbridge.protocol.JsonMessage.MessageType;
 import pt.com.broker.jsbridge.protocol.JsonSerializer;
-
-import java.util.List;
 
 /* TODO TEMP CHANGE brsantos */
 //import org.caudexorigo.http.netty.WebSocketHandler;
@@ -21,8 +22,8 @@ public class JSBridgeHandler // implements WebSocketHandler
 {
 	private static final Logger log = LoggerFactory.getLogger(JSBridgeHandler.class);
 
-        /* TODO TEMP CHANGE brsantos */
-	//@Override
+	/* TODO TEMP CHANGE brsantos */
+	// @Override
 	public void handleMessage(Channel channel, WebSocketFrame ws_frame)
 	{
 		if (ws_frame.isText())
@@ -67,14 +68,14 @@ public class JSBridgeHandler // implements WebSocketHandler
 		}
 	}
 
-        /* TODO TEMP CHANGE brsantos */
-	//@Override
+	/* TODO TEMP CHANGE brsantos */
+	// @Override
 	public void handleWebSocketOpened(Channel channel)
 	{
 	}
-                
-        /* TODO TEMP CHANGE brsantos */
-	//@Override
+
+	/* TODO TEMP CHANGE brsantos */
+	// @Override
 	public void handleWebSocketClosed(Channel channel)
 	{
 		List<BridgeChannel> bc_lst = ConfigurationInfo.getBridgeChannels();

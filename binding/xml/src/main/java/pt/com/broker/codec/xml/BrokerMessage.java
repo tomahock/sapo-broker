@@ -2,30 +2,29 @@ package pt.com.broker.codec.xml;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement(name = "BrokerMessage")
 public class BrokerMessage
 {
-    @XmlElement(name = "Priority")
+	@XmlElement(name = "Priority")
 	public int priority;
 
-    @XmlElement(name = "MessageId")
+	@XmlElement(name = "MessageId")
 	public String messageId;
 
-    @XmlElement(name = "CorrelationId")
+	@XmlElement(name = "CorrelationId")
 	public String correlationId;
 
-    @XmlElement(name = "Timestamp")
+	@XmlElement(name = "Timestamp")
 	public String timestamp;
 
-    @XmlElement(name = "Expiration")
+	@XmlElement(name = "Expiration")
 	public String expiration;
 
-    @XmlElement(name = "DestinationName")
+	@XmlElement(name = "DestinationName")
 	public String destinationName;
 
-    @XmlElement(name = "TextPayload")
+	@XmlElement(name = "TextPayload")
 	public String textPayload;
 
 	public BrokerMessage()

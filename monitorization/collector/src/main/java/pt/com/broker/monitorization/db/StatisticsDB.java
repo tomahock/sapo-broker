@@ -1,10 +1,10 @@
 package pt.com.broker.monitorization.db;
 
+import java.util.Date;
+
 import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 /* TODO TEMP CHANGE brsantos */
 //import org.caudexorigo.jdbc.DbExecutor;
@@ -27,7 +27,7 @@ public class StatisticsDB
 		try
 		{
 			/* TODO TEMP CHANGE brsantos */
-//			DbExecutor.runActionPreparedStatement("INSERT INTO raw_data (agent_name, event_time, subject, predicate, object_value) VALUES (?, ?, ?, ?, ?)", agent, sampleDate, subject, predicate, value);
+			// DbExecutor.runActionPreparedStatement("INSERT INTO raw_data (agent_name, event_time, subject, predicate, object_value) VALUES (?, ?, ?, ?, ?)", agent, sampleDate, subject, predicate, value);
 		}
 		catch (Throwable t)
 		{

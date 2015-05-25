@@ -5,16 +5,17 @@ import java.util.Map;
 /**
  * Created by luissantos on 07-05-2014.
  */
-public interface NetSubscribeAction {
+public interface NetSubscribeAction
+{
 
-    public String getDestination();
+	public String getDestination();
 
-    public NetAction.DestinationType getDestinationType();
+	public NetAction.DestinationType getDestinationType();
 
-    public String getActionId();
+	public String getActionId();
 
-    public void setActionId(String actionId);
+	public void setActionId(String actionId);
 
-    public Map<String, String> getHeaders();
+	public Map<String, String> getHeaders();
 
 }

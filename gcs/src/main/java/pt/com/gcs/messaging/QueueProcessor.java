@@ -1,5 +1,7 @@
 package pt.com.gcs.messaging;
 
+import io.netty.channel.Channel;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.netty.channel.Channel;
-import org.caudexorigo.ErrorAnalyser;
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.ErrorAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,7 @@ public class QueueProcessor implements SubscriptionProcessor
 	private final AtomicLong currentIdx = new AtomicLong(0);
 
 	private final AtomicLong lastMessageDelivered = new AtomicLong(System.currentTimeMillis());
-	
+
 	private long maxStaleAge;
 
 	protected QueueProcessor(String queueName, long maxStaleAge)
@@ -79,9 +80,9 @@ public class QueueProcessor implements SubscriptionProcessor
 		}
 
 		this.queueName = queueName;
-		
-		//TODO: With time, remove this kind of dependencies from the code. Try to loose couple at least
-		//the core classes.
+
+		// TODO: With time, remove this kind of dependencies from the code. Try to loose couple at least
+		// the core classes.
 		storage = new BDBStorage(this);
 
 		long cnt = storage.count();
@@ -332,13 +333,13 @@ public class QueueProcessor implements SubscriptionProcessor
 		return queueName;
 	}
 
-    @Override
-    public String getSubscriptionName() {
-        return getQueueName();
-    }
+	@Override
+	public String getSubscriptionName()
+	{
+		return getQueueName();
+	}
 
-
-    private boolean hasActiveListeners(Set<MessageListener> listeners)
+	private boolean hasActiveListeners(Set<MessageListener> listeners)
 	{
 		for (MessageListener ml : listeners)
 		{
@@ -697,30 +698,33 @@ public class QueueProcessor implements SubscriptionProcessor
 		return msgListenterEventHandler;
 	}
 
-    @Override
-    public boolean hasLocalListeners() {
+	@Override
+	public boolean hasLocalListeners()
+	{
 
-        return localListeners().size() > 0 ;
+		return localListeners().size() > 0;
 
-    }
+	}
 
-    @Override
-    public boolean hasRemoteListeners() {
-        return remoteListeners().size() > 0 ;
-    }
+	@Override
+	public boolean hasRemoteListeners()
+	{
+		return remoteListeners().size() > 0;
+	}
 
+	public List<NetMessage> getMessages()
+	{
 
-    public List<NetMessage> getMessages(){
+		List<BDBMessage> msgs = storage.getMessages();
 
-        List<BDBMessage> msgs = storage.getMessages();
+		List<NetMessage> lista = new ArrayList<>(msgs.size());
 
-        List<NetMessage> lista = new ArrayList<>(msgs.size());
+		for (BDBMessage message : msgs)
+		{
+			lista.add(message.getMessage());
+		}
 
-        for(BDBMessage message : msgs ){
-            lista.add(message.getMessage());
-        }
+		return lista;
 
-        return lista;
-
-    }
+	}
 }

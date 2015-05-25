@@ -5,21 +5,23 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
-import pt.com.broker.functests.Action;
 import org.caudexorigo.text.RandomStringUtils;
-
 
 import pt.com.broker.client.nio.AcceptRequest;
 import pt.com.broker.client.nio.BrokerClient;
 import pt.com.broker.client.nio.events.AcceptResponseListener;
+import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
 import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.functests.Action;
 import pt.com.broker.functests.Epilogue;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
-import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.types.*;
+import pt.com.broker.types.NetAccepted;
 import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
 
 public class MultipleGenericPubSubTest extends BrokerTest
 {
@@ -40,12 +42,11 @@ public class MultipleGenericPubSubTest extends BrokerTest
 	private List<TestClientInfo> infoConsumers;
 	private List<TestClientInfo> infoProducers;
 
+	public MultipleGenericPubSubTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-
-    public MultipleGenericPubSubTest(NetProtocolType protocolType) {
-        super(protocolType);
-
-        setName("MultipleGenericPubSubTest");
+		setName("MultipleGenericPubSubTest");
 		infoConsumers = new ArrayList<TestClientInfo>();
 		infoProducers = new ArrayList<TestClientInfo>();
 	}
@@ -69,44 +70,52 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		addEpilogues();
 	}
 
+	@Override
+	protected void end()
+	{
 
-    @Override
-    protected void end() {
+		try
+		{
 
-        try {
+			for (TestClientInfo info : infoConsumers)
+			{
 
+				if (info != null)
+				{
+					if (info.brokerClient != null)
+					{
 
-            for(TestClientInfo info : infoConsumers){
+						info.brokerClient.close();
 
-                if(info != null){
-                    if(info.brokerClient!=null){
+					}
+				}
 
-                           info.brokerClient.close();
+			}
 
-                    }
-                }
+			for (TestClientInfo info : infoProducers)
+			{
 
-            }
+				if (info != null)
+				{
+					if (info.brokerClient != null)
+					{
 
-            for(TestClientInfo info : infoProducers){
+						info.brokerClient.close();
 
-                if(info != null){
-                    if(info.brokerClient!=null){
+					}
+				}
 
-                        info.brokerClient.close();
+			}
 
-                    }
-                }
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 
-            }
+	}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    protected void addConsumers()
+	protected void addConsumers()
 	{
 		try
 		{
@@ -116,7 +125,7 @@ public class MultipleGenericPubSubTest extends BrokerTest
 
 			tci.brokerClient = new BrokerClient(getAgent1Hostname(), getAgent1Port(), this.getEncodingProtocolType());
 
-            tci.brokerClient.connect();
+			tci.brokerClient.connect();
 			tci.brokerListenter = new MultipleNotificationsBrokerListener(getDestinationType(), numberOfExecutions);
 			tci.numberOfExecutions = numberOfExecutions;
 
@@ -135,12 +144,10 @@ public class MultipleGenericPubSubTest extends BrokerTest
 		{
 			TestClientInfo tci = new TestClientInfo();
 
+			int port = getAgent1Port();
 
-            int port = getAgent1Port();
-
-
-            tci.brokerClient = new BrokerClient(getAgent1Hostname(), port, this.getEncodingProtocolType());
-            tci.brokerClient.connect();
+			tci.brokerClient = new BrokerClient(getAgent1Hostname(), port, this.getEncodingProtocolType());
+			tci.brokerClient.connect();
 
 			tci.brokerListenter = null;
 			tci.numberOfExecutions = 1;
@@ -164,31 +171,32 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getConsumerDestinationType());
 					for (TestClientInfo tci : getInfoConsumers())
 					{
-                        final CountDownLatch latch = new CountDownLatch(1);
+						final CountDownLatch latch = new CountDownLatch(1);
 
-						tci.brokerClient.subscribe(subscribe, tci.brokerListenter, new AcceptRequest(UUID.randomUUID().toString(), new AcceptResponseListener() {
-                            @Override
-                            public void onMessage(NetAccepted message, HostInfo host) {
-                                latch.countDown();
-                            }
+						tci.brokerClient.subscribe(subscribe, tci.brokerListenter, new AcceptRequest(UUID.randomUUID().toString(), new AcceptResponseListener()
+						{
+							@Override
+							public void onMessage(NetAccepted message, HostInfo host)
+							{
+								latch.countDown();
+							}
 
-                            @Override
-                            public void onFault(NetFault fault, HostInfo host) {
-                                latch.countDown();
-                            }
+							@Override
+							public void onFault(NetFault fault, HostInfo host)
+							{
+								latch.countDown();
+							}
 
-                            @Override
-                            public void onTimeout(String actionID) {
-                                latch.countDown();
-                            }
+							@Override
+							public void onTimeout(String actionID)
+							{
+								latch.countDown();
+							}
 
-                        },6000)).get();
+						}, 6000)).get();
 
-                        latch.await();
+						latch.await();
 					}
-
-
-
 
 					setDone(true);
 					setSucess(true);
@@ -216,28 +224,31 @@ public class MultipleGenericPubSubTest extends BrokerTest
 					{
 						NetBrokerMessage brokerMessage = new NetBrokerMessage(getData());
 
-                        final CountDownLatch latch = new CountDownLatch(1);
+						final CountDownLatch latch = new CountDownLatch(1);
 
-						tci.brokerClient.publish(brokerMessage, getDestinationName(), getDestinationType(), new AcceptRequest(UUID.randomUUID().toString(), new AcceptResponseListener() {
-                            @Override
-                            public void onMessage(NetAccepted message, HostInfo host) {
-                                latch.countDown();
-                            }
+						tci.brokerClient.publish(brokerMessage, getDestinationName(), getDestinationType(), new AcceptRequest(UUID.randomUUID().toString(), new AcceptResponseListener()
+						{
+							@Override
+							public void onMessage(NetAccepted message, HostInfo host)
+							{
+								latch.countDown();
+							}
 
-                            @Override
-                            public void onFault(NetFault fault, HostInfo host) {
-                                latch.countDown();
-                            }
+							@Override
+							public void onFault(NetFault fault, HostInfo host)
+							{
+								latch.countDown();
+							}
 
-                            @Override
-                            public void onTimeout(String actionID) {
-                                latch.countDown();
-                            }
-                        },6000)).get();
+							@Override
+							public void onTimeout(String actionID)
+							{
+								latch.countDown();
+							}
+						}, 6000)).get();
 
-                        latch.await();
+						latch.await();
 					}
-
 
 					setDone(true);
 					setSucess(true);
@@ -290,13 +301,16 @@ public class MultipleGenericPubSubTest extends BrokerTest
 				}
 				catch (Throwable t)
 				{
-                    if(t.getCause() instanceof SubscriptionNotFound){
+					if (t.getCause() instanceof SubscriptionNotFound)
+					{
 
-                        // Sometimes its normal that no subscription is found
+						// Sometimes its normal that no subscription is found
 
-                    }else{
-                       throw t;
-                    }
+					}
+					else
+					{
+						throw t;
+					}
 
 				}
 				return this;

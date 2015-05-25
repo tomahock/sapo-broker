@@ -1,4 +1,3 @@
-
 package pt.sapo.services.definitions;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -7,11 +6,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -29,36 +29,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "getRolesResult"
+		"getRolesResult"
 })
 @XmlRootElement(name = "GetRolesResponse")
-public class GetRolesResponse {
+public class GetRolesResponse
+{
 
-    @XmlElement(name = "GetRolesResult")
-    protected ESBRoles getRolesResult;
+	@XmlElement(name = "GetRolesResult")
+	protected ESBRoles getRolesResult;
 
-    /**
-     * Gets the value of the getRolesResult property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ESBRoles }
-     *     
-     */
-    public ESBRoles getGetRolesResult() {
-        return getRolesResult;
-    }
+	/**
+	 * Gets the value of the getRolesResult property.
+	 * 
+	 * @return possible object is {@link ESBRoles }
+	 * 
+	 */
+	public ESBRoles getGetRolesResult()
+	{
+		return getRolesResult;
+	}
 
-    /**
-     * Sets the value of the getRolesResult property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ESBRoles }
-     *     
-     */
-    public void setGetRolesResult(ESBRoles value) {
-        this.getRolesResult = value;
-    }
+	/**
+	 * Sets the value of the getRolesResult property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link ESBRoles }
+	 * 
+	 */
+	public void setGetRolesResult(ESBRoles value)
+	{
+		this.getRolesResult = value;
+	}
 
 }

@@ -1,12 +1,12 @@
 package pt.com.broker.jsbridge;
 
+import java.io.File;
+import java.net.URI;
+
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.net.URI;
 
 public class JSBridgeServer
 {
@@ -27,13 +27,10 @@ public class JSBridgeServer
 		File r = new File(root_directory);
 		URI root_uri = r.getCanonicalFile().toURI();
 
-                
-                /* TODO TEMP CHANGE brsantos */
-		/*NettyHttpServer server = new NettyHttpServer(root_uri, true);
-		server.setPort(port);
-		server.setRouter(new JSBridgeRouter(root_uri));
-		server.addWebSocketHandler("/websocket", new JSBridgeHandler());
-		server.start();*/
+		/* TODO TEMP CHANGE brsantos */
+		/*
+		 * NettyHttpServer server = new NettyHttpServer(root_uri, true); server.setPort(port); server.setRouter(new JSBridgeRouter(root_uri)); server.addWebSocketHandler("/websocket", new JSBridgeHandler()); server.start();
+		 */
 		/* TEMP CHANGE brsantos */
 
 	}

@@ -44,7 +44,6 @@ public interface CliArgs
 	@Option(shortName = "d", defaultValue = "TOPIC")
 	String getDestinationType();
 
-
 	/**
 	 * 
 	 * @return STS location (e.g. https://services.sapo.pt/STS/).
@@ -110,7 +109,7 @@ public interface CliArgs
 
 	@Option(shortName = "o", defaultValue = "full")
 	String getOutput();
-	
+
 	@Option(longName = "strip-newlines", defaultValue = "false")
 	boolean stripNewlines();
 }

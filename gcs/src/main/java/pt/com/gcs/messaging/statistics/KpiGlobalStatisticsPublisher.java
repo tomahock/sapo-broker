@@ -17,24 +17,28 @@ import pt.sapo.socialbus.common.kpi.EventBuilder;
 import pt.sapo.socialbus.common.kpi.data.Event;
 import pt.sapo.socialbus.common.kpi.data.MetricItem;
 import pt.sapo.socialbus.common.kpi.data.MetricType;
+
 import com.google.common.collect.Lists;
 
 /**
  * Collects global agent statistics and publishes them to the KPI central.
  * */
-public class KpiGlobalStatisticsPublisher {
-	
+public class KpiGlobalStatisticsPublisher
+{
+
 	private static final Logger log = LoggerFactory.getLogger(KpiGlobalStatisticsPublisher.class);
-	
+
 	private final Date date;
 	private final Statistics statistics;
-	
-	public KpiGlobalStatisticsPublisher(Date date, Statistics statistics) {
+
+	public KpiGlobalStatisticsPublisher(Date date, Statistics statistics)
+	{
 		this.date = date;
 		this.statistics = statistics;
 	}
 
-	public void publishStatistics() {
+	public void publishStatistics()
+	{
 		List<Event> kpiEvents = Lists.newArrayList();
 		kpiEvents.addAll(getQeueInfoKpis());
 		kpiEvents.addAll(getTopicInfoKpis());
@@ -42,98 +46,108 @@ public class KpiGlobalStatisticsPublisher {
 		kpiEvents.addAll(getMiscInformationKpis());
 		KpiStatistics.publishKpiEvents(kpiEvents);
 	}
-	
-	private EventBuilder getEventBuilder(String destinationType){
+
+	private EventBuilder getEventBuilder(String destinationType)
+	{
 		EventBuilder eventBuilder = new EventBuilder()
-			.setTimestamp(date.getTime())
-			.setDomain(KpiStaticsConstants.BROKER_KPI_STATISTICS_DOMAIN)
-			.addStringAttribute(KpiStaticsConstants.AGENT_NAME_ATTRIBUTE, GcsInfo.getAgentName());
-		if(destinationType != null)
+				.setTimestamp(date.getTime())
+				.setDomain(KpiStaticsConstants.BROKER_KPI_STATISTICS_DOMAIN)
+				.addStringAttribute(KpiStaticsConstants.AGENT_NAME_ATTRIBUTE, GcsInfo.getAgentName());
+		if (destinationType != null)
 			eventBuilder.addStringAttribute(KpiStaticsConstants.DESTINATION_TYPE_ATTRIBUTE, destinationType);
 		return eventBuilder;
 	}
-	
-	private double getStatsValue(long value){
-		if(value == -1){
+
+	private double getStatsValue(long value)
+	{
+		if (value == -1)
+		{
 			return 0.0;
 		}
 		return (double) value;
 	}
-	
-	private double getStatsValue(long value, String name){
+
+	private double getStatsValue(long value, String name)
+	{
 		double doubleVal = getStatsValue(value);
 		log.debug("Long value for metric {}: {}", name, value);
 		log.debug("Double value for metric {}: {}", name, doubleVal);
 		return doubleVal;
 	}
-	
-	private List<Event> getQeueInfoKpis(){
+
+	private List<Event> getQeueInfoKpis()
+	{
 		List<Event> kpis = Lists.newArrayList();
-		for (QueueStatistics queueStats: statistics.getQueueStatistics())
+		for (QueueStatistics queueStats : statistics.getQueueStatistics())
 		{
 			EventBuilder eventBuilder = getEventBuilder(DestinationType.QUEUE.toString());
 			eventBuilder.addStringAttribute(KpiStaticsConstants.QUEUE_NAME_ATTRIBUTE, queueStats.getQueueName());
-			
+
 			eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_RECEIVED_METRIC, getStatsValue(queueStats.getReceivedMessages())));
 			eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_DELIVERED_METRIC, getStatsValue(queueStats.getDeliveredMessages())));
 			eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_EXPIRED_METRIC, getStatsValue(queueStats.getExpiredMessages())));
 			eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_REDELIVERED_METRIC, getStatsValue(queueStats.getRedeliveredMessages())));
-			
+
 			kpis.add(eventBuilder.buildMetricBundleEvent());
 		}
 		return kpis;
 	}
-	
-	private List<Event> getTopicInfoKpis(){
+
+	private List<Event> getTopicInfoKpis()
+	{
 		List<Event> kpis = Lists.newArrayList();
-		for(TopicStatistics topicStats: statistics.getTopicStatistics()){
+		for (TopicStatistics topicStats : statistics.getTopicStatistics())
+		{
 			EventBuilder eventBuilder = getEventBuilder(DestinationType.TOPIC.toString());
 			eventBuilder.addStringAttribute(KpiStaticsConstants.TOPIC_NAME_ATTRIBUTE, topicStats.getTopicName());
-			
-			//TODO: Perguntar ao Neves porque é que não existem estatísticas de mensagens recebidas (input rate) por tópico
+
+			// TODO: Perguntar ao Neves porque é que não existem estatísticas de mensagens recebidas (input rate) por tópico
 			eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_DELIVERED_METRIC, getStatsValue(topicStats.getDeliveredMessages(), KpiStaticsConstants.MESSAGES_DELIVERED_METRIC)));
 			eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_DISCARDED_METRIC, getStatsValue(topicStats.getDiscardedMessages())));
 			eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_DISPATCHED_METRIC, getStatsValue(topicStats.getDispatchedToQueueMessages())));
-			
+
 			kpis.add(eventBuilder.buildMetricBundleEvent());
 		}
 		return kpis;
 	}
-	
-	private List<Event> getChannelInfoKpis(){
+
+	private List<Event> getChannelInfoKpis()
+	{
 		List<Event> kpis = Lists.newArrayList();
-		for(ChannelStatistics channelStats: statistics.getChannelStatistics()){
+		for (ChannelStatistics channelStats : statistics.getChannelStatistics())
+		{
 			EventBuilder eventBuilder = getEventBuilder(channelStats.getChannelName());
-			
+
 			eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_RECEIVED_METRIC, getStatsValue(channelStats.getReceivedMessages())));
 			kpis.add(eventBuilder.buildMetricBundleEvent());
 		}
 		return kpis;
 	}
-	
-	private List<Event> getMiscInformationKpis(){
+
+	private List<Event> getMiscInformationKpis()
+	{
 		List<Event> kpis = Lists.newArrayList();
 		SystemStatistics systemStats = statistics.getSystemStatistics();
-		
+
 		EventBuilder eventBuilder = getEventBuilder(null);
 		eventBuilder.addStringAttribute("stats", "messages");
 		eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_INVALID_METRIC, getStatsValue(systemStats.getInvalidMessages())));
 		eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_ACCESS_DENIED_METRIC, getStatsValue(systemStats.getAccessDeniedMessages())));
 		kpis.add(eventBuilder.buildMetricBundleEvent());
-		
+
 		eventBuilder = getEventBuilder(null);
 		eventBuilder.addStringAttribute("stats", "connections");
 		eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.CONNECTION_TCP_METRIC, getStatsValue(systemStats.getTcpConnections())));
 		eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.CONNECTION_TCP_LEGACY_METRIC, getStatsValue(systemStats.getTcpLegacyConnections())));
 		eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.CONNECTION_SSL_METRIC, getStatsValue(systemStats.getSslConnections())));
 		kpis.add(eventBuilder.buildMetricBundleEvent());
-		
+
 		eventBuilder = getEventBuilder(null);
 		eventBuilder.addStringAttribute("stats", "system");
 		eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.MESSAGES_DELIVERY_FAILED_METRIC, getStatsValue(systemStats.getFailedMessages())));
 		eventBuilder.addMetricItem(new MetricItem(MetricType.counter, KpiStaticsConstants.SYSTEM_FAULTS_METRIC, getStatsValue(systemStats.getSystemFaults())));
 		kpis.add(eventBuilder.buildMetricBundleEvent());
-		
+
 		return kpis;
 	}
 

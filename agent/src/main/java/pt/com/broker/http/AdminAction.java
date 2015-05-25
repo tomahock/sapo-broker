@@ -22,36 +22,45 @@ import org.slf4j.LoggerFactory;
 import pt.com.broker.core.BrokerExecutor;
 import pt.com.gcs.messaging.Gcs;
 
-public class AdminAction extends HttpAction {
-	
+public class AdminAction extends HttpAction
+{
+
 	private static final Logger log = LoggerFactory.getLogger(AdminAction.class);
-	
+
 	private ByteBuf BAD_REQUEST_RESPONSE;
-	
-	public AdminAction(){
+
+	public AdminAction()
+	{
 		super();
-			byte[] bad_arr;
-			try {
-				bad_arr = "<p>Only the POST verb is supported</p>".getBytes("UTF-8");
-				BAD_REQUEST_RESPONSE = Unpooled.wrappedBuffer(bad_arr);
-			} catch (UnsupportedEncodingException e) {
-				log.error("Fatal JVM error!", e);
-				Shutdown.now();
-			}
+		byte[] bad_arr;
+		try
+		{
+			bad_arr = "<p>Only the POST verb is supported</p>".getBytes("UTF-8");
+			BAD_REQUEST_RESPONSE = Unpooled.wrappedBuffer(bad_arr);
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			log.error("Fatal JVM error!", e);
+			Shutdown.now();
+		}
 	}
 
 	@Override
-	public void service(ChannelHandlerContext ctx, FullHttpRequest request, FullHttpResponse response) {
+	public void service(ChannelHandlerContext ctx, FullHttpRequest request, FullHttpResponse response)
+	{
 		log.debug("AdminAction Called! Method used: {}", request.getMethod().toString());
 		Channel channel = ctx.channel();
-		if(request.getMethod().equals(HttpMethod.POST)){
+		if (request.getMethod().equals(HttpMethod.POST))
+		{
 			String action = request.content().toString(Charset.forName("UTF-8"));
 			log.debug("Action received: {}", action);
-			if(StringUtils.isBlank(action)){
+			if (StringUtils.isBlank(action))
+			{
 				throw new IllegalArgumentException("No arguments supplied");
 			}
-			
-			if(action.equals("SHUTDOWN")){
+
+			if (action.equals("SHUTDOWN"))
+			{
 				Runnable kill = new Runnable()
 				{
 					public void run()
@@ -60,21 +69,28 @@ public class AdminAction extends HttpAction {
 					}
 				};
 				BrokerExecutor.schedule(kill, 1000, TimeUnit.MILLISECONDS);
-			} else if (action.startsWith("QUEUE:")){
+			}
+			else if (action.startsWith("QUEUE:"))
+			{
 				String from = channel.remoteAddress().toString();
 				String local = channel.localAddress().toString();
 				String queueName = StringUtils.substringAfter(action, "QUEUE:");
 				Gcs.deleteQueue(queueName);
 				String message = String.format("[%s] Queue '%s' was deleted. Request from: '%s'%n", local, queueName, from);
 				log.info(message);
-				try {
+				try
+				{
 					response.content().writeBytes(Unpooled.wrappedBuffer("Queue deleted".getBytes("UTF-8")));
-				} catch (UnsupportedEncodingException e) {
+				}
+				catch (UnsupportedEncodingException e)
+				{
 					log.error("Error retrieving bytes from UTF-8 string.", e);
 				}
 				response.setStatus(HttpResponseStatus.OK);
 			}
-		} else {
+		}
+		else
+		{
 			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			response.content().writeBytes(BAD_REQUEST_RESPONSE.duplicate());
 		}

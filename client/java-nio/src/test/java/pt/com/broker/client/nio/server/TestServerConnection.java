@@ -1,7 +1,5 @@
 package pt.com.broker.client.nio.server;
 
-
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -27,263 +25,256 @@ import pt.com.broker.types.NetProtocolType;
  * Created by luissantos on 12-05-2014.
  */
 
-//FIXME: Isn't this supposed to be an integration test?
-public class TestServerConnection extends ServerBaseTest {
+// FIXME: Isn't this supposed to be an integration test?
+public class TestServerConnection extends ServerBaseTest
+{
 
-    @Test()
-    public void testConnection() throws ExecutionException, InterruptedException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-        List<SocketServer> servers = getServers();
-        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
-        Bootstrap b = new Bootstrap(new ChannelInitializer(serializer,null,null, null), DefaultNettyContext.get());
-        HostContainer container = new HostContainer(b);
-        for(SocketServer server : servers){
-            HostInfo host = new HostInfo("127.0.0.1", server.getPort());
-            host.setReaderIdleTime(4000);
-            host.setWriterIdleTime(2000);
-            container.add(host);
-        }
-        Future<HostInfo> future = container.connectAsync();
-        HostInfo hostInfo = future.get(10000,TimeUnit.MILLISECONDS);
-        Assert.assertNotNull(hostInfo);
-        //container.shutdown();
-        //f.get(10000,TimeUnit.MILLISECONDS);
-        ShutDownServers(servers);
-    }
+	@Test()
+	public void testConnection() throws ExecutionException, InterruptedException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException
+	{
+		List<SocketServer> servers = getServers();
+		BindingSerializer serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
+		Bootstrap b = new Bootstrap(new ChannelInitializer(serializer, null, null, null), DefaultNettyContext.get());
+		HostContainer container = new HostContainer(b);
+		for (SocketServer server : servers)
+		{
+			HostInfo host = new HostInfo("127.0.0.1", server.getPort());
+			host.setReaderIdleTime(4000);
+			host.setWriterIdleTime(2000);
+			container.add(host);
+		}
+		Future<HostInfo> future = container.connectAsync();
+		HostInfo hostInfo = future.get(10000, TimeUnit.MILLISECONDS);
+		Assert.assertNotNull(hostInfo);
+		// container.shutdown();
+		// f.get(10000,TimeUnit.MILLISECONDS);
+		ShutDownServers(servers);
+	}
 
+	@Test()
+	public void testClosedServers() throws InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException
+	{
 
+		if (skipTest(Utils.isAndroid()))
+		{
+			return;
+		}
 
-    @Test()
-    public void testClosedServers() throws InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+		List<SocketServer> servers = getServers();
 
-        if(skipTest(Utils.isAndroid())){
-            return;
-        }
+		BindingSerializer serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        List<SocketServer> servers = getServers();
+		HostContainer container = new HostContainer(new Bootstrap(new ChannelInitializer(serializer, null, null, null), DefaultNettyContext.get()));
 
-        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
+		for (SocketServer server : servers)
+		{
+			container.add(new HostInfo("127.0.0.1", server.getPort()));
+		}
 
-        HostContainer container = new HostContainer(new Bootstrap(new ChannelInitializer( serializer,null,null, null), DefaultNettyContext.get()));
+		int total_servers = container.size();
 
-        for(SocketServer server : servers){
-            container.add(new HostInfo("127.0.0.1",server.getPort()));
-        }
+		Future<HostInfo> future = container.connectAsync();
 
+		HostInfo host = future.get(20000L, TimeUnit.MILLISECONDS);
 
-        int total_servers = container.size();
+		Assert.assertNotNull(host);
 
-        Future<HostInfo> future = container.connectAsync();
+		Assert.assertTrue(host.isActive());
 
-        HostInfo host = future.get(20000L,TimeUnit.MILLISECONDS);
+		System.out.println("------------------------------------");
 
-        Assert.assertNotNull(host);
+		Thread.sleep(4000);
 
-        Assert.assertTrue(host.isActive());
+		for (HostInfo chost : container.getConnectedHosts())
+		{
+			System.out.println("Status: " + chost.getStatus());
+		}
 
-        System.out.println("------------------------------------");
+		Collection<SocketServer> rservers = getRandomServers(servers);
 
-        Thread.sleep(4000);
+		System.out.println("Random servers: " + rservers.size());
+		ShutDownServers(rservers);
 
-        for(HostInfo chost : container.getConnectedHosts()){
-            System.out.println("Status: "+chost.getStatus());
-        }
+		Thread.sleep(4000);
 
-        Collection<SocketServer> rservers  = getRandomServers(servers);
+		int not_connected = container.notConnectedHosts().size();
+		int connected_servers = container.getConnectedSize();
 
-        System.out.println("Random servers: "+rservers.size());
-        ShutDownServers(rservers);
+		for (HostInfo chost : container.getConnectedHosts())
+		{
+			System.out.println("Status: " + chost.getStatus());
+		}
 
+		System.out.println("Connected Servers: " + connected_servers);
+		System.out.println("Not Connected Servers: " + not_connected);
 
+		Assert.assertEquals(total_servers, (not_connected + connected_servers));
 
-        Thread.sleep(4000);
+		ShutDownServers(servers);
 
-        int not_connected = container.notConnectedHosts().size();
-        int connected_servers = container.getConnectedSize();
+		container.disconnect().get();
 
+		for (HostInfo chost : container.notConnectedHosts())
+		{
+			System.out.println("Status: " + chost.getStatus());
+		}
 
-        for(HostInfo chost : container.getConnectedHosts()){
-            System.out.println("Status: "+chost.getStatus());
-        }
+		Thread.sleep(4000);
 
-        System.out.println("Connected Servers: "+connected_servers);
-        System.out.println("Not Connected Servers: "+not_connected);
+	}
 
-        Assert.assertEquals(total_servers, (not_connected + connected_servers ));
+	@Test()
+	public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException
+	{
 
-        ShutDownServers(servers);
+		if (skipTest(Utils.isAndroid()))
+		{
+			return;
+		}
 
+		if (!userHasPermissions())
+		{
+			return;
+		}
 
-        container.disconnect().get();
+		List<SocketServer> servers = getServers();
 
-        for(HostInfo chost : container.notConnectedHosts()){
-            System.out.println("Status: "+chost.getStatus());
-        }
+		BindingSerializer serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        Thread.sleep(4000);
+		Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer, null, new PongConsumerManager(), null), DefaultNettyContext.get());
 
+		HostContainer container = new HostContainer(bootstrap);
 
-    }
+		for (SocketServer server : servers)
+		{
+			HostInfo hostInfo = new HostInfo("127.0.0.1", server.getPort());
+			hostInfo.setConnectTimeout(500);
+			hostInfo.setReaderIdleTime(4000);
+			hostInfo.setWriterIdleTime(2000);
 
+			container.add(hostInfo);
+		}
 
+		Future<HostInfo> future = container.connectAsync();
 
-    @Test()
-    public void testHeartbeat() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+		HostInfo host = future.get(20000L, TimeUnit.MILLISECONDS);
 
-        if(skipTest(Utils.isAndroid())){
-            return;
-        }
+		// Wait for a bit for the client to get connected with all the servers
+		Thread.sleep(2000);
 
-        if(!userHasPermissions()){
-            return;
-        }
+		Collection<SocketServer> random_servers = getRandomServers(servers);
 
-        List<SocketServer> servers = getServers();
+		for (SocketServer s : random_servers)
+		{
 
-        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
+			if (!ipTables.blockPort(currentChainName(), s.getPort()))
+			{
+				System.out.println("Error blocking port");
+			}
 
-        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager(), null), DefaultNettyContext.get());
+			System.out.println("Blocking server: " + s.getPort());
 
-        HostContainer container = new HostContainer(bootstrap);
+		}
 
+		int blockedservers = random_servers.size();
 
-        for(SocketServer server : servers){
-            HostInfo hostInfo = new HostInfo("127.0.0.1",server.getPort());
-            hostInfo.setConnectTimeout(500);
-            hostInfo.setReaderIdleTime(4000);
-            hostInfo.setWriterIdleTime(2000);
+		Thread.sleep(15000);
 
-            container.add(hostInfo);
-        }
+		int connected_servers = container.getConnectedHosts().size();
 
-        Future<HostInfo> future = container.connectAsync();
+		System.out.println("Connected Servers: " + connected_servers);
+		System.out.println("Blocked Servers: " + blockedservers);
 
-        HostInfo host = future.get(20000L,TimeUnit.MILLISECONDS);
+		Assert.assertEquals(container.size(), connected_servers + blockedservers);
 
-        // Wait for a bit for the client to get connected with all the servers
-        Thread.sleep(2000);
+		ShutDownServers(servers);
 
+	}
 
-        Collection<SocketServer> random_servers = getRandomServers(servers);
+	@Test()
+	public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException
+	{
 
-        for(SocketServer s : random_servers){
+		if (!userHasPermissions())
+		{
 
-            if(!ipTables.blockPort(currentChainName(),s.getPort())){
-                System.out.println("Error blocking port");
-            }
+			return;
+		}
 
-            System.out.println("Blocking server: "+s.getPort());
+		List<SocketServer> servers = getServers();
 
-        }
+		BindingSerializer serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
 
-        int blockedservers = random_servers.size();
+		Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer, null, new PongConsumerManager(), null), DefaultNettyContext.get());
 
-        Thread.sleep(15000);
+		HostContainer container = new HostContainer(bootstrap);
 
-        int connected_servers = container.getConnectedHosts().size();
+		for (SocketServer server : servers)
+		{
+			HostInfo host = new HostInfo("127.0.0.1", server.getPort());
+			host.setConnectTimeout(500);
+			host.setReaderIdleTime(4000);
+			host.setWriterIdleTime(2000);
 
+			container.add(host);
+		}
 
-        System.out.println("Connected Servers: "+connected_servers);
-        System.out.println("Blocked Servers: "+blockedservers);
+		Future<HostInfo> future = container.connectAsync();
 
+		HostInfo host = future.get(20000L, TimeUnit.MILLISECONDS);
 
-        Assert.assertEquals(container.size(), connected_servers + blockedservers);
+		// Wait for a bit for the client to get connected with all the servers
+		Thread.sleep(2000);
 
-        ShutDownServers(servers);
+		Collection<SocketServer> random_servers = getRandomServers(servers);
 
-    }
+		for (SocketServer s : random_servers)
+		{
 
+			if (!ipTables.blockPort(currentChainName(), s.getPort()))
+			{
+				System.out.println("Error blocking port");
+			}
 
+			System.out.println("Blocking server: " + s.getPort());
 
-    @Test()
-    public void testHeartbeatWithReconnect() throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+		}
 
-        if(!userHasPermissions()){
+		System.out.println("------ sleeping-------");
 
-            return;
-        }
+		Thread.sleep(10000);
 
-        List<SocketServer> servers = getServers();
+		int blockedservers = random_servers.size();
 
-        BindingSerializer  serializer = BindingSerializerFactory.getInstance(NetProtocolType.JSON);
+		int connected_servers = container.getConnectedSize();
 
-        Bootstrap bootstrap = new Bootstrap(new ChannelInitializer(serializer,null,new PongConsumerManager(), null), DefaultNettyContext.get());
+		System.out.println("Connected Servers: " + connected_servers);
+		System.out.println("Blocked Servers: " + blockedservers);
 
-        HostContainer container = new HostContainer(bootstrap);
+		Assert.assertEquals(container.getHostsSize(), connected_servers + blockedservers);
 
+		for (SocketServer s : random_servers)
+		{
 
-        for(SocketServer server : servers){
-            HostInfo host = new HostInfo("127.0.0.1",server.getPort());
-            host.setConnectTimeout(500);
-            host.setReaderIdleTime(4000);
-            host.setWriterIdleTime(2000);
+			if (!ipTables.removePortBlock(currentChainName(), s.getPort()))
+			{
+				System.out.println("Error ublocking port");
+			}
 
-            container.add(host);
-        }
+			System.out.println("Unblocking server: " + s.getPort());
 
-        Future<HostInfo> future = container.connectAsync();
+		}
 
-        HostInfo host = future.get(20000L,TimeUnit.MILLISECONDS);
+		Thread.sleep(10000);
 
-        // Wait for a bit for the client to get connected with all the servers
-        Thread.sleep(2000);
+		connected_servers = container.getConnectedSize();
 
+		System.out.println("Total Servers: " + servers.size());
+		System.out.println("Connected Servers: " + connected_servers);
 
-        Collection<SocketServer> random_servers = getRandomServers(servers);
+		Assert.assertEquals(container.getHostsSize(), connected_servers);
 
-        for(SocketServer s : random_servers){
-
-            if(!ipTables.blockPort(currentChainName(),s.getPort())){
-                System.out.println("Error blocking port");
-            }
-
-            System.out.println("Blocking server: "+s.getPort());
-
-        }
-
-        System.out.println("------ sleeping-------");
-
-        Thread.sleep(10000);
-
-        int blockedservers = random_servers.size();
-
-        int connected_servers = container.getConnectedSize();
-
-
-        System.out.println("Connected Servers: "+connected_servers);
-        System.out.println("Blocked Servers: "+blockedservers);
-
-        Assert.assertEquals(container.getHostsSize(), connected_servers + blockedservers);
-
-
-        for(SocketServer s : random_servers){
-
-            if(!ipTables.removePortBlock(currentChainName(), s.getPort())){
-                System.out.println("Error ublocking port");
-            }
-
-            System.out.println("Unblocking server: "+s.getPort());
-
-        }
-
-
-
-        Thread.sleep(10000);
-
-        connected_servers = container.getConnectedSize();
-
-
-        System.out.println("Total Servers: "+servers.size());
-        System.out.println("Connected Servers: "+connected_servers);
-
-
-        Assert.assertEquals(container.getHostsSize(), connected_servers);
-
-        ShutDownServers(servers);
-    }
-
-
-
-
-
+		ShutDownServers(servers);
+	}
 
 }

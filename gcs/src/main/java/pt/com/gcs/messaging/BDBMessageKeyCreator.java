@@ -1,11 +1,12 @@
 package pt.com.gcs.messaging;
 
+import pt.com.gcs.messaging.serialization.MessageMarshaller;
+
 import com.sleepycat.bind.tuple.StringBinding;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.SecondaryDatabase;
 import com.sleepycat.je.SecondaryKeyCreator;
-import pt.com.gcs.messaging.serialization.MessageMarshaller;
 
 /**
  * BDBMessageKeyCreator implements SecondaryKeyCreator witch is used for extracting single-valued secondary keys from primary records.

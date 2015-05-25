@@ -3,8 +3,8 @@ package pt.com.broker.codec.xml;
 import java.nio.charset.Charset;
 import java.util.Date;
 
-import org.caudexorigo.time.ISO8601;
 import org.apache.commons.lang3.StringUtils;
+import org.caudexorigo.time.ISO8601;
 
 import pt.com.broker.codec.xml.soap.SoapEnvelope;
 import pt.com.broker.codec.xml.soap.SoapFault;
@@ -190,14 +190,17 @@ public class Builder
 		{
 			NetAction netAction = new NetAction(NetAction.ActionType.PING);
 
-            String pingactionId = null;
+			String pingactionId = null;
 
-            if(msg.body.checkStatus.actionId !=null){
-                pingactionId = msg.body.checkStatus.actionId;
+			if (msg.body.checkStatus.actionId != null)
+			{
+				pingactionId = msg.body.checkStatus.actionId;
 
-            }else{
-                pingactionId = NetPong.getUniversalActionId();
-            }
+			}
+			else
+			{
+				pingactionId = NetPong.getUniversalActionId();
+			}
 
 			NetPing netPing = new NetPing(pingactionId);
 
@@ -325,8 +328,8 @@ public class Builder
 			break;
 		case PING:
 			soap.body.checkStatus = new CheckStatus();
-            NetPing ping = netMessage.getAction().getPingMessage();
-            soap.body.checkStatus.actionId = ping.getActionId();
+			NetPing ping = netMessage.getAction().getPingMessage();
+			soap.body.checkStatus.actionId = ping.getActionId();
 			break;
 		case PONG:
 			NetPong pong = netMessage.getAction().getPongMessage();

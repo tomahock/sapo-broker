@@ -1,8 +1,8 @@
 package pt.com.broker.types;
 
-import pt.com.broker.types.NetAction.ActionType;
-
 import java.util.Map;
+
+import pt.com.broker.types.NetAction.ActionType;
 
 /**
  * Represents a Fault message.
@@ -12,26 +12,24 @@ import java.util.Map;
 public final class NetFault
 {
 
-    public static final String InvalidMessageSizeErrorCode = "1101";
-    public static final String UnknownEncodingProtocolCode = "1102"; // Not sent
-    public static final String UnknownEncodingVersionCode = "1103"; // Not sent
-    public static final String InvalidMessageFormatErrorCode = "1201";
-    public static final String UnexpectedMessageTypeErrorCode = "1202";
-    public static final String InvalidDestinationNameErrorCode = "2001";
-    public static final String InvalidMessageDestinationTypeErrorCode = "2002";
-    public static final String MaximumNrQueuesReachedErrorCode = "2003";
-    public static final String MaximumDistinctSubscriptionsReachedErrorCode = "2004" ;
-    public static final String PollTimeoutErrorCode = "2005";
-    public static final String NoMessageInQueueErrorCode = "2006" ;
-    public static final String NoVirtualQueueSupportErrorCode = "2007";
-    public static final String AuthenticationFailedErrorCode = "3101";
-    public static final String UnknownAuthenticationTypeCode = "3102";
-    public static final String AccessDeniedErrorCode = "3103";
-    public static final String InvalidAuthenticationChannelTypeCode = "3201";
+	public static final String InvalidMessageSizeErrorCode = "1101";
+	public static final String UnknownEncodingProtocolCode = "1102"; // Not sent
+	public static final String UnknownEncodingVersionCode = "1103"; // Not sent
+	public static final String InvalidMessageFormatErrorCode = "1201";
+	public static final String UnexpectedMessageTypeErrorCode = "1202";
+	public static final String InvalidDestinationNameErrorCode = "2001";
+	public static final String InvalidMessageDestinationTypeErrorCode = "2002";
+	public static final String MaximumNrQueuesReachedErrorCode = "2003";
+	public static final String MaximumDistinctSubscriptionsReachedErrorCode = "2004";
+	public static final String PollTimeoutErrorCode = "2005";
+	public static final String NoMessageInQueueErrorCode = "2006";
+	public static final String NoVirtualQueueSupportErrorCode = "2007";
+	public static final String AuthenticationFailedErrorCode = "3101";
+	public static final String UnknownAuthenticationTypeCode = "3102";
+	public static final String AccessDeniedErrorCode = "3103";
+	public static final String InvalidAuthenticationChannelTypeCode = "3201";
 
-
-
-    public static final NetMessage InvalidMessageSizeErrorMessage;
+	public static final NetMessage InvalidMessageSizeErrorMessage;
 	public static final NetMessage UnknownEncodingProtocolMessage; // Not sent
 	public static final NetMessage UnknownEncodingVersionMessage; // Not sent
 	public static final NetMessage InvalidMessageFormatErrorMessage;

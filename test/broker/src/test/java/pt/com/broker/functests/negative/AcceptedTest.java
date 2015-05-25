@@ -10,8 +10,9 @@ import pt.com.broker.types.NetProtocolType;
 public class AcceptedTest extends GenericNetMessageNegativeTest
 {
 
-    public AcceptedTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public AcceptedTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Unexpected Message - Accepted");
 

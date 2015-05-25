@@ -1,10 +1,11 @@
 package pt.com.broker.client.sample;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.caudexorigo.Shutdown;
 import org.caudexorigo.cli.CliFactory;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.CliArgs;
 import pt.com.broker.types.Headers;

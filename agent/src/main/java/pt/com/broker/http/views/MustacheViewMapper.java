@@ -4,26 +4,31 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 
-public class MustacheViewMapper {
-	
+public class MustacheViewMapper
+{
+
 	private static final MustacheViewMapper INSTANCE = new MustacheViewMapper();
-	
-	//This object allready has a built in Guava cache.
+
+	// This object allready has a built in Guava cache.
 	private MustacheFactory mFactory = new DefaultMustacheFactory();
-	
-	private MustacheViewMapper(){
+
+	private MustacheViewMapper()
+	{
 		init();
 	}
-	
-	private void init(){
-		
+
+	private void init()
+	{
+
 	}
-	
-	public Mustache getView(String viewKey){
+
+	public Mustache getView(String viewKey)
+	{
 		return mFactory.compile(viewKey);
 	}
-	
-	public static final MustacheViewMapper getInstance(){
+
+	public static final MustacheViewMapper getInstance()
+	{
 		return INSTANCE;
 	}
 

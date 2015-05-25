@@ -61,14 +61,13 @@ public abstract class Test extends BaseTest
 
 	protected abstract void build() throws Throwable;
 
-
-    protected  void logBuildTest(){
-        log.info(String.format("Building test - %s ",getName()));
-    }
+	protected void logBuildTest()
+	{
+		log.info(String.format("Building test - %s ", getName()));
+	}
 
 	public final boolean run(int nrOfRuns, TestsResults testResults)
 	{
-
 
 		boolean result = true;
 		if (skipTest())
@@ -79,7 +78,7 @@ public abstract class Test extends BaseTest
 		try
 		{
 
-            logBuildTest();
+			logBuildTest();
 			build();
 
 			log.info("Initializing  test - " + getName());
@@ -99,7 +98,7 @@ public abstract class Test extends BaseTest
 			int count = nrOfRuns;
 			do
 			{
-                log.info("Timeout: "+getTimeout());
+				log.info("Timeout: " + getTimeout());
 
 				executionResults = executer.invokeAll(activities, getTimeout(), TimeUnit.MILLISECONDS);
 
@@ -133,9 +132,7 @@ public abstract class Test extends BaseTest
 
 			if (!okToTimeOut() && (getAction() != null))
 			{
-                log.error(t.getMessage(),t);
-
-
+				log.error(t.getMessage(), t);
 
 				if (!getAction().isSucess())
 				{
@@ -182,14 +179,15 @@ public abstract class Test extends BaseTest
 		else
 			testResults.addFailedTest(getNameAndEncoding(testResults));
 
-        end();
+		end();
 
 		return result;
 	}
 
-    protected void end(){
+	protected void end()
+	{
 
-    }
+	}
 
 	private String getNameAndEncoding(TestsResults testResults)
 	{
@@ -204,13 +202,12 @@ public abstract class Test extends BaseTest
 		return run(1, testResults);
 	}
 
-
-    @org.junit.Test()
-    public final void run(){
-        Boolean result =  run(1, new TestsResults());
-        assertTrue(result);
-    }
-
+	@org.junit.Test()
+	public final void run()
+	{
+		Boolean result = run(1, new TestsResults());
+		assertTrue(result);
+	}
 
 	public String getName()
 	{
@@ -277,7 +274,8 @@ public abstract class Test extends BaseTest
 		return okToTimeOut;
 	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name)
+	{
+		this.name = name;
+	}
 }

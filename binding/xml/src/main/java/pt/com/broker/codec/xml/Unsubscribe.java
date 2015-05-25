@@ -7,13 +7,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Unsubscribe")
 public class Unsubscribe
 {
-    @XmlAttribute(name = "action-id")
+	@XmlAttribute(name = "action-id")
 	public String actionId;
 
-    @XmlElement(name = "DestinationName")
+	@XmlElement(name = "DestinationName")
 	public String destinationName;
 
-    @XmlElement(name = "DestinationType")
+	@XmlElement(name = "DestinationType")
 	public String destinationType;
 
 	public Unsubscribe()

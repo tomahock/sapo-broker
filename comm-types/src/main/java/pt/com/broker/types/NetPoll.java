@@ -47,13 +47,15 @@ public final class NetPoll implements NetSubscribeAction
 		return System.currentTimeMillis() > expires;
 	}
 
-    @Override
-    public NetAction.DestinationType getDestinationType() {
-        return NetAction.DestinationType.QUEUE;
-    }
+	@Override
+	public NetAction.DestinationType getDestinationType()
+	{
+		return NetAction.DestinationType.QUEUE;
+	}
 
-    @Override
-    public Map<String, String> getHeaders() {
-        return new HashMap<>();
-    }
+	@Override
+	public Map<String, String> getHeaders()
+	{
+		return new HashMap<>();
+	}
 }

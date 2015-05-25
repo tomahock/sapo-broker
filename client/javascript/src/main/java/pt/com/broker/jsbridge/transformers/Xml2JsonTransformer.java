@@ -1,15 +1,16 @@
 package pt.com.broker.jsbridge.transformers;
 
-import org.caudexorigo.ErrorAnalyser;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.com.broker.jsbridge.MessageTransformer;
-import pt.com.broker.types.NetBrokerMessage;
-
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.caudexorigo.ErrorAnalyser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.jsbridge.MessageTransformer;
+import pt.com.broker.types.NetBrokerMessage;
 
 public class Xml2JsonTransformer implements MessageTransformer
 {

@@ -1,7 +1,6 @@
 package pt.com.gcs.conf;
 
 import java.io.File;
-import java.io.FileReader;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import pt.com.broker.auth.ProviderInfo;
@@ -66,22 +64,26 @@ public class GlobalConfig
 	private int maxDistinctSubscriptions;
 	private boolean preferLocalConsumers = true;
 	private boolean supportVirtualQueues = true;
-	//Max Stake age by queues prefix
+	// Max Stake age by queues prefix
 	private Map<String, Long> queuePrefixConfig = new HashMap<String, Long>();
 
 	private GlobalConfig()
 	{
-		try {
+		try
+		{
 			String configFile = GcsInfo.getGlobalConfigFilePath();
 			String globalConfigPath = null;
 			File xmlFile = null;
-			//FIXME: Place the validator in the resources folder as well.
+			// FIXME: Place the validator in the resources folder as well.
 			Source schemaLocation = new StreamSource(GlobalConfig.class.getResourceAsStream("/pt/com/gcs/etc/global_config.xsd"));
 			URL globalConfigUrl = getClass().getClassLoader().getResource(configFile);
-			if(globalConfigUrl != null){
+			if (globalConfigUrl != null)
+			{
 				xmlFile = new File(globalConfigUrl.toURI());
 				globalConfigPath = globalConfigUrl.toURI().getPath();
-			} else {
+			}
+			else
+			{
 				xmlFile = new File(configFile);
 				globalConfigPath = configFile;
 			}
@@ -96,7 +98,9 @@ public class GlobalConfig
 			Document doc = parseXmlFile(globalConfigPath, false);
 
 			init(doc);
-		} catch (URISyntaxException e) {
+		}
+		catch (URISyntaxException e)
+		{
 			// Throwable t = ErrorAnalyser.findRootCause(e);
 			log.error("Fatal error: {}", e.getMessage());
 			Shutdown.now(e);
@@ -170,24 +174,27 @@ public class GlobalConfig
 
 		String maxStoreTimeStr = extractElementInfo(doc, "store-time")[0];
 		maxStoreTime = Long.parseLong(maxStoreTimeStr);
-		
+
 		queuePrefixConfig = loadQueuePrefixConfig(doc);
 
 	}
-	
-	private Map<String, Long> loadQueuePrefixConfig(Document doc){
+
+	private Map<String, Long> loadQueuePrefixConfig(Document doc)
+	{
 		Map<String, Long> queuePrefixConfig = new HashMap<String, Long>();
 		NodeList prefixes = doc.getElementsByTagName("prefixes");
-		if(prefixes.getLength() > 0){
-			//This means we have prefixes to load
+		if (prefixes.getLength() > 0)
+		{
+			// This means we have prefixes to load
 			NodeList prefixNodes = ((Element) prefixes.item(0)).getElementsByTagName("prefix");
-			//Because we validate the xml as good developers we are, we can be assured that this nodelist
-			//will allways be filled.
-			for(int i = 0; i < prefixNodes.getLength(); i++){
+			// Because we validate the xml as good developers we are, we can be assured that this nodelist
+			// will allways be filled.
+			for (int i = 0; i < prefixNodes.getLength(); i++)
+			{
 				Element prefixNode = (Element) prefixNodes.item(i);
-				//Queue prefix
+				// Queue prefix
 				String prefixName = prefixNode.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
-				//Queue prefix timer
+				// Queue prefix timer
 				Long prefixStaleAge = Long.valueOf(prefixNode.getElementsByTagName("max-stale-age").item(0).getFirstChild().getNodeValue());
 				queuePrefixConfig.put(prefixName, prefixStaleAge);
 			}
@@ -423,7 +430,7 @@ public class GlobalConfig
 	{
 		return instance.queueMaxStaleAge;
 	}
-	
+
 	public static long getRedeliveryInterval()
 	{
 		return instance.queueRedeliveryInterval;
@@ -438,8 +445,9 @@ public class GlobalConfig
 	{
 		return instance.maxDistinctSubscriptions;
 	}
-	
-	public static Map<String, Long> getQueuePrefixConfig(){
+
+	public static Map<String, Long> getQueuePrefixConfig()
+	{
 		return instance.queuePrefixConfig;
 	}
 }

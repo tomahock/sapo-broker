@@ -6,8 +6,9 @@ import pt.com.broker.types.NetProtocolType;
 public class BadEncodingVersionTest extends GenericNegativeTest
 {
 
-    public BadEncodingVersionTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public BadEncodingVersionTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Bad Encoding Version Test");
 
@@ -22,9 +23,7 @@ public class BadEncodingVersionTest extends GenericNegativeTest
 	{
 	}
 
-	/*@Override
-	public boolean skipTest()
-	{
-		return true;
-	}*/
+	/*
+	 * @Override public boolean skipTest() { return true; }
+	 */
 }

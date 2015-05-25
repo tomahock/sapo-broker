@@ -19,86 +19,102 @@ import pt.com.broker.types.BindingSerializer;
  * @author vagrant
  * @version $Id: $Id
  */
-public abstract class BaseChannelInitializer extends io.netty.channel.ChannelInitializer<Channel> {
+public abstract class BaseChannelInitializer extends io.netty.channel.ChannelInitializer<Channel>
+{
 
+	/** Constant <code>log</code> */
+	protected static final Logger log = LoggerFactory.getLogger(BaseChannelInitializer.class);
 
-    /** Constant <code>log</code> */
-    protected static final Logger log = LoggerFactory.getLogger(BaseChannelInitializer.class);
+	protected final BindingSerializer serializer;
 
-    protected final BindingSerializer serializer;
+	private boolean oldFraming = false;
 
-    private boolean oldFraming = false;
+	/**
+	 * <p>
+	 * Constructor for BaseChannelInitializer.
+	 * </p>
+	 *
+	 * @param serializer
+	 *            a {@link pt.com.broker.types.BindingSerializer} object.
+	 */
+	public BaseChannelInitializer(BindingSerializer serializer)
+	{
+		this.serializer = serializer;
+	}
 
-    /**
-     * <p>Constructor for BaseChannelInitializer.</p>
-     *
-     * @param serializer a {@link pt.com.broker.types.BindingSerializer} object.
-     */
-    public BaseChannelInitializer(BindingSerializer serializer) {
-        this.serializer= serializer;
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected void initChannel(Channel ch) throws Exception
+	{
 
-    /** {@inheritDoc} */
-    @Override
-    protected void initChannel(Channel ch) throws Exception {
+		ChannelPipeline pipeline = ch.pipeline();
 
-        ChannelPipeline pipeline = ch.pipeline();
+		if (isOldFraming())
+		{
 
-        if(isOldFraming()){
+			/* add Message <> byte encode decoder */
+			pipeline.addLast("broker_message_decoder", new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(serializer));
+			pipeline.addLast("broker_message_encoder", new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder(serializer));
 
-            /* add Message <> byte encode decoder */
-            pipeline.addLast("broker_message_decoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageDecoder(serializer));
-            pipeline.addLast("broker_message_encoder",new pt.com.broker.client.nio.codecs.oldframing.BrokerMessageEncoder(serializer));
+		}
+		else
+		{
 
+			/* add Message <> byte encode decoder */
+			pipeline.addLast("broker_message_decoder", new BrokerMessageDecoder(serializer));
+			pipeline.addLast("broker_message_encoder", new BrokerMessageEncoder(serializer));
+		}
 
-        }else{
+		ch.pipeline().addLast("byte_message_encoder", new MessageToByteEncoder<Byte[]>()
+		{
 
-            /* add Message <> byte encode decoder */
-            pipeline.addLast("broker_message_decoder",new BrokerMessageDecoder(serializer));
-            pipeline.addLast("broker_message_encoder",new BrokerMessageEncoder(serializer));
-        }
+			@Override
+			protected void encode(ChannelHandlerContext ctx, Byte[] msg, ByteBuf out) throws Exception
+			{
 
+				byte[] data = new byte[msg.length];
 
-        ch.pipeline().addLast("byte_message_encoder",new MessageToByteEncoder<Byte[]>(){
+				int pos = 0;
+				for (Byte bye : msg)
+				{
+					data[pos++] = bye.byteValue();
+				}
 
-            @Override
-            protected void encode(ChannelHandlerContext ctx, Byte[] msg, ByteBuf out) throws Exception {
+				out.writeBytes(data);
+			}
+		});
+	}
 
-                byte[] data = new byte[msg.length];
+	/**
+	 * <p>
+	 * isOldFraming.
+	 * </p>
+	 *
+	 * @return a boolean.
+	 */
+	protected boolean isOldFraming()
+	{
+		return oldFraming;
+	}
 
-                int pos = 0;
-                for(Byte bye : msg){
-                    data[pos++] = bye.byteValue();
-                }
-
-                out.writeBytes(data);
-            }
-        });
-    }
-
-
-    /**
-     * <p>isOldFraming.</p>
-     *
-     * @return a boolean.
-     */
-    protected boolean isOldFraming(){
-        return  oldFraming;
-    }
-
-    /**
-     * <p>Setter for the field <code>oldFraming</code>.</p>
-     *
-     * @param oldFraming a boolean.
-     */
-    public void setOldFraming(boolean oldFraming) {
-        this.oldFraming = oldFraming;
-    }
+	/**
+	 * <p>
+	 * Setter for the field <code>oldFraming</code>.
+	 * </p>
+	 *
+	 * @param oldFraming
+	 *            a boolean.
+	 */
+	public void setOldFraming(boolean oldFraming)
+	{
+		this.oldFraming = oldFraming;
+	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-			throws Exception {
+			throws Exception
+	{
 		log.debug("********Unexpected exception caught.*********", cause);
 	}
-    
+
 }

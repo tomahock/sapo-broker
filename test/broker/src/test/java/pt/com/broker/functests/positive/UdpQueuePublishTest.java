@@ -6,11 +6,11 @@ import pt.com.broker.types.NetProtocolType;
 public class UdpQueuePublishTest extends UdpPublishTest
 {
 
+	public UdpQueuePublishTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-    public UdpQueuePublishTest(NetProtocolType protocolType) {
-        super(protocolType);
-
-        setName("UDP queue publication");
+		setName("UDP queue publication");
 		setDestinationType(DestinationType.QUEUE);
 	}
 }

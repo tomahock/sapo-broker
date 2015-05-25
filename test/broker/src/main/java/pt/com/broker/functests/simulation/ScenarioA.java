@@ -12,7 +12,7 @@ import pt.com.broker.types.NetProtocolType;
 
 public class ScenarioA
 {
-	
+
 	static final Logger log = LoggerFactory.getLogger(ScenarioA.class);
 
 	public static void run()
@@ -61,9 +61,9 @@ public class ScenarioA
 
 	public static void main(String[] args)
 	{
-		
+
 		log.info("Starting test battery for Scenario A.");
-//		System.out.println("Starting Scenario A");
+		// System.out.println("Starting Scenario A");
 
 		TestMachines machines = TestMachines.All;
 

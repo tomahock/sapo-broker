@@ -1,9 +1,9 @@
 package pt.com.broker.performance;
 
+import java.util.concurrent.Callable;
+
 import pt.com.broker.client.BrokerClient;
 import pt.com.broker.client.messaging.BrokerListener;
-
-import java.util.concurrent.Callable;
 
 public abstract class TestActor implements Callable<Integer>, BrokerListener
 {

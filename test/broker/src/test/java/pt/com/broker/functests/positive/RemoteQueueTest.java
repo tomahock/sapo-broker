@@ -5,11 +5,11 @@ import pt.com.broker.types.NetProtocolType;
 
 public class RemoteQueueTest extends MultipleGenericQueuePubSubTest
 {
-    public RemoteQueueTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public RemoteQueueTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
-        setName("Remote queue consumer");
-    }
-
+		setName("Remote queue consumer");
+	}
 
 }

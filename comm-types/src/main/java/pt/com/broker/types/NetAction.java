@@ -32,94 +32,91 @@ public final class NetAction
 	private NetPong pongMessage;
 	private NetAuthentication authenticationMessage;
 
-
-    private Object netActionMessage;
-
-
+	private Object netActionMessage;
 
 	public NetAction(ActionType actionType)
 	{
 		this.actionType = actionType;
 	}
 
+	public NetAction(NetFault fault)
+	{
 
-    public NetAction(NetFault fault){
+		this(ActionType.FAULT);
 
-        this(ActionType.FAULT);
+		setFaultMessage(fault);
+	}
 
-        setFaultMessage(fault);
-    }
+	public NetAction(NetUnsubscribe netUnsubscribe)
+	{
 
-    public NetAction(NetUnsubscribe netUnsubscribe){
+		this(ActionType.UNSUBSCRIBE);
 
-        this(ActionType.UNSUBSCRIBE);
+		setUnsbuscribeMessage(netUnsubscribe);
+	}
 
-        setUnsbuscribeMessage(netUnsubscribe);
-    }
+	public NetAction(NetAccepted accepted)
+	{
+		this(ActionType.ACCEPTED);
 
-    public NetAction(NetAccepted accepted)
-    {
-        this(ActionType.ACCEPTED);
+		setAcceptedMessage(accepted);
+	}
 
-        setAcceptedMessage(accepted);
-    }
+	public NetAction(NetNotification notification)
+	{
+		this(ActionType.NOTIFICATION);
 
+		setNotificationMessage(notification);
+	}
 
-    public NetAction(NetNotification notification)
-    {
-        this(ActionType.NOTIFICATION);
+	public NetAction(NetPing ping)
+	{
+		this(ActionType.PING);
 
-        setNotificationMessage(notification);
-    }
+		setPingMessage(ping);
+	}
 
-   public NetAction(NetPing ping)
-    {
-        this(ActionType.PING);
+	public NetAction(NetPong pong)
+	{
+		this(ActionType.PONG);
 
-        setPingMessage(ping);
-    }
+		setPongMessage(pong);
+	}
 
-    public NetAction(NetPong pong)
-    {
-        this(ActionType.PONG);
+	public NetAction(NetSubscribe netSubscribe)
+	{
+		this(ActionType.SUBSCRIBE);
 
-        setPongMessage(pong);
-    }
-    public NetAction(NetSubscribe netSubscribe)
-    {
-        this(ActionType.SUBSCRIBE);
+		setSubscribeMessage(netSubscribe);
+	}
 
-        setSubscribeMessage(netSubscribe);
-    }
+	public NetAction(NetPublish netPublish)
+	{
+		this(ActionType.PUBLISH);
 
+		setPublishMessage(netPublish);
+	}
 
-    public NetAction(NetPublish netPublish)
-    {
-        this(ActionType.PUBLISH);
+	public NetAction(NetAcknowledge netAcknowledge)
+	{
+		this(ActionType.ACKNOWLEDGE);
 
-        setPublishMessage(netPublish);
-    }
+		setAcknowledgeMessage(netAcknowledge);
+	}
 
-    public NetAction(NetAcknowledge netAcknowledge){
-        this(ActionType.ACKNOWLEDGE);
+	public NetAction(NetPoll netPoll)
+	{
+		this(ActionType.POLL);
 
-        setAcknowledgeMessage(netAcknowledge);
-    }
+		setPollMessage(netPoll);
+	}
 
+	public NetAction(NetAuthentication netAuthentication)
+	{
+		this(ActionType.AUTH);
 
-    public NetAction(NetPoll netPoll){
-        this(ActionType.POLL);
-
-        setPollMessage(netPoll);
-    }
-
-    public NetAction(NetAuthentication netAuthentication){
-        this(ActionType.AUTH);
-
-        setAuthenticationMessage(netAuthentication);
-    }
-
-
+		setAuthenticationMessage(netAuthentication);
+	}
 
 	public ActionType getActionType()
 	{
@@ -129,7 +126,7 @@ public final class NetAction
 	public void setPublishMessage(NetPublish publishMessage)
 	{
 		this.publishMessage = publishMessage;
-        setNetActionMessage(publishMessage);
+		setNetActionMessage(publishMessage);
 	}
 
 	public NetPublish getPublishMessage()
@@ -140,7 +137,7 @@ public final class NetAction
 	public void setPollMessage(NetPoll pollMessage)
 	{
 		this.pollMessage = pollMessage;
-        setNetActionMessage(pollMessage);
+		setNetActionMessage(pollMessage);
 	}
 
 	public NetPoll getPollMessage()
@@ -151,7 +148,7 @@ public final class NetAction
 	public void setAcceptedMessage(NetAccepted acceptedMessage)
 	{
 		this.acceptedMessage = acceptedMessage;
-        setNetActionMessage(acceptedMessage);
+		setNetActionMessage(acceptedMessage);
 	}
 
 	public NetAccepted getAcceptedMessage()
@@ -162,7 +159,7 @@ public final class NetAction
 	public void setAcknowledgeMessage(NetAcknowledge acknowledgeMessage)
 	{
 		this.acknowledgeMessage = acknowledgeMessage;
-        setNetActionMessage(acknowledgeMessage);
+		setNetActionMessage(acknowledgeMessage);
 	}
 
 	public NetAcknowledge getAcknowledgeMessage()
@@ -173,7 +170,7 @@ public final class NetAction
 	public void setSubscribeMessage(NetSubscribe subscribeMessage)
 	{
 		this.subscribeMessage = subscribeMessage;
-        setNetActionMessage(subscribeMessage);
+		setNetActionMessage(subscribeMessage);
 	}
 
 	public NetSubscribe getSubscribeMessage()
@@ -184,7 +181,7 @@ public final class NetAction
 	public void setUnsbuscribeMessage(NetUnsubscribe unsbuscribeMessage)
 	{
 		this.unsbuscribeMessage = unsbuscribeMessage;
-        setNetActionMessage(unsbuscribeMessage);
+		setNetActionMessage(unsbuscribeMessage);
 	}
 
 	public NetUnsubscribe getUnsbuscribeMessage()
@@ -205,7 +202,7 @@ public final class NetAction
 	public void setFaultMessage(NetFault faultMessage)
 	{
 		this.faultMessage = faultMessage;
-        setNetActionMessage(faultMessage);
+		setNetActionMessage(faultMessage);
 	}
 
 	public NetFault getFaultMessage()
@@ -216,7 +213,7 @@ public final class NetAction
 	public void setPingMessage(NetPing pingMessage)
 	{
 		this.pingMessage = pingMessage;
-        setNetActionMessage(pingMessage);
+		setNetActionMessage(pingMessage);
 	}
 
 	public NetPing getPingMessage()
@@ -227,7 +224,7 @@ public final class NetAction
 	public void setPongMessage(NetPong pongMessage)
 	{
 		this.pongMessage = pongMessage;
-        setNetActionMessage(pongMessage);
+		setNetActionMessage(pongMessage);
 	}
 
 	public NetPong getPongMessage()
@@ -238,7 +235,7 @@ public final class NetAction
 	public void setAuthenticationMessage(NetAuthentication authenticationMessage)
 	{
 		this.authenticationMessage = authenticationMessage;
-        setNetActionMessage(authenticationMessage);
+		setNetActionMessage(authenticationMessage);
 	}
 
 	public NetAuthentication getAuthenticationMessage()
@@ -246,13 +243,14 @@ public final class NetAction
 		return authenticationMessage;
 	}
 
+	public Object getNetActionMessage()
+	{
 
-    public Object getNetActionMessage(){
+		return netActionMessage;
+	}
 
-        return netActionMessage;
-    }
-
-    private void setNetActionMessage(Object netActionMessage){
-        this.netActionMessage = netActionMessage;
-    }
+	private void setNetActionMessage(Object netActionMessage)
+	{
+		this.netActionMessage = netActionMessage;
+	}
 }

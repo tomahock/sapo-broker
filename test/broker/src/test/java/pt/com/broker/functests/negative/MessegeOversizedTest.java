@@ -1,23 +1,19 @@
 package pt.com.broker.functests.negative;
 
-import org.junit.runners.Parameterized;
-import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.client.nio.events.PongListenerAdapter;
+import pt.com.broker.client.nio.server.HostInfo;
 import pt.com.broker.functests.Prerequisite;
 import pt.com.broker.functests.Step;
 import pt.com.broker.functests.helpers.GenericNegativeTest;
 import pt.com.broker.types.NetPong;
 import pt.com.broker.types.NetProtocolType;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 public class MessegeOversizedTest extends GenericNegativeTest
 {
 
-
-    public MessegeOversizedTest(NetProtocolType protocolType) {
-        super(protocolType);
+	public MessegeOversizedTest(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("Message oversize");
 
@@ -41,13 +37,14 @@ public class MessegeOversizedTest extends GenericNegativeTest
 			{
 				try
 				{
-					getBrokerClient().checkStatus(new PongListenerAdapter() {
-                        @Override
-                        public void onMessage(NetPong message, HostInfo hostInfo) {
+					getBrokerClient().checkStatus(new PongListenerAdapter()
+					{
+						@Override
+						public void onMessage(NetPong message, HostInfo hostInfo)
+						{
 
-                        }
-                    });
-
+						}
+					});
 
 					setSucess(true);
 					setDone(true);
@@ -67,11 +64,7 @@ public class MessegeOversizedTest extends GenericNegativeTest
 		return (getEncodingProtocolType() == NetProtocolType.SOAP) || (getEncodingProtocolType() == NetProtocolType.SOAP_v0) || (getEncodingProtocolType() == NetProtocolType.JSON);
 	}
 
-    /*@Parameterized.Parameters()
-    public static Collection getProtocolTypes() {
-        return Arrays.asList(new Object[][]{
-                {NetProtocolType.PROTOCOL_BUFFER},
-                {NetProtocolType.THRIFT},
-        });
-    }*/
+	/*
+	 * @Parameterized.Parameters() public static Collection getProtocolTypes() { return Arrays.asList(new Object[][]{ {NetProtocolType.PROTOCOL_BUFFER}, {NetProtocolType.THRIFT}, }); }
+	 */
 }

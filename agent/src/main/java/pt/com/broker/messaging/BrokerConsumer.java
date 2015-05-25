@@ -1,15 +1,14 @@
 package pt.com.broker.messaging;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import java.util.Collection;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.caudexorigo.time.ISO8601;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.com.broker.core.BrokerExecutor;
 import pt.com.broker.types.MessageListener;
 import pt.com.broker.types.NetAction.DestinationType;
 import pt.com.broker.types.NetSubscribe;
@@ -123,9 +122,9 @@ public class BrokerConsumer
 			}
 		};
 
-//		BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 120, 120, TimeUnit.SECONDS);
-//
-//		BrokerExecutor.scheduleWithFixedDelay(queue_consumer_counter, 120, 120, TimeUnit.SECONDS);
+		// BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 120, 120, TimeUnit.SECONDS);
+		//
+		// BrokerExecutor.scheduleWithFixedDelay(queue_consumer_counter, 120, 120, TimeUnit.SECONDS);
 	}
 
 	public void listen(NetSubscribe sb, ChannelHandlerContext context, boolean ackRequired)

@@ -10,8 +10,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-
-
 public class ChannelAttributes
 {
 	private static final ConcurrentMap<String, Map<String, Object>> PROPS = new ConcurrentHashMap<String, Map<String, Object>>();

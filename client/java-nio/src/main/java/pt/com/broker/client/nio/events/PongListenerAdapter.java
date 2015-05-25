@@ -10,30 +10,35 @@ import pt.com.broker.types.NetPong;
  * @author vagrant
  * @version $Id: $Id
  */
-public abstract class PongListenerAdapter implements BrokerListener {
+public abstract class PongListenerAdapter implements BrokerListener
+{
 
+	/** {@inheritDoc} */
+	@Override
+	public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable
+	{
 
-    /** {@inheritDoc} */
-    @Override
-    public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+		NetPong netPong = message.getAction().getPongMessage();
 
-        NetPong netPong = message.getAction().getPongMessage();
+		if (netPong == null)
+		{
+			return;
+		}
 
-        if(netPong == null) {
-            return;
-        }
+		this.onMessage(netPong, host);
 
-        this.onMessage(netPong, host);
+	}
 
-    }
-
-    /**
-     * <p>onMessage.</p>
-     *
-     * @param message a {@link pt.com.broker.types.NetPong} object.
-     * @param hostInfo a {@link pt.com.broker.client.nio.server.HostInfo} object.
-     */
-    public abstract void onMessage(NetPong message, HostInfo hostInfo);
-
+	/**
+	 * <p>
+	 * onMessage.
+	 * </p>
+	 *
+	 * @param message
+	 *            a {@link pt.com.broker.types.NetPong} object.
+	 * @param hostInfo
+	 *            a {@link pt.com.broker.client.nio.server.HostInfo} object.
+	 */
+	public abstract void onMessage(NetPong message, HostInfo hostInfo);
 
 }

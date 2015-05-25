@@ -13,11 +13,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslHandler;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.FutureListener;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -28,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
 
 import org.apache.commons.lang3.StringUtils;
 import org.caudexorigo.Shutdown;
@@ -53,8 +46,6 @@ import pt.com.gcs.messaging.statistics.KpiTopicConsumerCounter;
 import pt.com.gcs.messaging.statistics.StatisticsCollector;
 import pt.com.gcs.net.Peer;
 import pt.com.gcs.net.codec.GcsCodec;
-import pt.com.gcs.net.codec.GcsDecoder;
-import pt.com.gcs.net.codec.GcsEncoder;
 import pt.com.gcs.net.codec.GcsHandler;
 import pt.com.gcs.net.ssl.SslContextFactory;
 
@@ -374,35 +365,36 @@ public class Gcs
 		{
 			startAcceptor(GcsInfo.getAgentPort());
 			startConnector();
-			
+
 			GcsExecutor.scheduleWithFixedDelay(new GlobalConfigMonitor(), 30, 30, TimeUnit.SECONDS);
-			
-			//TODO: Place all stats tasks in the same class that manages them.
-			//Statistics
+
+			// TODO: Place all stats tasks in the same class that manages them.
+			// Statistics
 			GcsExecutor.scheduleWithFixedDelay(new StatisticsCollector(), 60, 60, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new KpiQueueConsumerCounter(), 120, 120, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new KpiTopicConsumerCounter(), 120, 120, TimeUnit.SECONDS);
-//			BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 120, 120, TimeUnit.SECONDS);
-			//This one go to stats as well
+			// BrokerExecutor.scheduleWithFixedDelay(topic_consumer_counter, 120, 120, TimeUnit.SECONDS);
+			// This one go to stats as well
 			GcsExecutor.scheduleWithFixedDelay(new QueueLister(), 5, 5, TimeUnit.MINUTES);
-			//This one must be on the stats as well
+			// This one must be on the stats as well
 			GcsExecutor.scheduleWithFixedDelay(new QueueCounter(), 20, 20, TimeUnit.SECONDS);
 			GcsExecutor.scheduleWithFixedDelay(new KpiQueuesSize(), 5, 5, TimeUnit.MINUTES);
 
-//			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
+			// GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 10, 10, TimeUnit.MINUTES);
 			GcsExecutor.scheduleWithFixedDelay(new ExpiredMessagesDeleter(), 1, 1, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new QueueWatchDog(), 2, 2, TimeUnit.MINUTES);
 
 			GcsExecutor.scheduleWithFixedDelay(new PingPeers(), 5, 5, TimeUnit.MINUTES);
 
-			GcsExecutor.scheduleWithFixedDelay(new StaleQueueCleaner(Optional.<String>absent(), GlobalConfig.getQueueMaxStaleAge()), GlobalConfig.getQueueMaxStaleAge(), GlobalConfig.getQueueMaxStaleAge(), TimeUnit.MILLISECONDS);
-			//We should place one stalequeuecleaner for each queue prefix running at the specific time
+			GcsExecutor.scheduleWithFixedDelay(new StaleQueueCleaner(Optional.<String> absent(), GlobalConfig.getQueueMaxStaleAge()), GlobalConfig.getQueueMaxStaleAge(), GlobalConfig.getQueueMaxStaleAge(), TimeUnit.MILLISECONDS);
+			// We should place one stalequeuecleaner for each queue prefix running at the specific time
 			Map<String, Long> queuePrefixConfig = GlobalConfig.getQueuePrefixConfig();
 			Set<String> queuePrefixes = queuePrefixConfig.keySet();
-			for(String queuePrefix: queuePrefixes){
+			for (String queuePrefix : queuePrefixes)
+			{
 				Long queueStaleTimer = queuePrefixConfig.get(queuePrefix);
-				GcsExecutor.scheduleWithFixedDelay(new StaleQueueCleaner(Optional.<String>of(queuePrefix), queueStaleTimer), queueStaleTimer, queueStaleTimer, TimeUnit.MILLISECONDS);
+				GcsExecutor.scheduleWithFixedDelay(new StaleQueueCleaner(Optional.<String> of(queuePrefix), queueStaleTimer), queueStaleTimer, queueStaleTimer, TimeUnit.MILLISECONDS);
 			}
 		}
 		catch (Throwable t)
@@ -436,64 +428,67 @@ public class Gcs
 
 	private void startAcceptor(int portNumber) throws IOException
 	{
-        /*@todo (Luis Santos) adicionar Executors ao Bootstrap */
-//		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-1");
-//		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-1");
+		/* @todo (Luis Santos) adicionar Executors ao Bootstrap */
+		// ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-1");
+		// ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-1");
 
-		//ChannelFactory factory = new NioServerSocketChannelFactory(tpe_io, tpe_workers);
+		// ChannelFactory factory = new NioServerSocketChannelFactory(tpe_io, tpe_workers);
 		ServerBootstrap bootstrap = new ServerBootstrap();
 
+		EventLoopGroup bossGroup = new NioEventLoopGroup();
+		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-
-        bootstrap.group(bossGroup,workerGroup);
-		bootstrap.childOption(ChannelOption.TCP_NODELAY,true);
-        bootstrap.childOption(ChannelOption.SO_KEEPALIVE,true);
-        bootstrap.childOption(ChannelOption.SO_RCVBUF,128 * 1024);
-        bootstrap.childOption(ChannelOption.SO_SNDBUF,128 * 1024);
-        bootstrap.option(ChannelOption.SO_REUSEADDR,true);
-        bootstrap.option(ChannelOption.SO_BACKLOG,1024);
+		bootstrap.group(bossGroup, workerGroup);
+		bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+		bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
+		bootstrap.childOption(ChannelOption.SO_RCVBUF, 128 * 1024);
+		bootstrap.childOption(ChannelOption.SO_SNDBUF, 128 * 1024);
+		bootstrap.option(ChannelOption.SO_REUSEADDR, true);
+		bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
 
 		bootstrap.channel(NioServerSocketChannel.class)
-         .childHandler(new ChannelInitializer<SocketChannel>() {
+				.childHandler(new ChannelInitializer<SocketChannel>()
+				{
 
-             @Override
-             protected void initChannel(SocketChannel ch) throws Exception {
-                 ChannelPipeline pipeline = ch.pipeline();
-                 SslContext serverContext = SslContextFactory.getServerSslContext(
-                     GcsInfo.getCertificateFile(), GcsInfo.getKeyFile(), GcsInfo.getKeyPassword()
-                 );
-                 pipeline.addLast("broker-gcs-handler", new GcsHandler(serverContext, GcsInfo.isForceAgentSsl()));
-             }
-             
-         });
+					@Override
+					protected void initChannel(SocketChannel ch) throws Exception
+					{
+						ChannelPipeline pipeline = ch.pipeline();
+						SslContext serverContext = SslContextFactory.getServerSslContext(
+								GcsInfo.getCertificateFile(), GcsInfo.getKeyFile(), GcsInfo.getKeyPassword()
+								);
+						pipeline.addLast("broker-gcs-handler", new GcsHandler(serverContext, GcsInfo.isForceAgentSsl()));
+					}
+
+				});
 
 		InetSocketAddress inet = new InetSocketAddress("0.0.0.0", portNumber);
 		bootstrap.bind(inet);
-//		log.info("SAPO-BROKER Listening on: '{}'.", inet.toString());
+		// log.info("SAPO-BROKER Listening on: '{}'.", inet.toString());
 		log.info("{} listening on: '{}'.", SERVICE_NAME, inet.toString());
 	}
 
 	private void startConnector()
 	{
-//		ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-2");
-//		ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-2");
-         /*@todo (Luis Santos) adicionar Executors ao Bootstrap */
-		Bootstrap bootstrap = new Bootstrap ();
-        bootstrap.group(new NioEventLoopGroup());
-        bootstrap.channel(NioSocketChannel.class);
-        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+		// ThreadPoolExecutor tpe_io = CustomExecutors.newCachedThreadPool("gcs-io-2");
+		// ThreadPoolExecutor tpe_workers = CustomExecutors.newCachedThreadPool("gcs-worker-2");
+		/* @todo (Luis Santos) adicionar Executors ao Bootstrap */
+		Bootstrap bootstrap = new Bootstrap();
+		bootstrap.group(new NioEventLoopGroup());
+		bootstrap.channel(NioSocketChannel.class);
+		bootstrap.handler(new ChannelInitializer<SocketChannel>()
+		{
 
-            @Override
-            protected void initChannel(SocketChannel ch) throws Exception {
-                ChannelPipeline pipeline = ch.pipeline();
-                SslContext clientContext = SslContextFactory.getClientSslContext();
-                pipeline.addLast("broker-ssl-handler", clientContext.newHandler(ch.alloc()));
-                pipeline.addLast("broker-codec", new GcsCodec());
-                pipeline.addLast("broker-handler", new GcsRemoteProtocolHandler());
-            }
-        });
+			@Override
+			protected void initChannel(SocketChannel ch) throws Exception
+			{
+				ChannelPipeline pipeline = ch.pipeline();
+				SslContext clientContext = SslContextFactory.getClientSslContext();
+				pipeline.addLast("broker-ssl-handler", clientContext.newHandler(ch.alloc()));
+				pipeline.addLast("broker-codec", new GcsCodec());
+				pipeline.addLast("broker-handler", new GcsRemoteProtocolHandler());
+			}
+		});
 		// try
 		// {
 		// bootstrap.setOption("localAddress", new InetSocketAddress(Inet4Address.getByName(GcsInfo.getAgentHost()), 0));
@@ -502,10 +497,10 @@ public class Gcs
 		// {
 		// log.error(String.format("Failed to bind to local host address. Address: '%s'.", GcsInfo.getAgentHost()), e);
 		// }
-		bootstrap.option(ChannelOption.SO_KEEPALIVE,true);
-        bootstrap.option(ChannelOption.SO_RCVBUF,128 * 1024);
-        bootstrap.option(ChannelOption.SO_SNDBUF,128 * 1024);
-        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,5000);
+		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+		bootstrap.option(ChannelOption.SO_RCVBUF, 128 * 1024);
+		bootstrap.option(ChannelOption.SO_SNDBUF, 128 * 1024);
+		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
 		this.connector = bootstrap;
 	}
 
@@ -614,7 +609,8 @@ public class Gcs
 		Gcs.publish(np);
 	}
 
-    public static Gcs getInstance() {
-        return instance;
-    }
+	public static Gcs getInstance()
+	{
+		return instance;
+	}
 }

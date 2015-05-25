@@ -5,37 +5,32 @@ import org.junit.Assume;
 /**
  * Created by luissantos on 22-05-2014.
  */
-public abstract class BaseTest{
+public abstract class BaseTest
+{
 
+	protected boolean skipTest(boolean condition)
+	{
 
+		if (condition)
+		{
 
-    protected boolean skipTest(boolean condition){
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+			StackTraceElement e = stacktrace[3];// maybe this number needs to be corrected
+			String methodName = e.getMethodName();
+			String className = e.getClassName();
 
+			System.out.println(" Skiping Test " + className + "#" + methodName);
 
-        if(condition){
+		}
 
-            StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
-            StackTraceElement e = stacktrace[3];//maybe this number needs to be corrected
-            String methodName = e.getMethodName();
-            String className = e.getClassName();
+		Assume.assumeTrue(!condition);
 
-           System.out.println(" Skiping Test "+ className +"#"+methodName);
+		return condition;
+	}
 
+	protected void fail(String msg)
+	{
 
-        }
-
-        Assume.assumeTrue(!condition);
-
-        return condition;
-    }
-
-
-
-
-
-    protected void fail(String msg){
-
-    }
-
+	}
 
 }

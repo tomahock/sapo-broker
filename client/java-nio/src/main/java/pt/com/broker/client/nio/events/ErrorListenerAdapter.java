@@ -10,29 +10,33 @@ import pt.com.broker.types.NetMessage;
  * @author vagrant
  * @version $Id: $Id
  */
-public abstract class ErrorListenerAdapter implements BrokerListener {
+public abstract class ErrorListenerAdapter implements BrokerListener
+{
 
-    /** {@inheritDoc} */
-    @Override
-    public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable {
+	/** {@inheritDoc} */
+	@Override
+	public final void deliverMessage(NetMessage message, HostInfo host) throws Throwable
+	{
 
+		NetFault netFault = message.getAction().getFaultMessage();
 
-        NetFault netFault = message.getAction().getFaultMessage();
+		if (netFault != null)
+		{
+			onMessage(netFault, host);
+		}
 
-        if(netFault != null){
-            onMessage(netFault,host);
-        }
+	}
 
-
-    }
-
-
-    /**
-     * <p>onMessage.</p>
-     *
-     * @param message a {@link pt.com.broker.types.NetFault} object.
-     * @param hostInfo a {@link pt.com.broker.client.nio.server.HostInfo} object.
-     */
-    public abstract void onMessage(NetFault message, HostInfo hostInfo);
+	/**
+	 * <p>
+	 * onMessage.
+	 * </p>
+	 *
+	 * @param message
+	 *            a {@link pt.com.broker.types.NetFault} object.
+	 * @param hostInfo
+	 *            a {@link pt.com.broker.client.nio.server.HostInfo} object.
+	 */
+	public abstract void onMessage(NetFault message, HostInfo hostInfo);
 
 }

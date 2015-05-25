@@ -1,5 +1,8 @@
 package pt.com.gcs.messaging;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -7,12 +10,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import org.caudexorigo.ErrorAnalyser;
 import org.caudexorigo.ds.Cache;
 import org.caudexorigo.ds.CacheFiller;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,10 +108,10 @@ public class TopicProcessorList implements SubscriptionProcessorList
 		return instance.i_values();
 	}
 
-    public static SubscriptionProcessorList getInstance()
-    {
-        return instance;
-    }
+	public static SubscriptionProcessorList getInstance()
+	{
+		return instance;
+	}
 
 	private TopicProcessorList()
 	{
@@ -290,15 +290,16 @@ public class TopicProcessorList implements SubscriptionProcessorList
 		}
 	}
 
-    @Override
-    public SubscriptionProcessor getSubscriptionProcessor(String name) {
-        return i_get(name);
-    }
+	@Override
+	public SubscriptionProcessor getSubscriptionProcessor(String name)
+	{
+		return i_get(name);
+	}
 
-    @Override
-    public Collection<SubscriptionProcessor> getValues() {
-        return (Collection)i_values();
-    }
-
+	@Override
+	public Collection<SubscriptionProcessor> getValues()
+	{
+		return (Collection) i_values();
+	}
 
 }

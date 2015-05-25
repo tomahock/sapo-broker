@@ -1,10 +1,11 @@
 package pt.com.gcs.messaging;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

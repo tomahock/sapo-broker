@@ -1,22 +1,22 @@
 package pt.com.broker.functests.helpers;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.caudexorigo.text.RandomStringUtils;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.com.broker.functests.Test;
-import org.caudexorigo.text.RandomStringUtils;
 
+import pt.com.broker.functests.Test;
 import pt.com.broker.functests.conf.ConfigurationInfo;
 import pt.com.broker.types.NetProtocolType;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 @RunWith(Parameterized.class)
 public abstract class BrokerTest extends Test
 {
-    private static final Logger log = LoggerFactory.getLogger(BrokerTest.class);
+	private static final Logger log = LoggerFactory.getLogger(BrokerTest.class);
 
 	private static NetProtocolType defaultEncodingProtocolType = NetProtocolType.PROTOCOL_BUFFER;
 
@@ -31,9 +31,10 @@ public abstract class BrokerTest extends Test
 
 	protected byte[] rawData = null;
 
-    protected  void logBuildTest(){
-        log.info(String.format("Building test - %s ( %s ) ",getName(),encodingProtocolType));
-    }
+	protected void logBuildTest()
+	{
+		log.info(String.format("Building test - %s ( %s ) ", getName(), encodingProtocolType));
+	}
 
 	public BrokerTest(NetProtocolType protocolType)
 	{
@@ -129,11 +130,10 @@ public abstract class BrokerTest extends Test
 		}
 	}
 
-
-    public int getAgent1SSLPort()
-    {
-        return  Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-port"));
-    }
+	public int getAgent1SSLPort()
+	{
+		return Integer.parseInt(ConfigurationInfo.getParameter("agent1-legacy-port"));
+	}
 
 	public int getAgent1Port()
 	{
@@ -150,7 +150,7 @@ public abstract class BrokerTest extends Test
 		return port;
 	}
 
-	public  int getAgent2Port()
+	public int getAgent2Port()
 	{
 
 		int port = 0;
@@ -195,24 +195,26 @@ public abstract class BrokerTest extends Test
 		return port;
 	}
 
-    public String getAgent1Hostname(){
-        return ConfigurationInfo.getParameter("agent1-host");
-    }
+	public String getAgent1Hostname()
+	{
+		return ConfigurationInfo.getParameter("agent1-host");
+	}
 
-    public String getAgent2Hostname(){
-        return ConfigurationInfo.getParameter("agent2-host");
-    }
+	public String getAgent2Hostname()
+	{
+		return ConfigurationInfo.getParameter("agent2-host");
+	}
 
-    @Parameterized.Parameters()
-    public static Collection getProtocolTypes() {
-        return Arrays.asList(new Object[][]{
-//            {NetProtocolType.JSON},
-            {NetProtocolType.PROTOCOL_BUFFER},
-            {NetProtocolType.THRIFT},
-            {NetProtocolType.SOAP},
-            {NetProtocolType.SOAP_v0}
-        });
-    }
-
+	@Parameterized.Parameters()
+	public static Collection getProtocolTypes()
+	{
+		return Arrays.asList(new Object[][] {
+				// {NetProtocolType.JSON},
+				{ NetProtocolType.PROTOCOL_BUFFER },
+				{ NetProtocolType.THRIFT },
+				{ NetProtocolType.SOAP },
+				{ NetProtocolType.SOAP_v0 }
+		});
+	}
 
 }

@@ -1,10 +1,11 @@
 package pt.com.broker.messaging;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

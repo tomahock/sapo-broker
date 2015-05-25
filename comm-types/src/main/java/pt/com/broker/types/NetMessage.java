@@ -12,9 +12,10 @@ public class NetMessage implements DeliverableMessage
 {
 	private NetAction action;
 	private Map<String, String> headers;
-	
-	public NetMessage(){
-		
+
+	public NetMessage()
+	{
+
 	}
 
 	public NetMessage(NetAction action)

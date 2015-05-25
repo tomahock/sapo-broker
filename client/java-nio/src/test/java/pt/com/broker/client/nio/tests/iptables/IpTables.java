@@ -1,8 +1,5 @@
 package pt.com.broker.client.nio.tests.iptables;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,182 +9,188 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by luissantos on 14-05-2014.
  */
-public class IpTables {
+public class IpTables
+{
 
-    private static final Logger log = LoggerFactory.getLogger(IpTables.class);
+	private static final Logger log = LoggerFactory.getLogger(IpTables.class);
 
+	public enum TCP_DENY
+	{
+		REJECT, DROP
+	}
 
-    public enum  TCP_DENY{
-        REJECT, DROP
-    }
+	java.lang.Runtime rt;
 
+	String iptablesPath = "/sbin/iptables";
 
-    java.lang.Runtime rt;
+	Pattern find_chains_pattern = Pattern.compile("Chain ([\\w-]+) .*");
 
-    String iptablesPath = "/sbin/iptables";
+	public IpTables()
+	{
 
-    Pattern find_chains_pattern = Pattern.compile("Chain ([\\w-]+) .*");
+		rt = java.lang.Runtime.getRuntime();
+	}
 
-    public IpTables() {
+	public boolean hasPermission()
+	{
 
-        rt = java.lang.Runtime.getRuntime();
-    }
+		try
+		{
+			return exec("-L").waitFor() != 3;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
 
-    public boolean hasPermission(){
+	}
 
+	public boolean flushChain(String name) throws IOException, InterruptedException
+	{
+		String[] params = { "-F", name };
 
-        try {
-            return exec("-L").waitFor() != 3;
-        } catch (Exception e) {
-            return false;
-        }
+		return exec(params).waitFor() == 0;
+	}
 
+	public boolean deleteChain(String name) throws IOException, InterruptedException
+	{
 
-    }
+		String[] params = { "-X", name };
 
+		return flushChain(name) && exec(params).waitFor() == 0;
+	}
 
-    public boolean flushChain(String name) throws IOException, InterruptedException{
-        String[] params = {"-F", name};
+	public boolean addChain(String name) throws IOException, InterruptedException
+	{
 
-        return exec(params).waitFor() == 0;
-    }
+		String[] params = { "-N", name };
 
-    public boolean deleteChain(String name)  throws IOException, InterruptedException{
+		return exec(params).waitFor() == 0;
+	}
 
-        String[] params = {"-X", name};
+	public boolean chainExists(String name) throws IOException, InterruptedException
+	{
 
-        return flushChain(name) && exec(params).waitFor() == 0;
-    }
+		String[] params = { "-L", name };
 
-    public boolean addChain(String name) throws IOException, InterruptedException {
+		return exec(params).waitFor() == 0;
 
-        String[] params = {"-N", name};
+	}
 
-        return exec(params).waitFor() == 0;
-    }
+	public boolean removeChainfromChain(String parent, String child) throws IOException, InterruptedException
+	{
 
-    public boolean chainExists(String name) throws IOException, InterruptedException {
+		String[] params = { "-D", parent, "-j", child };
 
-        String[] params = {"-L", name};
+		return exec(params).waitFor() == 0;
+	}
 
-        return exec(params).waitFor() == 0;
+	public boolean addChaintoChain(String parent, String child) throws IOException, InterruptedException
+	{
 
-    }
+		String[] params = { "-A", parent, "-j", child };
 
+		return exec(params).waitFor() == 0;
+	}
 
-    public boolean removeChainfromChain(String parent, String child)throws IOException, InterruptedException {
+	public boolean removePortBlock(String chain, int port, TCP_DENY deny) throws IOException, InterruptedException
+	{
 
-        String[] params = {"-D", parent, "-j", child};
+		String[] params = { "-D", chain, "-p", "tcp", "--dport", Integer.toString(port), "-j", deny.name() };
 
-        return exec(params).waitFor() == 0;
-    }
+		return exec(params).waitFor() == 0;
+	}
 
-    public boolean addChaintoChain(String parent, String child) throws IOException, InterruptedException {
+	public boolean blockPort(String chain, int port, TCP_DENY deny) throws IOException, InterruptedException
+	{
 
-        String[] params = {"-A", parent, "-j", child};
+		String[] params = { "-A", chain, "-p", "tcp", "--dport", Integer.toString(port), "-j", deny.name() };
 
-        return exec(params).waitFor() == 0;
-    }
+		return exec(params).waitFor() == 0;
+	}
 
+	public boolean blockPort(String chain, int port) throws IOException, InterruptedException
+	{
 
+		return blockPort(chain, port, TCP_DENY.DROP);
 
-    public boolean removePortBlock(String chain, int port, TCP_DENY deny) throws IOException, InterruptedException {
+	}
 
-        String[] params = {"-D", chain , "-p" , "tcp" , "--dport" , Integer.toString(port) , "-j", deny.name() };
+	public boolean removePortBlock(String chain, int port) throws IOException, InterruptedException
+	{
 
-        return exec(params).waitFor() == 0;
-    }
+		return removePortBlock(chain, port, TCP_DENY.DROP);
 
-    public boolean blockPort(String chain, int port, TCP_DENY deny) throws IOException, InterruptedException {
+	}
 
-        String[] params = {"-A", chain , "-p" , "tcp" , "--dport" , Integer.toString(port) , "-j", deny.name() };
+	public Collection<String> getChains() throws IOException, InterruptedException
+	{
 
-        return exec(params).waitFor() == 0;
-    }
+		Process p = exec("-L");
 
-    public boolean blockPort(String chain, int port) throws IOException, InterruptedException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-        return blockPort(chain, port, TCP_DENY.DROP);
+		List<String> chains = new ArrayList<String>();
 
-    }
+		String line;
+		while ((line = reader.readLine()) != null)
+		{
+			Matcher m = find_chains_pattern.matcher(line);
 
-    public boolean removePortBlock(String chain, int port) throws IOException, InterruptedException {
+			if (m.find())
+			{
+				chains.add(m.group(1));
+			}
+		}
 
-        return removePortBlock(chain, port, TCP_DENY.DROP);
+		return chains;
 
-    }
+	}
 
+	protected Process exec(String parameter) throws IOException, InterruptedException
+	{
 
-    public Collection<String> getChains() throws IOException, InterruptedException {
+		List<String> parameters = new ArrayList<String>(1);
 
+		parameters.add(parameter);
 
-        Process p = exec("-L");
+		return exec(parameters);
+	}
 
+	protected Process exec(String[] _parameters) throws IOException, InterruptedException
+	{
 
-        BufferedReader reader = new BufferedReader (new InputStreamReader(p.getInputStream()));
+		List<String> parameters = new ArrayList<String>(_parameters.length);
 
+		for (String param : _parameters)
+		{
+			parameters.add(param);
+		}
 
-        List<String> chains = new ArrayList<String>();
+		return exec(parameters);
+	}
 
+	protected Process exec(Collection<String> parameters) throws IOException, InterruptedException
+	{
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            Matcher m = find_chains_pattern.matcher(line);
+		List<String> command = new ArrayList<String>();
 
-            if(m.find()){
-                chains.add(m.group(1));
-            }
-        }
+		command.add(iptablesPath);
 
+		command.addAll(parameters);
 
-        return chains;
+		ProcessBuilder pb = new ProcessBuilder(command);
 
-    }
+		log.debug("Commnad: " + command);
 
+		Process p = pb.start();
 
-    protected Process exec(String parameter) throws IOException, InterruptedException {
-
-        List<String> parameters = new ArrayList<String>(1);
-
-        parameters.add(parameter);
-
-
-        return exec(parameters);
-    }
-
-
-    protected Process exec(String [] _parameters) throws IOException, InterruptedException {
-
-        List<String> parameters = new ArrayList<String>(_parameters.length);
-
-        for(String param : _parameters){
-            parameters.add(param);
-        }
-
-
-        return exec(parameters);
-    }
-
-
-
-    protected Process exec(Collection<String> parameters) throws IOException, InterruptedException {
-
-        List<String> command = new ArrayList<String>();
-
-        command.add(iptablesPath);
-
-        command.addAll(parameters);
-
-        ProcessBuilder pb = new ProcessBuilder(command);
-
-        log.debug("Commnad: "+command);
-
-        Process p = pb.start();
-
-
-        return  p;
-    }
+		return p;
+	}
 }

@@ -6,8 +6,9 @@ import pt.com.broker.types.NetProtocolType;
 public class VirtualQueueTopicNameWildcard extends MultipleGenericVirtualQueuePubSubTest
 {
 
-    public VirtualQueueTopicNameWildcard(NetProtocolType protocolType) {
-        super(protocolType);
+	public VirtualQueueTopicNameWildcard(NetProtocolType protocolType)
+	{
+		super(protocolType);
 
 		setName("VirtualQueue - Topic name is a wildcard");
 

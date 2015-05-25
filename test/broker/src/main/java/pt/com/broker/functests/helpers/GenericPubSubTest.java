@@ -1,32 +1,35 @@
 package pt.com.broker.functests.helpers;
 
-import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
-import pt.com.broker.functests.Action;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.com.broker.client.nio.AcceptRequest;
-import pt.com.broker.client.nio.BrokerClient;
-import pt.com.broker.client.nio.events.AcceptResponseListener;
-import pt.com.broker.client.nio.server.HostInfo;
-import pt.com.broker.client.nio.events.NotificationListenerAdapter;
-import pt.com.broker.functests.Epilogue;
-import pt.com.broker.functests.Prerequisite;
-import pt.com.broker.functests.Step;
-import pt.com.broker.functests.conf.ConfigurationInfo;
-import pt.com.broker.types.*;
-import pt.com.broker.types.NetAction.DestinationType;
-
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pt.com.broker.client.nio.AcceptRequest;
+import pt.com.broker.client.nio.BrokerClient;
+import pt.com.broker.client.nio.events.AcceptResponseListener;
+import pt.com.broker.client.nio.events.NotificationListenerAdapter;
+import pt.com.broker.client.nio.exceptions.SubscriptionNotFound;
+import pt.com.broker.client.nio.server.HostInfo;
+import pt.com.broker.functests.Action;
+import pt.com.broker.functests.Epilogue;
+import pt.com.broker.functests.Prerequisite;
+import pt.com.broker.functests.Step;
+import pt.com.broker.types.NetAccepted;
+import pt.com.broker.types.NetAction.DestinationType;
+import pt.com.broker.types.NetBrokerMessage;
+import pt.com.broker.types.NetFault;
+import pt.com.broker.types.NetNotification;
+import pt.com.broker.types.NetProtocolType;
+import pt.com.broker.types.NetSubscribe;
+
 public class GenericPubSubTest extends BrokerTest
 {
-    private static final Logger log = LoggerFactory.getLogger(GenericPubSubTest.class);
+	private static final Logger log = LoggerFactory.getLogger(GenericPubSubTest.class);
 
 	private String destinationName = "/topic/foo";
 	private String subscriptionName = "/topic/foo";
@@ -41,28 +44,21 @@ public class GenericPubSubTest extends BrokerTest
 	protected boolean constructionFailed = false;
 	protected Throwable reasonForFailure;
 
-
-
-    NetNotification[] last = {null};
-
+	NetNotification[] last = { null };
 
 	public GenericPubSubTest(NetProtocolType protocolType)
 	{
 		super(protocolType);
-        setName("GenericPubSubTest");
+		setName("GenericPubSubTest");
 		try
 		{
-            String host = getAgent1Hostname();
+			String host = getAgent1Hostname();
 
+			infoConsumer = new BrokerClient(host, getAgent1Port(), this.getEncodingProtocolType());
+			infoConsumer.connect();
 
-
-			infoConsumer = new BrokerClient(host, getAgent1Port() , this.getEncodingProtocolType());
-            infoConsumer.connect();
-
-
-			infoProducer = new BrokerClient(host, getAgent1Port() , this.getEncodingProtocolType());
-            infoProducer.connect();
-
+			infoProducer = new BrokerClient(host, getAgent1Port(), this.getEncodingProtocolType());
+			infoProducer.connect();
 
 		}
 		catch (Throwable t)
@@ -70,21 +66,25 @@ public class GenericPubSubTest extends BrokerTest
 			constructionFailed = true;
 			reasonForFailure = t;
 
-            throw t;
+			throw t;
 		}
 
 	}
 
-    @Override
-    protected void end() {
-        try {
-            infoConsumer.close();
-            infoProducer.close();
+	@Override
+	protected void end()
+	{
+		try
+		{
+			infoConsumer.close();
+			infoProducer.close();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void build() throws Throwable
@@ -94,18 +94,20 @@ public class GenericPubSubTest extends BrokerTest
 
 		if (getBrokerListener() == null)
 		{
-			brokerListener = new NotificationListenerAdapter() {
-                @Override
-                public boolean onMessage(NetNotification message, HostInfo host) {
+			brokerListener = new NotificationListenerAdapter()
+			{
+				@Override
+				public boolean onMessage(NetNotification message, HostInfo host)
+				{
 
-                    synchronized (last){
-                        last[0] = message;
-                    }
+					synchronized (last)
+					{
+						last[0] = message;
+					}
 
-
-                    return true;
-                }
-            };
+					return true;
+				}
+			};
 		}
 
 		addPrerequisites();
@@ -133,40 +135,41 @@ public class GenericPubSubTest extends BrokerTest
 				{
 					NetSubscribe subscribe = new NetSubscribe(getSubscriptionName(), getDestinationType());
 
-                    final AtomicBoolean success = new AtomicBoolean(false);
+					final AtomicBoolean success = new AtomicBoolean(false);
 
-                    final BlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
+					final BlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
 
-                    AcceptRequest request = new AcceptRequest(UUID.randomUUID().toString(),new AcceptResponseListener() {
-                        @Override
-                        public void onMessage(NetAccepted message, HostInfo host) {
+					AcceptRequest request = new AcceptRequest(UUID.randomUUID().toString(), new AcceptResponseListener()
+					{
+						@Override
+						public void onMessage(NetAccepted message, HostInfo host)
+						{
 
-                            log.info("Success");
+							log.info("Success");
 
-                            queue.add(true);
-                        }
+							queue.add(true);
+						}
 
-                        @Override
-                        public void onFault(NetFault fault, HostInfo host) {
+						@Override
+						public void onFault(NetFault fault, HostInfo host)
+						{
 
-                            log.error("Fault");
+							log.error("Fault");
 
-                            queue.add(false);
-                        }
+							queue.add(false);
+						}
 
-                        @Override
-                        public void onTimeout(String actionID) {
+						@Override
+						public void onTimeout(String actionID)
+						{
 
-                            log.error("Timeout");
-                            queue.add(false);
+							log.error("Timeout");
+							queue.add(false);
 
-                        }
-                    },10000);
+						}
+					}, 10000);
 
 					getInfoConsumer().subscribe(subscribe, getBrokerListener(), request);
-
-
-
 
 					setDone(true);
 					setSucess(queue.take());
@@ -195,12 +198,11 @@ public class GenericPubSubTest extends BrokerTest
 
 					Future f = getInfoProducer().publish(brokerMessage, getDestinationName(), getDestinationType());
 
-                    f.get();
+					f.get();
 
+					Thread.sleep(2000);
 
-                    Thread.sleep(2000);
-
-					//getInfoProducer().close();
+					// getInfoProducer().close();
 
 					setDone(true);
 					setSucess(true);
@@ -217,8 +219,6 @@ public class GenericPubSubTest extends BrokerTest
 
 	protected void addConsequences()
 	{
-
-
 
 		NotificationConsequence notConsequence = new NotificationConsequence("Consume", "consumer", last);
 		notConsequence.setDestination(getDestinationName());
@@ -240,27 +240,30 @@ public class GenericPubSubTest extends BrokerTest
 				{
 					getInfoConsumer().unsubscribe(getDestinationType(), getSubscriptionName());
 
-
 				}
 				catch (Throwable t)
 				{
-                    if(t.getCause() instanceof SubscriptionNotFound){
+					if (t.getCause() instanceof SubscriptionNotFound)
+					{
 
-                        // Sometimes its normal that no subscription is found
+						// Sometimes its normal that no subscription is found
 
-                    }else{
-                        throw new Exception(t);
-                    }
+					}
+					else
+					{
+						throw new Exception(t);
+					}
 
+				}
+				finally
+				{
 
-				}finally {
+					setDone(true);
+					setSucess(true);
 
-                    setDone(true);
-                    setSucess(true);
-
-                    getInfoConsumer().close();
-                }
-                return this;
+					getInfoConsumer().close();
+				}
+				return this;
 			}
 		});
 	}
