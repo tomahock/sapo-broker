@@ -74,7 +74,7 @@ class Client(threading.Thread):
         return self.__wqueue.put(message, block, timeout)
 
     def receive(self, block=True, timeout=None):
-        msg = self.__rqueue.get(block=True, timeout=None)
+        msg = self.__rqueue.get(block, timeout)
         self.__rqueue.task_done()
         return msg
 
