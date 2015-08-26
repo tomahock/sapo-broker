@@ -1,8 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([libsapo-broker2], [2.1.0], [c.valente@co.sapo.pt])
-SOVERSION=3:0:1
+AC_INIT([libsapo-broker2], [2.2.2], [opers@co.sapo.pt])
+# SOVERSION math is: SOVERSION=A:B:C -> VERSION=A-C,C,B
+SOVERSION=4:2:2
 AC_SUBST(SOVERSION)
 
 AM_INIT_AUTOMAKE(dist-bzip2)
