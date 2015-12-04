@@ -207,7 +207,7 @@ class Codec:
 
         #serialization objects
         transportOut = TTransport.TMemoryBuffer()
-        protocolOut = TBinaryProtocol.TBinaryProtocol(transportOut)
+        protocolOut = TBinaryProtocol.TBinaryProtocolAccelerated(transportOut)
         atom.write(protocolOut)
 
         #get the message binary payload
@@ -221,7 +221,7 @@ class Codec:
         atom = ttypes.Atom()
 
         transportIn = TTransport.TMemoryBuffer(data)
-        protocolIn = TBinaryProtocol.TBinaryProtocol(transportIn)
+        protocolIn = TBinaryProtocol.TBinaryProtocolAccelerated(transportIn)
 
         atom.read(protocolIn)
         action = atom.action

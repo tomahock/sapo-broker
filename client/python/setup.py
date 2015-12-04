@@ -6,7 +6,7 @@ use_setuptools()
 from setuptools import setup, find_packages
 from os import path
 
-version = '0.0.2'
+version = '0.1.0'
 
 setup(
     name='SAPO-Broker',
@@ -25,13 +25,12 @@ setup(
         * SSL
         * Dropbox""",
     url="http://oss.sapo.pt/#!broker",
-    install_requires=['protobuf', 'thrift'],
+    install_requires=['thrift'],  # protobuf is optional, thrift is preferred
     version=version,
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.5',
         'Programming Language :: Python :: 2.6',
 	    'Programming Language :: Python :: 2.7',
         'Topic :: Software Development :: Libraries :: Python Modules',
