@@ -291,8 +291,8 @@ PHP_FUNCTION(broker_msg_decode) {
     zval *origin_arr;
 
     // again, thank you Zend for such a lame naming scheme. not mentioning CAPS, of course :)
-    ALLOC_INIT_ZVAL(destination_arr);
-    ALLOC_INIT_ZVAL(origin_arr);
+    //ALLOC_INIT_ZVAL(destination_arr);
+    //ALLOC_INIT_ZVAL(origin_arr);
 
     // fill destination array
     //char *dest_name = estrndup(message->destination.name, strlen(message->destination.name));
@@ -317,18 +317,33 @@ PHP_FUNCTION(broker_msg_decode) {
 PHP_FUNCTION(broker_receive) {
     int argc = ZEND_NUM_ARGS();
     int sapo_broker_id = -1;
-    long msecs;
+    zend_long msecs;
     zval *zsapo_broker = NULL;
     zend_bool return_array;
     sapo_broker_t *sapo_broker;
     broker_msg_t *message;
     struct timeval timeout;
 
-    if (zend_parse_parameters(argc TSRMLS_CC, "rl|b", &zsapo_broker, &msecs, &return_array) == FAILURE)
-        RETURN_FALSE;
+    FILE *fp;
+   char* str = "string";
+   int x = 10;
+   fp=fopen("/servers/logs/test.txt", "a");
+   if(fp == NULL)
+           exit(-1);
 
-    if (zsapo_broker == NULL)
+
+    if (zend_parse_parameters(argc TSRMLS_CC, "rl|b", &zsapo_broker, &msecs, &return_array) == FAILURE){
+      fprintf(fp, "xixi\n");
+       fclose(fp) ;
+       RETURN_FALSE;
+    }
+
+
+    if (zsapo_broker == NULL){
+    fprintf(fp, "xoxo\n");
+     fclose(fp) ;
         RETURN_FALSE;
+      }
 
     sapo_broker = (sapo_broker_t*)zend_fetch_resource_ex(zsapo_broker, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
 
@@ -336,8 +351,9 @@ PHP_FUNCTION(broker_receive) {
     timeout.tv_sec = msecs / 1000;
     timeout.tv_usec = 1000 * (msecs % 1000);
     message = broker_receive(sapo_broker, &timeout);
-    if (message == NULL)
+    if (message == NULL){
         RETURN_FALSE;
+      }
 
     if (!return_array) {
         ZVAL_RES(return_value, zend_register_resource(message, le_broker_msg_t));
@@ -357,8 +373,8 @@ PHP_FUNCTION(broker_receive) {
         zval *origin_arr;
 
         // again, thank you Zend for such a lame naming scheme. not mentioning CAPS, of course :)
-        ALLOC_INIT_ZVAL(destination_arr);
-        ALLOC_INIT_ZVAL(origin_arr);
+        //ALLOC_INIT_ZVAL(destination_arr);
+        //ALLOC_INIT_ZVAL(origin_arr);
 
         // fill destination array
         //char *dest_name = estrndup(message->destination.name, strlen(message->destination.name));
