@@ -333,44 +333,52 @@ PHP_FUNCTION(broker_receive) {
 
 
     if (zend_parse_parameters(argc TSRMLS_CC, "rl|b", &zsapo_broker, &msecs, &return_array) == FAILURE){
-      fprintf(fp, "xixi\n");
-       fclose(fp) ;
        RETURN_FALSE;
     }
 
 
     if (zsapo_broker == NULL){
-    fprintf(fp, "xoxo\n");
-     fclose(fp) ;
         RETURN_FALSE;
       }
 
-    sapo_broker = (sapo_broker_t*)zend_fetch_resource_ex(zsapo_broker, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
+      if((sapo_broker = (sapo_broker_t*)zend_fetch_resource_ex(zsapo_broker, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t)) == NULL) {
+          RETURN_FALSE;
+      }
+
+
+    // ZEND_FETCH_RESOURCE(sapo_broker, sapo_broker_t*, &zsapo_broker, -1, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
+    //sapo_broker = (sapo_broker_t*)zend_fetch_resource_ex(zsapo_broker, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
 
     // convert miliseconds to timeval
     timeout.tv_sec = msecs / 1000;
     timeout.tv_usec = 1000 * (msecs % 1000);
     message = broker_receive(sapo_broker, &timeout);
+
     if (message == NULL){
         RETURN_FALSE;
-      }
+    }
 
     if (!return_array) {
         ZVAL_RES(return_value, zend_register_resource(message, le_broker_msg_t));
 //        ZEND_REGISTER_RESOURCE(return_value, message, le_broker_msg_t);
     } else {
+
+
         char *payload = estrndup(message->payload, message->payload_len);
         char *message_id = estrndup(message->message_id, strlen(message->message_id));
 
         // alloc return array
         array_init(return_value);
+
         add_assoc_long(return_value, "payload_len", message->payload_len);
         add_assoc_stringl(return_value, "payload", payload, message->payload_len);
+
         add_assoc_stringl(return_value, "message_id", message_id, strlen(message->message_id));
         add_assoc_bool(return_value, "acked", message->acked);
 
-        zval *destination_arr;
-        zval *origin_arr;
+
+        zval destination_arr;
+        zval origin_arr;
 
         // again, thank you Zend for such a lame naming scheme. not mentioning CAPS, of course :)
         //ALLOC_INIT_ZVAL(destination_arr);
@@ -378,27 +386,31 @@ PHP_FUNCTION(broker_receive) {
 
         // fill destination array
         //char *dest_name = estrndup(message->destination.name, strlen(message->destination.name));
-        array_init(destination_arr);
+        array_init(&destination_arr);
+
         //add_assoc_stringl(destination_arr, "name", dest_name, strlen(message->destination.name), 1);
-        add_assoc_long(destination_arr, "type", message->destination.type);
-        add_assoc_bool(destination_arr, "queue_autoack", message->destination.queue_autoack);
+        add_assoc_long(&destination_arr, "type", message->destination.type);
+        add_assoc_bool(&destination_arr, "queue_autoack", message->destination.queue_autoack);
 
         // fill origin array
         //char *orig_name = estrndup(message->origin.name, strlen(message->origin.name));
-        array_init(origin_arr);
+        array_init(&origin_arr);
         //add_assoc_stringl(origin_arr, "name", dest_name, strlen(dest_name), 1);
-        add_assoc_long(origin_arr, "type", message->origin.type);
-        add_assoc_bool(origin_arr, "queue_autoack", message->origin.queue_autoack);
+        add_assoc_long(&origin_arr, "type", message->origin.type);
+        add_assoc_bool(&origin_arr, "queue_autoack", message->origin.queue_autoack);
 
         // add both to message array
-        add_assoc_zval(return_value, "origin", origin_arr);
-        add_assoc_zval(return_value, "destination", destination_arr);
+        add_assoc_zval(return_value, "origin", &origin_arr);
+        add_assoc_zval(return_value, "destination", &destination_arr);
 
         // returning by val. if we're losing our reference, we should auto-ack now
         // make sure this restriction (return by val only with auto-ack) is clear in docs
         // and filter above.
         // NOTE: broker_msg_ack calls broker_msg_free underneath
+
+
         broker_msg_ack(sapo_broker, message);
+
     }
 }
 
@@ -472,20 +484,23 @@ PHP_FUNCTION(broker_subscribe_virtual_queue) {
     zend_string *queue = NULL;
     int argc = ZEND_NUM_ARGS();
     int sapo_broker_id = -1;
-    int queue_len;
     zend_bool autoack;
     zval *zsapo_broker = NULL;
     sapo_broker_t *sapo_broker;
 
-    if (zend_parse_parameters(argc TSRMLS_CC, "rSb", &zsapo_broker, &queue, &autoack) == FAILURE)
-        RETURN_FALSE;
+    if (zend_parse_parameters(argc TSRMLS_CC, "rSb", &zsapo_broker, &queue, &autoack) == FAILURE){
+      RETURN_FALSE;
 
-    if (zsapo_broker == NULL)
+    }
+
+    if (zsapo_broker == NULL) {
         RETURN_FALSE;
+      }
 
     sapo_broker = (sapo_broker_t*)zend_fetch_resource_ex(zsapo_broker, PHP_SAPO_BROKER_T_RES_NAME, le_sapo_broker_t);
     char *internal_queue_name = estrndup(queue->val, queue->len);
     int retval = broker_subscribe_virtual_queue(sapo_broker, internal_queue_name, autoack);
+
     RETURN_LONG(retval);
 }
 
